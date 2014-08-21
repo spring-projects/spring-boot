@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -40,8 +41,10 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
@@ -146,6 +149,10 @@ public class MessageSourceAutoConfiguration {
 		private static final Log logger = LogFactory
 				.getLog(PathMatchingResourcePatternResolver.class);
 
+		private static final String JAR_FILE_EXTENSION = ".jar";
+
+		private static final String JAR_URL_PREFIX = "jar:";
+
 		public ExtendedPathMatchingResourcePatternResolver(ClassLoader classLoader) {
 			super(classLoader);
 		}
@@ -160,40 +167,64 @@ public class MessageSourceAutoConfiguration {
 			if ("".equals(path)) {
 				Set<Resource> result = new LinkedHashSet<Resource>(16);
 				result.addAll(Arrays.asList(super.findAllClassPathResources(location)));
-				addAllClassLoaderJarUrls(getClassLoader(), result);
+				addAllClassLoaderJarRoots(getClassLoader(), result);
 				return result.toArray(new Resource[result.size()]);
 			}
 			return super.findAllClassPathResources(location);
 		}
 
-		private void addAllClassLoaderJarUrls(ClassLoader classLoader,
+		private void addAllClassLoaderJarRoots(ClassLoader classLoader,
 				Set<Resource> result) {
 			if (classLoader != null) {
 				if (classLoader instanceof URLClassLoader) {
-					addAllClassLoaderJarUrls(((URLClassLoader) classLoader).getURLs(),
-							result);
+					try {
+						addAllClassLoaderJarUrls(
+								((URLClassLoader) classLoader).getURLs(), result);
+					}
+					catch (Exception ex) {
+						if (logger.isDebugEnabled()) {
+							logger.debug("Cannot introspect jar files since "
+									+ "ClassLoader [" + classLoader
+									+ "] does not support 'getURLs()': " + ex);
+						}
+					}
 				}
-				addAllClassLoaderJarUrls(classLoader.getParent(), result);
+				try {
+					addAllClassLoaderJarRoots(classLoader.getParent(), result);
+				}
+				catch (Exception ex) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Cannot introspect jar files in parent "
+								+ "ClassLoader since [" + classLoader
+								+ "] does not support 'getParent()': " + ex);
+					}
+				}
 			}
 		}
 
 		private void addAllClassLoaderJarUrls(URL[] urls, Set<Resource> result) {
 			for (URL url : urls) {
-				if ("file".equals(url.getProtocol())
-						&& url.toString().toLowerCase().endsWith(".jar")) {
+				if (isJarFileUrl(url)) {
 					try {
-						URL jarUrl = new URL("jar:" + url.toString() + "!/");
-						jarUrl.openConnection();
-						result.add(convertClassLoaderURL(jarUrl));
+						UrlResource jarResource = new UrlResource(JAR_URL_PREFIX
+								+ url.toString() + ResourceUtils.JAR_URL_SEPARATOR);
+						if (jarResource.exists()) {
+							result.add(jarResource);
+						}
 					}
-					catch (Exception ex) {
-						if (logger.isWarnEnabled()) {
-							logger.warn("Cannot search for matching files underneath "
+					catch (MalformedURLException ex) {
+						if (logger.isDebugEnabled()) {
+							logger.debug("Cannot search for matching files underneath "
 									+ url + " because it cannot be accessed as a JAR", ex);
 						}
 					}
 				}
 			}
+		}
+
+		private boolean isJarFileUrl(URL url) {
+			return ResourceUtils.URL_PROTOCOL_FILE.equals(url.getProtocol())
+					&& url.getPath().toLowerCase().endsWith(JAR_FILE_EXTENSION);
 		}
 
 	}
