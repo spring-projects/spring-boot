@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
  * both Jar Files, Exploded Archives and directly running applications.
  *
  * @author Phillip Webb
- * @since 1.1.2
+ * @since 1.2.0
  */
 public class ApplicationHome {
 
