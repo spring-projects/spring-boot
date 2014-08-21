@@ -37,7 +37,7 @@ class DriverClassNameProvider {
 		Map<String, String> drivers = new HashMap<String, String>();
 		drivers.put("derby", "org.apache.derby.jdbc.EmbeddedDriver");
 		drivers.put("h2", "org.h2.Driver");
-		drivers.put("hsqldb", "org.hsqldb.jdbcDriver");
+		drivers.put("hsqldb", "org.hsqldb.jdbc.JDBCDriver");
 		drivers.put("sqlite", "org.sqlite.JDBC");
 		drivers.put("mysql", "com.mysql.jdbc.Driver");
 		drivers.put("mariadb", "org.mariadb.jdbc.Driver");
