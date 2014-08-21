@@ -16,10 +16,12 @@ given the ability to merge pull requests.
 None of these is essential for a pull request, but they will all help.  They can also be
 added after the original pull request but before a merge.
 
-* Use the Spring Framework code format conventions. Import `eclipse-code-formatter.xml`
-  from the `eclipse` folder of the project if you are using Eclipse. If using IntelliJ,
-  copy `spring-intellij-code-style.xml` to `~/.IntelliJIdea*/config/codestyles` and select
-  spring-intellij-code-style from Settings -> Code Styles.
+* Use the Spring Framework code format conventions. If you use Eclipse and you follow
+  the ``Importing into eclipse'' instructions below you should get project specific
+  formatting automatically. You can also import formatter settings using the
+  `eclipse-code-formatter.xml` file from the `eclipse` folder. If using IntelliJ, you can
+  use the [Eclipse Code Formatter Plugin](http://plugins.jetbrains.com/plugin/6546)
+  to import the same file.
 * Make sure all new `.java` files to have a simple Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is
   for.
