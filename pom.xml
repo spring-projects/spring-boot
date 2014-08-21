@@ -274,7 +274,7 @@
 									<regexFlags>
 										<regexFlag>DOTALL</regexFlag>
 									</regexFlags>
-									<token>\n\t&lt;repositories&gt;.*&lt;/repositories&gt;</token>
+									<token>\n\t&lt;profiles&gt;.*&lt;/profiles&gt;</token>
 									<value></value>
 								</configuration>
 							</execution>

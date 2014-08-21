@@ -51,6 +51,10 @@
 							<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
 							<skipInvocation>${skipTests}</skipInvocation>
 							<streamLogs>true</streamLogs>
+							<profiles>
+								<profile>integration-test</profile>
+							</profiles>
+							<localRepositoryPath> </localRepositoryPath>
 						</configuration>
 						<executions>
 							<execution>
