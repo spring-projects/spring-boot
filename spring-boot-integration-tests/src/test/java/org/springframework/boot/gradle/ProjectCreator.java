@@ -46,6 +46,8 @@ public class ProjectCreator {
 		}
 
 		GradleConnector gradleConnector = GradleConnector.newConnector();
+		gradleConnector.useGradleVersion("1.12");
+
 		((DefaultGradleConnector) gradleConnector).embedded(true);
 		return gradleConnector.forProjectDirectory(projectDirectory).connect();
 	}

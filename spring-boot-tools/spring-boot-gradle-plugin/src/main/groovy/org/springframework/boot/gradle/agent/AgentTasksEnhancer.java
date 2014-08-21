@@ -108,6 +108,11 @@ public class AgentTasksEnhancer implements Action<Project> {
 			if (this.noverify != null && this.noverify) {
 				exec.jvmArgs("-noverify");
 			}
+			Iterable<?> defaultJvmArgs = exec.getConventionMapping().getConventionValue(
+					null, "jvmArgs", false);
+			if (defaultJvmArgs != null) {
+				exec.jvmArgs(defaultJvmArgs);
+			}
 		}
 	}
 
