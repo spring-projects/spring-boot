@@ -43,11 +43,13 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
@@ -183,10 +185,8 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedServiceWithCustomJmsConfiguration() {
-		load(CustomJmsConfiguration.class, "spring.hornetq.embedded.queues=Queue1,Queue2"); // Ignored
-																							// with
-																							// custom
-																							// config
+		// Ignored with custom config
+		load(CustomJmsConfiguration.class, "spring.hornetq.embedded.queues=Queue1,Queue2");
 		DestinationChecker checker = new DestinationChecker(this.context);
 		checker.checkQueue("custom", true); // See CustomJmsConfiguration
 
@@ -317,7 +317,7 @@ public class HornetQAutoConfigurationTests {
 			String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(config);
-		applicationContext.register(HornetQAutoConfiguration.class,
+		applicationContext.register(HornetQAutoConfigurationWithoutXA.class,
 				JmsAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
@@ -415,6 +415,13 @@ public class HornetQAutoConfigurationTests {
 				}
 			};
 		}
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(HornetQProperties.class)
+	@Import({ HornetQEmbeddedServerConfiguration.class,
+			HornetQConnectionFactoryConfiguration.class })
+	protected static class HornetQAutoConfigurationWithoutXA {
 	}
 
 }

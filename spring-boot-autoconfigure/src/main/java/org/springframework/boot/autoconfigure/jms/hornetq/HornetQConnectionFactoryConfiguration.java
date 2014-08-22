@@ -14,38 +14,43 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.activemq;
+package org.springframework.boot.autoconfigure.jms.hornetq;
 
 import javax.jms.ConnectionFactory;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hornetq.jms.client.HornetQConnectionFactory;
+import org.hornetq.jms.server.embedded.EmbeddedJMS;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for ActiveMQ {@link ConnectionFactory}.
+ * Configuration for HornetQ {@link ConnectionFactory}.
  *
- * @author Greg Turnquist
- * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 1.1.0
+ * @since 1.2.0
  */
 @Configuration
 @ConditionalOnMissingBean(ConnectionFactory.class)
-class ActiveMQConnectionFactoryConfiguration {
+class HornetQConnectionFactoryConfiguration {
+
+	private static Log logger = LogFactory
+			.getLog(HornetQEmbeddedServerConfiguration.class);
+
+	// Ensure JMS is setup before XA
+	@Autowired(required = false)
+	private EmbeddedJMS embeddedJMS;
 
 	@Bean
-	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
-				properties).createConnectionFactory(ActiveMQConnectionFactory.class);
-		if (properties.isPooled()) {
-			PooledConnectionFactory pool = new PooledConnectionFactory();
-			pool.setConnectionFactory(connectionFactory);
-			return pool;
+	public ConnectionFactory jmsConnectionFactory(HornetQProperties properties) {
+		if (this.embeddedJMS != null && logger.isDebugEnabled()) {
+			logger.debug("Using embdedded HornetQ broker");
 		}
-		return connectionFactory;
+		return new HornetQConnectionFactoryFactory(properties)
+				.createConnectionFactory(HornetQConnectionFactory.class);
 	}
 
 }
