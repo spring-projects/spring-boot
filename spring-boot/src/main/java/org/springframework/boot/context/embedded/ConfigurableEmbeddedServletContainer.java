@@ -49,7 +49,7 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setPort(int port);
 
 	/**
-	 * The session timeout in minutes (default 30). If 0 or negative then sessions never
+	 * The session timeout in seconds (default 30). If 0 or negative then sessions never
 	 * expire.
 	 * @param sessionTimeout the session timeout
 	 */
