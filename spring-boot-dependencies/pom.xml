@@ -515,6 +515,11 @@
 				<version>${activemq.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-jms-pool</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-pool2</artifactId>
 				<version>${commons-pool2.version}</version>
