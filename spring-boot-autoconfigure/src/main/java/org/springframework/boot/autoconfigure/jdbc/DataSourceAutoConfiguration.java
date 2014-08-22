@@ -97,8 +97,8 @@ public class DataSourceAutoConfiguration {
 		@Autowired
 		private DataSourceProperties properties;
 
-		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 		@Bean
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 		public DataSource dataSource() {
 			DataSourceBuilder factory = DataSourceBuilder
 					.create(this.properties.getClassLoader())
@@ -205,8 +205,7 @@ public class DataSourceAutoConfiguration {
 				return ConditionOutcome.match("existing auto database detected");
 			}
 
-			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					context.getBeanFactory(), DataSource.class, true, false).length > 0) {
+			if (hasBean(context, DataSource.class)) {
 				return ConditionOutcome
 						.match("Existing bean configured database detected");
 			}
@@ -214,6 +213,10 @@ public class DataSourceAutoConfiguration {
 			return ConditionOutcome.noMatch("no existing bean configured database");
 		}
 
+		private boolean hasBean(ConditionContext context, Class<?> type) {
+			return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+					context.getBeanFactory(), type, true, false).length > 0;
+		}
 	}
 
 }

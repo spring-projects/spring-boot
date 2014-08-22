@@ -25,7 +25,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Base class for configuration of a database pool.
+ * Base class for configuration of a data source.
  *
  * @author Dave Syer
  * @author Maciej Walkowiak
