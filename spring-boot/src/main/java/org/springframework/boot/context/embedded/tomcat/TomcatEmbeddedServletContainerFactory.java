@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +62,8 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -331,7 +334,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
-		context.setSessionTimeout(getSessionTimeout());
+
+        long minutes = SECONDS.toMinutes(getSessionTimeout());
+        context.setSessionTimeout((new BigDecimal(minutes).intValueExact()));
 		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
 			customizer.customize(context);
 		}
