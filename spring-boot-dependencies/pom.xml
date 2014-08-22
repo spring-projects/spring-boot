@@ -48,6 +48,7 @@
 		<!-- Third Party -->
 		<activemq.version>5.9.1</activemq.version>
 		<aspectj.version>1.8.2</aspectj.version>
+		<atomikos.version>3.9.3</atomikos.version>
 		<codahale-metrics.version>3.0.2</codahale-metrics.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.1</commons-collections.version>
@@ -85,6 +86,7 @@
 		<jolokia.version>1.2.2</jolokia.version>
 		<json-path.version>0.9.1</json-path.version>
 		<jstl.version>1.2</jstl.version>
+		<jta.version>1.1</jta.version>
 		<junit.version>4.11</junit.version>
 		<liquibase.version>3.0.8</liquibase.version>
 		<log4j.version>1.2.17</log4j.version>
@@ -351,6 +353,21 @@
 				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.atomikos</groupId>
+				<artifactId>transactions-jdbc</artifactId>
+				<version>${atomikos.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.atomikos</groupId>
+				<artifactId>transactions-jms</artifactId>
+				<version>${atomikos.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.atomikos</groupId>
+				<artifactId>transactions-jta</artifactId>
+				<version>${atomikos.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.codahale.metrics</groupId>
 				<artifactId>metrics-graphite</artifactId>
 				<version>${codahale-metrics.version}</version>
@@ -481,6 +498,11 @@
 				<groupId>javax.servlet</groupId>
 				<artifactId>jstl</artifactId>
 				<version>${jstl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.transaction</groupId>
+				<artifactId>jta</artifactId>
+				<version>${jta.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jaxen</groupId>
