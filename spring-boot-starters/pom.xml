@@ -36,6 +36,8 @@
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jdbc</module>
 		<module>spring-boot-starter-jetty</module>
+		<module>spring-boot-starter-jta-atomikos</module>
+		<module>spring-boot-starter-jta-bitronix</module>
 		<module>spring-boot-starter-logging</module>
 		<module>spring-boot-starter-log4j</module>
 		<module>spring-boot-starter-mobile</module>
