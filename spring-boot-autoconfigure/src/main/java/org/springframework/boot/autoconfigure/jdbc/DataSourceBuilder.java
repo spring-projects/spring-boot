@@ -49,8 +49,6 @@ public class DataSourceBuilder {
 
 	private ClassLoader classLoader;
 
-	private DriverClassNameProvider driverClassNameProvider = new DriverClassNameProvider();
-
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	public static DataSourceBuilder create() {
@@ -76,9 +74,9 @@ public class DataSourceBuilder {
 	private void maybeGetDriverClassName() {
 		if (!this.properties.containsKey("driverClassName")
 				&& this.properties.containsKey("url")) {
-			String cls = this.driverClassNameProvider.getDriverClassName(this.properties
-					.get("url"));
-			this.properties.put("driverClassName", cls);
+			String url = this.properties.get("url");
+			String driverClass = DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
+			this.properties.put("driverClassName", driverClass);
 		}
 	}
 

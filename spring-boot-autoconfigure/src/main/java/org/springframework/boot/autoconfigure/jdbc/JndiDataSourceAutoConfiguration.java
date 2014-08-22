@@ -36,7 +36,8 @@ import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
  * @since 1.2.0
  */
 @Configuration
-@AutoConfigureBefore(DataSourceAutoConfiguration.class)
+@AutoConfigureBefore({ XADataSourceAutoConfiguration.class,
+		DataSourceAutoConfiguration.class })
 @ConditionalOnClass(DataSource.class)
 @ConditionalOnProperty(prefix = DataSourceProperties.PREFIX, name = "jndi-name")
 @EnableConfigurationProperties(DataSourceProperties.class)
