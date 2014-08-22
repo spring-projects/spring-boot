@@ -56,8 +56,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @Import(Registrar.class)
 public class DataSourceAutoConfiguration {
 
-	public static final String CONFIGURATION_PREFIX = "spring.datasource";
-
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from
 	 * {@link EmbeddedDataSourceConfiguration}.
@@ -99,7 +97,7 @@ public class DataSourceAutoConfiguration {
 		@Autowired
 		private DataSourceProperties properties;
 
-		@ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 		@Bean
 		public DataSource dataSource() {
 			DataSourceBuilder factory = DataSourceBuilder
