@@ -118,7 +118,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		if (StringUtils.hasText(this.username)) {
 			return this.username;
 		}
-		if (EmbeddedDatabaseConnection.isEmbedded(this.driverClassName)) {
+		if (EmbeddedDatabaseConnection.isEmbedded(getDriverClassName())) {
 			return "sa";
 		}
 		return null;
@@ -128,7 +128,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		if (StringUtils.hasText(this.password)) {
 			return this.password;
 		}
-		if (EmbeddedDatabaseConnection.isEmbedded(this.driverClassName)) {
+		if (EmbeddedDatabaseConnection.isEmbedded(getDriverClassName())) {
 			return "";
 		}
 		return null;
