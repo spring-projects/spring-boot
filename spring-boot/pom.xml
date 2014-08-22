@@ -90,6 +90,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.codehaus.btm</groupId>
+			<artifactId>btm</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy</artifactId>
 			<optional>true</optional>

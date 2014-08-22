@@ -49,6 +49,7 @@
 		<activemq.version>5.9.1</activemq.version>
 		<aspectj.version>1.8.2</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
+		<bitronix.version>2.1.4</bitronix.version>
 		<codahale-metrics.version>3.0.2</codahale-metrics.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.1</commons-collections.version>
@@ -386,6 +387,11 @@
 				<groupId>com.codahale.metrics</groupId>
 				<artifactId>metrics-servlets</artifactId>
 				<version>${codahale-metrics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.btm</groupId>
+				<artifactId>btm</artifactId>
+				<version>${bitronix.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.janino</groupId>
