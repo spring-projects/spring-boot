@@ -149,7 +149,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	@Override
 	public void setSessionTimeout(int sessionTimeout, TimeUnit timeUnit) {
 		Assert.notNull(timeUnit, "TimeUnit must not be null");
-		this.sessionTimeout = (int) timeUnit.toSeconds(sessionTimeout);
+		this.sessionTimeout = (int) timeUnit.toMinutes(sessionTimeout);
 	}
 
 	/**
