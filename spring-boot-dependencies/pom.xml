@@ -75,6 +75,7 @@
 		<hornetq.version>2.4.3.Final</hornetq.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 		<jackson.version>2.4.2</jackson.version>
+		<gson.version>2.3</gson.version>
 		<janino.version>2.6.1</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
@@ -397,6 +398,11 @@
 				<groupId>com.codahale.metrics</groupId>
 				<artifactId>metrics-servlets</artifactId>
 				<version>${codahale-metrics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.btm</groupId>
