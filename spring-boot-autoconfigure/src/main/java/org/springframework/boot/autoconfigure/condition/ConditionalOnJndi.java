@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jta;
+package org.springframework.boot.autoconfigure.condition;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Import;
+import javax.naming.InitialContext;
+
+import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for JTA.
+ * {@link Conditional} that matches based on the availability of a JNDI
+ * {@link InitialContext} and the ability to lookup specific locations.
  *
- * @author Josh Long
  * @author Phillip Webb
  * @since 1.2.0
  */
-@ConditionalOnClass(javax.transaction.Transaction.class)
-@Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class,
-		AtomikosJtaConfiguration.class })
-@EnableConfigurationProperties(JtaProperties.class)
-public class JtaAutoConfiguration {
+@Conditional(OnJndiCondition.class)
+public @interface ConditionalOnJndi {
+
+	/**
+	 * JNDI Locations, one of which must exist. If no locations are specific the condition
+	 * matches solely based on the presence of an {@link InitialContext}.
+	 */
+	String[] value() default {};
 
 }
