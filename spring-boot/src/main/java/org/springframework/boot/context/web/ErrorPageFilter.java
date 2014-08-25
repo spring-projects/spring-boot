@@ -143,6 +143,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 			rethrow(ex);
 			return;
 		}
+		logger.error("Forwarding to error page", ex);
 		setErrorAttributes(request, 500, ex.getMessage());
 		request.setAttribute(ERROR_EXCEPTION, ex);
 		request.setAttribute(ERROR_EXCEPTION_TYPE, type.getName());
