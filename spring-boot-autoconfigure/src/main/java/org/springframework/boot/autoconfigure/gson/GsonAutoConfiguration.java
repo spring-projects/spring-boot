@@ -33,7 +33,7 @@ import com.google.gson.Gson;
  * </ul>
  * 
  * @author David Liu
- * @since 1.1.0
+ * @since 1.1.4
  */
 @Configuration
 @ConditionalOnClass(Gson.class)
@@ -45,5 +45,5 @@ public class GsonAutoConfiguration {
 		Gson gson = new Gson();
 		return gson;
 	}
-		
+
 }

@@ -29,7 +29,7 @@ import com.google.gson.Gson;
  * Tests for {@link GsonAutoConfiguration}.
  * 
  * @author David Liu
- * @since 1.1.0
+ * @since 1.1.4
  */
 public class GsonAutoConfigurationTests {
 
