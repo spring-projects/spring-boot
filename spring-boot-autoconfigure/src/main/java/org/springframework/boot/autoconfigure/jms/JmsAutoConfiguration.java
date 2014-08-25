@@ -19,13 +19,10 @@ package org.springframework.boot.autoconfigure.jms;
 import javax.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
-import org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +42,6 @@ import org.springframework.jms.core.JmsTemplate;
 @ConditionalOnClass(JmsTemplate.class)
 @ConditionalOnBean(ConnectionFactory.class)
 @EnableConfigurationProperties(JmsProperties.class)
-@AutoConfigureAfter({ HornetQAutoConfiguration.class, ActiveMQAutoConfiguration.class })
 public class JmsAutoConfiguration {
 
 	@Autowired

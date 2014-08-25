@@ -112,16 +112,18 @@ public class DataSourceBuilder {
 		return this;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Class<? extends DataSource> findType() {
 		if (this.type != null) {
 			return this.type;
 		}
 		for (String name : DATA_SOURCE_TYPE_NAMES) {
-			if (ClassUtils.isPresent(name, this.classLoader)) {
-				@SuppressWarnings("unchecked")
-				Class<DataSource> resolved = (Class<DataSource>) ClassUtils
-						.resolveClassName(name, this.classLoader);
-				return resolved;
+			try {
+				return (Class<? extends DataSource>) ClassUtils.forName(name,
+						this.classLoader);
+			}
+			catch (Exception ex) {
+				// Swallow and continue
 			}
 		}
 		return null;
