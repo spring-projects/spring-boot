@@ -1258,11 +1258,14 @@ in `application.properties`:
 	spring.datasource.url=jdbc:mysql://localhost/test
 	spring.datasource.username=dbuser
 	spring.datasource.password=dbpass
-	spring.datasource.driverClassName=com.mysql.jdbc.Driver
+	spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 ----
 
 See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourceProperties`]
 for more of the supported options.
+
+TIP: You often won't need to specify the `driver-class-name` since Spring boot can deduce
+it for most databases from the `url`.
 
 NOTE: For a pooling `DataSource` to be created we need to be able to verify that a valid
 `Driver` class is available, so we check for that before doing anything. I.e. if you set
