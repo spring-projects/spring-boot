@@ -118,7 +118,7 @@ public class VelocityAutoConfiguration {
 		@Bean
 		public VelocityEngine velocityEngine(VelocityConfigurer configurer)
 				throws VelocityException, IOException {
-			return configurer.createVelocityEngine();
+			return configurer.getVelocityEngine();
 		}
 
 		@Bean

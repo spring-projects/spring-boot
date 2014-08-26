@@ -92,12 +92,10 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 		this.toolboxConfigLocation = toolboxConfigLocation;
 	}
 
-	/**
-	 * Apply the given properties to a {@link VelocityViewResolver}.
-	 * @param resolver the resolver to apply the properties to.
-	 */
-	public void applyToViewResolver(VelocityViewResolver resolver) {
-		super.applyToViewResolver(resolver);
+	@Override
+	public void applyToViewResolver(Object viewResolver) {
+		super.applyToViewResolver(viewResolver);
+		VelocityViewResolver resolver = (VelocityViewResolver) viewResolver;
 		resolver.setToolboxConfigLocation(getToolboxConfigLocation());
 		resolver.setDateToolAttribute(getDateToolAttribute());
 		resolver.setNumberToolAttribute(getNumberToolAttribute());
