@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.agent;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.security.CodeSource;
 
 import org.gradle.api.Action;
@@ -84,7 +85,14 @@ public class AgentTasksEnhancer implements Action<Project> {
 			if (loaded != null) {
 				CodeSource source = loaded.getProtectionDomain().getCodeSource();
 				if (source != null) {
-					return new File(source.getLocation().getFile());
+					File agent;
+					try {
+						agent = new File(source.getLocation().toURI());
+					}
+					catch (URISyntaxException ex) {
+						agent = new File(source.getLocation().getPath());
+					}
+					return agent;
 				}
 			}
 		}
