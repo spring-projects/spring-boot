@@ -85,14 +85,12 @@ public class AgentTasksEnhancer implements Action<Project> {
 			if (loaded != null) {
 				CodeSource source = loaded.getProtectionDomain().getCodeSource();
 				if (source != null) {
-					File agent;
 					try {
-						agent = new File(source.getLocation().toURI());
+						return new File(source.getLocation().toURI());
 					}
 					catch (URISyntaxException ex) {
-						agent = new File(source.getLocation().getPath());
+						return new File(source.getLocation().getPath());
 					}
-					return agent;
 				}
 			}
 		}
