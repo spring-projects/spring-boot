@@ -31,6 +31,7 @@ import org.springframework.jms.annotation.JmsListenerAnnotationBeanPostProcessor
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.destination.DestinationResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring JMS.
@@ -50,11 +51,17 @@ public class JmsAutoConfiguration {
 	@Autowired
 	private ConnectionFactory connectionFactory;
 
+	@Autowired(required = false)
+	private DestinationResolver destinationResolver;
+
 	@Bean
 	@ConditionalOnMissingBean
 	public JmsTemplate jmsTemplate() {
 		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
 		jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
+		if (this.destinationResolver != null) {
+			jmsTemplate.setDestinationResolver(this.destinationResolver);
+		}
 		return jmsTemplate;
 	}
 
@@ -73,12 +80,18 @@ public class JmsAutoConfiguration {
 	@ConditionalOnBean(JmsListenerAnnotationBeanPostProcessor.class)
 	protected static class AnnotationDrivenConfiguration {
 
-		@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
+		@Autowired(required = false)
+		private DestinationResolver destinationResolver;
+
 		@Bean
+		@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 		public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
 				ConnectionFactory connectionFactory) {
 			DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 			factory.setConnectionFactory(connectionFactory);
+			if (this.destinationResolver != null) {
+				factory.setDestinationResolver(this.destinationResolver);
+			}
 			return factory;
 		}
 
