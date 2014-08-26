@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.template;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 /**
@@ -158,10 +159,18 @@ public abstract class AbstractTemplateViewResolverProperties {
 	}
 
 	/**
-	 * Apply the given properties to a {@link AbstractTemplateViewResolver}.
-	 * @param resolver the resolver to apply the properties to.
+	 * Apply the given properties to a {@link AbstractTemplateViewResolver}. Use Object in
+	 * signature to avoid runtime dependency on MVC, which means that the template engine
+	 * can be used in a non-web application.
+	 *
+	 * @param viewResolver the resolver to apply the properties to.
 	 */
-	protected void applyToViewResolver(AbstractTemplateViewResolver resolver) {
+	public void applyToViewResolver(Object viewResolver) {
+
+		Assert.isInstanceOf(AbstractTemplateViewResolver.class, viewResolver,
+				"ViewResolver is not an instance of AbstractTemplateViewResolver :"
+						+ viewResolver);
+		AbstractTemplateViewResolver resolver = (AbstractTemplateViewResolver) viewResolver;
 		resolver.setPrefix(getPrefix());
 		resolver.setSuffix(getSuffix());
 		resolver.setCache(isCache());
@@ -175,6 +184,7 @@ public abstract class AbstractTemplateViewResolverProperties {
 		// The resolver usually acts as a fallback resolver (e.g. like a
 		// InternalResourceViewResolver) so it needs to have low precedence
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
+
 	}
 
 }
