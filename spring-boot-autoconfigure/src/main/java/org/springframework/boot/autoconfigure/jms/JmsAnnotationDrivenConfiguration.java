@@ -19,14 +19,15 @@ package org.springframework.boot.autoconfigure.jms;
 import javax.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.annotation.JmsListenerAnnotationBeanPostProcessor;
+import org.springframework.jms.annotation.JmsBootstrapConfiguration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerConfigUtils;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -39,7 +40,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Configuration
 @ConditionalOnClass(EnableJms.class)
-@ConditionalOnBean(JmsListenerAnnotationBeanPostProcessor.class)
+@Import(JmsBootstrapConfiguration.class)
 class JmsAnnotationDrivenConfiguration {
 
 	@Autowired(required = false)
@@ -61,6 +62,12 @@ class JmsAnnotationDrivenConfiguration {
 			factory.setDestinationResolver(this.destinationResolver);
 		}
 		return factory;
+	}
+
+	@EnableJms
+	@ConditionalOnMissingBean(name = JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
+	protected static class EnableJmsConfiguration {
+
 	}
 
 }

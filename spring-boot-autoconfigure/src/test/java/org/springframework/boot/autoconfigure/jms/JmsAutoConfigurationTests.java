@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerConfigUtils;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
@@ -63,7 +64,7 @@ public class JmsAutoConfigurationTests {
 		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
 				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
 						.getBrokerURL());
-		assertFalse("No listener container factory should be created by default",
+		assertTrue("listener container factory should be created by default",
 				this.context.containsBean("jmsListenerContainerFactory"));
 	}
 
@@ -110,7 +111,6 @@ public class JmsAutoConfigurationTests {
 				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
 		assertEquals(DefaultJmsListenerContainerFactory.class,
 				jmsListenerContainerFactory.getClass());
-
 	}
 
 	@Test
@@ -223,6 +223,14 @@ public class JmsAutoConfigurationTests {
 		assertEquals("tcp://remote-host:10000", factory.getBrokerURL());
 	}
 
+	@Test
+	public void enableJmsAutomatically() throws Exception {
+		load(NoEnableJmsConfiguration.class);
+		AnnotationConfigApplicationContext ctx = this.context;
+		ctx.getBean(JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME);
+		ctx.getBean(JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
+	}
+
 	private AnnotationConfigApplicationContext createContext(
 			Class<?>... additionalClasses) {
 		return doLoad(additionalClasses);
@@ -291,6 +299,7 @@ public class JmsAutoConfigurationTests {
 
 	@Configuration
 	protected static class TestConfiguration5 {
+
 		@Bean
 		JmsMessagingTemplate jmsMessagingTemplate(JmsTemplate jmsTemplate) {
 			JmsMessagingTemplate messagingTemplate = new JmsMessagingTemplate(jmsTemplate);
@@ -302,6 +311,7 @@ public class JmsAutoConfigurationTests {
 
 	@Configuration
 	protected static class TestConfiguration6 {
+
 		@Bean
 		JmsListenerContainerFactory<?> jmsListenerContainerFactory(
 				ConnectionFactory connectionFactory) {
@@ -315,6 +325,10 @@ public class JmsAutoConfigurationTests {
 	@Configuration
 	@EnableJms
 	protected static class EnableJmsConfiguration {
+	}
+
+	@Configuration
+	protected static class NoEnableJmsConfiguration {
 	}
 
 }
