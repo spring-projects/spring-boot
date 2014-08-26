@@ -46,6 +46,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	private ClassLoader classLoader;
 
+	private String jndiName;
+
 	private boolean initialize = true;
 
 	private String platform = "all";
@@ -150,6 +152,20 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getJndiName() {
+		return this.jndiName;
+	}
+
+	/**
+	 * Allows the DataSource to be managed by the container and obtained via JNDI. The
+	 * {@code URL}, {@code driverClassName}, {@code username} and {@code password} fields
+	 * will be ignored when using JNDI lookups.
+	 * @param jndiName the JNDI name
+	 */
+	public void setJndiName(String jndiName) {
+		this.jndiName = jndiName;
 	}
 
 	public boolean isInitialize() {

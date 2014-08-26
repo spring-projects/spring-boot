@@ -1272,6 +1272,27 @@ NOTE: For a pooling `DataSource` to be created we need to be able to verify that
 `spring.datasource.driverClassName=com.mysql.jdbc.Driver` then that class has to be
 loadable.
 
+
+
+[[boot-features-connecting-to-a-jndi-datasource]]
+==== Connection to a JNDI DataSource
+If you are deploying your Spring Boot application to an Application Server you might want
+to configure and manage your DataSource using you Application Servers built in features
+and access it using JNDI.
+
+The `spring.datasource.jndi-name` property can be used as an alternative to the
+`spring.datasource.url`, `spring.datasource.username` and `spring.datasource.password`
+properties to access the `DataSource` from a specific JNDI location. For example, the
+following section in `application.properties` shows how you can access a JBoss AS defined
+`DataSource`:
+
+[source,properties,indent=0]
+----
+	spring.datasource.jndi-name=java:jboss/datasources/customers
+----
+
+
+
 [[boot-features-using-jdbc-template]]
 === Using JdbcTemplate
 Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-configured and

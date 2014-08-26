@@ -175,6 +175,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.url=
 	spring.datasource.username=
 	spring.datasource.password=
+	spring.datasource.jndi-name # For JNDI lookup (class, url, username & password are ignored when set)
 	spring.datasource.max-active=100 # Advanced configuration...
 	spring.datasource.max-idle=8
 	spring.datasource.min-idle=8
