@@ -129,8 +129,7 @@ class AutoConfigurationSorter {
 	@SuppressWarnings("rawtypes")
 	public static List<String> getClasses(String packageName)
 			throws IOException, ClassNotFoundException {
-		ClassLoader classLoader = Thread.currentThread()
-				.getContextClassLoader();
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		String path = packageName.replace(".", "/");
 		Enumeration<URL> resources = classLoader.getResources(path);
 		List<File> dirs = new ArrayList<File>();
@@ -156,8 +155,7 @@ class AutoConfigurationSorter {
 		for (File file : files) {
 			if (file.isDirectory()) {
 				assert !file.getName().contains(".");
-				classes.addAll(findClasses(file,
-						packageName + "." + file.getName()));
+				classes.addAll(findClasses(file, packageName + "." + file.getName()));
 			} 
 			else if (file.getName().endsWith("AutoConfiguration.class")) {
 				classes.add(packageName
@@ -203,16 +201,16 @@ class AutoConfigurationSorter {
 				for (String packageName : get(className).getPackageAfter()) {
 					rtn.addAll(getClasses(packageName));
 				}
-			} catch (ClassNotFoundException e) {
+			} 
+			catch (ClassNotFoundException e) {
 				return null;
-			} catch (IOException e) {
+			} 
+			catch (IOException e) {
 				return null;
 			}
-			for (Map.Entry<String, AutoConfigurationClass> entry : this.classes
-					.entrySet()) {
+			for (Map.Entry<String, AutoConfigurationClass> entry : this.classes.entrySet()) {
 				if (className.indexOf(".") > 0) {
-					String packageName = className.substring(0,
-							className.lastIndexOf("."));
+					String packageName = className.substring(0, className.lastIndexOf("."));
 					if (entry.getValue().getPackageBefore().contains(packageName)) {
 						rtn.add(entry.getKey());
 					}
