@@ -23,17 +23,22 @@ import java.lang.annotation.Target;
 
 /**
  * Hint for that an {@link EnableAutoConfiguration auto-configuration} should be applied
- * after other specified auto-configuration classes.
+ * after other specified auto-configuration classes or packages.
  *
  * @author Phillip Webb
+ * @author David Liu
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface AutoConfigureAfter {
-
 	/**
 	 * The auto-configure classes that should have already been applied.
 	 */
-	Class<?>[] value();
+	Class<?>[] value() default {};
+
+	/**
+	 * The auto-configure packages that should have already been applied.
+	 */
+	String[] packages() default {};
 
 }

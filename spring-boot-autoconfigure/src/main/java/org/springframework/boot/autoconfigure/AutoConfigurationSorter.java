@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -103,6 +106,14 @@ class AutoConfigurationSorter {
 
 		processing.add(current);
 
+		for (String packageName : classes.getPackagesRequestedAfter(current)) {
+			Assert.state(!processing.contains(packageName), "AutoConfigure cycle detected between " + current + " and "
+					+ packageName);
+			if (!sorted.contains(packageName) && tosort.contains(packageName)) {
+				doSortByAfterAnnotation(classes, tosort, sorted, processing, packageName);
+			}
+		}
+
 		for (String after : classes.getClassesRequestedAfter(current)) {
 			Assert.state(!processing.contains(after),
 					"AutoConfigure cycle detected between " + current + " and " + after);
@@ -113,6 +124,48 @@ class AutoConfigurationSorter {
 
 		processing.remove(current);
 		sorted.add(current);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static List<String> getClasses(String packageName)
+			throws IOException, ClassNotFoundException {
+		ClassLoader classLoader = Thread.currentThread()
+				.getContextClassLoader();
+		String path = packageName.replace(".", "/");
+		Enumeration<URL> resources = classLoader.getResources(path);
+		List<File> dirs = new ArrayList<File>();
+		while (resources.hasMoreElements()) {
+			URL urlResource = resources.nextElement();
+			dirs.add(new File(urlResource.getFile()));
+		}
+		List<String> classes = new ArrayList<String>();
+		for (File directory : dirs) {
+			classes.addAll(findClasses(directory, packageName));
+		}
+		return classes;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static List<String> findClasses(File directory, String packageName)
+			throws ClassNotFoundException {
+		List<String> classes = new ArrayList<String>();
+		if (!directory.isDirectory()) {
+			return classes;
+		}
+		File[] files = directory.listFiles();
+		for (File file : files) {
+			if (file.isDirectory()) {
+				assert !file.getName().contains(".");
+				classes.addAll(findClasses(file,
+						packageName + "." + file.getName()));
+			} 
+			else if (file.getName().endsWith("AutoConfiguration.class")) {
+				classes.add(packageName
+						+ "."
+						+ file.getName().substring(0, file.getName().length() - 6));
+			}
+		}
+		return classes;
 	}
 
 	private static class AutoConfigurationClasses {
@@ -143,6 +196,30 @@ class AutoConfigurationSorter {
 			}
 			return rtn;
 		}
+
+		public Set<String> getPackagesRequestedAfter(String className) {
+			Set<String> rtn = new LinkedHashSet<String>();
+			try {
+				for (String packageName : get(className).getPackageAfter()) {
+					rtn.addAll(getClasses(packageName));
+				}
+			} catch (ClassNotFoundException e) {
+				return null;
+			} catch (IOException e) {
+				return null;
+			}
+			for (Map.Entry<String, AutoConfigurationClass> entry : this.classes
+					.entrySet()) {
+				if (className.indexOf(".") > 0) {
+					String packageName = className.substring(0,
+							className.lastIndexOf("."));
+					if (entry.getValue().getPackageBefore().contains(packageName)) {
+						rtn.add(entry.getKey());
+					}
+				}
+			}
+			return rtn;
+		}
 	}
 
 	private static class AutoConfigurationClass {
@@ -168,6 +245,14 @@ class AutoConfigurationSorter {
 			return getAnnotationValue(AutoConfigureAfter.class);
 		}
 
+		public Set<String> getPackageBefore() {
+			return getAnnotationPackage(AutoConfigureBefore.class);
+		}
+
+		public Set<String> getPackageAfter() {
+			return getAnnotationPackage(AutoConfigureAfter.class);
+		}
+
 		private Set<String> getAnnotationValue(Class<?> annotation) {
 			Map<String, Object> attributes = this.metadata.getAnnotationAttributes(
 					annotation.getName(), true);
@@ -175,6 +260,16 @@ class AutoConfigurationSorter {
 				return Collections.emptySet();
 			}
 			return new HashSet<String>(Arrays.asList((String[]) attributes.get("value")));
+		}
+
+		private Set<String> getAnnotationPackage(Class<?> annotation) {
+			Map<String, Object> attributes = this.metadata
+					.getAnnotationAttributes(annotation.getName(), true);
+			if (attributes == null) {
+				return Collections.emptySet();
+			}
+			return new HashSet<String>(Arrays.asList((String[]) attributes
+					.get("packages")));
 		}
 
 	}

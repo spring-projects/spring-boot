@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure;
 
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,16 +29,28 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureA.PackageA1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureB.PackageB1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureC.PackageC1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureD.PackageD1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureE.PackageE1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureU.PackageU1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureV.PackageV1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureW.PackageW1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureW.PackageW2AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureX.PackageX1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureX.PackageX2AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureY.PackageY1AutoConfiguration;
+import org.springframework.boot.autoconfigure.PackageAutoConfigureZ.PackageZ1AutoConfiguration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.DefaultResourceLoader;
 
-import static org.junit.Assert.assertThat;
-
 /**
  * Tests for {@link AutoConfigurationSorter}.
- *
+ * 
  * @author Phillip Webb
+ * @author David Liu
  */
 public class AutoConfigurationSorterTests {
 
@@ -51,6 +65,20 @@ public class AutoConfigurationSorterTests {
 	private static final String X = AutoConfigureX.class.getName();
 	private static final String Y = AutoConfigureY.class.getName();
 	private static final String Z = AutoConfigureZ.class.getName();
+
+	private static final String A1 = PackageA1AutoConfiguration.class.getName();
+	private static final String B1 = PackageB1AutoConfiguration.class.getName();
+	private static final String C1 = PackageC1AutoConfiguration.class.getName();
+	private static final String D1 = PackageD1AutoConfiguration.class.getName();
+	private static final String E1 = PackageE1AutoConfiguration.class.getName();
+	private static final String W1 = PackageW1AutoConfiguration.class.getName();
+	private static final String W2 = PackageW2AutoConfiguration.class.getName();
+	private static final String X1 = PackageX1AutoConfiguration.class.getName();
+	private static final String X2 = PackageX2AutoConfiguration.class.getName();
+	private static final String Y1 = PackageY1AutoConfiguration.class.getName();
+	private static final String Z1 = PackageZ1AutoConfiguration.class.getName();
+	private static final String U1 = PackageU1AutoConfiguration.class.getName();
+	private static final String V1 = PackageV1AutoConfiguration.class.getName();
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -113,6 +141,56 @@ public class AutoConfigurationSorterTests {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("AutoConfigure cycle detected");
 		this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D));
+	}
+
+
+
+	@Test
+	public void byPackageAutoConfigureBefore() throws Exception {
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X1, X2, Y1, Z1));
+		assertThat(actual, nameMatcher(Z1, Y1, X1, X2));
+	}
+
+	@Test
+	public void byPackageAutoConfigureAfterDoubles() throws Exception {
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A1,
+				B1, C1, E1));
+		assertThat(actual, nameMatcher(C1, E1, B1, A1));
+	}
+
+	@Test
+	public void byPackageAutoConfigureMixedBeforeAndAfter() throws Exception {
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A1, B1, C1, W1, W2, X1));
+		assertThat(actual, nameMatcher(C1, W1, W2, B1, A1, X1));
+	}
+
+	@Test
+	public void byPackageAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder()
+			throws Exception {
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(W1,
+				X1, A1, B1, C1));
+		assertThat(actual, nameMatcher(C1, W1, B1, A1, X1));
+	}
+
+	@Test
+	public void byPackageAutoConfigureAfterWithMissing() throws Exception {
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A1,
+				B1));
+		assertThat(actual, nameMatcher(B1, A1));
+	}
+
+	@Test
+	public void byPackageAutoConfigureAfterWithCycle() throws Exception {
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("AutoConfigure cycle detected");
+		List<String> inPriorityOrder = this.sorter.getInPriorityOrder(Arrays.asList(A1, B1, C1, D1));
+		System.out.println(inPriorityOrder);
+	}
+
+	@Test
+	public void byPackageClassAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder() throws Exception {
+		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(W1, X1, A1, B1, C1, U1, V1));
+		assertThat(actual, nameMatcher(C1, W1, V1, B1, A1, U1, X1));
 	}
 
 	private Matcher<? super List<String>> nameMatcher(String... names) {
