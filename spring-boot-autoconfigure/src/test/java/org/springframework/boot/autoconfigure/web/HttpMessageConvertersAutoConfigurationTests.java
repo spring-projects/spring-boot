@@ -32,7 +32,7 @@ import com.google.gson.Gson;
 
 /**
  * Tests for {@link HttpMessageConvertersAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  * @author David Liu
