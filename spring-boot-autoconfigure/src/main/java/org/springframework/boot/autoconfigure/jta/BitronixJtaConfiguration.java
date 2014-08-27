@@ -57,7 +57,7 @@ class BitronixJtaConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConfigurationProperties(prefix = JtaProperties.PREFIX)
-	public bitronix.tm.Configuration bitronixConfiguration(JtaProperties xxx) {
+	public bitronix.tm.Configuration bitronixConfiguration() {
 		bitronix.tm.Configuration config = TransactionManagerServices.getConfiguration();
 		config.setServerId("spring-boot-jta-bitronix");
 		File logBaseDir = getLogBaseDir();

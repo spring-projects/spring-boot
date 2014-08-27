@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
+import java.util.Arrays;
+
 import javax.jms.ConnectionFactory;
 import javax.naming.NamingException;
 
@@ -25,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.jndi.JndiLocatorDelegate;
 
 /**
@@ -36,12 +39,26 @@ import org.springframework.jndi.JndiLocatorDelegate;
 @Configuration
 @AutoConfigureBefore(JmsAutoConfiguration.class)
 @ConditionalOnMissingBean(ConnectionFactory.class)
-@ConditionalOnJndi("java:/JmsXA")
+@ConditionalOnJndi({ "java:/JmsXA", "java:/XAConnectionFactory" })
 public class JndiConnectionFactoryAutoConfiguration {
 
 	@Bean
 	public ConnectionFactory connectionFactory() throws NamingException {
-		return new JndiLocatorDelegate().lookup("java:/JmsXA", ConnectionFactory.class);
+		for (String name : getJndiLocations()) {
+			try {
+				return new JndiLocatorDelegate().lookup(name, ConnectionFactory.class);
+			}
+			catch (NamingException ex) {
+				// Swallow and continue
+			}
+		}
+		throw new IllegalStateException(
+				"Unable to find ConnectionFactory in JNDI locations "
+						+ Arrays.asList(getJndiLocations()));
+	}
+
+	private String[] getJndiLocations() {
+		return AnnotationUtils.getAnnotation(getClass(), ConditionalOnJndi.class).value();
 	}
 
 }

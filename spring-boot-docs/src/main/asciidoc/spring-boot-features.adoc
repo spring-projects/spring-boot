@@ -1929,8 +1929,9 @@ looking at common JNDI locations (`java:comp/UserTransaction`,
 `java:comp/TransactionManager` etc). If you are using a transaction service provided by
 your application server, you will generally also want to ensure that all resources are
 managed by the server and exposed over JNDI.  Spring Boot will attempt to auto-configure
-JMS by looking for a `ConnectionFactory` at the JNDI path `java:/JmsXA` and you can use
-the <<boot-features-connecting-to-a-jndi-datasource, `spring.datasource.jndi-name` property>>
+JMS by looking for a `ConnectionFactory` at the JNDI path `java:/JmsXA` or
+`java:/XAConnectionFactory` and you can use the
+<<boot-features-connecting-to-a-jndi-datasource, `spring.datasource.jndi-name` property>>
 to configure your `DataSource`.
 
 
