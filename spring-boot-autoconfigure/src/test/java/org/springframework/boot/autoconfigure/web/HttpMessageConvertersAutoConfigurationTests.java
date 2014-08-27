@@ -107,4 +107,5 @@ public class HttpMessageConvertersAutoConfigurationTests {
 			return new Gson();
 		}
 	}
+
 }
