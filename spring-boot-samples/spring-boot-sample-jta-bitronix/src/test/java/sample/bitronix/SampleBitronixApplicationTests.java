@@ -16,13 +16,14 @@
 
 package sample.bitronix;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.hamcrest.Matcher;
 import org.hamcrest.core.SubstringMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
-
-import sample.bitronix.SampleBitronixApplication;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -40,12 +41,14 @@ public class SampleBitronixApplicationTests {
 	@Test
 	public void testTransactionRollback() throws Exception {
 		SampleBitronixApplication.main(new String[] {});
-		String expected = "";
-		expected += "----> josh\n";
-		expected += "Count is 1\n";
-		expected += "Simulated error\n";
-		expected += "Count is 1\n";
-		assertThat(this.outputCapture.toString(), containsString(expected));
+		StringWriter expectedWriter = new StringWriter();
+		PrintWriter printer = new PrintWriter(expectedWriter);
+		printer.println("----> josh");
+		printer.println("Count is 1");
+		printer.println("Simulated error");
+		printer.println("Count is 1");
+		assertThat(this.outputCapture.toString(),
+				containsString(expectedWriter.toString()));
 		assertThat(this.outputCapture.toString(), containsStringOnce("---->"));
 	}
 

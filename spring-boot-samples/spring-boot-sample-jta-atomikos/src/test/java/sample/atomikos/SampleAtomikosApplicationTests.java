@@ -16,6 +16,9 @@
 
 package sample.atomikos;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.hamcrest.Matcher;
 import org.hamcrest.core.SubstringMatcher;
 import org.junit.Rule;
@@ -38,12 +41,14 @@ public class SampleAtomikosApplicationTests {
 	@Test
 	public void testTransactionRollback() throws Exception {
 		SampleAtomikosApplication.main(new String[] {});
-		String expected = "";
-		expected += "----> josh\n";
-		expected += "Count is 1\n";
-		expected += "Simulated error\n";
-		expected += "Count is 1\n";
-		assertThat(this.outputCapture.toString(), containsString(expected));
+		StringWriter expectedWriter = new StringWriter();
+		PrintWriter printer = new PrintWriter(expectedWriter);
+		printer.println("----> josh");
+		printer.println("Count is 1");
+		printer.println("Simulated error");
+		printer.println("Count is 1");
+		assertThat(this.outputCapture.toString(),
+				containsString(expectedWriter.toString()));
 		assertThat(this.outputCapture.toString(), containsStringOnce("---->"));
 	}
 
