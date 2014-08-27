@@ -16,13 +16,18 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
 import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
@@ -39,9 +45,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
+import org.springframework.web.filter.GenericFilterBean;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -190,6 +198,23 @@ public class EmbeddedWebApplicationContextTests {
 		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
 		verify(escf.getServletContext()).addServlet("servletBean", servlet);
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping("/");
+	}
+
+	@Test
+	public void orderedBeanInsertedCorrectly() throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		OrderedFilter filter = new OrderedFilter();
+		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(Mockito.mock(Filter.class));
+		registration.setOrder(100);
+		this.context.registerBeanDefinition("filterRegistrationBean",
+				beanDefinition(registration));
+		this.context.refresh();
+		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
+		verify(escf.getServletContext()).addFilter("filterBean", filter);
+		verify(escf.getServletContext()).addFilter("object", registration.getFilter());
+		assertEquals(filter, escf.getRegisteredFilter(0).getFilter());
 	}
 
 	@Test
@@ -419,6 +444,16 @@ public class EmbeddedWebApplicationContextTests {
 
 		public EmbeddedServletContainerInitializedEvent getEvent() {
 			return this.event;
+		}
+
+	}
+
+	@Order(10)
+	protected static class OrderedFilter extends GenericFilterBean {
+
+		@Override
+		public void doFilter(ServletRequest request, ServletResponse response,
+				FilterChain chain) throws IOException, ServletException {
 		}
 
 	}
