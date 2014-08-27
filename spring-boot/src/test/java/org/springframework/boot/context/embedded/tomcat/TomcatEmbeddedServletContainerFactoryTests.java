@@ -236,7 +236,7 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		Tomcat tomcat = getTomcat(factory);
 		Connector connector = tomcat.getConnector();
 
-		AbstractHttp11JsseProtocol jsseProtocol = (AbstractHttp11JsseProtocol) connector
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
 				.getProtocolHandler();
 		assertThat(jsseProtocol.getCiphers(), equalTo("ALPHA,BRAVO,CHARLIE"));
 	}

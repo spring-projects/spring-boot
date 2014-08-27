@@ -225,7 +225,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		connector.setPort(port);
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			if (getAddress() != null) {
-				((AbstractProtocol) connector.getProtocolHandler())
+				((AbstractProtocol<?>) connector.getProtocolHandler())
 						.setAddress(getAddress());
 			}
 		}
@@ -242,7 +242,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 					connector.getProtocolHandler() instanceof AbstractHttp11JsseProtocol,
 					"To use SSL, the connector's protocol handler must be an "
 							+ "AbstractHttp11JsseProtocol subclass");
-			configureSsl((AbstractHttp11JsseProtocol) connector.getProtocolHandler(),
+			configureSsl((AbstractHttp11JsseProtocol<?>) connector.getProtocolHandler(),
 					getSsl());
 			connector.setScheme("https");
 			connector.setSecure(true);
@@ -258,7 +258,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * @param protocol the protocol
 	 * @param ssl the ssl details
 	 */
-	protected void configureSsl(AbstractHttp11JsseProtocol protocol, Ssl ssl) {
+	protected void configureSsl(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		protocol.setSSLEnabled(true);
 		protocol.setSslProtocol(ssl.getProtocol());
 		configureSslClientAuth(protocol, ssl);
@@ -271,7 +271,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		configureSslTrustStore(protocol, ssl);
 	}
 
-	private void configureSslClientAuth(AbstractHttp11JsseProtocol protocol, Ssl ssl) {
+	private void configureSslClientAuth(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		if (ssl.getClientAuth() == ClientAuth.NEED) {
 			protocol.setClientAuth(Boolean.TRUE.toString());
 		}
@@ -280,7 +280,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		}
 	}
 
-	private void configureSslKeyStore(AbstractHttp11JsseProtocol protocol, Ssl ssl) {
+	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		try {
 			File file = ResourceUtils.getFile(ssl.getKeyStore());
 			protocol.setKeystoreFile(file.getAbsolutePath());
@@ -291,7 +291,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		}
 	}
 
-	private void configureSslTrustStore(AbstractHttp11JsseProtocol protocol, Ssl ssl) {
+	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		if (ssl.getTrustStore() != null) {
 			try {
 				File file = ResourceUtils.getFile(ssl.getTrustStore());
