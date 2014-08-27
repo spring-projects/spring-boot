@@ -152,7 +152,13 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	private void processDefaultPropertySource(PropertySource<?> source,
 			PropertySourcesPropertyResolver resolver, String[] includes, String[] exacts) {
 		for (String propertyName : exacts) {
-			Object value = resolver.getProperty(propertyName);
+			Object value = null;
+			try {
+				value = resolver.getProperty(propertyName, Object.class);
+			}
+			catch (RuntimeException ex) {
+				// Probably could not convert to Object, weird, but ignoreable
+			}
 			if (value == null) {
 				value = source.getProperty(propertyName.toUpperCase());
 			}
