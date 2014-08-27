@@ -224,6 +224,10 @@ The following application starters are provided by Spring Boot under the
 |`spring-boot-starter-batch`
 |Support for ``Spring Batch'' including HSQLDB database.
 
+|`spring-boot-starter-data-elasticsearch`
+|Support for the Elasticsearch search and analytics engine including
+`spring-data-elasticsearch`.
+
 |`spring-boot-starter-data-gemfire`
 |Support for the GemFire distributed data store including `spring-data-gemfire`.
 
