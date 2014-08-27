@@ -272,11 +272,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-jta-arjuna</artifactId>
-				<version>1.2.0.BUILD-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-log4j</artifactId>
 				<version>1.2.0.BUILD-SNAPSHOT</version>
 			</dependency>
