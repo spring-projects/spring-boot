@@ -219,7 +219,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		connector.setPort(port);
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			if (getAddress() != null) {
-				((AbstractProtocol) connector.getProtocolHandler())
+				((AbstractProtocol<?>) connector.getProtocolHandler())
 						.setAddress(getAddress());
 			}
 		}
