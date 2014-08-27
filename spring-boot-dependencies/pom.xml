@@ -48,6 +48,8 @@
 		<!-- Third Party -->
 		<activemq.version>5.9.1</activemq.version>
 		<aspectj.version>1.8.2</aspectj.version>
+		<atomikos.version>3.9.3</atomikos.version>
+		<bitronix.version>2.1.4</bitronix.version>
 		<codahale-metrics.version>3.0.2</codahale-metrics.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.1</commons-collections.version>
@@ -85,6 +87,7 @@
 		<jolokia.version>1.2.2</jolokia.version>
 		<json-path.version>0.9.1</json-path.version>
 		<jstl.version>1.2</jstl.version>
+		<jta.version>1.1</jta.version>
 		<junit.version>4.11</junit.version>
 		<liquibase.version>3.0.8</liquibase.version>
 		<log4j.version>1.2.17</log4j.version>
@@ -259,6 +262,21 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-jta-atomikos</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-jta-bitronix</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-jta-arjuna</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-log4j</artifactId>
 				<version>1.2.0.BUILD-SNAPSHOT</version>
 			</dependency>
@@ -351,6 +369,21 @@
 				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.atomikos</groupId>
+				<artifactId>transactions-jdbc</artifactId>
+				<version>${atomikos.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.atomikos</groupId>
+				<artifactId>transactions-jms</artifactId>
+				<version>${atomikos.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.atomikos</groupId>
+				<artifactId>transactions-jta</artifactId>
+				<version>${atomikos.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.codahale.metrics</groupId>
 				<artifactId>metrics-graphite</artifactId>
 				<version>${codahale-metrics.version}</version>
@@ -369,6 +402,11 @@
 				<groupId>com.codahale.metrics</groupId>
 				<artifactId>metrics-servlets</artifactId>
 				<version>${codahale-metrics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.btm</groupId>
+				<artifactId>btm</artifactId>
+				<version>${bitronix.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.janino</groupId>
@@ -481,6 +519,11 @@
 				<groupId>javax.servlet</groupId>
 				<artifactId>jstl</artifactId>
 				<version>${jstl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.transaction</groupId>
+				<artifactId>jta</artifactId>
+				<version>${jta.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jaxen</groupId>

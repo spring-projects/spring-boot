@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -74,7 +75,7 @@ public class DataSourceAutoConfiguration {
 	}
 
 	@Conditional(DataSourceAutoConfiguration.EmbeddedDataSourceCondition.class)
-	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import(EmbeddedDataSourceConfiguration.class)
 	protected static class EmbeddedConfiguration {
 
@@ -92,7 +93,7 @@ public class DataSourceAutoConfiguration {
 	}
 
 	@Conditional(DataSourceAutoConfiguration.NonEmbeddedDataSourceCondition.class)
-	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	protected static class NonEmbeddedConfiguration {
 
 		@Autowired
@@ -196,7 +197,8 @@ public class DataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			if (hasBean(context, DataSource.class)) {
+			if (hasBean(context, DataSource.class)
+					|| hasBean(context, XADataSource.class)) {
 				return ConditionOutcome
 						.match("existing bean configured database detected");
 			}
@@ -210,6 +212,7 @@ public class DataSourceAutoConfiguration {
 			return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					context.getBeanFactory(), type, true, false).length > 0;
 		}
+
 	}
 
 }

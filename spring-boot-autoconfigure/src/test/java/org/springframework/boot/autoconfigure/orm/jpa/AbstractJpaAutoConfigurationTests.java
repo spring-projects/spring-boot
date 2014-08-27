@@ -17,11 +17,12 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -228,8 +229,10 @@ public abstract class AbstractJpaAutoConfigurationTests {
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
 			factoryBean.setPersistenceUnitName("manually-configured");
-			factoryBean.setJpaPropertyMap(Collections.singletonMap("configured",
-					"manually"));
+			Map<String, Object> properties = new HashMap<String, Object>();
+			properties.put("configured", "manually");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			factoryBean.setJpaPropertyMap(properties);
 			return factoryBean;
 		}
 	}
