@@ -1874,6 +1874,83 @@ own beans:
 
 
 
+[[boot-features-jta]]
+== Distributed Transactions with JTA
+Spring Boot supports distributed JTA transactions across multiple XA resources using
+either an http://www.atomikos.com/[Atomkos] or
+http://docs.codehaus.org/display/BTM/Home[Bitronix] embedded transaction manager. JTA
+transactions are also supported when deploying to a suitable Java EE Application Server.
+
+When a JTA environment is detected, Spring's `JtaTransactionManager` will be used to manage
+transactions. Auto-configured JMS, DataSource and JPA beans will be upgraded to support
+XA transactions. You can use standard Spring idioms such as `@Transactional` to
+participate in a distributed transaction.
+
+
+
+=== Using an Atomikos transaction manager
+Atomikos is a popular open source transaction manager which can be embedded into your
+Spring Boot application. You can use the `spring-boot-starter-jta-atomikos` Starter POM to
+pull in the appropriate Atomikos libraries. Spring Boot will auto-configure Atomikos and
+ensure that appropriate `depends-on` settings are applied to your Spring Beans for correct
+startup and shutdown ordering.
+
+By default Atomikos transaction logs will be written to a `transaction-logs` folder in
+your application home directory (the directory in which your application jar file
+resides). You can customize this directory by setting a `spring.jta.log-dir` property in
+your `application.properties` file. Properties starting `spring.jta.` can also be used to
+customize the Atomikos `UserTransactionServiceIml`. See the
+{dc-spring-boot}/jta/atomikos/AtomikosProperties.{dc-ext}[`AtomikosProperties` javadoc]
+for complete details.
+
+
+
+=== Using a Bitronix transaction manager
+Bitronix is another popular open source JTA transaction manager implementation. You can
+use the `spring-boot-starter-jta-bitronix` starter POM to add the appropriate Birtronix
+dependencies to your project. As with Atomikos, Spring Boot will automatically configure
+Bitronix and post-process your beans to ensure that startup and shutdown ordering is
+correct.
+
+By default Bitronix transaction log files (`part1.btm` and `part2.btm`) will be written to
+a `transaction-logs` folder in your application home directory. You can customize this
+directory by using the `spring.jta.log-dir` property. Properties starting `spring.jta.`
+are also bound to the `bitronix.tm.Configuration` bean, allowing for complete
+customization. See the http://btm.codehaus.org/api/2.0.1/bitronix/tm/Configuration.html[Bitronix
+documentation] for details.
+
+
+
+=== Using a Java EE managed transaction manager
+If you are packaging your Spring Boot application as a `war` or `ear` file and deploying
+it to a Java EE application server, you can use your application servers built-in
+transaction manager. Spring Boot will attempt to auto-configure a transaction manager by
+looking at common JNDI locations (`java:comp/UserTransaction`,
+`java:comp/TransactionManager` etc). If you are using a transaction service provided by
+your application server, you will generally also want to ensure that all resources are
+managed by the server and exposed over JNDI.  Spring Boot will attempt to auto-configure
+JMS by looking for a `ConnectionFactory` at the JNDI path `java:/JmsXA` and you can use
+the <<boot-features-connecting-to-a-jndi-datasource, `spring.datasource.jndi-name` property>>
+to configure your `DataSource`.
+
+
+
+=== Supporting an alternative embedded transaction manager
+The {sc-spring-boot}/jta/XAConnectionFactoryWrapper.{sc-ext}[`XAConnectionFactoryWrapper`]
+and {sc-spring-boot}/jta/XADataSourceWrapper.{sc-ext}[`XADataSourceWrapper`] interfaces
+can be used to support alternative embedded transaction managers. The interfaces are
+responsible for wrapping `XAConnectionFactory` and `XADataSource` beans and exposing them
+as regular `ConnectionFactory` and `DataSource` beans which will transparently enroll in
+the distributed transaction. DataSource and JMS auto-configuration will use JTA variants
+as long as you have a `JtaTransactionManager` bean and appropriate XA wrapper beans
+registered within your `ApplicationContext`
+
+The {sc-spring-boot}/jta/BitronixXAConnectionFactoryWrapper.{sc-ext}[BitronixXAConnectionFactoryWrapper]
+and {sc-spring-boot}/jta/BitronixXADataSourceWrapper.{sc-ext}[BitronixXADataSourceWrapper]
+provide good examples of how to write XA wrappers.
+
+
+
 [[boot-features-integration]]
 == Spring Integration
 Spring Integration provides abstractions over messaging and also other transports such as

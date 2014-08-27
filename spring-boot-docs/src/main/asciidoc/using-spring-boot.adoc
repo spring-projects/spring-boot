@@ -255,6 +255,12 @@ and Hibernate.
 |`spring-boot-starter-jdbc`
 |JDBC Database support.
 
+|`spring-boot-starter-jta-atomikos`
+|Support for JTA distributed transactions via Atomikos.
+
+|`spring-boot-starter-jta-bitronix`
+|Support for JTA distributed transactions via Bitronix.
+
 |`spring-boot-starter-mobile`
 |Support for `spring-mobile`
 
