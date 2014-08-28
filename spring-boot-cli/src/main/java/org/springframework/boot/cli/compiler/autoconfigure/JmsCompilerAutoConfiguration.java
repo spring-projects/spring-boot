@@ -22,7 +22,6 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
-import org.springframework.boot.groovy.EnableJmsMessaging;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring JMS.
@@ -34,26 +33,25 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return  AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJms") ||
-				AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJmsMessaging");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJms")
+				|| AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJmsMessaging");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
 		dependencies.add("spring-jms", "jms-api");
-
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("javax.jms",
-				"org.springframework.jms.annotation",
-				"org.springframework.jms.config",
-				"org.springframework.jms.core",
+		imports.addStarImports("javax.jms", "org.springframework.jms.annotation",
+				"org.springframework.jms.config", "org.springframework.jms.core",
 				"org.springframework.jms.listener",
-				"org.springframework.jms.listener.adapter")
-				.addImports(EnableJmsMessaging.class.getCanonicalName());
+				"org.springframework.jms.listener.adapter").addImports(
+				org.springframework.boot.groovy.EnableJmsMessaging.class
+						.getCanonicalName());
 	}
 
 }

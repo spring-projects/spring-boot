@@ -28,4 +28,5 @@ class JmsExample implements CommandLineRunner {
 		log.info "Received ${message}"
 		latch.countDown()
 	}
+
 }

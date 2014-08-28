@@ -4,7 +4,7 @@ org.springframework.boot.cli.compiler.autoconfigure.SpringMvcCompilerAutoConfigu
 org.springframework.boot.cli.compiler.autoconfigure.SpringBatchCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.RabbitCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.ReactorCompilerAutoConfiguration
-org.springframework.boot.cli.compiler.autoconfigure.CachingAutoConfiguration
+org.springframework.boot.cli.compiler.autoconfigure.CachingCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.JdbcCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.JmsCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.JUnitCompilerAutoConfiguration

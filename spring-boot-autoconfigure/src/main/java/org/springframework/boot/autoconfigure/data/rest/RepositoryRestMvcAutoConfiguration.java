@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 
@@ -33,12 +32,9 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
  * <p>
  * Activates when the application is a web application and no
  * {@link RepositoryRestMvcConfiguration} is found.
- * </p>
  * <p>
- * Once in effect, the auto-configuration allows to configure any property
- * of {@link RepositoryRestConfiguration} using the {@code spring.data.rest}
- * prefix.
- * </p>
+ * Once in effect, the auto-configuration allows to configure any property of
+ * {@link RepositoryRestConfiguration} using the {@code spring.data.rest} prefix.
  *
  * @author Rob Winch
  * @author Stephane Nicoll
@@ -48,18 +44,17 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 @ConditionalOnWebApplication
 @ConditionalOnMissingBean(RepositoryRestMvcConfiguration.class)
 @ConditionalOnClass(RepositoryRestMvcConfiguration.class)
-@Import(RepositoryRestMvcAutoConfiguration.RepositoryRestMvcBootConfiguration.class)
 public class RepositoryRestMvcAutoConfiguration {
 
+	static class RepositoryRestMvcBootConfiguration extends
+			RepositoryRestMvcConfiguration {
 
-	@Configuration
-	static class RepositoryRestMvcBootConfiguration extends RepositoryRestMvcConfiguration {
-
-		@Override
 		@Bean
 		@ConfigurationProperties(prefix = "spring.data.rest")
+		@Override
 		public RepositoryRestConfiguration config() {
 			return super.config();
 		}
+
 	}
 }

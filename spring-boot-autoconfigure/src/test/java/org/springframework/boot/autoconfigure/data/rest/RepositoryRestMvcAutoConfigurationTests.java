@@ -20,7 +20,6 @@ import java.net.URI;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
@@ -36,7 +35,8 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link RepositoryRestMvcAutoConfiguration}.
@@ -64,7 +64,8 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	public void testWithCustomBaseUri() throws Exception {
 		load(TestConfiguration.class, "spring.data.rest.baseUri:foo");
 		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
-		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
+		RepositoryRestConfiguration bean = this.context
+				.getBean(RepositoryRestConfiguration.class);
 		assertEquals("Custom baseURI not set", URI.create("foo"), bean.getBaseUri());
 	}
 
@@ -72,17 +73,17 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	public void backOffWithCustomConfiguration() {
 		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.baseUri:foo");
 		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
-		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
-		assertEquals("Custom base URI should not have been set", URI.create(""), bean.getBaseUri());
+		RepositoryRestConfiguration bean = this.context
+				.getBean(RepositoryRestConfiguration.class);
+		assertEquals("Custom base URI should not have been set", URI.create(""),
+				bean.getBaseUri());
 
 	}
 
-	private void load(Class<?> config,
-			String... environment) {
+	private void load(Class<?> config, String... environment) {
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.setServletContext(new MockServletContext());
-		applicationContext.register(config,
-				EmbeddedDataSourceConfiguration.class,
+		applicationContext.register(config, EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -99,7 +100,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	}
 
-	@Import({TestConfiguration.class, RepositoryRestMvcConfiguration.class})
+	@Import({ TestConfiguration.class, RepositoryRestMvcConfiguration.class })
 	protected static class TestConfigurationWithRestMvcConfig {
 
 	}

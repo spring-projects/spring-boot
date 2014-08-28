@@ -80,7 +80,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 		if (!this.beans.containsKey(beanName)) {
 			return null;
 		}
-		final AtomicReference<Method> found = new AtomicReference<Method>();
+		final AtomicReference<Method> found = new AtomicReference<Method>(null);
 		MetaData meta = this.beans.get(beanName);
 		final String factory = meta.getMethod();
 		Class<?> type = this.beanFactory.getType(meta.getBean());
@@ -88,8 +88,8 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 			@Override
 			public void doWith(Method method) throws IllegalArgumentException,
 					IllegalAccessException {
-				if (found.get() == null && method.getName().equals(factory)) {
-					found.set(method);
+				if (method.getName().equals(factory)) {
+					found.compareAndSet(null, method);
 				}
 			}
 		});

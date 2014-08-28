@@ -1847,6 +1847,7 @@ resolved against their provided names.
 
 
 
+[[boot-features-using-jms-template]]
 [[boot-features-using-jms-sending]]
 ==== Sending a message
 Spring's `JmsTemplate` is auto-configured and you can autowire it directly into your
@@ -1875,6 +1876,8 @@ own beans:
 
 NOTE: {spring-javadoc}/jms/core/JmsMessagingTemplate.{dc-ext}[`JmsMessagingTemplate`]
 (new in Spring 4.1) can be injected in a similar manner.
+
+
 
 [[boot-features-using-jms-receiving]]
 ==== Receiving a message
