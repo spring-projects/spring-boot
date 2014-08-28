@@ -126,6 +126,11 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		// Should not throw
+		this.logger.info("Hello world");
+		String output = this.outputCapture.toString().trim();
+		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+		assertFalse("Wrong output:\n" + output, output.contains("???"));
+		assertTrue(new File(tmpDir() + "/spring.log").exists());
 	}
 
 	@Test
