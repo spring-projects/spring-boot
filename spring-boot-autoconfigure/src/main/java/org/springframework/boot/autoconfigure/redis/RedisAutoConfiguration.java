@@ -49,6 +49,12 @@ import redis.clients.jedis.JedisPoolConfig;
 @EnableConfigurationProperties
 public class RedisAutoConfiguration {
 
+	@Bean(name = "org.springframework.autoconfigure.redis.RedisProperties")
+	@ConditionalOnMissingBean
+	public RedisProperties redisProperties() {
+		return new RedisProperties();
+	}
+
 	@Configuration
 	@ConditionalOnMissingClass(name = "org.apache.commons.pool2.impl.GenericObjectPool")
 	protected static class RedisConnectionConfiguration {
@@ -60,12 +66,7 @@ public class RedisAutoConfiguration {
 		@ConditionalOnMissingBean
 		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
 			JedisConnectionFactory factory = new JedisConnectionFactory();
-			factory.setHostName(this.properties.getHost());
-			factory.setPort(this.properties.getPort());
-			if (this.properties.getPassword() != null) {
-				factory.setPassword(this.properties.getPassword());
-			}
-			factory.setDatabase(this.properties.getDatabase());
+			applyConnectionFactoryProperties(factory, this.properties);
 			return factory;
 		}
 
@@ -82,12 +83,7 @@ public class RedisAutoConfiguration {
 		@ConditionalOnMissingBean
 		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
 			JedisConnectionFactory factory = createJedisConnectionFactory();
-			factory.setHostName(this.properties.getHost());
-			factory.setPort(this.properties.getPort());
-			if (this.properties.getPassword() != null) {
-				factory.setPassword(this.properties.getPassword());
-			}
-			factory.setDatabase(this.properties.getDatabase());
+			applyConnectionFactoryProperties(factory, this.properties);
 			return factory;
 		}
 
@@ -107,14 +103,6 @@ public class RedisAutoConfiguration {
 			config.setMaxWaitMillis(props.getMaxWait());
 			return config;
 		}
-
-	}
-
-	@Bean(name = "org.springframework.autoconfigure.redis.RedisProperties")
-	@ConditionalOnMissingBean
-	public RedisProperties redisProperties() {
-
-		return new RedisProperties();
 
 	}
 
@@ -144,6 +132,16 @@ public class RedisAutoConfiguration {
 			return template;
 		}
 
+	}
+
+	static void applyConnectionFactoryProperties(JedisConnectionFactory factory,
+			RedisProperties properties) {
+		factory.setHostName(properties.getHost());
+		factory.setPort(properties.getPort());
+		if (properties.getPassword() != null) {
+			factory.setPassword(properties.getPassword());
+		}
+		factory.setDatabase(properties.getDatabase());
 	}
 
 }
