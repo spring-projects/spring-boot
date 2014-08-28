@@ -102,7 +102,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@Primary
 	@ConditionalOnMissingBean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-EntityManagerFactoryBuilder factoryBuilder) {
+			EntityManagerFactoryBuilder factoryBuilder) {
 		return factoryBuilder.dataSource(this.dataSource).packages(getPackagesToScan())
 				.properties(getVendorProperties()).build();
 	}
