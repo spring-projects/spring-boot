@@ -65,6 +65,7 @@ public class RedisAutoConfiguration {
 			if (this.properties.getPassword() != null) {
 				factory.setPassword(this.properties.getPassword());
 			}
+			factory.setDatabase(this.properties.getDatabase());
 			return factory;
 		}
 
@@ -86,6 +87,7 @@ public class RedisAutoConfiguration {
 			if (this.properties.getPassword() != null) {
 				factory.setPassword(this.properties.getPassword());
 			}
+			factory.setDatabase(this.properties.getDatabase());
 			return factory;
 		}
 
