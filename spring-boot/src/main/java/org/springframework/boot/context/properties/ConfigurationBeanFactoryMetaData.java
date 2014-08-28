@@ -88,7 +88,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 			@Override
 			public void doWith(Method method) throws IllegalArgumentException,
 					IllegalAccessException {
-				if (method.getName().equals(factory)) {
+				if (found.get() == null && method.getName().equals(factory)) {
 					found.set(method);
 				}
 			}

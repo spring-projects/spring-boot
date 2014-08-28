@@ -220,6 +220,9 @@ content into your application; rather pick only the properties that you need.
 	spring.data.elasticsearch.local=true # if local mode should be used with client nodes
 	spring.data.elasticsearch.repositories.enabled=true # if spring data repository support is enabled
 
+	# DATA RESET ({spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[RepositoryRestConfiguration}])
+	spring.data.rest.baseUri=foo # base URI against which the exporter should calculate its links
+
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
 	flyway.locations=classpath:db/migrations # locations of migrations scripts
 	flyway.schemas= # schemas to update
