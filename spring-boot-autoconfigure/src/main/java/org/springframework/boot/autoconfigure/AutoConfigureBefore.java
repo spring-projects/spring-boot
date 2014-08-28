@@ -22,10 +22,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Hint for that an {@link EnableAutoConfiguration auto-configuration} should be applied
- * before other specified auto-configuration classes.
- *
+ * Hint for that an {@link EnableAutoConfiguration auto-configuration} should be
+ * applied before other specified auto-configuration classes or packages.
+ * 
  * @author Phillip Webb
+ * @author David Liu
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
@@ -34,6 +35,11 @@ public @interface AutoConfigureBefore {
 	/**
 	 * The auto-configure classes that should have not yet been applied.
 	 */
-	Class<?>[] value();
+	Class<?>[] value() default {};
+
+	/**
+	 * The auto-configure packages that should have already been applied.
+	 */
+	String[] packages() default {};
 
 }
