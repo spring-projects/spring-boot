@@ -21,9 +21,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -63,8 +60,6 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	private static final String[] NO_PACKAGES = new String[0];
 
-	private static Log logger = LogFactory.getLog(JpaBaseConfiguration.class);
-
 	private ConfigurableListableBeanFactory beanFactory;
 
 	@Autowired
@@ -86,12 +81,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnMissingBean
 	public JpaVendorAdapter jpaVendorAdapter() {
 		AbstractJpaVendorAdapter adapter = createJpaVendorAdapter();
-		if (logger.isDebugEnabled()) {
-			adapter.setShowSql(true);
-		}
-		else {
-			adapter.setShowSql(this.jpaProperties.isShowSql());
-		}
+		adapter.setShowSql(this.jpaProperties.isShowSql());
 		adapter.setDatabase(this.jpaProperties.getDatabase());
 		adapter.setDatabasePlatform(this.jpaProperties.getDatabasePlatform());
 		adapter.setGenerateDdl(this.jpaProperties.isGenerateDdl());
@@ -112,7 +102,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@Primary
 	@ConditionalOnMissingBean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-			EntityManagerFactoryBuilder factoryBuilder) {
+EntityManagerFactoryBuilder factoryBuilder) {
 		return factoryBuilder.dataSource(this.dataSource).packages(getPackagesToScan())
 				.properties(getVendorProperties()).build();
 	}

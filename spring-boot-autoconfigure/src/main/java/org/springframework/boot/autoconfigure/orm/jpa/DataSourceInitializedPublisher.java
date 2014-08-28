@@ -18,8 +18,15 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +40,20 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * {@link BeanPostProcessor} used to fire {@link DataSourceInitializedEvent}s. Should only
- * be registered via the inner {@link Registrar} class.
+ * {@link BeanPostProcessor} used to fire {@link DataSourceInitializedEvent}s.
+ * Should only be registered via the inner {@link Registrar} class.
  *
  * @author Dave Syer
+ * @author David Liu
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 class DataSourceInitializedPublisher implements BeanPostProcessor {
+
+	private static Log logger = LogFactory.getLog(JpaBaseConfiguration.class);
+
+	@PersistenceContext
+	private EntityManager em;
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -47,6 +61,8 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	private DataSource dataSource;
 
 	private JpaProperties properties;
+
+	private boolean hasPrint = false;
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
@@ -57,6 +73,17 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName)
 			throws BeansException {
+		if (logger.isDebugEnabled() && hasPrint == false && em != null) {
+			AnnotationConfiguration cfg = new AnnotationConfiguration();
+			cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+			for (javax.persistence.metamodel.EntityType<?> et : em.getMetamodel().getEntities()) {
+				Class<?> entityClass = et.getJavaType();
+				cfg.addAnnotatedClass(entityClass);
+			}
+			SchemaExport schemaExport = new SchemaExport(cfg);
+			schemaExport.execute(true, false, false, true);
+			hasPrint = true;
+		}
 		if (bean instanceof DataSource) {
 			// Normally this will be the right DataSource
 			this.dataSource = (DataSource) bean;
