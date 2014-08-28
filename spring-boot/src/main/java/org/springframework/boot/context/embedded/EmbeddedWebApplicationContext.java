@@ -16,20 +16,10 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.EventListener;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.Filter;
-import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -41,7 +31,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
@@ -94,7 +83,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 * default. To change the default behaviour you can use a
 	 * {@link ServletRegistrationBean} or a different bean name.
 	 */
-	public static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
+	public static final String DISPATCHER_SERVLET_NAME = ServletContextInitializerBeans.DISPATCHER_SERVLET_NAME;
 
 	private EmbeddedServletContainer embeddedServletContainer;
 
@@ -220,108 +209,11 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	/**
 	 * Returns {@link ServletContextInitializer}s that should be used with the embedded
 	 * Servlet context. By default this method will first attempt to find
-	 * {@link ServletContextInitializer} beans, if none are found it will instead search
-	 * for {@link Servlet} and {@link Filter} beans.
+	 * {@link ServletContextInitializer}, {@link Servlet}, {@link Filter} and certain
+	 * {@link EventListener} beans.
 	 */
 	protected Collection<ServletContextInitializer> getServletContextInitializerBeans() {
-
-		List<ServletContextInitializer> filters = new ArrayList<ServletContextInitializer>();
-		List<ServletContextInitializer> servlets = new ArrayList<ServletContextInitializer>();
-		List<ServletContextInitializer> listeners = new ArrayList<ServletContextInitializer>();
-		List<ServletContextInitializer> other = new ArrayList<ServletContextInitializer>();
-		Set<Servlet> servletRegistrations = new LinkedHashSet<Servlet>();
-		Set<Filter> filterRegistrations = new LinkedHashSet<Filter>();
-		Set<EventListener> listenerRegistrations = new LinkedHashSet<EventListener>();
-
-		for (Entry<String, ServletContextInitializer> initializerBean : getOrderedBeansOfType(ServletContextInitializer.class)) {
-			ServletContextInitializer initializer = initializerBean.getValue();
-			if (initializer instanceof ServletRegistrationBean) {
-				servlets.add(initializer);
-				ServletRegistrationBean servlet = (ServletRegistrationBean) initializer;
-				servletRegistrations.add(servlet.getServlet());
-			}
-			else if (initializer instanceof FilterRegistrationBean) {
-				filters.add(initializer);
-				FilterRegistrationBean filter = (FilterRegistrationBean) initializer;
-				filterRegistrations.add(filter.getFilter());
-			}
-			else if (initializer instanceof ServletListenerRegistrationBean) {
-				listeners.add(initializer);
-				listenerRegistrations
-						.add(((ServletListenerRegistrationBean<?>) initializer)
-								.getListener());
-			}
-			else {
-				other.add(initializer);
-			}
-		}
-
-		List<Entry<String, Servlet>> servletBeans = getOrderedBeansOfType(Servlet.class);
-		for (Entry<String, Servlet> servletBean : servletBeans) {
-			final String name = servletBean.getKey();
-			Servlet servlet = servletBean.getValue();
-			if (!servletRegistrations.contains(servlet)) {
-				String url = (servletBeans.size() == 1 ? "/" : "/" + name + "/");
-				if (name.equals(DISPATCHER_SERVLET_NAME)) {
-					url = "/"; // always map the main dispatcherServlet to "/"
-				}
-				ServletRegistrationBean registration = new ServletRegistrationBean(
-						servlet, url);
-				registration.setName(name);
-				registration.setMultipartConfig(getMultipartConfig());
-				registration.setOrder(CustomOrderAwareComparator.INSTANCE
-						.getOrder(servlet));
-				servlets.add(registration);
-			}
-		}
-
-		for (Entry<String, Filter> filterBean : getOrderedBeansOfType(Filter.class)) {
-			String name = filterBean.getKey();
-			Filter filter = filterBean.getValue();
-			if (!filterRegistrations.contains(filter)) {
-				FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-				registration.setName(name);
-				registration.setOrder(CustomOrderAwareComparator.INSTANCE
-						.getOrder(filter));
-				filters.add(registration);
-			}
-		}
-
-		Set<Class<?>> listenerTypes = ServletListenerRegistrationBean.getSupportedTypes();
-		for (Class<?> type : listenerTypes) {
-			for (Entry<String, ?> listenerBean : getOrderedBeansOfType(type)) {
-				String name = listenerBean.getKey();
-				EventListener listener = (EventListener) listenerBean.getValue();
-				if (ServletListenerRegistrationBean.isSupportedType(listener)
-						&& !filterRegistrations.contains(listener)) {
-					ServletListenerRegistrationBean<EventListener> registration = new ServletListenerRegistrationBean<EventListener>(
-							listener);
-					registration.setName(name);
-					registration.setOrder(CustomOrderAwareComparator.INSTANCE
-							.getOrder(listener));
-					listeners.add(registration);
-				}
-			}
-		}
-		AnnotationAwareOrderComparator.sort(filters);
-		AnnotationAwareOrderComparator.sort(servlets);
-		AnnotationAwareOrderComparator.sort(listeners);
-		AnnotationAwareOrderComparator.sort(other);
-
-		List<ServletContextInitializer> list = new ArrayList<ServletContextInitializer>(
-				filters);
-		list.addAll(servlets);
-		list.addAll(listeners);
-		list.addAll(other);
-		return list;
-	}
-
-	private MultipartConfigElement getMultipartConfig() {
-		List<Entry<String, MultipartConfigElement>> beans = getOrderedBeansOfType(MultipartConfigElement.class);
-		if (beans.isEmpty()) {
-			return null;
-		}
-		return beans.get(0).getValue();
+		return new ServletContextInitializerBeans(getBeanFactory());
 	}
 
 	/**
@@ -373,25 +265,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
 			throw ex;
 		}
-	}
-
-	private <T> List<Entry<String, T>> getOrderedBeansOfType(Class<T> type) {
-		List<Entry<String, T>> beans = new ArrayList<Entry<String, T>>();
-		Comparator<Entry<String, T>> comparator = new Comparator<Entry<String, T>>() {
-			@Override
-			public int compare(Entry<String, T> o1, Entry<String, T> o2) {
-				return AnnotationAwareOrderComparator.INSTANCE.compare(o1.getValue(),
-						o2.getValue());
-			}
-		};
-		String[] names = getBeanFactory().getBeanNamesForType(type, true, false);
-		Map<String, T> map = new LinkedHashMap<String, T>();
-		for (String name : names) {
-			map.put(name, getBeanFactory().getBean(name, type));
-		}
-		beans.addAll(map.entrySet());
-		Collections.sort(beans, comparator);
-		return beans;
 	}
 
 	private void startEmbeddedServletContainer() {
@@ -446,17 +319,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 */
 	public EmbeddedServletContainer getEmbeddedServletContainer() {
 		return this.embeddedServletContainer;
-	}
-
-	private static class CustomOrderAwareComparator extends
-			AnnotationAwareOrderComparator {
-
-		public static CustomOrderAwareComparator INSTANCE = new CustomOrderAwareComparator();
-
-		@Override
-		protected int getOrder(Object obj) {
-			return super.getOrder(obj);
-		}
 	}
 
 }
