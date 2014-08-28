@@ -1774,7 +1774,8 @@ The `javax.jms.ConnectionFactory` interface provides a standard method of creati
 `ConnectionFactory` to work with JMS, you generally won't need to use it directly yourself
 and you can instead rely on higher level messaging abstractions (see the
 {spring-reference}/#jms[relevant section] of the Spring Framework reference
-documentation for details).
+documentation for details). Spring Boot also auto configures the necessary infrastructure
+to send and receive messages.
 
 
 
@@ -1846,9 +1847,9 @@ resolved against their provided names.
 
 
 
-[[boot-features-using-jms-template]]
-==== Using JmsTemplate
-Spring's `JmsTemplate` is auto-configured and you can `@Autowire` it directly into your
+[[boot-features-using-jms-sending]]
+==== Sending a message
+Spring's `JmsTemplate` is auto-configured and you can autowire it directly into your
 own beans:
 
 [source,java,indent=0]
@@ -1872,7 +1873,31 @@ own beans:
 	}
 ----
 
+NOTE: {spring-javadoc}/jms/core/JmsMessagingTemplate.{dc-ext}[`JmsMessagingTemplate`]
+(new in Spring 4.1) can be injected in a similar manner.
 
+[[boot-features-using-jms-receiving]]
+==== Receiving a message
+
+When the JMS infrastructure is present, any bean can be annotated with `@JmsListener` to
+create a listener endpoint. If no `JmsListenerContainerFactory` has been defined, a default
+one is configured automatically.
+
+The following component creates a listener endpoint on the `someQueue` destination:
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		@JmsListener(destination = "someQueue")
+		public void processMessage(String content) { ... }
+
+	}
+----
+
+Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the javadoc of `@EnableJms`]
+for more details.
 
 [[boot-features-jta]]
 == Distributed Transactions with JTA
