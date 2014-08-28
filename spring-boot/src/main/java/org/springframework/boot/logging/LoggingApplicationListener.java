@@ -185,19 +185,20 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 				system.initialize(value);
 			}
 			catch (Exception ex) {
-				this.logger.warn("Logging environment value '" + value
-						+ "' cannot be opened and will be ignored");
+				this.logger
+						.warn("Logging environment value '"
+								+ value
+								+ "' cannot be opened and will be ignored (using default location instead)");
+				system.initialize();
 			}
 		}
 		else {
-
 			system.initialize();
-			if (this.springBootLogging != null) {
-				initializeLogLevel(system, this.springBootLogging);
-			}
-
 		}
 
+		if (this.springBootLogging != null) {
+			initializeLogLevel(system, this.springBootLogging);
+		}
 		setLogLevels(system, environment);
 
 	}
