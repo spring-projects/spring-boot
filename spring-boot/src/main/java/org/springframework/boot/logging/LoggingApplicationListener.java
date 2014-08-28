@@ -141,7 +141,19 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	 * {@link Environment} and the classpath.
 	 */
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
+		initializeEarlyLoggingLevel(environment);
+		cleanLogTempProperty();
+		LoggingSystem system = LoggingSystem.get(classLoader);
+		boolean systemEnvironmentChanged = mapSystemPropertiesFromSpring(environment);
+		if (systemEnvironmentChanged) {
+			// Re-initialize the defaults in case the system Environment changed
+			system.beforeInitialize();
+		}
+		initializeSystem(environment, system);
+		initializeFinalLoggingLevels(environment, system);
+	}
 
+	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {
 		if (this.parseArgs && this.springBootLogging == null) {
 			if (environment.containsProperty("debug")) {
 				this.springBootLogging = LogLevel.DEBUG;
@@ -150,7 +162,9 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 				this.springBootLogging = LogLevel.TRACE;
 			}
 		}
+	}
 
+	private void cleanLogTempProperty() {
 		// Logback won't read backslashes so add a clean path for it to use
 		if (!StringUtils.hasLength(System.getProperty("LOG_TEMP"))) {
 			String path = System.getProperty("java.io.tmpdir");
@@ -160,24 +174,24 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			}
 			System.setProperty("LOG_TEMP", path);
 		}
+	}
 
-		boolean environmentChanged = false;
+	private boolean mapSystemPropertiesFromSpring(Environment environment) {
+		boolean changed = false;
 		for (Map.Entry<String, String> mapping : ENVIRONMENT_SYSTEM_PROPERTY_MAPPING
 				.entrySet()) {
-			if (environment.containsProperty(mapping.getKey())) {
-				System.setProperty(mapping.getValue(),
-						environment.getProperty(mapping.getKey()));
-				environmentChanged = true;
+			String springName = mapping.getKey();
+			String systemName = mapping.getValue();
+			if (environment.containsProperty(springName)) {
+				System.setProperty(systemName, environment.getProperty(springName));
+				changed = true;
 			}
 		}
+		return changed;
+	}
 
-		LoggingSystem system = LoggingSystem.get(classLoader);
-
-		if (environmentChanged) {
-			// Re-initialize the defaults in case the Environment changed
-			system.beforeInitialize();
-		}
-		// User specified configuration
+	private void initializeSystem(ConfigurableEnvironment environment,
+			LoggingSystem system) {
 		if (environment.containsProperty("logging.config")) {
 			String value = environment.getProperty("logging.config");
 			try {
@@ -185,22 +199,23 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 				system.initialize(value);
 			}
 			catch (Exception ex) {
-				this.logger
-						.warn("Logging environment value '"
-								+ value
-								+ "' cannot be opened and will be ignored (using default location instead)");
+				this.logger.warn("Logging environment value '" + value
+						+ "' cannot be opened and will be ignored "
+						+ "(using default location instead)");
 				system.initialize();
 			}
 		}
 		else {
 			system.initialize();
 		}
+	}
 
+	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,
+			LoggingSystem system) {
 		if (this.springBootLogging != null) {
 			initializeLogLevel(system, this.springBootLogging);
 		}
 		setLogLevels(system, environment);
-
 	}
 
 	public void setLogLevels(LoggingSystem system, Environment environment) {
