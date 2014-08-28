@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
@@ -331,7 +332,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
-		context.setSessionTimeout(getSessionTimeout());
+		long timeout = getSessionTimeout();
+		if (timeout > 0) {
+			// Tomcat timeouts are in minutes
+			timeout = Math.max(TimeUnit.SECONDS.toMinutes(timeout), 1L);
+		}
+		context.setSessionTimeout((int) timeout);
 		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
 			customizer.customize(context);
 		}
