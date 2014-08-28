@@ -6,7 +6,7 @@ import java.util.concurrent.CountDownLatch
 
 @Log
 @EnableJms
-class JmsExample implements CommandLineRunner {
+class SampleJmsListener implements CommandLineRunner {
 
 	private CountDownLatch latch = new CountDownLatch(1)
 
@@ -15,17 +15,19 @@ class JmsExample implements CommandLineRunner {
 
 	void run(String... args) {
 		def messageCreator = { session ->
-			session.createObjectMessage("Greetings from Spring Boot via ActiveMQ")
+			session.createObjectMessage("Hello World")
 		} as MessageCreator
 		log.info "Sending JMS message..."
-		jmsTemplate.send("spring-boot", messageCreator)
-		log.info "Send JMS message, waiting..."
+		jmsTemplate.send("testQueue", messageCreator)
+		log.info "Sent JMS message, waiting..."
 		latch.await()
 	}
 
-	@JmsListener(destination = 'spring-boot')
+	@JmsListener(destination = 'testQueue')
 	def receive(String message) {
 		log.info "Received ${message}"
 		latch.countDown()
 	}
 }
+
+
