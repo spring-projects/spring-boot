@@ -68,6 +68,13 @@ public class CommonsDbcpDataSourceMetadataTests extends AbstractDataSourceMetada
 		assertEquals(Float.valueOf(-1F), unlimitedDataSource.getPoolUsage());
 	}
 
+	@Override
+	public void getValidationQuery() {
+		BasicDataSource dataSource = createDataSource();
+		dataSource.setValidationQuery("SELECT FROM FOO");
+		assertEquals("SELECT FROM FOO", new CommonsDbcpDataSourceMetadata(dataSource).getValidationQuery());
+	}
+
 	private CommonsDbcpDataSourceMetadata createDataSourceMetadata(int minSize, int maxSize) {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setMinIdle(minSize);

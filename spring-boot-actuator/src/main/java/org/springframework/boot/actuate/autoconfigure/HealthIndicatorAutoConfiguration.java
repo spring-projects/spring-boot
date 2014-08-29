@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +44,10 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jdbc.CompositeDataSourceMetadataProvider;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadata;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvider;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
@@ -57,6 +62,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 @Configuration
@@ -96,20 +102,36 @@ public class HealthIndicatorAutoConfiguration {
 		@Autowired(required = false)
 		private Map<String, DataSource> dataSources;
 
+		@Autowired(required = false)
+		private Collection<DataSourceMetadataProvider> metadataProviders = Collections.emptyList();
+
 		@Bean
 		@ConditionalOnMissingBean(name = "dbHealthIndicator")
 		public HealthIndicator dbHealthIndicator() {
+			DataSourceMetadataProvider metadataProvider =
+					new CompositeDataSourceMetadataProvider(this.metadataProviders);
 			if (this.dataSources.size() == 1) {
-				return new DataSourceHealthIndicator(this.dataSources.values().iterator()
-						.next());
+				return createDataSourceHealthIndicator(metadataProvider,
+						this.dataSources.values().iterator().next());
 			}
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
 				composite.addHealthIndicator(entry.getKey(),
-						new DataSourceHealthIndicator(entry.getValue()));
+						createDataSourceHealthIndicator(metadataProvider, entry.getValue()));
 			}
 			return composite;
+		}
+
+		private DataSourceHealthIndicator createDataSourceHealthIndicator(DataSourceMetadataProvider provider,
+				DataSource dataSource) {
+
+			String validationQuery = null;
+			DataSourceMetadata dataSourceMetadata = provider.getDataSourceMetadata(dataSource);
+			if (dataSourceMetadata != null) {
+				validationQuery = dataSourceMetadata.getValidationQuery();
+			}
+			return new DataSourceHealthIndicator(dataSource, validationQuery);
 		}
 	}
 

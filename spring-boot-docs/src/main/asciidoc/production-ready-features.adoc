@@ -164,8 +164,8 @@ To provide custom health information you can register a Spring bean that impleme
 
 Spring Boot provides a
 {sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
-implementation that attempts a simple database test as well as implementations for
-Redis, MongoDB and RabbitMQ.
+implementation that attempts a simple database test (reusing the validation query set on the data
+source, if any) as well as implementations for Redis, MongoDB and RabbitMQ.
 
 Spring Boot adds the `HealthIndicator` instances automatically if beans of type `DataSource`,
 `MongoTemplate`, `RedisConnectionFactory`, `RabbitTemplate` are present in the `ApplicationContext`.

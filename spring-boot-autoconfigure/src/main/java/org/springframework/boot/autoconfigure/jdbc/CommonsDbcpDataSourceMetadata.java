@@ -46,4 +46,8 @@ public class CommonsDbcpDataSourceMetadata extends AbstractDataSourceMetadata<Ba
 		return getDataSource().getMinIdle();
 	}
 
+	@Override
+	public String getValidationQuery() {
+		return getDataSource().getValidationQuery();
+	}
 }

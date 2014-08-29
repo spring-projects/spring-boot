@@ -64,4 +64,10 @@ public interface DataSourceMetadata {
 	 */
 	Integer getMinPoolSize();
 
+	/**
+	 * Return the query to use to validate that a connection is
+	 * valid or {@code null} if that information is not available.
+	 */
+	String getValidationQuery();
+
 }

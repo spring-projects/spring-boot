@@ -48,4 +48,8 @@ public class TomcatDataSourceMetadata extends AbstractDataSourceMetadata<DataSou
 		return getDataSource().getMinIdle();
 	}
 
+	@Override
+	public String getValidationQuery() {
+		return getDataSource().getValidationQuery();
+	}
 }

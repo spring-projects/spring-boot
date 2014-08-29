@@ -57,6 +57,11 @@ public class HikariDataSourceMetadata extends AbstractDataSourceMetadata<HikariD
 		return getDataSource().getMinimumIdle();
 	}
 
+	@Override
+	public String getValidationQuery() {
+		return getDataSource().getConnectionTestQuery();
+	}
+
 	/**
 	 * Provide the {@link HikariPool} instance managed internally by
 	 * the {@link HikariDataSource} as there is no other way to retrieve

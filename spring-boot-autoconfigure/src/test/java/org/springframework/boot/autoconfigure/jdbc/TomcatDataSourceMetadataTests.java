@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.jdbc;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.Before;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  *
  * @author Stephane Nicoll
@@ -29,7 +31,7 @@ public class TomcatDataSourceMetadataTests extends AbstractDataSourceMetadataTes
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata = createDataSourceMetadata(0, 2);
+		this.dataSourceMetadata = new TomcatDataSourceMetadata(createDataSource(0, 2));
 	}
 
 	@Override
@@ -37,7 +39,14 @@ public class TomcatDataSourceMetadataTests extends AbstractDataSourceMetadataTes
 		return this.dataSourceMetadata;
 	}
 
-	private TomcatDataSourceMetadata createDataSourceMetadata(int minSize, int maxSize) {
+	@Override
+	public void getValidationQuery() {
+		DataSource dataSource = createDataSource(0, 4);
+		dataSource.setValidationQuery("SELECT FROM FOO");
+		assertEquals("SELECT FROM FOO", new TomcatDataSourceMetadata(dataSource).getValidationQuery());
+	}
+
+	private DataSource createDataSource(int minSize, int maxSize) {
 		DataSource dataSource = (DataSource) initializeBuilder().type(DataSource.class).build();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxActive(maxSize);
@@ -45,7 +54,7 @@ public class TomcatDataSourceMetadataTests extends AbstractDataSourceMetadataTes
 		// Avoid warnings
 		dataSource.setInitialSize(minSize);
 		dataSource.setMaxIdle(maxSize);
-		return new TomcatDataSourceMetadata(dataSource);
+		return dataSource;
 	}
 
 }
