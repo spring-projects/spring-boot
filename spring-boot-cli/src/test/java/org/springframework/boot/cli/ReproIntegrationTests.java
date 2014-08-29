@@ -73,10 +73,5 @@ public class ReproIntegrationTests {
 		this.cli.jar("secure.groovy", "crsh.groovy");
 	}
 
-	@Test
-	public void jmsListener() throws Exception {
-		this.cli.run("jms.groovy");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
-	}
 
 }
