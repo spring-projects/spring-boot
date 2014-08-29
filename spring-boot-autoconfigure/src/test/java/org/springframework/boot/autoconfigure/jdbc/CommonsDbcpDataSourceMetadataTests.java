@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.jdbc;
+package org.springframework.boot.autoconfigure.jdbc;
 
 import static org.junit.Assert.*;
 

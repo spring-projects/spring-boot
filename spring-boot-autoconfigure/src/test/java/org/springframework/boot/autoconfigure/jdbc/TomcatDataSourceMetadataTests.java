@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.jdbc;
+package org.springframework.boot.autoconfigure.jdbc;
 
-import com.zaxxer.hikari.HikariDataSource;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.Before;
 
 /**
  *
  * @author Stephane Nicoll
  */
-public class HikariDataSourceMetadataTests extends AbstractDataSourceMetadataTests<HikariDataSourceMetadata> {
+public class TomcatDataSourceMetadataTests extends AbstractDataSourceMetadataTests<TomcatDataSourceMetadata> {
 
-	private HikariDataSourceMetadata dataSourceMetadata;
+	private TomcatDataSourceMetadata dataSourceMetadata;
 
 	@Before
 	public void setup() {
@@ -33,15 +33,19 @@ public class HikariDataSourceMetadataTests extends AbstractDataSourceMetadataTes
 	}
 
 	@Override
-	protected HikariDataSourceMetadata getDataSourceMetadata() {
+	protected TomcatDataSourceMetadata getDataSourceMetadata() {
 		return this.dataSourceMetadata;
 	}
 
-	private HikariDataSourceMetadata createDataSourceMetadata(int minSize, int maxSize) {
-		HikariDataSource dataSource = (HikariDataSource) initializeBuilder().type(HikariDataSource.class).build();
-		dataSource.setMinimumIdle(minSize);
-		dataSource.setMaximumPoolSize(maxSize);
+	private TomcatDataSourceMetadata createDataSourceMetadata(int minSize, int maxSize) {
+		DataSource dataSource = (DataSource) initializeBuilder().type(DataSource.class).build();
+		dataSource.setMinIdle(minSize);
+		dataSource.setMaxActive(maxSize);
 
-		return new HikariDataSourceMetadata(dataSource);
+		// Avoid warnings
+		dataSource.setInitialSize(minSize);
+		dataSource.setMaxIdle(maxSize);
+		return new TomcatDataSourceMetadata(dataSource);
 	}
+
 }

@@ -19,13 +19,13 @@ package org.springframework.boot.actuate.autoconfigure;
 import javax.sql.DataSource;
 
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
-import org.springframework.boot.actuate.metrics.jdbc.DataSourceMetadataProvider;
-import org.springframework.boot.actuate.metrics.jdbc.DataSourceMetadataProvidersConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvidersConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 

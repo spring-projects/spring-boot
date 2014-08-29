@@ -20,16 +20,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.jdbc.CompositeDataSourceMetadataProvider;
-import org.springframework.boot.actuate.metrics.jdbc.DataSourceMetadata;
-import org.springframework.boot.actuate.metrics.jdbc.DataSourceMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.CompositeDataSourceMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadata;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 

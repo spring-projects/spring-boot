@@ -14,23 +14,36 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.jdbc;
+package org.springframework.boot.autoconfigure.jdbc;
 
-import javax.sql.DataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 
 /**
- * Provide a {@link DataSourceMetadata} based on a {@link DataSource}.
+ * A {@link DataSourceMetadata} implementation for the commons dbcp
+ * data source.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public interface DataSourceMetadataProvider {
+public class CommonsDbcpDataSourceMetadata extends AbstractDataSourceMetadata<BasicDataSource> {
 
-	/**
-	 * Return the {@link DataSourceMetadata} instance able to manage the
-	 * specified {@link DataSource} or {@code null} if the given data
-	 * source could not be handled.
-	 */
-	DataSourceMetadata getDataSourceMetadata(DataSource dataSource);
+	public CommonsDbcpDataSourceMetadata(BasicDataSource dataSource) {
+		super(dataSource);
+	}
+
+	@Override
+	public Integer getPoolSize() {
+		return getDataSource().getNumActive();
+	}
+
+	@Override
+	public Integer getMaxPoolSize() {
+		return getDataSource().getMaxActive();
+	}
+
+	@Override
+	public Integer getMinPoolSize() {
+		return getDataSource().getMinIdle();
+	}
 
 }
