@@ -83,7 +83,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	/**
 	 * Skip the execution.
-	 * @since 1.Z
+	 * @since 1.2
 	 */
 	@Parameter(property = "skip", defaultValue = "false")
 	private boolean skip;
