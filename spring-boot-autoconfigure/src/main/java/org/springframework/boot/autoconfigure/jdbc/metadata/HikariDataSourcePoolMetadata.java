@@ -14,43 +14,56 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.springframework.beans.DirectFieldAccessor;
+
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.HikariPool;
 
 /**
- * {@link DataSourcePoolMetadata} for a Apache Commons DBCP {@link DataSource}.
+ * {@link DataSourcePoolMetadata} for a Hikari {@link DataSource}.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class CommonsDbcpDataSourcePoolMetadata extends
-		AbstractDataSourcePoolMetadata<BasicDataSource> {
+public class HikariDataSourcePoolMetadata extends
+		AbstractDataSourcePoolMetadata<HikariDataSource> {
 
-	public CommonsDbcpDataSourcePoolMetadata(BasicDataSource dataSource) {
+	public HikariDataSourcePoolMetadata(HikariDataSource dataSource) {
 		super(dataSource);
 	}
 
 	@Override
 	public Integer getActive() {
-		return getDataSource().getNumActive();
+		try {
+			return getHikariPool().getActiveConnections();
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
+	private HikariPool getHikariPool() {
+		return (HikariPool) new DirectFieldAccessor(getDataSource())
+				.getPropertyValue("pool");
 	}
 
 	@Override
 	public Integer getMax() {
-		return getDataSource().getMaxActive();
+		return getDataSource().getMaximumPoolSize();
 	}
 
 	@Override
 	public Integer getMin() {
-		return getDataSource().getMinIdle();
+		return getDataSource().getMinimumIdle();
 	}
 
 	@Override
 	public String getValidationQuery() {
-		return getDataSource().getValidationQuery();
+		return getDataSource().getConnectionTestQuery();
 	}
 
 }

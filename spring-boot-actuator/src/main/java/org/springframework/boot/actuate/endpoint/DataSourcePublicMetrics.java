@@ -28,9 +28,9 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.autoconfigure.jdbc.CompositeDataSourcePoolMetadataProvider;
-import org.springframework.boot.autoconfigure.jdbc.DataSourcePoolMetadata;
-import org.springframework.boot.autoconfigure.jdbc.DataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 

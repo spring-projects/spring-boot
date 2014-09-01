@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourcePoolMetadataProvider;
-import org.springframework.boot.autoconfigure.jdbc.DataSourcePoolMetadataProvidersConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 

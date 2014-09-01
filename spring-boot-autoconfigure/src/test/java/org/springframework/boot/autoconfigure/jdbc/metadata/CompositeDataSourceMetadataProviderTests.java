@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import java.util.Arrays;
 
@@ -24,6 +24,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.autoconfigure.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
