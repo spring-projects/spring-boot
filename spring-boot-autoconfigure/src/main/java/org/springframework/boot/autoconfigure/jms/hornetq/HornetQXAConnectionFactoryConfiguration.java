@@ -19,11 +19,8 @@ package org.springframework.boot.autoconfigure.jms.hornetq;
 import javax.jms.ConnectionFactory;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hornetq.jms.client.HornetQXAConnectionFactory;
-import org.hornetq.jms.server.embedded.EmbeddedJMS;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,21 +40,13 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnBean(XAConnectionFactoryWrapper.class)
 class HornetQXAConnectionFactoryConfiguration {
 
-	private static Log logger = LogFactory
-			.getLog(HornetQEmbeddedServerConfiguration.class);
-
-	// Ensure JMS is setup before XA
-	@Autowired(required = false)
-	private EmbeddedJMS embeddedJMS;
-
 	@Bean
-	public ConnectionFactory jmsConnectionFactory(HornetQProperties properties,
-			XAConnectionFactoryWrapper wrapper) throws Exception {
-		if (this.embeddedJMS != null && logger.isDebugEnabled()) {
-			logger.debug("Using embdedded HornetQ broker with XA");
-		}
+	public ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory,
+			HornetQProperties properties, XAConnectionFactoryWrapper wrapper)
+			throws Exception {
 		return wrapper.wrapConnectionFactory(new HornetQConnectionFactoryFactory(
-				properties).createConnectionFactory(HornetQXAConnectionFactory.class));
+				beanFactory, properties)
+				.createConnectionFactory(HornetQXAConnectionFactory.class));
 	}
 
 }

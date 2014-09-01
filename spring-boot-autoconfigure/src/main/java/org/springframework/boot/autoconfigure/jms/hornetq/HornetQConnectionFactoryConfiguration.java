@@ -18,11 +18,8 @@ package org.springframework.boot.autoconfigure.jms.hornetq;
 
 import javax.jms.ConnectionFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hornetq.jms.client.HornetQConnectionFactory;
-import org.hornetq.jms.server.embedded.EmbeddedJMS;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,19 +34,10 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class HornetQConnectionFactoryConfiguration {
 
-	private static Log logger = LogFactory
-			.getLog(HornetQEmbeddedServerConfiguration.class);
-
-	// Ensure JMS is setup before XA
-	@Autowired(required = false)
-	private EmbeddedJMS embeddedJMS;
-
 	@Bean
-	public ConnectionFactory jmsConnectionFactory(HornetQProperties properties) {
-		if (this.embeddedJMS != null && logger.isDebugEnabled()) {
-			logger.debug("Using embdedded HornetQ broker");
-		}
-		return new HornetQConnectionFactoryFactory(properties)
+	public ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory,
+			HornetQProperties properties) {
+		return new HornetQConnectionFactoryFactory(beanFactory, properties)
 				.createConnectionFactory(HornetQConnectionFactory.class);
 	}
 
