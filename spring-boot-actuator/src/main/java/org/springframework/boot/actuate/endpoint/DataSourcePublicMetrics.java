@@ -119,7 +119,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	}
 
 	/**
-	 * Specify if the given value ends with {@value #DATASOURCE_SUFFIX}.
+	 * Specify if the given value ends with {@code dataSource}.
 	 */
 	protected boolean endWithDataSource(String value) {
 		int suffixLength = DATASOURCE_SUFFIX.length();

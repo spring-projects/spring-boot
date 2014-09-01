@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnBean(DataSource.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @Import(DataSourceMetadataProvidersConfiguration.class)
-public class MetricDataSourceAutoConfiguration {
+public class DataSourceMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(DataSourceMetadataProvider.class)

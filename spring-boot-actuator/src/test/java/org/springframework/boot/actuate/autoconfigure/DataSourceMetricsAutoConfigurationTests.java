@@ -46,9 +46,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link DataSourceMetricsAutoConfiguration}.
+ *
  * @author Stephane Nicoll
  */
-public class MetricDataSourceAutoConfigurationTests {
+public class DataSourceMetricsAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -134,7 +136,7 @@ public class MetricDataSourceAutoConfigurationTests {
 		if (config.length > 0) {
 			this.context.register(config);
 		}
-		this.context.register(MetricDataSourceAutoConfiguration.class);
+		this.context.register(DataSourceMetricsAutoConfiguration.class);
 		this.context.refresh();
 	}
 
@@ -193,4 +195,5 @@ public class MetricDataSourceAutoConfigurationTests {
 		return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
 				.url("jdbc:hsqldb:mem:test").username("sa");
 	}
+
 }
