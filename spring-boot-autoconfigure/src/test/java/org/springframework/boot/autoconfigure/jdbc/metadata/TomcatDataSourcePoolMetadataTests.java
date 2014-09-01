@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.Before;
+import org.springframework.boot.autoconfigure.jdbc.metadata.TomcatDataSourcePoolMetadata;
 
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link TomcatDataSourcePoolMetadata}.
  *
  * @author Stephane Nicoll
  */
-public class TomcatDataSourceMetadataTests extends AbstractDataSourceMetadataTests<TomcatDataSourceMetadata> {
+public class TomcatDataSourcePoolMetadataTests extends
+		AbstractDataSourcePoolMetadataTests<TomcatDataSourcePoolMetadata> {
 
-	private TomcatDataSourceMetadata dataSourceMetadata;
+	private TomcatDataSourcePoolMetadata dataSourceMetadata;
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata = new TomcatDataSourceMetadata(createDataSource(0, 2));
+		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(createDataSource(0, 2));
 	}
 
 	@Override
-	protected TomcatDataSourceMetadata getDataSourceMetadata() {
+	protected TomcatDataSourcePoolMetadata getDataSourceMetadata() {
 		return this.dataSourceMetadata;
 	}
 
@@ -43,11 +46,13 @@ public class TomcatDataSourceMetadataTests extends AbstractDataSourceMetadataTes
 	public void getValidationQuery() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertEquals("SELECT FROM FOO", new TomcatDataSourceMetadata(dataSource).getValidationQuery());
+		assertEquals("SELECT FROM FOO",
+				new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery());
 	}
 
 	private DataSource createDataSource(int minSize, int maxSize) {
-		DataSource dataSource = (DataSource) initializeBuilder().type(DataSource.class).build();
+		DataSource dataSource = (DataSource) initializeBuilder().type(DataSource.class)
+				.build();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxActive(maxSize);
 

@@ -1,6 +1,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.DataSourceMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration,\
@@ -8,7 +9,6 @@ org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration,
 org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ManagementSecurityAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.MetricDataSourceAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceRepositoryAutoConfiguration,\

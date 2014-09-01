@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
-
-import static org.junit.Assert.*;
+package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.jdbc.metadata.CommonsDbcpDataSourcePoolMetadata;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
+ * Tests for {@link CommonsDbcpDataSourcePoolMetadata}.
  *
  * @author Stephane Nicoll
  */
-public class CommonsDbcpDataSourceMetadataTests extends AbstractDataSourceMetadataTests<CommonsDbcpDataSourceMetadata> {
+public class CommonsDbcpDataSourcePoolMetadataTests extends
+		AbstractDataSourcePoolMetadataTests<CommonsDbcpDataSourcePoolMetadata> {
 
-	private CommonsDbcpDataSourceMetadata dataSourceMetadata;
+	private CommonsDbcpDataSourcePoolMetadata dataSourceMetadata;
 
 	@Before
 	public void setup() {
@@ -36,50 +41,54 @@ public class CommonsDbcpDataSourceMetadataTests extends AbstractDataSourceMetada
 	}
 
 	@Override
-	protected CommonsDbcpDataSourceMetadata getDataSourceMetadata() {
+	protected CommonsDbcpDataSourcePoolMetadata getDataSourceMetadata() {
 		return this.dataSourceMetadata;
 	}
 
 	@Test
 	public void getPoolUsageWithNoCurrent() {
-		CommonsDbcpDataSourceMetadata dsm = new CommonsDbcpDataSourceMetadata(createDataSource()) {
+		CommonsDbcpDataSourcePoolMetadata dsm = new CommonsDbcpDataSourcePoolMetadata(
+				createDataSource()) {
 			@Override
-			public Integer getPoolSize() {
+			public Integer getActive() {
 				return null;
 			}
 		};
-		assertNull(dsm.getPoolUsage());
+		assertNull(dsm.getUsage());
 	}
 
 	@Test
 	public void getPoolUsageWithNoMax() {
-		CommonsDbcpDataSourceMetadata dsm = new CommonsDbcpDataSourceMetadata(createDataSource()) {
+		CommonsDbcpDataSourcePoolMetadata dsm = new CommonsDbcpDataSourcePoolMetadata(
+				createDataSource()) {
 			@Override
-			public Integer getMaxPoolSize() {
+			public Integer getMax() {
 				return null;
 			}
 		};
-		assertNull(dsm.getPoolUsage());
+		assertNull(dsm.getUsage());
 	}
 
 	@Test
 	public void getPoolUsageWithUnlimitedPool() {
-		DataSourceMetadata unlimitedDataSource = createDataSourceMetadata(0, -1);
-		assertEquals(Float.valueOf(-1F), unlimitedDataSource.getPoolUsage());
+		DataSourcePoolMetadata unlimitedDataSource = createDataSourceMetadata(0, -1);
+		assertEquals(Float.valueOf(-1F), unlimitedDataSource.getUsage());
 	}
 
 	@Override
 	public void getValidationQuery() {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertEquals("SELECT FROM FOO", new CommonsDbcpDataSourceMetadata(dataSource).getValidationQuery());
+		assertEquals("SELECT FROM FOO",
+				new CommonsDbcpDataSourcePoolMetadata(dataSource).getValidationQuery());
 	}
 
-	private CommonsDbcpDataSourceMetadata createDataSourceMetadata(int minSize, int maxSize) {
+	private CommonsDbcpDataSourcePoolMetadata createDataSourceMetadata(int minSize,
+			int maxSize) {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxActive(maxSize);
-		return new CommonsDbcpDataSourceMetadata(dataSource);
+		return new CommonsDbcpDataSourcePoolMetadata(dataSource);
 	}
 
 	private BasicDataSource createDataSource() {

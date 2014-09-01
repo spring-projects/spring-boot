@@ -33,9 +33,9 @@ import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvidersConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
@@ -167,7 +167,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void dataSourceHealthIndicatorWithCustomValidationQuery() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class,
-				DataSourceConfig.class, DataSourceMetadataProvidersConfiguration.class,
+				DataSourceConfig.class, DataSourcePoolMetadataProvidersConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.validation-query:SELECT from FOOBAR");
 		this.context.refresh();

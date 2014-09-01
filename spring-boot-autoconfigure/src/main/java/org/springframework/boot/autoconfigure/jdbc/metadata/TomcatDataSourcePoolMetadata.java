@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.autoconfigure.jdbc.metadata;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.tomcat.jdbc.pool.ConnectionPool;
+import org.apache.tomcat.jdbc.pool.DataSource;
 
 /**
- * A {@link DataSourceMetadata} implementation for the commons dbcp
- * data source.
+ * {@link DataSourcePoolMetadata} for a Tomcat {@link DataSource}.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
-public class CommonsDbcpDataSourceMetadata extends AbstractDataSourceMetadata<BasicDataSource> {
+public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<DataSource> {
 
-	public CommonsDbcpDataSourceMetadata(BasicDataSource dataSource) {
+	public TomcatDataSourcePoolMetadata(DataSource dataSource) {
 		super(dataSource);
 	}
 
 	@Override
-	public Integer getPoolSize() {
-		return getDataSource().getNumActive();
+	public Integer getActive() {
+		ConnectionPool pool = getDataSource().getPool();
+		return (pool == null ? 0 : pool.getActive());
 	}
 
 	@Override
-	public Integer getMaxPoolSize() {
+	public Integer getMax() {
 		return getDataSource().getMaxActive();
 	}
 
 	@Override
-	public Integer getMinPoolSize() {
+	public Integer getMin() {
 		return getDataSource().getMinIdle();
 	}
 
@@ -50,4 +50,5 @@ public class CommonsDbcpDataSourceMetadata extends AbstractDataSourceMetadata<Ba
 	public String getValidationQuery() {
 		return getDataSource().getValidationQuery();
 	}
+
 }

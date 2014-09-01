@@ -27,6 +27,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.HealthAggregator;
@@ -36,7 +37,6 @@ import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -44,10 +44,10 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jdbc.CompositeDataSourceMetadataProvider;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadata;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProviders;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
@@ -103,33 +103,36 @@ public class HealthIndicatorAutoConfiguration {
 		private Map<String, DataSource> dataSources;
 
 		@Autowired(required = false)
-		private Collection<DataSourceMetadataProvider> metadataProviders = Collections.emptyList();
+		private Collection<DataSourcePoolMetadataProvider> metadataProviders = Collections
+				.emptyList();
 
 		@Bean
 		@ConditionalOnMissingBean(name = "dbHealthIndicator")
 		public HealthIndicator dbHealthIndicator() {
-			DataSourceMetadataProvider metadataProvider =
-					new CompositeDataSourceMetadataProvider(this.metadataProviders);
+			DataSourcePoolMetadataProvider metadataProvider = new DataSourcePoolMetadataProviders(
+					this.metadataProviders);
 			if (this.dataSources.size() == 1) {
-				return createDataSourceHealthIndicator(metadataProvider,
-						this.dataSources.values().iterator().next());
+				DataSource dataSource = this.dataSources.values().iterator().next();
+				return createDataSourceHealthIndicator(metadataProvider, dataSource);
 			}
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(),
-						createDataSourceHealthIndicator(metadataProvider, entry.getValue()));
+				String name = entry.getKey();
+				DataSource dataSource = entry.getValue();
+				composite.addHealthIndicator(name,
+						createDataSourceHealthIndicator(metadataProvider, dataSource));
 			}
 			return composite;
 		}
 
-		private DataSourceHealthIndicator createDataSourceHealthIndicator(DataSourceMetadataProvider provider,
-				DataSource dataSource) {
-
+		private DataSourceHealthIndicator createDataSourceHealthIndicator(
+				DataSourcePoolMetadataProvider provider, DataSource dataSource) {
 			String validationQuery = null;
-			DataSourceMetadata dataSourceMetadata = provider.getDataSourceMetadata(dataSource);
-			if (dataSourceMetadata != null) {
-				validationQuery = dataSourceMetadata.getValidationQuery();
+			DataSourcePoolMetadata poolMetadata = provider
+					.getDataSourcePoolMetadata(dataSource);
+			if (poolMetadata != null) {
+				validationQuery = poolMetadata.getValidationQuery();
 			}
 			return new DataSourceHealthIndicator(dataSource, validationQuery);
 		}

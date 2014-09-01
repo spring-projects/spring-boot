@@ -20,21 +20,22 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.autoconfigure.jdbc.CompositeDataSourceMetadataProvider;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadata;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProviders;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 
 /**
- * A {@link PublicMetrics} implementation that provides data source usage
- * statistics.
+ * A {@link PublicMetrics} implementation that provides data source usage statistics.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
@@ -47,81 +48,66 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	private ApplicationContext applicationContext;
 
 	@Autowired
-	private Collection<DataSourceMetadataProvider> dataSourceMetadataProviders;
+	private Collection<DataSourcePoolMetadataProvider> providers;
 
-	private final Map<String, DataSourceMetadata> dataSourceMetadataByPrefix
-			= new HashMap<String, DataSourceMetadata>();
+	private final Map<String, DataSourcePoolMetadata> metadataByPrefix = new HashMap<String, DataSourcePoolMetadata>();
 
 	@PostConstruct
 	public void initialize() {
-		Map<String, DataSource> dataSources = this.applicationContext.getBeansOfType(DataSource.class);
 		DataSource primaryDataSource = getPrimaryDataSource();
-
-
-		DataSourceMetadataProvider provider = new CompositeDataSourceMetadataProvider(this.dataSourceMetadataProviders);
-		for (Map.Entry<String, DataSource> entry : dataSources.entrySet()) {
-			String prefix = createPrefix(entry.getKey(), entry.getValue(), entry.getValue().equals(primaryDataSource));
-			DataSourceMetadata dataSourceMetadata = provider.getDataSourceMetadata(entry.getValue());
-			if (dataSourceMetadata != null) {
-				dataSourceMetadataByPrefix.put(prefix, dataSourceMetadata);
+		DataSourcePoolMetadataProvider provider = new DataSourcePoolMetadataProviders(
+				this.providers);
+		for (Map.Entry<String, DataSource> entry : this.applicationContext
+				.getBeansOfType(DataSource.class).entrySet()) {
+			String beanName = entry.getKey();
+			DataSource bean = entry.getValue();
+			String prefix = createPrefix(beanName, bean, bean.equals(primaryDataSource));
+			DataSourcePoolMetadata poolMetadata = provider
+					.getDataSourcePoolMetadata(bean);
+			if (poolMetadata != null) {
+				this.metadataByPrefix.put(prefix, poolMetadata);
 			}
 		}
 	}
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		Collection<Metric<?>> result = new LinkedHashSet<Metric<?>>();
-		for (Map.Entry<String, DataSourceMetadata> entry : dataSourceMetadataByPrefix.entrySet()) {
+		Set<Metric<?>> metrics = new LinkedHashSet<Metric<?>>();
+		for (Map.Entry<String, DataSourcePoolMetadata> entry : this.metadataByPrefix
+				.entrySet()) {
 			String prefix = entry.getKey();
-			// Make sure the prefix ends with a dot
-			if (!prefix.endsWith(".")) {
-				prefix = prefix + ".";
-			}
-			DataSourceMetadata dataSourceMetadata = entry.getValue();
-			Integer poolSize = dataSourceMetadata.getPoolSize();
-			if (poolSize != null) {
-				result.add(new Metric<Integer>(prefix + "active", poolSize));
-			}
-			Float poolUsage = dataSourceMetadata.getPoolUsage();
-			if (poolUsage != null) {
-				result.add(new Metric<Float>(prefix + "usage", poolUsage));
-			}
+			prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
+			DataSourcePoolMetadata metadata = entry.getValue();
+			addMetric(metrics, prefix + "max", metadata.getMax());
+			addMetric(metrics, prefix + "min", metadata.getMin());
+			addMetric(metrics, prefix + "active", metadata.getActive());
+			addMetric(metrics, prefix + "usage", metadata.getUsage());
 		}
-		return result;
+		return metrics;
+	}
+
+	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name, T value) {
+		if (value != null) {
+			metrics.add(new Metric<T>(name, value));
+		}
 	}
 
 	/**
-	 * Create the prefix to use for the metrics to associate with the given {@link DataSource}.
-	 * @param dataSourceName the name of the data source bean
+	 * Create the prefix to use for the metrics to associate with the given
+	 * {@link DataSource}.
+	 * @param name the name of the data source bean
 	 * @param dataSource the data source to configure
 	 * @param primary if this data source is the primary data source
 	 * @return a prefix for the given data source
 	 */
-	protected String createPrefix(String dataSourceName, DataSource dataSource, boolean primary) {
-		StringBuilder sb = new StringBuilder("datasource.");
+	protected String createPrefix(String name, DataSource dataSource, boolean primary) {
 		if (primary) {
-			sb.append("primary");
+			return "datasource.primary";
 		}
-		else if (endWithDataSource(dataSourceName)) { // Strip the data source part out of the name
-			sb.append(dataSourceName.substring(0, dataSourceName.length() - DATASOURCE_SUFFIX.length()));
+		if (name.toLowerCase().endsWith(DATASOURCE_SUFFIX.toLowerCase())) {
+			name = name.substring(0, name.length() - DATASOURCE_SUFFIX.length());
 		}
-		else {
-			sb.append(dataSourceName);
-		}
-		return sb.toString();
-	}
-
-	/**
-	 * Specify if the given value ends with {@value #DATASOURCE_SUFFIX}.
-	 */
-	protected boolean endWithDataSource(String value) {
-		int suffixLength = DATASOURCE_SUFFIX.length();
-		int valueLength = value.length();
-		if (valueLength > suffixLength) {
-			String suffix = value.substring(valueLength - suffixLength, valueLength);
-			return suffix.equalsIgnoreCase(DATASOURCE_SUFFIX);
-		}
-		return false;
+		return "datasource." + name;
 	}
 
 	/**
@@ -131,9 +117,9 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	 */
 	private DataSource getPrimaryDataSource() {
 		try {
-			return applicationContext.getBean(DataSource.class);
+			return this.applicationContext.getBean(DataSource.class);
 		}
-		catch (NoSuchBeanDefinitionException e) {
+		catch (NoSuchBeanDefinitionException ex) {
 			return null;
 		}
 	}

@@ -24,27 +24,24 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvider;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvidersConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} that provides
- * metrics on dataSource usage.
+ * {@link EnableAutoConfiguration Auto-configuration} that provides metrics on dataSource
+ * usage.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
 @ConditionalOnBean(DataSource.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
-@Import(DataSourceMetadataProvidersConfiguration.class)
-public class MetricDataSourceAutoConfiguration {
+public class DataSourceMetricsAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(DataSourceMetadataProvider.class)
-	@ConditionalOnMissingBean(DataSourcePublicMetrics.class)
-	DataSourcePublicMetrics dataSourcePublicMetrics() {
+	@ConditionalOnBean(DataSourcePoolMetadataProvider.class)
+	@ConditionalOnMissingBean
+	public DataSourcePublicMetrics dataSourcePublicMetrics() {
 		return new DataSourcePublicMetrics();
 	}
 
