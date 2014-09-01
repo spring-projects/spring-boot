@@ -634,26 +634,35 @@ The `gauge` shows the last response time for a request. So the last request to `
 NOTE: In this example we are actually accessing the endpoint over HTTP using the
 `/metrics` URL, this explains why `metrics` appears in the response.
 
+
+
 [[production-ready-datasource-metrics]]
 === DataSource metrics
+The following metrics are exposed for each supported `DataSource` defined in your
+application:
 
-The following metrics are available for each data source defined in the application: the
-number of allocated connection(s) (`.active`) and the current usage of the connection
-pool (`.usage`).
+* The maximum number connections (`datasource.xxx.max`).
+* The minimum number of connections (`datasource.xxx.min`).
+* The number of active connections (`datasource.xxx.active`)
+* The current usage of the connection pool (`datasource.xxx.usage`).
 
-All data source metrics share the `datasource.` prefix. The prefix is further qualified for
-each data source:
+All data source metrics share the `datasource.` prefix. The prefix is further qualified
+for each data source:
 
 * If the data source is the primary data source (that is either the only available data
-  source or the one flagged `@Primary` amongst the existing ones), the prefix is `datasource.primary`
-* If the data source bean name ends with `dataSource`, the prefix is the name of the bean without
-  it (i.e. `datasource.batch` for `batchDataSource`)
-* In all other cases, the name of the bean is used
+  source or the one flagged `@Primary` amongst the existing ones), the prefix is
+  `datasource.primary`.
+* If the data source bean name ends with `dataSource`, the prefix is the name of the bean
+  without `dataSource` (i.e. `datasource.batch` for `batchDataSource`).
+* In all other cases, the name of the bean is used.
 
-It is possible to override part or all of those defaults by registering a bean with a customized
-version of `DataSourcePublicMetrics`. Spring Boot provides those metadata for all supported
-datasource; you can provide a `DataSourceMetadata` implementation for your favorite data source,
-check `DatasourceMetadataProvidersConfiguration` for more details.
+It is possible to override part or all of those defaults by registering a bean with a
+customized version of `DataSourcePublicMetrics`. By default, Spring Boot provides metadata
+for all  supported datasources; you can add additional `DataSourcePoolMetadataProvider`
+beans if your favorite data source isn't supported out of the box. See
+`DataSourcePoolMetadataProvidersConfiguration` for examples.
+
+
 
 [[production-ready-recording-metrics]]
 === Recording your own metrics

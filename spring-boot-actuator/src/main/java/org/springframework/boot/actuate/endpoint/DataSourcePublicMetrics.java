@@ -28,9 +28,9 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProviders;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProviders;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 
@@ -62,7 +62,8 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 			String beanName = entry.getKey();
 			DataSource bean = entry.getValue();
 			String prefix = createPrefix(beanName, bean, bean.equals(primaryDataSource));
-			DataSourcePoolMetadata poolMetadata = provider.getDataSourcePoolMetadata(bean);
+			DataSourcePoolMetadata poolMetadata = provider
+					.getDataSourcePoolMetadata(bean);
 			if (poolMetadata != null) {
 				this.metadataByPrefix.put(prefix, poolMetadata);
 			}
@@ -76,9 +77,11 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 				.entrySet()) {
 			String prefix = entry.getKey();
 			prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
-			DataSourcePoolMetadata dataSourceMetadata = entry.getValue();
-			addMetric(metrics, prefix + "active", dataSourceMetadata.getActive());
-			addMetric(metrics, prefix + "usage", dataSourceMetadata.getUsage());
+			DataSourcePoolMetadata metadata = entry.getValue();
+			addMetric(metrics, prefix + "max", metadata.getMax());
+			addMetric(metrics, prefix + "min", metadata.getMin());
+			addMetric(metrics, prefix + "active", metadata.getActive());
+			addMetric(metrics, prefix + "usage", metadata.getUsage());
 		}
 		return metrics;
 	}
