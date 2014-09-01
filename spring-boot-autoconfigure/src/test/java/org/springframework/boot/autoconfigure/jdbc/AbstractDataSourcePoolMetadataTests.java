@@ -27,11 +27,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Abstract base class for {@link DataSourceMetadata} tests.
+ * Abstract base class for {@link DataSourcePoolMetadata} tests.
  *
  * @author Stephane Nicoll
  */
-public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSourceMetadata<?>> {
+public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourcePoolMetadata<?>> {
 
 	/**
 	 * Return a data source metadata instance with a min size of 0 and max size of 2.
@@ -40,12 +40,12 @@ public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSour
 
 	@Test
 	public void getMaxPoolSize() {
-		assertEquals(Integer.valueOf(2), getDataSourceMetadata().getMaxPoolSize());
+		assertEquals(Integer.valueOf(2), getDataSourceMetadata().getMax());
 	}
 
 	@Test
 	public void getMinPoolSize() {
-		assertEquals(Integer.valueOf(0), getDataSourceMetadata().getMinPoolSize());
+		assertEquals(Integer.valueOf(0), getDataSourceMetadata().getMin());
 	}
 
 	@Test
@@ -60,8 +60,8 @@ public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSour
 				return null;
 			}
 		});
-		assertEquals(Integer.valueOf(0), getDataSourceMetadata().getPoolSize());
-		assertEquals(Float.valueOf(0), getDataSourceMetadata().getPoolUsage());
+		assertEquals(Integer.valueOf(0), getDataSourceMetadata().getActive());
+		assertEquals(Float.valueOf(0), getDataSourceMetadata().getUsage());
 	}
 
 	@Test
@@ -72,8 +72,8 @@ public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSour
 			@Override
 			public Void doInConnection(Connection connection) throws SQLException,
 					DataAccessException {
-				assertEquals(Integer.valueOf(1), getDataSourceMetadata().getPoolSize());
-				assertEquals(Float.valueOf(0.5F), getDataSourceMetadata().getPoolUsage());
+				assertEquals(Integer.valueOf(1), getDataSourceMetadata().getActive());
+				assertEquals(Float.valueOf(0.5F), getDataSourceMetadata().getUsage());
 				return null;
 			}
 		});
@@ -92,9 +92,9 @@ public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSour
 					public Void doInConnection(Connection connection)
 							throws SQLException, DataAccessException {
 						assertEquals(Integer.valueOf(2), getDataSourceMetadata()
-								.getPoolSize());
+								.getActive());
 						assertEquals(Float.valueOf(1F), getDataSourceMetadata()
-								.getPoolUsage());
+								.getUsage());
 						return null;
 					}
 				});

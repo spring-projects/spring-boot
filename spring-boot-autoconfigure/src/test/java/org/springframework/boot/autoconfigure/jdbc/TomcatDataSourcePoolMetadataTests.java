@@ -22,22 +22,22 @@ import org.junit.Before;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests for {@link TomcatDataSourceMetadata}.
+ * Tests for {@link TomcatDataSourcePoolMetadata}.
  *
  * @author Stephane Nicoll
  */
-public class TomcatDataSourceMetadataTests extends
-		AbstractDataSourceMetadataTests<TomcatDataSourceMetadata> {
+public class TomcatDataSourcePoolMetadataTests extends
+		AbstractDataSourcePoolMetadataTests<TomcatDataSourcePoolMetadata> {
 
-	private TomcatDataSourceMetadata dataSourceMetadata;
+	private TomcatDataSourcePoolMetadata dataSourceMetadata;
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata = new TomcatDataSourceMetadata(createDataSource(0, 2));
+		this.dataSourceMetadata = new TomcatDataSourcePoolMetadata(createDataSource(0, 2));
 	}
 
 	@Override
-	protected TomcatDataSourceMetadata getDataSourceMetadata() {
+	protected TomcatDataSourcePoolMetadata getDataSourceMetadata() {
 		return this.dataSourceMetadata;
 	}
 
@@ -46,7 +46,7 @@ public class TomcatDataSourceMetadataTests extends
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setValidationQuery("SELECT FROM FOO");
 		assertEquals("SELECT FROM FOO",
-				new TomcatDataSourceMetadata(dataSource).getValidationQuery());
+				new TomcatDataSourcePoolMetadata(dataSource).getValidationQuery());
 	}
 
 	private DataSource createDataSource(int minSize, int maxSize) {

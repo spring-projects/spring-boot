@@ -19,17 +19,17 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 /**
- * Provide a {@link DataSourceMetadata} based on a {@link DataSource}.
+ * Provide a {@link DataSourcePoolMetadata} based on a {@link DataSource}.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public interface DataSourceMetadataProvider {
+public interface DataSourcePoolMetadataProvider {
 
 	/**
-	 * Return the {@link DataSourceMetadata} instance able to manage the specified
+	 * Return the {@link DataSourcePoolMetadata} instance able to manage the specified
 	 * {@link DataSource} or {@code null} if the given data source could not be handled.
 	 */
-	DataSourceMetadata getDataSourceMetadata(DataSource dataSource);
+	DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource);
 
 }

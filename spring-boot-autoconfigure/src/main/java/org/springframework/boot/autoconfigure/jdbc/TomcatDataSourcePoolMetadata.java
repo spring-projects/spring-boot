@@ -20,29 +20,29 @@ import org.apache.tomcat.jdbc.pool.ConnectionPool;
 import org.apache.tomcat.jdbc.pool.DataSource;
 
 /**
- * {@link DataSourceMetadata} for a Tomcat {@link DataSource}.
+ * {@link DataSourcePoolMetadata} for a Tomcat {@link DataSource}.
  *
  * @author Stephane Nicoll
  */
-public class TomcatDataSourceMetadata extends AbstractDataSourceMetadata<DataSource> {
+public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<DataSource> {
 
-	public TomcatDataSourceMetadata(DataSource dataSource) {
+	public TomcatDataSourcePoolMetadata(DataSource dataSource) {
 		super(dataSource);
 	}
 
 	@Override
-	public Integer getPoolSize() {
+	public Integer getActive() {
 		ConnectionPool pool = getDataSource().getPool();
 		return (pool == null ? 0 : pool.getActive());
 	}
 
 	@Override
-	public Integer getMaxPoolSize() {
+	public Integer getMax() {
 		return getDataSource().getMaxActive();
 	}
 
 	@Override
-	public Integer getMinPoolSize() {
+	public Integer getMin() {
 		return getDataSource().getMinIdle();
 	}
 

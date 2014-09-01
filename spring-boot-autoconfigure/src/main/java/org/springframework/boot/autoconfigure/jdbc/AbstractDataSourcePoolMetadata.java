@@ -19,27 +19,27 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 /**
- * A base {@link DataSourceMetadata} implementation.
+ * A base {@link DataSourcePoolMetadata} implementation.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public abstract class AbstractDataSourceMetadata<T extends DataSource> implements
-		DataSourceMetadata {
+public abstract class AbstractDataSourcePoolMetadata<T extends DataSource> implements
+		DataSourcePoolMetadata {
 
 	private final T dataSource;
 
 	/**
 	 * Create an instance with the data source to use.
 	 */
-	protected AbstractDataSourceMetadata(T dataSource) {
+	protected AbstractDataSourcePoolMetadata(T dataSource) {
 		this.dataSource = dataSource;
 	}
 
 	@Override
-	public Float getPoolUsage() {
-		Integer maxSize = getMaxPoolSize();
-		Integer currentSize = getPoolSize();
+	public Float getUsage() {
+		Integer maxSize = getMax();
+		Integer currentSize = getActive();
 		if (maxSize == null || currentSize == null) {
 			return null;
 		}

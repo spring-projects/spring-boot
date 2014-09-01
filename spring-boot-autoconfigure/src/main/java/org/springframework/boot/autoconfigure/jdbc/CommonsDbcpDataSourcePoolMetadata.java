@@ -21,30 +21,30 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 
 /**
- * {@link DataSourceMetadata} for a Apache Commons DBCP {@link DataSource}.
+ * {@link DataSourcePoolMetadata} for a Apache Commons DBCP {@link DataSource}.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class CommonsDbcpDataSourceMetadata extends
-		AbstractDataSourceMetadata<BasicDataSource> {
+public class CommonsDbcpDataSourcePoolMetadata extends
+		AbstractDataSourcePoolMetadata<BasicDataSource> {
 
-	public CommonsDbcpDataSourceMetadata(BasicDataSource dataSource) {
+	public CommonsDbcpDataSourcePoolMetadata(BasicDataSource dataSource) {
 		super(dataSource);
 	}
 
 	@Override
-	public Integer getPoolSize() {
+	public Integer getActive() {
 		return getDataSource().getNumActive();
 	}
 
 	@Override
-	public Integer getMaxPoolSize() {
+	public Integer getMax() {
 		return getDataSource().getMaxActive();
 	}
 
 	@Override
-	public Integer getMinPoolSize() {
+	public Integer getMin() {
 		return getDataSource().getMinIdle();
 	}
 

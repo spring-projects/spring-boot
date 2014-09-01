@@ -24,20 +24,20 @@ import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
 
 /**
- * {@link DataSourceMetadata} for a Hikari {@link DataSource}.
+ * {@link DataSourcePoolMetadata} for a Hikari {@link DataSource}.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class HikariDataSourceMetadata extends
-		AbstractDataSourceMetadata<HikariDataSource> {
+public class HikariDataSourcePoolMetadata extends
+		AbstractDataSourcePoolMetadata<HikariDataSource> {
 
-	public HikariDataSourceMetadata(HikariDataSource dataSource) {
+	public HikariDataSourcePoolMetadata(HikariDataSource dataSource) {
 		super(dataSource);
 	}
 
 	@Override
-	public Integer getPoolSize() {
+	public Integer getActive() {
 		try {
 			return getHikariPool().getActiveConnections();
 		}
@@ -52,12 +52,12 @@ public class HikariDataSourceMetadata extends
 	}
 
 	@Override
-	public Integer getMaxPoolSize() {
+	public Integer getMax() {
 		return getDataSource().getMaximumPoolSize();
 	}
 
 	@Override
-	public Integer getMinPoolSize() {
+	public Integer getMin() {
 		return getDataSource().getMinimumIdle();
 	}
 

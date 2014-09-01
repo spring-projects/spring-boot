@@ -23,22 +23,22 @@ import com.zaxxer.hikari.HikariDataSource;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests for {@link HikariDataSourceMetadata}.
+ * Tests for {@link HikariDataSourcePoolMetadata}.
  *
  * @author Stephane Nicoll
  */
-public class HikariDataSourceMetadataTests extends
-		AbstractDataSourceMetadataTests<HikariDataSourceMetadata> {
+public class HikariDataSourcePoolMetadataTests extends
+		AbstractDataSourcePoolMetadataTests<HikariDataSourcePoolMetadata> {
 
-	private HikariDataSourceMetadata dataSourceMetadata;
+	private HikariDataSourcePoolMetadata dataSourceMetadata;
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata = new HikariDataSourceMetadata(createDataSource(0, 2));
+		this.dataSourceMetadata = new HikariDataSourcePoolMetadata(createDataSource(0, 2));
 	}
 
 	@Override
-	protected HikariDataSourceMetadata getDataSourceMetadata() {
+	protected HikariDataSourcePoolMetadata getDataSourceMetadata() {
 		return this.dataSourceMetadata;
 	}
 
@@ -47,7 +47,7 @@ public class HikariDataSourceMetadataTests extends
 		HikariDataSource dataSource = createDataSource(0, 4);
 		dataSource.setConnectionTestQuery("SELECT FROM FOO");
 		assertEquals("SELECT FROM FOO",
-				new HikariDataSourceMetadata(dataSource).getValidationQuery());
+				new HikariDataSourcePoolMetadata(dataSource).getValidationQuery());
 	}
 
 	private HikariDataSource createDataSource(int minSize, int maxSize) {

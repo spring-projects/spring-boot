@@ -19,13 +19,13 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 /**
- * Provides access meta-data that is commonly available from most {@link DataSource}
- * implementations.
+ * Provides access meta-data that is commonly available from most polled
+ * {@link DataSource} implementations.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public interface DataSourceMetadata {
+public interface DataSourcePoolMetadata {
 
 	/**
 	 * Return the usage of the pool as value between 0 and 1 (or -1 if the pool is not
@@ -38,26 +38,26 @@ public interface DataSourceMetadata {
 	 * This may also return {@code null} if the data source does not provide the necessary
 	 * information to compute the poll usage.
 	 */
-	Float getPoolUsage();
+	Float getUsage();
 
 	/**
 	 * Return the current number of active connections that have been allocated from the
 	 * data source or {@code null} if that information is not available.
 	 */
-	Integer getPoolSize();
+	Integer getActive();
 
 	/**
 	 * Return the maximum number of active connections that can be allocated at the same
 	 * time or {@code -1} if there is no limit. Can also return {@code null} if that
 	 * information is not available.
 	 */
-	Integer getMaxPoolSize();
+	Integer getMax();
 
 	/**
 	 * Return the minimum number of idle connections in the pool or {@code null} if that
 	 * information is not available.
 	 */
-	Integer getMinPoolSize();
+	Integer getMin();
 
 	/**
 	 * Return the query to use to validate that a connection is valid or {@code null} if

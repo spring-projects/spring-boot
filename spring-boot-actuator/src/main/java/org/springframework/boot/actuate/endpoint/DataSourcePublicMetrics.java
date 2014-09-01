@@ -28,9 +28,9 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.autoconfigure.jdbc.CompositeDataSourceMetadataProvider;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadata;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.CompositeDataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.DataSourcePoolMetadata;
+import org.springframework.boot.autoconfigure.jdbc.DataSourcePoolMetadataProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 
@@ -48,23 +48,23 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	private ApplicationContext applicationContext;
 
 	@Autowired
-	private Collection<DataSourceMetadataProvider> providers;
+	private Collection<DataSourcePoolMetadataProvider> providers;
 
-	private final Map<String, DataSourceMetadata> metadataByPrefix = new HashMap<String, DataSourceMetadata>();
+	private final Map<String, DataSourcePoolMetadata> metadataByPrefix = new HashMap<String, DataSourcePoolMetadata>();
 
 	@PostConstruct
 	public void initialize() {
 		DataSource primaryDataSource = getPrimaryDataSource();
-		DataSourceMetadataProvider provider = new CompositeDataSourceMetadataProvider(
+		DataSourcePoolMetadataProvider provider = new CompositeDataSourcePoolMetadataProvider(
 				this.providers);
 		for (Map.Entry<String, DataSource> entry : this.applicationContext
 				.getBeansOfType(DataSource.class).entrySet()) {
 			String beanName = entry.getKey();
 			DataSource bean = entry.getValue();
 			String prefix = createPrefix(beanName, bean, bean.equals(primaryDataSource));
-			DataSourceMetadata dataSourceMetadata = provider.getDataSourceMetadata(bean);
-			if (dataSourceMetadata != null) {
-				this.metadataByPrefix.put(prefix, dataSourceMetadata);
+			DataSourcePoolMetadata poolMetadata = provider.getDataSourcePoolMetadata(bean);
+			if (poolMetadata != null) {
+				this.metadataByPrefix.put(prefix, poolMetadata);
 			}
 		}
 	}
@@ -72,13 +72,13 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	@Override
 	public Collection<Metric<?>> metrics() {
 		Set<Metric<?>> metrics = new LinkedHashSet<Metric<?>>();
-		for (Map.Entry<String, DataSourceMetadata> entry : this.metadataByPrefix
+		for (Map.Entry<String, DataSourcePoolMetadata> entry : this.metadataByPrefix
 				.entrySet()) {
 			String prefix = entry.getKey();
 			prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
-			DataSourceMetadata dataSourceMetadata = entry.getValue();
-			addMetric(metrics, prefix + "active", dataSourceMetadata.getPoolSize());
-			addMetric(metrics, prefix + "usage", dataSourceMetadata.getPoolUsage());
+			DataSourcePoolMetadata dataSourceMetadata = entry.getValue();
+			addMetric(metrics, prefix + "active", dataSourceMetadata.getActive());
+			addMetric(metrics, prefix + "usage", dataSourceMetadata.getUsage());
 		}
 		return metrics;
 	}
