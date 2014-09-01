@@ -28,7 +28,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.autoconfigure.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProviders;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.ApplicationContext;
@@ -55,7 +55,7 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 	@PostConstruct
 	public void initialize() {
 		DataSource primaryDataSource = getPrimaryDataSource();
-		DataSourcePoolMetadataProvider provider = new CompositeDataSourcePoolMetadataProvider(
+		DataSourcePoolMetadataProvider provider = new DataSourcePoolMetadataProviders(
 				this.providers);
 		for (Map.Entry<String, DataSource> entry : this.applicationContext
 				.getBeansOfType(DataSource.class).entrySet()) {

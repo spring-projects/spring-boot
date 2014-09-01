@@ -45,9 +45,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProviders;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
@@ -109,19 +109,19 @@ public class HealthIndicatorAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "dbHealthIndicator")
 		public HealthIndicator dbHealthIndicator() {
-			DataSourcePoolMetadataProvider metadataProvider = new CompositeDataSourcePoolMetadataProvider(
+			DataSourcePoolMetadataProvider metadataProvider = new DataSourcePoolMetadataProviders(
 					this.metadataProviders);
 			if (this.dataSources.size() == 1) {
-				return createDataSourceHealthIndicator(metadataProvider, this.dataSources
-						.values().iterator().next());
+				DataSource dataSource = this.dataSources.values().iterator().next();
+				return createDataSourceHealthIndicator(metadataProvider, dataSource);
 			}
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
-				composite.addHealthIndicator(
-						entry.getKey(),
-						createDataSourceHealthIndicator(metadataProvider,
-								entry.getValue()));
+				String name = entry.getKey();
+				DataSource dataSource = entry.getValue();
+				composite.addHealthIndicator(name,
+						createDataSourceHealthIndicator(metadataProvider, dataSource));
 			}
 			return composite;
 		}

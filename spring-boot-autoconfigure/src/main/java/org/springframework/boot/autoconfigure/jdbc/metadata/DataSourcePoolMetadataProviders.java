@@ -29,22 +29,15 @@ import javax.sql.DataSource;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class CompositeDataSourcePoolMetadataProvider implements DataSourcePoolMetadataProvider {
+public class DataSourcePoolMetadataProviders implements DataSourcePoolMetadataProvider {
 
 	private final List<DataSourcePoolMetadataProvider> providers;
 
 	/**
-	 * Create a {@link CompositeDataSourcePoolMetadataProvider} instance with no delegate.
-	 */
-	public CompositeDataSourcePoolMetadataProvider() {
-		this(new ArrayList<DataSourcePoolMetadataProvider>());
-	}
-
-	/**
-	 * Create a {@link CompositeDataSourcePoolMetadataProvider} instance with an initial
+	 * Create a {@link DataSourcePoolMetadataProviders} instance with an initial
 	 * collection of delegates to use.
 	 */
-	public CompositeDataSourcePoolMetadataProvider(
+	public DataSourcePoolMetadataProviders(
 			Collection<? extends DataSourcePoolMetadataProvider> providers) {
 		this.providers = new ArrayList<DataSourcePoolMetadataProvider>(providers);
 	}
@@ -52,19 +45,13 @@ public class CompositeDataSourcePoolMetadataProvider implements DataSourcePoolMe
 	@Override
 	public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
 		for (DataSourcePoolMetadataProvider provider : this.providers) {
-			DataSourcePoolMetadata metadata = provider.getDataSourcePoolMetadata(dataSource);
+			DataSourcePoolMetadata metadata = provider
+					.getDataSourcePoolMetadata(dataSource);
 			if (metadata != null) {
 				return metadata;
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Add a {@link DataSourcePoolMetadataProvider} delegate to the list.
-	 */
-	public void addDataSourceMetadataProvider(DataSourcePoolMetadataProvider provider) {
-		this.providers.add(provider);
 	}
 
 }
