@@ -30,8 +30,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} that provides
- * metrics on dataSource usage.
+ * {@link EnableAutoConfiguration Auto-configuration} that provides metrics on dataSource
+ * usage.
  *
  * @author Stephane Nicoll
  * @since 1.2.0

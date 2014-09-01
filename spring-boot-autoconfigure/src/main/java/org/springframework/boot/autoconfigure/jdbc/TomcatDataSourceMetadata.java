@@ -21,8 +21,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 
 /**
  *
- * A {@link DataSourceMetadata} implementation for the tomcat
- * data source.
+ * A {@link DataSourceMetadata} implementation for the tomcat data source.
  *
  * @author Stephane Nicoll
  */
@@ -52,4 +51,5 @@ public class TomcatDataSourceMetadata extends AbstractDataSourceMetadata<DataSou
 	public String getValidationQuery() {
 		return getDataSource().getValidationQuery();
 	}
+
 }

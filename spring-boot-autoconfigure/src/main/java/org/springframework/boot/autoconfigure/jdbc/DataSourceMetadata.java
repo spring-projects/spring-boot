@@ -19,9 +19,8 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 /**
- * Provide various metadata regarding a {@link DataSource} that
- * are shared by most data source types but not accessible in a
- * standard manner.
+ * Provide various metadata regarding a {@link DataSource} that are shared by most data
+ * source types but not accessible in a standard manner.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
@@ -29,44 +28,39 @@ import javax.sql.DataSource;
 public interface DataSourceMetadata {
 
 	/**
-	 * Return the usage of the pool as a double value between
-	 * 0 and 1.
+	 * Return the usage of the pool as a double value between 0 and 1.
 	 * <ul>
-	 * <li>1 means that the maximum number of connections
-	 * have been allocated</li>
+	 * <li>1 means that the maximum number of connections have been allocated</li>
 	 * <li>0 means that no connection is currently active</li>
-	 * <li>-1 means there is not limit to the number of connections
-	 * that can be allocated</li>
+	 * <li>-1 means there is not limit to the number of connections that can be allocated</li>
 	 * </ul>
-	 * This may also return {@code null} if the data source does
-	 * not provide the necessary information to compute the poll usage.
+	 * This may also return {@code null} if the data source does not provide the necessary
+	 * information to compute the poll usage.
 	 */
 	Float getPoolUsage();
 
 	/**
-	 * Return the current number of active connections that
-	 * have been allocated from the data source or {@code null}
-	 * if that information is not available.
+	 * Return the current number of active connections that have been allocated from the
+	 * data source or {@code null} if that information is not available.
 	 */
 	Integer getPoolSize();
 
 	/**
-	 * Return the maximum number of active connections that can be
-	 * allocated at the same time or {@code -1} if there is no
-	 * limit. Can also return {@code null} if that information is
-	 * not available.
+	 * Return the maximum number of active connections that can be allocated at the same
+	 * time or {@code -1} if there is no limit. Can also return {@code null} if that
+	 * information is not available.
 	 */
 	Integer getMaxPoolSize();
 
 	/**
-	 * Return the minimum number of idle connections in the pool
-	 * or {@code null} if that information is not available.
+	 * Return the minimum number of idle connections in the pool or {@code null} if that
+	 * information is not available.
 	 */
 	Integer getMinPoolSize();
 
 	/**
-	 * Return the query to use to validate that a connection is
-	 * valid or {@code null} if that information is not available.
+	 * Return the query to use to validate that a connection is valid or {@code null} if
+	 * that information is not available.
 	 */
 	String getValidationQuery();
 

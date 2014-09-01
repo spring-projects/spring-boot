@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import static org.junit.Assert.*;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -26,11 +24,9 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.metrics.Metric;
@@ -44,8 +40,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.zaxxer.hikari.HikariDataSource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
- *
  * @author Stephane Nicoll
  */
 public class MetricDataSourceAutoConfigurationTests {
@@ -78,24 +78,25 @@ public class MetricDataSourceAutoConfigurationTests {
 		load(MultipleDataSourcesConfig.class);
 		PublicMetrics bean = this.context.getBean(PublicMetrics.class);
 		Collection<Metric<?>> metrics = bean.metrics();
-		assertMetrics(metrics,
-				"datasource.tomcat.active", "datasource.tomcat.usage",
+		assertMetrics(metrics, "datasource.tomcat.active", "datasource.tomcat.usage",
 				"datasource.commonsDbcp.active", "datasource.commonsDbcp.usage");
 
 		// Hikari won't work unless a first connection has been retrieved
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean("hikariDS", DataSource.class));
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(this.context.getBean("hikariDS",
+				DataSource.class));
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
-			public Void doInConnection(Connection connection) throws SQLException, DataAccessException {
+			public Void doInConnection(Connection connection) throws SQLException,
+					DataAccessException {
 				return null;
 			}
 		});
 
 		Collection<Metric<?>> anotherMetrics = bean.metrics();
-		assertMetrics(anotherMetrics,
-				"datasource.tomcat.active", "datasource.tomcat.usage",
-				"datasource.hikariDS.active", "datasource.hikariDS.usage",
-				"datasource.commonsDbcp.active", "datasource.commonsDbcp.usage");
+		assertMetrics(anotherMetrics, "datasource.tomcat.active",
+				"datasource.tomcat.usage", "datasource.hikariDS.active",
+				"datasource.hikariDS.usage", "datasource.commonsDbcp.active",
+				"datasource.commonsDbcp.usage");
 	}
 
 	@Test
@@ -103,19 +104,18 @@ public class MetricDataSourceAutoConfigurationTests {
 		load(MultipleDataSourcesWithPrimaryConfig.class);
 		PublicMetrics bean = this.context.getBean(PublicMetrics.class);
 		Collection<Metric<?>> metrics = bean.metrics();
-		assertMetrics(metrics,
-				"datasource.primary.active", "datasource.primary.usage",
+		assertMetrics(metrics, "datasource.primary.active", "datasource.primary.usage",
 				"datasource.commonsDbcp.active", "datasource.commonsDbcp.usage");
 	}
 
 	@Test
 	public void customPrefix() {
-		load(MultipleDataSourcesWithPrimaryConfig.class, CustomDataSourcePublicMetrics.class);
+		load(MultipleDataSourcesWithPrimaryConfig.class,
+				CustomDataSourcePublicMetrics.class);
 		PublicMetrics bean = this.context.getBean(PublicMetrics.class);
 		Collection<Metric<?>> metrics = bean.metrics();
-		assertMetrics(metrics,
-				"ds.first.active", "ds.first.usage",
-				"ds.second.active", "ds.second.usage");
+		assertMetrics(metrics, "ds.first.active", "ds.first.usage", "ds.second.active",
+				"ds.second.usage");
 
 	}
 
@@ -138,13 +138,13 @@ public class MetricDataSourceAutoConfigurationTests {
 		this.context.refresh();
 	}
 
-
 	@Configuration
 	static class MultipleDataSourcesConfig {
 
 		@Bean
 		public DataSource tomcatDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
+			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
+					.build();
 		}
 
 		@Bean
@@ -164,7 +164,8 @@ public class MetricDataSourceAutoConfigurationTests {
 		@Bean
 		@Primary
 		public DataSource myDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
+			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
+					.build();
 		}
 
 		@Bean
@@ -180,7 +181,8 @@ public class MetricDataSourceAutoConfigurationTests {
 		public DataSourcePublicMetrics myDataSourcePublicMetrics() {
 			return new DataSourcePublicMetrics() {
 				@Override
-				protected String createPrefix(String dataSourceName, DataSource dataSource, boolean primary) {
+				protected String createPrefix(String dataSourceName,
+						DataSource dataSource, boolean primary) {
 					return (primary ? "ds.first." : "ds.second");
 				}
 			};
@@ -188,9 +190,7 @@ public class MetricDataSourceAutoConfigurationTests {
 	}
 
 	private static DataSourceBuilder initializeBuilder() {
-		return DataSourceBuilder.create()
-				.driverClassName("org.hsqldb.jdbc.JDBCDriver")
-				.url("jdbc:hsqldb:mem:test")
-				.username("sa");
+		return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
+				.url("jdbc:hsqldb:mem:test").username("sa");
 	}
 }

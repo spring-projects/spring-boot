@@ -16,17 +16,18 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import static org.junit.Assert.*;
-
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 /**
- *
  * @author Stephane Nicoll
  */
-public class CommonsDbcpDataSourceMetadataTests extends AbstractDataSourceMetadataTests<CommonsDbcpDataSourceMetadata> {
+public class CommonsDbcpDataSourceMetadataTests extends
+		AbstractDataSourceMetadataTests<CommonsDbcpDataSourceMetadata> {
 
 	private CommonsDbcpDataSourceMetadata dataSourceMetadata;
 
@@ -42,7 +43,8 @@ public class CommonsDbcpDataSourceMetadataTests extends AbstractDataSourceMetada
 
 	@Test
 	public void getPoolUsageWithNoCurrent() {
-		CommonsDbcpDataSourceMetadata dsm = new CommonsDbcpDataSourceMetadata(createDataSource()) {
+		CommonsDbcpDataSourceMetadata dsm = new CommonsDbcpDataSourceMetadata(
+				createDataSource()) {
 			@Override
 			public Integer getPoolSize() {
 				return null;
@@ -53,7 +55,8 @@ public class CommonsDbcpDataSourceMetadataTests extends AbstractDataSourceMetada
 
 	@Test
 	public void getPoolUsageWithNoMax() {
-		CommonsDbcpDataSourceMetadata dsm = new CommonsDbcpDataSourceMetadata(createDataSource()) {
+		CommonsDbcpDataSourceMetadata dsm = new CommonsDbcpDataSourceMetadata(
+				createDataSource()) {
 			@Override
 			public Integer getMaxPoolSize() {
 				return null;
@@ -72,10 +75,12 @@ public class CommonsDbcpDataSourceMetadataTests extends AbstractDataSourceMetada
 	public void getValidationQuery() {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertEquals("SELECT FROM FOO", new CommonsDbcpDataSourceMetadata(dataSource).getValidationQuery());
+		assertEquals("SELECT FROM FOO",
+				new CommonsDbcpDataSourceMetadata(dataSource).getValidationQuery());
 	}
 
-	private CommonsDbcpDataSourceMetadata createDataSourceMetadata(int minSize, int maxSize) {
+	private CommonsDbcpDataSourceMetadata createDataSourceMetadata(int minSize,
+			int maxSize) {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxActive(maxSize);

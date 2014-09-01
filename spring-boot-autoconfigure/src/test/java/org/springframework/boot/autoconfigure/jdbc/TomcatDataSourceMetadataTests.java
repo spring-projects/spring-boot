@@ -22,10 +22,10 @@ import org.junit.Before;
 import static org.junit.Assert.assertEquals;
 
 /**
- *
  * @author Stephane Nicoll
  */
-public class TomcatDataSourceMetadataTests extends AbstractDataSourceMetadataTests<TomcatDataSourceMetadata> {
+public class TomcatDataSourceMetadataTests extends
+		AbstractDataSourceMetadataTests<TomcatDataSourceMetadata> {
 
 	private TomcatDataSourceMetadata dataSourceMetadata;
 
@@ -43,11 +43,13 @@ public class TomcatDataSourceMetadataTests extends AbstractDataSourceMetadataTes
 	public void getValidationQuery() {
 		DataSource dataSource = createDataSource(0, 4);
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertEquals("SELECT FROM FOO", new TomcatDataSourceMetadata(dataSource).getValidationQuery());
+		assertEquals("SELECT FROM FOO",
+				new TomcatDataSourceMetadata(dataSource).getValidationQuery());
 	}
 
 	private DataSource createDataSource(int minSize, int maxSize) {
-		DataSource dataSource = (DataSource) initializeBuilder().type(DataSource.class).build();
+		DataSource dataSource = (DataSource) initializeBuilder().type(DataSource.class)
+				.build();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxActive(maxSize);
 

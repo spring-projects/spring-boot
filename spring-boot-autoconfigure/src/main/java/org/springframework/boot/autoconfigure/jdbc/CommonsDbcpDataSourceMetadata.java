@@ -19,13 +19,13 @@ package org.springframework.boot.autoconfigure.jdbc;
 import org.apache.commons.dbcp.BasicDataSource;
 
 /**
- * A {@link DataSourceMetadata} implementation for the commons dbcp
- * data source.
+ * A {@link DataSourceMetadata} implementation for the commons dbcp data source.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class CommonsDbcpDataSourceMetadata extends AbstractDataSourceMetadata<BasicDataSource> {
+public class CommonsDbcpDataSourceMetadata extends
+		AbstractDataSourceMetadata<BasicDataSource> {
 
 	public CommonsDbcpDataSourceMetadata(BasicDataSource dataSource) {
 		super(dataSource);
@@ -50,4 +50,5 @@ public class CommonsDbcpDataSourceMetadata extends AbstractDataSourceMetadata<Ba
 	public String getValidationQuery() {
 		return getDataSource().getValidationQuery();
 	}
+
 }

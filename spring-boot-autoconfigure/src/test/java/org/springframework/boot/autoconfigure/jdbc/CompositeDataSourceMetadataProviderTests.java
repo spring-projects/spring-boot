@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
-
 import java.util.Arrays;
 
 import javax.sql.DataSource;
@@ -28,8 +25,11 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.BDDMockito.given;
+
 /**
- *
  * @author Stephane Nicoll
  */
 public class CompositeDataSourceMetadataProviderTests {
@@ -55,30 +55,30 @@ public class CompositeDataSourceMetadataProviderTests {
 	@Mock
 	private DataSource unknownDataSource;
 
-
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(firstProvider.getDataSourceMetadata(firstDataSource)).willReturn(first);
-		given(firstProvider.getDataSourceMetadata(secondDataSource)).willReturn(second);
+		given(this.firstProvider.getDataSourceMetadata(this.firstDataSource)).willReturn(
+				this.first);
+		given(this.firstProvider.getDataSourceMetadata(this.secondDataSource))
+				.willReturn(this.second);
 	}
 
 	@Test
 	public void createWithProviders() {
-		CompositeDataSourceMetadataProvider provider =
-				new CompositeDataSourceMetadataProvider(Arrays.asList(firstProvider, secondProvider));
-		assertSame(first, provider.getDataSourceMetadata(firstDataSource));
-		assertSame(second, provider.getDataSourceMetadata(secondDataSource));
-		assertNull(provider.getDataSourceMetadata(unknownDataSource));
+		CompositeDataSourceMetadataProvider provider = new CompositeDataSourceMetadataProvider(
+				Arrays.asList(this.firstProvider, this.secondProvider));
+		assertSame(this.first, provider.getDataSourceMetadata(this.firstDataSource));
+		assertSame(this.second, provider.getDataSourceMetadata(this.secondDataSource));
+		assertNull(provider.getDataSourceMetadata(this.unknownDataSource));
 	}
 
 	@Test
 	public void addProvider() {
-		CompositeDataSourceMetadataProvider provider =
-				new CompositeDataSourceMetadataProvider();
-		assertNull(provider.getDataSourceMetadata(firstDataSource));
-		provider.addDataSourceMetadataProvider(firstProvider);
-		assertSame(first, provider.getDataSourceMetadata(firstDataSource));
+		CompositeDataSourceMetadataProvider provider = new CompositeDataSourceMetadataProvider();
+		assertNull(provider.getDataSourceMetadata(this.firstDataSource));
+		provider.addDataSourceMetadataProvider(this.firstProvider);
+		assertSame(this.first, provider.getDataSourceMetadata(this.firstDataSource));
 	}
 
 }

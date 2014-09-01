@@ -16,21 +16,23 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Before;
+
+import com.zaxxer.hikari.HikariDataSource;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Stephane Nicoll
  */
-public class HikariDataSourceMetadataTests extends AbstractDataSourceMetadataTests<HikariDataSourceMetadata> {
+public class HikariDataSourceMetadataTests extends
+		AbstractDataSourceMetadataTests<HikariDataSourceMetadata> {
 
 	private HikariDataSourceMetadata dataSourceMetadata;
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata =  new HikariDataSourceMetadata(createDataSource(0, 2));
+		this.dataSourceMetadata = new HikariDataSourceMetadata(createDataSource(0, 2));
 	}
 
 	@Override
@@ -42,11 +44,13 @@ public class HikariDataSourceMetadataTests extends AbstractDataSourceMetadataTes
 	public void getValidationQuery() {
 		HikariDataSource dataSource = createDataSource(0, 4);
 		dataSource.setConnectionTestQuery("SELECT FROM FOO");
-		assertEquals("SELECT FROM FOO", new HikariDataSourceMetadata(dataSource).getValidationQuery());
+		assertEquals("SELECT FROM FOO",
+				new HikariDataSourceMetadata(dataSource).getValidationQuery());
 	}
 
 	private HikariDataSource createDataSource(int minSize, int maxSize) {
-		HikariDataSource dataSource = (HikariDataSource) initializeBuilder().type(HikariDataSource.class).build();
+		HikariDataSource dataSource = (HikariDataSource) initializeBuilder().type(
+				HikariDataSource.class).build();
 		dataSource.setMinimumIdle(minSize);
 		dataSource.setMaximumPoolSize(maxSize);
 		return dataSource;

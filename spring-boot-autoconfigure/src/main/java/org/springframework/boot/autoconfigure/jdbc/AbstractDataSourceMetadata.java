@@ -24,7 +24,8 @@ import javax.sql.DataSource;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public abstract class AbstractDataSourceMetadata<D extends DataSource> implements DataSourceMetadata {
+public abstract class AbstractDataSourceMetadata<D extends DataSource> implements
+		DataSourceMetadata {
 
 	private final D dataSource;
 
@@ -55,7 +56,7 @@ public abstract class AbstractDataSourceMetadata<D extends DataSource> implement
 	}
 
 	protected final D getDataSource() {
-		return dataSource;
+		return this.dataSource;
 	}
 
 }

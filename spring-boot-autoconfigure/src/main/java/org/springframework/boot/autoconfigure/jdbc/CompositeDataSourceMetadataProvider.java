@@ -35,7 +35,8 @@ public class CompositeDataSourceMetadataProvider implements DataSourceMetadataPr
 	/**
 	 * Create an instance with an initial collection of delegates to use.
 	 */
-	public CompositeDataSourceMetadataProvider(Collection<DataSourceMetadataProvider> providers) {
+	public CompositeDataSourceMetadataProvider(
+			Collection<DataSourceMetadataProvider> providers) {
 		this.providers = providers;
 	}
 
@@ -48,8 +49,9 @@ public class CompositeDataSourceMetadataProvider implements DataSourceMetadataPr
 
 	@Override
 	public DataSourceMetadata getDataSourceMetadata(DataSource dataSource) {
-		for (DataSourceMetadataProvider provider : providers) {
-			DataSourceMetadata dataSourceMetadata = provider.getDataSourceMetadata(dataSource);
+		for (DataSourceMetadataProvider provider : this.providers) {
+			DataSourceMetadata dataSourceMetadata = provider
+					.getDataSourceMetadata(dataSource);
 			if (dataSourceMetadata != null) {
 				return dataSourceMetadata;
 			}

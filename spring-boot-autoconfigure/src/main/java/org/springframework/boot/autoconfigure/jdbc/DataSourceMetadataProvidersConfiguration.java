@@ -18,16 +18,16 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.zaxxer.hikari.HikariDataSource;
+
 /**
- * Register the {@link DataSourceMetadataProvider} instances for the supported
- * data sources.
+ * Register the {@link DataSourceMetadataProvider} instances for the supported data
+ * sources.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
@@ -45,12 +45,14 @@ public class DataSourceMetadataProvidersConfiguration {
 				@Override
 				public DataSourceMetadata getDataSourceMetadata(DataSource dataSource) {
 					if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
-						return new TomcatDataSourceMetadata((org.apache.tomcat.jdbc.pool.DataSource) dataSource);
+						return new TomcatDataSourceMetadata(
+								(org.apache.tomcat.jdbc.pool.DataSource) dataSource);
 					}
 					return null;
 				}
 			};
 		}
+
 	}
 
 	@Configuration
@@ -69,6 +71,7 @@ public class DataSourceMetadataProvidersConfiguration {
 				}
 			};
 		}
+
 	}
 
 	@Configuration
@@ -81,12 +84,14 @@ public class DataSourceMetadataProvidersConfiguration {
 				@Override
 				public DataSourceMetadata getDataSourceMetadata(DataSource dataSource) {
 					if (dataSource instanceof BasicDataSource) {
-						return new CommonsDbcpDataSourceMetadata((BasicDataSource) dataSource);
+						return new CommonsDbcpDataSourceMetadata(
+								(BasicDataSource) dataSource);
 					}
 					return null;
 				}
 			};
 		}
+
 	}
 
 }

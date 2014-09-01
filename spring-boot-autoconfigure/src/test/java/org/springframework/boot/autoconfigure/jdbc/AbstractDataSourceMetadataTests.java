@@ -16,19 +16,17 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import static org.junit.Assert.*;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.junit.Test;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import static org.junit.Assert.assertEquals;
+
 /**
- *
  * @author Stephane Nicoll
  */
 public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSourceMetadata> {
@@ -51,10 +49,12 @@ public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSour
 	@Test
 	public void getPoolSizeNoConnection() {
 		// Make sure the pool is initialized
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata()
+				.getDataSource());
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
-			public Void doInConnection(Connection connection) throws SQLException, DataAccessException {
+			public Void doInConnection(Connection connection) throws SQLException,
+					DataAccessException {
 				return null;
 			}
 		});
@@ -64,10 +64,12 @@ public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSour
 
 	@Test
 	public void getPoolSizeOneConnection() {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata()
+				.getDataSource());
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
-			public Void doInConnection(Connection connection) throws SQLException, DataAccessException {
+			public Void doInConnection(Connection connection) throws SQLException,
+					DataAccessException {
 				assertEquals(Integer.valueOf(1), getDataSourceMetadata().getPoolSize());
 				assertEquals(Float.valueOf(0.5F), getDataSourceMetadata().getPoolUsage());
 				return null;
@@ -77,15 +79,20 @@ public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSour
 
 	@Test
 	public void getPoolSizeTwoConnections() {
-		final JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
+		final JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata()
+				.getDataSource());
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
-			public Void doInConnection(Connection connection) throws SQLException, DataAccessException {
+			public Void doInConnection(Connection connection) throws SQLException,
+					DataAccessException {
 				jdbcTemplate.execute(new ConnectionCallback<Void>() {
 					@Override
-					public Void doInConnection(Connection connection) throws SQLException, DataAccessException {
-						assertEquals(Integer.valueOf(2), getDataSourceMetadata().getPoolSize());
-						assertEquals(Float.valueOf(1F), getDataSourceMetadata().getPoolUsage());
+					public Void doInConnection(Connection connection)
+							throws SQLException, DataAccessException {
+						assertEquals(Integer.valueOf(2), getDataSourceMetadata()
+								.getPoolSize());
+						assertEquals(Float.valueOf(1F), getDataSourceMetadata()
+								.getPoolUsage());
 						return null;
 					}
 				});
@@ -98,10 +105,8 @@ public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSour
 	public abstract void getValidationQuery();
 
 	protected DataSourceBuilder initializeBuilder() {
-		return DataSourceBuilder.create()
-				.driverClassName("org.hsqldb.jdbc.JDBCDriver")
-				.url("jdbc:hsqldb:mem:test")
-				.username("sa");
+		return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
+				.url("jdbc:hsqldb:mem:test").username("sa");
 	}
 
 }

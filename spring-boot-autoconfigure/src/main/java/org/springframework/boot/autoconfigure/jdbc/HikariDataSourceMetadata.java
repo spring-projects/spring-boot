@@ -16,21 +16,20 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.pool.HikariPool;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.DirectFieldAccessor;
 
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.HikariPool;
+
 /**
- * A {@link DataSourceMetadata} implementation for the hikari
- * data source.
+ * A {@link DataSourceMetadata} implementation for the hikari data source.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class HikariDataSourceMetadata extends AbstractDataSourceMetadata<HikariDataSource> {
-
+public class HikariDataSourceMetadata extends
+		AbstractDataSourceMetadata<HikariDataSource> {
 
 	private final HikariPoolProvider hikariPoolProvider;
 
@@ -41,13 +40,14 @@ public class HikariDataSourceMetadata extends AbstractDataSourceMetadata<HikariD
 
 	@Override
 	public Integer getPoolSize() {
-		HikariPool hikariPool = hikariPoolProvider.getHikariPool();
+		HikariPool hikariPool = this.hikariPoolProvider.getHikariPool();
 		if (hikariPool != null) {
 			return hikariPool.getActiveConnections();
 		}
 		return null;
 	}
 
+	@Override
 	public Integer getMaxPoolSize() {
 		return getDataSource().getMaximumPoolSize();
 	}
@@ -63,9 +63,9 @@ public class HikariDataSourceMetadata extends AbstractDataSourceMetadata<HikariD
 	}
 
 	/**
-	 * Provide the {@link HikariPool} instance managed internally by
-	 * the {@link HikariDataSource} as there is no other way to retrieve
-	 * that information except JMX access.
+	 * Provide the {@link HikariPool} instance managed internally by the
+	 * {@link HikariDataSource} as there is no other way to retrieve that information
+	 * except JMX access.
 	 */
 	private static class HikariPoolProvider {
 		private final HikariDataSource dataSource;
@@ -78,7 +78,7 @@ public class HikariDataSourceMetadata extends AbstractDataSourceMetadata<HikariD
 		}
 
 		public HikariPool getHikariPool() {
-			if (!poolAvailable) {
+			if (!this.poolAvailable) {
 				return null;
 			}
 

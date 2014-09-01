@@ -27,9 +27,8 @@ import javax.sql.DataSource;
 public interface DataSourceMetadataProvider {
 
 	/**
-	 * Return the {@link DataSourceMetadata} instance able to manage the
-	 * specified {@link DataSource} or {@code null} if the given data
-	 * source could not be handled.
+	 * Return the {@link DataSourceMetadata} instance able to manage the specified
+	 * {@link DataSource} or {@code null} if the given data source could not be handled.
 	 */
 	DataSourceMetadata getDataSourceMetadata(DataSource dataSource);
 
