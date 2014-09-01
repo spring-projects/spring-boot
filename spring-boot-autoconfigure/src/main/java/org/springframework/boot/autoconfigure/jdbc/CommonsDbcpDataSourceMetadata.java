@@ -16,10 +16,12 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp.BasicDataSource;
 
 /**
- * A {@link DataSourceMetadata} implementation for the commons dbcp data source.
+ * {@link DataSourceMetadata} for a Apache Commons DBCP {@link DataSource}.
  *
  * @author Stephane Nicoll
  * @since 1.2.0

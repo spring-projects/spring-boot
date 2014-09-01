@@ -30,6 +30,8 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.BDDMockito.given;
 
 /**
+ * Tests for {@link CompositeDataSourceMetadataProvider}.
+ *
  * @author Stephane Nicoll
  */
 public class CompositeDataSourceMetadataProviderTests {

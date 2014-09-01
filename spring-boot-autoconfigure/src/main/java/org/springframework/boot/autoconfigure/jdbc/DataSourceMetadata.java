@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 /**
- * Provide various metadata regarding a {@link DataSource} that are shared by most data
- * source types but not accessible in a standard manner.
+ * Provides access meta-data that is commonly available from most {@link DataSource}
+ * implementations.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
@@ -28,7 +28,8 @@ import javax.sql.DataSource;
 public interface DataSourceMetadata {
 
 	/**
-	 * Return the usage of the pool as a double value between 0 and 1.
+	 * Return the usage of the pool as value between 0 and 1 (or -1 if the pool is not
+	 * limited).
 	 * <ul>
 	 * <li>1 means that the maximum number of connections have been allocated</li>
 	 * <li>0 means that no connection is currently active</li>

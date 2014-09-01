@@ -27,9 +27,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Abstract base class for {@link DataSourceMetadata} tests.
+ *
  * @author Stephane Nicoll
  */
-public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSourceMetadata> {
+public abstract class AbstractDataSourceMetadataTests<D extends AbstractDataSourceMetadata<?>> {
 
 	/**
 	 * Return a data source metadata instance with a min size of 0 and max size of 2.

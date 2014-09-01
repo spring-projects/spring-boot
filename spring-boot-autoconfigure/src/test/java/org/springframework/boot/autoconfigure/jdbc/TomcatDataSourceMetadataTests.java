@@ -22,6 +22,8 @@ import org.junit.Before;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link TomcatDataSourceMetadata}.
+ *
  * @author Stephane Nicoll
  */
 public class TomcatDataSourceMetadataTests extends

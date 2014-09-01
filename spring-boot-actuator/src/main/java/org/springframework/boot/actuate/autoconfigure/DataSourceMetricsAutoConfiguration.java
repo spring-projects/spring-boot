@@ -43,8 +43,8 @@ public class DataSourceMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(DataSourceMetadataProvider.class)
-	@ConditionalOnMissingBean(DataSourcePublicMetrics.class)
-	DataSourcePublicMetrics dataSourcePublicMetrics() {
+	@ConditionalOnMissingBean
+	public DataSourcePublicMetrics dataSourcePublicMetrics() {
 		return new DataSourcePublicMetrics();
 	}
 

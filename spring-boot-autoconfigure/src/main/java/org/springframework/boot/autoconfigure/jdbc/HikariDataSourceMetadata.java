@@ -16,14 +16,15 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import org.springframework.beans.BeansException;
+import javax.sql.DataSource;
+
 import org.springframework.beans.DirectFieldAccessor;
 
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
 
 /**
- * A {@link DataSourceMetadata} implementation for the hikari data source.
+ * {@link DataSourceMetadata} for a Hikari {@link DataSource}.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
@@ -31,20 +32,23 @@ import com.zaxxer.hikari.pool.HikariPool;
 public class HikariDataSourceMetadata extends
 		AbstractDataSourceMetadata<HikariDataSource> {
 
-	private final HikariPoolProvider hikariPoolProvider;
-
 	public HikariDataSourceMetadata(HikariDataSource dataSource) {
 		super(dataSource);
-		this.hikariPoolProvider = new HikariPoolProvider(dataSource);
 	}
 
 	@Override
 	public Integer getPoolSize() {
-		HikariPool hikariPool = this.hikariPoolProvider.getHikariPool();
-		if (hikariPool != null) {
-			return hikariPool.getActiveConnections();
+		try {
+			return getHikariPool().getActiveConnections();
 		}
-		return null;
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
+	private HikariPool getHikariPool() {
+		return (HikariPool) new DirectFieldAccessor(getDataSource())
+				.getPropertyValue("pool");
 	}
 
 	@Override
@@ -60,52 +64,6 @@ public class HikariDataSourceMetadata extends
 	@Override
 	public String getValidationQuery() {
 		return getDataSource().getConnectionTestQuery();
-	}
-
-	/**
-	 * Provide the {@link HikariPool} instance managed internally by the
-	 * {@link HikariDataSource} as there is no other way to retrieve that information
-	 * except JMX access.
-	 */
-	private static class HikariPoolProvider {
-		private final HikariDataSource dataSource;
-
-		private boolean poolAvailable;
-
-		private HikariPoolProvider(HikariDataSource dataSource) {
-			this.dataSource = dataSource;
-			this.poolAvailable = isHikariPoolAvailable();
-		}
-
-		public HikariPool getHikariPool() {
-			if (!this.poolAvailable) {
-				return null;
-			}
-
-			Object value = doGetValue();
-			if (value instanceof HikariPool) {
-				return (HikariPool) value;
-			}
-			return null;
-		}
-
-		private boolean isHikariPoolAvailable() {
-			try {
-				doGetValue();
-				return true;
-			}
-			catch (BeansException e) { // No such field
-				return false;
-			}
-			catch (SecurityException e) { // Security manager prevents to read the value
-				return false;
-			}
-		}
-
-		private Object doGetValue() {
-			DirectFieldAccessor accessor = new DirectFieldAccessor(this.dataSource);
-			return accessor.getPropertyValue("pool");
-		}
 	}
 
 }

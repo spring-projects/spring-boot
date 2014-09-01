@@ -23,6 +23,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link HikariDataSourceMetadata}.
+ *
  * @author Stephane Nicoll
  */
 public class HikariDataSourceMetadataTests extends

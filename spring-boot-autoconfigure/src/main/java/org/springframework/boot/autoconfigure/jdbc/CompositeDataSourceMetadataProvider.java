@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -30,30 +31,30 @@ import javax.sql.DataSource;
  */
 public class CompositeDataSourceMetadataProvider implements DataSourceMetadataProvider {
 
-	private final Collection<DataSourceMetadataProvider> providers;
+	private final List<DataSourceMetadataProvider> providers;
 
 	/**
-	 * Create an instance with an initial collection of delegates to use.
-	 */
-	public CompositeDataSourceMetadataProvider(
-			Collection<DataSourceMetadataProvider> providers) {
-		this.providers = providers;
-	}
-
-	/**
-	 * Create an instance with no delegate.
+	 * Create a {@link CompositeDataSourceMetadataProvider} instance with no delegate.
 	 */
 	public CompositeDataSourceMetadataProvider() {
 		this(new ArrayList<DataSourceMetadataProvider>());
 	}
 
+	/**
+	 * Create a {@link CompositeDataSourceMetadataProvider} instance with an initial
+	 * collection of delegates to use.
+	 */
+	public CompositeDataSourceMetadataProvider(
+			Collection<? extends DataSourceMetadataProvider> providers) {
+		this.providers = new ArrayList<DataSourceMetadataProvider>(providers);
+	}
+
 	@Override
 	public DataSourceMetadata getDataSourceMetadata(DataSource dataSource) {
 		for (DataSourceMetadataProvider provider : this.providers) {
-			DataSourceMetadata dataSourceMetadata = provider
-					.getDataSourceMetadata(dataSource);
-			if (dataSourceMetadata != null) {
-				return dataSourceMetadata;
+			DataSourceMetadata metadata = provider.getDataSourceMetadata(dataSource);
+			if (metadata != null) {
+				return metadata;
 			}
 		}
 		return null;

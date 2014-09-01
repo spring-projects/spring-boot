@@ -24,6 +24,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
+ * Tests for {@link CommonsDbcpDataSourceMetadata}.
+ *
  * @author Stephane Nicoll
  */
 public class CommonsDbcpDataSourceMetadataTests extends
