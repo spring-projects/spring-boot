@@ -1249,7 +1249,9 @@ Production database connections can also be auto-configured using a pooling
 
 * We prefer the Tomcat pooling `DataSource` for its performance and concurrency, so if
   that is available we always choose it.
-* If commons-dbcp is available we will use that, but we don't recommend it in production.
+* If HikariCP is available we will use it
+* If Commons DBCP is available we will use it, but we don't recommend it in production.
+* Lastly, if Commons DBCP2 is available we will use it
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
 ``starter POMs'' you will automcatically get a dependency to `tomcat-jdbc`.
