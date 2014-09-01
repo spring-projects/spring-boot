@@ -43,15 +43,16 @@ public class DataSourceBuilder {
 	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
 			"org.apache.tomcat.jdbc.pool.DataSource",
 			"com.zaxxer.hikari.HikariDataSource",
-			"org.apache.commons.dbcp.BasicDataSource" };
+			"org.apache.commons.dbcp.BasicDataSource",
+			"org.apache.commons.dbcp2.BasicDataSource" };
 
 	private Class<? extends DataSource> type;
 
-	private ClassLoader classLoader;
+	private final ClassLoader classLoader;
 
-	private DriverClassNameProvider driverClassNameProvider = new DriverClassNameProvider();
+	private final DriverClassNameProvider driverClassNameProvider = new DriverClassNameProvider();
 
-	private Map<String, String> properties = new HashMap<String, String>();
+	private final Map<String, String> properties = new HashMap<String, String>();
 
 	public static DataSourceBuilder create() {
 		return new DataSourceBuilder(null);
