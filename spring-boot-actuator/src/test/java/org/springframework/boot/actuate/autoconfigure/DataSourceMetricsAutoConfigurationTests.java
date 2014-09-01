@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -136,7 +137,8 @@ public class DataSourceMetricsAutoConfigurationTests {
 		if (config.length > 0) {
 			this.context.register(config);
 		}
-		this.context.register(DataSourceMetricsAutoConfiguration.class);
+		this.context.register(DataSourcePoolMetadataProvidersConfiguration.class,
+				DataSourceMetricsAutoConfiguration.class);
 		this.context.refresh();
 	}
 
