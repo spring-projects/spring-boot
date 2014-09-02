@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
  * @author Phillip Webb
  * @author Christian Dupuis
  */
+@Deprecated
 public class VanillaPublicMetricsTests {
 
 	@Test

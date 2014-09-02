@@ -48,6 +48,10 @@ public abstract class AnsiOutput {
 		AnsiOutput.enabled = enabled;
 	}
 
+	static Enabled getEnabled() {
+		return AnsiOutput.enabled;
+	}
+
 	/**
 	 * Create a new ANSI string from the specified elements. Any {@link AnsiElement}s will
 	 * be encoded as required.
@@ -121,8 +125,28 @@ public abstract class AnsiOutput {
 		}
 	}
 
+	/**
+	 * Possible values to pass to {@link AnsiOutput#setEnabled}. Determines when to output
+	 * ANSI escape sequences for coloring application output.
+	 */
 	public static enum Enabled {
-		DETECT, ALWAYS, NEVER
+
+		/**
+		 * Try to detect whether ANSI coloring capabilities are available. The default
+		 * value for {@link AnsiOutput}.
+		 */
+		DETECT,
+
+		/**
+		 * Enable ANSI-colored output
+		 */
+		ALWAYS,
+
+		/**
+		 * Disable ANSI-colored output
+		 */
+		NEVER
+
 	};
 
 }

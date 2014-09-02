@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-build</artifactId>
-	<version>1.1.6.BUILD-SNAPSHOT</version>
+	<version>1.2.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
@@ -79,8 +79,8 @@
 			</activation>
 			<modules>
 				<module>spring-boot-dependencies</module>
-				<module>spring-boot-versions</module>
 				<module>spring-boot-parent</module>
+				<module>spring-boot-versions</module>
 				<module>spring-boot-tools</module>
 				<module>spring-boot</module>
 				<module>spring-boot-autoconfigure</module>
@@ -100,13 +100,16 @@
 			</modules>
 		</profile>
 		<profile>
+			<id>full</id>
+		</profile>
+		<profile>
 			<id>prepare</id>
 			<properties>
 				<skipTests>true</skipTests>
 			</properties>
 			<modules>
-				<module>spring-boot-parent</module>
 				<module>spring-boot-dependencies</module>
+				<module>spring-boot-parent</module>
 				<module>spring-boot-versions</module>
 				<module>spring-boot-tools</module>
 			</modules>
@@ -252,7 +255,33 @@
 			</build>
 		</profile>
 		<profile>
-			<id>full</id>
+			<id>ci</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.google.code.maven-replacer-plugin</groupId>
+						<artifactId>replacer</artifactId>
+						<executions>
+							<execution>
+								<id>remove-repo-samples</id>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>${basedir}/spring-boot-dependencies/pom.xml</include>
+									</includes>
+									<regexFlags>
+										<regexFlag>DOTALL</regexFlag>
+									</regexFlags>
+									<token>\n\t&lt;profiles&gt;.*&lt;/profiles&gt;</token>
+									<value></value>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 </project>

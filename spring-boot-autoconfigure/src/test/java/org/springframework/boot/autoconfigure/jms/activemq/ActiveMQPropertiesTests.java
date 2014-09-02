@@ -17,67 +17,50 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.junit.Test;
-import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.core.env.StandardEnvironment;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests for {@link ActiveMQProperties}.
+ * Tests for {@link ActiveMQProperties} and ActiveMQConnectionFactoryFactory.
  *
  * @author Stephane Nicoll
  */
 public class ActiveMQPropertiesTests {
 
+	private static final String DEFAULT_EMBEDDED_BROKER_URL = "vm://localhost?broker.persistent=false";
+
+	private static final String DEFAULT_NETWORK_BROKER_URL = "tcp://localhost:61616";
+
 	private final ActiveMQProperties properties = new ActiveMQProperties();
-
-	private final StandardEnvironment environment = new StandardEnvironment();
-
-	@Test
-	public void determineBrokerUrlDefault() {
-		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
-				ActiveMQProperties.determineBrokerUrl(this.environment));
-	}
-
-	@Test
-	public void determineBrokerUrlVmBrokerUrl() {
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"spring.activemq.brokerUrl:vm://localhost?persistent=true");
-		assertEquals("vm://localhost?persistent=true",
-				ActiveMQProperties.determineBrokerUrl(this.environment));
-	}
-
-	@Test
-	public void determineBrokerUrlInMemoryFlag() {
-		EnvironmentTestUtils.addEnvironment(this.environment,
-				"spring.activemq.inMemory:false");
-		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL,
-				ActiveMQProperties.determineBrokerUrl(this.environment));
-	}
 
 	@Test
 	public void getBrokerUrlIsInMemoryByDefault() {
-		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
-				this.properties.determineBrokerUrl());
+		assertEquals(DEFAULT_EMBEDDED_BROKER_URL, new ActiveMQConnectionFactoryFactory(
+				this.properties).determineBrokerUrl());
 	}
 
 	@Test
 	public void getBrokerUrlUseExplicitBrokerUrl() {
 		this.properties.setBrokerUrl("vm://foo-bar");
-		assertEquals("vm://foo-bar", this.properties.determineBrokerUrl());
+		assertEquals("vm://foo-bar",
+				new ActiveMQConnectionFactoryFactory(this.properties)
+						.determineBrokerUrl());
 	}
 
 	@Test
 	public void getBrokerUrlWithInMemorySetToFalse() {
 		this.properties.setInMemory(false);
-		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL,
-				this.properties.determineBrokerUrl());
+		assertEquals(DEFAULT_NETWORK_BROKER_URL, new ActiveMQConnectionFactoryFactory(
+				this.properties).determineBrokerUrl());
 	}
 
 	@Test
 	public void getExplicitBrokerUrlAlwaysWins() {
 		this.properties.setBrokerUrl("vm://foo-bar");
 		this.properties.setInMemory(false);
-		assertEquals("vm://foo-bar", this.properties.determineBrokerUrl());
+		assertEquals("vm://foo-bar",
+				new ActiveMQConnectionFactoryFactory(this.properties)
+						.determineBrokerUrl());
 	}
+
 }

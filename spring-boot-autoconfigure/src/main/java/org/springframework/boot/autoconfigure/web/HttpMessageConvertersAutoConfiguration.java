@@ -23,15 +23,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpMessageConverter}s.
@@ -40,10 +43,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Christian Dupuis
  * @author Piotr Maj
  * @author Oliver Gierke
+ * @author David Liu
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)
-@Import(JacksonAutoConfiguration.class)
+@Import({ JacksonAutoConfiguration.class, GsonAutoConfiguration.class })
 public class HttpMessageConvertersAutoConfiguration {
 
 	@Autowired(required = false)
@@ -70,6 +74,20 @@ public class HttpMessageConvertersAutoConfiguration {
 			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 			converter.setObjectMapper(objectMapper);
 			converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
+			return converter;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(Gson.class)
+	protected static class GsonConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public GsonHttpMessageConverter gsonHttpMessageConverter(Gson gson) {
+			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
+			converter.setGson(gson);
 			return converter;
 		}
 

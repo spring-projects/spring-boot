@@ -67,7 +67,7 @@ public abstract class PropertySourceUtils {
 						.getPropertyNames()) {
 					String key = PropertySourceUtils.getSubKey(name, rootPrefix,
 							keyPrefixes);
-					if (key != null && !subProperties.containsKey(key)) {
+					if (key != null) {
 						subProperties.put(key, source.getProperty(name));
 					}
 				}

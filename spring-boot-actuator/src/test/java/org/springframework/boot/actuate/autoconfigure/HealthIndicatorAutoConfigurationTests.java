@@ -18,24 +18,34 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
-import org.springframework.boot.actuate.health.VanillaHealthIndicator;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -70,7 +80,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+		assertEquals(ApplicationHealthIndicator.class, beans.values().iterator().next()
 				.getClass());
 	}
 
@@ -97,7 +107,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+		assertEquals(ApplicationHealthIndicator.class, beans.values().iterator().next()
 				.getClass());
 	}
 
@@ -124,7 +134,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+		assertEquals(ApplicationHealthIndicator.class, beans.values().iterator().next()
 				.getClass());
 	}
 
@@ -154,6 +164,25 @@ public class HealthIndicatorAutoConfigurationTests {
 	}
 
 	@Test
+	public void dataSourceHealthIndicatorWithCustomValidationQuery() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				DataSourceProperties.class, DataSourceConfig.class,
+				DataSourcePoolMetadataProvidersConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.validation-query:SELECT from FOOBAR");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		HealthIndicator healthIndicator = beans.values().iterator().next();
+		assertEquals(DataSourceHealthIndicator.class, healthIndicator.getClass());
+		DataSourceHealthIndicator dataSourceHealthIndicator = (DataSourceHealthIndicator) healthIndicator;
+		assertEquals("SELECT from FOOBAR", dataSourceHealthIndicator.getQuery());
+	}
+
+	@Test
 	public void notDataSourceHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EmbeddedDataSourceConfiguration.class,
@@ -163,7 +192,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+		assertEquals(ApplicationHealthIndicator.class, beans.values().iterator().next()
 				.getClass());
 	}
 
@@ -190,7 +219,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+		assertEquals(ApplicationHealthIndicator.class, beans.values().iterator().next()
 				.getClass());
 	}
 
@@ -217,7 +246,22 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+		assertEquals(ApplicationHealthIndicator.class, beans.values().iterator().next()
 				.getClass());
 	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	protected static class DataSourceConfig {
+
+		@Bean
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+		public DataSource dataSource() {
+			return DataSourceBuilder.create()
+					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+					.url("jdbc:hsqldb:mem:test").username("sa").build();
+		}
+
+	}
+
 }

@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
 
@@ -103,7 +104,6 @@ public class JpaProperties {
 	/**
 	 * Get configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory.
-	 *
 	 * @param dataSource the DataSource in case it is needed to determine the properties
 	 * @return some Hibernate properties for configuration
 	 */
@@ -115,7 +115,7 @@ public class JpaProperties {
 
 		private Class<?> namingStrategy;
 
-		private static String DEFAULT_NAMING_STRATEGY = "org.springframework.boot.orm.jpa.SpringNamingStrategy";
+		private static Class<?> DEFAULT_NAMING_STRATEGY = SpringNamingStrategy.class;
 
 		private String ddlAuto;
 
@@ -150,7 +150,8 @@ public class JpaProperties {
 				result.put("hibernate.ejb.naming_strategy", this.namingStrategy.getName());
 			}
 			else if (this.namingStrategy == null) {
-				result.put("hibernate.ejb.naming_strategy", DEFAULT_NAMING_STRATEGY);
+				result.put("hibernate.ejb.naming_strategy",
+						DEFAULT_NAMING_STRATEGY.getName());
 			}
 			String ddlAuto = getOrDeduceDdlAuto(existing, dataSource);
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {

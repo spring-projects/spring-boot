@@ -16,11 +16,14 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -31,12 +34,18 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
+import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -62,6 +71,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Greg Turnquist
+ * @author Andy Wilkinson
  */
 public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
@@ -300,8 +310,192 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		assertThat(getResponse(getLocalUrl("/bang")), equalTo("Hello World"));
 	}
 
+	@Test
+	public void basicSsl() throws Exception {
+		FileCopyUtils.copy("test",
+				new FileWriter(this.temporaryFolder.newFile("test.txt")));
+
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null,
+						new TrustSelfSignedStrategy()).build());
+
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory),
+				equalTo("test"));
+	}
+
+	@Test
+	public void sslNeedsClientAuthenticationSucceedsWithClientCertificate()
+			throws Exception {
+		FileCopyUtils.copy("test",
+				new FileWriter(this.temporaryFolder.newFile("test.txt")));
+
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setClientAuth(ClientAuth.NEED);
+		ssl.setTrustStore("src/test/resources/test.jks");
+		ssl.setTrustStorePassword("secret");
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keyStore.load(new FileInputStream(new File("src/test/resources/test.jks")),
+				"secret".toCharArray());
+
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
+						.loadKeyMaterial(keyStore, "password".toCharArray()).build());
+
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory),
+				equalTo("test"));
+	}
+
+	@Test(expected = IOException.class)
+	public void sslNeedsClientAuthenticationFailsWithoutClientCertificate()
+			throws Exception {
+		FileCopyUtils.copy("test",
+				new FileWriter(this.temporaryFolder.newFile("test.txt")));
+
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setClientAuth(ClientAuth.NEED);
+		ssl.setTrustStore("src/test/resources/test.jks");
+		ssl.setTrustStorePassword("secret");
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null,
+						new TrustSelfSignedStrategy()).build());
+
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+
+		getResponse(getLocalUrl("https", "/test.txt"), requestFactory);
+	}
+
+	@Test
+	public void sslWantsClientAuthenticationSucceedsWithClientCertificate()
+			throws Exception {
+		FileCopyUtils.copy("test",
+				new FileWriter(this.temporaryFolder.newFile("test.txt")));
+
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setClientAuth(ClientAuth.WANT);
+		ssl.setTrustStore("src/test/resources/test.jks");
+		ssl.setTrustStorePassword("secret");
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keyStore.load(new FileInputStream(new File("src/test/resources/test.jks")),
+				"secret".toCharArray());
+
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder()
+						.loadTrustMaterial(null, new TrustSelfSignedStrategy())
+						.loadKeyMaterial(keyStore, "password".toCharArray()).build());
+
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory),
+				equalTo("test"));
+	}
+
+	@Test
+	public void sslWantsClientAuthenticationSucceedsWithoutClientCertificate()
+			throws Exception {
+		FileCopyUtils.copy("test",
+				new FileWriter(this.temporaryFolder.newFile("test.txt")));
+
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setClientAuth(ClientAuth.WANT);
+		ssl.setTrustStore("src/test/resources/test.jks");
+		ssl.setTrustStorePassword("secret");
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null,
+						new TrustSelfSignedStrategy()).build());
+
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory),
+				equalTo("test"));
+	}
+
 	protected String getLocalUrl(String resourcePath) {
-		return "http://localhost:" + this.container.getPort() + resourcePath;
+		return getLocalUrl("http", resourcePath);
+	}
+
+	protected String getLocalUrl(String scheme, String resourcePath) {
+		return scheme + "://localhost:" + this.container.getPort() + resourcePath;
 	}
 
 	protected String getLocalUrl(int port, String resourcePath) {
@@ -318,10 +512,27 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 	}
 
+	protected String getResponse(String url,
+			HttpComponentsClientHttpRequestFactory requestFactory) throws IOException,
+			URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, requestFactory);
+		try {
+			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
+		}
+		finally {
+			response.close();
+		}
+	}
+
 	protected ClientHttpResponse getClientResponse(String url) throws IOException,
 			URISyntaxException {
-		HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(url),
+		return getClientResponse(url, new HttpComponentsClientHttpRequestFactory());
+	}
+
+	protected ClientHttpResponse getClientResponse(String url,
+			HttpComponentsClientHttpRequestFactory requestFactory) throws IOException,
+			URISyntaxException {
+		ClientHttpRequest request = requestFactory.createRequest(new URI(url),
 				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		return response;

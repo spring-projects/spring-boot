@@ -711,7 +711,10 @@ messages to the console you can start your application with a `--debug` flag.
 	$ java -jar myapp.jar --debug
 ----
 
-If your terminal supports ANSI, color output will be used to aid readability.
+If your terminal supports ANSI, color output will be used to aid readability. You can set
+`spring.output.ansi.enabled` to a
+{dc-spring-boot}/ansi/AnsiOutput.Enabled.{dc-ext}[supported value] to override the auto
+detection.
 
 
 
@@ -1255,16 +1258,40 @@ in `application.properties`:
 	spring.datasource.url=jdbc:mysql://localhost/test
 	spring.datasource.username=dbuser
 	spring.datasource.password=dbpass
-	spring.datasource.driverClassName=com.mysql.jdbc.Driver
+	spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 ----
 
 See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourceProperties`]
 for more of the supported options.
 
+TIP: You often won't need to specify the `driver-class-name` since Spring boot can deduce
+it for most databases from the `url`.
+
 NOTE: For a pooling `DataSource` to be created we need to be able to verify that a valid
 `Driver` class is available, so we check for that before doing anything. I.e. if you set
 `spring.datasource.driverClassName=com.mysql.jdbc.Driver` then that class has to be
 loadable.
+
+
+
+[[boot-features-connecting-to-a-jndi-datasource]]
+==== Connection to a JNDI DataSource
+If you are deploying your Spring Boot application to an Application Server you might want
+to configure and manage your DataSource using you Application Servers built in features
+and access it using JNDI.
+
+The `spring.datasource.jndi-name` property can be used as an alternative to the
+`spring.datasource.url`, `spring.datasource.username` and `spring.datasource.password`
+properties to access the `DataSource` from a specific JNDI location. For example, the
+following section in `application.properties` shows how you can access a JBoss AS defined
+`DataSource`:
+
+[source,properties,indent=0]
+----
+	spring.datasource.jndi-name=java:jboss/datasources/customers
+----
+
+
 
 [[boot-features-using-jdbc-template]]
 === Using JdbcTemplate
@@ -1747,7 +1774,8 @@ The `javax.jms.ConnectionFactory` interface provides a standard method of creati
 `ConnectionFactory` to work with JMS, you generally won't need to use it directly yourself
 and you can instead rely on higher level messaging abstractions (see the
 {spring-reference}/#jms[relevant section] of the Spring Framework reference
-documentation for details).
+documentation for details). Spring Boot also auto configures the necessary infrastructure
+to send and receive messages.
 
 
 
@@ -1820,8 +1848,9 @@ resolved against their provided names.
 
 
 [[boot-features-using-jms-template]]
-==== Using JmsTemplate
-Spring's `JmsTemplate` is auto-configured and you can `@Autowire` it directly into your
+[[boot-features-using-jms-sending]]
+==== Sending a message
+Spring's `JmsTemplate` is auto-configured and you can autowire it directly into your
 own beans:
 
 [source,java,indent=0]
@@ -1844,6 +1873,110 @@ own beans:
 
 	}
 ----
+
+NOTE: {spring-javadoc}/jms/core/JmsMessagingTemplate.{dc-ext}[`JmsMessagingTemplate`]
+(new in Spring 4.1) can be injected in a similar manner.
+
+
+
+[[boot-features-using-jms-receiving]]
+==== Receiving a message
+
+When the JMS infrastructure is present, any bean can be annotated with `@JmsListener` to
+create a listener endpoint. If no `JmsListenerContainerFactory` has been defined, a default
+one is configured automatically.
+
+The following component creates a listener endpoint on the `someQueue` destination:
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		@JmsListener(destination = "someQueue")
+		public void processMessage(String content) { ... }
+
+	}
+----
+
+Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the javadoc of `@EnableJms`]
+for more details.
+
+[[boot-features-jta]]
+== Distributed Transactions with JTA
+Spring Boot supports distributed JTA transactions across multiple XA resources using
+either an http://www.atomikos.com/[Atomkos] or
+http://docs.codehaus.org/display/BTM/Home[Bitronix] embedded transaction manager. JTA
+transactions are also supported when deploying to a suitable Java EE Application Server.
+
+When a JTA environment is detected, Spring's `JtaTransactionManager` will be used to manage
+transactions. Auto-configured JMS, DataSource and JPA beans will be upgraded to support
+XA transactions. You can use standard Spring idioms such as `@Transactional` to
+participate in a distributed transaction.
+
+
+
+=== Using an Atomikos transaction manager
+Atomikos is a popular open source transaction manager which can be embedded into your
+Spring Boot application. You can use the `spring-boot-starter-jta-atomikos` Starter POM to
+pull in the appropriate Atomikos libraries. Spring Boot will auto-configure Atomikos and
+ensure that appropriate `depends-on` settings are applied to your Spring Beans for correct
+startup and shutdown ordering.
+
+By default Atomikos transaction logs will be written to a `transaction-logs` folder in
+your application home directory (the directory in which your application jar file
+resides). You can customize this directory by setting a `spring.jta.log-dir` property in
+your `application.properties` file. Properties starting `spring.jta.` can also be used to
+customize the Atomikos `UserTransactionServiceIml`. See the
+{dc-spring-boot}/jta/atomikos/AtomikosProperties.{dc-ext}[`AtomikosProperties` javadoc]
+for complete details.
+
+
+
+=== Using a Bitronix transaction manager
+Bitronix is another popular open source JTA transaction manager implementation. You can
+use the `spring-boot-starter-jta-bitronix` starter POM to add the appropriate Birtronix
+dependencies to your project. As with Atomikos, Spring Boot will automatically configure
+Bitronix and post-process your beans to ensure that startup and shutdown ordering is
+correct.
+
+By default Bitronix transaction log files (`part1.btm` and `part2.btm`) will be written to
+a `transaction-logs` folder in your application home directory. You can customize this
+directory by using the `spring.jta.log-dir` property. Properties starting `spring.jta.`
+are also bound to the `bitronix.tm.Configuration` bean, allowing for complete
+customization. See the http://btm.codehaus.org/api/2.0.1/bitronix/tm/Configuration.html[Bitronix
+documentation] for details.
+
+
+
+=== Using a Java EE managed transaction manager
+If you are packaging your Spring Boot application as a `war` or `ear` file and deploying
+it to a Java EE application server, you can use your application servers built-in
+transaction manager. Spring Boot will attempt to auto-configure a transaction manager by
+looking at common JNDI locations (`java:comp/UserTransaction`,
+`java:comp/TransactionManager` etc). If you are using a transaction service provided by
+your application server, you will generally also want to ensure that all resources are
+managed by the server and exposed over JNDI.  Spring Boot will attempt to auto-configure
+JMS by looking for a `ConnectionFactory` at the JNDI path `java:/JmsXA` or
+`java:/XAConnectionFactory` and you can use the
+<<boot-features-connecting-to-a-jndi-datasource, `spring.datasource.jndi-name` property>>
+to configure your `DataSource`.
+
+
+
+=== Supporting an alternative embedded transaction manager
+The {sc-spring-boot}/jta/XAConnectionFactoryWrapper.{sc-ext}[`XAConnectionFactoryWrapper`]
+and {sc-spring-boot}/jta/XADataSourceWrapper.{sc-ext}[`XADataSourceWrapper`] interfaces
+can be used to support alternative embedded transaction managers. The interfaces are
+responsible for wrapping `XAConnectionFactory` and `XADataSource` beans and exposing them
+as regular `ConnectionFactory` and `DataSource` beans which will transparently enroll in
+the distributed transaction. DataSource and JMS auto-configuration will use JTA variants
+as long as you have a `JtaTransactionManager` bean and appropriate XA wrapper beans
+registered within your `ApplicationContext`
+
+The {sc-spring-boot}/jta/BitronixXAConnectionFactoryWrapper.{sc-ext}[BitronixXAConnectionFactoryWrapper]
+and {sc-spring-boot}/jta/BitronixXADataSourceWrapper.{sc-ext}[BitronixXADataSourceWrapper]
+provide good examples of how to write XA wrappers.
 
 
 

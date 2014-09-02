@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.CompositePropertySource;
@@ -64,6 +66,89 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testKeySanitization() throws Exception {
+		System.setProperty("dbPassword", "123456");
+		System.setProperty("apiKey", "123456");
+		EnvironmentEndpoint report = getEndpointBean();
+		Map<String, Object> env = report.invoke();
+		assertEquals("******",
+				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
+		assertEquals("******",
+				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testKeySanitizationWithCustomKeys() throws Exception {
+		System.setProperty("dbPassword", "123456");
+		System.setProperty("apiKey", "123456");
+		EnvironmentEndpoint report = getEndpointBean();
+		report.setKeysToSanitize("key");
+		Map<String, Object> env = report.invoke();
+		assertEquals("123456",
+				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
+		assertEquals("******",
+				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testKeySanitizationWithCustomPattern() throws Exception {
+		System.setProperty("dbPassword", "123456");
+		System.setProperty("apiKey", "123456");
+		EnvironmentEndpoint report = getEndpointBean();
+		report.setKeysToSanitize(".*pass.*");
+		Map<String, Object> env = report.invoke();
+		assertEquals("******",
+				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
+		assertEquals("123456",
+				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testKeySanitizationWithCustomKeysByEnvironment() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.env.keys-to-sanitize: key");
+		this.context.register(Config.class);
+		this.context.refresh();
+		System.setProperty("dbPassword", "123456");
+		System.setProperty("apiKey", "123456");
+		EnvironmentEndpoint report = getEndpointBean();
+		Map<String, Object> env = report.invoke();
+		assertEquals("123456",
+				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
+		assertEquals("******",
+				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testKeySanitizationWithCustomPatternByEnvironment() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.env.keys-to-sanitize: .*pass.*");
+		this.context.register(Config.class);
+		this.context.refresh();
+		System.setProperty("dbPassword", "123456");
+		System.setProperty("apiKey", "123456");
+		EnvironmentEndpoint report = getEndpointBean();
+		Map<String, Object> env = report.invoke();
+		assertEquals("******",
+				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
+		assertEquals("123456",
+				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testKeySanitizationWithCustomPatternAndKeyByEnvironment()
+			throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.env.keys-to-sanitize: .*pass.*, key");
+		this.context.register(Config.class);
+		this.context.refresh();
 		System.setProperty("dbPassword", "123456");
 		System.setProperty("apiKey", "123456");
 		EnvironmentEndpoint report = getEndpointBean();

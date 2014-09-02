@@ -92,7 +92,7 @@ public class CommonsDataSourceConfigurationTests {
 	protected static class CommonsDataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 		public DataSource dataSource() {
 			return DataSourceBuilder.create().type(BasicDataSource.class).build();
 		}

@@ -19,6 +19,7 @@ package org.springframework.boot.bind;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,8 @@ import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DataBinder;
 
@@ -46,6 +49,8 @@ public class RelaxedDataBinder extends DataBinder {
 	private String namePrefix;
 
 	private boolean ignoreNestedProperties;
+
+	private MultiValueMap<String, String> nameAliases = new LinkedMultiValueMap<String, String>();
 
 	/**
 	 * Create a new {@link RelaxedDataBinder} instance.
@@ -74,6 +79,27 @@ public class RelaxedDataBinder extends DataBinder {
 	 */
 	public void setIgnoreNestedProperties(boolean ignoreNestedProperties) {
 		this.ignoreNestedProperties = ignoreNestedProperties;
+	}
+
+	/**
+	 * Set name aliases.
+	 * @param aliases a map of property name to aliases
+	 */
+	public void setNameAliases(Map<String, List<String>> aliases) {
+		this.nameAliases = new LinkedMultiValueMap<String, String>(aliases);
+	}
+
+	/**
+	 * Add aliases to the {@link DataBinder}.
+	 * @param name the property name to alias
+	 * @param alias aliases for the property names
+	 * @return this instance
+	 */
+	public RelaxedDataBinder withAlias(String name, String... alias) {
+		for (String value : alias) {
+			this.nameAliases.add(name, value);
+		}
+		return this;
 	}
 
 	@Override
@@ -262,17 +288,31 @@ public class RelaxedDataBinder extends DataBinder {
 
 	private String getActualPropertyName(BeanWrapper target, String prefix, String name) {
 		prefix = StringUtils.hasText(prefix) ? prefix + "." : "";
-		for (String candidate : new RelaxedNames(name)) {
-			try {
-				if (target.getPropertyType(prefix + candidate) != null) {
-					return candidate;
+		Iterable<String> names = getNameAndAliases(name);
+		for (String nameOrAlias : names) {
+			for (String candidate : new RelaxedNames(nameOrAlias)) {
+				try {
+					if (target.getPropertyType(prefix + candidate) != null) {
+						return candidate;
+					}
 				}
-			}
-			catch (InvalidPropertyException ex) {
-				// swallow and continue
+				catch (InvalidPropertyException ex) {
+					// swallow and continue
+				}
 			}
 		}
 		return name;
+	}
+
+	private Iterable<String> getNameAndAliases(String name) {
+		List<String> aliases = this.nameAliases.get(name);
+		if (aliases == null) {
+			return Collections.singleton(name);
+		}
+		List<String> nameAndAliases = new ArrayList<String>(aliases.size() + 1);
+		nameAndAliases.add(name);
+		nameAndAliases.addAll(aliases);
+		return nameAndAliases;
 	}
 
 	private static Object wrapTarget(Object target) {

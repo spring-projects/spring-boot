@@ -19,8 +19,8 @@ package org.springframework.boot.env;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.yaml.SpringProfileDocumentMatcher;
-import org.springframework.boot.yaml.YamlPropertiesFactoryBean;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;

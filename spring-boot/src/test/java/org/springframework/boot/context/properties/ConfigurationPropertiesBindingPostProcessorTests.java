@@ -149,6 +149,26 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
+	public void placeholderResolutionWithCustomLocation() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "fooValue:bar");
+		this.context.register(CustomConfigurationLocation.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(CustomConfigurationLocation.class).getFoo(),
+				equalTo("bar"));
+	}
+
+	@Test
+	public void placeholderResolutionWithUnmergedCustomLocation() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "fooValue:bar");
+		this.context.register(UnmergedCustomConfigurationLocation.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(UnmergedCustomConfigurationLocation.class)
+				.getFoo(), equalTo("${fooValue}"));
+	}
+
+	@Test
 	public void configurationPropertiesWithFactoryBean() throws Exception {
 		ConfigurationPropertiesWithFactoryBean.factoryBeanInit = false;
 		this.context = new AnnotationConfigApplicationContext() {
@@ -326,6 +346,38 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	}
 
+	@EnableConfigurationProperties
+	@ConfigurationProperties(locations = "custom-location.yml")
+	public static class CustomConfigurationLocation {
+
+		private String foo;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(locations = "custom-location.yml", merge = false)
+	public static class UnmergedCustomConfigurationLocation {
+
+		private String foo;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
+
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class ConfigurationPropertiesWithFactoryBean {
@@ -359,4 +411,5 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		}
 
 	}
+
 }

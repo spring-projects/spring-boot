@@ -53,6 +53,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -442,6 +443,28 @@ public class RelaxedDataBinderTests {
 		VanillaTarget target = new VanillaTarget();
 		this.conversionService = new DefaultConversionService();
 		doTestBindCaseInsensitiveEnums(target);
+	}
+
+	@Test
+	public void testBindWithoutAlais() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		MutablePropertyValues properties = new MutablePropertyValues();
+		properties.add("flub", "a");
+		properties.add("foo", "b");
+		new RelaxedDataBinder(target).bind(properties);
+		assertThat(target.getFooBaz(), nullValue());
+		assertThat(target.getFoo(), equalTo("b"));
+	}
+
+	@Test
+	public void testBindWithAlias() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		MutablePropertyValues properties = new MutablePropertyValues();
+		properties.add("flub", "a");
+		properties.add("foo", "b");
+		new RelaxedDataBinder(target).withAlias("flub", "fooBaz").bind(properties);
+		assertThat(target.getFooBaz(), equalTo("a"));
+		assertThat(target.getFoo(), equalTo("b"));
 	}
 
 	private void doTestBindCaseInsensitiveEnums(VanillaTarget target) throws Exception {

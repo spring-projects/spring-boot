@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MongoHealthIndicator}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class MongoHealthIndicatorTests {

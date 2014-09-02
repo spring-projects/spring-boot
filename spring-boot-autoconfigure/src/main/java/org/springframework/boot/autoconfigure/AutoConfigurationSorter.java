@@ -40,8 +40,8 @@ import org.springframework.util.Assert;
 
 /**
  * Sort {@link EnableAutoConfiguration auto-configuration} classes into priority order by
- * reading {@link Ordered} and {@link AutoConfigureAfter} annotations (without loading
- * classes).
+ * reading {@link Ordered}, {@link AutoConfigureBefore} and {@link AutoConfigureAfter}
+ * annotations (without loading classes).
  *
  * @author Phillip Webb
  */

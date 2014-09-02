@@ -36,6 +36,8 @@ import org.springframework.boot.loader.jar.JarFile;
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
+	private static LockProvider LOCK_PROVIDER = setupLockProvider();
+
 	private final ClassLoader rootClassLoader;
 
 	/**
@@ -126,7 +128,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-		synchronized (this) {
+		synchronized (LaunchedURLClassLoader.LOCK_PROVIDER.getLock(this, name)) {
 			Class<?> loadedClass = findLoadedClass(name);
 			if (loadedClass == null) {
 				Handler.setUseFastConnectionExceptions(true);
@@ -220,6 +222,39 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		catch (java.security.PrivilegedActionException ex) {
 			// Ignore
 		}
+	}
+
+	private static LockProvider setupLockProvider() {
+		try {
+			ClassLoader.registerAsParallelCapable();
+			return new Java7LockProvider();
+		}
+		catch (NoSuchMethodError ex) {
+			return new LockProvider();
+		}
+	}
+
+	/**
+	 * Strategy used to provide the synchronize lock object to use when loading classes.
+	 */
+	private static class LockProvider {
+
+		public Object getLock(LaunchedURLClassLoader classLoader, String className) {
+			return classLoader;
+		}
+
+	}
+
+	/**
+	 * Java 7 specific {@link LockProvider}.
+	 */
+	private static class Java7LockProvider extends LockProvider {
+
+		@Override
+		public Object getLock(LaunchedURLClassLoader classLoader, String className) {
+			return classLoader.getClassLoadingLock(className);
+		}
+
 	}
 
 }

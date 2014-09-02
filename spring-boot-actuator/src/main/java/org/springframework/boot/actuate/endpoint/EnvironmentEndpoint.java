@@ -32,7 +32,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -48,7 +47,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 
 	private Environment environment;
 
-	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
+	private final Sanitizer sanitizer = new Sanitizer();
 
 	/**
 	 * Create a new {@link EnvironmentEndpoint} instance.
@@ -58,8 +57,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	}
 
 	public void setKeysToSanitize(String... keysToSanitize) {
-		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
-		this.keysToSanitize = keysToSanitize;
+		this.sanitizer.setKeysToSanitize(keysToSanitize);
 	}
 
 	@Override
@@ -124,12 +122,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	}
 
 	public Object sanitize(String name, Object object) {
-		for (String keyToSanitize : this.keysToSanitize) {
-			if (name.toLowerCase().endsWith(keyToSanitize)) {
-				return (object == null ? null : "******");
-			}
-		}
-		return object;
+		return this.sanitizer.sanitize(name, object);
 	}
 
 	@Override

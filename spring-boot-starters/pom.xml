@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.1.6.BUILD-SNAPSHOT</version>
+		<version>1.2.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-starters</artifactId>
@@ -36,6 +36,8 @@
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jdbc</module>
 		<module>spring-boot-starter-jetty</module>
+		<module>spring-boot-starter-jta-atomikos</module>
+		<module>spring-boot-starter-jta-bitronix</module>
 		<module>spring-boot-starter-logging</module>
 		<module>spring-boot-starter-log4j</module>
 		<module>spring-boot-starter-mobile</module>

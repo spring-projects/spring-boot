@@ -99,7 +99,7 @@ public class SocialWebAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(BeanNameViewResolver.class)
-		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
+		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
 		public ViewResolver beanNameViewResolver() {
 			BeanNameViewResolver viewResolver = new BeanNameViewResolver();
 			viewResolver.setOrder(Integer.MIN_VALUE);

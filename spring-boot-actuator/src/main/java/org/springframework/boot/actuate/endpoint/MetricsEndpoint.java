@@ -16,39 +16,55 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
 
 /**
- * {@link Endpoint} to expose {@link PublicMetrics}.
+ * {@link Endpoint} to expose a collection of {@link PublicMetrics}.
  *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.metrics", ignoreUnknownFields = false)
 public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	private final PublicMetrics metrics;
+	private final List<PublicMetrics> publicMetrics;
 
 	/**
 	 * Create a new {@link MetricsEndpoint} instance.
-	 *
-	 * @param metrics the metrics to expose
+	 * @param publicMetrics the metrics to expose
 	 */
-	public MetricsEndpoint(PublicMetrics metrics) {
+	public MetricsEndpoint(PublicMetrics publicMetrics) {
+		this(Collections.singleton(publicMetrics));
+	}
+
+	/**
+	 * Create a new {@link MetricsEndpoint} instance.
+	 * @param publicMetrics the metrics to expose. The collection will be sorted using the
+	 * {@link AnnotationAwareOrderComparator}.
+	 */
+	public MetricsEndpoint(Collection<PublicMetrics> publicMetrics) {
 		super("metrics");
-		Assert.notNull(metrics, "Metrics must not be null");
-		this.metrics = metrics;
+		Assert.notNull(publicMetrics, "PublicMetrics must not be null");
+		this.publicMetrics = new ArrayList<PublicMetrics>(publicMetrics);
+		AnnotationAwareOrderComparator.sort(this.publicMetrics);
 	}
 
 	@Override
 	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		for (Metric<?> metric : this.metrics.metrics()) {
-			result.put(metric.getName(), metric.getValue());
+		for (PublicMetrics publicMetric : this.publicMetrics) {
+			for (Metric<?> metric : publicMetric.metrics()) {
+				result.put(metric.getName(), metric.getValue());
+			}
 		}
 		return result;
 	}
