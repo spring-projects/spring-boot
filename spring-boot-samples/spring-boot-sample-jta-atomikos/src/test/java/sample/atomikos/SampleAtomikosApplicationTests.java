@@ -16,16 +16,12 @@
 
 package sample.atomikos;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import org.hamcrest.Matcher;
 import org.hamcrest.core.SubstringMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -41,23 +37,19 @@ public class SampleAtomikosApplicationTests {
 	@Test
 	public void testTransactionRollback() throws Exception {
 		SampleAtomikosApplication.main(new String[] {});
-		StringWriter expectedWriter = new StringWriter();
-		PrintWriter printer = new PrintWriter(expectedWriter);
-		printer.println("----> josh");
-		printer.println("Count is 1");
-		printer.println("Simulated error");
-		printer.println("Count is 1");
-		assertThat(this.outputCapture.toString(),
-				containsString(expectedWriter.toString()));
-		assertThat(this.outputCapture.toString(), containsStringOnce("---->"));
+		String output = this.outputCapture.toString();
+		assertThat(output, containsString(1, "---->"));
+		assertThat(output, containsString(1, "----> josh"));
+		assertThat(output, containsString(2, "Count is 1"));
+		assertThat(output, containsString(1, "Simulated error"));
 	}
 
-	private Matcher<? super String> containsStringOnce(String s) {
+	private Matcher<? super String> containsString(final int times, String s) {
 		return new SubstringMatcher(s) {
 
 			@Override
 			protected String relationship() {
-				return "containing once";
+				return "containing " + times + " times";
 			}
 
 			@Override
@@ -67,7 +59,7 @@ public class SampleAtomikosApplicationTests {
 					s = s.substring(s.indexOf(this.substring) + this.substring.length());
 					i++;
 				}
-				return i == 1;
+				return i == times;
 			}
 
 		};
