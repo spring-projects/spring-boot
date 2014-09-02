@@ -99,9 +99,13 @@ Usage
 mvn spring-boot:run
 ---
 
-  The application is forked in a separate process. If you need to specify some JVM arguments
-  (i.e. for debugging purposes), you can use the <<<jvmArguments>>> parameter, see
-  {{{./examples/run-debug.html}Debug the application}} for more details.
+  By default the application is executed directly from the Maven JVM. If you need to run
+  in a forked process you can use the 'fork' option. Forking will also occur if the
+  'jvmArguments' or 'agent' options are specified.
+
+  If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
+  the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}
+  for more details.
 
   By default, any <<src/main/resources>> folder will be added to the application classpath
   when you run the application and any duplicate found in <<target/classes>> will be

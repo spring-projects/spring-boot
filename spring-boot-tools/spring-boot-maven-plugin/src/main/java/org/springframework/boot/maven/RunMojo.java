@@ -18,8 +18,10 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +51,7 @@ import org.springframework.boot.loader.tools.RunProcess;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author David Liu
  */
 @Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE, requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
@@ -73,7 +76,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	private boolean addResources;
 
 	/**
-	 * Path to agent jar.
+	 * Path to agent jar. NOTE: the use of agents means that processes will be started by
+	 * forking a new JVM.
 	 * @since 1.0
 	 */
 	@Parameter(property = "run.agent")
@@ -126,6 +130,14 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
 	private File classesDirectory;
 
+	/**
+	 * Flag to indicate if the run processes should be forked. By default process forking
+	 * is only used if an agent or jvmArguments are specified.
+	 * @since 1.2
+	 */
+	@Parameter(property = "fork", defaultValue = "false")
+	private boolean fork;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		final String startClassName = getStartClass();
@@ -156,6 +168,16 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void run(String startClassName) throws MojoExecutionException {
+		if (this.fork || (this.agent != null && this.agent.length > 0)
+				|| (this.jvmArguments != null && this.jvmArguments.length() > 0)) {
+			runWithForkedJvm(startClassName);
+		}
+		else {
+			runWithMavenJvm(startClassName);
+		}
+	}
+
+	private void runWithForkedJvm(String startClassName) throws MojoExecutionException {
 		List<String> args = new ArrayList<String>();
 		addAgents(args);
 		addJvmArgs(args);
@@ -166,9 +188,19 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 			new RunProcess(new JavaExecutable().toString()).run(args
 					.toArray(new String[args.size()]));
 		}
-		catch (Exception e) {
-			throw new MojoExecutionException("Could not exec java", e);
+		catch (Exception ex) {
+			throw new MojoExecutionException("Could not exec java", ex);
 		}
+	}
+
+	private void runWithMavenJvm(String startClassName) throws MojoExecutionException {
+		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
+		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName,
+				this.arguments), startClassName + ".main()");
+		launchThread.setContextClassLoader(new URLClassLoader(getClassPathUrls()));
+		launchThread.start();
+		join(threadGroup);
+		threadGroup.rethrowUncaughtException();
 	}
 
 	private void addAgents(List<String> args) {
@@ -287,6 +319,27 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		getLog().debug(sb.toString().trim());
 	}
 
+	private void join(ThreadGroup threadGroup) {
+		boolean hasNonDaemonThreads;
+		do {
+			hasNonDaemonThreads = false;
+			Thread[] threads = new Thread[threadGroup.activeCount()];
+			threadGroup.enumerate(threads);
+			for (Thread thread : threads) {
+				if (thread != null && !thread.isDaemon()) {
+					try {
+						hasNonDaemonThreads = true;
+						thread.join();
+					}
+					catch (InterruptedException ex) {
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
+		}
+		while (hasNonDaemonThreads);
+	}
+
 	private static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
 		public TestArtifactFilter() {
 			super("", Artifact.SCOPE_TEST);
@@ -296,6 +349,75 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		protected String getArtifactFeature(Artifact artifact) {
 			return artifact.getScope();
 		}
+	}
+
+	/**
+	 * Isolated {@link ThreadGroup} to capture uncaught exceptions.
+	 */
+	class IsolatedThreadGroup extends ThreadGroup {
+
+		private Throwable exception;
+
+		public IsolatedThreadGroup(String name) {
+			super(name);
+		}
+
+		@Override
+		public void uncaughtException(Thread thread, Throwable ex) {
+			if (!(ex instanceof ThreadDeath)) {
+				synchronized (this) {
+					this.exception = (this.exception == null ? ex : this.exception);
+				}
+				getLog().warn(ex);
+			}
+		}
+
+		public synchronized void rethrowUncaughtException() throws MojoExecutionException {
+			if (this.exception != null) {
+				throw new MojoExecutionException("An exception occured while running. "
+						+ this.exception.getMessage(), this.exception);
+			}
+		}
+
+	}
+
+	/**
+	 * Runner used to launch the application.
+	 */
+	class LaunchRunner implements Runnable {
+
+		private final String startClassName;
+		private final String[] args;
+
+		public LaunchRunner(String startClassName, String... args) {
+			this.startClassName = startClassName;
+			this.args = (args != null ? args : new String[] {});
+		}
+
+		@Override
+		public void run() {
+			Thread thread = Thread.currentThread();
+			ClassLoader classLoader = thread.getContextClassLoader();
+			try {
+				Class<?> startClass = classLoader.loadClass(this.startClassName);
+				Method mainMethod = startClass.getMethod("main",
+						new Class[] { String[].class });
+				if (!mainMethod.isAccessible()) {
+					mainMethod.setAccessible(true);
+				}
+				mainMethod.invoke(null, new Object[] { this.args });
+			}
+			catch (NoSuchMethodException ex) {
+				Exception wrappedEx = new Exception(
+						"The specified mainClass doesn't contain a "
+								+ "main method with appropriate signature.", ex);
+				thread.getThreadGroup().uncaughtException(thread, wrappedEx);
+			}
+			catch (Exception ex) {
+				thread.getThreadGroup().uncaughtException(thread, ex);
+			}
+		}
+
 	}
 
 }
