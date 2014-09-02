@@ -78,8 +78,6 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 			String prefix = entry.getKey();
 			prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
 			DataSourcePoolMetadata metadata = entry.getValue();
-			addMetric(metrics, prefix + "max", metadata.getMax());
-			addMetric(metrics, prefix + "min", metadata.getMin());
 			addMetric(metrics, prefix + "active", metadata.getActive());
 			addMetric(metrics, prefix + "usage", metadata.getUsage());
 		}
