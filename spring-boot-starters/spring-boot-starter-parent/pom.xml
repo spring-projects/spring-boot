@@ -127,7 +127,8 @@
 						<verbose>true</verbose>
 						<dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
 						<generateGitPropertiesFile>true</generateGitPropertiesFile>
-						<generateGitPropertiesFilename>${basedir}/target/classes/git.properties</generateGitPropertiesFilename>
+						<!-- Workaround until 2.1.11 is released; should be an absolute path -->
+						<generateGitPropertiesFilename>target/classes/git.properties</generateGitPropertiesFilename>
 					</configuration>
 				</plugin>
 				<!-- Support our own plugin -->
