@@ -94,6 +94,40 @@ If you are using a milestone or snapshot release you will also need to add appro
 	</pluginRepositories>
 ----
 
+If you want to fork a new process for run, you need to set fork to true or set java agent like this:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
+		<!-- ... -->
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{spring-boot-version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+          						<fork>
+          							true
+          						</fork>
+        					</configuration>
+        					...
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
 
 
 [[build-tool-plugins-maven-packaging]]
