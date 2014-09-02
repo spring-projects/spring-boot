@@ -1964,6 +1964,38 @@ to configure your `DataSource`.
 
 
 
+=== Mixing XA and non-XA JMS connections
+When using JTA, the primary JMS `ConnectionFactory` bean will be XA aware and participate
+in distributed transactions. In some situations you might want to process certain JMS
+messages using a non-XA `ConnectionFactory`. For example, your JMS processing logic might
+take longer than the XA timeout.
+
+If you want to use a non-XA `ConnectionFactory` you can inject the
+`nonXaJmsConnectionFactory` bean rather than the `@Primary` `jmsConnectionFactory` bean.
+For consistency the `jmsConnectionFactory` bean is also provided using the bean alias
+`xaJmsConnectionFactory`.
+
+For example:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	// Inject the primary (XA aware) ConnectionFactory
+	@Autowired
+	private ConnectionFactory defaultConnectionFactory;
+
+	// Inject the XA aware ConnectionFactory (uses the alias and injects the same as above)
+	@Autowired
+	@Qualifier("xaJmsConnectionFactory")
+	private ConnectionFactory xaConnectionFactory;
+
+	// Inject the non-XA aware ConnectionFactory
+	@Autowired
+	@Qualifier("nonXaJmsConnectionFactory")
+	private ConnectionFactory nonXaConnectionFactory;
+----
+
+
+
 === Supporting an alternative embedded transaction manager
 The {sc-spring-boot}/jta/XAConnectionFactoryWrapper.{sc-ext}[`XAConnectionFactoryWrapper`]
 and {sc-spring-boot}/jta/XADataSourceWrapper.{sc-ext}[`XADataSourceWrapper`] interfaces

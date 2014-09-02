@@ -20,8 +20,15 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.SubstringMatcher;
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.OutputCapture;
+import org.springframework.context.ApplicationContext;
 
+import bitronix.tm.resource.jms.PoolingConnectionFactory;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -42,6 +49,19 @@ public class SampleBitronixApplicationTests {
 		assertThat(output, containsString(1, "----> josh"));
 		assertThat(output, containsString(2, "Count is 1"));
 		assertThat(output, containsString(1, "Simulated error"));
+	}
+
+	@Test
+	public void testExposesXaAndNonXa() throws Exception {
+		ApplicationContext context = SpringApplication
+				.run(SampleBitronixApplication.class);
+		Object jmsConnectionFactory = context.getBean("jmsConnectionFactory");
+		Object xaJmsConnectionFactory = context.getBean("xaJmsConnectionFactory");
+		Object nonXaJmsConnectionFactory = context.getBean("nonXaJmsConnectionFactory");
+		assertThat(jmsConnectionFactory, sameInstance(xaJmsConnectionFactory));
+		assertThat(jmsConnectionFactory, instanceOf(PoolingConnectionFactory.class));
+		assertThat(nonXaJmsConnectionFactory,
+				not(instanceOf(PoolingConnectionFactory.class)));
 	}
 
 	private Matcher<? super String> containsString(final int times, String s) {

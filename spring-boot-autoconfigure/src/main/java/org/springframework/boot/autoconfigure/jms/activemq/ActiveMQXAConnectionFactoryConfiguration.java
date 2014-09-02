@@ -19,13 +19,16 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 import javax.jms.ConnectionFactory;
 import javax.transaction.TransactionManager;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQXAConnectionFactory;
+import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 /**
  * Configuration for ActiveMQ XA {@link ConnectionFactory}.
@@ -39,12 +42,25 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class ActiveMQXAConnectionFactoryConfiguration {
 
-	@Bean
+	@Primary
+	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 			XAConnectionFactoryWrapper wrapper) throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
 				properties).createConnectionFactory(ActiveMQXAConnectionFactory.class);
 		return wrapper.wrapConnectionFactory(connectionFactory);
+	}
+
+	@Bean
+	public ConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties) {
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
+				properties).createConnectionFactory(ActiveMQConnectionFactory.class);
+		if (properties.isPooled()) {
+			PooledConnectionFactory pool = new PooledConnectionFactory();
+			pool.setConnectionFactory(connectionFactory);
+			return pool;
+		}
+		return connectionFactory;
 	}
 
 }
