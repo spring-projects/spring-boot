@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Rule;
@@ -95,6 +96,32 @@ public class HttpMessageConvertersTests {
 		assertTrue(converters.getConverters().contains(converter1));
 		assertEquals(converter1, converters.getConverters().get(0));
 		assertEquals(converter2, converters.getConverters().get(1));
+	}
+
+	@Test
+	public void postProcessConverters() throws Exception {
+		HttpMessageConverters converters = new HttpMessageConverters() {
+			@Override
+			protected List<HttpMessageConverter<?>> postProcessConverters(
+					List<HttpMessageConverter<?>> converters) {
+				for (Iterator<HttpMessageConverter<?>> iterator = converters.iterator(); iterator
+						.hasNext();) {
+					if (iterator.next() instanceof Jaxb2RootElementHttpMessageConverter) {
+						iterator.remove();
+					}
+				}
+				return converters;
+			};
+		};
+		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		for (HttpMessageConverter<?> converter : converters) {
+			converterClasses.add(converter.getClass());
+		}
+		assertThat(converterClasses, equalTo(Arrays.<Class<?>> asList(
+				ByteArrayHttpMessageConverter.class, StringHttpMessageConverter.class,
+				ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
+				AllEncompassingFormHttpMessageConverter.class,
+				MappingJackson2HttpMessageConverter.class)));
 	}
 
 }
