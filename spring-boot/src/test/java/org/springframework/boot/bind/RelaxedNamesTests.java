@@ -16,12 +16,12 @@
 
 package org.springframework.boot.bind;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.util.Iterator;
 
 import org.junit.Test;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RelaxedNames}.
@@ -72,9 +72,11 @@ public class RelaxedNamesTests {
 		Iterator<String> iterator = new RelaxedNames("caMel").iterator();
 		assertThat(iterator.next(), equalTo("caMel"));
 		assertThat(iterator.next(), equalTo("ca_mel"));
+		assertThat(iterator.next(), equalTo("ca-mel"));
 		assertThat(iterator.next(), equalTo("camel"));
 		assertThat(iterator.next(), equalTo("CAMEL"));
 		assertThat(iterator.next(), equalTo("CA_MEL"));
+		assertThat(iterator.next(), equalTo("CA-MEL"));
 		assertThat(iterator.hasNext(), equalTo(false));
 	}
 

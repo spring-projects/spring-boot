@@ -155,6 +155,23 @@ public final class RelaxedNames implements Iterable<String> {
 				}
 				return builder.toString();
 			}
+		},
+
+		CAMELCASE_TO_HYPHEN {
+			@Override
+			public String apply(String value) {
+				value = value.replaceAll("([^A-Z-])([A-Z])", "$1___$2");
+				StringBuilder builder = new StringBuilder();
+				for (String field : value.split("___")) {
+					if (builder.length() == 0) {
+						builder.append(field);
+					}
+					else {
+						builder.append("-").append(StringUtils.uncapitalize(field));
+					}
+				}
+				return builder.toString();
+			}
 		};
 
 		public abstract String apply(String value);
