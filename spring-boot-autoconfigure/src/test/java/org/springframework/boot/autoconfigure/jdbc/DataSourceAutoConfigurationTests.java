@@ -227,6 +227,18 @@ public class DataSourceAutoConfigurationTests {
 				dataSource instanceof org.apache.commons.dbcp2.BasicDataSource);
 	}
 
+	@Test
+	public void testDBCPDataSourceOrder() throws Exception {
+		this.context.register(TestDBCP2DataSourceConfiguration.class,
+				TestDataSourceConfiguration.class,
+				DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertTrue("DataSource is wrong type: " + dataSource,
+				dataSource instanceof org.apache.commons.dbcp.BasicDataSource);
+	}
+
 	@Configuration
 	static class TestDataSourceConfiguration {
 
