@@ -434,7 +434,7 @@ placeholders syntax to access YAML properties.
 
 [[boot-features-external-config-multi-profile-yaml]]
 ==== Multi-profile YAML documents
-You can specify multiple profile-specific YAML document in a single file by
+You can specify multiple profile-specific YAML documents in a single file by
 by using a `spring.profiles` key to indicate when the document applies. For example:
 
 [source,yaml,indent=0]
@@ -453,9 +453,10 @@ by using a `spring.profiles` key to indicate when the document applies. For exam
 		address: 192.168.1.120
 ----
 
-In the example above, the `server.address` property will be `127.0.0.1` if the `development`
-profile is active. If the `development` and `production` profiles are **not** enabled, then the
-value for the property will be `192.168.1.100`
+In the example above, the `server.address` property will be `127.0.0.1` if the
+`development` profile is active. If the `development` and `production` profiles are *not*
+enabled, then the value for the property will be `192.168.1.100`
+
 
 
 [[boot-features-external-config-yaml-shortcomings]]
@@ -644,6 +645,7 @@ For example, when an application with following properties is run using the swit
 NOTE: Remember that the `spring.profiles` property can be defined in a YAML document
 to determine when this particular document is included in the configuration. See
 <<howto-change-configuration-depending-on-the-environment>> for more details.
+
 
 
 [[boot-features-programmatically-setting-profiles]]
