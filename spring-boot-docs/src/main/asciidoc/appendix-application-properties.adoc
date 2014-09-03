@@ -32,7 +32,7 @@ content into your application; rather pick only the properties that you need.
 	spring.config.location= # location of config file
 
 	# PROFILES
-	spring.profiles= # comma list of active profiles
+	spring.profiles.active= # comma list of <<howto-set-active-spring-profiles,active profiles>>
 
 	# APPLICATION SETTINGS ({sc-spring-boot}/SpringApplication.{sc-ext}[SpringApplication])
 	spring.main.sources=
