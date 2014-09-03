@@ -15,7 +15,6 @@
  */
 
 package org.springframework.boot.maven;
-
 import java.io.File;
 import java.net.URL;
 
@@ -26,11 +25,9 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import org.springframework.boot.maven.RunMojo;
-
 /**
  * Tests for {@link RunMojo}.
- * 
+ *
  * @author David Liu
  * @since 1.1.4
  */
@@ -41,7 +38,7 @@ public class RunMojoTests {
 	@Test
 	public void testNotFork() throws Exception {
 		RunMojo spy = PowerMockito.spy(new RunMojo());
-		PowerMockito.doReturn("org.springframework.boot.maven.sample.ClassWithMainMethod").when(spy, "getStartClass");
+		Whitebox.setInternalState(spy, "mainClass", "org.springframework.boot.maven.sample.ClassWithMainMethod");
 		spy.execute();
 	}
 
@@ -53,7 +50,7 @@ public class RunMojoTests {
 		File file = new File("./target/test-classes");
 		PowerMockito.doReturn(new URL[] { file.toURI().toURL() }).when(spy, "getClassPathUrls");
 		Whitebox.setInternalState(spy, "arguments", a);
-		PowerMockito.doReturn("org.springframework.boot.maven.sample.ClassWithMainMethod").when(spy, "getStartClass");
+		Whitebox.setInternalState(spy, "mainClass", "org.springframework.boot.maven.sample.ClassWithMainMethod");
 		spy.execute();
 	}
 

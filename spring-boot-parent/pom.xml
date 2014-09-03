@@ -50,9 +50,9 @@
 				<version>1.5.5</version>
 			</dependency>
 			<dependency>
-    			<groupId>org.powermock</groupId>
-    			<artifactId>powermock-api-mockito</artifactId>
-    			<version>1.5.3</version>
+				<groupId>org.powermock</groupId>
+				<artifactId>powermock-api-mockito</artifactId>
+				<version>1.5.3</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>

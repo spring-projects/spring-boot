@@ -178,37 +178,13 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 				new RunProcess(new JavaExecutable().toString()).run(args
 					.toArray(new String[args.size()]));
 			}
-			catch (Exception e) {
-				throw new MojoExecutionException("Could not exec java", e);
+			catch (Exception ex) {
+				throw new MojoExecutionException("Could not exec java", ex);
 			}
 		}
 		else {
-			IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
-			Thread launchThread = new Thread(threadGroup, new MainMethodRunner(startClassName, null));
-			launchThread.start();
-			join(threadGroup);
-			threadGroup.rethrowUncaughtException();
+			new MainMethodRunner(startClassName, this.arguments).run();
 		}
-	}
-
-	private void join(ThreadGroup threadGroup) {
-		boolean hasNonDaemonThreads;
-		do {
-			hasNonDaemonThreads = false;
-			Thread[] threads = new Thread[threadGroup.activeCount()];
-			threadGroup.enumerate(threads);
-			for (Thread thread : threads) {
-				if (thread != null && !thread.isDaemon()) {
-					try {
-						hasNonDaemonThreads = true;
-						thread.join();
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}
-			}
-		} while (hasNonDaemonThreads);
 	}
 
 	private void addAgents(List<String> args) {
@@ -338,29 +314,4 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	class IsolatedThreadGroup extends ThreadGroup {
-
-		private Throwable exception;
-
-		public IsolatedThreadGroup(String name) {
-			super(name);
-		}
-
-		@Override
-		public void uncaughtException(Thread thread, Throwable ex) {
-			if (!(ex instanceof ThreadDeath)) {
-				synchronized (this) {
-					this.exception = (this.exception == null ? ex : this.exception);
-				}
-				getLog().warn(ex);
-			}
-		}
-
-		public synchronized void rethrowUncaughtException() throws MojoExecutionException {
-			if (this.exception != null) {
-				throw new MojoExecutionException("An exception occured while running. " + this.exception.getMessage(),
-						this.exception);
-			}
-		}
-	}
 }
