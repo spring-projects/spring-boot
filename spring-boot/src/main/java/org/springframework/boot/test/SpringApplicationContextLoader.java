@@ -48,6 +48,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoaderUti
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -80,12 +81,15 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			throws Exception {
 		SpringApplication application = getSpringApplication();
 		application.setSources(getSources(config));
-		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
-			application.setAdditionalProfiles(config.getActiveProfiles());
-		}
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		if (config instanceof WebMergedContextConfiguration) {
 			environment = new StandardServletEnvironment();
+		}
+		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
+			String profiles = StringUtils.arrayToCommaDelimitedString(config
+					.getActiveProfiles());
+			EnvironmentTestUtils.addEnvironment(environment, "spring.profiles.active="
+					+ profiles);
 		}
 		// Ensure @IntegrationTest properties go before external config and after system
 		environment.getPropertySources()
