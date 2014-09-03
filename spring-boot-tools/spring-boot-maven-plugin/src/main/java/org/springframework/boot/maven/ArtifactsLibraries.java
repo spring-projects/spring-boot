@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.plugin.logging.Log;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
@@ -51,20 +53,42 @@ public class ArtifactsLibraries implements Libraries {
 
 	private final Collection<Dependency> unpacks;
 
-	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<Dependency> unpacks) {
+	private final Log log;
+
+	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<Dependency> unpacks,
+			Log log) {
 		this.artifacts = artifacts;
 		this.unpacks = unpacks;
+		this.log = log;
 	}
 
 	@Override
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
+		Set<String> duplicates = getDuplicates(this.artifacts);
 		for (Artifact artifact : this.artifacts) {
 			LibraryScope scope = SCOPES.get(artifact.getScope());
 			if (scope != null && artifact.getFile() != null) {
-				callback.library(new Library(artifact.getFile(), scope,
+				String name = artifact.getFile().getName();
+				if (duplicates.contains(name)) {
+					this.log.debug("Duplicate found: " + name);
+					name = artifact.getGroupId() + "-" + name;
+					this.log.debug("Renamed to: " + name);
+				}
+				callback.library(new Library(name, artifact.getFile(), scope,
 						isUnpackRequired(artifact)));
 			}
 		}
+	}
+
+	private Set<String> getDuplicates(Set<Artifact> artifacts) {
+		Set<String> duplicates = new HashSet<String>();
+		Set<String> seen = new HashSet<String>();
+		for (Artifact artifact : artifacts) {
+			if (artifact.getFile() != null && !seen.add(artifact.getFile().getName())) {
+				duplicates.add(artifact.getFile().getName());
+			}
+		}
+		return duplicates;
 	}
 
 	private boolean isUnpackRequired(Artifact artifact) {
@@ -78,4 +102,5 @@ public class ArtifactsLibraries implements Libraries {
 		}
 		return false;
 	}
+
 }
