@@ -24,6 +24,7 @@ import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link ASTTransformation} to apply
@@ -34,7 +35,10 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
+@Order(DependencyAutoConfigurationTransformation.ORDER)
 public class DependencyAutoConfigurationTransformation implements ASTTransformation {
+
+	public static final int ORDER = GrabMetadataTransformation.ORDER + 100;
 
 	private final GroovyClassLoader loader;
 

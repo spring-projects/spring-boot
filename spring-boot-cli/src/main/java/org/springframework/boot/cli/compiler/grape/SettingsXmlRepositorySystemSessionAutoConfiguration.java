@@ -58,12 +58,10 @@ import org.springframework.boot.cli.util.Log;
 public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		RepositorySystemSessionAutoConfiguration {
 
-	private static final String DEFAULT_HOME_DIR = System.getProperty("user.home");
-
 	private final String homeDir;
 
 	public SettingsXmlRepositorySystemSessionAutoConfiguration() {
-		this(DEFAULT_HOME_DIR);
+		this(System.getProperty("user.home"));
 	}
 
 	SettingsXmlRepositorySystemSessionAutoConfiguration(String homeDir) {

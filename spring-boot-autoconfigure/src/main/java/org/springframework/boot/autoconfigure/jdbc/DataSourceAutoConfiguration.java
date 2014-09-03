@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -29,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor.Registrar;
+import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -51,12 +53,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass(EmbeddedDatabaseType.class)
+@ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @EnableConfigurationProperties(DataSourceProperties.class)
-@Import(Registrar.class)
+@Import({ Registrar.class, DataSourcePoolMetadataProvidersConfiguration.class })
 public class DataSourceAutoConfiguration {
-
-	public static final String CONFIGURATION_PREFIX = "spring.datasource";
 
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from
@@ -75,8 +75,8 @@ public class DataSourceAutoConfiguration {
 		}
 	}
 
-	@Conditional(DataSourceAutoConfiguration.EmbeddedDatabaseCondition.class)
-	@ConditionalOnMissingBean(DataSource.class)
+	@Conditional(DataSourceAutoConfiguration.EmbeddedDataSourceCondition.class)
+	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import(EmbeddedDataSourceConfiguration.class)
 	protected static class EmbeddedConfiguration {
 
@@ -90,17 +90,18 @@ public class DataSourceAutoConfiguration {
 		public DataSourceInitializer dataSourceInitializer() {
 			return new DataSourceInitializer();
 		}
+
 	}
 
-	@Conditional(DataSourceAutoConfiguration.NonEmbeddedDatabaseCondition.class)
-	@ConditionalOnMissingBean(DataSource.class)
+	@Conditional(DataSourceAutoConfiguration.NonEmbeddedDataSourceCondition.class)
+	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	protected static class NonEmbeddedConfiguration {
 
 		@Autowired
 		private DataSourceProperties properties;
 
-		@ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
 		@Bean
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 		public DataSource dataSource() {
 			DataSourceBuilder factory = DataSourceBuilder
 					.create(this.properties.getClassLoader())
@@ -114,7 +115,7 @@ public class DataSourceAutoConfiguration {
 	}
 
 	@Configuration
-	@Conditional(DataSourceAutoConfiguration.DatabaseCondition.class)
+	@Conditional(DataSourceAutoConfiguration.DataSourceAvailableCondition.class)
 	protected static class JdbcTemplateConfiguration {
 
 		@Autowired(required = false)
@@ -135,19 +136,17 @@ public class DataSourceAutoConfiguration {
 	}
 
 	/**
-	 * Base {@link Condition} for non-embedded database checks.
+	 * {@link Condition} to test is a supported non-embedded {@link DataSource} type is
+	 * available.
 	 */
-	static class NonEmbeddedDatabaseCondition extends SpringBootCondition {
+	static class NonEmbeddedDataSourceCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-
-			ClassLoader dataSourceClassLoader = getDataSourceClassLoader(context);
-			if (dataSourceClassLoader != null) {
-				return ConditionOutcome.match("Supported DataSource class found");
+			if (getDataSourceClassLoader(context) != null) {
+				return ConditionOutcome.match("supported DataSource class found");
 			}
-
 			return ConditionOutcome.noMatch("missing supported DataSource");
 		}
 
@@ -158,20 +157,16 @@ public class DataSourceAutoConfiguration {
 		private ClassLoader getDataSourceClassLoader(ConditionContext context) {
 			Class<?> dataSourceClass = new DataSourceBuilder(context.getClassLoader())
 					.findType();
-			if (dataSourceClass == null) {
-				return null;
-			}
-			return dataSourceClass.getClassLoader();
+			return (dataSourceClass == null ? null : dataSourceClass.getClassLoader());
 		}
-
 	}
 
 	/**
-	 * {@link Condition} to detect when an embedded database is used.
+	 * {@link Condition} to detect when an embedded {@link DataSource} type can be used.
 	 */
-	static class EmbeddedDatabaseCondition extends SpringBootCondition {
+	static class EmbeddedDataSourceCondition extends SpringBootCondition {
 
-		private final SpringBootCondition nonEmbedded = new NonEmbeddedDatabaseCondition();
+		private final SpringBootCondition nonEmbedded = new NonEmbeddedDataSourceCondition();
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -191,29 +186,32 @@ public class DataSourceAutoConfiguration {
 	}
 
 	/**
-	 * {@link Condition} to detect when a database is configured.
+	 * {@link Condition} to detect when a {@link DataSource} is available (either because
+	 * the user provided one or because one will be auto-configured)
 	 */
-	static class DatabaseCondition extends SpringBootCondition {
+	static class DataSourceAvailableCondition extends SpringBootCondition {
 
-		private final SpringBootCondition nonEmbedded = new NonEmbeddedDatabaseCondition();
+		private final SpringBootCondition nonEmbedded = new NonEmbeddedDataSourceCondition();
 
-		private final SpringBootCondition embeddedCondition = new EmbeddedDatabaseCondition();
+		private final SpringBootCondition embeddedCondition = new EmbeddedDataSourceCondition();
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-
+			if (hasBean(context, DataSource.class)
+					|| hasBean(context, XADataSource.class)) {
+				return ConditionOutcome
+						.match("existing bean configured database detected");
+			}
 			if (anyMatches(context, metadata, this.nonEmbedded, this.embeddedCondition)) {
 				return ConditionOutcome.match("existing auto database detected");
 			}
-
-			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					context.getBeanFactory(), DataSource.class, true, false).length > 0) {
-				return ConditionOutcome
-						.match("Existing bean configured database detected");
-			}
-
 			return ConditionOutcome.noMatch("no existing bean configured database");
+		}
+
+		private boolean hasBean(ConditionContext context, Class<?> type) {
+			return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+					context.getBeanFactory(), type, true, false).length > 0;
 		}
 
 	}

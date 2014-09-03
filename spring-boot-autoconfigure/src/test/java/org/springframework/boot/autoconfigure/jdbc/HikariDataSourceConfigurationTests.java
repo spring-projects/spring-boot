@@ -103,7 +103,7 @@ public class HikariDataSourceConfigurationTests {
 	protected static class HikariDataSourceConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 		public DataSource dataSource() {
 			return DataSourceBuilder.create().type(HikariDataSource.class).build();
 		}

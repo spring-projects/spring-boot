@@ -18,27 +18,34 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 
 import javax.jms.ConnectionFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.pool.PooledConnectionFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Creates a {@link ConnectionFactory} based on {@link ActiveMQProperties}.
+ * Configuration for ActiveMQ {@link ConnectionFactory}.
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 1.1.0
  */
 @Configuration
-@EnableConfigurationProperties(ActiveMQProperties.class)
+@ConditionalOnMissingBean(ConnectionFactory.class)
 class ActiveMQConnectionFactoryConfiguration {
 
-	@Autowired
-	private ActiveMQProperties properties;
-
 	@Bean
-	public ConnectionFactory jmsConnectionFactory() {
-		return this.properties.createConnectionFactory();
+	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
+				properties).createConnectionFactory(ActiveMQConnectionFactory.class);
+		if (properties.isPooled()) {
+			PooledConnectionFactory pool = new PooledConnectionFactory();
+			pool.setConnectionFactory(connectionFactory);
+			return pool;
+		}
+		return connectionFactory;
 	}
+
 }

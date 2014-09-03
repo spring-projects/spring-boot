@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.util.ClassUtils;
 
@@ -50,8 +49,6 @@ public class DataSourceBuilder {
 
 	private ClassLoader classLoader;
 
-	private DriverClassNameProvider driverClassNameProvider = new DriverClassNameProvider();
-
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	public static DataSourceBuilder create() {
@@ -77,22 +74,15 @@ public class DataSourceBuilder {
 	private void maybeGetDriverClassName() {
 		if (!this.properties.containsKey("driverClassName")
 				&& this.properties.containsKey("url")) {
-			String cls = this.driverClassNameProvider.getDriverClassName(this.properties
-					.get("url"));
-			this.properties.put("driverClassName", cls);
+			String url = this.properties.get("url");
+			String driverClass = DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
+			this.properties.put("driverClassName", driverClass);
 		}
 	}
 
 	private void bind(DataSource result) {
-		new RelaxedDataBinder(result).bind(getPropertyValues());
-	}
-
-	private PropertyValues getPropertyValues() {
-		if (getType().getName().contains("Hikari") && this.properties.containsKey("url")) {
-			this.properties.put("jdbcUrl", this.properties.get("url"));
-			this.properties.remove("url");
-		}
-		return new MutablePropertyValues(this.properties);
+		MutablePropertyValues properties = new MutablePropertyValues(this.properties);
+		new RelaxedDataBinder(result).withAlias("url", "jdbcUrl").bind(properties);
 	}
 
 	public DataSourceBuilder type(Class<? extends DataSource> type) {
@@ -120,16 +110,18 @@ public class DataSourceBuilder {
 		return this;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Class<? extends DataSource> findType() {
 		if (this.type != null) {
 			return this.type;
 		}
 		for (String name : DATA_SOURCE_TYPE_NAMES) {
-			if (ClassUtils.isPresent(name, this.classLoader)) {
-				@SuppressWarnings("unchecked")
-				Class<DataSource> resolved = (Class<DataSource>) ClassUtils
-						.resolveClassName(name, this.classLoader);
-				return resolved;
+			try {
+				return (Class<? extends DataSource>) ClassUtils.forName(name,
+						this.classLoader);
+			}
+			catch (Exception ex) {
+				// Swallow and continue
 			}
 		}
 		return null;

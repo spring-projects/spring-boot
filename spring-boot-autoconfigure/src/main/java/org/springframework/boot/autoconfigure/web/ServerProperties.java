@@ -316,6 +316,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 					public void customize(Connector connector) {
 						ProtocolHandler handler = connector.getProtocolHandler();
 						if (handler instanceof AbstractProtocol) {
+							@SuppressWarnings("rawtypes")
 							AbstractProtocol protocol = (AbstractProtocol) handler;
 							protocol.setMaxThreads(Tomcat.this.maxThreads);
 						}
@@ -329,6 +330,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 					public void customize(Connector connector) {
 						ProtocolHandler handler = connector.getProtocolHandler();
 						if (handler instanceof AbstractHttp11Protocol) {
+							@SuppressWarnings("rawtypes")
 							AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
 							protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
 						}

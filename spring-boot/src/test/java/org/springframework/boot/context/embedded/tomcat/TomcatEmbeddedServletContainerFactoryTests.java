@@ -157,14 +157,21 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	public void sessionTimeout() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionTimeout(10);
-		assertTimeout(factory, 10);
+		assertTimeout(factory, 1);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionTimeout(1, TimeUnit.MINUTES);
-		assertTimeout(factory, 60);
+		assertTimeout(factory, 1);
+	}
+
+	@Test
+	public void noSessionTimeout() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionTimeout(0);
+		assertTimeout(factory, -1);
 	}
 
 	@Test
@@ -236,7 +243,7 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		Tomcat tomcat = getTomcat(factory);
 		Connector connector = tomcat.getConnector();
 
-		AbstractHttp11JsseProtocol jsseProtocol = (AbstractHttp11JsseProtocol) connector
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
 				.getProtocolHandler();
 		assertThat(jsseProtocol.getCiphers(), equalTo("ALPHA,BRAVO,CHARLIE"));
 	}

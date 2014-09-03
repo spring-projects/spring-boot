@@ -17,7 +17,10 @@
 package org.springframework.boot.actuate.metrics.writer;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -26,6 +29,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests for {@link DefaultCounterService}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class DefaultCounterServiceTests {
 
 	private final MetricWriter repository = mock(MetricWriter.class);
@@ -33,22 +37,28 @@ public class DefaultCounterServiceTests {
 	private final DefaultCounterService service = new DefaultCounterService(
 			this.repository);
 
+	@Captor
+	private ArgumentCaptor<Delta<Number>> captor;
+
 	@Test
 	public void incrementPrependsCounter() {
 		this.service.increment("foo");
-		@SuppressWarnings("rawtypes")
-		ArgumentCaptor<Delta> captor = ArgumentCaptor.forClass(Delta.class);
-		verify(this.repository).increment(captor.capture());
-		assertEquals("counter.foo", captor.getValue().getName());
+		verify(this.repository).increment(this.captor.capture());
+		assertEquals("counter.foo", this.captor.getValue().getName());
+		assertEquals(1L, this.captor.getValue().getValue());
 	}
 
 	@Test
 	public void decrementPrependsCounter() {
 		this.service.decrement("foo");
-		@SuppressWarnings("rawtypes")
-		ArgumentCaptor<Delta> captor = ArgumentCaptor.forClass(Delta.class);
-		verify(this.repository).increment(captor.capture());
-		assertEquals("counter.foo", captor.getValue().getName());
-		assertEquals(-1L, captor.getValue().getValue());
+		verify(this.repository).increment(this.captor.capture());
+		assertEquals("counter.foo", this.captor.getValue().getName());
+		assertEquals(-1L, this.captor.getValue().getValue());
+	}
+
+	@Test
+	public void resetResetsCounter() throws Exception {
+		this.service.reset("foo");
+		verify(this.repository).reset("counter.foo");
 	}
 }

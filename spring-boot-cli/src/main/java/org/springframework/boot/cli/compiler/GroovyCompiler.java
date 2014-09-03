@@ -47,6 +47,7 @@ import org.springframework.boot.cli.compiler.grape.AetherGrapeEngineFactory;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.util.ResourceUtils;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 /**
  * Compiler for Groovy sources. Primarily a simple Facade for
@@ -112,6 +113,11 @@ public class GroovyCompiler {
 			this.transformations.add(new ResolveDependencyCoordinatesTransformation(
 					resolutionContext));
 		}
+		for (ASTTransformation transformation : ServiceLoader
+				.load(SpringBootAstTransformation.class)) {
+			this.transformations.add(transformation);
+		}
+		Collections.sort(this.transformations, AnnotationAwareOrderComparator.INSTANCE);
 	}
 
 	/**

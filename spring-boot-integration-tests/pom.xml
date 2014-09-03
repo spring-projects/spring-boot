@@ -51,6 +51,10 @@
 							<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
 							<skipInvocation>${skipTests}</skipInvocation>
 							<streamLogs>true</streamLogs>
+							<profiles>
+								<profile>integration-test</profile>
+							</profiles>
+							<localRepositoryPath> </localRepositoryPath>
 						</configuration>
 						<executions>
 							<execution>
@@ -59,6 +63,39 @@
 								<goals>
 									<goal>install</goal>
 									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>clean-samples</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<delete includeemptydirs="true">
+											<fileset dir="${main.basedir}/spring-boot-samples" includes="**/target/" />
+										</delete>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-clean-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>clean-samples</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>clean</goal>
 								</goals>
 							</execution>
 						</executions>

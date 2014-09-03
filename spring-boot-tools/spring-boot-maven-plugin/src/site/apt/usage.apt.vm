@@ -104,11 +104,11 @@ mvn spring-boot:run
   {{{./examples/run-debug.html}Debug the application}} for more details.
 
   By default, any <<src/main/resources>> folder will be added to the application classpath
-  when you run the application. This allows hot refreshing of resources which can be very
-  useful when developing web applications. For example, you can work on HTML, CSS or JavaScipt
-  files and see your changes immediately without recompiling your application. It is also a
-  helpful way of allowing your front end developers to work without needing to download and
-  install a Java IDE.
+  when you run the application and any duplicate found in <<target/classes>> will be
+  removed. This allows hot refreshing of resources which can be very  useful when developing
+  web applications. For example, you can work on HTML, CSS or JavaScipt files and see your
+  changes immediately without recompiling your application. It is also a helpful way of
+  allowing your front end developers to work without needing to download and install a Java IDE.
 
   Of course, if your resources are using tokens that are filtered by Maven, you may want
   to disable that feature as follows:

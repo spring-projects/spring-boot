@@ -64,11 +64,9 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	private MavenProject project;
 
 	/**
-	 * Add maven resources to the classpath directly, this allows live in-place editing or
-	 * resources. Since resources will be added directly, and via the target/classes
-	 * folder they will appear twice if {@code ClassLoader.getResources()} is called. In
-	 * practice, however, most applications call {@code ClassLoader.getResource()} which
-	 * will always return the first resource.
+	 * Add maven resources to the classpath directly, this allows live in-place editing of
+	 * resources. Duplicate resources are removed from {@code target/classes} to prevent
+	 * them to appear twice if {@code ClassLoader.getResources()} is called.
 	 * @since 1.0
 	 */
 	@Parameter(property = "run.addResources", defaultValue = "true")

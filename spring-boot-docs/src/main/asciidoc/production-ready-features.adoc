@@ -164,8 +164,8 @@ To provide custom health information you can register a Spring bean that impleme
 
 Spring Boot provides a
 {sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
-implementation that attempts a simple database test as well as implementations for
-Redis, MongoDB and RabbitMQ.
+implementation that attempts a simple database test (reusing the validation query set on the data
+source, if any) as well as implementations for Redis, MongoDB and RabbitMQ.
 
 Spring Boot adds the `HealthIndicator` instances automatically if beans of type `DataSource`,
 `MongoTemplate`, `RedisConnectionFactory`, `RabbitTemplate` are present in the `ApplicationContext`.
@@ -615,7 +615,10 @@ endpoint you should see a response similar to this:
 		"threads": 15,
 		"threads.daemon": 11,
 		"threads.peak": 15,
-		"uptime": 494836
+		"uptime": 494836,
+		"instance.uptime": 489782,
+		"datasource.primary.active": 5,
+		"datasource.primary.usage": 0.25
 	}
 ----
 
@@ -630,6 +633,34 @@ The `gauge` shows the last response time for a request. So the last request to `
 
 NOTE: In this example we are actually accessing the endpoint over HTTP using the
 `/metrics` URL, this explains why `metrics` appears in the response.
+
+
+
+[[production-ready-datasource-metrics]]
+=== DataSource metrics
+The following metrics are exposed for each supported `DataSource` defined in your
+application:
+
+* The maximum number connections (`datasource.xxx.max`).
+* The minimum number of connections (`datasource.xxx.min`).
+* The number of active connections (`datasource.xxx.active`)
+* The current usage of the connection pool (`datasource.xxx.usage`).
+
+All data source metrics share the `datasource.` prefix. The prefix is further qualified
+for each data source:
+
+* If the data source is the primary data source (that is either the only available data
+  source or the one flagged `@Primary` amongst the existing ones), the prefix is
+  `datasource.primary`.
+* If the data source bean name ends with `dataSource`, the prefix is the name of the bean
+  without `dataSource` (i.e. `datasource.batch` for `batchDataSource`).
+* In all other cases, the name of the bean is used.
+
+It is possible to override part or all of those defaults by registering a bean with a
+customized version of `DataSourcePublicMetrics`. By default, Spring Boot provides metadata
+for all  supported datasources; you can add additional `DataSourcePoolMetadataProvider`
+beans if your favorite data source isn't supported out of the box. See
+`DataSourcePoolMetadataProvidersConfiguration` for examples.
 
 
 

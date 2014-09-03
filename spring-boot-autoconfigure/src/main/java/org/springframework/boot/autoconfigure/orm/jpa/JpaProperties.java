@@ -25,7 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.orm.jpa.SpringNamingStrategy;
+import org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.util.StringUtils;
 
@@ -104,7 +104,6 @@ public class JpaProperties {
 	/**
 	 * Get configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory.
-	 *
 	 * @param dataSource the DataSource in case it is needed to determine the properties
 	 * @return some Hibernate properties for configuration
 	 */

@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 /**
  * {@link ConfigurationProperties} for configuring FreeMarker
@@ -63,11 +62,4 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 		this.templateLoaderPath = templateLoaderPath;
 	}
 
-	/**
-	 * Apply the given properties to a {@link FreeMarkerViewResolver}.
-	 * @param resolver the resolver to apply the properties to.
-	 */
-	public void applyToViewResolver(FreeMarkerViewResolver resolver) {
-		super.applyToViewResolver(resolver);
-	}
 }

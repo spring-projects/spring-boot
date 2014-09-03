@@ -56,7 +56,7 @@ public class ExplodedArchive extends Archive {
 
 	private Manifest manifest;
 
-	private boolean recursive = true;
+	private boolean filtered = false;
 
 	/**
 	 * Create a new {@link ExplodedArchive} instance.
@@ -78,17 +78,18 @@ public class ExplodedArchive extends Archive {
 			throw new IllegalArgumentException("Invalid source folder " + root);
 		}
 		this.root = root;
-		this.recursive = recursive;
-		buildEntries(root);
+		buildEntries(root, recursive);
 		this.entries = Collections.unmodifiableMap(this.entries);
 	}
 
 	private ExplodedArchive(File root, Map<AsciiBytes, Entry> entries) {
 		this.root = root;
+		// The entries are pre-filtered
+		this.filtered = true;
 		this.entries = Collections.unmodifiableMap(entries);
 	}
 
-	private void buildEntries(File file) {
+	private void buildEntries(File file, boolean recursive) {
 		if (!file.equals(this.root)) {
 			String name = file.toURI().getPath()
 					.substring(this.root.toURI().getPath().length());
@@ -102,9 +103,9 @@ public class ExplodedArchive extends Archive {
 			}
 			for (File child : files) {
 				if (!SKIPPED_NAMES.contains(child.getName())) {
-					if (file.equals(this.root) || this.recursive
+					if (file.equals(this.root) || recursive
 							|| file.getName().equals("META-INF")) {
-						buildEntries(child);
+						buildEntries(child, recursive);
 					}
 				}
 			}
@@ -113,7 +114,8 @@ public class ExplodedArchive extends Archive {
 
 	@Override
 	public URL getUrl() throws MalformedURLException {
-		FilteredURLStreamHandler handler = new FilteredURLStreamHandler();
+		FilteredURLStreamHandler handler = this.filtered ? new FilteredURLStreamHandler()
+				: null;
 		return new URL("file", "", -1, this.root.toURI().getPath(), handler);
 	}
 

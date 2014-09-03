@@ -132,5 +132,4 @@ public class RepackagingTests {
 		assertThat(jarFile.getEntry("lib/foo.jar"), notNullValue());
 		jarFile.close();
 	}
-
 }
