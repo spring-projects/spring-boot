@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -34,6 +39,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -45,15 +51,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 /**
  * Tests for {@link DataSourceAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author David Liu
  */
 public class DataSourceAutoConfigurationTests {
 
@@ -214,6 +216,46 @@ public class DataSourceAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(NamedParameterJdbcOperations.class));
 	}
+
+	@Test
+	public void testDBCP2DataSource() throws Exception {
+		this.context.register(TestDBCP2DataSourceConfiguration.class,
+				DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertTrue("DataSource is wrong type: " + dataSource,
+				dataSource instanceof org.apache.commons.dbcp2.BasicDataSource);
+	}
+
+	@Test
+	public void testDBCPDataSourceOrder() throws Exception {
+		this.context.register(TestDBCP2DataSourceConfiguration.class,
+				TestDataSourceConfiguration.class,
+				DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertTrue("DataSource is wrong type: " + dataSource,
+				dataSource instanceof org.apache.commons.dbcp.BasicDataSource);
+	}
+
+	@Configuration
+	static class TestDBCP2DataSourceConfiguration {
+
+		private org.apache.commons.dbcp2.BasicDataSource pool;
+
+		@Bean
+		public DataSource dataSource() {
+			this.pool = new org.apache.commons.dbcp2.BasicDataSource();
+			this.pool.setDriverClassName("org.hsqldb.jdbcDriver");
+			this.pool.setUrl("jdbc:hsqldb:target/overridedb");
+			this.pool.setUsername("sa");
+			return this.pool;
+		}
+
+	}
+
 
 	@Configuration
 	static class TestDataSourceConfiguration {
