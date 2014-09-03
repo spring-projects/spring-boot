@@ -41,7 +41,7 @@ public class EmbeddedServerPortListener implements ApplicationListener<Applicati
 
 	private static final Log logger = LogFactory.getLog(EmbeddedServerPortListener.class);
 
-	private static final String DEFAULT_FILE_NAME = "server.port";
+	private static final String DEFAULT_FILE_NAME = "application.port";
 
 	private static final AtomicBoolean created = new AtomicBoolean(false);
 
