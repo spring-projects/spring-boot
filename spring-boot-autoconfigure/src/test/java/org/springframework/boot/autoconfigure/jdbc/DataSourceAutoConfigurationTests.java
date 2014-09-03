@@ -217,26 +217,29 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testDBCP2DataSource() throws Exception {
-		this.context.register(TestDBCP2DataSourceConfiguration.class,
+	public void testDBCPDataSourceOrder() throws Exception {
+		this.context.register(
 				DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
+		this.context.setClassLoader(new URLClassLoader(new URL[0], getClass()
+				.getClassLoader()) {
+			@Override
+			protected Class<?> loadClass(String name, boolean resolve)
+					throws ClassNotFoundException {
+				if (name.startsWith("org.apache.commons.dbcp.") || name.startsWith("org.apache.tomcat")
+						|| name.startsWith("com.zaxxer.hikari")) {
+					throw new ClassNotFoundException();
+				}
+				return super.loadClass(name, resolve);
+			}
+		});
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertTrue("DataSource is wrong type: " + dataSource,
 				dataSource instanceof org.apache.commons.dbcp2.BasicDataSource);
-	}
 
-	@Test
-	public void testDBCPDataSourceOrder() throws Exception {
-		this.context.register(TestDBCP2DataSourceConfiguration.class,
-				TestDataSourceConfiguration.class,
-				DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue("DataSource is wrong type: " + dataSource,
-				dataSource instanceof org.apache.commons.dbcp.BasicDataSource);
+
+
 	}
 
 	@Configuration
@@ -255,21 +258,6 @@ public class DataSourceAutoConfigurationTests {
 
 	}
 
-	@Configuration
-	static class TestDBCP2DataSourceConfiguration {
-
-		private org.apache.commons.dbcp2.BasicDataSource pool;
-
-		@Bean
-		public DataSource dataSource() {
-			this.pool = new org.apache.commons.dbcp2.BasicDataSource();
-			this.pool.setDriverClassName("org.hsqldb.jdbcDriver");
-			this.pool.setUrl("jdbc:hsqldb:target/overridedb");
-			this.pool.setUsername("sa");
-			return this.pool;
-		}
-
-	}
 
 	public static class DatabaseDriver implements Driver {
 
