@@ -153,7 +153,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				getFilters());
 
-		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack);
+		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
+				getLog());
 		try {
 			repackager.repackage(target, libraries);
 		}

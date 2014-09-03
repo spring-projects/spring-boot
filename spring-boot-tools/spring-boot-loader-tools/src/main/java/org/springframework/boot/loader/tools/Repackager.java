@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -153,17 +155,22 @@ public class Repackager {
 			throws IOException {
 		final JarWriter writer = new JarWriter(destination);
 		try {
+			final Set<String> seen = new HashSet<String>();
 			writer.writeManifest(buildManifest(sourceJar));
 			writer.writeEntries(sourceJar);
-
 			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
 				public void library(Library library) throws IOException {
 					File file = library.getFile();
 					if (isZip(file)) {
 						String destination = Repackager.this.layout
-								.getLibraryDestination(file.getName(), library.getScope());
+								.getLibraryDestination(library.getName(),
+										library.getScope());
 						if (destination != null) {
+							if (!seen.add(destination + library.getName())) {
+								throw new IllegalStateException("Duplicate library "
+										+ library.getName());
+							}
 							writer.writeNestedLibrary(destination, library);
 						}
 					}
