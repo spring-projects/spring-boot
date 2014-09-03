@@ -34,4 +34,4 @@ custom_gradle_template: false
 
 main_site_url: http://spring.io
 projects_site_url: http://projects.spring.io
-forum_url: http://forum.spring.io
+questions_url: http://spring.io/questions
