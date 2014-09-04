@@ -140,7 +140,7 @@ Maven, there is no ``super parent'' to import to share some configuration.
 ----
 	apply plugin: 'java'
 
-	repositories { mavenCentral() }
+	repositories { jcenter() }
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
 	}
@@ -155,7 +155,7 @@ for ``blessed'' dependencies>>:
 [source,groovy,indent=0,subs="attributes"]
 ----
 	buildscript {
-		repositories { mavenCentral() }
+		repositories { jcenter() }
 		dependencies {
 			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
 		}
@@ -164,7 +164,7 @@ for ``blessed'' dependencies>>:
 	apply plugin: 'java'
 	apply plugin: 'spring-boot'
 
-	repositories { mavenCentral() }
+	repositories { jcenter() }
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web")
 		testCompile("org.springframework.boot:spring-boot-starter-test")

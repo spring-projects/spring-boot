@@ -182,7 +182,7 @@ Here is a typical `build.gradle` file:
 ----
 	buildscript {
 		repositories {
-			mavenCentral()
+			jcenter()
 ifndef::release[]
 			maven { url "http://repo.spring.io/snapshot" }
 			maven { url "http://repo.spring.io/milestone" }
@@ -202,7 +202,7 @@ endif::release[]
 	}
 
 	repositories {
-		mavenCentral()
+		jcenter()
 ifndef::release[]
 		maven { url "http://repo.spring.io/snapshot" }
 		maven { url "http://repo.spring.io/milestone" }

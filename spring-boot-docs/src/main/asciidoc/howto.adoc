@@ -1466,7 +1466,7 @@ To configure IntelliJ correctly you can use the `idea` Gradle plugin:
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 	buildscript {
-		repositories { mavenCentral() }
+		repositories { jcenter() }
 		dependencies {
 			classpath "org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}"
 			classpath 'org.springframework:springloaded:1.2.0.RELEASE'
