@@ -24,7 +24,8 @@ import org.apache.tomcat.jdbc.pool.DataSource;
  *
  * @author Stephane Nicoll
  */
-public class TomcatDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<DataSource> {
+public class TomcatDataSourcePoolMetadata extends
+		AbstractDataSourcePoolMetadata<DataSource> {
 
 	public TomcatDataSourcePoolMetadata(DataSource dataSource) {
 		super(dataSource);

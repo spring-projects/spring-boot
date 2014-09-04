@@ -35,7 +35,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class BatchDatabaseInitializer {
 
-
 	@Autowired
 	private BatchProperties properties;
 

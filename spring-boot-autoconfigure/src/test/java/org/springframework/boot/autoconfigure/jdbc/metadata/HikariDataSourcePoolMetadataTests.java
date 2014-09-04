@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import org.junit.Before;
-import org.springframework.boot.autoconfigure.jdbc.metadata.HikariDataSourcePoolMetadata;
 
 import com.zaxxer.hikari.HikariDataSource;
 

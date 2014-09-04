@@ -186,11 +186,13 @@ public class ConfigurationPropertiesReportEndpoint extends
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> sanitize(Map<String, Object> map) {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			if (entry.getValue() instanceof Map) {
-				map.put(entry.getKey(), sanitize((Map<String, Object>) entry.getValue()));
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			if (value instanceof Map) {
+				map.put(key, sanitize((Map<String, Object>) value));
 			}
 			else {
-				map.put(entry.getKey(), this.sanitizer.sanitize(entry.getKey(), entry.getValue()));
+				map.put(key, this.sanitizer.sanitize(key, value));
 			}
 		}
 		return map;
