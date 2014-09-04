@@ -818,6 +818,35 @@ and path through constructor.
 
 
 
+[[production-ready-process-monitoring]]
+== Process monitoring
+In Spring Boot Actuator you can find `EmbeddedServerPortListener` which creates file
+containing embedded server port (by default in application directory and file name is
+`application.port`). It's not activated by default, but you can do it in two simple
+ways described below.
+
+
+
+[[production-ready-process-monitoring-configuration]]
+=== Extend configuration
+In `META-INF/spring.factories` file you have to activate the listener:
+
+[indent=0]
+----
+	org.springframework.context.ApplicationListener=\
+	org.springframework.boot.actuate.system.EmbeddedServerPortListener
+----
+
+
+
+[[production-ready-process-monitoring-programmatically]]
+=== Programmatically
+You can also activate this listener by invoking `SpringApplication.addListeners(...)`
+method and passing `EmbeddedServerPortListener` object. You can also customize file name
+and path through constructor.
+
+
+
 [[production-ready-whats-next]]
 == What to read next
 If you want to explore some of the concepts discussed in this chapter, you can take a
