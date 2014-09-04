@@ -115,14 +115,15 @@ class ProjectLibraries implements Libraries {
 		return libraries;
 	}
 
-	private Set<GradleLibrary> getLibrariesForFileDependencies(Configuration configuration,
-			LibraryScope scope) {
+	private Set<GradleLibrary> getLibrariesForFileDependencies(
+			Configuration configuration, LibraryScope scope) {
 		Set<GradleLibrary> libraries = new LinkedHashSet<GradleLibrary>();
 		for (Dependency dependency : configuration.getIncoming().getDependencies()) {
 			if (dependency instanceof FileCollectionDependency) {
 				FileCollectionDependency fileDependency = (FileCollectionDependency) dependency;
 				for (File file : fileDependency.resolve()) {
-					libraries.add(new GradleLibrary(fileDependency.getGroup(), file, scope));
+					libraries.add(new GradleLibrary(fileDependency.getGroup(), file,
+							scope));
 				}
 			}
 			else if (dependency instanceof ProjectDependency) {
@@ -134,7 +135,8 @@ class ProjectLibraries implements Libraries {
 		return libraries;
 	}
 
-	private Set<GradleLibrary> minus(Set<GradleLibrary> source, Set<GradleLibrary> toRemove) {
+	private Set<GradleLibrary> minus(Set<GradleLibrary> source,
+			Set<GradleLibrary> toRemove) {
 		if (source == null || toRemove == null) {
 			return source;
 		}
@@ -191,7 +193,7 @@ class ProjectLibraries implements Libraries {
 		@Override
 		public String getName() {
 			String name = super.getName();
-			if(this.includeGroupName && this.group != null) {
+			if (this.includeGroupName && this.group != null) {
 				name = this.group + "-" + name;
 			}
 			return name;
