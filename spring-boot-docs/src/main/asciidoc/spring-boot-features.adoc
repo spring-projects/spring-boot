@@ -986,8 +986,8 @@ support a uniform Java DSL for customizing the error handling. For example:
 	private static class MyCustomizer implements EmbeddedServletContainerCustomizer {
 
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainer factory) {
-            factory.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
+		public void customize(ConfigurableEmbeddedServletContainer container) {
+            container.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
 		}
 
 	}
@@ -1060,8 +1060,8 @@ class for a complete list.
 If you need to configure your embdedded servlet container programmatically you can register
 a Spring bean that implements the `EmbeddedServletContainerCustomizer` interface.
 `EmbeddedServletContainerCustomizer` provides access to the
-`ConfigurableEmbeddedServletContainerFactory` which includes numerous customization
-setter methods.
+`ConfigurableEmbeddedServletContainer` which includes numerous customization setter
+methods.
 
 [source,java,indent=0]
 ----
@@ -1082,7 +1082,7 @@ setter methods.
 
 
 [[boot-features-customizing-configurableembeddedservletcontainerfactory-directly]]
-===== Customizing ConfigurableEmbeddedServletContainerFactory directly
+===== Customizing ConfigurableEmbeddedServletContainer directly
 If the above customization techniques are too limited, you can register the
 `TomcatEmbeddedServletContainerFactory` or `JettyEmbeddedServletContainerFactory` bean
 yourself.
