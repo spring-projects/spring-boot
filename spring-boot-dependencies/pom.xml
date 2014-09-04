@@ -361,6 +361,11 @@
 				<artifactId>spring-boot-starter-ws</artifactId>
 				<version>1.2.0.BUILD-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-cloud</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
 
 			<!-- Third Party -->
 			<dependency>
@@ -1091,6 +1096,21 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-spring-service-connector</artifactId>
+				<version>${spring-cloud.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-cloudfoundry-connector</artifactId>
+				<version>${spring-cloud.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-heroku-connector</artifactId>
+				<version>${spring-cloud.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-localconfig-connector</artifactId>
 				<version>${spring-cloud.version}</version>
 			</dependency>
 			<dependency>
