@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-tools</artifactId>
-		<version>1.1.6.BUILD-SNAPSHOT</version>
+		<version>1.1.7.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-gradle-plugin</artifactId>
 	<name>Spring Boot Gradle Plugin</name>
