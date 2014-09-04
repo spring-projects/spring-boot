@@ -1855,6 +1855,20 @@ resolved against their provided names.
 
 
 
+[[boot-features-jms-jndi]]
+==== Using a JNDI ConnectionFactory
+If you are running your application in an Application Server Spring Boot will attempt to
+locate a JMS `ConnectionFactory` using JNDI. By default the locations `java:/JmsXA` and
+`java:/XAConnectionFactory` will checked. You can use the
+`spring.jms.jndi-name` property if you need to specify an alternative location:
+
+[source,properties,indent=0]
+----
+	spring.jms.jndi-name=java:/MyConnectionFactory
+----
+
+
+
 [[boot-features-using-jms-template]]
 [[boot-features-using-jms-sending]]
 ==== Sending a message
