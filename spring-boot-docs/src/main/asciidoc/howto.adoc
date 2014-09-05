@@ -1400,7 +1400,8 @@ user detail store) it might be worth extracting the
 `GlobalAuthenticationConfigurerAdapter` (in the `init()` method so it
 happens before the authentication manager is needed elsewhere), e.g.
 
-```
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
 @Configuration
 public class AuthenticationManagerConfiguration extends
     GlobalAuthenticationConfigurerAdapter {
@@ -1409,7 +1410,7 @@ public class AuthenticationManagerConfiguration extends
         auth.inMemoryAuthentication() // ... etc.
     }
 }
-```
+----
 
 
 [[howto-enable-https]]
