@@ -17,6 +17,7 @@
 package org.springframework.boot.jta.bitronix;
 
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
@@ -27,6 +28,8 @@ import javax.sql.XADataSource;
 
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import bitronix.tm.resource.common.ResourceBean;
@@ -83,6 +86,7 @@ public class PoolingDataSourceBean extends PoolingDataSource implements BeanName
 	/**
 	 * Set the {@link XADataSource} directly, instead of calling
 	 * {@link #setClassName(String)}.
+	 *
 	 * @param dataSource the data source to use
 	 */
 	public void setDataSource(XADataSource dataSource) {
@@ -104,9 +108,15 @@ public class PoolingDataSourceBean extends PoolingDataSource implements BeanName
 		return super.createPooledConnection(xaFactory, bean);
 	}
 
+	@Override
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		return getParentLoggerForDataSource(this.dataSource);
+	}
+
 	/**
 	 * A {@link XADataSource} implementation that delegates to the {@link ThreadLocal}
 	 * {@link PoolingDataSourceBean}.
+	 *
 	 * @see PoolingDataSourceBean#setDataSource(XADataSource)
 	 */
 	public static class DirectXADataSource implements XADataSource {
@@ -149,8 +159,8 @@ public class PoolingDataSourceBean extends PoolingDataSource implements BeanName
 		}
 
 		@Override
-		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-			return this.dataSource.getParentLogger();
+		public Logger getParentLogger() {
+			return getParentLoggerForDataSource(this.dataSource);
 		}
 
 		public XADataSource getDataSource() {
@@ -158,4 +168,24 @@ public class PoolingDataSourceBean extends PoolingDataSource implements BeanName
 		}
 	}
 
+	/**
+	 * When running on Java 7 or later, delegates reflectively to the underlying
+	 * {@link javax.sql.DataSource} or, when running on Java 6, does what
+	 * {@link DelegatingDataSource} does
+	 */
+	private static Logger getParentLoggerForDataSource(XADataSource dataSource) {
+
+		Method getParentLoggerMethod = ReflectionUtils.findMethod(XADataSource.class,
+				"getParentLogger");
+
+		if (getParentLoggerMethod != null) {
+			try {
+				return (Logger) getParentLoggerMethod.invoke(dataSource);
+			}
+			catch (Exception e) {
+				// Swallow and continue
+			}
+		}
+		return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	}
 }
