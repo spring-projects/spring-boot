@@ -1457,7 +1457,7 @@ would only ever be a development time trick probably).
 
 [[howto-reload-springloaded-gradle-and-intellij]]
 ==== Configuring Spring Loaded for use with Gradle and IntelliJ
-You need to jump though a few hoops if you want to use Spring Loaded in combination with
+You need to jump through a few hoops if you want to use Spring Loaded in combination with
 Gradle and IntelliJ. By default, IntelliJ will compile classes into a different location
 than Gradle, causing Spring Loaded monitoring to fail.
 
