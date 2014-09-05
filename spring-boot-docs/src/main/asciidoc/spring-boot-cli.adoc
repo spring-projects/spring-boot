@@ -122,7 +122,7 @@ The following items are used as ``grab hints'':
 |`@Test`
 |JUnit.
 
-|`@EnableRabbitMessaging`
+|`@EnableRabbit`
 |RabbitMQ.
 
 |`@EnableReactor`
