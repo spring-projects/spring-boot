@@ -1369,16 +1369,17 @@ http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle/#jc
 
 Spring Security also provides a convenient `AuthenticationManagerBuilder` which can be
 used to build an `AuthenticationManager` with common options. The recommended way to
-use this in a webapp is to inject it into a void method in a
+use this in a webapp is to inject it into a callback method in a
 `WebSecurityConfigurerAdapter`, e.g.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Configuration
+	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-		@Autowired
-		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		@Override
+		public void configure(AuthenticationManagerBuilder auth) throws Exception {
 				auth.inMemoryAuthentication()
 					.withUser("barry").password("password").roles("USER"); // ... etc.
 		}
@@ -1393,6 +1394,22 @@ You will get the best results if you put this in a nested class, or a standalone
 order of instantiation). The {github-code}/spring-boot-samples/spring-boot-sample-web-secure[secure web sample]
 is a useful template to follow.
 
+If you experience instantiation issues (e.g. using JDBC or JPA for the
+user detail store) it might be worth extracting the
+`AuthenticationManagerBuilder` callback into a
+`GlobalAuthenticationConfigurerAdapter` (in the `init()` method so it
+happens before the authentication manager is needed elsewhere), e.g.
+
+```
+@Configuration
+public class AuthenticationManagerConfiguration extends
+    GlobalAuthenticationConfigurerAdapter {
+    @Override
+    public void init(AuthenticationManagerBuilder auth) {
+        auth.inMemoryAuthentication() // ... etc.
+    }
+}
+```
 
 
 [[howto-enable-https]]
