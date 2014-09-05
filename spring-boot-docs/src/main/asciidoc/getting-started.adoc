@@ -549,7 +549,7 @@ file named `src/main/java/Example.java`:
 	}
 ----
 
-Although there isn't much code here, quite a lot is going on. Let's step though the
+Although there isn't much code here, quite a lot is going on. Let's step through the
 important parts.
 
 

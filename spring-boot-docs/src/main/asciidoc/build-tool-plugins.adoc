@@ -265,7 +265,7 @@ to override version numbers if necessary.
 === Default exclude rules
 Gradle handles ``exclude rules'' in a slightly different way to Maven which can cause
 unexpected results when using the starter POMs. Specifically, exclusions declared on
-a dependency will not be applied when the dependency can be reached though a different
+a dependency will not be applied when the dependency can be reached through a different
 path. For example, if a starter POM declares the following:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
