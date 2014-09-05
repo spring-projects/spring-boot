@@ -142,6 +142,7 @@ public class ThymeleafAutoConfiguration {
 	protected static class DataAttributeDialectConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		public DataAttributeDialect dialect() {
 			return new DataAttributeDialect();
 		}
@@ -153,6 +154,7 @@ public class ThymeleafAutoConfiguration {
 	protected static class ThymeleafSecurityDialectConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		public SpringSecurityDialect securityDialect() {
 			return new SpringSecurityDialect();
 		}
