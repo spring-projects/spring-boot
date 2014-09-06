@@ -368,12 +368,13 @@ For example, the following YAML document:
 
 [source,yaml,indent=0]
 ----
-	dev:
-		url: http://dev.bar.com
-		name: Developer Setup
-	prod:
-		url: http://foo.bar.com
-		name: My Cool App
+	environments:
+		dev:
+			url: http://dev.bar.com
+			name: Developer Setup
+		prod:
+			url: http://foo.bar.com
+			name: My Cool App
 ----
 
 Would be transformed into these properties:
