@@ -16,22 +16,22 @@
 
 package org.springframework.boot.jta.bitronix;
 
+import bitronix.tm.resource.common.ResourceBean;
+import bitronix.tm.resource.common.XAStatefulHolder;
+import bitronix.tm.resource.jdbc.PoolingDataSource;
+import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.StringUtils;
-
-import bitronix.tm.resource.common.ResourceBean;
-import bitronix.tm.resource.common.XAStatefulHolder;
-import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 /**
  * Spring friendly version of {@link PoolingDataSource}. Provides sensible defaults and
@@ -42,120 +42,146 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
  * @since 1.2.0
  */
 public class PoolingDataSourceBean extends PoolingDataSource implements BeanNameAware,
-		InitializingBean {
+        InitializingBean {
 
-	private static ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<PoolingDataSourceBean>();
+    private static ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<PoolingDataSourceBean>();
 
-	private XADataSource dataSource;
+    private XADataSource dataSource;
 
-	private String beanName;
+    private String beanName;
 
-	public PoolingDataSourceBean() {
-		super();
-		setMaxPoolSize(10);
-		setAllowLocalTransactions(true);
-		setEnableJdbc4ConnectionTest(true);
-	}
+    public PoolingDataSourceBean() {
+        super();
+        setMaxPoolSize(10);
+        setAllowLocalTransactions(true);
+        setEnableJdbc4ConnectionTest(true);
+    }
 
-	@Override
-	public synchronized void init() {
-		source.set(this);
-		try {
-			super.init();
-		}
-		finally {
-			source.remove();
-		}
-	}
+    @Override
+    public synchronized void init() {
+        source.set(this);
+        try {
+            super.init();
+        } finally {
+            source.remove();
+        }
+    }
 
-	@Override
-	public void setBeanName(String name) {
-		this.beanName = name;
-	}
+    @Override
+    public void setBeanName(String name) {
+        this.beanName = name;
+    }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (!StringUtils.hasLength(getUniqueName())) {
-			setUniqueName(this.beanName);
-		}
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (!StringUtils.hasLength(getUniqueName())) {
+            setUniqueName(this.beanName);
+        }
+    }
 
-	/**
-	 * Set the {@link XADataSource} directly, instead of calling
-	 * {@link #setClassName(String)}.
-	 * @param dataSource the data source to use
-	 */
-	public void setDataSource(XADataSource dataSource) {
-		this.dataSource = dataSource;
-		setClassName(DirectXADataSource.class.getName());
-		setDriverProperties(new Properties());
-	}
+    /**
+     * Set the {@link XADataSource} directly, instead of calling
+     * {@link #setClassName(String)}.
+     *
+     * @param dataSource the data source to use
+     */
+    public void setDataSource(XADataSource dataSource) {
+        this.dataSource = dataSource;
+        setClassName(DirectXADataSource.class.getName());
+        setDriverProperties(new Properties());
+    }
 
-	protected final XADataSource getDataSource() {
-		return this.dataSource;
-	}
+    protected final XADataSource getDataSource() {
+        return this.dataSource;
+    }
 
-	@Override
-	public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean)
-			throws Exception {
-		if (xaFactory instanceof DirectXADataSource) {
-			xaFactory = ((DirectXADataSource) xaFactory).getDataSource();
-		}
-		return super.createPooledConnection(xaFactory, bean);
-	}
+    @Override
+    public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean)
+            throws Exception {
+        if (xaFactory instanceof DirectXADataSource) {
+            xaFactory = ((DirectXADataSource) xaFactory).getDataSource();
+        }
+        return super.createPooledConnection(xaFactory, bean);
+    }
 
-	/**
-	 * A {@link XADataSource} implementation that delegates to the {@link ThreadLocal}
-	 * {@link PoolingDataSourceBean}.
-	 * @see PoolingDataSourceBean#setDataSource(XADataSource)
-	 */
-	public static class DirectXADataSource implements XADataSource {
+    @Override // this method is introduced in 1.7
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return invoke17DataSourceGetParentLogger(this.dataSource);
+    }
 
-		private final XADataSource dataSource;
+    /**
+     * A {@link XADataSource} implementation that delegates to the {@link ThreadLocal}
+     * {@link PoolingDataSourceBean}.
+     *
+     * @see PoolingDataSourceBean#setDataSource(XADataSource)
+     */
+    public static class DirectXADataSource implements XADataSource {
 
-		public DirectXADataSource() {
-			this.dataSource = source.get().dataSource;
-		}
+        private final XADataSource dataSource;
 
-		@Override
-		public PrintWriter getLogWriter() throws SQLException {
-			return this.dataSource.getLogWriter();
-		}
+        public DirectXADataSource() {
+            this.dataSource = source.get().dataSource;
+        }
 
-		@Override
-		public XAConnection getXAConnection() throws SQLException {
-			return this.dataSource.getXAConnection();
-		}
+        @Override
+        public PrintWriter getLogWriter() throws SQLException {
+            return this.dataSource.getLogWriter();
+        }
 
-		@Override
-		public XAConnection getXAConnection(String user, String password)
-				throws SQLException {
-			return this.dataSource.getXAConnection(user, password);
-		}
+        @Override
+        public XAConnection getXAConnection() throws SQLException {
+            return this.dataSource.getXAConnection();
+        }
 
-		@Override
-		public void setLogWriter(PrintWriter out) throws SQLException {
-			this.dataSource.setLogWriter(out);
-		}
+        @Override
+        public XAConnection getXAConnection(String user, String password)
+                throws SQLException {
+            return this.dataSource.getXAConnection(user, password);
+        }
 
-		@Override
-		public void setLoginTimeout(int seconds) throws SQLException {
-			this.dataSource.setLoginTimeout(seconds);
-		}
+        @Override
+        public void setLogWriter(PrintWriter out) throws SQLException {
+            this.dataSource.setLogWriter(out);
+        }
 
-		@Override
-		public int getLoginTimeout() throws SQLException {
-			return this.dataSource.getLoginTimeout();
-		}
+        @Override
+        public void setLoginTimeout(int seconds) throws SQLException {
+            this.dataSource.setLoginTimeout(seconds);
+        }
 
-		@Override
-		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-			return this.dataSource.getParentLogger();
-		}
+        @Override
+        public int getLoginTimeout() throws SQLException {
+            return this.dataSource.getLoginTimeout();
+        }
 
-		public XADataSource getDataSource() {
-			return this.dataSource;
-		}
-	}
 
+        @Override // this method is introduced in 1.7
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            return invoke17DataSourceGetParentLogger(this.dataSource);
+        }
+
+        public XADataSource getDataSource() {
+            return this.dataSource;
+        }
+    }
+
+    /**
+     * delegates reflectively to the underlying  {@link javax.sql.DataSource}
+     * or does what {@link org.springframework.jdbc.datasource.DelegatingDataSource} does
+     */
+    private static Logger invoke17DataSourceGetParentLogger(Object ds) {
+
+        String getParentLoggerMethodName = "getParentLogger";
+
+        Method getParentLoggerMethod = ReflectionUtils.findMethod(ds.getClass(), getParentLoggerMethodName);
+
+        if (getParentLoggerMethod != null) {
+            try {
+                return (Logger) getParentLoggerMethod.invoke(ds);
+            } catch (Exception e) {
+                // don't care
+            }
+        }
+        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    }
 }
