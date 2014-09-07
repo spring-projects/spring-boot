@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -34,6 +39,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -44,11 +50,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import com.zaxxer.hikari.HikariDataSource;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link DataSourceAutoConfiguration}.
@@ -215,6 +216,32 @@ public class DataSourceAutoConfigurationTests {
 		assertNotNull(this.context.getBean(NamedParameterJdbcOperations.class));
 	}
 
+	@Test
+	public void testDBCPDataSourceOrder() throws Exception {
+		this.context.register(
+				DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.setClassLoader(new URLClassLoader(new URL[0], getClass()
+				.getClassLoader()) {
+			@Override
+			protected Class<?> loadClass(String name, boolean resolve)
+					throws ClassNotFoundException {
+				if (name.startsWith("org.apache.commons.dbcp.") || name.startsWith("org.apache.tomcat")
+						|| name.startsWith("com.zaxxer.hikari")) {
+					throw new ClassNotFoundException();
+				}
+				return super.loadClass(name, resolve);
+			}
+		});
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertTrue("DataSource is wrong type: " + dataSource,
+				dataSource instanceof org.apache.commons.dbcp2.BasicDataSource);
+
+
+
+	}
+
 	@Configuration
 	static class TestDataSourceConfiguration {
 
@@ -230,6 +257,7 @@ public class DataSourceAutoConfigurationTests {
 		}
 
 	}
+
 
 	public static class DatabaseDriver implements Driver {
 
