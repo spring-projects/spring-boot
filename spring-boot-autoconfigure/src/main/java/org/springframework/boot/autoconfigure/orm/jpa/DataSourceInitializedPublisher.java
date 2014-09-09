@@ -65,6 +65,8 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 	private boolean hasPrint = false;
 
+	private static final String DEFAULT_DIALECT = "org.hibernate.dialect.H2Dialect";
+
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
@@ -90,7 +92,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 				cfg.setProperty("hibernate.dialect", properties.getDatabasePlatform());
 			}
 			else {
-				cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+				cfg.setProperty("hibernate.dialect", DEFAULT_DIALECT);
 			}
 			for (javax.persistence.metamodel.EntityType<?> et : em.getMetamodel().getEntities()) {
 				Class<?> entityClass = et.getJavaType();
