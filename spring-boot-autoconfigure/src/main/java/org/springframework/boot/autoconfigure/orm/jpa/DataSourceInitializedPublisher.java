@@ -23,6 +23,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
@@ -73,17 +74,6 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName)
 			throws BeansException {
-		if (logger.isDebugEnabled() && hasPrint == false && em != null) {
-			AnnotationConfiguration cfg = new AnnotationConfiguration();
-			cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-			for (javax.persistence.metamodel.EntityType<?> et : em.getMetamodel().getEntities()) {
-				Class<?> entityClass = et.getJavaType();
-				cfg.addAnnotatedClass(entityClass);
-			}
-			SchemaExport schemaExport = new SchemaExport(cfg);
-			schemaExport.execute(true, false, false, true);
-			hasPrint = true;
-		}
 		if (bean instanceof DataSource) {
 			// Normally this will be the right DataSource
 			this.dataSource = (DataSource) bean;
@@ -91,10 +81,24 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (bean instanceof JpaProperties) {
 			this.properties = (JpaProperties) bean;
 		}
-		if (bean instanceof EntityManagerFactory && this.dataSource != null
-				&& isInitializingDatabase()) {
-			this.applicationContext.publishEvent(new DataSourceInitializedEvent(
-					this.dataSource));
+		if (bean instanceof EntityManagerFactory && this.dataSource != null && isInitializingDatabase()) {
+			this.applicationContext.publishEvent(new DataSourceInitializedEvent(this.dataSource));
+		}
+		if (logger.isDebugEnabled() && hasPrint == false && em != null) {
+			AnnotationConfiguration cfg = new AnnotationConfiguration();
+			if (properties != null && StringUtils.isNotEmpty(properties.getDatabasePlatform())) {
+				cfg.setProperty("hibernate.dialect", properties.getDatabasePlatform());
+			}
+			else {
+				cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+			}
+			for (javax.persistence.metamodel.EntityType<?> et : em.getMetamodel().getEntities()) {
+				Class<?> entityClass = et.getJavaType();
+				cfg.addAnnotatedClass(entityClass);
+			}
+			SchemaExport schemaExport = new SchemaExport(cfg);
+			schemaExport.execute(true, false, false, true);
+			hasPrint = true;
 		}
 		return bean;
 	}
