@@ -156,7 +156,6 @@ public class JettyEmbeddedServletContainerFactoryTests extends
                 if (handler instanceof WebAppContext) {
                     ServletHandler servletHandler = ((WebAppContext) handler).getServletHandler();
                     assertHandlerStarted(servletHandler);
-
                 }
             }
         }
