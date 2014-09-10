@@ -81,12 +81,12 @@ public class MockDeferredInitializableHandler implements DeferredInitializable, 
 
     @Override
     public void addLifeCycleListener(Listener listener) {
-        // To change body of implemented methods use File | Settings | File Templates.
+        // Do nothing here for now.
     }
 
     @Override
     public void removeLifeCycleListener(Listener listener) {
-        // To change body of implemented methods use File | Settings | File Templates.
+        // Do nothing here for now.
     }
 
 }
