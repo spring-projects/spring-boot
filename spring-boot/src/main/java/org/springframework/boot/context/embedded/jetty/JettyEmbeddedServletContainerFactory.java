@@ -175,6 +175,10 @@ public class JettyEmbeddedServletContainerFactory extends
 			throw new EmbeddedServletContainerException("Could not find key store '"
 					+ ssl.getKeyStore() + "'", ex);
 		}
+		if (ssl.getKeyStoreType() != null) {
+			factory.setKeyStoreType(ssl.getKeyStoreType());
+		}
+		factory.setKeyStoreProvider(ssl.getKeyStoreProvider());
 	}
 
 	private void configureSslTrustStore(SslContextFactory factory, Ssl ssl) {
@@ -191,6 +195,10 @@ public class JettyEmbeddedServletContainerFactory extends
 						"Could not find trust store '" + ssl.getTrustStore() + "'", ex);
 			}
 		}
+		if (ssl.getTrustStoreType() != null) {
+			factory.setTrustStoreType(ssl.getTrustStoreType());
+		}
+		factory.setTrustStoreProvider(ssl.getTrustStoreProvider());
 	}
 
 	/**
