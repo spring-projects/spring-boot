@@ -63,18 +63,12 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 	private JpaProperties properties;
 
-	private boolean hasPrint = false;
+	private boolean print = false;
 
 	private static final String DEFAULT_DIALECT = "org.hibernate.dialect.H2Dialect";
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
-		return bean;
-	}
-
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
 			throws BeansException {
 		if (bean instanceof DataSource) {
 			// Normally this will be the right DataSource
@@ -83,13 +77,18 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (bean instanceof JpaProperties) {
 			this.properties = (JpaProperties) bean;
 		}
+		return bean;
+	}
+
+	@Override
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof EntityManagerFactory && this.dataSource != null && isInitializingDatabase()) {
 			this.applicationContext.publishEvent(new DataSourceInitializedEvent(this.dataSource));
 		}
-		if (logger.isDebugEnabled() && hasPrint == false && em != null) {
+		if (this.print == false && logger.isDebugEnabled() && em != null) {
 			AnnotationConfiguration cfg = new AnnotationConfiguration();
-			if (properties != null && StringUtils.isNotEmpty(properties.getDatabasePlatform())) {
-				cfg.setProperty("hibernate.dialect", properties.getDatabasePlatform());
+			if (this.properties != null && StringUtils.isNotEmpty(this.properties.getDatabasePlatform())) {
+				cfg.setProperty("hibernate.dialect", this.properties.getDatabasePlatform());
 			}
 			else {
 				cfg.setProperty("hibernate.dialect", DEFAULT_DIALECT);
@@ -100,7 +99,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 			}
 			SchemaExport schemaExport = new SchemaExport(cfg);
 			schemaExport.execute(true, false, false, true);
-			hasPrint = true;
+			this.print = true;
 		}
 		return bean;
 	}
