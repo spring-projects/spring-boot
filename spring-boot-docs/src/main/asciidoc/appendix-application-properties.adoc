@@ -61,9 +61,13 @@ content into your application; rather pick only the properties that you need.
 	server.ssl.key-password=
 	server.ssl.key-store=
 	server.ssl.key-store-password=
+	server.ssl.key-store-provider=
+	server.ssl.key-store-type=
 	server.ssl.protocol=TLS
 	server.ssl.trust-store=
 	server.ssl.trust-store-password=
+	server.ssl.trust-store-provider=
+	server.ssl.trust-store-type=
 	server.tomcat.access-log-pattern= # log pattern of the access log
 	server.tomcat.access-log-enabled=false # is access logging enabled
 	server.tomcat.protocol-header=x-forwarded-proto # ssl forward headers

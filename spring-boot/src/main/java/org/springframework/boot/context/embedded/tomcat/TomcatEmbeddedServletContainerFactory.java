@@ -290,6 +290,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 			throw new EmbeddedServletContainerException("Could not find key store "
 					+ ssl.getKeyStore(), ex);
 		}
+		if (ssl.getKeyStoreType() != null) {
+			protocol.setKeystoreType(ssl.getKeyStoreType());
+		}
+		if (ssl.getKeyStoreProvider() != null) {
+			protocol.setKeystoreProvider(ssl.getKeyStoreProvider());
+		}
 	}
 
 	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
@@ -304,6 +310,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 			}
 		}
 		protocol.setTruststorePass(ssl.getTrustStorePassword());
+		if (ssl.getTrustStoreType() != null) {
+			protocol.setTruststoreType(ssl.getTrustStoreType());
+		}
+		if (ssl.getTrustStoreProvider() != null) {
+			protocol.setTruststoreProvider(ssl.getTrustStoreProvider());
+		}
 	}
 
 	/**

@@ -36,9 +36,17 @@ public class Ssl {
 
 	private String keyStorePassword;
 
+	private String keyStoreType;
+
+	private String keyStoreProvider;
+
 	private String trustStore;
 
 	private String trustStorePassword;
+
+	private String trustStoreType;
+
+	private String trustStoreProvider;
 
 	private String protocol = "TLS";
 
@@ -90,6 +98,22 @@ public class Ssl {
 		this.keyStorePassword = keyStorePassword;
 	}
 
+	public String getKeyStoreType() {
+		return this.keyStoreType;
+	}
+
+	public void setKeyStoreType(String keyStoreType) {
+		this.keyStoreType = keyStoreType;
+	}
+
+	public String getKeyStoreProvider() {
+		return this.keyStoreProvider;
+	}
+
+	public void setKeyStoreProvider(String keyStoreProvider) {
+		this.keyStoreProvider = keyStoreProvider;
+	}
+
 	public String getTrustStore() {
 		return this.trustStore;
 	}
@@ -104,6 +128,22 @@ public class Ssl {
 
 	public void setTrustStorePassword(String trustStorePassword) {
 		this.trustStorePassword = trustStorePassword;
+	}
+
+	public String getTrustStoreType() {
+		return this.trustStoreType;
+	}
+
+	public void setTrustStoreType(String trustStoreType) {
+		this.trustStoreType = trustStoreType;
+	}
+
+	public String getTrustStoreProvider() {
+		return this.trustStoreProvider;
+	}
+
+	public void setTrustStoreProvider(String trustStoreProvider) {
+		this.trustStoreProvider = trustStoreProvider;
 	}
 
 	public String getProtocol() {
