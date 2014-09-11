@@ -35,6 +35,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Bradley M Handy
  * @see JettyEmbeddedServletContainerFactory
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
@@ -101,7 +102,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		}
 		try {
 			this.server.start();
-            initializeHandlers(this.server.getHandlers());
+			initializeHandlers(this.server.getHandlers());
 			Connector[] connectors = this.server.getConnectors();
 			for (Connector connector : connectors) {
 				connector.start();
@@ -114,11 +115,11 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		}
 	}
 
-    private void initializeHandlers(Handler... handlers) throws Exception {
-        for (Handler handler : handlers) {
-            handleDeferredInitialize(handler);
-        }
-    }
+	private void initializeHandlers(Handler... handlers) throws Exception {
+		for (Handler handler : handlers) {
+			handleDeferredInitialize(handler);
+		}
+	}
 
 	private void handleDeferredInitialize(Handler handler) throws Exception {
 		if (handler instanceof DeferredInitializable) {
@@ -127,9 +128,9 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		else if (handler instanceof HandlerWrapper) {
 			handleDeferredInitialize(((HandlerWrapper) handler).getHandler());
 		}
-        else if (handler instanceof HandlerCollection) {
-            initializeHandlers(((HandlerCollection) handler).getHandlers());
-        }
+		else if (handler instanceof HandlerCollection) {
+			initializeHandlers(((HandlerCollection) handler).getHandlers());
+		}
 	}
 
 	private Integer getLocalPort(Connector connector) {
