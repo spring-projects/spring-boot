@@ -18,15 +18,29 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.web.BasicErrorControllerMockMvcTests.MinimalWebConfiguration;
+import org.springframework.boot.autoconfigure.web.BasicErrorControllerMockMvcTests.TestConfiguration;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.AbstractView;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
@@ -40,8 +54,9 @@ import static org.junit.Assert.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = BasicErrorControllerMockMvcTests.TestConfiguration.class)
+@SpringApplicationConfiguration(classes = TestConfiguration.class)
 @WebAppConfiguration
+@DirtiesContext
 @IntegrationTest("server.port=0")
 public class BasicErrorControllerIntegrationTest {
 
@@ -69,4 +84,49 @@ public class BasicErrorControllerIntegrationTest {
 		assertThat(resp, containsString("errors=[{codes="));
 		assertThat(resp, containsString("org.springframework.validation.BindException"));
 	}
+
+	@Configuration
+	@MinimalWebConfiguration
+	public static class TestConfiguration {
+
+		// For manual testing
+		public static void main(String[] args) {
+			SpringApplication.run(TestConfiguration.class, args);
+		}
+
+		@Bean
+		public View error() {
+			return new AbstractView() {
+				@Override
+				protected void renderMergedOutputModel(Map<String, Object> model,
+						HttpServletRequest request, HttpServletResponse response)
+						throws Exception {
+					response.getWriter().write("ERROR_BEAN");
+				}
+			};
+		}
+
+		@RestController
+		protected static class Errors {
+
+			public String getFoo() {
+				return "foo";
+			}
+
+			@RequestMapping("/")
+			public String home() {
+				throw new IllegalStateException("Expected!");
+			}
+
+			@RequestMapping("/bind")
+			public String bind() throws Exception {
+				BindException error = new BindException(this, "test");
+				error.rejectValue("foo", "bar.error");
+				throw error;
+			}
+
+		}
+
+	}
+
 }
