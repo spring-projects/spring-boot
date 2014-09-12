@@ -101,6 +101,7 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 					.password("admin").roles("ADMIN", "USER").and().withUser("user")
 					.password("user").roles("USER");
 		}
+
 	}
 
 }
