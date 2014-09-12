@@ -146,7 +146,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  */
 public class SpringApplication {
 
-    public static final String MAIN_SOURCES = "spring.main.sources";
+	public static final String MAIN_SOURCES = "spring.main.sources";
 
 	private static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
 			+ "annotation.AnnotationConfigApplicationContext";
