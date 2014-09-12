@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jta;
 import java.io.File;
 import java.util.Properties;
 
+import javax.jms.Message;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
@@ -51,7 +52,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
  * @since 1.2.0
  */
 @Configuration
-@ConditionalOnClass(UserTransactionManager.class)
+@ConditionalOnClass({ JtaTransactionManager.class, UserTransactionManager.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class AtomikosJtaConfiguration {
 
@@ -101,12 +102,6 @@ class AtomikosJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public XAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
-		return new AtomikosXAConnectionFactoryWrapper();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public static AtomikosDependsOnBeanFactoryPostProcessor atomikosDependsOnBeanFactoryPostProcessor() {
 		return new AtomikosDependsOnBeanFactoryPostProcessor();
 	}
@@ -115,6 +110,18 @@ class AtomikosJtaConfiguration {
 	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
 			TransactionManager transactionManager) {
 		return new JtaTransactionManager(userTransaction, transactionManager);
+	}
+
+	@Configuration
+	@ConditionalOnClass(Message.class)
+	static class AtomikosJtaJmsConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public XAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
+			return new AtomikosXAConnectionFactoryWrapper();
+		}
+
 	}
 
 }

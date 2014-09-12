@@ -94,6 +94,9 @@ public class AtomikosDependsOnBeanFactoryPostProcessor implements
 		catch (ClassNotFoundException ex) {
 			// Ignore
 		}
+		catch (NoClassDefFoundError ex) {
+			// Ignore
+		}
 		return NO_BEANS;
 	}
 

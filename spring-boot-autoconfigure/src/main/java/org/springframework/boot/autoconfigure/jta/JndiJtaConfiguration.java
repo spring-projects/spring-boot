@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jta;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -24,12 +25,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
- * JTA Configuration for a JDNI managed {@link JtaTransactionManager}.
+ * JTA Configuration for a JNDI-managed {@link JtaTransactionManager}.
  *
  * @author Phillip Webb
  * @since 1.2.0
  */
 @Configuration
+@ConditionalOnClass(JtaTransactionManager.class)
 @ConditionalOnJndi({ JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME,
 		"java:comp/TransactionManager", "java:appserver/TransactionManager",
 		"java:pm/TransactionManager", "java:/TransactionManager" })

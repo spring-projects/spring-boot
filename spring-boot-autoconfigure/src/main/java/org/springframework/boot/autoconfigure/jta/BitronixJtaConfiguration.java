@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jta;
 
 import java.io.File;
 
+import javax.jms.Message;
 import javax.transaction.TransactionManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ import bitronix.tm.jndi.BitronixContext;
  * @since 1.2.0
  */
 @Configuration
-@ConditionalOnClass(BitronixContext.class)
+@ConditionalOnClass({ JtaTransactionManager.class, BitronixContext.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
 class BitronixJtaConfiguration {
 
@@ -91,12 +92,6 @@ class BitronixJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public XAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
-		return new BitronixXAConnectionFactoryWrapper();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
 	public static BitronixDependentBeanFactoryPostProcessor atomikosDependsOnBeanFactoryPostProcessor() {
 		return new BitronixDependentBeanFactoryPostProcessor();
 	}
@@ -106,4 +101,13 @@ class BitronixJtaConfiguration {
 		return new JtaTransactionManager(transactionManager);
 	}
 
+	@ConditionalOnClass(Message.class)
+	static class BitronixJtaJmsConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public XAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
+			return new BitronixXAConnectionFactoryWrapper();
+		}
+	}
 }

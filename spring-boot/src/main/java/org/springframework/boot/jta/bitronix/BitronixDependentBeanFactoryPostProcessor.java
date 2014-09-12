@@ -70,6 +70,9 @@ public class BitronixDependentBeanFactoryPostProcessor implements
 		catch (ClassNotFoundException ex) {
 			// Ignore
 		}
+		catch (NoClassDefFoundError ex) {
+			// Ignore
+		}
 		return NO_BEANS;
 	}
 
