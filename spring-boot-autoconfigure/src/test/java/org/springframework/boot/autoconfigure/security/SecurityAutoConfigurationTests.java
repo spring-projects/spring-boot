@@ -68,10 +68,10 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		// 4 for static resources and one for the rest
+		// 5 for static resources and one for the rest
 		List<SecurityFilterChain> filterChains = this.context.getBean(
 				FilterChainProxy.class).getFilterChains();
-		assertEquals(5, filterChains.size());
+		assertEquals(6, filterChains.size());
 	}
 
 	@Test
