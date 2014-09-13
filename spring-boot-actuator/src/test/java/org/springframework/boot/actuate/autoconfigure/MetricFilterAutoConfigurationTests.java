@@ -89,9 +89,9 @@ public class MetricFilterAutoConfigurationTests {
 		mvc.perform(get("/templateVarTest/foo")).andExpect(status().isOk());
 
 		verify(context.getBean(CounterService.class)).increment(
-				"status.200.templateVarTest.-someVariable-");
+				"status.200.templateVarTest.someVariable");
 		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.templateVarTest.-someVariable-"), anyDouble());
+				eq("response.templateVarTest.someVariable"), anyDouble());
 		context.close();
 	}
 
@@ -106,9 +106,9 @@ public class MetricFilterAutoConfigurationTests {
 		mvc.perform(get("/knownPath/foo")).andExpect(status().isNotFound());
 
 		verify(context.getBean(CounterService.class)).increment(
-				"status.404.knownPath.-someVariable-");
+				"status.404.knownPath.someVariable");
 		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.knownPath.-someVariable-"), anyDouble());
+				eq("response.knownPath.someVariable"), anyDouble());
 		context.close();
 	}
 
