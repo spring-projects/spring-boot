@@ -418,4 +418,18 @@ public class JarFileTests {
 		url.openConnection().getInputStream();
 	}
 
+	@Test
+	public void loadFileFromNestedURL() throws Exception {
+		// gh-1508
+		JarFile.registerUrlProtocolHandler();
+		String spec =
+			"jar:jar:" + this.rootJarFile.toURI() + "!/nested.jar!/3.dat";
+		URL url = new URL(spec);
+		assertThat(url.toString(), equalTo(spec));
+		InputStream inputStream = url.openStream();
+		assertThat(inputStream, notNullValue());
+		assertThat(inputStream.read(), equalTo(3));
+
+	}
+
 }
