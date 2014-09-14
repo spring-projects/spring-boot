@@ -22,7 +22,8 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
-import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,8 +37,6 @@ import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
@@ -61,6 +60,9 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	private static final String JTA_PLATFORM = "hibernate.transaction.jta.platform";
 
+	private static final Logger logger = LoggerFactory
+			.getLogger(HibernateJpaAutoConfiguration.class);
+
 	@Autowired
 	private JpaProperties properties;
 
@@ -82,19 +84,38 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
 		super.customizeVendorProperties(vendorProperties);
+
+		String HIBERNATE43_NOJTAPLATFORM_CLASS = "org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform";
+		String HIBERNATE42_NOJTAPLATFORM_CLASS = "org.hibernate.service.jta.platform.internal.NoJtaPlatform";
+
 		if (!vendorProperties.containsKey(JTA_PLATFORM)) {
 			JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
-			if (jtaTransactionManager != null) {
-				vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(
-						jtaTransactionManager));
+			try {
+				if (jtaTransactionManager != null) {
+					vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(
+							jtaTransactionManager));
+				}
+				else {
+					Object jtaPlatform = null;
+					if (ClassUtils.isPresent(HIBERNATE43_NOJTAPLATFORM_CLASS, null)) {
+						jtaPlatform = ClassUtils.forName(HIBERNATE43_NOJTAPLATFORM_CLASS,
+								null).newInstance();
+					}
+					else if (ClassUtils.isPresent(HIBERNATE42_NOJTAPLATFORM_CLASS, null)) {
+						jtaPlatform = ClassUtils.forName(HIBERNATE42_NOJTAPLATFORM_CLASS,
+								null).newInstance();
+					}
+					if (jtaPlatform != null) {
+						vendorProperties.put(JTA_PLATFORM, jtaPlatform);
+					}
+				}
 			}
-			else {
-				vendorProperties.put(JTA_PLATFORM, NoJtaPlatform.INSTANCE);
+			catch (Exception e) {
+				logger.error("Could not configure the JTA platform", e);
 			}
 		}
 	}
 
-	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 	static class HibernateEntityManagerCondition extends SpringBootCondition {
 
 		private static String[] CLASS_NAMES = {
