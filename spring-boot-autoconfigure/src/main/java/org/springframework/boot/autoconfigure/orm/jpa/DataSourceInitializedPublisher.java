@@ -70,6 +70,11 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
+		return bean;
+	}
+
+	@Override
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof DataSource) {
 			// Normally this will be the right DataSource
 			this.dataSource = (DataSource) bean;
@@ -77,11 +82,6 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (bean instanceof JpaProperties) {
 			this.properties = (JpaProperties) bean;
 		}
-		return bean;
-	}
-
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof EntityManagerFactory && this.dataSource != null && isInitializingDatabase()) {
 			this.applicationContext.publishEvent(new DataSourceInitializedEvent(this.dataSource));
 		}
