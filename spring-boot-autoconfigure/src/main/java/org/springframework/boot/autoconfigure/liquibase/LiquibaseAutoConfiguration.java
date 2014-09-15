@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,11 +89,20 @@ public class LiquibaseAutoConfiguration {
 			SpringLiquibase liquibase = new SpringLiquibase();
 			liquibase.setChangeLog(this.properties.getChangeLog());
 			liquibase.setContexts(this.properties.getContexts());
-			liquibase.setDataSource(this.dataSource);
+			liquibase.setDataSource(getDataSource());
 			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
 			liquibase.setDropFirst(this.properties.isDropFirst());
 			liquibase.setShouldRun(this.properties.isEnabled());
 			return liquibase;
+		}
+
+		private DataSource getDataSource() {
+			if (this.properties.getUrl() == null) {
+				return this.dataSource;
+			}
+			return DataSourceBuilder.create().url(this.properties.getUrl())
+					.username(this.properties.getUser())
+					.password(this.properties.getPassword()).build();
 		}
 	}
 
