@@ -1394,23 +1394,25 @@ You will get the best results if you put this in a nested class, or a standalone
 order of instantiation). The {github-code}/spring-boot-samples/spring-boot-sample-web-secure[secure web sample]
 is a useful template to follow.
 
-If you experience instantiation issues (e.g. using JDBC or JPA for the
-user detail store) it might be worth extracting the
-`AuthenticationManagerBuilder` callback into a
-`GlobalAuthenticationConfigurerAdapter` (in the `init()` method so it
-happens before the authentication manager is needed elsewhere), e.g.
+If you experience instantiation issues (e.g. using JDBC or JPA for the user detail store)
+it might be worth extracting the `AuthenticationManagerBuilder` callback into a
+`GlobalAuthenticationConfigurerAdapter` (in the `init()` method so it happens before the
+authentication manager is needed elsewhere), e.g.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-@Configuration
-public class AuthenticationManagerConfiguration extends
-    GlobalAuthenticationConfigurerAdapter {
-    @Override
-    public void init(AuthenticationManagerBuilder auth) {
-        auth.inMemoryAuthentication() // ... etc.
-    }
-}
+	@Configuration
+	public class AuthenticationManagerConfiguration extends
+
+		GlobalAuthenticationConfigurerAdapter {
+		@Override
+		public void init(AuthenticationManagerBuilder auth) {
+			auth.inMemoryAuthentication() // ... etc.
+		}
+
+	}
 ----
+
 
 
 [[howto-enable-https]]
