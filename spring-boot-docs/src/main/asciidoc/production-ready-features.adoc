@@ -195,9 +195,20 @@ exposed. For example, you could add the following to your `application.propertie
 	info.app.version=1.0.0
 ----
 
-If you are using Maven, you can automatically expand info properties from the Maven
-project using resource filtering. In your `pom.xml` you have (inside the `<build/>`
-element):
+
+
+[[production-ready-application-info-automatic-expansion]]
+==== Automatically expand info properties at build time
+Rather than hardcoding some properties that are also specified in your project's
+build configuration, you can automatically expand info properties using the
+existing build configuration instead. This is possible in both Maven and Gradle.
+
+
+
+[[production-ready-application-info-automatic-expansion-maven]]
+===== Automatic property expansion using Maven
+You can automatically expand info properties from the Maven project using resource
+filtering. In your `pom.xml` you have (inside the `<build/>` element):
 
 [source,xml,indent=0]
 ----
@@ -225,6 +236,29 @@ You can then refer to your Maven ``project properties'' via placeholders, e.g.
 
 NOTE: In the above example we used `project.*` to set some values to be used as
 fallbacks if the Maven resource filtering has not been switched on for some reason.
+
+
+
+[[production-ready-application-info-automatic-expansion-gradle]]
+===== Automatic property expansion using Gradle
+You can automatically expand info properties from the Gradle project by configuring
+the Java plugin's `processResources` task to do so:
+
+[source,groovy,indent=0]
+----
+processResources {
+	expand(project.properties)
+}
+----
+
+You can then refer to your Gradle project's properties via placeholders, e.g.
+
+[source,properties,indent=0]
+----
+	info.build.name=${name}
+	info.build.description=${description}
+	info.build.version=${version}
+----
 
 
 
