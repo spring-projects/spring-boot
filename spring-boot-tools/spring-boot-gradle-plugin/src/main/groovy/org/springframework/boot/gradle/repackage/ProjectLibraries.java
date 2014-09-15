@@ -209,7 +209,8 @@ class ProjectLibraries implements Libraries {
 		private final ResolvedArtifact artifact;
 
 		public ResolvedArtifactLibrary(ResolvedArtifact artifact, LibraryScope scope) {
-			super(null, artifact.getFile(), scope);
+			super(artifact.getModuleVersion().getId().getGroup(), artifact.getFile(),
+					scope);
 			this.artifact = artifact;
 		}
 
