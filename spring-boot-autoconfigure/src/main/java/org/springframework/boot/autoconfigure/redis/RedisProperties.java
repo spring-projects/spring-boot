@@ -35,9 +35,9 @@ public class RedisProperties {
 
 	private int port = 6379;
 
-	private RedisProperties.Pool pool;
+	private Pool pool;
 
-    private RedisProperties.Sentinel sentinel;
+	private Sentinel sentinel;
 
 	public String getHost() {
 		return this.host;
@@ -63,11 +63,11 @@ public class RedisProperties {
 		this.password = password;
 	}
 
-	public RedisProperties.Pool getPool() {
+	public Pool getPool() {
 		return this.pool;
 	}
 
-	public void setPool(RedisProperties.Pool pool) {
+	public void setPool(Pool pool) {
 		this.pool = pool;
 	}
 
@@ -79,16 +79,15 @@ public class RedisProperties {
 		this.database = database;
 	}
 
+	public Sentinel getSentinel() {
+		return this.sentinel;
+	}
 
 	public void setSentinel(Sentinel sentinel) {
 		this.sentinel = sentinel;
 	}
 
-	public Sentinel getSentinel() {
-		return sentinel;
-	}
-
-    /**
+	/**
 	 * Pool properties.
 	 */
 	public static class Pool {
@@ -134,28 +133,29 @@ public class RedisProperties {
 		}
 	}
 
-    /**
-     * Properties for configuring redis sentinels.
-     */
-    public static class Sentinel {
+	/**
+	 * Redis sentinel properties.
+	 */
+	public static class Sentinel {
 
-        private String master;
-        private String nodes;
+		private String master;
 
-        public String getMaster() {
-            return master;
-        }
+		private String nodes;
 
-        public void setMaster(String master) {
-            this.master = master;
-        }
+		public String getMaster() {
+			return this.master;
+		}
 
-        public String getNodes() {
-            return nodes;
-        }
+		public void setMaster(String master) {
+			this.master = master;
+		}
 
-        public void setNodes(String nodes) {
-            this.nodes = nodes;
-        }
-    }
+		public String getNodes() {
+			return this.nodes;
+		}
+
+		public void setNodes(String nodes) {
+			this.nodes = nodes;
+		}
+	}
 }
