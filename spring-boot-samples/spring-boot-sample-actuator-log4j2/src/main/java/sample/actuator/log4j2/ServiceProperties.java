@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * Support for the Log4j logging library.
- */
-package org.springframework.boot.logging.log4j;
+package sample.actuator.log4j2;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@ConfigurationProperties(prefix = "service", ignoreUnknownFields = false)
+@Component
+public class ServiceProperties {
+
+	private String name = "World";
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+}

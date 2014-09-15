@@ -7,9 +7,9 @@
 		<artifactId>spring-boot-samples</artifactId>
 		<version>1.2.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-sample-actuator-log4j</artifactId>
-	<name>Spring Boot Actuator Log4j Sample</name>
-	<description>Spring Boot Actuator Log4j Sample</description>
+	<artifactId>spring-boot-sample-actuator-log4j2</artifactId>
+	<name>Spring Boot Actuator Log4j 2 Sample</name>
+	<description>Spring Boot Actuator Log4j 2 Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
@@ -35,7 +35,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-log4j</artifactId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

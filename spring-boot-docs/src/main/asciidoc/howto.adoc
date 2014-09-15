@@ -961,14 +961,15 @@ If Groovy is on the classpath you should be able to configure Logback with
 
 [[howto-configure-log4j-for-logging]]
 === Configure Log4j for logging
-Spring Boot supports http://logging.apache.org/log4j[Log4j] for logging
-configuration, but it has to be on the classpath. If you are using the starter poms for
-assembling dependencies that means you have to exclude logback and then include log4j
-instead. If you aren't using the starter poms then you need to provide `commons-logging`
-(at least) in addition to Log4j.
+Spring Boot also supports either http://logging.apache.org/log4j/1.2[Log4j] or
+http://logging.apache.org/log4j/2.x[Log4j 2] for logging configuration, but only if one
+of them is on the classpath. If you are using the starter poms for assembling
+dependencies that means you have to exclude Logback and then include your chosen version
+of Log4j instead. If you aren't using the starter poms then you need to provide
+`commons-logging` (at least) in addition to your chosen version of Log4j.
 
-The simplest path to using Log4j is probably through the starter poms, even though it
-requires some jiggling with excludes, e.g. in Maven:
+The simplest path is probably through the starter poms, even though it requires some
+jiggling with excludes, .e.g. in Maven:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -992,10 +993,13 @@ requires some jiggling with excludes, e.g. in Maven:
 	</dependency>
 ----
 
-NOTE: The use of the log4j starter gathers together the dependencies for common logging
-requirements (e.g. including having Tomcat use `java.util.logging` but configure the
-output using Log4j). See the Actuator Log4j Sample for more detail and to see it in
-action.
+To use Log4j 2, simply depend on `spring-boot-starter-log4j2` rather than
+`spring-boot-starter-log4j`
+
+NOTE: The use of the one of the Log4j starters gathers together the dependencies for
+common logging requirements (e.g. including having Tomcat use `java.util.logging` but
+configure the output using Log4j or Log4j 2). See the Actuator Log4j or Log4j 2
+samples for more detail and to see it in action.
 
 
 

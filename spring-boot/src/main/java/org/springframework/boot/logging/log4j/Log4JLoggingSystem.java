@@ -33,7 +33,7 @@ import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link LoggingSystem} for for <a href="http://logging.apache.org/log4j">log4j</a>.
+ * {@link LoggingSystem} for <a href="http://logging.apache.org/log4j/1.2">Log4j</a>.
  *
  * @author Phillip Webb
  * @author Dave Syer

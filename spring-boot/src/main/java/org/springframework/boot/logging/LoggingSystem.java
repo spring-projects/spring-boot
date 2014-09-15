@@ -37,6 +37,8 @@ public abstract class LoggingSystem {
 		systems.put("ch.qos.logback.core.Appender", pkg + ".logback.LogbackLoggingSystem");
 		systems.put("org.apache.log4j.PropertyConfigurator", pkg
 				+ ".log4j.Log4JLoggingSystem");
+		systems.put("org.apache.logging.log4j.LogManager", pkg
+		  		+ ".log4j2.Log4J2LoggingSystem");
 		systems.put("java.util.logging.LogManager", pkg + ".java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
 	}

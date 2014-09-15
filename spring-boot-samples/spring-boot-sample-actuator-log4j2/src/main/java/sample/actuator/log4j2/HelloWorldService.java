@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Support for the Log4j logging library.
- */
-package org.springframework.boot.logging.log4j;
+package sample.actuator.log4j2;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class HelloWorldService {
+
+	@Autowired
+	private ServiceProperties configuration;
+
+	public String getHelloMessage() {
+		return "Hello " + this.configuration.getName();
+	}
+
+}
