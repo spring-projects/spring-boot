@@ -43,6 +43,8 @@ public class Handler extends URLStreamHandler {
 
 	private static final String FILE_PROTOCOL = "file:";
 
+	private static final String JAR_PROTOCOL = "jar:";
+
 	private static final String SEPARATOR = "!/";
 
 	private static final String[] FALLBACK_HANDLERS = { "sun.net.www.protocol.jar.Handler" };
@@ -142,7 +144,16 @@ public class Handler extends URLStreamHandler {
 		if (separatorIndex == -1) {
 			throw new MalformedURLException("Jar URL does not contain !/ separator");
 		}
-		String name = spec.substring(0, separatorIndex);
+
+		int startIndex = 0;
+
+		// strip any jar: protocols from the spec
+	    int jarIndex;
+		while((jarIndex = spec.indexOf(JAR_PROTOCOL, startIndex)) > -1) {
+			startIndex = jarIndex + JAR_PROTOCOL.length();
+		}
+
+		String name = spec.substring(startIndex, separatorIndex);
 		return getRootJarFile(name);
 	}
 
