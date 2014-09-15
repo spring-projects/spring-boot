@@ -199,9 +199,9 @@ exposed. For example, you could add the following to your `application.propertie
 
 [[production-ready-application-info-automatic-expansion]]
 ==== Automatically expand info properties at build time
-Rather than hardcoding some properties that are also specified in your project's
-build configuration, you can automatically expand info properties using the
-existing build configuration instead. This is possible in both Maven and Gradle.
+Rather than hardcoding some properties that are also specified in your project's build
+configuration, you can automatically expand info properties using the existing build
+configuration instead. This is possible in both Maven and Gradle.
 
 
 
@@ -246,9 +246,9 @@ the Java plugin's `processResources` task to do so:
 
 [source,groovy,indent=0]
 ----
-processResources {
-	expand(project.properties)
-}
+	processResources {
+		expand(project.properties)
+	}
 ----
 
 You can then refer to your Gradle project's properties via placeholders, e.g.

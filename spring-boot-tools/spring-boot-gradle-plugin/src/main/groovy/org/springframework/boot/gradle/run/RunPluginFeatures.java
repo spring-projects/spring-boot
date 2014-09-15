@@ -78,10 +78,7 @@ public class RunPluginFeatures implements PluginFeatures {
 				if (project.hasProperty("applicationDefaultJvmArgs")) {
 					return project.property("applicationDefaultJvmArgs");
 				}
-				else {
-					return Collections.emptyList();
-				}
-
+				return Collections.emptyList();
 			}
 		});
 	}

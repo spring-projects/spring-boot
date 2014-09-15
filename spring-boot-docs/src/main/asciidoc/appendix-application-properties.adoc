@@ -244,6 +244,9 @@ content into your application; rather pick only the properties that you need.
 	liquibase.default-schema= # default database schema to use
 	liquibase.drop-first=false
 	liquibase.enabled=true
+	liquibase.url= # specific JDBC url (if not set the default datasource is used)
+	liquibase.user= # user name for liquibase.url
+	liquibase.password= # password for liquibase.url
 
 	# JMX
 	spring.jmx.enabled=true # Expose MBeans from Spring

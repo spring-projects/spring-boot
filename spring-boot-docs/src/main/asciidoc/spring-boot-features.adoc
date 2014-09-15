@@ -369,7 +369,7 @@ For example, the following YAML document:
 [source,yaml,indent=0]
 ----
 	environments:
-		dev:
+		dev:`
 			url: http://dev.bar.com
 			name: Developer Setup
 		prod:
