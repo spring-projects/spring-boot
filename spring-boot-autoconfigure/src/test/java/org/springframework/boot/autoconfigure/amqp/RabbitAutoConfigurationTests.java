@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.amqp;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
@@ -37,8 +36,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RabbitAutoConfiguration}.
@@ -71,10 +73,9 @@ public class RabbitAutoConfigurationTests {
 
 	@Test
 	public void testRabbitTemplateWithOverrides() {
-		load(TestConfiguration.class,
-				"spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
-				"spring.rabbitmq.username:alice", "spring.rabbitmq.password:secret",
-				"spring.rabbitmq.virtual_host:/vhost");
+		load(TestConfiguration.class, "spring.rabbitmq.host:remote-server",
+				"spring.rabbitmq.port:9000", "spring.rabbitmq.username:alice",
+				"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		assertEquals("remote-server", connectionFactory.getHost());
@@ -129,13 +130,15 @@ public class RabbitAutoConfigurationTests {
 	public void testRabbitTemplateBackOff() {
 		load(TestConfiguration3.class);
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
-		assertEquals(this.context.getBean("testMessageConverter"), rabbitTemplate.getMessageConverter());
+		assertEquals(this.context.getBean("testMessageConverter"),
+				rabbitTemplate.getMessageConverter());
 	}
 
 	@Test
 	public void testRabbitMessagingTemplateBackOff() {
 		load(TestConfiguration4.class);
-		RabbitMessagingTemplate messagingTemplate = this.context.getBean(RabbitMessagingTemplate.class);
+		RabbitMessagingTemplate messagingTemplate = this.context
+				.getBean(RabbitMessagingTemplate.class);
 		assertEquals("fooBar", messagingTemplate.getDefaultDestination());
 	}
 
@@ -153,7 +156,8 @@ public class RabbitAutoConfigurationTests {
 	public void testEnableRabbitCreateDefaultContainerFactory() {
 		load(EnableRabbitConfiguration.class);
 		RabbitListenerContainerFactory<?> rabbitListenerContainerFactory = this.context
-				.getBean("rabbitListenerContainerFactory", RabbitListenerContainerFactory.class);
+				.getBean("rabbitListenerContainerFactory",
+						RabbitListenerContainerFactory.class);
 		assertEquals(SimpleRabbitListenerContainerFactory.class,
 				rabbitListenerContainerFactory.getClass());
 	}
@@ -162,7 +166,8 @@ public class RabbitAutoConfigurationTests {
 	public void testRabbitListenerContainerFactoryBackOff() {
 		load(TestConfiguration5.class);
 		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
-				.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
+				.getBean("rabbitListenerContainerFactory",
+						SimpleRabbitListenerContainerFactory.class);
 		rabbitListenerContainerFactory.setTxSize(10);
 		verify(rabbitListenerContainerFactory).setTxSize(10);
 	}
@@ -176,7 +181,7 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		this.context = doLoad(new Class<?>[] {config}, environment);
+		this.context = doLoad(new Class<?>[] { config }, environment);
 	}
 
 	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs,
@@ -224,7 +229,8 @@ public class RabbitAutoConfigurationTests {
 
 		@Bean
 		RabbitMessagingTemplate messagingTemplate(RabbitTemplate rabbitTemplate) {
-			RabbitMessagingTemplate messagingTemplate = new RabbitMessagingTemplate(rabbitTemplate);
+			RabbitMessagingTemplate messagingTemplate = new RabbitMessagingTemplate(
+					rabbitTemplate);
 			messagingTemplate.setDefaultDestination("fooBar");
 			return messagingTemplate;
 		}

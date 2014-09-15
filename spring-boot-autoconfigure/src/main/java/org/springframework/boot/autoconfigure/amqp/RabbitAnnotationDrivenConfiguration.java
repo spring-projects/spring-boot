@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
@@ -56,6 +55,7 @@ class RabbitAnnotationDrivenConfiguration {
 	@EnableRabbit
 	@ConditionalOnMissingBean(name = RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
 	protected static class EnableRabbitConfiguration {
+
 	}
 
 }
