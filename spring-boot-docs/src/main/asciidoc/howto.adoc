@@ -494,20 +494,38 @@ HTTPS connector:
 
 [[howto-use-tomcat-behind-a-proxy-server]]
 === Use Tomcat behind a front-end proxy server
-Spring Boot will automatically configure Tomcat's `RemoteIpValve` if it detects some
-environment settings. This allows you to transparently use the standard `x-forwarded-for`
-and `x-forwarded-proto` headers that most front-end proxy servers add.
-
-You can switch on the valve by adding some entries to application.properties, e.g.
+Spring Boot will automatically configure Tomcat's `RemoteIpValve`. This allows you to
+transparently use the standard `x-forwarded-for` and `x-forwarded-proto` headers that
+most front-end proxy servers add. If your proxy uses different headers you can
+customize the valve's configuration by adding some entries to `application.properties`,
+e.g.
 
 [indent=0]
 ----
-	server.tomcat.remote_ip_header=x-forwarded-for
-	server.tomcat.protocol_header=x-forwarded-proto
+	server.tomcat.remote_ip_header=x-your-remote-ip-header
+	server.tomcat.protocol_header=x-your-protocol-header
 ----
 
-Alternatively, you can add the `RemoteIpValve` yourself by adding a
-`TomcatEmbeddedServletContainerFactory` bean.
+The valve is also configured with a default regular expression that matches internal
+proxies that are to be trusted. By default, IP addresses in 10/8, 192.168/16, 169.254/16
+and 127/8 are trusted. You can customize the valve's configuration by adding an entry
+to `application.properties`, e.g.
+
+[indent=0]
+----
+	server.tomcat.internal_proxies=192\.168\.\d{1,3}\.\d{1,3}
+----
+
+Alternatively, you can take complete control of the configuration of the `RemoteIpValve`
+by configuring and adding it in a `TomcatEmbeddedServletContainerFactory` bean.
+
+Lastly, you can switch off the valve by adding some entries to `application.properties`:
+
+[indent=0]
+----
+	server.tomcat.remote_ip_header=
+	server.tomcat.protocol_header=
+----
 
 
 
