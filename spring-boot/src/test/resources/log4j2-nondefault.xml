@@ -3,8 +3,8 @@
     <Properties>
         <Property name="PID">????</Property>
         <Property name="LOG_PATH">/tmp</Property>
-        <Property name="LOG_FILE">${LOG_PATH}/spring.log</Property>
-        <Property name="LOG_PATTERN">${LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] service%X{context} - ${PID} %5p [%t] --- %c{1}: %m%n</Property>
+        <Property name="LOG_FILE">${sys:LOG_PATH}/spring.log</Property>
+        <Property name="LOG_PATTERN">${sys:LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] service%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">

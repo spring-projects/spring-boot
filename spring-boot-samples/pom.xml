@@ -22,6 +22,7 @@
 	<modules>
 		<module>spring-boot-sample-actuator</module>
 		<module>spring-boot-sample-actuator-log4j</module>
+		<module>spring-boot-sample-actuator-log4j2</module>
 		<module>spring-boot-sample-actuator-noweb</module>
 		<module>spring-boot-sample-actuator-ui</module>
 		<module>spring-boot-sample-amqp</module>
