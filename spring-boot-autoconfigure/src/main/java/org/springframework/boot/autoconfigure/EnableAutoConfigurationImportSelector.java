@@ -31,12 +31,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
  * auto-configuration}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see EnableAutoConfiguration
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -53,6 +55,10 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 			AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
 					.getAnnotationAttributes(EnableAutoConfiguration.class.getName(),
 							true));
+
+			Assert.notNull(attributes, "No auto-configuration attributes found. Is "
+					+ metadata.getClassName()
+					+ " annotated with @EnableAutoConfiguration?");
 
 			// Find all possible auto configuration classes, filtering duplicates
 			List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
