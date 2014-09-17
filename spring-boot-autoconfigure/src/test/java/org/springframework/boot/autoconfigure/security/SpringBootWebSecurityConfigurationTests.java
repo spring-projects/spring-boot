@@ -30,7 +30,7 @@ public class SpringBootWebSecurityConfigurationTests {
 	@Test
 	public void testDefaultIgnores() {
 		assertTrue(SpringBootWebSecurityConfiguration
-				.getIgnored(new SecurityProperties()).contains("/error"));
+				.getIgnored(new SecurityProperties()).contains("/css/**"));
 	}
 
 }

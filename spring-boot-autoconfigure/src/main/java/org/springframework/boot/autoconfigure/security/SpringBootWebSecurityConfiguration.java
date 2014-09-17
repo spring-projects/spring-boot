@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
+import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +51,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
 
 /**
@@ -86,7 +88,7 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
 public class SpringBootWebSecurityConfiguration {
 
 	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
-			"/images/**", "/**/favicon.ico", "/error");
+			"/images/**", "/**/favicon.ico");
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
@@ -132,6 +134,9 @@ public class SpringBootWebSecurityConfiguration {
 	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
 			WebSecurityConfigurer<WebSecurity> {
 
+		@Autowired(required = false)
+		private ErrorController errorController;
+
 		@Autowired
 		private SecurityProperties security;
 
@@ -146,8 +151,19 @@ public class SpringBootWebSecurityConfiguration {
 		public void init(WebSecurity builder) throws Exception {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			List<String> ignored = getIgnored(this.security);
+			if (this.errorController != null) {
+				ignored.add(normalizePath(this.errorController.getErrorPath()));
+			}
 			String[] paths = this.server.getPathsArray(ignored);
 			ignoring.antMatchers(paths);
+		}
+
+		private String normalizePath(String errorPath) {
+			String result = StringUtils.cleanPath(errorPath);
+			if (!result.startsWith("/")) {
+				result = "/" + result;
+			}
+			return result;
 		}
 
 	}

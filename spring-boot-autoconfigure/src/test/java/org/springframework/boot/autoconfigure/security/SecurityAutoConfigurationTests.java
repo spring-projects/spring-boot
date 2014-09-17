@@ -71,7 +71,7 @@ public class SecurityAutoConfigurationTests {
 		// 5 for static resources and one for the rest
 		List<SecurityFilterChain> filterChains = this.context.getBean(
 				FilterChainProxy.class).getFilterChains();
-		assertEquals(6, filterChains.size());
+		assertEquals(5, filterChains.size());
 	}
 
 	@Test
