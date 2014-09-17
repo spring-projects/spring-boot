@@ -101,7 +101,7 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		JodaModule jacksonJodaModule() {
+		public JodaModule jacksonJodaModule() {
 			return new JodaModule();
 		}
 
@@ -114,7 +114,7 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		JSR310Module jacksonJsr310Module() {
+		public JSR310Module jacksonJsr310Module() {
 			return new JSR310Module();
 		}
 

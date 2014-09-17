@@ -58,7 +58,8 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
+		public RedisConnectionFactory redisConnectionFactory()
+				throws UnknownHostException {
 			JedisConnectionFactory factory = new JedisConnectionFactory();
 			factory.setHostName(this.properties.getHost());
 			factory.setPort(this.properties.getPort());
@@ -79,7 +80,8 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
+		public RedisConnectionFactory redisConnectionFactory()
+				throws UnknownHostException {
 			JedisConnectionFactory factory = createJedisConnectionFactory();
 			factory.setHostName(this.properties.getHost());
 			factory.setPort(this.properties.getPort());
@@ -124,7 +126,7 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "redisTemplate")
-		RedisOperations<Object, Object> redisTemplate(
+		public RedisOperations<Object, Object> redisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
 				throws UnknownHostException {
 			RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();
@@ -134,7 +136,7 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(StringRedisTemplate.class)
-		StringRedisTemplate stringRedisTemplate(
+		public StringRedisTemplate stringRedisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
 				throws UnknownHostException {
 			StringRedisTemplate template = new StringRedisTemplate();
