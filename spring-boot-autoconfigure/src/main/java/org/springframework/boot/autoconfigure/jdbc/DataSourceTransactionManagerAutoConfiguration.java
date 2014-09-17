@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +61,7 @@ public class DataSourceTransactionManagerAutoConfiguration implements Ordered {
 	@Configuration
 	@EnableTransactionManagement
 	protected static class TransactionManagementConfiguration {
-		@PostConstruct
-		public void init() {
-			System.err.println("*************");
-		}
+
 	}
 
 }

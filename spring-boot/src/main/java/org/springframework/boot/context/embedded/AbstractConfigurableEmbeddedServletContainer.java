@@ -258,6 +258,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		this.jspServletClassName = jspServletClassName;
 	}
 
+	@Override
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
 	/**
 	 * @return the JSP servlet class name
 	 */

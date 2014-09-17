@@ -21,7 +21,7 @@ package org.springframework.boot.context.embedded;
  *
  * @author Andy Wilkinson
  * @author Vladimir Tsanev
- * @since 1.2.0
+ * @since 1.1.7
  */
 public class Ssl {
 
@@ -158,4 +158,5 @@ public class Ssl {
 	public enum ClientAuth {
 		WANT, NEED;
 	}
+
 }
