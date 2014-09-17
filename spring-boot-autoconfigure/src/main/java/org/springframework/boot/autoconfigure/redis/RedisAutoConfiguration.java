@@ -178,7 +178,7 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "redisTemplate")
-		RedisOperations<Object, Object> redisTemplate(
+		public RedisOperations<Object, Object> redisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
 				throws UnknownHostException {
 			RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();
@@ -188,7 +188,7 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(StringRedisTemplate.class)
-		StringRedisTemplate stringRedisTemplate(
+		public StringRedisTemplate stringRedisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
 				throws UnknownHostException {
 			StringRedisTemplate template = new StringRedisTemplate();
