@@ -133,7 +133,7 @@ public class MetricRepositoryAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "metricsExecutor")
-		protected Executor metricsExecutor() {
+		public Executor metricsExecutor() {
 			ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 			return executor;
 		}

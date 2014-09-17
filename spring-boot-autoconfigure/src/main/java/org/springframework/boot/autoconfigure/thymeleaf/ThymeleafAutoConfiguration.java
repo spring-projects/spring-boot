@@ -96,7 +96,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Bean
-		protected SpringResourceResourceResolver thymeleafResourceResolver() {
+		public SpringResourceResourceResolver thymeleafResourceResolver() {
 			return new SpringResourceResourceResolver();
 		}
 	}

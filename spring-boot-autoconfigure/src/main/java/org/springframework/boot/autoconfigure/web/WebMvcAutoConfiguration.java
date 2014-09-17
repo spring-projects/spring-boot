@@ -294,7 +294,7 @@ public class WebMvcAutoConfiguration {
 			}
 
 			@Bean
-			protected ResourceHttpRequestHandler faviconRequestHandler() {
+			public ResourceHttpRequestHandler faviconRequestHandler() {
 				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
 				requestHandler.setLocations(Arrays
 						.<Resource> asList(new ClassPathResource("/")));
