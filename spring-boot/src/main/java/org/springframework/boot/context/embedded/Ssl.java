@@ -20,7 +20,8 @@ package org.springframework.boot.context.embedded;
  * Simple container-independent abstraction for SSL configuration.
  *
  * @author Andy Wilkinson
- * @since 1.2.0
+ * @author Vladimir Tsanev
+ * @since 1.1.7
  */
 public class Ssl {
 
