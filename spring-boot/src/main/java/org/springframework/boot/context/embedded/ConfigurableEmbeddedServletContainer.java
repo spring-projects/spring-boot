@@ -139,4 +139,11 @@ public interface ConfigurableEmbeddedServletContainer {
 	 */
 	void addInitializers(ServletContextInitializer... initializers);
 
+	/**
+	 * Sets the SSL configuration that will be applied to the container's default
+	 * connector.
+	 * @param ssl the SSL configuration
+	 */
+	void setSsl(Ssl ssl);
+
 }

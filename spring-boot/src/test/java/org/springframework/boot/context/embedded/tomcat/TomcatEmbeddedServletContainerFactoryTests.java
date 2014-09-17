@@ -28,9 +28,11 @@ import org.apache.catalina.Service;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -226,6 +228,24 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		Tomcat tomcat = getTomcat(factory);
 		assertEquals("UTF-8", tomcat.getConnector().getURIEncoding());
+	}
+
+	@Test
+	public void sslCiphersConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		Tomcat tomcat = getTomcat(factory);
+		Connector connector = tomcat.getConnector();
+
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
+				.getProtocolHandler();
+		assertThat(jsseProtocol.getCiphers(), equalTo("ALPHA,BRAVO,CHARLIE"));
 	}
 
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {

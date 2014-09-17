@@ -389,6 +389,27 @@ and then inject the actual (``local'') port as a `@Value`. For example:
 
 
 
+[[howto-configure-ssl]]
+=== Configure SSL
+SSL can be configured declaratively by setting the various `server.ssl.*` properties,
+typically in `application.properties` or `application.yml`. For example:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.port = 8443
+	server.ssl.key-store = classpath:keystore.jks
+	server.ssl.key-store-password = secret
+	server.ssl.key-password = another-secret
+----
+
+See {sc-spring-boot}/context/embedded/Ssl.{sc-ext}[`Ssl`] for details of all of the
+supported properties.
+
+NOTE: Tomcat requires the key store (and trust store if you're using one) to be directly
+accessible on the filesystem, i.e. it cannot be read from within a jar file.
+
+
+
 [[howto-configure-tomcat]]
 === Configure Tomcat
 Generally you can follow the advice from
@@ -398,56 +419,6 @@ Generally you can follow the advice from
 can add in one of those. The Tomcat APIs are quite rich so once you have access to the
 `TomcatEmbeddedServletContainerFactory` you can modify it in a number of ways. Or the
 nuclear option is to add your own `TomcatEmbeddedServletContainerFactory`.
-
-
-
-[[howto-terminate-ssl-in-tomcat]]
-=== Terminate SSL in Tomcat
-Use an `EmbeddedServletContainerCustomizer` and in that add a `TomcatConnectorCustomizer`
-that sets up the connector to be secure:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Bean
-	public EmbeddedServletContainerCustomizer containerCustomizer(){
-		return new MyCustomizer();
-	}
-
-	// ...
-
-	private static class MyCustomizer implements EmbeddedServletContainerCustomizer {
-
-		@Override
-		public void customize(ConfigurableEmbeddedServletContainer factory) {
-			if(factory instanceof TomcatEmbeddedServletContainerFactory) {
-				customizeTomcat((TomcatEmbeddedServletContainerFactory) factory);
-			}
-		}
-
-		public void customizeTomcat(TomcatEmbeddedServletContainerFactory factory) {
-			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-				@Override
-				public void customize(Connector connector) {
-					connector.setPort(serverPort);
-					connector.setSecure(true);
-					connector.setScheme("https");
-					connector.setAttribute("keyAlias", "tomcat");
-					connector.setAttribute("keystorePass", "password");
-					try {
-						connector.setAttribute("keystoreFile",
-							ResourceUtils.getFile("src/ssl/tomcat.keystore").getAbsolutePath());
-					} catch (FileNotFoundException e) {
-						throw new IllegalStateException("Cannot load keystore", e);
-					}
-					connector.setAttribute("clientAuth", "false");
-					connector.setAttribute("sslProtocol", "TLS");
-					connector.setAttribute("SSLEnabled", true);
-				}
-			});
-		}
-
-	}
-----
 
 
 
