@@ -96,6 +96,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 						+ "or the competing implementation (" + factory.getClass() + ")");
 		LoggerContext context = (LoggerContext) factory;
 		context.stop();
+		context.reset();
 		try {
 			URL url = ResourceUtils.getURL(resolvedLocation);
 			new ContextInitializer(context).configureByResource(url);
