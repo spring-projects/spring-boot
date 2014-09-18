@@ -19,13 +19,13 @@ package org.springframework.boot.autoconfigure.groovy.template;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.TemplateEngine;
 import groovy.text.markup.MarkupTemplateEngine;
-import groovy.text.markup.TemplateConfiguration;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -47,15 +47,21 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 /**
  * Autoconfiguration support for Groovy templates in MVC. By default creates a
  * {@link MarkupTemplateEngine} configured from {@link GroovyTemplateProperties}, but you
- * can override that by providing a {@link TemplateEngine} of a different type.
+ * can override that by providing your own {@link GroovyMarkupConfig} or even a
+ * {@link MarkupTemplateEngine} of a different type.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Brian Clozel
  * @since 1.1.0
  */
 @Configuration
@@ -64,13 +70,49 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
 public class GroovyTemplateAutoConfiguration {
 
-	@Autowired
-	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+	@Configuration
+	@ConditionalOnClass({ MarkupTemplateEngine.class, GroovyMarkupConfigurer.class })
+	public static class GroovyMarkupConfiguration {
 
-	@Autowired
-	private GroovyTemplateProperties properties;
+		@Autowired
+		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-	public abstract static class BaseGroovyTemplateConfiguration implements
+		@Autowired
+		private GroovyTemplateProperties properties;
+
+		@Autowired(required = false)
+		private MarkupTemplateEngine templateEngine;
+
+		@PostConstruct
+		public void checkTemplateLocationExists() {
+			if (this.properties.isCheckTemplateLocation()) {
+				Resource resource = this.resourceLoader.getResource(this.properties
+						.getPrefix());
+				Assert.state(resource.exists(), "Cannot find template location: "
+						+ resource + " (please add some templates, "
+						+ "check your Groovy configuration, or set "
+						+ "spring.groovy.template.check-template-location=false)");
+			}
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(GroovyMarkupConfig.class)
+		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
+		public GroovyMarkupConfigurer groovyMarkupConfigurer() {
+			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
+			configurer.setResourceLoaderPath(this.properties.getPrefix());
+			configurer.setCacheTemplates(this.properties.isCache());
+			if (this.templateEngine != null) {
+				configurer.setTemplateEngine(this.templateEngine);
+			}
+			return configurer;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnMissingClass(name = "groovy.text.markup.MarkupTemplateEngine")
+	public static class GroovySimpleTemplateEngineConfiguration implements
 			BeanClassLoaderAware {
 
 		@Autowired
@@ -99,47 +141,12 @@ public class GroovyTemplateAutoConfiguration {
 				return new URLClassLoader(urls.toArray(new URL[urls.size()]),
 						this.classLoader);
 			}
-			else {
-				return this.classLoader;
-			}
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnClass(MarkupTemplateEngine.class)
-	public static class GroovyMarkupConfiguration extends BaseGroovyTemplateConfiguration {
-
-		@Autowired
-		private GroovyTemplateProperties properties;
-
-		@Bean
-		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
-		public TemplateConfiguration groovyTemplateConfiguration() {
-			return new TemplateConfiguration();
+			return this.classLoader;
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(TemplateEngine.class)
-		public TemplateEngine groovyTemplateEngine() throws Exception {
-			TemplateConfiguration configuration = groovyTemplateConfiguration();
-			configuration.setCacheTemplates(this.properties.isCache());
-			return new MarkupTemplateEngine(createParentLoaderForTemplates(),
-					configuration, new GroovyTemplateResolver());
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnMissingClass(name = "groovy.text.markup.MarkupTemplateEngine")
-	public static class GroovySimpleConfiguration extends BaseGroovyTemplateConfiguration {
-
-		@Autowired
-		private GroovyTemplateProperties properties;
-
-		@Bean
-		@ConditionalOnMissingBean(TemplateEngine.class)
-		public TemplateEngine groovyTemplateEngine() throws Exception {
+		public SimpleTemplateEngine groovyTemplateEngine() throws Exception {
 			return new SimpleTemplateEngine(createParentLoaderForTemplates());
 		}
 
@@ -155,21 +162,34 @@ public class GroovyTemplateAutoConfiguration {
 		private GroovyTemplateProperties properties;
 
 		@Bean
+		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
+		@ConditionalOnClass(MarkupTemplateEngine.class)
+		public GroovyMarkupViewResolver groovyMarkupViewResolver() {
+			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();
+			configureViewResolver(resolver);
+			return resolver;
+		}
+
+		@Bean
 		@ConditionalOnMissingBean(name = "groovyTemplateViewResolver")
+		@ConditionalOnMissingClass(MarkupTemplateEngine.class)
 		public GroovyTemplateViewResolver groovyTemplateViewResolver(TemplateEngine engine) {
 			GroovyTemplateViewResolver resolver = new GroovyTemplateViewResolver();
+			configureViewResolver(resolver);
 			resolver.setPrefix(this.properties.getPrefix());
+			resolver.setTemplateEngine(engine);
+			return resolver;
+		}
+
+		private void configureViewResolver(UrlBasedViewResolver resolver) {
 			resolver.setSuffix(this.properties.getSuffix());
 			resolver.setCache(this.properties.isCache());
 			resolver.setContentType(this.properties.getContentType());
 			resolver.setViewNames(this.properties.getViewNames());
-			resolver.setTemplateEngine(engine);
-
+			resolver.setRequestContextAttribute("spring");
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 6);
-
-			return resolver;
 		}
 
 	}

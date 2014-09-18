@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 /**
  * A custom {@link groovy.text.markup.TemplateResolver template resolver} which resolves
@@ -31,8 +33,12 @@ import org.springframework.context.i18n.LocaleContextHolder;
  *
  * @author Cédric Champeau
  * @since 1.1.0
+ * @deprecated since 1.2 in favor of Spring 4.1's {@link GroovyMarkupViewResolver} and
+ * {@link GroovyMarkupConfigurer}.
  */
+@Deprecated
 public class GroovyTemplateResolver implements TemplateResolver {
+
 	private ClassLoader templateClassLoader;
 
 	@Override
@@ -57,4 +63,5 @@ public class GroovyTemplateResolver implements TemplateResolver {
 		}
 		return resource;
 	}
+
 }
