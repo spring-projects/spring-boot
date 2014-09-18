@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -81,7 +82,8 @@ public abstract class AbstractConfigurationClassTests {
 	}
 
 	private boolean isTestClass(Resource resource) throws IOException {
-		return resource.getFile().getAbsolutePath().contains("target/test-classes");
+		return resource.getFile().getAbsolutePath()
+				.contains("target" + File.separator + "test-classes");
 	}
 
 	private boolean isPublic(MethodMetadata methodMetadata) {
