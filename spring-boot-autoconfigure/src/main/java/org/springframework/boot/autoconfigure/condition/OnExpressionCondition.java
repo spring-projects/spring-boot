@@ -21,6 +21,8 @@ import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.ClassMetadata;
 
@@ -30,6 +32,7 @@ import org.springframework.core.type.ClassMetadata;
  * @author Dave Syer
  * @see ConditionalOnExpression
  */
+@Order(Ordered.LOWEST_PRECEDENCE - 20)
 class OnExpressionCondition extends SpringBootCondition {
 
 	@Override

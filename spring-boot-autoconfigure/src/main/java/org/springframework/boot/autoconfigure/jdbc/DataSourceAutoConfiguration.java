@@ -39,6 +39,8 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -189,6 +191,7 @@ public class DataSourceAutoConfiguration {
 	 * {@link Condition} to detect when a {@link DataSource} is available (either because
 	 * the user provided one or because one will be auto-configured)
 	 */
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	static class DataSourceAvailableCondition extends SpringBootCondition {
 
 		private final SpringBootCondition nonEmbedded = new NonEmbeddedDataSourceCondition();

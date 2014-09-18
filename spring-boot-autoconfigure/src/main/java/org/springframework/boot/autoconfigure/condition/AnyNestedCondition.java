@@ -27,6 +27,8 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.ConfigurationCondition;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
@@ -58,6 +60,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 1.2.0
  */
+@Order(Ordered.LOWEST_PRECEDENCE - 20)
 public abstract class AnyNestedCondition extends SpringBootCondition implements
 		ConfigurationCondition {
 

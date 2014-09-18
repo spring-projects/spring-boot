@@ -20,7 +20,9 @@ import javax.naming.NamingException;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.jndi.JndiLocatorSupport;
@@ -33,6 +35,7 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  * @see ConditionalOnJndi
  */
+@Order(Ordered.LOWEST_PRECEDENCE - 20)
 class OnJndiCondition extends SpringBootCondition {
 
 	@Override
