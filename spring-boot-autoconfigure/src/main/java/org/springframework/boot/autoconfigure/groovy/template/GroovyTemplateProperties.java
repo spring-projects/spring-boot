@@ -46,17 +46,7 @@ public class GroovyTemplateProperties {
 
 	private String[] viewNames;
 
-	private boolean checkTemplateLocation = false;
-
 	private Map<String, Object> configuration = new HashMap<String, Object>();
-
-	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
-		this.checkTemplateLocation = checkTemplateLocation;
-	}
-
-	public boolean isCheckTemplateLocation() {
-		return this.checkTemplateLocation;
-	}
 
 	public String[] getViewNames() {
 		return this.viewNames;

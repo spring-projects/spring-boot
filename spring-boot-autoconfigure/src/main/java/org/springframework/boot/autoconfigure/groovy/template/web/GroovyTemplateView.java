@@ -46,8 +46,6 @@ public class GroovyTemplateView extends AbstractUrlBasedView {
 	protected void renderMergedOutputModel(Map<String, Object> model,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		applyContentType(response);
-		model.put("spring", new RequestContext(request, response, getServletContext(),
-				model));
 		this.template.make(model).writeTo(new BufferedWriter(response.getWriter()));
 	}
 

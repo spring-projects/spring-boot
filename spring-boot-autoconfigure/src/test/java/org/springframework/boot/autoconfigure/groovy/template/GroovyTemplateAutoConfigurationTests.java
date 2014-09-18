@@ -27,10 +27,10 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import groovy.text.markup.MarkupTemplateEngine;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.groovy.template.web.GroovyTemplateViewResolver;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ClassPathResource;
@@ -40,6 +40,8 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -71,7 +73,7 @@ public class GroovyTemplateAutoConfigurationTests {
 	@Test
 	public void defaultConfiguration() {
 		registerAndRefreshContext();
-		assertThat(this.context.getBean(GroovyTemplateViewResolver.class), notNullValue());
+		assertThat(this.context.getBean(GroovyMarkupViewResolver.class), notNullValue());
 	}
 
 	@Test
@@ -101,7 +103,6 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void localeViewResolution() throws Exception {
-		LocaleContextHolder.setLocale(Locale.FRENCH);
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("includes", Locale.FRENCH);
 		String result = response.getContentAsString();
@@ -146,14 +147,15 @@ public class GroovyTemplateAutoConfigurationTests {
 	public void disableCache() {
 		registerAndRefreshContext("spring.groovy.template.cache:false");
 		assertThat(
-				this.context.getBean(GroovyTemplateViewResolver.class).getCacheLimit(),
+				this.context.getBean(GroovyMarkupViewResolver.class).getCacheLimit(),
 				equalTo(0));
 	}
 
 	@Test
 	public void renderTemplate() throws Exception {
 		registerAndRefreshContext();
-		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
+		GroovyMarkupConfig config = this.context.getBean(GroovyMarkupConfig.class);
+		MarkupTemplateEngine engine = config.getTemplateEngine();
 		Writer writer = new StringWriter();
 		engine.createTemplate(new ClassPathResource("templates/message.tpl").getFile())
 				.make(new HashMap<String, Object>(Collections.singletonMap("greeting",
@@ -173,8 +175,9 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	private MockHttpServletResponse render(String viewName, Locale locale)
 			throws Exception {
-		GroovyTemplateViewResolver resolver = this.context
-				.getBean(GroovyTemplateViewResolver.class);
+		LocaleContextHolder.setLocale(locale);
+		GroovyMarkupViewResolver resolver = this.context
+				.getBean(GroovyMarkupViewResolver.class);
 		View view = resolver.resolveViewName(viewName, locale);
 		assertThat(view, notNullValue());
 		HttpServletRequest request = new MockHttpServletRequest();
