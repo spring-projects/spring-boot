@@ -165,6 +165,7 @@ public class ManagementSecurityAutoConfiguration {
 	@Configuration
 	@ConditionalOnExpression("${management.security.enabled:true} && !${security.basic.enabled:true}")
 	@ConditionalOnMissingBean(WebSecurityConfiguration.class)
+	@ConditionalOnWebApplication
 	@EnableWebSecurity
 	protected static class WebSecurityEnabler extends AuthenticationManagerConfiguration {
 	}
