@@ -48,10 +48,10 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private final PropertySources propertySources;
 
-	private final Collection<String> NON_ENUMERABLE_ENUMERABLES = Arrays.asList(
+	private static final Collection<String> NON_ENUMERABLE_ENUMERABLES = Arrays.asList(
 			StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 			StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
-
+	
 	/**
 	 * Create a new PropertyValues from the given PropertySources
 	 * @param propertySources a PropertySources instance
@@ -107,7 +107,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertySourcesPropertyResolver resolver, String[] includes, String[] exacts) {
 		if (source.getPropertyNames().length > 0) {
 			for (String propertyName : source.getPropertyNames()) {
-				if (this.NON_ENUMERABLE_ENUMERABLES.contains(source.getName())
+				if (PropertySourcesPropertyValues.NON_ENUMERABLE_ENUMERABLES.contains(source.getName())
 						&& !PatternMatchUtils.simpleMatch(includes, propertyName)) {
 					continue;
 				}

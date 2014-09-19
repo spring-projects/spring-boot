@@ -74,6 +74,11 @@ class OnWebApplicationCondition extends SpringBootCondition {
 					.match("found web application StandardServletEnvironment");
 		}
 
+		if (context.getResourceLoader() instanceof WebApplicationContext) {
+			return ConditionOutcome
+					.match("found web application WebApplicationContext");
+		}
+
 		return ConditionOutcome.noMatch("not a web application");
 	}
 

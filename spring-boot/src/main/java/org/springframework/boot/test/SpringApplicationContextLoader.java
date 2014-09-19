@@ -50,7 +50,6 @@ import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
-import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
  * A {@link ContextLoader} that can be used to test Spring Boot applications (those that
@@ -82,9 +81,6 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		SpringApplication application = getSpringApplication();
 		application.setSources(getSources(config));
 		ConfigurableEnvironment environment = new StandardEnvironment();
-		if (config instanceof WebMergedContextConfiguration) {
-			environment = new StandardServletEnvironment();
-		}
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
 			String profiles = StringUtils.arrayToCommaDelimitedString(config
 					.getActiveProfiles());
