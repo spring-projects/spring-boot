@@ -1001,6 +1001,24 @@ You can also use regular Spring MVC features like http://docs.spring.io/spring/d
 methods] and http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-controller-advice[`@ControllerAdvice`].
 The `ErrorController` will then pick up any unhandled exceptions.
 
+N.B. if you register an `ErrorPage` with a path that will end up being handled by a `Filter` (e.g. as is common with some non-Spring web frameworks, 
+like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, e.g.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+@Bean
+public FilterRegistrationBean myFilter() {
+
+  FilterRegistrationBean registration = new FilterRegistrationBean();
+  registration.setFilter(new MyFilter());
+  ...
+  registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
+  return registration;
+
+}
+----
+
+(the default `FilterRegistrationBean` does not include the `ERROR` dispatcher type).
 
 
 [[boot-features-embedded-container]]
