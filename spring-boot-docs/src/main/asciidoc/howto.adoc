@@ -1320,7 +1320,7 @@ in the ``Production-ready features'' section.
 
 [[howto-customize-the-whitelabel-error-page]]
 === Customize the ``whitelabel'' error page
-The Actuator installs a ``whitelabel'' error page that you will see in browser client if
+Spring Boot installs a ``whitelabel'' error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
 see a sensible response with the right error code). To switch it off you can set
 `error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
@@ -1333,6 +1333,8 @@ of the default configuration you should find a `BeanNameViewResolver` in your
 `ApplicationContext` so a `@Bean` with id `error` would be a simple way of doing that.
 Look at {sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
 
+See also the section on <<boot-features-error-handling, Error Handling>> for details of
+how to register handlers in the servlet container.
 
 
 [[howto-security]]
