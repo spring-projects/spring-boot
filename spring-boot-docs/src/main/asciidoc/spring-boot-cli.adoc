@@ -223,7 +223,7 @@ In this example, `tests.groovy` contains JUnit `@Test` methods or Spock `Specifi
 classes. All the common framework annotations and static methods should be available to
 you without having to `import` them.
 
-Here is the `test.groovy` file that we used above (with a JUnit test):
+Here is the `tests.groovy` file that we used above (with a JUnit test):
 
 [source,groovy,indent=0]
 ----
@@ -231,7 +231,7 @@ Here is the `test.groovy` file that we used above (with a JUnit test):
 
 		@Test
 		void homeSaysHello() {
-			assertEquals("Hello World", new WebApplication().home())
+			assertEquals("Hello World!", new WebApplication().home())
 		}
 
 	}
