@@ -21,19 +21,22 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * {@link EmbeddedServletContainer} that can be used to control an embedded Jetty server.
- * Usually this class should be created using the
+ * {@link EmbeddedServletContainer} that can be used to control an embedded
+ * Jetty server. Usually this class should be created using the
  * {@link JettyEmbeddedServletContainerFactory} and not directly.
- *
+ * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author David Liu
  * @see JettyEmbeddedServletContainerFactory
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
@@ -121,6 +124,11 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		}
 		else if (handler instanceof HandlerWrapper) {
 			handleDeferredInitialize(((HandlerWrapper) handler).getHandler());
+		}
+		else if (handler instanceof HandlerCollection) {
+			for (Handler handlerFromCollection : ((HandlerCollection) handler).getHandlers()) {
+				handleDeferredInitialize(handlerFromCollection);
+			}
 		}
 	}
 
