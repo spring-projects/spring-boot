@@ -822,7 +822,8 @@ and path through constructor.
 == Process monitoring
 In Spring Boot Actuator you can find `EmbeddedServerPortListener` which creates file
 containing embedded server port (by default in application directory and file name is
-`application.port`). It's not activated by default, but you can do it in two simple
+`application.port`) and management port (by default in application directory and file 
+name is `management.port`). It's not activated by default, but you can do it in two simple
 ways described below.
 
 
