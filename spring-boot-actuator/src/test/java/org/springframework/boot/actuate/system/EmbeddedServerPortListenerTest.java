@@ -24,21 +24,29 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.io.FileReader;
 
+import javax.servlet.ServletContext;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.GenericWebApplicationContext;
 
 /**
  * Tests {@link EmbeddedServerPortListener}.
- * 
+ *
  * @author David Liu
  * @since 2.0
  */
@@ -55,16 +63,29 @@ public class EmbeddedServerPortListenerTest {
 
 	@Test
 	public void createPortFileTest() throws Exception {
+		ManagementServerProperties properties = mock(ManagementServerProperties.class);
+		properties.setPort(2011);
 		EmbeddedServletContainer container = mock(TomcatEmbeddedServletContainer.class);
+		ServletContext servletContext = mock(ServletContext.class);
+		ApplicationContext mockApplicationContex = new GenericWebApplicationContext();
+		doReturn(mockApplicationContex).when(servletContext).getAttribute(
+				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+		ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) mockApplicationContex)
+				.getBeanFactory();
+		beanFactory.registerSingleton("managementServerProperties", properties);
+		((ConfigurableApplicationContext) mockApplicationContex).refresh();
 		doReturn(9911).when(container).getPort();
 		AnnotationConfigEmbeddedWebApplicationContext context = mock(AnnotationConfigEmbeddedWebApplicationContext.class);
 		doReturn(container).when(context).getEmbeddedServletContainer();
+		doReturn(servletContext).when(context).getServletContext();
 		ApplicationStartedEvent event = mock(ApplicationStartedEvent.class);
 		doReturn(context).when(event).getSource();
-		File file = this.temporaryFolder.newFile();
-		EmbeddedServerPortListener listener = new EmbeddedServerPortListener(file);
+		File applicationFile = this.temporaryFolder.newFile();
+		File managementFile = this.temporaryFolder.newFile();
+		EmbeddedServerPortListener listener = new EmbeddedServerPortListener(applicationFile, managementFile);
 		listener.onApplicationEvent(event);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(applicationFile)), not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(managementFile)), not(isEmptyString()));
 	}
 
 }
