@@ -16,6 +16,10 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +43,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
@@ -248,6 +253,63 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		assertThat(jsseProtocol.getCiphers(), equalTo("ALPHA,BRAVO,CHARLIE"));
 	}
 
+	@Test
+	public void primaryConnectorPortClashThrowsIllegalStateException()
+			throws InterruptedException, UnknownHostException, IOException {
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				TomcatEmbeddedServletContainerFactory factory = getFactory();
+				factory.setPort(port);
+
+				try {
+					TomcatEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
+					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (IllegalStateException ex) {
+
+				}
+			}
+
+		});
+
+	}
+
+	@Test
+	public void additionalConnectorPortClashThrowsIllegalStateException()
+			throws InterruptedException, UnknownHostException, IOException {
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				TomcatEmbeddedServletContainerFactory factory = getFactory();
+				Connector connector = new Connector(
+						"org.apache.coyote.http11.Http11NioProtocol");
+				connector.setPort(port);
+				factory.addAdditionalTomcatConnectors(connector);
+
+				try {
+					TomcatEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
+					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (IllegalStateException ex) {
+
+				}
+			}
+
+		});
+
+	}
+
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
 		Tomcat tomcat = getTomcat(factory);
 		Context context = (Context) tomcat.getHost().findChildren()[0];
@@ -257,6 +319,18 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	private Tomcat getTomcat(TomcatEmbeddedServletContainerFactory factory) {
 		this.container = factory.getEmbeddedServletContainer();
 		return ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+	}
+
+	private void doWithBlockedPort(final int port, Runnable action) throws IOException {
+		ServerSocket serverSocket = new ServerSocket();
+		serverSocket.bind(new InetSocketAddress(port));
+
+		try {
+			action.run();
+		}
+		finally {
+			serverSocket.close();
+		}
 	}
 
 }
