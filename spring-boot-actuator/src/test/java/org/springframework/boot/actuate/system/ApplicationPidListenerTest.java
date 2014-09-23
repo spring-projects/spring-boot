@@ -107,7 +107,8 @@ public class ApplicationPidListenerTest {
 
 	@Test
 	public void createPidFileFromEnvWithDefaults() throws Exception {
-		ApplicationPidListener listener = new ApplicationPidListener(false);
+		ApplicationPidListener listener = new ApplicationPidListener(
+				ApplicationStartedEvent.class);
 		listener.onApplicationEvent(STARTED_EVENT);
 		assertThat(FileCopyUtils.copyToString(new FileReader(DEFAULT_PID_FILE)),
 				not(isEmptyString()));
@@ -115,7 +116,8 @@ public class ApplicationPidListenerTest {
 
 	@Test
 	public void createPidFileFromEnv() throws Exception {
-		ApplicationPidListener listener = new ApplicationPidListener(true);
+		ApplicationPidListener listener = new ApplicationPidListener(
+				ApplicationEnvironmentPreparedEvent.class);
 		listener.onApplicationEvent(environmentPreparedEvent);
 		assertThat(FileCopyUtils.copyToString(new FileReader(OVERRIDE_PID_FILE)),
 				not(isEmptyString()));

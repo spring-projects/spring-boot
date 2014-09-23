@@ -18,13 +18,15 @@ package org.springframework.boot.context.event;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * Event published by a {@link SpringApplication} when it fails to start.
  *
  * @author Dave Syer
  */
-public class ApplicationFailedEvent extends SpringApplicationEvent {
+public class ApplicationFailedEvent extends SpringApplicationEvent implements
+		ProvidesEnvironmentEvent {
 
 	private final ConfigurableApplicationContext context;
 
@@ -57,4 +59,8 @@ public class ApplicationFailedEvent extends SpringApplicationEvent {
 		return this.exception;
 	}
 
+	@Override
+	public ConfigurableEnvironment getEnvironment() {
+		return context.getEnvironment();
+	}
 }

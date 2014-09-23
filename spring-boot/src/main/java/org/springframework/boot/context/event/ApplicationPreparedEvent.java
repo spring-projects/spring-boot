@@ -19,6 +19,7 @@ package org.springframework.boot.context.event;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
 /**
@@ -28,13 +29,14 @@ import org.springframework.core.env.Environment;
  *
  * @author Dave Syer
  */
-public class ApplicationPreparedEvent extends SpringApplicationEvent {
+public class ApplicationPreparedEvent extends SpringApplicationEvent implements
+		ProvidesEnvironmentEvent {
 
 	private final ConfigurableApplicationContext context;
 
 	/**
 	 * @param application the current application
-	 * @param args the argumemts the application is running with
+	 * @param args the arguments the application is running with
 	 * @param context the ApplicationContext about to be refreshed
 	 */
 	public ApplicationPreparedEvent(SpringApplication application, String[] args,
@@ -50,4 +52,8 @@ public class ApplicationPreparedEvent extends SpringApplicationEvent {
 		return this.context;
 	}
 
+	@Override
+	public ConfigurableEnvironment getEnvironment() {
+		return context.getEnvironment();
+	}
 }

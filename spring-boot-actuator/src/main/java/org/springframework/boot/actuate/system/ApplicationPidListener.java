@@ -23,7 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.ProvidesEnvironmentEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -93,24 +95,26 @@ public class ApplicationPidListener implements
 	 * taken from the {@link Environment}. This causes the listener to wait for
 	 * {@link org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent}
 	 * before it tries to write the PID file. Normally the listener would react on
-	 * {@link  #DEFAULT_EVENT} in the first place.
+	 * {@link #DEFAULT_EVENT} in the first place.
 	 *
-	 * @param configureFromEnvironment If set to true, the listener will try to resolve
-	 * the file location of the PID file from the
-	 * {@link org.springframework.core.env.Environment} property
-	 * {@value #CONFIGURED_PID_FILE}}.<br/>
-	 * <br/>
-	 * If set to {@code false}, the defaults are applied.
+	 * @param onEvent The class the listener should react to. If the event provides an
+	 * {@link org.springframework.core.env.Environment}, the listener tries to resolve the
+	 * property '{@value #CONFIGURED_PID_FILE}' in order to write the PID file to the
+	 * specified location. If the event does not provide an {@link Environment}, the
+	 * defaults are applied.
 	 */
-	public ApplicationPidListener(boolean configureFromEnvironment) {
-		this.file = new File(DEFAULT_FILE_NAME);
+	public ApplicationPidListener(Class<? extends SpringApplicationEvent> onEvent) {
+		Assert.notNull(onEvent, "The 'onEvent' argument must not be null");
 
-		if (configureFromEnvironment) {
-			this.onEvent = ApplicationEnvironmentPreparedEvent.class;
+		if (onEvent.equals(ApplicationFailedEvent.class)) {
+			throw new IllegalArgumentException(
+					String.format(
+							"Cannot use '%s' here, as writing the PID file on application boot failure makes no sense.",
+							ApplicationFailedEvent.class.getName()));
 		}
-		else {
-			this.onEvent = ApplicationStartedEvent.class;
-		}
+
+		this.file = new File(DEFAULT_FILE_NAME);
+		this.onEvent = onEvent;
 	}
 
 	@Override
@@ -120,7 +124,7 @@ public class ApplicationPidListener implements
 		}
 
 		File pidFile = this.file;
-		if (event instanceof ApplicationEnvironmentPreparedEvent) {
+		if (event instanceof ProvidesEnvironmentEvent) {
 			Environment env = ((ApplicationEnvironmentPreparedEvent) event)
 					.getEnvironment();
 			if (env.containsProperty(CONFIGURED_PID_FILE)) {

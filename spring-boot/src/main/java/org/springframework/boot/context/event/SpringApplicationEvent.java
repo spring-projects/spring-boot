@@ -40,5 +40,4 @@ public abstract class SpringApplicationEvent extends ApplicationEvent {
 	public final String[] getArgs() {
 		return this.args;
 	}
-
 }

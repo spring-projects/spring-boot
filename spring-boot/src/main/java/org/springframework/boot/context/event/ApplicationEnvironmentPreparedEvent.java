@@ -26,13 +26,14 @@ import org.springframework.core.env.Environment;
  *
  * @author Dave Syer
  */
-public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent {
+public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent implements
+		ProvidesEnvironmentEvent {
 
 	private final ConfigurableEnvironment environment;
 
 	/**
 	 * @param application the current application
-	 * @param args the argumemts the application is running with
+	 * @param args the arguments the application is running with
 	 * @param environment the environment that was just created
 	 */
 	public ApplicationEnvironmentPreparedEvent(SpringApplication application,
@@ -41,9 +42,7 @@ public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent 
 		this.environment = environment;
 	}
 
-	/**
-	 * @return the environment
-	 */
+	@Override
 	public ConfigurableEnvironment getEnvironment() {
 		return this.environment;
 	}
