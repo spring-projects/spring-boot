@@ -22,9 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.ApplicationPid;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
@@ -37,15 +40,20 @@ import org.springframework.util.Assert;
  * @since 1.0.2
  */
 public class ApplicationPidListener implements
-		ApplicationListener<ApplicationStartedEvent>, Ordered {
+		ApplicationListener<SpringApplicationEvent>, Ordered {
 
 	private static final Log logger = LogFactory.getLog(ApplicationPidListener.class);
 
 	private static final String DEFAULT_FILE_NAME = "application.pid";
+	private static final Class<? extends SpringApplicationEvent> DEFAULT_EVENT = ApplicationStartedEvent.class;
+
+	private static final String CONFIGURED_PID_FILE = "spring.application.pid-file";
 
 	private static final AtomicBoolean created = new AtomicBoolean(false);
 
 	private int order = Ordered.HIGHEST_PRECEDENCE + 13;
+
+	private final Class<? extends SpringApplicationEvent> onEvent;
 
 	private final File file;
 
@@ -55,31 +63,81 @@ public class ApplicationPidListener implements
 	 */
 	public ApplicationPidListener() {
 		this.file = new File(DEFAULT_FILE_NAME);
+		this.onEvent = DEFAULT_EVENT;
 	}
 
 	/**
 	 * Create a new {@link ApplicationPidListener} instance with a specified filename.
+	 *
 	 * @param filename the name of file containing pid
 	 */
 	public ApplicationPidListener(String filename) {
 		Assert.notNull(filename, "Filename must not be null");
 		this.file = new File(filename);
+		this.onEvent = DEFAULT_EVENT;
 	}
 
 	/**
 	 * Create a new {@link ApplicationPidListener} instance with a specified file.
+	 *
 	 * @param file the file containing pid
 	 */
 	public ApplicationPidListener(File file) {
 		Assert.notNull(file, "File must not be null");
 		this.file = file;
+		this.onEvent = DEFAULT_EVENT;
+	}
+
+	/**
+	 * Create a new {@link ApplicationPidListener} instance with the PID file location
+	 * taken from the {@link Environment}. This causes the listener to wait for
+	 * {@link org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent}
+	 * before it tries to write the PID file. Normally the listener would react on
+	 * {@link  #DEFAULT_EVENT} in the first place.
+	 *
+	 * @param configureFromEnvironment If set to true, the listener will try to resolve
+	 * the file location of the PID file from the
+	 * {@link org.springframework.core.env.Environment} property
+	 * {@value #CONFIGURED_PID_FILE}}.<br/>
+	 * <br/>
+	 * If set to {@code false}, the defaults are applied.
+	 */
+	public ApplicationPidListener(boolean configureFromEnvironment) {
+		this.file = new File(DEFAULT_FILE_NAME);
+
+		if (configureFromEnvironment) {
+			this.onEvent = ApplicationEnvironmentPreparedEvent.class;
+		}
+		else {
+			this.onEvent = ApplicationStartedEvent.class;
+		}
 	}
 
 	@Override
-	public void onApplicationEvent(ApplicationStartedEvent event) {
+	public void onApplicationEvent(SpringApplicationEvent event) {
+		if (!event.getClass().equals(onEvent)) {
+			return;
+		}
+
+		File pidFile = this.file;
+		if (event instanceof ApplicationEnvironmentPreparedEvent) {
+			Environment env = ((ApplicationEnvironmentPreparedEvent) event)
+					.getEnvironment();
+			if (env.containsProperty(CONFIGURED_PID_FILE)) {
+				String location = env.getProperty(CONFIGURED_PID_FILE);
+				logger.debug(String.format("Overriding PID file: %s", location));
+				pidFile = new File(location);
+			}
+			else {
+				logger.warn(String
+						.format("Trying to configure application PID file location from environment, but no property '%s' could be found.",
+								CONFIGURED_PID_FILE));
+			}
+		}
+
 		if (created.compareAndSet(false, true)) {
 			try {
-				new ApplicationPid().write(this.file);
+				new ApplicationPid().write(pidFile);
 				this.file.deleteOnExit();
 			}
 			catch (Exception ex) {

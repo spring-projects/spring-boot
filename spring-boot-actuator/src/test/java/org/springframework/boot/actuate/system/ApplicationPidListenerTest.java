@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.actuate.system;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
@@ -25,39 +29,111 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
-
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests fpr {@link ApplicationPidListener}.
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
+ * @author Holger Stolzenberg
  */
 public class ApplicationPidListenerTest {
 
-	private static final ApplicationStartedEvent EVENT = new ApplicationStartedEvent(
-			new SpringApplication(), new String[] {});
+	private static final SpringApplication APPLICATION = new SpringApplication();
+
+	private static final ApplicationStartedEvent STARTED_EVENT = new ApplicationStartedEvent(
+			APPLICATION, new String[] {});
+
+	private static final ApplicationPreparedEvent PREPARED_EVENT = new ApplicationPreparedEvent(
+			APPLICATION, new String[] {}, null);
+
+	private ApplicationEnvironmentPreparedEvent environmentPreparedEvent;
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+	private static final File DEFAULT_PID_FILE = new File("application.pid");
+	private static final File OVERRIDE_PID_FILE = new File("application_override.pid");
+
+	@Before
+	public void initPrepareEvent() {
+		final MockEnvironment environment = new MockEnvironment();
+		environment
+				.setProperty("spring.application.pid-file", "application_override.pid");
+
+		environmentPreparedEvent = new ApplicationEnvironmentPreparedEvent(
+				new SpringApplication(), new String[0], environment);
+	}
+
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Before
 	@After
 	public void resetListener() {
 		ApplicationPidListener.reset();
+
+		DEFAULT_PID_FILE.delete();
+		OVERRIDE_PID_FILE.delete();
 	}
 
 	@Test
-	public void createPidFile() throws Exception {
+	public void createPidFileWithDefaults() throws Exception {
+		ApplicationPidListener listener = new ApplicationPidListener();
+		listener.onApplicationEvent(STARTED_EVENT);
+		assertThat(FileCopyUtils.copyToString(new FileReader(DEFAULT_PID_FILE)),
+				not(isEmptyString()));
+	}
+
+	@Test
+	public void createPidFileFromFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		ApplicationPidListener listener = new ApplicationPidListener(file);
-		listener.onApplicationEvent(EVENT);
+		listener.onApplicationEvent(STARTED_EVENT);
 		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
 	}
 
+	@Test
+	public void createPidFileFromFilePath() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		ApplicationPidListener listener = new ApplicationPidListener(
+				file.getAbsolutePath());
+		listener.onApplicationEvent(STARTED_EVENT);
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
+	}
+
+	@Test
+	public void createPidFileFromEnvWithDefaults() throws Exception {
+		ApplicationPidListener listener = new ApplicationPidListener(false);
+		listener.onApplicationEvent(STARTED_EVENT);
+		assertThat(FileCopyUtils.copyToString(new FileReader(DEFAULT_PID_FILE)),
+				not(isEmptyString()));
+	}
+
+	@Test
+	public void createPidFileFromEnv() throws Exception {
+		ApplicationPidListener listener = new ApplicationPidListener(true);
+		listener.onApplicationEvent(environmentPreparedEvent);
+		assertThat(FileCopyUtils.copyToString(new FileReader(OVERRIDE_PID_FILE)),
+				not(isEmptyString()));
+	}
+
+	@Test
+	public void ignoreUnknownEvent() throws Exception {
+		File file = this.temporaryFolder.newFile();
+
+		ApplicationPidListener listener = new ApplicationPidListener(file);
+		listener.onApplicationEvent(PREPARED_EVENT);
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)), isEmptyString());
+	}
+
+	@Test
+	public void setGetOrder() {
+		ApplicationPidListener listener = new ApplicationPidListener();
+		listener.setOrder(10);
+		assertThat(listener.getOrder(), equalTo(10));
+	}
 }
