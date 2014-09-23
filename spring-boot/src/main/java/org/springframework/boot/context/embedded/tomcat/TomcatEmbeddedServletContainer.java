@@ -90,11 +90,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			// Unlike Jetty, all Tomcat threads are daemon threads. We create a
 			// blocking non-daemon to stop immediate shutdown
 			startDaemonAwaitThread();
-
-			if (LifecycleState.FAILED.equals(this.tomcat.getConnector().getState())) {
-				this.tomcat.stop();
-				throw new IllegalStateException("Tomcat connector in failed state");
-			}
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -151,11 +146,22 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		if (connector != null && this.autoStart) {
 			startConnector(connector);
 		}
+
 		// Ensure process isn't left running if it actually failed to start
-		if (LifecycleState.FAILED.equals(this.tomcat.getConnector().getState())) {
+
+		if (connectorsHaveFailedToStart()) {
 			stopSilently();
 			throw new IllegalStateException("Tomcat connector in failed state");
 		}
+	}
+
+	private boolean connectorsHaveFailedToStart() {
+		for (Connector connector : this.tomcat.getService().findConnectors()) {
+			if (LifecycleState.FAILED.equals(connector.getState())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void stopSilently() {
