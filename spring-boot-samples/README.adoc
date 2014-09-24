@@ -10,9 +10,9 @@
   -- Simple REST service with production features
 * link:spring-boot-sample-actuator-ui[spring-boot-sample-actuator-ui]
   -- A web UI example with production features
-* link:spring-boot-sample-actuator-ui[spring-boot-sample-actuator-noweb]
+* link:spring-boot-sample-actuator-noweb[spring-boot-sample-actuator-noweb]
   -- A production features sample with no web application
-* link:spring-boot-sample-actuator-ui[spring-boot-sample-actuator-log4j]
+* link:spring-boot-sample-actuator-log4j[spring-boot-sample-actuator-log4j]
   -- A production features sample using log4j for logging (instead of logback)
 * link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
   -- A thymeleaf web application
@@ -48,7 +48,7 @@
   -- Example showing database migrations with Liquibase
 * link:spring-boot-sample-amqp[spring-boot-sample-amqp]
   -- Example showing message-oriented application using RabbitMQ
-* link:spring-boot-sample-amqp[spring-boot-sample-hornetq]
+* link:spring-boot-sample-hornetq[spring-boot-sample-hornetq]
   -- Example showing message-oriented application using HornetQ
 * link:spring-boot-sample-batch[spring-boot-sample-batch]
   -- Define and run a Batch job in a few lines of code
