@@ -23,7 +23,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * {@link org.springframework.core.env.Environment} has been created and therefore allow
  * accessing it.
  *
- * @author h.stolzenberg
+ * @author Holger Stolzenberg
  * @since 1.2.0
  */
 public interface ProvidesEnvironmentEvent {
