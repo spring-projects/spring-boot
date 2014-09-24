@@ -49,6 +49,7 @@ class RelaxedConversionService implements ConversionService {
 		this.additionalConverters = new GenericConversionService();
 		this.additionalConverters
 				.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
+		this.additionalConverters.addConverter(new StringToCharArrayConverter());
 	}
 
 	@Override
