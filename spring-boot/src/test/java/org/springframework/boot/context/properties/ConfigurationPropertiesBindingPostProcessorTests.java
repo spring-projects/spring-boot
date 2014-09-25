@@ -188,6 +188,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		assertTrue("No init", ConfigurationPropertiesWithFactoryBean.factoryBeanInit);
 	}
 
+	@Test
+	public void configurationPropertiesWithCharArray() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.chars:word");
+		this.context.register(PropertyWithCharArray.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertyWithCharArray.class).getChars(),
+				equalTo("word".toCharArray()));
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class TestConfigurationWithValidatingSetter {
@@ -298,6 +308,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		public String getBar() {
 			return this.bar;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertyWithCharArray {
+
+		private char[] chars;
+
+		public char[] getChars() {
+			return this.chars;
+		}
+
+		public void setChars(char[] chars) {
+			this.chars = chars;
 		}
 
 	}

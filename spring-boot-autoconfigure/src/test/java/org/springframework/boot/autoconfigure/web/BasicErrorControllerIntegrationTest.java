@@ -81,7 +81,8 @@ public class BasicErrorControllerIntegrationTest {
 				"http://localhost:" + this.port + "/bind", Map.class);
 		String resp = entity.getBody().toString();
 		assertThat(resp, containsString("Error count: 1"));
-		assertThat(resp, containsString("errors=[{codes="));
+		assertThat(resp, containsString("errors=[{"));
+		assertThat(resp, containsString("codes=["));
 		assertThat(resp, containsString("org.springframework.validation.BindException"));
 	}
 
