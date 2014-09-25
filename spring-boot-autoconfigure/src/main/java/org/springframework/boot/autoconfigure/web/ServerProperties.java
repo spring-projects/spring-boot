@@ -209,6 +209,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 		private String protocolHeader;
 
+		private String portHeader;
+
 		private String remoteIpHeader;
 
 		private File basedir;
@@ -285,6 +287,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			this.protocolHeader = protocolHeader;
 		}
 
+		public String getPortHeader() {
+			return this.portHeader;
+		}
+
+		public void setPortHeader(String portHeader) {
+			this.portHeader = portHeader;
+		}
+
 		public String getRemoteIpHeader() {
 			return this.remoteIpHeader;
 		}
@@ -321,6 +331,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				valve.setRemoteIpHeader(remoteIpHeader);
 				valve.setProtocolHeader(protocolHeader);
 				valve.setInternalProxies(getInternalProxies());
+				valve.setPortHeader(getPortHeader());
 				factory.addContextValves(valve);
 			}
 
