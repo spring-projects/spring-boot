@@ -30,6 +30,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -38,8 +39,10 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -49,7 +52,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ThymeleafAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
 	@After
 	public void close() {
@@ -135,6 +138,46 @@ public class ThymeleafAutoConfigurationTests {
 		assertTrue("Wrong result: " + result, result.contains("<title>Content</title>"));
 		assertTrue("Wrong result: " + result, result.contains("<span>bar</span>"));
 		context.close();
+	}
+
+	@Test
+	public void useDataDialect() throws Exception {
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
+		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
+		String result = engine.process("data-dialect", attrs);
+		assertEquals("<html><body data-foo=\"bar\"></body></html>", result);
+	}
+
+	@Test
+	public void renderTemplate() throws Exception {
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
+		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
+		String result = engine.process("home", attrs);
+		assertEquals("<html><body>bar</body></html>", result);
+	}
+
+	@Test
+	public void renderNonWebAppTemplate() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		assertEquals(0, context.getBeanNamesForType(ViewResolver.class).length);
+		try {
+			TemplateEngine engine = context.getBean(TemplateEngine.class);
+			Context attrs = new Context(Locale.UK, Collections.singletonMap("greeting",
+					"Hello World"));
+			String result = engine.process("message", attrs);
+			assertThat(result, containsString("Hello World"));
+		}
+		finally {
+			context.close();
+		}
 	}
 
 }

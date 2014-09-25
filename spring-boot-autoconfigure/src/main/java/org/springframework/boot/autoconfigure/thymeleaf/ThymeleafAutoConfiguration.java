@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
@@ -149,18 +150,19 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class })
+	@ConditionalOnWebApplication
 	protected static class ThymeleafViewResolverConfiguration implements EnvironmentAware {
 
 		private RelaxedPropertyResolver environment;
+
+		@Autowired
+		private SpringTemplateEngine templateEngine;
 
 		@Override
 		public void setEnvironment(Environment environment) {
 			this.environment = new RelaxedPropertyResolver(environment,
 					"spring.thymeleaf.");
 		}
-
-		@Autowired
-		private SpringTemplateEngine templateEngine;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "thymeleafViewResolver")
