@@ -153,15 +153,15 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
-	public void testActiveMQOverriddenStandalone() {
-		load(TestConfiguration.class, "spring.activemq.inMemory:false");
+	public void testActiveMQOverriddenEmbedded() {
+		load(TestConfiguration.class, "spring.activemq.autodetectConnection:false", "spring.activemq.inMemory:true");
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		ActiveMQConnectionFactory connectionFactory = this.context
 				.getBean(ActiveMQConnectionFactory.class);
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(ACTIVEMQ_NETWORK_URL,
+		assertEquals(ACTIVEMQ_EMBEDDED_URL,
 				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
 						.getBrokerURL());
 	}
@@ -195,9 +195,9 @@ public class JmsAutoConfigurationTests {
 	}
 
 	@Test
-	public void testActiveMQOverriddenPoolAndStandalone() {
-		load(TestConfiguration.class, "spring.activemq.pooled:true",
-				"spring.activemq.inMemory:false");
+	public void testActiveMQOverriddenPoolAndEmbedded() {
+		load(TestConfiguration.class, "spring.activemq.autodetectConnection:false", "spring.activemq.pooled:true",
+				"spring.activemq.inMemory:true");
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
 				.getBean(PooledConnectionFactory.class);
@@ -206,7 +206,7 @@ public class JmsAutoConfigurationTests {
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals(ACTIVEMQ_NETWORK_URL, factory.getBrokerURL());
+		assertEquals(ACTIVEMQ_EMBEDDED_URL, factory.getBrokerURL());
 	}
 
 	@Test

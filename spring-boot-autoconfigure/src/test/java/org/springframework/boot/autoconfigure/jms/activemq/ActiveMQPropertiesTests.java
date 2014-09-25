@@ -34,8 +34,8 @@ public class ActiveMQPropertiesTests {
 	private final ActiveMQProperties properties = new ActiveMQProperties();
 
 	@Test
-	public void getBrokerUrlIsInMemoryByDefault() {
-		assertEquals(DEFAULT_EMBEDDED_BROKER_URL, new ActiveMQConnectionFactoryFactory(
+	public void getBrokerUrlIsNetworkByDefault() {
+		assertEquals(DEFAULT_NETWORK_BROKER_URL, new ActiveMQConnectionFactoryFactory(
 				this.properties).determineBrokerUrl());
 	}
 
@@ -48,9 +48,9 @@ public class ActiveMQPropertiesTests {
 	}
 
 	@Test
-	public void getBrokerUrlWithInMemorySetToFalse() {
-		this.properties.setInMemory(false);
-		assertEquals(DEFAULT_NETWORK_BROKER_URL, new ActiveMQConnectionFactoryFactory(
+	public void getBrokerUrlWithInMemorySetToTrue() {
+		this.properties.setInMemory(true);
+		assertEquals(DEFAULT_EMBEDDED_BROKER_URL, new ActiveMQConnectionFactoryFactory(
 				this.properties).determineBrokerUrl());
 	}
 

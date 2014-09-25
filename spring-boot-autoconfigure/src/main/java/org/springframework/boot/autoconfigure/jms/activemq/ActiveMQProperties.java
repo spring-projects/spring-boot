@@ -29,7 +29,9 @@ public class ActiveMQProperties {
 
 	private String brokerUrl;
 
-	private boolean inMemory = true;
+	private boolean autodetectConnection = true;
+
+	private boolean inMemory;
 
 	private boolean pooled;
 
@@ -43,6 +45,14 @@ public class ActiveMQProperties {
 
 	public void setBrokerUrl(String brokerUrl) {
 		this.brokerUrl = brokerUrl;
+	}
+
+	public boolean isAutodetectConnection() {
+	return autodetectConnection;
+	}
+
+	public void setAutodetectConnection(boolean autodetectConnection) {
+	this.autodetectConnection = autodetectConnection;
 	}
 
 	/**
