@@ -207,9 +207,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"; // 127/8
 
-		private String protocolHeader = "x-forwarded-proto";
+		private String protocolHeader;
 
-		private String remoteIpHeader = "x-forwarded-for";
+		private String remoteIpHeader;
 
 		private File basedir;
 

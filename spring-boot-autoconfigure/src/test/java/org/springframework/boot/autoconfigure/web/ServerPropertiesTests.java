@@ -147,6 +147,12 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void defaultTomcatRemoteIpValve() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		// Since 1.1.7 you need to specify at least the protocol and ip properties
+		map.put("server.tomcat.protocol_header", "x-forwarded-proto");
+		map.put("server.tomcat.remote_ip_header", "x-forwarded-for");
+		bindProperties(map);
+
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 
