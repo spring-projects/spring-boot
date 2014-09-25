@@ -952,8 +952,8 @@ Spring Boot includes auto-configuration support for the following templating eng
  * http://www.thymeleaf.org[Thymeleaf]
  * http://velocity.apache.org[Velocity]
 
-When you're using one of these templating engines with the default configuration, your templates
-will be picked up automatically from `src/main/resources/templates`.
+When you're using one of these templating engines with the default configuration, your
+templates will be picked up automatically from `src/main/resources/templates`.
 
 TIP: JSPs should be avoided if possible, there are several
 <<boot-features-jsp-limitations, known limitations>> when using them with embedded
@@ -988,35 +988,44 @@ support a uniform Java DSL for customizing the error handling. For example:
 
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer container) {
-            container.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
+			container.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
 		}
 
 	}
 ----
 
-You can also use regular Spring MVC features like http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-exception-handlers[`@ExceptionHandler`
-methods] and http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-controller-advice[`@ControllerAdvice`].
-The `ErrorController` will then pick up any unhandled exceptions.
+You can also use regular Spring MVC features like
+{spring-reference}/#mvc-exceptionhandlers[`@ExceptionHandler` methods] and
+{spring-reference}/#mvc-ann-controller-advice[`@ControllerAdvice`]. The `ErrorController`
+will then pick up any unhandled exceptions.
 
 N.B. if you register an `ErrorPage` with a path that will end up being handled by a
-`Filter` (e.g. as is common with some non-Spring web frameworks,  like Jersey and Wicket),
+`Filter` (e.g. as is common with some non-Spring web frameworks, like Jersey and Wicket),
 then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, e.g.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public FilterRegistrationBean myFilter() {
-
-	  FilterRegistrationBean registration = new FilterRegistrationBean();
-	  registration.setFilter(new MyFilter());
-	  ...
-	  registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
-	  return registration;
-
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(new MyFilter());
+		...
+		registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
+		return registration;
 	}
 ----
 
 (the default `FilterRegistrationBean` does not include the `ERROR` dispatcher type).
+
+[[boot-features-error-handling-websphere]]
+===== Error Handling on WebSphere Application Server
+When deployed to a servlet container, a Spring Boot uses its error page filter to
+forward a request with an error status to the appropriate error page. The request can
+only be forwarded to the correct error page if the response has not already been
+committed. By default, WebSphere Application Server 8.0 and later commits the response
+upon  successful completion of a servlet's service method. You should disable this
+behaviour by setting `com.ibm.ws.webcontainer.invokeFlushAfterService` to `false`
+
 
 
 
