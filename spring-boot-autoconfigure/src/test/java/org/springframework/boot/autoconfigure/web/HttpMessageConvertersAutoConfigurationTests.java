@@ -63,7 +63,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	protected static class JacksonConfig {
 
 		@Bean
-		public MappingJackson2HttpMessageConverter jacksonMessaegConverter() {
+		public MappingJackson2HttpMessageConverter jacksonMessageConverter() {
 			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 			converter.setObjectMapper(objectMapper());
 			return converter;
