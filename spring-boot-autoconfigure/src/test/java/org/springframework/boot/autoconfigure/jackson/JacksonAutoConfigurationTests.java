@@ -28,6 +28,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -141,13 +142,20 @@ public class JacksonAutoConfigurationTests {
 	public void customDateFormatClass() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.date-format:com.fasterxml.jackson.databind.util.ISO8601DateFormat");
+				"spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
-		assertEquals("\"1988-06-25T18:30:00Z\"", mapper.writeValueAsString(date));
+		assertEquals("\"1988-06-25 20:30:00\"", mapper.writeValueAsString(date));
 	}
-
+	
+	public static class MyDateFormat extends SimpleDateFormat {
+		
+		public MyDateFormat() {
+			super("yyyy-MM-dd HH:mm:ss");
+		}
+	}
+	
 	/*
 	 * ObjectMapper does not contain method to get the property naming strategy of the mapper.
 	 * See https://github.com/FasterXML/jackson-databind/issues/559
