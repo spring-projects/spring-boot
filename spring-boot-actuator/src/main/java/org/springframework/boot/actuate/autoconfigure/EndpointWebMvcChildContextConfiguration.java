@@ -85,14 +85,14 @@ public class EndpointWebMvcChildContextConfiguration {
 				this.managementServerProperties = BeanFactoryUtils
 						.beanOfTypeIncludingAncestors(this.beanFactory,
 								ManagementServerProperties.class);
-				this.server = BeanFactoryUtils
-						.beanOfTypeIncludingAncestors(this.beanFactory,
-								ServerProperties.class);
+				this.server = BeanFactoryUtils.beanOfTypeIncludingAncestors(
+						this.beanFactory, ServerProperties.class);
 			}
-			// Customize as per the parent context first (so e.g. the access logs go to the same place)
+			// Customize as per the parent context first (so e.g. the access logs go to
+			// the same place)
 			server.customize(container);
 			// Then reset the error pages
-			container.setErrorPages(Collections.<ErrorPage>emptySet());
+			container.setErrorPages(Collections.<ErrorPage> emptySet());
 			// and add the management-specific bits
 			container.setPort(this.managementServerProperties.getPort());
 			container.setAddress(this.managementServerProperties.getAddress());
