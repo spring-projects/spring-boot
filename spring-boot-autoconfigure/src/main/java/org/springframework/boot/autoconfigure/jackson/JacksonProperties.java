@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * Configuration properties to configure Jackson
  *
  * @author Andy Wilkinson
+ * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.jackson")
 public class JacksonProperties {
