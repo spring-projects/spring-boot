@@ -94,6 +94,8 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.add-mappings=true # if default mappings should be added
 
 	# JACKSON ({sc-spring-boot-autoconfigure}}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
+	spring.jackson.date-format= # Date format string (e.g. yyyy-MM-dd HH:mm:ss), or a fully-qualified date format class name (e.g. com.fasterxml.jackson.databind.util.ISO8601DateFormat)
+	spring.jackson.property-naming-strategy= # One of the constants on Jackson's PropertyNamingStrategy (e.g. CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES) or the fully-qualified class name of a PropertyNamingStrategy subclass
 	spring.jackson.deserialization.*= # see Jackson's DeserializationFeature
 	spring.jackson.generator.*= # see Jackson's JsonGenerator.Feature
 	spring.jackson.mapper.*= # see Jackson's MapperFeature
