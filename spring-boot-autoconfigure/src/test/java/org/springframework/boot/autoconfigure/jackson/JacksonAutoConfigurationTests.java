@@ -16,9 +16,22 @@
 
 package org.springframework.boot.autoconfigure.jackson;
 
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.verify;
+
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -44,22 +57,12 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.verify;
-
 /**
  * Tests for {@link JacksonAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Oliver Gierke
+ * @author Marcel Overdijk
  */
 public class JacksonAutoConfigurationTests {
 
@@ -106,6 +109,97 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new Foo()));
+	}
+
+	/*
+	 * ObjectMapper does not contain method to get the date format of the mapper.
+	 * See https://github.com/FasterXML/jackson-databind/issues/559
+	 * If such a method will be provided below tests can be simplified.
+	 */
+
+	@Test
+	public void noCustomDateFormat() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
+		assertEquals(String.valueOf(date.getTime()), mapper.writeValueAsString(date));
+	}
+
+	@Test
+	public void customDateFormat() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.date-format:yyyyMMddHHmmss");
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
+		assertEquals("\"19880625203000\"", mapper.writeValueAsString(date));
+	}
+
+	@Test
+	public void customDateFormatClass() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.date-format:com.fasterxml.jackson.databind.util.ISO8601DateFormat");
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
+		assertEquals("\"1988-06-25T18:30:00Z\"", mapper.writeValueAsString(date));
+	}
+
+	/*
+	 * ObjectMapper does not contain method to get the property naming strategy of the mapper.
+	 * See https://github.com/FasterXML/jackson-databind/issues/559
+	 * If such a method will be provided below tests can be simplified.
+	 */
+
+	@Test
+	public void noCustomPropertyNamingStrategy() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertEquals("{\"propertyName\":null}", mapper.writeValueAsString(new Bar()));
+	}
+
+	@Test
+	public void customPropertyNamingStrategyCamelCaseToLowerCaseWithUnderscores() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.property-naming-strategy:CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES");
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertEquals("{\"property_name\":null}", mapper.writeValueAsString(new Bar()));
+	}
+
+	@Test
+	public void customPropertyNamingStrategyPascalCaseToCamelCase() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.property-naming-strategy:PASCAL_CASE_TO_CAMEL_CASE");
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertEquals("{\"PropertyName\":null}", mapper.writeValueAsString(new Bar()));
+	}
+
+	@Test
+	public void customPropertyNamingStrategyLowerCase() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.property-naming-strategy:LOWER_CASE");
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertEquals("{\"propertyname\":null}", mapper.writeValueAsString(new Bar()));
+	}
+
+	@Test
+	public void customPropertyNamingStrategyClass() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy");
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertEquals("{\"property_name\":null}", mapper.writeValueAsString(new Bar()));
 	}
 
 	@Test
@@ -297,4 +391,16 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
+	protected static class Bar {
+		
+		private String propertyName;
+
+		public String getPropertyName() {
+			return propertyName;
+		}
+
+		public void setPropertyName(String propertyName) {
+			this.propertyName = propertyName;
+		}
+	}
 }
