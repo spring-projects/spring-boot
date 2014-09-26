@@ -223,7 +223,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertThat(localServerPort, notNullValue());
 		assertThat(localManagementPort, notNullValue());
 		assertThat(localServerPort, not(equalTo(localManagementPort)));
-		assertThat(applicationContext.getBean(ServerPortConfig.class).getCount(), equalTo(2));
+		assertThat(this.applicationContext.getBean(ServerPortConfig.class).getCount(),
+				equalTo(2));
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -305,11 +306,11 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Configuration
 	public static class ServerPortConfig {
-		
+
 		private int count = 0;
-		
+
 		public int getCount() {
-			return count;
+			return this.count;
 		}
 
 		@Bean
@@ -317,7 +318,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 			ServerProperties properties = new ServerProperties() {
 				@Override
 				public void customize(ConfigurableEmbeddedServletContainer container) {
-					count++;
+					ServerPortConfig.this.count++;
 					super.customize(container);
 				}
 			};
