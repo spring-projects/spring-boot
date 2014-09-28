@@ -33,13 +33,6 @@ import org.springframework.boot.actuate.metrics.repository.MultiMetricRepository
  */
 public class MultiMetricRichGaugeReader implements RichGaugeReader {
 
-	private static final String COUNT = ".count";
-	private static final String MAX = ".max";
-	private static final String MIN = ".min";
-	private static final String AVG = ".avg";
-	private static final String ALPHA = ".alpha";
-	private static final String VAL = ".val";
-
 	private final MultiMetricRepository repository;
 
 	public MultiMetricRichGaugeReader(MultiMetricRepository repository) {
@@ -56,22 +49,22 @@ public class MultiMetricRichGaugeReader implements RichGaugeReader {
 		double max = 0.;
 		long count = 0;
 		for (Metric<?> metric : metrics) {
-			if (metric.getName().endsWith(VAL)) {
+			if (metric.getName().endsWith(RichGauge.VAL)) {
 				value = metric.getValue().doubleValue();
 			}
-			else if (metric.getName().endsWith(ALPHA)) {
+			else if (metric.getName().endsWith(RichGauge.ALPHA)) {
 				alpha = metric.getValue().doubleValue();
 			}
-			else if (metric.getName().endsWith(AVG)) {
+			else if (metric.getName().endsWith(RichGauge.AVG)) {
 				average = metric.getValue().doubleValue();
 			}
-			else if (metric.getName().endsWith(MIN)) {
+			else if (metric.getName().endsWith(RichGauge.MIN)) {
 				min = metric.getValue().doubleValue();
 			}
-			else if (metric.getName().endsWith(MAX)) {
+			else if (metric.getName().endsWith(RichGauge.MAX)) {
 				max = metric.getValue().doubleValue();
 			}
-			else if (metric.getName().endsWith(COUNT)) {
+			else if (metric.getName().endsWith(RichGauge.COUNT)) {
 				count = metric.getValue().longValue();
 			}
 		}
