@@ -21,11 +21,14 @@ import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.actuate.endpoint.PublicMetrics;
+import org.springframework.boot.actuate.endpoint.RichGaugeReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
+import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.actuate.metrics.writer.CodahaleMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.CompositeMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
@@ -34,6 +37,7 @@ import org.springframework.boot.actuate.metrics.writer.MessageChannelMetricWrite
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriterMessageHandler;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
@@ -115,6 +119,12 @@ public class MetricRepositoryAutoConfiguration {
 			return new InMemoryMetricRepository();
 		}
 
+	}
+
+	@Bean
+	@ConditionalOnBean(RichGaugeReader.class)
+	public PublicMetrics richGaugePublicMetrics(RichGaugeReader richGaugeReader) {
+		return new RichGaugeReaderPublicMetrics(richGaugeReader);
 	}
 
 	@Configuration
