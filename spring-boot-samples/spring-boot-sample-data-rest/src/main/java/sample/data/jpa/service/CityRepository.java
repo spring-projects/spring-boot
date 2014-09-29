@@ -26,9 +26,15 @@ import sample.data.jpa.domain.City;
 @RepositoryRestResource(collectionResourceRel = "citys", path = "cities")
 interface CityRepository extends PagingAndSortingRepository<City, Long> {
 
-	Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(String name,
-			String country, Pageable pageable);
+	// curl
+	// http://localhost:8080/cities/search/findByNameContainingAndCountryContainingAllIgnoringCase\?name\=elbourne\&country\=ustralia\&size\=2\&page\=0
+	Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(
+			@Param(value = "name") String name, @Param(value = "country") String country,
+			Pageable pageable);
 
-	City findByNameAndCountryAllIgnoringCase(String name, String country);
+	// curl
+	// http://localhost:8080/cities/search/findByNameAndCountryAllIgnoringCase\?name\=Melbourne\&country\=Australia
+	City findByNameAndCountryAllIgnoringCase(@Param(value = "name") String name,
+			@Param(value = "country") String country);
 
 }
