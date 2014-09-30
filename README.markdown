@@ -49,11 +49,11 @@ At this point you need to make a decision: is your project a "grouping project",
 
 Based on your choice above, copy the correct sample page to `index.html`, e.g.:
 
-    $ cp sample-pages/project.html index.html
+    $ cp _sample-pages/project.html index.html
 
 or
 
-    $ cp sample-pages/project_group.html index.html
+    $ cp _sample-pages/project_group.html index.html
 
 
 ## Edit the content of your home page
