@@ -16,8 +16,13 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,6 +37,14 @@ class ActiveMQConnectionFactoryFactory {
 	private static final String DEFAULT_EMBEDDED_BROKER_URL = "vm://localhost?broker.persistent=false";
 
 	private static final String DEFAULT_NETWORK_BROKER_URL = "tcp://localhost:61616";
+
+	private static final Map<String, String> CLASS_BASED_BROKER_URLS;
+	static {
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		map.put("org.apache.activemq.transport.mqtt.MQTTTransport",
+				"mqtt://localhost:1883");
+		CLASS_BASED_BROKER_URLS = Collections.unmodifiableMap(map);
+	}
 
 	private final ActiveMQProperties properties;
 
@@ -66,6 +79,13 @@ class ActiveMQConnectionFactoryFactory {
 	String determineBrokerUrl() {
 		if (this.properties.getBrokerUrl() != null) {
 			return this.properties.getBrokerUrl();
+		}
+		if (this.properties.isAutodetectConnectionUrl()) {
+			for (Map.Entry<String, String> entry : CLASS_BASED_BROKER_URLS.entrySet()) {
+				if (ClassUtils.isPresent(entry.getKey(), null)) {
+					return entry.getValue();
+				}
+			}
 		}
 		if (this.properties.isInMemory()) {
 			return DEFAULT_EMBEDDED_BROKER_URL;

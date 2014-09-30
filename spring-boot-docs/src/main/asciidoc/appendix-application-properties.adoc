@@ -284,6 +284,7 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.broker-url=tcp://localhost:61616 # connection URL
 	spring.activemq.user=
 	spring.activemq.password=
+	spring.activemq.autodetect-connection-url=true # attempt to guess URL based on classpath
 	spring.activemq.in-memory=true # broker kind to create if no broker-url is specified
 	spring.activemq.pooled=false
 
