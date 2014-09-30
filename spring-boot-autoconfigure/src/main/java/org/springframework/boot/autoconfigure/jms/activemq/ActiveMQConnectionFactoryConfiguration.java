@@ -20,6 +20,9 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,10 +37,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 class ActiveMQConnectionFactoryConfiguration {
 
+	private static final String DEFAULT_MQTT_BROKER_URL = "mqtt://localhost:1883";
+
+	@Bean
+	@Qualifier("autodetectedAmqConnectionUrl")
+	@ConditionalOnClass(name = "org.apache.activemq.transport.mqtt.MQTTTransport")
+	public String mqttAmqConnectionUrl() {
+		return DEFAULT_MQTT_BROKER_URL;
+	}
+
+	@Autowired(required = false)
+	@Qualifier("autodetectedAmqConnectionUrl")
+	private String autodetectedAmqConnectionUrl;
+
 	@Bean
 	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
-				properties).createConnectionFactory(ActiveMQConnectionFactory.class);
+				properties, autodetectedAmqConnectionUrl).createConnectionFactory(ActiveMQConnectionFactory.class);
 		if (properties.isPooled()) {
 			PooledConnectionFactory pool = new PooledConnectionFactory();
 			pool.setConnectionFactory(connectionFactory);
