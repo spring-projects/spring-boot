@@ -97,6 +97,7 @@ Assuming you're already within your project's clone directory, and you've alread
 
 > **Note:** Jekyll 1.1.2 is a known good version, and it is specifically referred to in `Gemfile.lock` so you have to use `bundle` (not `gem install ...`) to install it:
 
+    gem install bundler
     bundle
 
 ### Run jekyll
