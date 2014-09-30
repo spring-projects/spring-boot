@@ -15,8 +15,7 @@ From within your Spring project's git checkout directory:
 
 ### Remove all files
 
-    git rm -rf *
-    git rm -rf '.*'
+    git rm -rf `git ls-files` && rm -rf *
 
 ### Add the gh-pages-upstream remote
 
