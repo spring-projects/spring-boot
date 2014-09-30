@@ -16,11 +16,15 @@
 
 package org.springframework.boot.autoconfigure.jackson;
 
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -40,6 +46,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
@@ -57,6 +64,7 @@ import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
  *
  * @author Oliver Gierke
  * @author Andy Wilkinson
+ * @author Marcel Overdijk
  * @since 1.1.0
  */
 @Configuration
@@ -89,12 +97,43 @@ public class JacksonAutoConfiguration {
 
 		@Autowired
 		private JacksonProperties jacksonProperties = new JacksonProperties();
-
+		
 		@Bean
 		@Primary
 		@ConditionalOnMissingBean
 		public ObjectMapper jacksonObjectMapper() {
 			ObjectMapper objectMapper = new ObjectMapper();
+
+			// We support a fully qualified class name extending DateFormat or a date pattern string value
+			String dateFormat = this.jacksonProperties.getDateFormat();
+			if (dateFormat != null) {
+				try {
+					Class<?> clazz = ClassUtils.forName(dateFormat, null);
+					objectMapper.setDateFormat((DateFormat) BeanUtils.instantiateClass(clazz));
+				} catch (ClassNotFoundException e) {
+					objectMapper.setDateFormat(new SimpleDateFormat(dateFormat));
+				}
+			}
+
+			// We support a fully qualified class name extending Jackson's PropertyNamingStrategy 
+			// or a string value corresponding to the constant names in PropertyNamingStrategy which hold default provided implementations 
+			String propertyNamingStrategy = this.jacksonProperties.getPropertyNamingStrategy();
+			if (propertyNamingStrategy != null) {
+				try {
+					Class<?> clazz = ClassUtils.forName(propertyNamingStrategy, null);
+					objectMapper.setPropertyNamingStrategy((PropertyNamingStrategy) BeanUtils.instantiateClass(clazz));
+				} catch (ClassNotFoundException e) {
+					// Find the field (this way we automatically support new constants that may be added by Jackson in the future) 
+					Field field = ReflectionUtils.findField(PropertyNamingStrategy.class, propertyNamingStrategy, PropertyNamingStrategy.class);
+					if (field != null) {
+						try {
+							objectMapper.setPropertyNamingStrategy((PropertyNamingStrategy) field.get(null));
+						} catch (Exception ex) {
+							throw new IllegalStateException(ex);
+						}
+					}
+				}
+			}
 
 			if (this.httpMapperProperties.isJsonSortKeys()) {
 				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
