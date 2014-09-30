@@ -19,6 +19,7 @@ package sample.data.jpa.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import sample.data.jpa.domain.City;
@@ -26,9 +27,11 @@ import sample.data.jpa.domain.City;
 @RepositoryRestResource(collectionResourceRel = "citys", path = "cities")
 interface CityRepository extends PagingAndSortingRepository<City, Long> {
 
-	Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(String name,
-			String country, Pageable pageable);
+	Page<City> findByNameContainingAndCountryContainingAllIgnoringCase(
+			@Param("name") String name, @Param("country") String country,
+			Pageable pageable);
 
-	City findByNameAndCountryAllIgnoringCase(String name, String country);
+	City findByNameAndCountryAllIgnoringCase(@Param("name") String name,
+			@Param("country") String country);
 
 }
