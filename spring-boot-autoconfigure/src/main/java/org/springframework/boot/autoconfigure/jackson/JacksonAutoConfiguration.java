@@ -33,6 +33,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -94,7 +95,7 @@ public class JacksonAutoConfiguration {
 		@Primary
 		@ConditionalOnMissingBean
 		public ObjectMapper jacksonObjectMapper() {
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
 			if (this.httpMapperProperties.isJsonSortKeys()) {
 				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,

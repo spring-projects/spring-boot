@@ -78,6 +78,16 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	public void defaultFeatures() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertFalse(mapper.getSerializationConfig().isEnabled(MapperFeature.DEFAULT_VIEW_INCLUSION));
+		assertFalse(mapper.getDeserializationConfig().isEnabled(MapperFeature.DEFAULT_VIEW_INCLUSION));
+		assertFalse(mapper.getDeserializationConfig().isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
+	}
+
+	@Test
 	public void registersJodaModuleAutomatically() {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
