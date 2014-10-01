@@ -42,9 +42,9 @@ import org.springframework.util.Assert;
  */
 public class RedisMetricRepository implements MetricRepository {
 
-	private static final String DEFAULT_METRICS_PREFIX = "spring.metrics.";
+	private static final String DEFAULT_METRICS_PREFIX = "spring.metrics";
 
-	private String prefix = DEFAULT_METRICS_PREFIX;
+	private String prefix = DEFAULT_METRICS_PREFIX  + ".";
 
 	private String key = "keys." + DEFAULT_METRICS_PREFIX;
 

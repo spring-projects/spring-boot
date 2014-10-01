@@ -27,14 +27,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import sample.data.jpa.SampleDataRestApplication;
 import sample.data.jpa.domain.City;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests for {@link CityRepository}.
  *
  * @author Oliver Gierke
+ * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleDataRestApplication.class)
@@ -48,5 +51,21 @@ public class CityRepositoryIntegrationTests {
 
 		Page<City> cities = this.repository.findAll(new PageRequest(0, 10));
 		assertThat(cities.getTotalElements(), is(greaterThan(20L)));
+	}
+
+	@Test
+	public void findByNameAndCountry() {
+		City city = this.repository.findByNameAndCountryAllIgnoringCase("Melbourne",
+				"Australia");
+		assertThat(city, notNullValue());
+		assertThat(city.getName(), is(equalTo("Melbourne")));
+	}
+
+	@Test
+	public void findContaining() {
+		Page<City> cities = this.repository
+				.findByNameContainingAndCountryContainingAllIgnoringCase("", "UK",
+						new PageRequest(0, 10));
+		assertThat(cities.getTotalElements(), is(equalTo(3L)));
 	}
 }

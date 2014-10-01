@@ -31,10 +31,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * Configuration properties to configure Jackson
  *
  * @author Andy Wilkinson
+ * @author Marcel Overdijk
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.jackson")
 public class JacksonProperties {
+
+	private String dateFormat;
+
+	private String propertyNamingStrategy;
 
 	private Map<SerializationFeature, Boolean> serialization = new HashMap<SerializationFeature, Boolean>();
 
@@ -45,6 +50,22 @@ public class JacksonProperties {
 	private Map<JsonParser.Feature, Boolean> parser = new HashMap<JsonParser.Feature, Boolean>();
 
 	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<JsonGenerator.Feature, Boolean>();
+
+	public String getDateFormat() {
+		return this.dateFormat;
+	}
+
+	public void setDateFormat(String dateFormat) {
+		this.dateFormat = dateFormat;
+	}
+
+	public String getPropertyNamingStrategy() {
+		return this.propertyNamingStrategy;
+	}
+
+	public void setPropertyNamingStrategy(String propertyNamingStrategy) {
+		this.propertyNamingStrategy = propertyNamingStrategy;
+	}
 
 	public Map<SerializationFeature, Boolean> getSerialization() {
 		return this.serialization;
