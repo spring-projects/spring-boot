@@ -119,6 +119,7 @@ public class MetricFilterAutoConfiguration {
 			result = result.replace("**", "-star-star-");
 			result = result.replace("*", "-star-");
 			result = result.replace("/-", "/");
+			result = result.replace("-/", "/");
 			if (result.endsWith("-")) {
 				result = result.substring(0, result.length() - 1);
 			}
