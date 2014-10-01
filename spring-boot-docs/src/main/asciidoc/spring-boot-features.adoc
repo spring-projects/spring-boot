@@ -1463,7 +1463,16 @@ following to your `application.properties`.
 NOTE: Hibernate's own internal property name for this (if you happen to remember it
 better) is `hibernate.hbm2ddl.auto`. You can set it, along with other Hibernate native
 properties, using `spring.jpa.properties.*` (the prefix is stripped before adding them
-to the entity manager). By default the DDL execution (or validation) is deferred until
+to the entity manager). Example:
+
+[indent=0]
+----
+	spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+----
+
+passes `hibernate.globally_quoted_identifiers` to the Hibernate entity manager.
+
+By default the DDL execution (or validation) is deferred until
 the `ApplicationContext` has started. There is also a `spring.jpa.generate-ddl` flag, but
 it is not used if Hibernate autoconfig is active because the `ddl-auto`
 settings are more fine grained.
