@@ -330,7 +330,7 @@ public class SpringApplication {
 			}
 			return context;
 		}
-		catch (Exception ex) {
+		catch (Throwable ex) {
 			try {
 				for (SpringApplicationRunListener runListener : runListeners) {
 					finishWithException(runListener, context, ex);
@@ -696,7 +696,7 @@ public class SpringApplication {
 	}
 
 	private void finishWithException(SpringApplicationRunListener runListener,
-			ConfigurableApplicationContext context, Exception exception) {
+			ConfigurableApplicationContext context, Throwable exception) {
 		try {
 			runListener.finished(context, exception);
 		}
