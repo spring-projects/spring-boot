@@ -26,10 +26,13 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
+import org.springframework.util.SystemPropertyUtils;
 
 /**
  * An {@link org.springframework.context.ApplicationListener} that saves application PID
- * into file. This application listener will be triggered exactly once per JVM.
+ * into file. This application listener will be triggered exactly once per JVM, and the file
+ * name can be overridden at runtime with a System property or environment variable named
+ * "PIDFILE" (or "pidfile").
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
@@ -62,8 +65,7 @@ public class ApplicationPidListener implements
 	 * @param filename the name of file containing pid
 	 */
 	public ApplicationPidListener(String filename) {
-		Assert.notNull(filename, "Filename must not be null");
-		this.file = new File(filename);
+		this(new File(filename));
 	}
 
 	/**
@@ -72,7 +74,10 @@ public class ApplicationPidListener implements
 	 */
 	public ApplicationPidListener(File file) {
 		Assert.notNull(file, "File must not be null");
-		this.file = file;
+		String actual = SystemPropertyUtils.resolvePlaceholders("${PIDFILE}", true);
+		actual = !actual.contains("$") ? actual :  SystemPropertyUtils.resolvePlaceholders("${pidfile}", true);
+		actual = !actual.contains("$") ? actual :  file.getAbsolutePath();
+		this.file = new File(actual);
 	}
 
 	@Override
