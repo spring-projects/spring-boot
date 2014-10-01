@@ -75,6 +75,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	}
 
 	private synchronized void initialize() throws EmbeddedServletContainerException {
+		this.logger.info("Tomcat initialized with port(s): "
+				+ getConfiguredPortsDescription());
 		try {
 			addInstanceIdToEngineName();
 
@@ -95,6 +97,15 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Tomcat", ex);
 		}
+	}
+
+	private String getConfiguredPortsDescription() {
+		StringBuilder ports = new StringBuilder();
+		for (Connector connector : this.tomcat.getService().findConnectors()) {
+			ports.append(ports.length() == 0 ? "" : " ");
+			ports.append(connector.getPort() + "/" + connector.getScheme());
+		}
+		return ports.toString();
 	}
 
 	private void addInstanceIdToEngineName() {
@@ -153,6 +164,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			stopSilently();
 			throw new IllegalStateException("Tomcat connector in failed state");
 		}
+
+		this.logger.info("Tomcat started on port(s): " + getActualPortsDescription());
 	}
 
 	private boolean connectorsHaveFailedToStart() {
@@ -204,7 +217,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 					((TomcatEmbeddedContext) child).deferredLoadOnStartup();
 				}
 			}
-			logPorts();
 		}
 		catch (Exception ex) {
 			this.logger.error("Cannot start connector: ", ex);
@@ -217,14 +229,13 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		return this.serviceConnectors;
 	}
 
-	private void logPorts() {
+	private String getActualPortsDescription() {
 		StringBuilder ports = new StringBuilder();
-		for (Connector additionalConnector : this.tomcat.getService().findConnectors()) {
+		for (Connector connector : this.tomcat.getService().findConnectors()) {
 			ports.append(ports.length() == 0 ? "" : " ");
-			ports.append(additionalConnector.getLocalPort() + "/"
-					+ additionalConnector.getScheme());
+			ports.append(connector.getLocalPort() + "/" + connector.getScheme());
 		}
-		this.logger.info("Tomcat started on port(s): " + ports.toString());
+		return ports.toString();
 	}
 
 	@Override
