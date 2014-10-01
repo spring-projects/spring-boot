@@ -500,14 +500,6 @@ to `application.properties`, e.g.
 Alternatively, you can take complete control of the configuration of the `RemoteIpValve`
 by configuring and adding it in a `TomcatEmbeddedServletContainerFactory` bean.
 
-Lastly, you can switch off the valve by adding some entries to `application.properties`:
-
-[indent=0]
-----
-	server.tomcat.remote_ip_header=
-	server.tomcat.protocol_header=
-----
-
 
 
 [[howto-use-jetty-instead-of-tomcat]]
