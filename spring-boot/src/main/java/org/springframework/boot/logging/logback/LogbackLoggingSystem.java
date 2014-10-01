@@ -90,10 +90,16 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		Assert.notNull(configLocation, "ConfigLocation must not be null");
 		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
-		Assert.isInstanceOf(LoggerContext.class, factory,
-				"LoggerFactory is not a Logback LoggerContext but "
-						+ "Logback is on the classpath. Either remove Logback "
-						+ "or the competing implementation (" + factory.getClass() + ")");
+		Assert.isInstanceOf(
+				LoggerContext.class,
+				factory,
+				String.format(
+						"LoggerFactory is not a Logback LoggerContext but Logback is on "
+								+ "the classpath. Either remove Logback or the competing "
+								+ "implementation (%s loaded from %s).",
+						factory.getClass(), factory.getClass().getProtectionDomain()
+								.getCodeSource().getLocation()));
+
 		LoggerContext context = (LoggerContext) factory;
 		context.stop();
 		context.reset();
