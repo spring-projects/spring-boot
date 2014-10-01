@@ -33,12 +33,12 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests fpr {@link ApplicationPidListener}.
+ * Tests for {@link ApplicationPidListener}.
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
  */
-public class ApplicationPidListenerTest {
+public class ApplicationPidListenerTests {
 
 	private static final ApplicationStartedEvent EVENT = new ApplicationStartedEvent(
 			new SpringApplication(), new String[] {});
@@ -49,6 +49,7 @@ public class ApplicationPidListenerTest {
 	@Before
 	@After
 	public void resetListener() {
+		System.clearProperty("PIDFILE");
 		ApplicationPidListener.reset();
 	}
 
@@ -58,6 +59,15 @@ public class ApplicationPidListenerTest {
 		ApplicationPidListener listener = new ApplicationPidListener(file);
 		listener.onApplicationEvent(EVENT);
 		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
+	}
+
+	@Test
+	public void overridePidFile() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		System.setProperty("PIDFILE", this.temporaryFolder.newFile().getAbsolutePath());
+		ApplicationPidListener listener = new ApplicationPidListener(file);
+		listener.onApplicationEvent(EVENT);
+		assertThat(FileCopyUtils.copyToString(new FileReader(System.getProperty("PIDFILE"))), not(isEmptyString()));
 	}
 
 }
