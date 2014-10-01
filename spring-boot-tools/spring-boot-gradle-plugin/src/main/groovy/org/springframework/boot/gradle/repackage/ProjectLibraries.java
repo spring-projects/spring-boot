@@ -199,6 +199,23 @@ class ProjectLibraries implements Libraries {
 			return name;
 		}
 
+		@Override
+		public int hashCode() {
+			return getFile().hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof GradleLibrary) {
+				return getFile().equals(((GradleLibrary) obj).getFile());
+			}
+			return false;
+		}
+
+		@Override
+		public String toString() {
+			return getFile().getAbsolutePath();
+		}
 	}
 
 	/**
