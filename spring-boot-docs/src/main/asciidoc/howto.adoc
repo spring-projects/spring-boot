@@ -465,9 +465,19 @@ HTTPS connector:
 
 [[howto-use-tomcat-behind-a-proxy-server]]
 === Use Tomcat behind a front-end proxy server
-Spring Boot will automatically configure Tomcat's `RemoteIpValve`. This allows you to
+Spring Boot will automatically configure Tomcat's `RemoteIpValve` if you enable it. This allows you to
 transparently use the standard `x-forwarded-for` and `x-forwarded-proto` headers that
-most front-end proxy servers add. If your proxy uses different headers you can
+most front-end proxy servers add. The valve is switched on by setting one or both of these
+properties to something non-empty (these are the conventional values used by most proxies, and if
+you only set one the other will be set automatically):
+
+[indent=0]
+----
+	server.tomcat.remote_ip_header=x-forwarded-for
+	server.tomcat.protocol_header=x-forwarded-protocol
+----
+
+If your proxy uses different headers you can
 customize the valve's configuration by adding some entries to `application.properties`,
 e.g.
 
