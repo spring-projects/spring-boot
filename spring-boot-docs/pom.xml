@@ -217,6 +217,8 @@
 										<spring-boot-version>${project.version}</spring-boot-version>
 										<spring-boot-docs-version>${project.version}</spring-boot-docs-version>
 										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+										<spring-docs-version>${spring.version}</spring-docs-version>
+										<spring-security-docs-version>${spring-security.version}</spring-security-docs-version>
 										<github-tag>${github-tag}</github-tag>
 									</attributes>
 								</configuration>
