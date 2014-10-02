@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.boot.actuate.metrics.writer.Delta;
@@ -40,13 +41,15 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  */
-public class RedisMetricRepository implements MetricRepository {
+public class RedisMetricRepository implements MetricRepository, InitializingBean {
 
 	private static final String DEFAULT_METRICS_PREFIX = "spring.metrics.";
 
+	private static final String DEFAULT_KEY = "keys." + DEFAULT_METRICS_PREFIX;
+
 	private String prefix = DEFAULT_METRICS_PREFIX;
 
-	private String key = "keys." + DEFAULT_METRICS_PREFIX;
+	private String key = DEFAULT_KEY;
 
 	private BoundZSetOperations<String, String> zSetOperations;
 
@@ -57,7 +60,19 @@ public class RedisMetricRepository implements MetricRepository {
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
 		this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
 	}
-
+	
+	@Override
+	public void afterPropertiesSet() {
+		if (!DEFAULT_METRICS_PREFIX.equals(this.prefix)) {
+			if (DEFAULT_KEY.equals(this.key)) {
+				this.key = "keys." + this.prefix;
+			}
+		}
+		if (!DEFAULT_KEY.equals(this.key)) {
+			this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
+		}
+	}
+	
 	/**
 	 * The prefix for all metrics keys.
 	 * @param prefix the prefix to set for all metrics keys
@@ -78,7 +93,6 @@ public class RedisMetricRepository implements MetricRepository {
 	 */
 	public void setKey(String key) {
 		this.key = key;
-		this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
 	}
 
 	@Override
