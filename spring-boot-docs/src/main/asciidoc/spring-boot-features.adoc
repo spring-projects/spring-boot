@@ -1030,7 +1030,58 @@ upon  successful completion of a servlet's service method. You should disable th
 behaviour by setting `com.ibm.ws.webcontainer.invokeFlushAfterService` to `false`
 
 
+[[boot-features-jersey]]
+=== JAX-RS and Jersey
+If you prefer the JAX-RS programming model for REST endpoints you can use one of the
+available implementations instead of Spring MVC. Jersey 1.x and Apache Celtix work
+quite well out of the box if you just register their `Servlet` or `Filter` as a 
+`@Bean` in your application context. Jersey 2.x has some native Spring support so
+we also provide autoconfiguration support for it in Spring Boot together with a
+starter.
 
+To get started with Jersey 2.x just include the `spring-boot-starter-jersey` as a dependency
+and then you need one `@Bean` of type `ResourceConfig` in which you register all the
+endpoints:
+
+[source,java]
+----
+@Component
+public class JerseyConfig extends ResourceConfig {
+
+	public JerseyConfig() {
+		register(Endpoint.class);
+	}
+
+}
+----
+
+All the registered endpoints should be `@Components` with HTTP resource annotations (`@GET` etc.), e.g.
+
+[source,java]
+----
+@Component
+@Path("/hello")
+public class Endpoint {
+
+	@GET
+	public String message() {
+		return "Hello";
+	}
+
+}
+----
+
+Since the `Endpoint` is a Spring `@Component` its lifecycle
+is managed by Spring and you can `@Autowired` dependencies and inject
+external configuration with `@Value`. The Jersey servlet will be
+registered and mapped to "/\*" by default. You can change the mapping
+by adding `@ApplicationPath` to your `ResourceConfig`.
+
+There is a {github-code}/spring-boot-samples/spring-boot-sample-jersey[Jersey sample] so
+you can see how to set things up. There is also a {github-code}/spring-boot-samples/spring-boot-sample-jersey1[Jersey 1.x sample]. 
+Note that in the Jersey 1.x sample that the spring-boot maven plugin has been configured to
+unpack some Jersey jars so they can be scanned by the JAX-RS implementation (the sample
+asks for them to be scanned in its `Filter` registration.
 
 [[boot-features-embedded-container]]
 === Embedded servlet container support

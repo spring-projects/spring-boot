@@ -40,7 +40,7 @@ public class SampleJersey1Application {
     public FilterRegistrationBean jersey() {
     	FilterRegistrationBean bean = new FilterRegistrationBean();
     	bean.setFilter(new ServletContainer());
-    	bean.addInitParameter("com.sun.jersey.config.property.packages", "com.sun.jersey;demo");
+    	bean.addInitParameter("com.sun.jersey.config.property.packages", "com.sun.jersey;sample.jersey1");
 		return bean;
     }
     
