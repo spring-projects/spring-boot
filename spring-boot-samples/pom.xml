@@ -37,6 +37,8 @@
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hornetq</module>
 		<module>spring-boot-sample-integration</module>
+		<module>spring-boot-sample-jersey</module>
+		<module>spring-boot-sample-jersey1</module>
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-jta-atomikos</module>
 		<module>spring-boot-sample-jta-bitronix</module>
