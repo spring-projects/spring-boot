@@ -135,8 +135,12 @@
 		<spring-social-facebook.version>2.0.1.RELEASE</spring-social-facebook.version>
 		<spring-social-linkedin.version>1.0.1.RELEASE</spring-social-linkedin.version>
 		<spring-social-twitter.version>1.1.0.RELEASE</spring-social-twitter.version>
+		<spring-security.version>3.2.5.RELEASE</spring-security.version>
+		<spring-security-oauth2.version>2.0.5.RELEASE</spring-security-oauth2.version>
+		<spring-security-jwt.version>1.0.2.RELEASE</spring-security-jwt.version>
 		<spring-ws.version>2.2.1.RELEASE</spring-ws.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
+		<sendgrid.version>2.1.0</sendgrid.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity4.version>2.1.2.RELEASE</thymeleaf-extras-springsecurity4.version>
@@ -1520,6 +1524,11 @@
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-jwt</artifactId>
 				<version>${spring-security-jwt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security.oauth</groupId>
+				<artifactId>spring-security-oauth2</artifactId>
+				<version>${spring-security-oauth2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.social</groupId>
