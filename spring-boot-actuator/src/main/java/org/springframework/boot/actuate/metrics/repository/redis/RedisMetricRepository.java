@@ -45,13 +45,9 @@ public class RedisMetricRepository implements MetricRepository, InitializingBean
 
 	private static final String DEFAULT_METRICS_PREFIX = "spring.metrics";
 
-<<<<<<< HEAD
-	private String prefix = DEFAULT_METRICS_PREFIX  + ".";
-=======
 	private static final String DEFAULT_KEY = "keys." + DEFAULT_METRICS_PREFIX;
 
 	private String prefix = DEFAULT_METRICS_PREFIX;
->>>>>>> 1.1.x
 
 	private String key = DEFAULT_KEY;
 
