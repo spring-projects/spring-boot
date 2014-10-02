@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.config.JtaTransactionManagerFactoryBean;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
@@ -40,7 +41,8 @@ class JndiJtaConfiguration {
 
 	@Bean
 	public JtaTransactionManager transactionManager() {
-		return new JtaTransactionManager();
+		JtaTransactionManagerFactoryBean factoryBean = new JtaTransactionManagerFactoryBean();
+		return factoryBean.getObject();
 	}
 
 }
