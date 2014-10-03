@@ -762,8 +762,8 @@ The multipart support is helpful when you want to receive multipart encoded file
 a `@RequestParam`-annotated parameter of type `MultipartFile` in a Spring MVC controller
 handler method.
 
-See the {sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`] s
-ource for more details.
+See the {sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`]
+source for more details.
 
 
 
