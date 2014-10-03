@@ -337,7 +337,7 @@ are automatically registered with your shell.
 
 [[getting-started-cli-example]]
 ==== Quick start Spring CLI example
-Here's a really simple web application that you can use to test you installation. Create
+Here's a really simple web application that you can use to test your installation. Create
 a file called `app.groovy`:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
@@ -361,7 +361,7 @@ Then simply run it from a shell:
 ----
 
 NOTE: It will take some time when you first run the application as dependencies are
-downloaded, subsequent runs will be much quicker.
+downloaded. Subsequent runs will be much quicker.
 
 Open http://localhost:8080 in your favorite web browser and you should see the following
 output:
@@ -422,7 +422,7 @@ that you have created a suitable folder and that it is your ``current directory'
 [[getting-started-first-application-pom]]
 === Creating the POM
 We need to start by creating a Maven `pom.xml` file. The `pom.xml` is the recipe that
-will be used to build your project. Open you favorite text editor and add the following:
+will be used to build your project. Open your favorite text editor and add the following:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -500,7 +500,7 @@ currently have.
 	[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
 ----
 
-The `mvn dependency:tree` command prints tree representation of your project dependencies.
+The `mvn dependency:tree` command prints a tree representation of your project dependencies.
 You can see that `spring-boot-starter-parent` provides no
 dependencies by itself. Let's edit our `pom.xml` and add the `spring-boot-starter-web` dependency
 just below the `parent` section:

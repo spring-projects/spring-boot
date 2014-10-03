@@ -308,8 +308,8 @@ can set up default values for your application in `application.properties` (or w
 other basename you choose with `spring.config.name`) and override it at runtime with a
 different file, keeping the defaults.
 
-NOTE: if you use environment variables not system properties, most operating systems
-disallow period-separated key names, but you can use underscores instead (e.g.
+NOTE: If you use environment variables rather than system properties, most operating
+systems disallow period-separated key names, but you can use underscores instead (e.g.
 `SPRING_CONFIG_NAME` instead of `spring.config.name`).
 
 NOTE: If you are running in a container then JNDI properties (in `java:comp/env`) or
@@ -324,7 +324,7 @@ In addition to `application.properties` files, profile specific properties can a
 defined using the naming convention `application-{profile}.properties`.
 
 Profile specific properties are loaded from the same locations as standard
-`application.properties`, with profiles specific files overriding the default ones.
+`application.properties`, with profile specific files overriding the default ones.
 
 
 
@@ -369,7 +369,7 @@ For example, the following YAML document:
 [source,yaml,indent=0]
 ----
 	environments:
-		dev:`
+		dev:
 			url: http://dev.bar.com
 			name: Developer Setup
 		prod:
@@ -436,7 +436,7 @@ placeholders syntax to access YAML properties.
 [[boot-features-external-config-multi-profile-yaml]]
 ==== Multi-profile YAML documents
 You can specify multiple profile-specific YAML documents in a single file by
-by using a `spring.profiles` key to indicate when the document applies. For example:
+using a `spring.profiles` key to indicate when the document applies. For example:
 
 [source,yaml,indent=0]
 ----
@@ -675,12 +675,12 @@ http://logging.apache.org/log4j/[Log4J] and
 http://logback.qos.ch/[Logback].
 In each case there is console output and file output (rotating, 10 Mb file size).
 
-By default, If you use the ``Starter POMs'', Logback will be used for logging. Appropriate
+By default, if you use the ``Starter POMs'', Logback will be used for logging. Appropriate
 Logback routing is also included to ensure that dependent libraries that use
 Java Util Logging, Commons Logging, Log4J or SLF4J will all work correctly.
 
 TIP: There are a lot of logging frameworks available for Java. Don't worry if the above
-list seems confusing, generally you won't need to change your logging dependencies and
+list seems confusing. Generally you won't need to change your logging dependencies and
 the Spring Boot defaults will work just fine.
 
 
@@ -700,7 +700,7 @@ The default log output from Spring Boot looks like this:
 
 The following items are output:
 
-* Date and Time -- Millesecond precision and easily sortable.
+* Date and Time -- Millisecond precision and easily sortable.
 * Log Level -- `ERROR`, `WARN`, `INFO`, `DEBUG` or `TRACE`.
 * Process ID.
 * A `---` separator to distinguish the start of actual log messages.
@@ -801,7 +801,7 @@ To help with the customization some other properties are transferred from the Sp
 All the logging systems supported can consult System properties when parsing their
 configuration files.  See the default configurations in `spring-boot.jar` for examples.
 
-WARNING: There are know classloading issues with Java Util Logging that cause problems
+WARNING: There are known classloading issues with Java Util Logging that cause problems
 when running from an ``executable jar''. We recommend that you avoid it if at all
 possible.
 
@@ -1335,7 +1335,7 @@ Production database connections can also be auto-configured using a pooling
 * Lastly, if Commons DBCP2 is available we will use it
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
-``starter POMs'' you will automcatically get a dependency to `tomcat-jdbc`.
+``starter POMs'' you will automatically get a dependency to `tomcat-jdbc`.
 
 NOTE: Additional connection pools can always be configured manually. If you define your
 own `DataSource` bean, auto-configuration will not occur.
