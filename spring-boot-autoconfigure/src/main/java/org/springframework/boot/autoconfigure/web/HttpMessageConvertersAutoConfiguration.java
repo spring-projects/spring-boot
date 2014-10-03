@@ -29,9 +29,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.gson.Gson;
 
 /**
@@ -42,6 +45,7 @@ import com.google.gson.Gson;
  * @author Piotr Maj
  * @author Oliver Gierke
  * @author David Liu
+ * @author Sebastien Deleuze
  * @author Andy Wilkinson
  */
 @Configuration
@@ -72,6 +76,27 @@ public class HttpMessageConvertersAutoConfiguration {
 				ObjectMapper objectMapper) {
 			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 			converter.setObjectMapper(objectMapper);
+			converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
+			return converter;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(XmlMapper.class)
+	@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
+	@EnableConfigurationProperties(HttpMapperProperties.class)
+	protected static class XmlMappers {
+
+		@Autowired
+		private HttpMapperProperties properties = new HttpMapperProperties();
+
+		@Bean
+		@ConditionalOnMissingBean
+		public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(
+				Jackson2ObjectMapperBuilder builder) {
+			MappingJackson2XmlHttpMessageConverter converter = new MappingJackson2XmlHttpMessageConverter();
+			converter.setObjectMapper(builder.createXmlMapper(true).build());
 			converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
 			return converter;
 		}

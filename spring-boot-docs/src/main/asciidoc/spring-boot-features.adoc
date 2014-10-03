@@ -885,7 +885,8 @@ formatters, view controllers etc.) you can add your own `@Bean` of type
 ==== HttpMessageConverters
 Spring MVC uses the `HttpMessageConverter` interface to convert HTTP requests and
 responses. Sensible defaults are included out of the box, for example Objects can be
-automatically converted to JSON (using the Jackson library) or XML (using JAXB).
+automatically converted to JSON (using the Jackson library) or XML (using the Jackson
+XML extension if available, else using JAXB).
 
 If you need to add or customize converters you can use Spring Boot's
 `HttpMessageConverters` class:
