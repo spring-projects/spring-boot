@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jackson;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
@@ -33,6 +32,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -45,11 +45,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -63,6 +60,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Dave Syer
  * @author Oliver Gierke
+ * @author Sebastien Deleuze
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  */
@@ -86,9 +84,6 @@ public class JacksonAutoConfigurationTests {
 	public void registersJodaModuleAutomatically() {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
-		Map<String, Module> modules = this.context.getBeansOfType(Module.class);
-		assertThat(modules.size(), greaterThanOrEqualTo(1)); // Depends on the JDK
-		assertThat(modules.get("jacksonJodaModule"), is(instanceOf(JodaModule.class)));
 		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
 		assertThat(objectMapper.canSerialize(LocalDateTime.class), is(true));
 	}
@@ -337,6 +332,26 @@ public class JacksonAutoConfigurationTests {
 		assertTrue(JsonGenerator.Feature.AUTO_CLOSE_TARGET.enabledByDefault());
 		assertFalse(mapper.getFactory()
 				.isEnabled(JsonGenerator.Feature.AUTO_CLOSE_TARGET));
+	}
+
+	@Test
+	public void defaultObjectMapperBuilder() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		this.context.refresh();
+		Jackson2ObjectMapperBuilder builder = this.context
+				.getBean(Jackson2ObjectMapperBuilder.class);
+		ObjectMapper mapper = builder.build();
+		assertTrue(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault());
+		assertFalse(mapper.getDeserializationConfig().isEnabled(
+				MapperFeature.DEFAULT_VIEW_INCLUSION));
+		assertTrue(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault());
+		assertFalse(mapper.getDeserializationConfig().isEnabled(
+				MapperFeature.DEFAULT_VIEW_INCLUSION));
+		assertFalse(mapper.getSerializationConfig().isEnabled(
+				MapperFeature.DEFAULT_VIEW_INCLUSION));
+		assertTrue(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault());
+		assertFalse(mapper.getDeserializationConfig().isEnabled(
+				DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
 	}
 
 	@Configuration

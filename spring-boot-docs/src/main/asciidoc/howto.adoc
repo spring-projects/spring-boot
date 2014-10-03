@@ -643,15 +643,40 @@ default as long as Jackson2 is on the classpath. For example:
 
 As long as `MyThing` can be serialized by Jackson2 (e.g. a normal POJO or Groovy object)
 then `http://localhost:8080/thing` will serve a JSON representation of it by default.
-Sometimes in a browser you might see XML responses (but by default only if `MyThing` was
-a JAXB object) because browsers tend to send accept headers that prefer XML.
+Sometimes in a browser you might see XML responses because browsers tend to send accept
+headers that prefer XML.
 
 
 
 [[howto-write-an-xml-rest-service]]
 === Write an XML REST service
-Since JAXB is in the JDK the same example as we used for JSON would work, as long as the
-`MyThing` was annotated as `@XmlRootElement`:
+If you have the Jackson XML extension (`jackson-dataformat-xml`) on the classpath, it will
+be used to render XML responses and the very same example as we used for JSON would work.
+To use it, add the following dependency to your project:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>com.fasterxml.jackson.dataformat</groupId>
+		<artifactId>jackson-dataformat-xml</artifactId>
+	</dependency>
+----
+
+You may also want to add a dependency on Woodstox. It's faster than the default Stax
+implementation provided by the JDK and also adds pretty print support and improved
+namespace handling:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.codehaus.woodstox</groupId>
+		<artifactId>woodstox-core-asl</artifactId>
+	</dependency>
+----
+
+If Jackson's XML extension is not available, JAXB (provided by default in the JDK) will
+be used, with the additional requirement to have `MyThing` annotated as
+`@XmlRootElement`:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -670,14 +695,21 @@ To get the server to render XML instead of JSON you might have to send an
 [[howto-customize-the-jackson-objectmapper]]
 === Customize the Jackson ObjectMapper
 Spring MVC (client and server side) uses `HttpMessageConverters` to negotiate content
-conversion in an HTTP exchange. If Jackson is on the classpath you already get a default
-converter with a vanilla `ObjectMapper`. Spring Boot has some features to make it easier
-to customize this behavior.
+conversion in an HTTP exchange. If Jackson is on the classpath you already get the
+default converter(s) provided by `Jackson2ObjectMapperBuilder`.
 
-You can configure the vanilla `ObjectMapper` using the environment. Jackson provides an
-extensive suite of simple on/off features that can be used to configure various aspects
-of its processing. These features are described in five enums in Jackson which map onto
-properties in the environment:
+The `ObjectMapper` (or `XmlMapper` for Jackson XML converter) instance created by default
+have the following customized properties:
+
+* MapperFeature.DEFAULT_VIEW_INCLUSION is disabled
+* DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES is disabled
+
+Spring Boot has also some features to make it easier to customize this behavior.
+
+You can configure the `ObjectMapper` and `XmlMapper` instances using the environment.
+Jackson provides an extensive suite of simple on/off features that can be used to
+configure various aspects of its processing. These features are described in five enums in
+Jackson which map onto properties in the environment:
 
 |===
 |Jackson enum|Environment property
@@ -698,14 +730,17 @@ properties in the environment:
 |`spring.jackson.serialization.<feature_name>=true\|false`
 |===
 
-For example, to allow deserialization to continue when an unknown property is encountered
-during deserialization, set `spring.jackson.deserialization.fail_on_unknown_properties=false`.
-Note that, thanks to the use of <<boot-features-external-config-relaxed-binding, relaxed binding>>,
-the case of `fail_on_unknown_properties` doesn't have to match the case of the corresponding
-enum constant which is `FAIL_ON_UNKNOWN_PROPERTIES`.
+For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
+Note that, thanks to the use of <<boot-features-external-config-relaxed-binding,
+relaxed binding>>, the case of `indent_output` doesn't have to match the case of the
+corresponding enum constant which is `INDENT_OUTPUT`.
 
-If you want to replace the default `ObjectMapper` completely, define a `@Bean` of that type
-and mark it as `@Primary`.
+If you want to replace the default `ObjectMapper` completely, define a `@Bean` of that
+type and mark it as `@Primary`.
+
+Defining a `@Bean` of type `Jackson2ObjectMapperBuilder` will allow you to customize both
+default `ObjectMapper` and `XmlMapper` (used in `MappingJackson2HttpMessageConverter` and
+`MappingJackson2XmlHttpMessageConverter` respectively).
 
 Another way to customize Jackson is to add beans of type
 `com.fasterxml.jackson.databind.Module` to your context. They will be registered with every
