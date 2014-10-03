@@ -127,6 +127,7 @@
 		<tomcat.version>7.0.55</tomcat.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
+		<woodstox.version>4.4.1</woodstox.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 	</properties>
 	<prerequisites>
@@ -438,6 +439,11 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-xml</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
@@ -781,6 +787,17 @@
 				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.codehaus.woodstox</groupId>
+				<artifactId>woodstox-core-asl</artifactId>
+				<version>${woodstox.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>stax</groupId>
+						<artifactId>stax-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
 				<groupId>org.crashub</groupId>
 				<artifactId>crash.cli</artifactId>
 				<version>${crashub.version}</version>
@@ -1031,6 +1048,13 @@
 				<groupId>org.apache.solr</groupId>
 				<artifactId>solr-solrj</artifactId>
 				<version>${solr.version}</version>
+				<exclusions>
+					<!-- Because of https://issues.apache.org/jira/browse/SOLR-5064 -->
+					<exclusion>
+						<groupId>org.codehaus.woodstox</groupId>
+						<artifactId>wstx-asl</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.spockframework</groupId>

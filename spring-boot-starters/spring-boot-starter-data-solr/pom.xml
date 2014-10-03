@@ -27,6 +27,11 @@
 			<artifactId>solr-solrj</artifactId>
 		</dependency>
 		<dependency>
+			<!-- Because of https://issues.apache.org/jira/browse/SOLR-5064 -->
+			<groupId>org.codehaus.woodstox</groupId>
+			<artifactId>woodstox-core-asl</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<exclusions>
