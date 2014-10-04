@@ -31,10 +31,13 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
+import org.springframework.util.SystemPropertyUtils;
 
 /**
  * An {@link org.springframework.context.ApplicationListener} that saves application PID
- * into file. This application listener will be triggered exactly once per JVM.
+ * into file. This application listener will be triggered exactly once per JVM, and the file
+ * name can be overridden at runtime with a System property or environment variable named
+ * "PIDFILE" (or "pidfile").
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
@@ -86,6 +89,12 @@ public class ApplicationPidListener implements
 	 */
 	public ApplicationPidListener(File file) {
 		Assert.notNull(file, "File must not be null");
+
+    String actual = SystemPropertyUtils.resolvePlaceholders("${PIDFILE}", true);
+    actual = !actual.contains("$") ? actual :  SystemPropertyUtils.resolvePlaceholders("${pidfile}", true);
+    actual = !actual.contains("$") ? actual :  file.getAbsolutePath();
+    file = new File(actual);
+
 		this.file = file;
 		this.onEvent = DEFAULT_EVENT;
 	}
@@ -104,7 +113,7 @@ public class ApplicationPidListener implements
 	 * defaults are applied.
 	 */
 	public ApplicationPidListener(Class<? extends SpringApplicationEvent> onEvent) {
-		Assert.notNull(onEvent, "The 'onEvent' argument must not be null");
+    Assert.notNull(onEvent, "The 'onEvent' argument must not be null");
 
 		if (onEvent.equals(ApplicationFailedEvent.class)) {
 			throw new IllegalArgumentException(
@@ -113,9 +122,9 @@ public class ApplicationPidListener implements
 							ApplicationFailedEvent.class.getName()));
 		}
 
-		this.file = new File(DEFAULT_FILE_NAME);
+    this.file = new File (DEFAULT_FILE_NAME);
 		this.onEvent = onEvent;
-	}
+  }
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {

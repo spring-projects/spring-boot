@@ -308,8 +308,8 @@ can set up default values for your application in `application.properties` (or w
 other basename you choose with `spring.config.name`) and override it at runtime with a
 different file, keeping the defaults.
 
-NOTE: if you use environment variables not system properties, most operating systems
-disallow period-separated key names, but you can use underscores instead (e.g.
+NOTE: If you use environment variables rather than system properties, most operating
+systems disallow period-separated key names, but you can use underscores instead (e.g.
 `SPRING_CONFIG_NAME` instead of `spring.config.name`).
 
 NOTE: If you are running in a container then JNDI properties (in `java:comp/env`) or
@@ -324,7 +324,7 @@ In addition to `application.properties` files, profile specific properties can a
 defined using the naming convention `application-{profile}.properties`.
 
 Profile specific properties are loaded from the same locations as standard
-`application.properties`, with profiles specific files overriding the default ones.
+`application.properties`, with profile specific files overriding the default ones.
 
 
 
@@ -369,7 +369,7 @@ For example, the following YAML document:
 [source,yaml,indent=0]
 ----
 	environments:
-		dev:`
+		dev:
 			url: http://dev.bar.com
 			name: Developer Setup
 		prod:
@@ -436,7 +436,7 @@ placeholders syntax to access YAML properties.
 [[boot-features-external-config-multi-profile-yaml]]
 ==== Multi-profile YAML documents
 You can specify multiple profile-specific YAML documents in a single file by
-by using a `spring.profiles` key to indicate when the document applies. For example:
+using a `spring.profiles` key to indicate when the document applies. For example:
 
 [source,yaml,indent=0]
 ----
@@ -675,12 +675,12 @@ http://logging.apache.org/log4j/[Log4J] and
 http://logback.qos.ch/[Logback].
 In each case there is console output and file output (rotating, 10 Mb file size).
 
-By default, If you use the ``Starter POMs'', Logback will be used for logging. Appropriate
+By default, if you use the ``Starter POMs'', Logback will be used for logging. Appropriate
 Logback routing is also included to ensure that dependent libraries that use
 Java Util Logging, Commons Logging, Log4J or SLF4J will all work correctly.
 
 TIP: There are a lot of logging frameworks available for Java. Don't worry if the above
-list seems confusing, generally you won't need to change your logging dependencies and
+list seems confusing. Generally you won't need to change your logging dependencies and
 the Spring Boot defaults will work just fine.
 
 
@@ -700,7 +700,7 @@ The default log output from Spring Boot looks like this:
 
 The following items are output:
 
-* Date and Time -- Millesecond precision and easily sortable.
+* Date and Time -- Millisecond precision and easily sortable.
 * Log Level -- `ERROR`, `WARN`, `INFO`, `DEBUG` or `TRACE`.
 * Process ID.
 * A `---` separator to distinguish the start of actual log messages.
@@ -801,7 +801,7 @@ To help with the customization some other properties are transferred from the Sp
 All the logging systems supported can consult System properties when parsing their
 configuration files.  See the default configurations in `spring-boot.jar` for examples.
 
-WARNING: There are know classloading issues with Java Util Logging that cause problems
+WARNING: There are known classloading issues with Java Util Logging that cause problems
 when running from an ``executable jar''. We recommend that you avoid it if at all
 possible.
 
@@ -955,8 +955,8 @@ Spring Boot includes auto-configuration support for the following templating eng
  * http://www.thymeleaf.org[Thymeleaf]
  * http://velocity.apache.org[Velocity]
 
-When you're using one of these templating engines with the default configuration, your templates
-will be picked up automatically from `src/main/resources/templates`.
+When you're using one of these templating engines with the default configuration, your
+templates will be picked up automatically from `src/main/resources/templates`.
 
 TIP: JSPs should be avoided if possible, there are several
 <<boot-features-jsp-limitations, known limitations>> when using them with embedded
@@ -991,35 +991,97 @@ support a uniform Java DSL for customizing the error handling. For example:
 
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer container) {
-            container.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
+			container.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
 		}
 
 	}
 ----
 
-You can also use regular Spring MVC features like http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-exception-handlers[`@ExceptionHandler`
-methods] and http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-controller-advice[`@ControllerAdvice`].
-The `ErrorController` will then pick up any unhandled exceptions.
+You can also use regular Spring MVC features like
+{spring-reference}/#mvc-exceptionhandlers[`@ExceptionHandler` methods] and
+{spring-reference}/#mvc-ann-controller-advice[`@ControllerAdvice`]. The `ErrorController`
+will then pick up any unhandled exceptions.
 
-N.B. if you register an `ErrorPage` with a path that will end up being handled by a `Filter` (e.g. as is common with some non-Spring web frameworks, 
-like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, e.g.
+N.B. if you register an `ErrorPage` with a path that will end up being handled by a
+`Filter` (e.g. as is common with some non-Spring web frameworks, like Jersey and Wicket),
+then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, e.g.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-@Bean
-public FilterRegistrationBean myFilter() {
-
-  FilterRegistrationBean registration = new FilterRegistrationBean();
-  registration.setFilter(new MyFilter());
-  ...
-  registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
-  return registration;
-
-}
+	@Bean
+	public FilterRegistrationBean myFilter() {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(new MyFilter());
+		...
+		registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
+		return registration;
+	}
 ----
 
 (the default `FilterRegistrationBean` does not include the `ERROR` dispatcher type).
 
+[[boot-features-error-handling-websphere]]
+===== Error Handling on WebSphere Application Server
+When deployed to a servlet container, a Spring Boot uses its error page filter to
+forward a request with an error status to the appropriate error page. The request can
+only be forwarded to the correct error page if the response has not already been
+committed. By default, WebSphere Application Server 8.0 and later commits the response
+upon  successful completion of a servlet's service method. You should disable this
+behaviour by setting `com.ibm.ws.webcontainer.invokeFlushAfterService` to `false`
+
+
+[[boot-features-jersey]]
+=== JAX-RS and Jersey
+If you prefer the JAX-RS programming model for REST endpoints you can use one of the
+available implementations instead of Spring MVC. Jersey 1.x and Apache Celtix work
+quite well out of the box if you just register their `Servlet` or `Filter` as a 
+`@Bean` in your application context. Jersey 2.x has some native Spring support so
+we also provide autoconfiguration support for it in Spring Boot together with a
+starter.
+
+To get started with Jersey 2.x just include the `spring-boot-starter-jersey` as a dependency
+and then you need one `@Bean` of type `ResourceConfig` in which you register all the
+endpoints:
+
+[source,java]
+----
+@Component
+public class JerseyConfig extends ResourceConfig {
+
+	public JerseyConfig() {
+		register(Endpoint.class);
+	}
+
+}
+----
+
+All the registered endpoints should be `@Components` with HTTP resource annotations (`@GET` etc.), e.g.
+
+[source,java]
+----
+@Component
+@Path("/hello")
+public class Endpoint {
+
+	@GET
+	public String message() {
+		return "Hello";
+	}
+
+}
+----
+
+Since the `Endpoint` is a Spring `@Component` its lifecycle
+is managed by Spring and you can `@Autowired` dependencies and inject
+external configuration with `@Value`. The Jersey servlet will be
+registered and mapped to "/\*" by default. You can change the mapping
+by adding `@ApplicationPath` to your `ResourceConfig`.
+
+There is a {github-code}/spring-boot-samples/spring-boot-sample-jersey[Jersey sample] so
+you can see how to set things up. There is also a {github-code}/spring-boot-samples/spring-boot-sample-jersey1[Jersey 1.x sample]. 
+Note that in the Jersey 1.x sample that the spring-boot maven plugin has been configured to
+unpack some Jersey jars so they can be scanned by the JAX-RS implementation (the sample
+asks for them to be scanned in its `Filter` registration.
 
 [[boot-features-embedded-container]]
 === Embedded servlet container support
@@ -1273,7 +1335,7 @@ Production database connections can also be auto-configured using a pooling
 * Lastly, if Commons DBCP2 is available we will use it
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
-``starter POMs'' you will automcatically get a dependency to `tomcat-jdbc`.
+``starter POMs'' you will automatically get a dependency to `tomcat-jdbc`.
 
 NOTE: Additional connection pools can always be configured manually. If you define your
 own `DataSource` bean, auto-configuration will not occur.
@@ -1481,7 +1543,16 @@ following to your `application.properties`.
 NOTE: Hibernate's own internal property name for this (if you happen to remember it
 better) is `hibernate.hbm2ddl.auto`. You can set it, along with other Hibernate native
 properties, using `spring.jpa.properties.*` (the prefix is stripped before adding them
-to the entity manager). By default the DDL execution (or validation) is deferred until
+to the entity manager). Example:
+
+[indent=0]
+----
+	spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+----
+
+passes `hibernate.globally_quoted_identifiers` to the Hibernate entity manager.
+
+By default the DDL execution (or validation) is deferred until
 the `ApplicationContext` has started. There is also a `spring.jpa.generate-ddl` flag, but
 it is not used if Hibernate autoconfig is active because the `ddl-auto`
 settings are more fine grained.

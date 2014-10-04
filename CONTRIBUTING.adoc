@@ -145,7 +145,7 @@ The generated eclipse projects can be imported by selecting `import existing pro
 from the `file` menu.
 
 === Importing into other IDEs
-Maven is well supported by most Java IDEs. Refer to you vendor documentation.
+Maven is well supported by most Java IDEs. Refer to your vendor documentation.
 
 == Integration tests
 The sample application are used as integration tests during the build (when you

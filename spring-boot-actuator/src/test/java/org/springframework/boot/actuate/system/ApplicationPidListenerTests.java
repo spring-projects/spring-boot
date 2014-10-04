@@ -36,13 +36,13 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
 
 /**
- * Tests fpr {@link ApplicationPidListener}.
+ * Tests for {@link ApplicationPidListener}.
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
  * @author Holger Stolzenberg
  */
-public class ApplicationPidListenerTest {
+public class ApplicationPidListenerTests {
 
 	private static final SpringApplication APPLICATION = new SpringApplication();
 
@@ -74,6 +74,7 @@ public class ApplicationPidListenerTest {
 	@Before
 	@After
 	public void resetListener() {
+		System.clearProperty("PIDFILE");
 		ApplicationPidListener.reset();
 
 		DEFAULT_PID_FILE.delete();
@@ -137,5 +138,14 @@ public class ApplicationPidListenerTest {
 		ApplicationPidListener listener = new ApplicationPidListener();
 		listener.setOrder(10);
 		assertThat(listener.getOrder(), equalTo(10));
+	}
+
+  @Test
+  public void overridePidFile() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		System.setProperty("PIDFILE", this.temporaryFolder.newFile().getAbsolutePath());
+		ApplicationPidListener listener = new ApplicationPidListener(file);
+		listener.onApplicationEvent(STARTED_EVENT);
+		assertThat(FileCopyUtils.copyToString(new FileReader(System.getProperty("PIDFILE"))), not(isEmptyString()));
 	}
 }

@@ -75,6 +75,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	}
 
 	private synchronized void initialize() throws EmbeddedServletContainerException {
+		this.logger.info("Tomcat initialized with port(s): "
+				+ getConfiguredPortsDescription());
 		try {
 			addInstanceIdToEngineName();
 
@@ -90,16 +92,20 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			// Unlike Jetty, all Tomcat threads are daemon threads. We create a
 			// blocking non-daemon to stop immediate shutdown
 			startDaemonAwaitThread();
-
-			if (LifecycleState.FAILED.equals(this.tomcat.getConnector().getState())) {
-				this.tomcat.stop();
-				throw new IllegalStateException("Tomcat connector in failed state");
-			}
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Tomcat", ex);
 		}
+	}
+
+	private String getConfiguredPortsDescription() {
+		StringBuilder ports = new StringBuilder();
+		for (Connector connector : this.tomcat.getService().findConnectors()) {
+			ports.append(ports.length() == 0 ? "" : " ");
+			ports.append(connector.getPort() + "/" + connector.getScheme());
+		}
+		return ports.toString();
 	}
 
 	private void addInstanceIdToEngineName() {
@@ -151,11 +157,24 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		if (connector != null && this.autoStart) {
 			startConnector(connector);
 		}
+
 		// Ensure process isn't left running if it actually failed to start
-		if (LifecycleState.FAILED.equals(this.tomcat.getConnector().getState())) {
+
+		if (connectorsHaveFailedToStart()) {
 			stopSilently();
 			throw new IllegalStateException("Tomcat connector in failed state");
 		}
+
+		this.logger.info("Tomcat started on port(s): " + getActualPortsDescription());
+	}
+
+	private boolean connectorsHaveFailedToStart() {
+		for (Connector connector : this.tomcat.getService().findConnectors()) {
+			if (LifecycleState.FAILED.equals(connector.getState())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void stopSilently() {
@@ -198,7 +217,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 					((TomcatEmbeddedContext) child).deferredLoadOnStartup();
 				}
 			}
-			logPorts();
 		}
 		catch (Exception ex) {
 			this.logger.error("Cannot start connector: ", ex);
@@ -211,14 +229,13 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		return this.serviceConnectors;
 	}
 
-	private void logPorts() {
+	private String getActualPortsDescription() {
 		StringBuilder ports = new StringBuilder();
-		for (Connector additionalConnector : this.tomcat.getService().findConnectors()) {
+		for (Connector connector : this.tomcat.getService().findConnectors()) {
 			ports.append(ports.length() == 0 ? "" : " ");
-			ports.append(additionalConnector.getLocalPort() + "/"
-					+ additionalConnector.getScheme());
+			ports.append(connector.getLocalPort() + "/" + connector.getScheme());
 		}
-		this.logger.info("Tomcat started on port(s): " + ports.toString());
+		return ports.toString();
 	}
 
 	@Override

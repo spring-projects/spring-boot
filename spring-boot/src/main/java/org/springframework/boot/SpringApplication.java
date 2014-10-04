@@ -194,7 +194,7 @@ public class SpringApplication {
 	private Set<String> profiles = new HashSet<String>();
 
 	/**
-	 * Crate a new {@link SpringApplication} instance. The application context will load
+	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
@@ -207,7 +207,7 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Crate a new {@link SpringApplication} instance. The application context will load
+	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
@@ -332,7 +332,7 @@ public class SpringApplication {
 			}
 			return context;
 		}
-		catch (Exception ex) {
+		catch (Throwable ex) {
 			try {
 				for (SpringApplicationRunListener runListener : runListeners) {
 					finishWithException(runListener, context, ex);
@@ -697,7 +697,7 @@ public class SpringApplication {
 	}
 
 	private void finishWithException(SpringApplicationRunListener runListener,
-			ConfigurableApplicationContext context, Exception exception) {
+			ConfigurableApplicationContext context, Throwable exception) {
 		try {
 			runListener.finished(context, exception);
 		}

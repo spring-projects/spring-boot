@@ -22,8 +22,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.util.Assert;
 
 /**
@@ -32,8 +32,9 @@ import org.springframework.util.Assert;
  * such an event.
  * <p>
  * Users can inject a {@link AuditEventRepository} to publish their own events or
- * alternatively use Springs {@link AuthenticationEventPublisher} (usually obtained by
- * implementing {@link ApplicationEventPublisherAware}).
+ * alternatively use Spring's {@link ApplicationEventPublisher} (usually obtained by
+ * implementing {@link ApplicationEventPublisherAware}) to publish AuditApplicationEvents
+ * (wrappers for AuditEvent).
  *
  * @author Dave Syer
  * @see AuditEventRepository

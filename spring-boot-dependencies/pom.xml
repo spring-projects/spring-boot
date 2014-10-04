@@ -46,7 +46,7 @@
 		<!-- Spring Boot -->
 		<spring-boot.version>1.2.0.BUILD-SNAPSHOT</spring-boot.version>
 		<!-- Third Party -->
-		<activemq.version>5.9.1</activemq.version>
+		<activemq.version>5.10.0</activemq.version>
 		<aspectj.version>1.8.2</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
@@ -69,7 +69,7 @@
 		<hibernate.version>4.3.6.Final</hibernate.version>
 		<hibernate-entitymanager.version>${hibernate.version}</hibernate-entitymanager.version>
 		<hibernate-jpa-api.version>1.0.1.Final</hibernate-jpa-api.version>
-		<hibernate-validator.version>5.0.3.Final</hibernate-validator.version>
+		<hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
 		<hikaricp.version>1.4.0</hikaricp.version>
 		<httpclient.version>4.3.5</httpclient.version>
 		<httpasyncclient.version>4.0.2</httpasyncclient.version>
@@ -85,6 +85,7 @@
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<jdom2.version>2.0.5</jdom2.version>
+		<jersey.version>2.7</jersey.version>
 		<joda-time.version>2.4</joda-time.version>
 		<jolokia.version>1.2.2</jolokia.version>
 		<json-path.version>0.9.1</json-path.version>
@@ -103,7 +104,7 @@
 		<snakeyaml.version>1.13</snakeyaml.version>
 		<solr.version>4.7.2</solr.version>
 		<spock.version>0.7-groovy-2.0</spock.version>
-		<spring.version>4.1.1.BUILD-SNAPSHOT</spring.version>
+		<spring.version>4.1.1.RELEASE</spring.version>
 		<spring-amqp.version>1.4.0.M1</spring-amqp.version>
 		<spring-cloud.version>1.1.0.RELEASE</spring-cloud.version>
 		<spring-batch.version>3.0.1.RELEASE</spring-batch.version>
@@ -259,6 +260,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jdbc</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-jersey</artifactId>
 				<version>1.2.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -855,6 +861,26 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-core</artifactId>
 				<version>${flyway.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-server</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet-core</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.ext</groupId>
+				<artifactId>jersey-spring3</artifactId>
+				<version>${jersey.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>

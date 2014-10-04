@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -106,6 +108,8 @@ public class ConfigFileApplicationListener implements
 
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
+	private static Log logger = LogFactory.getLog(ConfigFileApplicationListener.class);
+
 	private String searchLocations;
 
 	private String names;
@@ -113,6 +117,8 @@ public class ConfigFileApplicationListener implements
 	private int order = DEFAULT_ORDER;
 
 	private final ConversionService conversionService = new DefaultConversionService();
+
+	private final List<Object> debug = new ArrayList<Object>();
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -140,7 +146,19 @@ public class ConfigFileApplicationListener implements
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+		logDebugMessages();
 		addPostProcessors(event.getApplicationContext());
+	}
+
+	private void logDebugMessages() {
+		// Debug logging is deferred because the Logging initialization might not have
+		// run at the time that config file decisions are taken
+		if (logger.isDebugEnabled()) {
+			for (Object message : this.debug) {
+				logger.debug(message);
+			}
+		}
+		this.debug.clear();
 	}
 
 	/**
@@ -270,6 +288,8 @@ public class ConfigFileApplicationListener implements
 
 		private boolean activatedProfiles;
 
+		private final List<Object> debug = ConfigFileApplicationListener.this.debug;
+
 		public Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
 			this.resourceLoader = resourceLoader == null ? new DefaultResourceLoader()
@@ -280,7 +300,6 @@ public class ConfigFileApplicationListener implements
 			this.propertiesLoader = new PropertySourcesLoader();
 			this.profiles = Collections.asLifoQueue(new LinkedList<String>());
 			this.activatedProfiles = false;
-
 			if (this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
 				// Any pre-existing active profiles set via property sources (e.g. System
 				// properties) take precedence over those added in config files.
@@ -354,29 +373,46 @@ public class ConfigFileApplicationListener implements
 		private PropertySource<?> loadIntoGroup(String identifier, String location,
 				String profile) throws IOException {
 			Resource resource = this.resourceLoader.getResource(location);
+			PropertySource<?> propertySource = null;
 			if (resource != null) {
 				String name = "applicationConfig: [" + location + "]";
 				String group = "applicationConfig: [" + identifier + "]";
-				PropertySource<?> propertySource = this.propertiesLoader.load(resource,
-						group, name, profile);
+				propertySource = this.propertiesLoader.load(resource, group, name,
+						profile);
 				if (propertySource != null) {
 					maybeActivateProfiles(propertySource
 							.getProperty(ACTIVE_PROFILES_PROPERTY));
 					addIncludeProfiles(propertySource
 							.getProperty(INCLUDE_PROFILES_PROPERTY));
 				}
-				return propertySource;
 			}
-			return null;
+
+			StringBuilder msg = new StringBuilder();
+			msg.append(propertySource == null ? "Skipped " : "Loaded ");
+			msg.append("config file ");
+			msg.append("'" + location + "' ");
+			msg.append(StringUtils.hasLength(profile) ? "for profile " : "");
+			msg.append(resource == null || !resource.exists() ? "resource not found" : "");
+			this.debug.add(msg);
+
+			return propertySource;
 		}
 
 		private void maybeActivateProfiles(Object value) {
-			if (!this.activatedProfiles == true) {
-				Set<String> profiles = getProfilesForValue(value);
-				activateProfiles(profiles);
-				if (profiles.size() > 0) {
-					this.activatedProfiles = true;
+			if (this.activatedProfiles) {
+				if (value != null) {
+					this.debug.add("Profiles already activated, '" + value
+							+ "' will not be applied");
 				}
+				return;
+			}
+
+			Set<String> profiles = getProfilesForValue(value);
+			activateProfiles(profiles);
+			if (profiles.size() > 0) {
+				this.debug.add("Activated profiles "
+						+ StringUtils.collectionToCommaDelimitedString(profiles));
+				this.activatedProfiles = true;
 			}
 		}
 

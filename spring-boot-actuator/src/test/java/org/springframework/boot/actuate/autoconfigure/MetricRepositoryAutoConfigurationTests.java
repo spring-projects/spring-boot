@@ -16,13 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.Executor;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.endpoint.RichGaugeReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.rich.RichGauge;
+import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
 import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
@@ -41,9 +46,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link MetricRepositoryAutoConfiguration}.
@@ -115,6 +122,44 @@ public class MetricRepositoryAutoConfigurationTests {
 		context.close();
 	}
 
+	@Test
+	public void richGaugePublicMetrics() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				RichGaugeReaderConfig.class, MetricRepositoryAutoConfiguration.class);
+
+		RichGaugeReader richGaugeReader = context.getBean(RichGaugeReader.class);
+		assertNotNull(richGaugeReader);
+		when(richGaugeReader.findAll()).thenReturn(
+				Collections.singletonList(new RichGauge("bar", 3.7d)));
+
+		RichGaugeReaderPublicMetrics publicMetrics = context
+				.getBean(RichGaugeReaderPublicMetrics.class);
+		assertNotNull(publicMetrics);
+
+		Collection<Metric<?>> metrics = publicMetrics.metrics();
+		assertNotNull(metrics);
+		assertEquals(metrics.size(), 6);
+
+		assertHasMetric(metrics, new Metric<Double>("bar.val", 3.7d));
+		assertHasMetric(metrics, new Metric<Double>("bar.avg", 3.7d));
+		assertHasMetric(metrics, new Metric<Double>("bar.min", 3.7d));
+		assertHasMetric(metrics, new Metric<Double>("bar.max", 3.7d));
+		assertHasMetric(metrics, new Metric<Double>("bar.alpha", -1.d));
+		assertHasMetric(metrics, new Metric<Long>("bar.count", 1L));
+
+		context.close();
+	}
+
+	private void assertHasMetric(Collection<Metric<?>> metrics, Metric<?> metric) {
+		for (Metric<?> m : metrics) {
+			if (m.getValue().equals(metric.getValue())
+					&& m.getName().equals(metric.getName())) {
+				return;
+			}
+		}
+		fail("Metric " + metric.toString() + " not found in " + metrics.toString());
+	}
+
 	@Configuration
 	public static class SyncTaskExecutorConfiguration {
 
@@ -148,5 +193,13 @@ public class MetricRepositoryAutoConfigurationTests {
 			return mock(CounterService.class);
 		}
 
+	}
+
+	@Configuration
+	static class RichGaugeReaderConfig {
+		@Bean
+		public RichGaugeReader richGaugeReader() {
+			return mock(RichGaugeReader.class);
+		}
 	}
 }

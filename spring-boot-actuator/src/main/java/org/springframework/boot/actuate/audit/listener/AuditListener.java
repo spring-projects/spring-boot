@@ -18,13 +18,12 @@ package org.springframework.boot.actuate.audit.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.context.ApplicationListener;
 
 /**
- * {@link ApplicationListener} that listens for {@link AuditEvent}s and stores them in a
- * {@link AuditEventRepository}.
+ * {@link ApplicationListener} that listens for {@link AuditApplicationEvent}s and stores
+ * them in a {@link AuditEventRepository}.
  *
  * @author Dave Syer
  */

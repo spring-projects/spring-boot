@@ -34,6 +34,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -43,6 +45,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link ErrorPageFilter}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class ErrorPageFilterTests {
 
@@ -61,6 +64,7 @@ public class ErrorPageFilterTests {
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertTrue(this.response.isCommitted());
+		assertThat(this.response.getForwardedUrl(), is(nullValue()));
 	}
 
 	@Test
@@ -83,6 +87,7 @@ public class ErrorPageFilterTests {
 		assertThat(wrapper.getStatus(), equalTo(401));
 		// The real response has to be 401 as well...
 		assertThat(this.response.getStatus(), equalTo(401));
+		assertThat(this.response.getForwardedUrl(), equalTo("/error"));
 	}
 
 	@Test
@@ -103,11 +108,12 @@ public class ErrorPageFilterTests {
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
+		assertThat(this.response.getForwardedUrl(), is(nullValue()));
 		assertTrue(this.response.isCommitted());
 	}
 
 	@Test
-	public void responseUncommitted() throws Exception {
+	public void responseUncommittedWithoutErrorPage() throws Exception {
 		this.chain = new MockFilterChain() {
 			@Override
 			public void doFilter(ServletRequest request, ServletResponse response)
@@ -122,6 +128,7 @@ public class ErrorPageFilterTests {
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
+		assertThat(this.response.getForwardedUrl(), is(nullValue()));
 		assertTrue(this.response.isCommitted());
 	}
 
@@ -159,6 +166,7 @@ public class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
 				equalTo((Object) "BAD"));
 		assertTrue(this.response.isCommitted());
+		assertThat(this.response.getForwardedUrl(), equalTo("/error"));
 	}
 
 	@Test
@@ -180,6 +188,26 @@ public class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
 				equalTo((Object) "BAD"));
 		assertTrue(this.response.isCommitted());
+		assertThat(this.response.getForwardedUrl(), equalTo("/400"));
+	}
+
+	@Test
+	public void statusErrorWithCommittedResponse() throws Exception {
+		this.filter.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				((HttpServletResponse) response).sendError(400, "BAD");
+				response.flushBuffer();
+				super.doFilter(request, response);
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
+				equalTo(400));
+		assertTrue(this.response.isCommitted());
+		assertThat(this.response.getForwardedUrl(), is(nullValue()));
 	}
 
 	@Test
@@ -203,6 +231,23 @@ public class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
 				equalTo((Object) RuntimeException.class.getName()));
 		assertTrue(this.response.isCommitted());
+		assertThat(this.response.getForwardedUrl(), equalTo("/500"));
+	}
+
+	@Test
+	public void exceptionErrorWithCommittedResponse() throws Exception {
+		this.filter.addErrorPages(new ErrorPage(RuntimeException.class, "/500"));
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				response.flushBuffer();
+				throw new RuntimeException("BAD");
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.response.getForwardedUrl(), is(nullValue()));
 	}
 
 	@Test

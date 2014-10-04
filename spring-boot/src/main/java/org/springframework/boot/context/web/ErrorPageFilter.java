@@ -52,6 +52,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -124,6 +125,12 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 	private void handleErrorStatus(HttpServletRequest request,
 			HttpServletResponse response, int status, String message)
 			throws ServletException, IOException {
+
+		if (response.isCommitted()) {
+			handleCommittedResponse(request, null);
+			return;
+		}
+
 		String errorPath = getErrorPath(this.statuses, status);
 		if (errorPath == null) {
 			response.sendError(status, message);
@@ -132,6 +139,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 		response.setStatus(status);
 		setErrorAttributes(request, status, message);
 		request.getRequestDispatcher(errorPath).forward(request, response);
+
 	}
 
 	private void handleException(HttpServletRequest request,
@@ -143,33 +151,49 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 			rethrow(ex);
 			return;
 		}
-		if (logger.isErrorEnabled()) {
-			String message = "Forwarding to error page from request ["
-					+ request.getServletPath() + request.getPathInfo()
-					+ "] due to exception [" + ex.getMessage() + "]";
-			logger.error(message, ex);
+		if (response.isCommitted()) {
+			handleCommittedResponse(request, ex);
+			return;
 		}
-		setErrorAttributes(request, 500, ex.getMessage());
-		request.setAttribute(ERROR_EXCEPTION, ex);
-		request.setAttribute(ERROR_EXCEPTION_TYPE, type.getName());
+
 		forwardToErrorPage(errorPath, request, wrapped, ex);
 	}
 
 	private void forwardToErrorPage(String path, HttpServletRequest request,
 			HttpServletResponse response, Throwable ex) throws ServletException,
 			IOException {
-		if (response.isCommitted()) {
-			String message = "Cannot forward to error page for" + request.getRequestURI()
-					+ " (response is committed), so this response may have "
-					+ "the wrong status code";
-			// User might see the error page without all the data here but throwing the
-			// exception isn't going to help anyone (we'll log it to be on the safe side)
+
+		if (logger.isErrorEnabled()) {
+			String message = "Forwarding to error page from request ["
+					+ request.getServletPath() + request.getPathInfo()
+					+ "] due to exception [" + ex.getMessage() + "]";
 			logger.error(message, ex);
-			return;
 		}
+
+		setErrorAttributes(request, 500, ex.getMessage());
+		request.setAttribute(ERROR_EXCEPTION, ex);
+		request.setAttribute(ERROR_EXCEPTION_TYPE, ex.getClass().getName());
+
 		response.reset();
 		response.sendError(500, ex.getMessage());
 		request.getRequestDispatcher(path).forward(request, response);
+	}
+
+	private void handleCommittedResponse(HttpServletRequest request, Throwable ex) {
+		String message = "Cannot forward to error page for request to "
+				+ request.getRequestURI() + " as the response has already been"
+				+ " committed. As a result, the response may have the wrong status"
+				+ " code. If your application is running on WebSphere Application"
+				+ " Server you may be able to resolve this problem by setting "
+				+ " com.ibm.ws.webcontainer.invokeFlushAfterService to false";
+		if (ex == null) {
+			logger.error(message);
+		}
+		else {
+			// User might see the error page without all the data here but throwing the
+			// exception isn't going to help anyone (we'll log it to be on the safe side)
+			logger.error(message, ex);
+		}
 	}
 
 	private String getErrorPath(Map<Integer, String> map, Integer status) {
@@ -243,6 +267,8 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 
 		private String message;
 
+		private boolean errorToSend;
+
 		public ErrorWrapperResponse(HttpServletResponse response) {
 			super(response);
 			this.status = response.getStatus();
@@ -257,11 +283,22 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 		public void sendError(int status, String message) throws IOException {
 			this.status = status;
 			this.message = message;
+
+			this.errorToSend = true;
 		}
 
 		@Override
 		public int getStatus() {
 			return this.status;
+		}
+
+		@Override
+		public void flushBuffer() throws IOException {
+			if (this.errorToSend && !isCommitted()) {
+				((HttpServletResponse) getResponse())
+						.sendError(this.status, this.message);
+			}
+			super.flushBuffer();
 		}
 
 		public String getMessage() {
