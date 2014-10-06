@@ -19,7 +19,6 @@ package org.springframework.boot.context.event;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
 /**
@@ -29,8 +28,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Dave Syer
  */
-public class ApplicationPreparedEvent extends SpringApplicationEvent implements
-		ProvidesEnvironmentEvent {
+public class ApplicationPreparedEvent extends SpringApplicationEvent {
 
 	private final ConfigurableApplicationContext context;
 
@@ -50,10 +48,5 @@ public class ApplicationPreparedEvent extends SpringApplicationEvent implements
 	 */
 	public ConfigurableApplicationContext getApplicationContext() {
 		return this.context;
-	}
-
-	@Override
-	public ConfigurableEnvironment getEnvironment() {
-		return context.getEnvironment();
 	}
 }

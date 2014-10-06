@@ -23,9 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.context.event.ApplicationFailedEvent;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.boot.context.event.ProvidesEnvironmentEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -35,9 +32,9 @@ import org.springframework.util.SystemPropertyUtils;
 
 /**
  * An {@link org.springframework.context.ApplicationListener} that saves application PID
- * into file. This application listener will be triggered exactly once per JVM, and the file
- * name can be overridden at runtime with a System property or environment variable named
- * "PIDFILE" (or "pidfile").
+ * into file. This application listener will be triggered exactly once per JVM, and the
+ * file name can be overridden at runtime with a System property named "PIDFILE" (or
+ * "pidfile") or an environment property name "{@value #CONFIGURED_PID_FILE}".
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
@@ -50,104 +47,96 @@ public class ApplicationPidListener implements
 	private static final Log logger = LogFactory.getLog(ApplicationPidListener.class);
 
 	private static final String DEFAULT_FILE_NAME = "application.pid";
-	private static final Class<? extends SpringApplicationEvent> DEFAULT_EVENT = ApplicationStartedEvent.class;
-
 	private static final String CONFIGURED_PID_FILE = "spring.application.pid-file";
 
 	private static final AtomicBoolean created = new AtomicBoolean(false);
 
 	private int order = Ordered.HIGHEST_PRECEDENCE + 13;
 
-	private final Class<? extends SpringApplicationEvent> onEvent;
-
 	private final File file;
+	private final boolean withOverrides;
 
 	/**
-	 * Create a new {@link ApplicationPidListener} instance using the filename
-	 * 'application.pid'.
+	 * Create a new {@link ApplicationPidListener} instance with the default PID file name
+	 * "{@value #DEFAULT_FILE_NAME}".
+	 *
+	 * The default can be overridden by providing a system property "PIDFILE" or an
+	 * {@link Environment} property named "{@value #CONFIGURED_PID_FILE}".
+	 *
+	 * The environment property will override the system property if both are specified.
 	 */
 	public ApplicationPidListener() {
 		this.file = new File(DEFAULT_FILE_NAME);
-		this.onEvent = DEFAULT_EVENT;
+		this.withOverrides = true;
 	}
 
 	/**
 	 * Create a new {@link ApplicationPidListener} instance with a specified filename.
+	 * System and environment properties will not be honored.
 	 *
 	 * @param filename the name of file containing pid
 	 */
 	public ApplicationPidListener(String filename) {
 		Assert.notNull(filename, "Filename must not be null");
 		this.file = new File(filename);
-		this.onEvent = DEFAULT_EVENT;
+		this.withOverrides = false;
 	}
 
 	/**
-	 * Create a new {@link ApplicationPidListener} instance with a specified file.
+	 * Create a new {@link ApplicationPidListener} instance with a specified file. System
+	 * and environment properties will not be honored.
 	 *
 	 * @param file the file containing pid
 	 */
 	public ApplicationPidListener(File file) {
 		Assert.notNull(file, "File must not be null");
-
-    String actual = SystemPropertyUtils.resolvePlaceholders("${PIDFILE}", true);
-    actual = !actual.contains("$") ? actual :  SystemPropertyUtils.resolvePlaceholders("${pidfile}", true);
-    actual = !actual.contains("$") ? actual :  file.getAbsolutePath();
-    file = new File(actual);
-
 		this.file = file;
-		this.onEvent = DEFAULT_EVENT;
+		this.withOverrides = false;
 	}
-
-	/**
-	 * Create a new {@link ApplicationPidListener} instance with the PID file location
-	 * taken from the {@link Environment}. This causes the listener to wait for
-	 * {@link org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent}
-	 * before it tries to write the PID file. Normally the listener would react on
-	 * {@link #DEFAULT_EVENT} in the first place.
-	 *
-	 * @param onEvent The class the listener should react to. If the event provides an
-	 * {@link org.springframework.core.env.Environment}, the listener tries to resolve the
-	 * property '{@value #CONFIGURED_PID_FILE}' in order to write the PID file to the
-	 * specified location. If the event does not provide an {@link Environment}, the
-	 * defaults are applied.
-	 */
-	public ApplicationPidListener(Class<? extends SpringApplicationEvent> onEvent) {
-    Assert.notNull(onEvent, "The 'onEvent' argument must not be null");
-
-		if (onEvent.equals(ApplicationFailedEvent.class)) {
-			throw new IllegalArgumentException(
-					String.format(
-							"Cannot use '%s' here, as writing the PID file on application boot failure makes no sense.",
-							ApplicationFailedEvent.class.getName()));
-		}
-
-    this.file = new File (DEFAULT_FILE_NAME);
-		this.onEvent = onEvent;
-  }
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (!event.getClass().equals(onEvent)) {
-			return;
-		}
+		writePidFile(configurePidFile(event));
+	}
 
+	private File configurePidFile(final SpringApplicationEvent event) {
+		// set the file to the listener defaults
 		File pidFile = this.file;
-		if (event instanceof ProvidesEnvironmentEvent) {
-			Environment env = ((ApplicationEnvironmentPreparedEvent) event)
-					.getEnvironment();
-			if (env.containsProperty(CONFIGURED_PID_FILE)) {
-				String location = env.getProperty(CONFIGURED_PID_FILE);
-				logger.debug(String.format("Overriding PID file: %s", location));
-				pidFile = new File(location);
-			}
-			else {
-				logger.warn(String
-						.format("Trying to configure application PID file location from environment, but no property '%s' could be found.",
-								CONFIGURED_PID_FILE));
-			}
+
+		// only run configuration overrides if the PID file location was not specified
+		// explicitly
+		if (!withOverrides) {
+			return pidFile;
 		}
 
+		// try to resolve from system property, overriding the default
+		String configSource = "system property";
+
+		String actual = SystemPropertyUtils.resolvePlaceholders("${PIDFILE}", true);
+		actual = !actual.contains("$") ? actual : SystemPropertyUtils
+				.resolvePlaceholders("${pidfile}", true);
+		actual = !actual.contains("$") ? actual : pidFile.getAbsolutePath();
+		pidFile = new File(actual);
+
+		if (!(event instanceof ApplicationEnvironmentPreparedEvent)) {
+			return pidFile;
+		}
+
+		// try to resolve from environment, overriding the system property and the default
+		Environment env = ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
+		if (env.containsProperty(CONFIGURED_PID_FILE)) {
+			configSource = "environment";
+
+			String location = env.getProperty(CONFIGURED_PID_FILE);
+			pidFile = new File(location);
+		}
+
+		logger.debug(String.format("Configured PID file from %s: %s", configSource,
+				pidFile.getAbsolutePath()));
+		return pidFile;
+	}
+
+	private void writePidFile(final File pidFile) {
 		if (created.compareAndSet(false, true)) {
 			try {
 				new ApplicationPid().write(pidFile);

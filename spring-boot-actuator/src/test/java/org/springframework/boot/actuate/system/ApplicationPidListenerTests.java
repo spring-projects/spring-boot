@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
@@ -49,9 +48,6 @@ public class ApplicationPidListenerTests {
 	private static final ApplicationStartedEvent STARTED_EVENT = new ApplicationStartedEvent(
 			APPLICATION, new String[] {});
 
-	private static final ApplicationPreparedEvent PREPARED_EVENT = new ApplicationPreparedEvent(
-			APPLICATION, new String[] {}, null);
-
 	private ApplicationEnvironmentPreparedEvent environmentPreparedEvent;
 
 	@Rule
@@ -63,11 +59,11 @@ public class ApplicationPidListenerTests {
 	@Before
 	public void initPrepareEvent() {
 		final MockEnvironment environment = new MockEnvironment();
-		environment
-				.setProperty("spring.application.pid-file", "application_override.pid");
+		environment.setProperty("spring.application.pid-file",
+				OVERRIDE_PID_FILE.getAbsolutePath());
 
-		environmentPreparedEvent = new ApplicationEnvironmentPreparedEvent(
-				new SpringApplication(), new String[0], environment);
+		environmentPreparedEvent = new ApplicationEnvironmentPreparedEvent(APPLICATION,
+				new String[] {}, environment);
 	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
@@ -107,45 +103,27 @@ public class ApplicationPidListenerTests {
 	}
 
 	@Test
-	public void createPidFileFromEnvWithDefaults() throws Exception {
-		ApplicationPidListener listener = new ApplicationPidListener(
-				ApplicationStartedEvent.class);
-		listener.onApplicationEvent(STARTED_EVENT);
-		assertThat(FileCopyUtils.copyToString(new FileReader(DEFAULT_PID_FILE)),
-				not(isEmptyString()));
-	}
-
-	@Test
-	public void createPidFileFromEnv() throws Exception {
-		ApplicationPidListener listener = new ApplicationPidListener(
-				ApplicationEnvironmentPreparedEvent.class);
-		listener.onApplicationEvent(environmentPreparedEvent);
-		assertThat(FileCopyUtils.copyToString(new FileReader(OVERRIDE_PID_FILE)),
-				not(isEmptyString()));
-	}
-
-	@Test
-	public void ignoreUnknownEvent() throws Exception {
-		File file = this.temporaryFolder.newFile();
-
-		ApplicationPidListener listener = new ApplicationPidListener(file);
-		listener.onApplicationEvent(PREPARED_EVENT);
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), isEmptyString());
-	}
-
-	@Test
 	public void setGetOrder() {
 		ApplicationPidListener listener = new ApplicationPidListener();
 		listener.setOrder(10);
 		assertThat(listener.getOrder(), equalTo(10));
 	}
 
-  @Test
-  public void overridePidFile() throws Exception {
-		File file = this.temporaryFolder.newFile();
+	@Test
+	public void overridePidFileWithSystemProperty() throws Exception {
 		System.setProperty("PIDFILE", this.temporaryFolder.newFile().getAbsolutePath());
-		ApplicationPidListener listener = new ApplicationPidListener(file);
+		ApplicationPidListener listener = new ApplicationPidListener();
 		listener.onApplicationEvent(STARTED_EVENT);
-		assertThat(FileCopyUtils.copyToString(new FileReader(System.getProperty("PIDFILE"))), not(isEmptyString()));
+		assertThat(
+				FileCopyUtils.copyToString(new FileReader(System.getProperty("PIDFILE"))),
+				not(isEmptyString()));
+	}
+
+	@Test
+	public void overridePidFileFromEnvironment() throws Exception {
+		ApplicationPidListener listener = new ApplicationPidListener();
+		listener.onApplicationEvent(environmentPreparedEvent);
+		assertThat(FileCopyUtils.copyToString(new FileReader(OVERRIDE_PID_FILE)),
+				not(isEmptyString()));
 	}
 }

@@ -26,8 +26,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Dave Syer
  */
-public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent implements
-		ProvidesEnvironmentEvent {
+public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent {
 
 	private final ConfigurableEnvironment environment;
 
@@ -42,9 +41,12 @@ public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent 
 		this.environment = environment;
 	}
 
-	@Override
+	/**
+	 * Provides access to the applications environment.
+	 *
+	 * @return The {@link Environment} of the application
+	 */
 	public ConfigurableEnvironment getEnvironment() {
 		return this.environment;
 	}
-
 }
