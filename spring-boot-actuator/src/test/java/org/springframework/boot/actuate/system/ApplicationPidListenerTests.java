@@ -67,7 +67,9 @@ public class ApplicationPidListenerTests {
 		System.setProperty("PIDFILE", this.temporaryFolder.newFile().getAbsolutePath());
 		ApplicationPidListener listener = new ApplicationPidListener(file);
 		listener.onApplicationEvent(EVENT);
-		assertThat(FileCopyUtils.copyToString(new FileReader(System.getProperty("PIDFILE"))), not(isEmptyString()));
+		assertThat(
+				FileCopyUtils.copyToString(new FileReader(System.getProperty("PIDFILE"))),
+				not(isEmptyString()));
 	}
 
 }
