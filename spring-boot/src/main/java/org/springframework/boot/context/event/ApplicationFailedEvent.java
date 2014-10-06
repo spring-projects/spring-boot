@@ -56,5 +56,4 @@ public class ApplicationFailedEvent extends SpringApplicationEvent {
 	public Throwable getException() {
 		return this.exception;
 	}
-
 }

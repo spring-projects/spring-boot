@@ -32,7 +32,7 @@ public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent 
 
 	/**
 	 * @param application the current application
-	 * @param args the argumemts the application is running with
+	 * @param args the arguments the application is running with
 	 * @param environment the environment that was just created
 	 */
 	public ApplicationEnvironmentPreparedEvent(SpringApplication application,
@@ -42,10 +42,11 @@ public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent 
 	}
 
 	/**
-	 * @return the environment
+	 * Provides access to the applications environment.
+	 *
+	 * @return The {@link Environment} of the application
 	 */
 	public ConfigurableEnvironment getEnvironment() {
 		return this.environment;
 	}
-
 }
