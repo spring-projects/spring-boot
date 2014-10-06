@@ -60,7 +60,7 @@ public class RedisMetricRepository implements MetricRepository, InitializingBean
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
 		this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() {
 		if (!DEFAULT_METRICS_PREFIX.equals(this.prefix)) {
@@ -72,7 +72,7 @@ public class RedisMetricRepository implements MetricRepository, InitializingBean
 			this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
 		}
 	}
-	
+
 	/**
 	 * The prefix for all metrics keys.
 	 * @param prefix the prefix to set for all metrics keys

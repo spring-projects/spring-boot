@@ -26,13 +26,12 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
-import org.springframework.util.SystemPropertyUtils;
 
 /**
  * An {@link org.springframework.context.ApplicationListener} that saves application PID
- * into file. This application listener will be triggered exactly once per JVM, and the file
- * name can be overridden at runtime with a System property or environment variable named
- * "PIDFILE" (or "pidfile").
+ * into file. This application listener will be triggered exactly once per JVM, and the
+ * file name can be overridden at runtime with a System property or environment variable
+ * named "PIDFILE" (or "pidfile").
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
@@ -45,6 +44,8 @@ public class ApplicationPidListener implements
 	private static final Log logger = LogFactory.getLog(ApplicationPidListener.class);
 
 	private static final String DEFAULT_FILE_NAME = "application.pid";
+
+	private static final String[] PROPERTY_VARIABLES = { "PIDFILE", "pidfile" };
 
 	private static final AtomicBoolean created = new AtomicBoolean(false);
 
@@ -74,10 +75,30 @@ public class ApplicationPidListener implements
 	 */
 	public ApplicationPidListener(File file) {
 		Assert.notNull(file, "File must not be null");
-		String actual = SystemPropertyUtils.resolvePlaceholders("${PIDFILE}", true);
-		actual = !actual.contains("$") ? actual :  SystemPropertyUtils.resolvePlaceholders("${pidfile}", true);
-		actual = !actual.contains("$") ? actual :  file.getAbsolutePath();
-		this.file = new File(actual);
+		String override = getOverride();
+		if (override != null) {
+			this.file = new File(override);
+		}
+		else {
+			this.file = file;
+		}
+	}
+
+	private String getOverride() {
+		for (String property : PROPERTY_VARIABLES) {
+			try {
+				String override = System.getProperty(property);
+				override = (override != null ? override : System.getenv(property));
+				if (override != null) {
+					return override;
+				}
+			}
+			catch (Throwable ex) {
+				System.err.println("Could not resolve '" + property
+						+ "' as system property: " + ex);
+			}
+		}
+		return null;
 	}
 
 	@Override
