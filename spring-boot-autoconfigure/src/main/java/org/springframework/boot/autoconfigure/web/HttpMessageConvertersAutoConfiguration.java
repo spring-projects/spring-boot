@@ -45,8 +45,8 @@ import com.google.gson.Gson;
  * @author Piotr Maj
  * @author Oliver Gierke
  * @author David Liu
- * @author Sebastien Deleuze
  * @author Andy Wilkinson
+ * @author Sebastien Deleuze
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)

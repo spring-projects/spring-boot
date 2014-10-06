@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jersey;
 
-import static org.junit.Assert.assertEquals;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,7 +31,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jersey.DefaultServletPathTests.Application;
+import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationDefaultServletPathTests.Application;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.IntegrationTest;
@@ -46,11 +44,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.Assert.assertEquals;
+
+/**
+ * Tests for {@link JerseyAutoConfiguration} when using default servlet paths.
+ *
+ * @author Dave Syer
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @IntegrationTest("server.port=0")
 @WebAppConfiguration
-public class DefaultServletPathTests {
+public class JerseyAutoConfigurationDefaultServletPathTests {
 
 	@Value("${local.server.port}")
 	private int port;
@@ -59,8 +64,8 @@ public class DefaultServletPathTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:"
-				+ port + "/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity(
+				"http://localhost:" + this.port + "/hello", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
@@ -77,7 +82,7 @@ public class DefaultServletPathTests {
 
 		@GET
 		public String message() {
-			return "Hello " + msg;
+			return "Hello " + this.msg;
 		}
 
 		public static void main(String[] args) {

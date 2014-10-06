@@ -32,10 +32,15 @@ import org.springframework.util.Assert;
 public final class RichGauge {
 
 	public static final String COUNT = ".count";
+
 	public static final String MAX = ".max";
+
 	public static final String MIN = ".min";
+
 	public static final String AVG = ".avg";
+
 	public static final String ALPHA = ".alpha";
+
 	public static final String VAL = ".val";
 
 	private final String name;

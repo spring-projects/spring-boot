@@ -49,18 +49,14 @@ public class RichGaugeReaderPublicMetrics implements PublicMetrics {
 		return result;
 	}
 
-	private List<Metric<?>> convert(RichGauge richGauge) {
+	private List<Metric<?>> convert(RichGauge gauge) {
 		List<Metric<?>> result = new ArrayList<Metric<?>>(6);
-
-		result.add(new Metric<Double>(richGauge.getName() + RichGauge.AVG, richGauge
-				.getAverage()));
-		result.add(new Metric<Double>(richGauge.getName() + RichGauge.VAL, richGauge.getValue()));
-		result.add(new Metric<Double>(richGauge.getName() + RichGauge.MIN, richGauge.getMin()));
-		result.add(new Metric<Double>(richGauge.getName() + RichGauge.MAX, richGauge.getMax()));
-		result.add(new Metric<Double>(richGauge.getName() + RichGauge.ALPHA, richGauge
-				.getAlpha()));
-		result.add(new Metric<Long>(richGauge.getName() + RichGauge.COUNT, richGauge.getCount()));
-
+		result.add(new Metric<Double>(gauge.getName() + RichGauge.AVG, gauge.getAverage()));
+		result.add(new Metric<Double>(gauge.getName() + RichGauge.VAL, gauge.getValue()));
+		result.add(new Metric<Double>(gauge.getName() + RichGauge.MIN, gauge.getMin()));
+		result.add(new Metric<Double>(gauge.getName() + RichGauge.MAX, gauge.getMax()));
+		result.add(new Metric<Double>(gauge.getName() + RichGauge.ALPHA, gauge.getAlpha()));
+		result.add(new Metric<Long>(gauge.getName() + RichGauge.COUNT, gauge.getCount()));
 		return result;
 	}
 

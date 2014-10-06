@@ -29,6 +29,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * JTA Configuration for a JNDI-managed {@link JtaTransactionManager}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.2.0
  */
 @Configuration
@@ -41,8 +42,7 @@ class JndiJtaConfiguration {
 
 	@Bean
 	public JtaTransactionManager transactionManager() {
-		JtaTransactionManagerFactoryBean factoryBean = new JtaTransactionManagerFactoryBean();
-		return factoryBean.getObject();
+		return new JtaTransactionManagerFactoryBean().getObject();
 	}
 
 }

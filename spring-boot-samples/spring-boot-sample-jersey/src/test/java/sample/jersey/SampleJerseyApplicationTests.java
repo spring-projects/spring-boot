@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package sample.jersey;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,21 +28,23 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleJerseyApplication.class)
 @IntegrationTest("server.port=0")
 @WebAppConfiguration
 public class SampleJerseyApplicationTests {
-	
+
 	@Value("${local.server.port}")
 	private int port;
-	
-	private RestTemplate restTemplate =new TestRestTemplate();
+
+	private RestTemplate restTemplate = new TestRestTemplate();
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:"
-				+ port + "/hello", String.class);
+		ResponseEntity<String> entity = this.restTemplate.getForEntity(
+				"http://localhost:" + this.port + "/hello", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 

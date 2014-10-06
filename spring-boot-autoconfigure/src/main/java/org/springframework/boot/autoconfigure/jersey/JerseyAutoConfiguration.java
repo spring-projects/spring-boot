@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.glassfish.jersey.servlet.ServletProperties;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,8 +45,9 @@ import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.filter.RequestContextFilter;
 
 /**
+ * {@link EnableAutoConfiguration Auto-configuration} for Jersey.
+ *
  * @author Dave Syer
- * 
  */
 @Configuration
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
@@ -65,7 +67,7 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
 	@PostConstruct
 	public void path() {
-		path = findPath(AnnotationUtils.findAnnotation(config.getClass(),
+		this.path = findPath(AnnotationUtils.findAnnotation(this.config.getClass(),
 				ApplicationPath.class));
 	}
 
@@ -78,9 +80,9 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
 	public ServletRegistrationBean jerseyServletRegistration() {
-		Class<? extends ResourceConfig> configType = config.getClass();
+		Class<? extends ResourceConfig> configType = this.config.getClass();
 		ServletRegistrationBean registration = new ServletRegistrationBean(
-				new ServletContainer(), path);
+				new ServletContainer(), this.path);
 		registration.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
 				configType.getName());
 		registration.setName("jerseyServlet");
@@ -100,7 +102,7 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 			return "/*";
 		}
 		String path = annotation.value();
-		return path.isEmpty() || path.equals("/") ? "/*" : path + "/*";
+		return ((path.isEmpty() || path.equals("/")) ? "/*" : path + "/*");
 	}
 
 }

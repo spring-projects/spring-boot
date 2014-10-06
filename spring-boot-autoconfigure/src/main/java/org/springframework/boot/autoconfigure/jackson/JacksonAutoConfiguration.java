@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -56,8 +57,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  *
  * @author Oliver Gierke
  * @author Andy Wilkinson
- * @author Sebastien Deleuze
  * @author Marcel Overdijk
+ * @author Sebastien Deleuze
  * @since 1.1.0
  */
 @Configuration
@@ -99,29 +100,25 @@ public class JacksonAutoConfiguration {
 	static class JacksonObjectMapperBuilderAutoConfiguration {
 
 		@Autowired
-		private HttpMapperProperties httpMapperProperties = new HttpMapperProperties();
+		private JacksonProperties jacksonProperties;
 
 		@Autowired
-		private JacksonProperties jacksonProperties = new JacksonProperties();
+		private HttpMapperProperties httpMapperProperties;
 
 		@Bean
 		@ConditionalOnMissingBean(Jackson2ObjectMapperBuilder.class)
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder() {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-
 			if (this.httpMapperProperties.isJsonSortKeys()) {
 				builder.featuresToEnable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
 			}
-
 			configureFeatures(builder, this.jacksonProperties.getDeserialization());
 			configureFeatures(builder, this.jacksonProperties.getSerialization());
 			configureFeatures(builder, this.jacksonProperties.getMapper());
 			configureFeatures(builder, this.jacksonProperties.getParser());
 			configureFeatures(builder, this.jacksonProperties.getGenerator());
-
 			configureDateFormat(builder);
 			configurePropertyNamingStrategy(builder);
-
 			return builder;
 		}
 
@@ -137,53 +134,57 @@ public class JacksonAutoConfiguration {
 			}
 		}
 
-		private void configurePropertyNamingStrategy(Jackson2ObjectMapperBuilder builder) {
-			// We support a fully qualified class name extending Jackson's
-			// PropertyNamingStrategy or a string value corresponding to the constant
-			// names in PropertyNamingStrategy which hold default provided implementations
-			String propertyNamingStrategy = this.jacksonProperties
-					.getPropertyNamingStrategy();
-			if (propertyNamingStrategy != null) {
-				try {
-					Class<?> clazz = ClassUtils.forName(propertyNamingStrategy, null);
-					builder.propertyNamingStrategy((PropertyNamingStrategy) BeanUtils
-							.instantiateClass(clazz));
-				}
-				catch (ClassNotFoundException e) {
-					// Find the field (this way we automatically support new constants
-					// that may be added by Jackson in the future)
-					Field field = ReflectionUtils.findField(PropertyNamingStrategy.class,
-							propertyNamingStrategy, PropertyNamingStrategy.class);
-					if (field != null) {
-						try {
-							builder.propertyNamingStrategy((PropertyNamingStrategy) field
-									.get(null));
-						}
-						catch (Exception ex) {
-							throw new IllegalStateException(ex);
-						}
-					}
-					else {
-						throw new IllegalArgumentException("Constant named '"
-								+ propertyNamingStrategy + "' not found on "
-								+ PropertyNamingStrategy.class.getName());
-					}
-				}
-			}
-		}
-
 		private void configureDateFormat(Jackson2ObjectMapperBuilder builder) {
 			// We support a fully qualified class name extending DateFormat or a date
 			// pattern string value
 			String dateFormat = this.jacksonProperties.getDateFormat();
 			if (dateFormat != null) {
 				try {
-					Class<?> clazz = ClassUtils.forName(dateFormat, null);
-					builder.dateFormat((DateFormat) BeanUtils.instantiateClass(clazz));
+					Class<?> dateFormatClass = ClassUtils.forName(dateFormat, null);
+					builder.dateFormat((DateFormat) BeanUtils
+							.instantiateClass(dateFormatClass));
 				}
-				catch (ClassNotFoundException e) {
+				catch (ClassNotFoundException ex) {
 					builder.dateFormat(new SimpleDateFormat(dateFormat));
 				}
+			}
+		}
+
+		private void configurePropertyNamingStrategy(Jackson2ObjectMapperBuilder builder) {
+			// We support a fully qualified class name extending Jackson's
+			// PropertyNamingStrategy or a string value corresponding to the constant
+			// names in PropertyNamingStrategy which hold default provided implementations
+			String strategy = this.jacksonProperties.getPropertyNamingStrategy();
+			if (strategy != null) {
+				try {
+					configurePropertyNamingStrategyClass(builder,
+							ClassUtils.forName(strategy, null));
+				}
+				catch (ClassNotFoundException ex) {
+					configurePropertyNamingStrategyField(builder, strategy);
+				}
+			}
+		}
+
+		private void configurePropertyNamingStrategyClass(
+				Jackson2ObjectMapperBuilder builder, Class<?> propertyNamingStrategyClass) {
+			builder.propertyNamingStrategy((PropertyNamingStrategy) BeanUtils
+					.instantiateClass(propertyNamingStrategyClass));
+		}
+
+		private void configurePropertyNamingStrategyField(
+				Jackson2ObjectMapperBuilder builder, String fieldName) {
+			// Find the field (this way we automatically support new constants
+			// that may be added by Jackson in the future)
+			Field field = ReflectionUtils.findField(PropertyNamingStrategy.class,
+					fieldName, PropertyNamingStrategy.class);
+			Assert.notNull(field, "Constant named '" + fieldName + "' not found on "
+					+ PropertyNamingStrategy.class.getName());
+			try {
+				builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
 			}
 		}
 

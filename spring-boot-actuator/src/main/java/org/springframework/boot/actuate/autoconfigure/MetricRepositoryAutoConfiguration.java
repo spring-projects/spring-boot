@@ -73,7 +73,7 @@ import com.codahale.metrics.MetricRegistry;
  * In addition if Codahale's metrics library is on the classpath a {@link MetricRegistry}
  * will be created and wired up to the counter and gauge services in addition to the basic
  * repository. Users can create Codahale metrics by prefixing their metric names with the
- * appropriate type (e.g. "histogram.*", "meter.*") and sending them to the standard 
+ * appropriate type (e.g. "histogram.*", "meter.*") and sending them to the standard
  * <code>GaugeService</code> or <code>CounterService</code>.
  * </p>
  * <p>

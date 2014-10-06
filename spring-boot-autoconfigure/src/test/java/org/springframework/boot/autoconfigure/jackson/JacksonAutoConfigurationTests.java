@@ -60,9 +60,9 @@ import static org.mockito.Mockito.verify;
  *
  * @author Dave Syer
  * @author Oliver Gierke
- * @author Sebastien Deleuze
  * @author Andy Wilkinson
  * @author Marcel Overdijk
+ * @author Sebastien Deleuze
  */
 public class JacksonAutoConfigurationTests {
 
