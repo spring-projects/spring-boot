@@ -124,7 +124,7 @@ public class WebMvcAutoConfiguration {
 		return new HiddenHttpMethodFilter();
 	}
 
-	// Defined as a nested config to ensure WebMvcConfigurerAdapter it not read when not
+	// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when not
 	// on the classpath
 	@Configuration
 	@EnableWebMvc
@@ -294,7 +294,7 @@ public class WebMvcAutoConfiguration {
 			}
 
 			@Bean
-			protected ResourceHttpRequestHandler faviconRequestHandler() {
+			public ResourceHttpRequestHandler faviconRequestHandler() {
 				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
 				requestHandler.setLocations(Arrays
 						.<Resource> asList(new ClassPathResource("/")));

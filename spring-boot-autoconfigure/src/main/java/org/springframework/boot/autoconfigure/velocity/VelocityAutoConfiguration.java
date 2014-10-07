@@ -81,6 +81,7 @@ public class VelocityAutoConfiguration {
 
 		protected void applyProperties(VelocityEngineFactory factory) {
 			factory.setResourceLoaderPath(this.properties.getResourceLoaderPath());
+			factory.setPreferFileSystemAccess(this.properties.isPreferFileSystemAccess());
 			Properties velocityProperties = new Properties();
 			velocityProperties.putAll(this.properties.getProperties());
 			factory.setVelocityProperties(velocityProperties);
@@ -118,7 +119,7 @@ public class VelocityAutoConfiguration {
 		@Bean
 		public VelocityEngine velocityEngine(VelocityConfigurer configurer)
 				throws VelocityException, IOException {
-			return configurer.createVelocityEngine();
+			return configurer.getVelocityEngine();
 		}
 
 		@Bean

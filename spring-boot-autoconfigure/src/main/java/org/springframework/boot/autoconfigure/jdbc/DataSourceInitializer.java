@@ -78,6 +78,11 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 			try {
 				this.applicationContext.publishEvent(new DataSourceInitializedEvent(
 						this.dataSource));
+				// The listener might not be registered yet, so don't rely on it.
+				if (!this.initialized) {
+					runDataScripts();
+					this.initialized = true;
+				}
 			}
 			catch (IllegalStateException ex) {
 				logger.warn("Could not send event to complete DataSource initialization ("

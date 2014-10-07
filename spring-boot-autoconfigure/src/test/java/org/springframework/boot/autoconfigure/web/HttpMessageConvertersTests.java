@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Rule;
@@ -29,7 +30,7 @@ import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
-import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -62,7 +63,7 @@ public class HttpMessageConvertersTests {
 				ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class,
 				MappingJackson2HttpMessageConverter.class,
-				Jaxb2RootElementHttpMessageConverter.class)));
+				MappingJackson2XmlHttpMessageConverter.class)));
 	}
 
 	@Test
@@ -95,6 +96,32 @@ public class HttpMessageConvertersTests {
 		assertTrue(converters.getConverters().contains(converter1));
 		assertEquals(converter1, converters.getConverters().get(0));
 		assertEquals(converter2, converters.getConverters().get(1));
+	}
+
+	@Test
+	public void postProcessConverters() throws Exception {
+		HttpMessageConverters converters = new HttpMessageConverters() {
+			@Override
+			protected List<HttpMessageConverter<?>> postProcessConverters(
+					List<HttpMessageConverter<?>> converters) {
+				for (Iterator<HttpMessageConverter<?>> iterator = converters.iterator(); iterator
+						.hasNext();) {
+					if (iterator.next() instanceof MappingJackson2XmlHttpMessageConverter) {
+						iterator.remove();
+					}
+				}
+				return converters;
+			};
+		};
+		List<Class<?>> converterClasses = new ArrayList<Class<?>>();
+		for (HttpMessageConverter<?> converter : converters) {
+			converterClasses.add(converter.getClass());
+		}
+		assertThat(converterClasses, equalTo(Arrays.<Class<?>> asList(
+				ByteArrayHttpMessageConverter.class, StringHttpMessageConverter.class,
+				ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
+				AllEncompassingFormHttpMessageConverter.class,
+				MappingJackson2HttpMessageConverter.class)));
 	}
 
 }

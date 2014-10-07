@@ -27,6 +27,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.FileCollectionDependency;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.Libraries;
@@ -74,18 +75,18 @@ class ProjectLibraries implements Libraries {
 
 	@Override
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
-		Set<Library> custom = getLibraries(this.customConfigurationName,
+		Set<GradleLibrary> custom = getLibraries(this.customConfigurationName,
 				LibraryScope.CUSTOM);
 		if (custom != null) {
 			libraries(custom, callback);
 		}
 		else {
-			Set<Library> compile = getLibraries("compile", LibraryScope.COMPILE);
+			Set<GradleLibrary> compile = getLibraries("compile", LibraryScope.COMPILE);
 
-			Set<Library> runtime = getLibraries("runtime", LibraryScope.RUNTIME);
+			Set<GradleLibrary> runtime = getLibraries("runtime", LibraryScope.RUNTIME);
 			runtime = minus(runtime, compile);
 
-			Set<Library> provided = getLibraries(this.providedConfigurationName,
+			Set<GradleLibrary> provided = getLibraries(this.providedConfigurationName,
 					LibraryScope.PROVIDED);
 			if (provided != null) {
 				compile = minus(compile, provided);
@@ -98,38 +99,53 @@ class ProjectLibraries implements Libraries {
 		}
 	}
 
-	private Set<Library> getLibraries(String configurationName, LibraryScope scope) {
+	private Set<GradleLibrary> getLibraries(String configurationName, LibraryScope scope) {
 		Configuration configuration = (configurationName == null ? null : this.project
 				.getConfigurations().findByName(configurationName));
 		if (configuration == null) {
 			return null;
 		}
-		Set<Library> libraries = new LinkedHashSet<Library>();
+		Set<GradleLibrary> libraries = new LinkedHashSet<GradleLibrary>();
 		for (ResolvedArtifact artifact : configuration.getResolvedConfiguration()
 				.getResolvedArtifacts()) {
 			libraries.add(new ResolvedArtifactLibrary(artifact, scope));
 		}
+		libraries.addAll(getLibrariesForFileDependencies(configuration, scope));
+
+		return libraries;
+	}
+
+	private Set<GradleLibrary> getLibrariesForFileDependencies(
+			Configuration configuration, LibraryScope scope) {
+		Set<GradleLibrary> libraries = new LinkedHashSet<GradleLibrary>();
 		for (Dependency dependency : configuration.getIncoming().getDependencies()) {
 			if (dependency instanceof FileCollectionDependency) {
 				FileCollectionDependency fileDependency = (FileCollectionDependency) dependency;
 				for (File file : fileDependency.resolve()) {
-					libraries.add(new Library(file, scope));
+					libraries.add(new GradleLibrary(fileDependency.getGroup(), file,
+							scope));
 				}
+			}
+			else if (dependency instanceof ProjectDependency) {
+				ProjectDependency projectDependency = (ProjectDependency) dependency;
+				libraries.addAll(getLibrariesForFileDependencies(
+						projectDependency.getProjectConfiguration(), scope));
 			}
 		}
 		return libraries;
 	}
 
-	private Set<Library> minus(Set<Library> source, Set<Library> toRemove) {
+	private Set<GradleLibrary> minus(Set<GradleLibrary> source,
+			Set<GradleLibrary> toRemove) {
 		if (source == null || toRemove == null) {
 			return source;
 		}
 		Set<File> filesToRemove = new HashSet<File>();
-		for (Library library : toRemove) {
+		for (GradleLibrary library : toRemove) {
 			filesToRemove.add(library.getFile());
 		}
-		Set<Library> result = new LinkedHashSet<Library>();
-		for (Library library : source) {
+		Set<GradleLibrary> result = new LinkedHashSet<GradleLibrary>();
+		for (GradleLibrary library : source) {
 			if (!filesToRemove.contains(library.getFile())) {
 				result.add(library);
 			}
@@ -137,31 +153,88 @@ class ProjectLibraries implements Libraries {
 		return result;
 	}
 
-	private void libraries(Set<Library> libraries, LibraryCallback callback)
+	private void libraries(Set<GradleLibrary> libraries, LibraryCallback callback)
 			throws IOException {
 		if (libraries != null) {
-			for (Library library : libraries) {
+			Set<String> duplicates = getDuplicates(libraries);
+			for (GradleLibrary library : libraries) {
+				library.setIncludeGroupName(duplicates.contains(library.getName()));
 				callback.library(library);
 			}
+		}
+	}
+
+	private Set<String> getDuplicates(Set<GradleLibrary> libraries) {
+		Set<String> duplicates = new HashSet<String>();
+		Set<String> seen = new HashSet<String>();
+		for (GradleLibrary library : libraries) {
+			if (library.getFile() != null && !seen.add(library.getFile().getName())) {
+				duplicates.add(library.getFile().getName());
+			}
+		}
+		return duplicates;
+	}
+
+	private class GradleLibrary extends Library {
+
+		private final String group;
+
+		private boolean includeGroupName;
+
+		public GradleLibrary(String group, File file, LibraryScope scope) {
+			super(file, scope);
+			this.group = group;
+		}
+
+		public void setIncludeGroupName(boolean includeGroupName) {
+			this.includeGroupName = includeGroupName;
+		}
+
+		@Override
+		public String getName() {
+			String name = super.getName();
+			if (this.includeGroupName && this.group != null) {
+				name = this.group + "-" + name;
+			}
+			return name;
+		}
+
+		@Override
+		public int hashCode() {
+			return getFile().hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof GradleLibrary) {
+				return getFile().equals(((GradleLibrary) obj).getFile());
+			}
+			return false;
+		}
+
+		@Override
+		public String toString() {
+			return getFile().getAbsolutePath();
 		}
 	}
 
 	/**
 	 * Adapts a {@link ResolvedArtifact} to a {@link Library}.
 	 */
-	private class ResolvedArtifactLibrary extends Library {
+	private class ResolvedArtifactLibrary extends GradleLibrary {
 
 		private final ResolvedArtifact artifact;
 
 		public ResolvedArtifactLibrary(ResolvedArtifact artifact, LibraryScope scope) {
-			super(artifact.getFile(), scope);
+			super(artifact.getModuleVersion().getId().getGroup(), artifact.getFile(),
+					scope);
 			this.artifact = artifact;
 		}
 
 		@Override
 		public boolean isUnpackRequired() {
 			if (ProjectLibraries.this.extension.getRequiresUnpack() != null) {
-				ModuleVersionIdentifier id = artifact.getModuleVersion().getId();
+				ModuleVersionIdentifier id = this.artifact.getModuleVersion().getId();
 				return ProjectLibraries.this.extension.getRequiresUnpack().contains(
 						id.getGroup() + ":" + id.getName());
 			}

@@ -20,11 +20,15 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
+import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
@@ -118,6 +122,24 @@ public class JmxAutoConfigurationTests {
 		this.context.setParent(parent);
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
+	}
+
+	@Test
+	public void customJmxDomain() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomJmxDomainConfiguration.class,
+				JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		this.context.refresh();
+		IntegrationMBeanExporter mbeanExporter = this.context
+				.getBean(IntegrationMBeanExporter.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(mbeanExporter);
+		assertEquals("foo.my", dfa.getPropertyValue("domain"));
+	}
+
+	@Configuration
+	@EnableIntegrationMBeanExport(defaultDomain = "foo.my")
+	public static class CustomJmxDomainConfiguration {
+
 	}
 
 	@Configuration

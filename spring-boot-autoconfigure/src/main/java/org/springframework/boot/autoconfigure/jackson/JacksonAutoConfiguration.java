@@ -16,41 +16,49 @@
 
 package org.springframework.boot.autoconfigure.jackson;
 
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.HttpMapperProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 
 /**
  * Auto configuration for Jackson. The following auto-configuration will get applied:
  * <ul>
  * <li>an {@link ObjectMapper} in case none is already configured.</li>
- * <li>the {@link JodaModule} registered if it's on the classpath.</li>
- * <li>the {@link JSR310Module} registered if it's on the classpath and the application is
- * running on Java 8 or better.</li>
+ * <li>a {@link Jackson2ObjectMapperBuilder} in case none is already configured.</li>
  * <li>auto-registration for all {@link Module} beans with all {@link ObjectMapper} beans
  * (including the defaulted ones).</li>
  * </ul>
  *
  * @author Oliver Gierke
+ * @author Andy Wilkinson
+ * @author Marcel Overdijk
+ * @author Sebastien Deleuze
  * @since 1.1.0
  */
 @Configuration
@@ -74,48 +82,110 @@ public class JacksonAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(ObjectMapper.class)
-	@EnableConfigurationProperties(HttpMapperProperties.class)
+	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	static class JacksonObjectMapperAutoConfiguration {
-
-		@Autowired
-		private HttpMapperProperties properties = new HttpMapperProperties();
 
 		@Bean
 		@Primary
-		@ConditionalOnMissingBean
-		public ObjectMapper jacksonObjectMapper() {
-			ObjectMapper objectMapper = new ObjectMapper();
-			if (this.properties.isJsonSortKeys()) {
-				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
-						true);
+		@ConditionalOnMissingBean(ObjectMapper.class)
+		public ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
+			return builder.createXmlMapper(false).build();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
+	@EnableConfigurationProperties({ HttpMapperProperties.class, JacksonProperties.class })
+	static class JacksonObjectMapperBuilderAutoConfiguration {
+
+		@Autowired
+		private JacksonProperties jacksonProperties;
+
+		@Autowired
+		private HttpMapperProperties httpMapperProperties;
+
+		@Bean
+		@ConditionalOnMissingBean(Jackson2ObjectMapperBuilder.class)
+		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder() {
+			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+			if (this.httpMapperProperties.isJsonSortKeys()) {
+				builder.featuresToEnable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
 			}
-			return objectMapper;
+			configureFeatures(builder, this.jacksonProperties.getDeserialization());
+			configureFeatures(builder, this.jacksonProperties.getSerialization());
+			configureFeatures(builder, this.jacksonProperties.getMapper());
+			configureFeatures(builder, this.jacksonProperties.getParser());
+			configureFeatures(builder, this.jacksonProperties.getGenerator());
+			configureDateFormat(builder);
+			configurePropertyNamingStrategy(builder);
+			return builder;
 		}
 
-	}
-
-	@Configuration
-	@ConditionalOnClass(JodaModule.class)
-	static class JodaModuleAutoConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		JodaModule jacksonJodaModule() {
-			return new JodaModule();
+		private void configureFeatures(Jackson2ObjectMapperBuilder builder,
+				Map<?, Boolean> features) {
+			for (Entry<?, Boolean> entry : features.entrySet()) {
+				if (entry.getValue() != null && entry.getValue()) {
+					builder.featuresToEnable(entry.getKey());
+				}
+				else {
+					builder.featuresToDisable(entry.getKey());
+				}
+			}
 		}
 
-	}
+		private void configureDateFormat(Jackson2ObjectMapperBuilder builder) {
+			// We support a fully qualified class name extending DateFormat or a date
+			// pattern string value
+			String dateFormat = this.jacksonProperties.getDateFormat();
+			if (dateFormat != null) {
+				try {
+					Class<?> dateFormatClass = ClassUtils.forName(dateFormat, null);
+					builder.dateFormat((DateFormat) BeanUtils
+							.instantiateClass(dateFormatClass));
+				}
+				catch (ClassNotFoundException ex) {
+					builder.dateFormat(new SimpleDateFormat(dateFormat));
+				}
+			}
+		}
 
-	@Configuration
-	@ConditionalOnJava(JavaVersion.EIGHT)
-	@ConditionalOnClass(JSR310Module.class)
-	static class Jsr310ModuleAutoConfiguration {
+		private void configurePropertyNamingStrategy(Jackson2ObjectMapperBuilder builder) {
+			// We support a fully qualified class name extending Jackson's
+			// PropertyNamingStrategy or a string value corresponding to the constant
+			// names in PropertyNamingStrategy which hold default provided implementations
+			String strategy = this.jacksonProperties.getPropertyNamingStrategy();
+			if (strategy != null) {
+				try {
+					configurePropertyNamingStrategyClass(builder,
+							ClassUtils.forName(strategy, null));
+				}
+				catch (ClassNotFoundException ex) {
+					configurePropertyNamingStrategyField(builder, strategy);
+				}
+			}
+		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		JSR310Module jacksonJsr310Module() {
-			return new JSR310Module();
+		private void configurePropertyNamingStrategyClass(
+				Jackson2ObjectMapperBuilder builder, Class<?> propertyNamingStrategyClass) {
+			builder.propertyNamingStrategy((PropertyNamingStrategy) BeanUtils
+					.instantiateClass(propertyNamingStrategyClass));
+		}
+
+		private void configurePropertyNamingStrategyField(
+				Jackson2ObjectMapperBuilder builder, String fieldName) {
+			// Find the field (this way we automatically support new constants
+			// that may be added by Jackson in the future)
+			Field field = ReflectionUtils.findField(PropertyNamingStrategy.class,
+					fieldName, PropertyNamingStrategy.class);
+			Assert.notNull(field, "Constant named '" + fieldName + "' not found on "
+					+ PropertyNamingStrategy.class.getName());
+			try {
+				builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 	}

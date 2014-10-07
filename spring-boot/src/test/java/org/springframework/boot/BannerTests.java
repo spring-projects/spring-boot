@@ -58,7 +58,8 @@ public class BannerTests {
 	static class DummyBanner implements Banner {
 
 		@Override
-		public void printBanner(Environment environment, PrintStream out) {
+		public void printBanner(Environment environment, Class<?> sourceClass,
+				PrintStream out) {
 			out.println("My Banner");
 		}
 

@@ -41,9 +41,8 @@ public class RedisMetricRepositoryTests {
 
 	@Before
 	public void init() {
-		this.repository = new RedisMetricRepository(this.redis.getResource());
 		this.prefix = "spring.test." + System.currentTimeMillis();
-		this.repository.setPrefix(this.prefix);
+		this.repository = new RedisMetricRepository(this.redis.getResource(), this.prefix);
 	}
 
 	@After

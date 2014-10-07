@@ -465,20 +465,39 @@ HTTPS connector:
 
 [[howto-use-tomcat-behind-a-proxy-server]]
 === Use Tomcat behind a front-end proxy server
-Spring Boot will automatically configure Tomcat's `RemoteIpValve` if it detects some
-environment settings. This allows you to transparently use the standard `x-forwarded-for`
-and `x-forwarded-proto` headers that most front-end proxy servers add.
-
-You can switch on the valve by adding some entries to application.properties, e.g.
+Spring Boot will automatically configure Tomcat's `RemoteIpValve` if you enable it. This
+allows you to transparently use the standard `x-forwarded-for` and `x-forwarded-proto`
+headers that most front-end proxy servers add. The valve is switched on by setting one or
+both of these properties to something non-empty (these are the conventional values used by
+most proxies, and if you only set one the other will be set automatically):
 
 [indent=0]
 ----
 	server.tomcat.remote_ip_header=x-forwarded-for
-	server.tomcat.protocol_header=x-forwarded-proto
+	server.tomcat.protocol_header=x-forwarded-protocol
 ----
 
-Alternatively, you can add the `RemoteIpValve` yourself by adding a
-`TomcatEmbeddedServletContainerFactory` bean.
+If your proxy uses different headers you can customize the valve's configuration by adding
+some entries to `application.properties`, e.g.
+
+[indent=0]
+----
+	server.tomcat.remote_ip_header=x-your-remote-ip-header
+	server.tomcat.protocol_header=x-your-protocol-header
+----
+
+The valve is also configured with a default regular expression that matches internal
+proxies that are to be trusted. By default, IP addresses in 10/8, 192.168/16, 169.254/16
+and 127/8 are trusted. You can customize the valve's configuration by adding an entry
+to `application.properties`, e.g.
+
+[indent=0]
+----
+	server.tomcat.internal_proxies=192\.168\.\d{1,3}\.\d{1,3}
+----
+
+Alternatively, you can take complete control of the configuration of the `RemoteIpValve`
+by configuring and adding it in a `TomcatEmbeddedServletContainerFactory` bean.
 
 
 
@@ -623,15 +642,40 @@ default as long as Jackson2 is on the classpath. For example:
 
 As long as `MyThing` can be serialized by Jackson2 (e.g. a normal POJO or Groovy object)
 then `http://localhost:8080/thing` will serve a JSON representation of it by default.
-Sometimes in a browser you might see XML responses (but by default only if `MyThing` was
-a JAXB object) because browsers tend to send accept headers that prefer XML.
+Sometimes in a browser you might see XML responses because browsers tend to send accept
+headers that prefer XML.
 
 
 
 [[howto-write-an-xml-rest-service]]
 === Write an XML REST service
-Since JAXB is in the JDK the same example as we used for JSON would work, as long as the
-`MyThing` was annotated as `@XmlRootElement`:
+If you have the Jackson XML extension (`jackson-dataformat-xml`) on the classpath, it will
+be used to render XML responses and the very same example as we used for JSON would work.
+To use it, add the following dependency to your project:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>com.fasterxml.jackson.dataformat</groupId>
+		<artifactId>jackson-dataformat-xml</artifactId>
+	</dependency>
+----
+
+You may also want to add a dependency on Woodstox. It's faster than the default Stax
+implementation provided by the JDK and also adds pretty print support and improved
+namespace handling:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.codehaus.woodstox</groupId>
+		<artifactId>woodstox-core-asl</artifactId>
+	</dependency>
+----
+
+If Jackson's XML extension is not available, JAXB (provided by default in the JDK) will
+be used, with the additional requirement to have `MyThing` annotated as
+`@XmlRootElement`:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -650,19 +694,57 @@ To get the server to render XML instead of JSON you might have to send an
 [[howto-customize-the-jackson-objectmapper]]
 === Customize the Jackson ObjectMapper
 Spring MVC (client and server side) uses `HttpMessageConverters` to negotiate content
-conversion in an HTTP exchange. If Jackson is on the classpath you already get a default
-converter with a vanilla `ObjectMapper`. Spring Boot has some features to make it easier
-to customize this behavior.
+conversion in an HTTP exchange. If Jackson is on the classpath you already get the
+default converter(s) provided by `Jackson2ObjectMapperBuilder`.
 
-The smallest change that might work is to just add beans of type
-`com.fasterxml.jackson.databind.Module` to your context. They will be registered with the
-default `ObjectMapper` and then injected into the default message converter. To replace
-the default `ObjectMapper` completely, define a `@Bean` of that type and mark it as
-`@Primary`.
+The `ObjectMapper` (or `XmlMapper` for Jackson XML converter) instance created by default
+have the following customized properties:
 
-In addition, if your context contains any beans of type `ObjectMapper` then all of the
-`Module` beans will be registered with all of the mappers. So there is a global mechanism
-for contributing custom modules when you add new features to your application.
+* MapperFeature.DEFAULT_VIEW_INCLUSION is disabled
+* DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES is disabled
+
+Spring Boot has also some features to make it easier to customize this behavior.
+
+You can configure the `ObjectMapper` and `XmlMapper` instances using the environment.
+Jackson provides an extensive suite of simple on/off features that can be used to
+configure various aspects of its processing. These features are described in five enums in
+Jackson which map onto properties in the environment:
+
+|===
+|Jackson enum|Environment property
+
+|`com.fasterxml.jackson.databind.DeserializationFeature`
+|`spring.jackson.deserialization.<feature_name>=true\|false`
+
+|`com.fasterxml.jackson.core.JsonGenerator.Feature`
+|`spring.jackson.generator.<feature_name>=true\|false`
+
+|`com.fasterxml.jackson.databind.MapperFeature`
+|`spring.jackson.mapper.<feature_name>=true\|false`
+
+|`com.fasterxml.jackson.core.JsonParser.Feature`
+|`spring.jackson.parser.<feature_name>=true\|false`
+
+|`com.fasterxml.jackson.databind.SerializationFeature`
+|`spring.jackson.serialization.<feature_name>=true\|false`
+|===
+
+For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
+Note that, thanks to the use of <<boot-features-external-config-relaxed-binding,
+relaxed binding>>, the case of `indent_output` doesn't have to match the case of the
+corresponding enum constant which is `INDENT_OUTPUT`.
+
+If you want to replace the default `ObjectMapper` completely, define a `@Bean` of that
+type and mark it as `@Primary`.
+
+Defining a `@Bean` of type `Jackson2ObjectMapperBuilder` will allow you to customize both
+default `ObjectMapper` and `XmlMapper` (used in `MappingJackson2HttpMessageConverter` and
+`MappingJackson2XmlHttpMessageConverter` respectively).
+
+Another way to customize Jackson is to add beans of type
+`com.fasterxml.jackson.databind.Module` to your context. They will be registered with every
+bean of type `ObjectMapper`, providing a global mechanism for contributing custom modules
+when you add new features to your application.
 
 Finally, if you provide any `@Beans` of type `MappingJackson2HttpMessageConverter` then
 they will replace the default value in the MVC configuration. Also, a convenience bean is
@@ -714,8 +796,8 @@ The multipart support is helpful when you want to receive multipart encoded file
 a `@RequestParam`-annotated parameter of type `MultipartFile` in a Spring MVC controller
 handler method.
 
-See the {sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`] s
-ource for more details.
+See the {sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`]
+source for more details.
 
 
 
@@ -1302,7 +1384,7 @@ in the ``Production-ready features'' section.
 
 [[howto-customize-the-whitelabel-error-page]]
 === Customize the ``whitelabel'' error page
-The Actuator installs a ``whitelabel'' error page that you will see in browser client if
+Spring Boot installs a ``whitelabel'' error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
 see a sensible response with the right error code). To switch it off you can set
 `error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
@@ -1315,6 +1397,8 @@ of the default configuration you should find a `BeanNameViewResolver` in your
 `ApplicationContext` so a `@Bean` with id `error` would be a simple way of doing that.
 Look at {sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
 
+See also the section on <<boot-features-error-handling, Error Handling>> for details of
+how to register handlers in the servlet container.
 
 
 [[howto-security]]
@@ -1363,6 +1447,25 @@ You will get the best results if you put this in a nested class, or a standalone
 (i.e. not mixed in with a lot of other `@Beans` that might be allowed to influence the
 order of instantiation). The {github-code}/spring-boot-samples/spring-boot-sample-web-secure[secure web sample]
 is a useful template to follow.
+
+If you experience instantiation issues (e.g. using JDBC or JPA for the user detail store)
+it might be worth extracting the `AuthenticationManagerBuilder` callback into a
+`GlobalAuthenticationConfigurerAdapter` (in the `init()` method so it happens before the
+authentication manager is needed elsewhere), e.g.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Configuration
+	public class AuthenticationManagerConfiguration extends
+
+		GlobalAuthenticationConfigurerAdapter {
+		@Override
+		public void init(AuthenticationManagerBuilder auth) {
+			auth.inMemoryAuthentication() // ... etc.
+		}
+
+	}
+----
 
 
 
@@ -1457,7 +1560,7 @@ would only ever be a development time trick probably).
 
 [[howto-reload-springloaded-gradle-and-intellij]]
 ==== Configuring Spring Loaded for use with Gradle and IntelliJ
-You need to jump though a few hoops if you want to use Spring Loaded in combination with
+You need to jump through a few hoops if you want to use Spring Loaded in combination with
 Gradle and IntelliJ. By default, IntelliJ will compile classes into a different location
 than Gradle, causing Spring Loaded monitoring to fail.
 
@@ -1466,7 +1569,7 @@ To configure IntelliJ correctly you can use the `idea` Gradle plugin:
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 	buildscript {
-		repositories { mavenCentral() }
+		repositories { jcenter() }
 		dependencies {
 			classpath "org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}"
 			classpath 'org.springframework:springloaded:1.2.0.RELEASE'

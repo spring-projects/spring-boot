@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -96,7 +97,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Bean
-		protected SpringResourceResourceResolver thymeleafResourceResolver() {
+		public SpringResourceResourceResolver thymeleafResourceResolver() {
 			return new SpringResourceResourceResolver();
 		}
 	}
@@ -142,6 +143,7 @@ public class ThymeleafAutoConfiguration {
 	protected static class DataAttributeDialectConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		public DataAttributeDialect dialect() {
 			return new DataAttributeDialect();
 		}
@@ -153,6 +155,7 @@ public class ThymeleafAutoConfiguration {
 	protected static class ThymeleafSecurityDialectConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
 		public SpringSecurityDialect securityDialect() {
 			return new SpringSecurityDialect();
 		}
@@ -161,6 +164,7 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class })
+	@ConditionalOnWebApplication
 	protected static class ThymeleafViewResolverConfiguration {
 
 		@Autowired

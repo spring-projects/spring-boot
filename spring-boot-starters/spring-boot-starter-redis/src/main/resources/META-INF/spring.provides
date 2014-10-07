@@ -1,1 +1,1 @@
-provides: spring-data-redis,lettuce
+provides: spring-data-redis,jedis

@@ -32,8 +32,9 @@ public interface Banner {
 	/**
 	 * Print the banner to the specified print stream.
 	 * @param environment the spring environment
+	 * @param sourceClass the source class for the application
 	 * @param out the output print stream
 	 */
-	void printBanner(Environment environment, PrintStream out);
+	void printBanner(Environment environment, Class<?> sourceClass, PrintStream out);
 
 }

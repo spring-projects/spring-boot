@@ -27,6 +27,8 @@ import java.io.File;
  */
 public class Library {
 
+	private final String name;
+
 	private final File file;
 
 	private final LibraryScope scope;
@@ -49,9 +51,29 @@ public class Library {
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
 	 */
 	public Library(File file, LibraryScope scope, boolean unpackRequired) {
+		this(null, file, scope, unpackRequired);
+	}
+
+	/**
+	 * Create a new {@link Library}.
+	 * @param name the name of the library as it should be written or {@code null} to use
+	 * the file name
+	 * @param file the source file
+	 * @param scope the scope of the library
+	 * @param unpackRequired if the library needs to be unpacked before it can be used
+	 */
+	public Library(String name, File file, LibraryScope scope, boolean unpackRequired) {
+		this.name = (name == null ? file.getName() : name);
 		this.file = file;
 		this.scope = scope;
 		this.unpackRequired = unpackRequired;
+	}
+
+	/**
+	 * @return the name of file as it should be written
+	 */
+	public String getName() {
+		return this.name;
 	}
 
 	/**

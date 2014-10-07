@@ -22,6 +22,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVe
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
@@ -32,6 +34,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @see ConditionalOnJava
  * @since 1.1.0
  */
+@Order(Ordered.HIGHEST_PRECEDENCE + 20)
 class OnJavaCondition extends SpringBootCondition {
 
 	private static final JavaVersion JVM_VERSION = JavaVersion.getJavaVersion();

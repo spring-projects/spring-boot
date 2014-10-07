@@ -44,6 +44,12 @@ public class LiquibaseProperties {
 
 	private boolean enabled = true;
 
+	private String user;
+
+	private String password;
+
+	private String url;
+
 	public String getChangeLog() {
 		return this.changeLog;
 	}
@@ -91,4 +97,29 @@ public class LiquibaseProperties {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+
+	public String getUser() {
+		return this.user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUrl() {
+		return this.url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 }

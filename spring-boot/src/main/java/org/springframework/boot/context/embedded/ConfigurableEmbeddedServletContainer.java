@@ -145,4 +145,5 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param ssl the SSL configuration
 	 */
 	void setSsl(Ssl ssl);
+
 }

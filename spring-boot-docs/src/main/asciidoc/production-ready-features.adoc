@@ -164,8 +164,8 @@ To provide custom health information you can register a Spring bean that impleme
 
 Spring Boot provides a
 {sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
-implementation that attempts a simple database test as well as implementations for
-Redis, MongoDB and RabbitMQ.
+implementation that attempts a simple database test (reusing the validation query set on the data
+source, if any) as well as implementations for Redis, MongoDB and RabbitMQ.
 
 Spring Boot adds the `HealthIndicator` instances automatically if beans of type `DataSource`,
 `MongoTemplate`, `RedisConnectionFactory`, `RabbitTemplate` are present in the `ApplicationContext`.
@@ -195,9 +195,20 @@ exposed. For example, you could add the following to your `application.propertie
 	info.app.version=1.0.0
 ----
 
-If you are using Maven, you can automatically expand info properties from the Maven
-project using resource filtering. In your `pom.xml` you have (inside the `<build/>`
-element):
+
+
+[[production-ready-application-info-automatic-expansion]]
+==== Automatically expand info properties at build time
+Rather than hardcoding some properties that are also specified in your project's build
+configuration, you can automatically expand info properties using the existing build
+configuration instead. This is possible in both Maven and Gradle.
+
+
+
+[[production-ready-application-info-automatic-expansion-maven]]
+===== Automatic property expansion using Maven
+You can automatically expand info properties from the Maven project using resource
+filtering. In your `pom.xml` you have (inside the `<build/>` element):
 
 [source,xml,indent=0]
 ----
@@ -225,6 +236,29 @@ You can then refer to your Maven ``project properties'' via placeholders, e.g.
 
 NOTE: In the above example we used `project.*` to set some values to be used as
 fallbacks if the Maven resource filtering has not been switched on for some reason.
+
+
+
+[[production-ready-application-info-automatic-expansion-gradle]]
+===== Automatic property expansion using Gradle
+You can automatically expand info properties from the Gradle project by configuring
+the Java plugin's `processResources` task to do so:
+
+[source,groovy,indent=0]
+----
+	processResources {
+		expand(project.properties)
+	}
+----
+
+You can then refer to your Gradle project's properties via placeholders, e.g.
+
+[source,properties,indent=0]
+----
+	info.build.name=${name}
+	info.build.description=${description}
+	info.build.version=${version}
+----
 
 
 
@@ -597,9 +631,9 @@ endpoint you should see a response similar to this:
 	{
 		"counter.status.200.root": 20,
 		"counter.status.200.metrics": 3,
-		"counter.status.200.**": 5,
+		"counter.status.200.star-star": 5,
 		"counter.status.401.root": 4,
-		"gauge.response.**": 6,
+		"gauge.response.star-star": 6,
 		"gauge.response.root": 2,
 		"gauge.response.metrics": 3,
 		"classes": 5808,
@@ -615,14 +649,17 @@ endpoint you should see a response similar to this:
 		"threads": 15,
 		"threads.daemon": 11,
 		"threads.peak": 15,
-		"uptime": 494836
+		"uptime": 494836,
+		"instance.uptime": 489782,
+		"datasource.primary.active": 5,
+		"datasource.primary.usage": 0.25
 	}
 ----
 
 Here we can see basic `memory`, `heap`, `class loading`, `processor` and `thread pool`
 information along with some HTTP metrics. In this instance the `root` (``/'') and `/metrics`
 URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears
-that the `root` URL returned `HTTP 401` (unauthorized) `4` times. The double asterix (`**`)
+that the `root` URL returned `HTTP 401` (unauthorized) `4` times. The double asterix (`star-star`)
 comes from a request matched by Spring MVC as `/**` (normally a static resource).
 
 The `gauge` shows the last response time for a request. So the last request to `root` took
@@ -630,6 +667,34 @@ The `gauge` shows the last response time for a request. So the last request to `
 
 NOTE: In this example we are actually accessing the endpoint over HTTP using the
 `/metrics` URL, this explains why `metrics` appears in the response.
+
+
+
+[[production-ready-datasource-metrics]]
+=== DataSource metrics
+The following metrics are exposed for each supported `DataSource` defined in your
+application:
+
+* The maximum number connections (`datasource.xxx.max`).
+* The minimum number of connections (`datasource.xxx.min`).
+* The number of active connections (`datasource.xxx.active`)
+* The current usage of the connection pool (`datasource.xxx.usage`).
+
+All data source metrics share the `datasource.` prefix. The prefix is further qualified
+for each data source:
+
+* If the data source is the primary data source (that is either the only available data
+  source or the one flagged `@Primary` amongst the existing ones), the prefix is
+  `datasource.primary`.
+* If the data source bean name ends with `dataSource`, the prefix is the name of the bean
+  without `dataSource` (i.e. `datasource.batch` for `batchDataSource`).
+* In all other cases, the name of the bean is used.
+
+It is possible to override part or all of those defaults by registering a bean with a
+customized version of `DataSourcePublicMetrics`. By default, Spring Boot provides metadata
+for all  supported datasources; you can add additional `DataSourcePoolMetadataProvider`
+beans if your favorite data source isn't supported out of the box. See
+`DataSourcePoolMetadataProvidersConfiguration` for examples.
 
 
 

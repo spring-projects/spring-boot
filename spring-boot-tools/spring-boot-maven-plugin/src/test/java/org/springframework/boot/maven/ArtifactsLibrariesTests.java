@@ -17,11 +17,14 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.plugin.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -35,6 +38,8 @@ import org.springframework.boot.loader.tools.LibraryScope;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -63,7 +68,7 @@ public class ArtifactsLibrariesTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.artifacts = Collections.singleton(this.artifact);
-		this.libs = new ArtifactsLibraries(this.artifacts, null);
+		this.libs = new ArtifactsLibraries(this.artifacts, null, mock(Log.class));
 		given(this.artifact.getFile()).willReturn(this.file);
 	}
 
@@ -88,9 +93,31 @@ public class ArtifactsLibrariesTests {
 		Dependency unpack = new Dependency();
 		unpack.setGroupId("gid");
 		unpack.setArtifactId("aid");
-		this.libs = new ArtifactsLibraries(this.artifacts, Collections.singleton(unpack));
+		this.libs = new ArtifactsLibraries(this.artifacts, Collections.singleton(unpack),
+				mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback).library(this.libraryCaptor.capture());
 		assertThat(this.libraryCaptor.getValue().isUnpackRequired(), equalTo(true));
 	}
+
+	@Test
+	public void renamesDuplicates() throws Exception {
+		Artifact artifact1 = mock(Artifact.class);
+		Artifact artifact2 = mock(Artifact.class);
+		given(artifact1.getType()).willReturn("jar");
+		given(artifact1.getScope()).willReturn("compile");
+		given(artifact1.getGroupId()).willReturn("g1");
+		given(artifact1.getFile()).willReturn(new File("a"));
+		given(artifact2.getType()).willReturn("jar");
+		given(artifact2.getScope()).willReturn("compile");
+		given(artifact2.getGroupId()).willReturn("g2");
+		given(artifact2.getFile()).willReturn(new File("a"));
+		this.artifacts = new LinkedHashSet<Artifact>(Arrays.asList(artifact1, artifact2));
+		this.libs = new ArtifactsLibraries(this.artifacts, null, mock(Log.class));
+		this.libs.doWithLibraries(this.callback);
+		verify(this.callback, times(2)).library(this.libraryCaptor.capture());
+		assertThat(this.libraryCaptor.getAllValues().get(0).getName(), equalTo("g1-a"));
+		assertThat(this.libraryCaptor.getAllValues().get(1).getName(), equalTo("g2-a"));
+	}
+
 }

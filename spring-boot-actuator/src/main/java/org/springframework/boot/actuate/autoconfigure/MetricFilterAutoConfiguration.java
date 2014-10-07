@@ -52,7 +52,8 @@ import org.springframework.web.util.UrlPathHelper;
  */
 @Configuration
 @ConditionalOnBean({ CounterService.class, GaugeService.class })
-@ConditionalOnClass({ Servlet.class, ServletRegistration.class })
+@ConditionalOnClass({ Servlet.class, ServletRegistration.class,
+		OncePerRequestFilter.class })
 @AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
 public class MetricFilterAutoConfiguration {
 
@@ -101,7 +102,7 @@ public class MetricFilterAutoConfiguration {
 					// not convertible
 				}
 				if (bestMatchingPattern != null) {
-					suffix = bestMatchingPattern.toString().replaceAll("[{}]", "-");
+					suffix = fixSpecialCharacters(bestMatchingPattern.toString());
 				}
 				else if (httpStatus.is4xxClientError()) {
 					suffix = UNKNOWN_PATH_SUFFIX;
@@ -112,6 +113,21 @@ public class MetricFilterAutoConfiguration {
 				String counterKey = getKey("status." + status + suffix);
 				MetricFilterAutoConfiguration.this.counterService.increment(counterKey);
 			}
+		}
+
+		private String fixSpecialCharacters(String value) {
+			String result = value.replaceAll("[{}]", "-");
+			result = result.replace("**", "-star-star-");
+			result = result.replace("*", "-star-");
+			result = result.replace("/-", "/");
+			result = result.replace("-/", "/");
+			if (result.endsWith("-")) {
+				result = result.substring(0, result.length() - 1);
+			}
+			if (result.startsWith("-")) {
+				result = result.substring(1);
+			}
+			return result;
 		}
 
 		private int getStatus(HttpServletResponse response) {

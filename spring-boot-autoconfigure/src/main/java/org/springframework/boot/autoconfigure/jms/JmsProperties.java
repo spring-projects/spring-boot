@@ -29,12 +29,22 @@ public class JmsProperties {
 
 	private boolean pubSubDomain = false;
 
+	private String jndiName;
+
 	public boolean isPubSubDomain() {
 		return this.pubSubDomain;
 	}
 
 	public void setPubSubDomain(boolean pubSubDomain) {
 		this.pubSubDomain = pubSubDomain;
+	}
+
+	public String getJndiName() {
+		return this.jndiName;
+	}
+
+	public void setJndiName(String jndiName) {
+		this.jndiName = jndiName;
 	}
 
 }

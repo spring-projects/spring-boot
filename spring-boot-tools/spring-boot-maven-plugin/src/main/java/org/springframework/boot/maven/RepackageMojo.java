@@ -82,6 +82,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private String finalName;
 
 	/**
+	 * Skip the execution.
+	 * @since 1.2
+	 */
+	@Parameter(property = "skip", defaultValue = "false")
+	private boolean skip;
+
+	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
 	 * attached. If this is not given, it will merely be written to the output directory
 	 * according to the finalName. Attaching the artifact allows to deploy it alongside to
@@ -123,6 +130,10 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			getLog().debug("repackage goal could not be applied to pom project.");
 			return;
 		}
+		if (this.skip) {
+			getLog().debug("skipping repackaging as per configuration.");
+			return;
+		}
 
 		File source = this.project.getArtifact().getFile();
 		File target = getTargetFile();
@@ -153,7 +164,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				getFilters());
 
-		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack);
+		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
+				getLog());
 		try {
 			repackager.repackage(target, libraries);
 		}

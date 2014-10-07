@@ -202,9 +202,16 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 		private boolean accessLogEnabled = false;
 
-		private String protocolHeader = "x-forwarded-proto";
+		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
+				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
+				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
+				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"; // 127/8
 
-		private String remoteIpHeader = "x-forwarded-for";
+		private String protocolHeader;
+
+		private String portHeader;
+
+		private String remoteIpHeader;
 
 		private File basedir;
 
@@ -264,12 +271,28 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			this.accessLogPattern = accessLogPattern;
 		}
 
+		public String getInternalProxies() {
+			return this.internalProxies;
+		}
+
+		public void setInternalProxies(String internalProxies) {
+			this.internalProxies = internalProxies;
+		}
+
 		public String getProtocolHeader() {
 			return this.protocolHeader;
 		}
 
 		public void setProtocolHeader(String protocolHeader) {
 			this.protocolHeader = protocolHeader;
+		}
+
+		public String getPortHeader() {
+			return this.portHeader;
+		}
+
+		public void setPortHeader(String portHeader) {
+			this.portHeader = portHeader;
 		}
 
 		public String getRemoteIpHeader() {
@@ -307,6 +330,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				RemoteIpValve valve = new RemoteIpValve();
 				valve.setRemoteIpHeader(remoteIpHeader);
 				valve.setProtocolHeader(protocolHeader);
+				valve.setInternalProxies(getInternalProxies());
+				valve.setPortHeader(getPortHeader());
 				factory.addContextValves(valve);
 			}
 

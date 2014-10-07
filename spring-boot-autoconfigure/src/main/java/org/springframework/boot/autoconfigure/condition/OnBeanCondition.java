@@ -37,7 +37,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.ConfigurationCondition;
+import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
@@ -54,6 +56,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Jakub Kubrynski
  */
+@Order(Ordered.LOWEST_PRECEDENCE)
 class OnBeanCondition extends SpringBootCondition implements ConfigurationCondition {
 
 	/**

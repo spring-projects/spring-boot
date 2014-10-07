@@ -46,12 +46,15 @@
 		<!-- Spring Boot -->
 		<spring-boot.version>1.2.0.BUILD-SNAPSHOT</spring-boot.version>
 		<!-- Third Party -->
-		<activemq.version>5.9.1</activemq.version>
+		<activemq.version>5.10.0</activemq.version>
 		<aspectj.version>1.8.2</aspectj.version>
+		<atomikos.version>3.9.3</atomikos.version>
+		<bitronix.version>2.1.4</bitronix.version>
 		<codahale-metrics.version>3.0.2</codahale-metrics.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.1</commons-collections.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
+		<commons-dbcp2.version>2.0.1</commons-dbcp2.version>
 		<commons-digester.version>2.1</commons-digester.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.2</commons-pool2.version>
@@ -66,13 +69,14 @@
 		<hibernate.version>4.3.6.Final</hibernate.version>
 		<hibernate-entitymanager.version>${hibernate.version}</hibernate-entitymanager.version>
 		<hibernate-jpa-api.version>1.0.1.Final</hibernate-jpa-api.version>
-		<hibernate-validator.version>5.0.3.Final</hibernate-validator.version>
+		<hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
 		<hikaricp.version>1.4.0</hikaricp.version>
 		<httpclient.version>4.3.5</httpclient.version>
 		<httpasyncclient.version>4.0.2</httpasyncclient.version>
 		<hornetq.version>2.4.3.Final</hornetq.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 		<jackson.version>2.4.2</jackson.version>
+		<gson.version>2.3</gson.version>
 		<janino.version>2.6.1</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
@@ -81,6 +85,7 @@
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<jdom2.version>2.0.5</jdom2.version>
+		<jersey.version>2.7</jersey.version>
 		<joda-time.version>2.4</joda-time.version>
 		<jolokia.version>1.2.2</jolokia.version>
 		<json-path.version>0.9.1</json-path.version>
@@ -99,14 +104,14 @@
 		<snakeyaml.version>1.13</snakeyaml.version>
 		<solr.version>4.7.2</solr.version>
 		<spock.version>0.7-groovy-2.0</spock.version>
-		<spring.version>4.1.0.BUILD-SNAPSHOT</spring.version>
-		<spring-amqp.version>1.3.5.RELEASE</spring-amqp.version>
-		<spring-cloud.version>1.1.0.BUILD-SNAPSHOT</spring-cloud.version>
+		<spring.version>4.1.1.RELEASE</spring.version>
+		<spring-amqp.version>1.4.0.M1</spring-amqp.version>
+		<spring-cloud.version>1.1.0.RELEASE</spring-cloud.version>
 		<spring-batch.version>3.0.1.RELEASE</spring-batch.version>
-		<spring-data-releasetrain.version>Dijkstra-SR3</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Evans-RELEASE</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.16.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>4.0.3.RELEASE</spring-integration.version>
-		<spring-loaded.version>1.2.0.RELEASE</spring-loaded.version>
+		<spring-integration.version>4.1.0.M1</spring-integration.version>
+		<spring-loaded.version>1.2.1.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.2.RELEASE</spring-mobile.version>
 		<spring-social.version>1.1.0.RELEASE</spring-social.version>
 		<spring-social-facebook.version>1.1.1.RELEASE</spring-social-facebook.version>
@@ -194,6 +199,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-cloud</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-batch</artifactId>
 				<version>1.2.0.BUILD-SNAPSHOT</version>
 			</dependency>
@@ -254,7 +264,22 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-jersey</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jetty</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-jta-atomikos</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-jta-bitronix</artifactId>
 				<version>1.2.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -351,6 +376,21 @@
 				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.atomikos</groupId>
+				<artifactId>transactions-jdbc</artifactId>
+				<version>${atomikos.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.atomikos</groupId>
+				<artifactId>transactions-jms</artifactId>
+				<version>${atomikos.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.atomikos</groupId>
+				<artifactId>transactions-jta</artifactId>
+				<version>${atomikos.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.codahale.metrics</groupId>
 				<artifactId>metrics-graphite</artifactId>
 				<version>${codahale-metrics.version}</version>
@@ -371,6 +411,16 @@
 				<version>${codahale-metrics.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.btm</groupId>
+				<artifactId>btm</artifactId>
+				<version>${bitronix.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.codehaus.janino</groupId>
 				<artifactId>janino</artifactId>
 				<version>${janino.version}</version>
@@ -388,6 +438,11 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-xml</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
@@ -440,6 +495,11 @@
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>${commons-collections.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-dbcp2</artifactId>
+				<version>${commons-dbcp2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-dbcp</groupId>
@@ -525,6 +585,11 @@
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-pool</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-jms-pool</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
 			<dependency>
@@ -803,6 +868,26 @@
 				<version>${flyway.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-server</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet-core</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.ext</groupId>
+				<artifactId>jersey-spring3</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-core</artifactId>
 				<version>${hamcrest.version}</version>
@@ -1019,6 +1104,26 @@
 				<groupId>org.springframework.batch</groupId>
 				<artifactId>spring-batch-test</artifactId>
 				<version>${spring-batch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-cloudfoundry-connector</artifactId>
+				<version>${spring-cloud.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-core</artifactId>
+				<version>${spring-cloud.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-heroku-connector</artifactId>
+				<version>${spring-cloud.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-localconfig-connector</artifactId>
+				<version>${spring-cloud.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>

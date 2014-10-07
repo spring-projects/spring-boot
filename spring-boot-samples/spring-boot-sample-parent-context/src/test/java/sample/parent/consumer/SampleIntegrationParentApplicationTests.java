@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Dave Syer
  */
-public class SampleIntegrationApplicationTests {
+public class SampleIntegrationParentApplicationTests {
 
 	private static ConfigurableApplicationContext context;
 

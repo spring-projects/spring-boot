@@ -37,7 +37,12 @@
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hornetq</module>
 		<module>spring-boot-sample-integration</module>
+		<module>spring-boot-sample-jersey</module>
+		<module>spring-boot-sample-jersey1</module>
 		<module>spring-boot-sample-jetty</module>
+		<module>spring-boot-sample-jta-atomikos</module>
+		<module>spring-boot-sample-jta-bitronix</module>
+		<module>spring-boot-sample-jta-jndi</module>
 		<module>spring-boot-sample-liquibase</module>
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
@@ -49,11 +54,13 @@
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
 		<module>spring-boot-sample-tomcat8-jsp</module>
 		<module>spring-boot-sample-traditional</module>
+		<module>spring-boot-sample-velocity</module>
 		<module>spring-boot-sample-web-freemarker</module>
 		<module>spring-boot-sample-web-groovy-templates</module>
 		<module>spring-boot-sample-web-method-security</module>
 		<module>spring-boot-sample-web-secure</module>
 		<module>spring-boot-sample-web-secure-custom</module>
+		<module>spring-boot-sample-web-secure-jdbc</module>
 		<module>spring-boot-sample-web-static</module>
 		<module>spring-boot-sample-web-jsp</module>
 		<module>spring-boot-sample-web-ui</module>
@@ -61,7 +68,7 @@
 		<module>spring-boot-sample-websocket</module>
 		<module>spring-boot-sample-ws</module>
 		<module>spring-boot-sample-xml</module>
-	</modules>
+    </modules>
 	<!-- No dependencies - otherwise the samples won't work if you change the
 		parent -->
 	<build>
@@ -101,4 +108,48 @@
 			</plugin>
 		</plugins>
 	</build>
+	<repositories>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>http://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>http://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>http://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>http://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-releases</id>
+			<name>Spring Releases</name>
+			<url>http://repo.spring.io/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 </project>

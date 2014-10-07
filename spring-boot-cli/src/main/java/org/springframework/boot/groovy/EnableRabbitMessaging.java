@@ -26,10 +26,13 @@ import org.springframework.boot.cli.compiler.autoconfigure.RabbitCompilerAutoCon
 
 /**
  * Pseudo annotation used to trigger {@link RabbitCompilerAutoConfiguration}.
+ *
+ * @deprecated since 1.2.0 in favor of {@code EnableRabbit}
  */
 @Target(ElementType.TYPE)
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface EnableRabbitMessaging {
 
 }

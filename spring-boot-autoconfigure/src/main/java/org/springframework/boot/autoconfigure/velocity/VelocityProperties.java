@@ -48,6 +48,8 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 
 	private String toolboxConfigLocation;
 
+	private boolean preferFileSystemAccess = true;
+
 	public VelocityProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
 	}
@@ -92,12 +94,18 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 		this.toolboxConfigLocation = toolboxConfigLocation;
 	}
 
-	/**
-	 * Apply the given properties to a {@link VelocityViewResolver}.
-	 * @param resolver the resolver to apply the properties to.
-	 */
-	public void applyToViewResolver(VelocityViewResolver resolver) {
-		super.applyToViewResolver(resolver);
+	public boolean isPreferFileSystemAccess() {
+		return this.preferFileSystemAccess;
+	}
+
+	public void setPreferFileSystemAccess(boolean preferFileSystemAccess) {
+		this.preferFileSystemAccess = preferFileSystemAccess;
+	}
+
+	@Override
+	public void applyToViewResolver(Object viewResolver) {
+		super.applyToViewResolver(viewResolver);
+		VelocityViewResolver resolver = (VelocityViewResolver) viewResolver;
 		resolver.setToolboxConfigLocation(getToolboxConfigLocation());
 		resolver.setDateToolAttribute(getDateToolAttribute());
 		resolver.setNumberToolAttribute(getNumberToolAttribute());

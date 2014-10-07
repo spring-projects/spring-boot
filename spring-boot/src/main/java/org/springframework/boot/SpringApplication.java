@@ -17,7 +17,6 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Constructor;
-import java.nio.charset.Charset;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,7 +66,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
-import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -196,7 +194,7 @@ public class SpringApplication {
 	private Set<String> profiles = new HashSet<String>();
 
 	/**
-	 * Crate a new {@link SpringApplication} instance. The application context will load
+	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
@@ -209,7 +207,7 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Crate a new {@link SpringApplication} instance. The application context will load
+	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
@@ -334,7 +332,7 @@ public class SpringApplication {
 			}
 			return context;
 		}
-		catch (Exception ex) {
+		catch (Throwable ex) {
 			try {
 				for (SpringApplicationRunListener runListener : runListeners) {
 					finishWithException(runListener, context, ex);
@@ -482,30 +480,17 @@ public class SpringApplication {
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
 		if (resource.exists()) {
-			printBannerResource(environment, resource);
+			new ResourceBanner(resource).printBanner(environment,
+					this.mainApplicationClass, System.out);
 			return;
 		}
 
 		if (this.banner != null) {
-			this.banner.printBanner(environment, System.out);
+			this.banner.printBanner(environment, this.mainApplicationClass, System.out);
 			return;
 		}
 
 		printBanner();
-	}
-
-	private void printBannerResource(Environment environment, Resource resource) {
-		try {
-			String banner = StreamUtils.copyToString(
-					resource.getInputStream(),
-					environment.getProperty("banner.charset", Charset.class,
-							Charset.forName("UTF-8")));
-			System.out.println(environment.resolvePlaceholders(banner));
-		}
-		catch (Exception ex) {
-			this.log.warn("Banner not printable: " + resource + " (" + ex.getClass()
-					+ ": '" + ex.getMessage() + "')", ex);
-		}
 	}
 
 	/**
@@ -517,7 +502,7 @@ public class SpringApplication {
 	 */
 	@Deprecated
 	protected void printBanner() {
-		DEFAULT_BANNER.printBanner(null, System.out);
+		DEFAULT_BANNER.printBanner(null, this.mainApplicationClass, System.out);
 	}
 
 	/**
@@ -712,7 +697,7 @@ public class SpringApplication {
 	}
 
 	private void finishWithException(SpringApplicationRunListener runListener,
-			ConfigurableApplicationContext context, Exception exception) {
+			ConfigurableApplicationContext context, Throwable exception) {
 		try {
 			runListener.finished(context, exception);
 		}

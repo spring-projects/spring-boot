@@ -93,4 +93,8 @@ public class ConditionOutcome {
 		return super.equals(obj);
 	}
 
+	@Override
+	public String toString() {
+		return (this.message == null ? "" : this.message);
+	}
 }

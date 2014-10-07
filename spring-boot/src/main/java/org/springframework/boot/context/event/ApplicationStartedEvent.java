@@ -34,7 +34,7 @@ public class ApplicationStartedEvent extends SpringApplicationEvent {
 
 	/**
 	 * @param application the current application
-	 * @param args the argumemts the application is running with
+	 * @param args the arguments the application is running with
 	 */
 	public ApplicationStartedEvent(SpringApplication application, String[] args) {
 		super(application, args);

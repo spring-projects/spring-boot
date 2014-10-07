@@ -375,8 +375,10 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	private JarFile createJarFileFromFileEntry(JarEntryData sourceEntry)
 			throws IOException {
 		if (sourceEntry.getMethod() != ZipEntry.STORED) {
-			throw new IllegalStateException("Unable to open nested compressed entry "
-					+ sourceEntry.getName());
+			throw new IllegalStateException("Unable to open nested entry '"
+					+ sourceEntry.getName() + "'. It has been compressed and nested "
+					+ "jar files must be stored without compression. Please check the "
+					+ "mechanism used to create your executable jar file");
 		}
 		return new JarFile(this.rootFile, this.pathFromRoot + "!/"
 				+ sourceEntry.getName(), sourceEntry.getData());

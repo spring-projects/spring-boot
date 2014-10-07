@@ -20,7 +20,8 @@ package org.springframework.boot.context.embedded;
  * Simple container-independent abstraction for SSL configuration.
  *
  * @author Andy Wilkinson
- * @since 1.2.0
+ * @author Vladimir Tsanev
+ * @since 1.1.7
  */
 public class Ssl {
 
@@ -36,9 +37,17 @@ public class Ssl {
 
 	private String keyStorePassword;
 
+	private String keyStoreType;
+
+	private String keyStoreProvider;
+
 	private String trustStore;
 
 	private String trustStorePassword;
+
+	private String trustStoreType;
+
+	private String trustStoreProvider;
 
 	private String protocol = "TLS";
 
@@ -90,6 +99,22 @@ public class Ssl {
 		this.keyStorePassword = keyStorePassword;
 	}
 
+	public String getKeyStoreType() {
+		return this.keyStoreType;
+	}
+
+	public void setKeyStoreType(String keyStoreType) {
+		this.keyStoreType = keyStoreType;
+	}
+
+	public String getKeyStoreProvider() {
+		return this.keyStoreProvider;
+	}
+
+	public void setKeyStoreProvider(String keyStoreProvider) {
+		this.keyStoreProvider = keyStoreProvider;
+	}
+
 	public String getTrustStore() {
 		return this.trustStore;
 	}
@@ -106,6 +131,22 @@ public class Ssl {
 		this.trustStorePassword = trustStorePassword;
 	}
 
+	public String getTrustStoreType() {
+		return this.trustStoreType;
+	}
+
+	public void setTrustStoreType(String trustStoreType) {
+		this.trustStoreType = trustStoreType;
+	}
+
+	public String getTrustStoreProvider() {
+		return this.trustStoreProvider;
+	}
+
+	public void setTrustStoreProvider(String trustStoreProvider) {
+		this.trustStoreProvider = trustStoreProvider;
+	}
+
 	public String getProtocol() {
 		return this.protocol;
 	}
@@ -117,4 +158,5 @@ public class Ssl {
 	public enum ClientAuth {
 		WANT, NEED;
 	}
+
 }

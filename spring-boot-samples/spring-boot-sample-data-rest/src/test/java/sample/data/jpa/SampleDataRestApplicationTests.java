@@ -29,14 +29,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration test to run the application.
  *
  * @author Oliver Gierke
+ * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleDataRestApplication.class)
@@ -60,5 +63,23 @@ public class SampleDataRestApplicationTests {
 
 		this.mvc.perform(get("/")).andExpect(status().isOk())
 				.andExpect(content().string(containsString("hotels")));
+	}
+
+	@Test
+	public void findByNameAndCountry() throws Exception {
+
+		this.mvc.perform(
+				get("/cities/search/findByNameAndCountryAllIgnoringCase?name=Melbourne&country=Australia"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("_embedded.citys", hasSize(1)));
+	}
+
+	@Test
+	public void findByContaining() throws Exception {
+
+		this.mvc.perform(
+				get("/cities/search/findByNameContainingAndCountryContainingAllIgnoringCase?name=&country=UK"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("_embedded.citys", hasSize(3)));
 	}
 }

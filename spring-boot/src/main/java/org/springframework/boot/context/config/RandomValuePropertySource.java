@@ -18,6 +18,8 @@ package org.springframework.boot.context.config;
 
 import java.util.Random;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
@@ -33,6 +35,8 @@ import org.springframework.util.StringUtils;
  */
 public class RandomValuePropertySource extends PropertySource<Random> {
 
+	private static Log logger = LogFactory.getLog(RandomValuePropertySource.class);
+
 	public RandomValuePropertySource(String name) {
 		super(name, new Random());
 	}
@@ -41,6 +45,9 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	public Object getProperty(String name) {
 		if (!name.startsWith("random.")) {
 			return null;
+		}
+		if (logger.isTraceEnabled()) {
+			logger.trace("Generating random property for '" + name + "'");
 		}
 		if (name.endsWith("int")) {
 			return getSource().nextInt();
@@ -71,6 +78,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		environment.getPropertySources().addAfter(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				new RandomValuePropertySource("random"));
+		logger.trace("RandomValuePropertySource add to Environment");
 	}
 
 }

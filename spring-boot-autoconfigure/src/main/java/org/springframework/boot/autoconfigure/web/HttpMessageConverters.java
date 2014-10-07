@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -69,26 +70,54 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	 * converters.
 	 * @param additionalConverters additional converters to be added. Items are added just
 	 * before any default converter of the same type (or at the front of the list if no
-	 * default converter is found) The {@link #getConverters()} methods can be used for
-	 * further converter manipulation.
+	 * default converter is found) The {@link #postProcessConverters(List)} method can be
+	 * used for further converter manipulation.
 	 */
 	public HttpMessageConverters(Collection<HttpMessageConverter<?>> additionalConverters) {
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
+		this(true, additionalConverters);
+	}
+
+	/**
+	 * Create a new {@link HttpMessageConverters} instance with the specified converters.
+	 * @param addDefaultConverters if default converters should be added
+	 * @param converters converters to be added. Items are added just before any default
+	 * converter of the same type (or at the front of the list if no default converter is
+	 * found) The {@link #postProcessConverters(List)} method can be used for further
+	 * converter manipulation.
+	 */
+	public HttpMessageConverters(boolean addDefaultConverters,
+			Collection<HttpMessageConverter<?>> converters) {
+		List<HttpMessageConverter<?>> combined = new ArrayList<HttpMessageConverter<?>>();
 		List<HttpMessageConverter<?>> processing = new ArrayList<HttpMessageConverter<?>>(
-				additionalConverters);
-		for (HttpMessageConverter<?> defaultConverter : getDefaultConverters()) {
-			Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
-			while (iterator.hasNext()) {
-				HttpMessageConverter<?> candidate = iterator.next();
-				if (ClassUtils.isAssignableValue(defaultConverter.getClass(), candidate)) {
-					converters.add(candidate);
-					iterator.remove();
+				converters);
+		if (addDefaultConverters) {
+			for (HttpMessageConverter<?> defaultConverter : getDefaultConverters()) {
+				Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
+				while (iterator.hasNext()) {
+					HttpMessageConverter<?> candidate = iterator.next();
+					if (ClassUtils.isAssignableValue(defaultConverter.getClass(),
+							candidate)) {
+						combined.add(candidate);
+						iterator.remove();
+					}
 				}
+				combined.add(defaultConverter);
 			}
-			converters.add(defaultConverter);
 		}
-		converters.addAll(0, processing);
-		this.converters = Collections.unmodifiableList(converters);
+		combined.addAll(0, processing);
+		combined = postProcessConverters(combined);
+		this.converters = Collections.unmodifiableList(combined);
+	}
+
+	/**
+	 * Method that can be used to post-process the {@link HttpMessageConverter} list
+	 * before it is used.
+	 * @param converters a mutable list of the converters that will be used.
+	 * @return the final converts list to use
+	 */
+	protected List<HttpMessageConverter<?>> postProcessConverters(
+			List<HttpMessageConverter<?>> converters) {
+		return converters;
 	}
 
 	private List<HttpMessageConverter<?>> getDefaultConverters() {
@@ -113,7 +142,8 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		for (Iterator<HttpMessageConverter<?>> iterator = converters.iterator(); iterator
 				.hasNext();) {
 			HttpMessageConverter<?> converter = iterator.next();
-			if (converter instanceof AbstractXmlHttpMessageConverter) {
+			if ((converter instanceof AbstractXmlHttpMessageConverter)
+					|| (converter instanceof MappingJackson2XmlHttpMessageConverter)) {
 				xml.add(converter);
 				iterator.remove();
 			}
@@ -127,8 +157,8 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	}
 
 	/**
-	 * Return a mutable list of the converters in the order that they will be registered.
-	 * Values in the list cannot be modified once the bean has been initialized.
+	 * Return an immutable list of the converters in the order that they will be
+	 * registered.
 	 * @return the converters
 	 */
 	public List<HttpMessageConverter<?>> getConverters() {

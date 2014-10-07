@@ -128,7 +128,7 @@ public class JarWriter {
 	public void writeNestedLibrary(String destination, Library library)
 			throws IOException {
 		File file = library.getFile();
-		JarEntry entry = new JarEntry(destination + file.getName());
+		JarEntry entry = new JarEntry(destination + library.getName());
 		if (library.isUnpackRequired()) {
 			entry.setComment("UNPACK:" + FileUtils.sha1Hash(file));
 		}

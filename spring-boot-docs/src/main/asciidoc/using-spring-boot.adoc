@@ -140,7 +140,7 @@ Maven, there is no ``super parent'' to import to share some configuration.
 ----
 	apply plugin: 'java'
 
-	repositories { mavenCentral() }
+	repositories { jcenter() }
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
 	}
@@ -155,7 +155,7 @@ for ``blessed'' dependencies>>:
 [source,groovy,indent=0,subs="attributes"]
 ----
 	buildscript {
-		repositories { mavenCentral() }
+		repositories { jcenter() }
 		dependencies {
 			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
 		}
@@ -164,7 +164,7 @@ for ``blessed'' dependencies>>:
 	apply plugin: 'java'
 	apply plugin: 'spring-boot'
 
-	repositories { mavenCentral() }
+	repositories { jcenter() }
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web")
 		testCompile("org.springframework.boot:spring-boot-starter-test")
@@ -224,6 +224,10 @@ The following application starters are provided by Spring Boot under the
 |`spring-boot-starter-batch`
 |Support for ``Spring Batch'' including HSQLDB database.
 
+|`spring-boot-starter-data-elasticsearch`
+|Support for the Elasticsearch search and analytics engine including
+`spring-data-elasticsearch`.
+
 |`spring-boot-starter-data-gemfire`
 |Support for the GemFire distributed data store including `spring-data-gemfire`.
 
@@ -254,6 +258,12 @@ and Hibernate.
 
 |`spring-boot-starter-jdbc`
 |JDBC Database support.
+
+|`spring-boot-starter-jta-atomikos`
+|Support for JTA distributed transactions via Atomikos.
+
+|`spring-boot-starter-jta-bitronix`
+|Support for JTA distributed transactions via Bitronix.
 
 |`spring-boot-starter-mobile`
 |Support for `spring-mobile`

@@ -173,4 +173,5 @@ public class RelaxedPropertyResolverTests {
 		assertThat(subProperties.get("a.c"), equalTo((Object) "2"));
 		assertThat(subProperties.get("a.d"), equalTo((Object) "3"));
 	}
+
 }

@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  */
 public class JettyEmbeddedServletContainerFactoryTests extends
-AbstractEmbeddedServletContainerFactoryTests {
+		AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected JettyEmbeddedServletContainerFactory getFactory() {

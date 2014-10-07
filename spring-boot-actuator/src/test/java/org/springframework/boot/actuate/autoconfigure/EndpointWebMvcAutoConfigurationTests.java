@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -222,6 +223,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertThat(localServerPort, notNullValue());
 		assertThat(localManagementPort, notNullValue());
 		assertThat(localServerPort, not(equalTo(localManagementPort)));
+		assertThat(this.applicationContext.getBean(ServerPortConfig.class).getCount(),
+				equalTo(2));
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -304,9 +307,21 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Configuration
 	public static class ServerPortConfig {
 
+		private int count = 0;
+
+		public int getCount() {
+			return this.count;
+		}
+
 		@Bean
 		public ServerProperties serverProperties() {
-			ServerProperties properties = new ServerProperties();
+			ServerProperties properties = new ServerProperties() {
+				@Override
+				public void customize(ConfigurableEmbeddedServletContainer container) {
+					ServerPortConfig.this.count++;
+					super.customize(container);
+				}
+			};
 			properties.setPort(ports.get().server);
 			return properties;
 		}
