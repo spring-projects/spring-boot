@@ -15,8 +15,7 @@ From within your Spring project's git checkout directory:
 
 ### Remove all files
 
-    git rm -rf *
-    git rm -rf '.*'
+    git rm -rf `git ls-files` && rm -rf *
 
 ### Add the gh-pages-upstream remote
 
@@ -50,11 +49,11 @@ At this point you need to make a decision: is your project a "grouping project",
 
 Based on your choice above, copy the correct sample page to `index.html`, e.g.:
 
-    $ cp sample-pages/project.html index.html
+    $ cp _sample-pages/project.html index.html
 
 or
 
-    $ cp sample-pages/project_group.html index.html
+    $ cp _sample-pages/project_group.html index.html
 
 
 ## Edit the content of your home page
