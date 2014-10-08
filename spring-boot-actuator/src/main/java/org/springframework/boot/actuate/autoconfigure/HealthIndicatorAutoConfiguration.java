@@ -30,6 +30,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
+import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
+import org.springframework.boot.actuate.health.DiskSpaceHealthIndicatorProperties;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
@@ -52,6 +54,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -253,6 +256,24 @@ public class HealthIndicatorAutoConfiguration {
 						entry.getValue()));
 			}
 			return composite;
+		}
+	}
+
+	@Configuration
+	@ConditionalOnExpression("${health.diskspace.enabled:true}")
+	public static class DiskSpaceHealthIndicatorConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(name = "diskSpaceHealthIndicator")
+		public HealthIndicator diskSpaceHealthIndicator(
+				DiskSpaceHealthIndicatorProperties properties) {
+			return new DiskSpaceHealthIndicator(properties);
+		}
+
+		@Bean
+		@ConfigurationProperties("health.diskspace")
+		public DiskSpaceHealthIndicatorProperties diskSpaceHealthIndicatorProperties() {
+			return new DiskSpaceHealthIndicatorProperties();
 		}
 	}
 

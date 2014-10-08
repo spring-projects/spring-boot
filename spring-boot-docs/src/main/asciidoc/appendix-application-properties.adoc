@@ -387,6 +387,10 @@ content into your application; rather pick only the properties that you need.
 	endpoints.trace.sensitive=true
 	endpoints.trace.enabled=true
 
+	# HEALTH INDICATORS
+	health.diskspace.path=.
+	health.diskspace.threshold=10485760
+
 	# MVC ONLY ENDPOINTS
 	endpoints.jolokia.path=jolokia
 	endpoints.jolokia.sensitive=true

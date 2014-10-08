@@ -165,10 +165,10 @@ To provide custom health information you can register a Spring bean that impleme
 Spring Boot provides a
 {sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
 implementation that attempts a simple database test (reusing the validation query set on the data
-source, if any) as well as implementations for Redis, MongoDB and RabbitMQ.
-
-Spring Boot adds the `HealthIndicator` instances automatically if beans of type `DataSource`,
-`MongoTemplate`, `RedisConnectionFactory`, `RabbitTemplate` are present in the `ApplicationContext`.
+source, if any) as well as implementations for Redis, MongoDB and RabbitMQ. Spring Boot adds the
+`HealthIndicator` instances automatically if beans of type `DataSource`, `MongoTemplate`,
+`RedisConnectionFactory`, and `RabbitTemplate` respectively are present in the
+`ApplicationContext`. A health indicator that checks free disk space is also provided.
 
 Besides implementing custom a `HealthIndicator` type and using out-of-box {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
 types, it is also possible to introduce custom `Status` types for different or more complex system
