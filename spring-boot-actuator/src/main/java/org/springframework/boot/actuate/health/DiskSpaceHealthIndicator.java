@@ -16,67 +16,45 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 /**
- * A {@link HealthIndicator} that checks for available disk space.
+ * A {@link HealthIndicator} that checks available disk space and reports a status of
+ * {@link Status#DOWN} when it drops below a configurable threshold.
  *
  * @author Mattias Severson
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
-@Component
 public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
+
 	private static Log logger = LogFactory.getLog(DiskSpaceHealthIndicator.class);
 
-	private final File path;
-	private final long thresholdBytes;
+	private final DiskSpaceHealthIndicatorProperties properties;
 
 	/**
-	 * Constructor.
-	 * @param path The path to a directory for checking available disk space. The
-	 *                application must have read access to this path. Additionally, the
-	 *                {@link java.lang.SecurityManager#checkRead(String)} will be called
-	 *                if a security manager is used.
-	 *                By default, it uses the system property {@code user.dir}, i.e. the
-	 *                current directory when the JVM was started.
-	 * @param thresholdBytes The threshold (in Bytes) of remaining disk space that will
-	 *                          trigger this health indicator when exceeded.
-	 *                          Default value is 10485760 Bytes (10 MB).
+	 * Create a new {@code DiskSpaceHealthIndicator}
 	 */
 	@Autowired
-	public DiskSpaceHealthIndicator(@Value("${health.path?:${user.dir}}") String path,
-									@Value("${health.threshold.bytes:10485760}") long thresholdBytes) {
-		this.path = new File(path);
-		this.thresholdBytes = thresholdBytes;
-		verifyPathIsAccessible(this.path);
-		Assert.isTrue(thresholdBytes >= 0, "thresholdBytes must be greater than 0");
+	public DiskSpaceHealthIndicator(DiskSpaceHealthIndicatorProperties properties) {
+		this.properties = properties;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		long diskFreeInBytes = this.path.getFreeSpace();
-		if (diskFreeInBytes >= this.thresholdBytes) {
+		long diskFreeInBytes = this.properties.getPath().getFreeSpace();
+		if (diskFreeInBytes >= this.properties.getThreshold()) {
 			builder.up();
-		} else {
-			logger.warn(String.format("Free disk space threshold exceeded. " +
-							"Available: %d bytes (threshold: %d bytes).",
-					diskFreeInBytes, this.thresholdBytes));
+		}
+		else {
+			logger.warn(String.format("Free disk space below threshold. "
+					+ "Available: %d bytes (threshold: %d bytes)", diskFreeInBytes,
+					this.properties.getThreshold()));
 			builder.down();
 		}
-	}
-
-	private static void verifyPathIsAccessible(File path) {
-		if (!path.exists()) {
-			throw new IllegalArgumentException(String.format("Path does not exist: %s", path));
-		}
-		if (!path.canRead()) {
-			throw new IllegalStateException(String.format("Path cannot be read: %s", path));
-		}
+		builder.withDetail("free", diskFreeInBytes).withDetail("threshold",
+				this.properties.getThreshold());
 	}
 }
