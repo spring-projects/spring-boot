@@ -24,25 +24,27 @@ import org.eclipse.jetty.webapp.WebAppContext;
  * deferred initialization.
  *
  * @author Phillip Webb
+ * @author Bradley M Handy
  */
-class JettyEmbeddedWebAppContext extends WebAppContext {
+class JettyEmbeddedWebAppContext extends WebAppContext implements DeferredInitializable {
 
 	@Override
 	protected ServletHandler newServletHandler() {
 		return new JettyEmbeddedServletHandler();
 	}
 
-	public void deferredInitialize() throws Exception {
-		((JettyEmbeddedServletHandler) getServletHandler()).deferredInitialize();
+	public void performDeferredInitialization() throws Exception {
+		((DeferredInitializable) getServletHandler()).performDeferredInitialization();
 	}
 
-	private static class JettyEmbeddedServletHandler extends ServletHandler {
+	private static class JettyEmbeddedServletHandler extends ServletHandler implements
+			DeferredInitializable {
 
 		@Override
 		public void initialize() throws Exception {
 		}
 
-		public void deferredInitialize() throws Exception {
+		public void performDeferredInitialization() throws Exception {
 			super.initialize();
 		}
 

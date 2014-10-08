@@ -21,7 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.ssl.SslConnector;
+import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
@@ -31,9 +34,11 @@ import org.springframework.boot.context.embedded.Ssl;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link JettyEmbeddedServletContainerFactory} and
@@ -83,6 +88,18 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		}
 	}
 
+    @Test
+    public void jettyDeferredInitialization() throws Exception {
+        JettyEmbeddedServletContainerFactory factory = getFactory();
+        Handler customHandler = spy(new MockDeferredInitializableHandler());
+        factory.addServerCustomizers(new IntroduceHandlerCollectionJettyServerCustomizer(customHandler));
+        this.container = factory.getEmbeddedServletContainer();
+        this.container.start();
+
+        JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
+        verifyHandlersHaveStarted(jettyContainer.getServer().getHandlers());
+    }
+
 	@Test
 	public void sessionTimeout() throws Exception {
 		JettyEmbeddedServletContainerFactory factory = getFactory();
@@ -128,5 +145,50 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 				.getMaxInactiveInterval();
 		assertThat(actual, equalTo(expected));
 	}
+
+    private void verifyHandlersHaveStarted(Handler... handlers) {
+        for (Handler handler : handlers) {
+            if (handler instanceof HandlerCollection) {
+                verifyHandlersHaveStarted(((HandlerCollection) handler).getHandlers());
+            }
+            else {
+                assertHandlerStarted(handler);
+                if (handler instanceof WebAppContext) {
+                    ServletHandler servletHandler = ((WebAppContext) handler).getServletHandler();
+                    assertHandlerStarted(servletHandler);
+                }
+            }
+        }
+    }
+
+    private void assertHandlerStarted(Handler handler) {
+        assertTrue(String.format("Handler should be started: %s", handler.getClass().getName()), handler.isStarted());
+    }
+
+    private static class IntroduceHandlerCollectionJettyServerCustomizer implements JettyServerCustomizer {
+
+        private Handler[] customerHandlers;
+
+        public IntroduceHandlerCollectionJettyServerCustomizer(Handler... handlers) {
+            this.customerHandlers = handlers == null ? new Handler[0] : handlers;
+        }
+
+        @Override
+        public void customize(Server server) {
+            Handler currentHandler = server.getHandler();
+            HandlerCollection handlerCollection = new HandlerCollection();
+            ContextHandlerCollection contextHandlerCollection = new ContextHandlerCollection();
+
+            contextHandlerCollection.addHandler(currentHandler);
+            handlerCollection.addHandler(contextHandlerCollection);
+
+            for (Handler handler : customerHandlers) {
+                handlerCollection.addHandler(handler);
+            }
+
+            server.setHandler(handlerCollection);
+        }
+
+    }
 
 }

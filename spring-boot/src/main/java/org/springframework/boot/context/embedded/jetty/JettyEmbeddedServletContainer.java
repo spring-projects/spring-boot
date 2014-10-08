@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
@@ -34,6 +35,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Bradley M Handy
  * @see JettyEmbeddedServletContainerFactory
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
@@ -100,9 +102,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		}
 		try {
 			this.server.start();
-			for (Handler handler : this.server.getHandlers()) {
-				handleDeferredInitialize(handler);
-			}
+			initializeHandlers(this.server.getHandlers());
 			Connector[] connectors = this.server.getConnectors();
 			for (Connector connector : connectors) {
 				connector.start();
@@ -115,12 +115,21 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		}
 	}
 
+	private void initializeHandlers(Handler... handlers) throws Exception {
+		for (Handler handler : handlers) {
+			handleDeferredInitialize(handler);
+		}
+	}
+
 	private void handleDeferredInitialize(Handler handler) throws Exception {
-		if (handler instanceof JettyEmbeddedWebAppContext) {
-			((JettyEmbeddedWebAppContext) handler).deferredInitialize();
+		if (handler instanceof DeferredInitializable) {
+			((DeferredInitializable) handler).performDeferredInitialization();
 		}
 		else if (handler instanceof HandlerWrapper) {
 			handleDeferredInitialize(((HandlerWrapper) handler).getHandler());
+		}
+		else if (handler instanceof HandlerCollection) {
+			initializeHandlers(((HandlerCollection) handler).getHandlers());
 		}
 	}
 
