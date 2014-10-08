@@ -32,13 +32,17 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.Assert;
+import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * An {@link org.springframework.context.ApplicationListener} that saves
  * embedded server port and management port into file. This application listener
- * will be triggered exactly once per JVM.
- *
+ * will be triggered exactly once per JVM, and the file name can be overridden
+ * at runtime with a System property or environment variable named
+ * "APPLICATIONPORTFILE" and "MANAGEMENTPORTFILE" (or "applicationportfile" and
+ * "managementportfile").
+ * 
  * @author David Liu
  * @since 1.2.0
  */
@@ -63,8 +67,7 @@ public class EmbeddedServerPortListener implements ApplicationListener<Applicati
 	 * filename 'application.port' and 'management.port'.
 	 */
 	public EmbeddedServerPortListener() {
-		this.applicationFile = new File(APPLICATION_PORT_FILE_NAME);
-		this.managementFile = new File(MANAGEMENT_PORT_FILE_NAME);
+		this(new File(APPLICATION_PORT_FILE_NAME), new File(MANAGEMENT_PORT_FILE_NAME));
 	}
 
 	/**
@@ -74,10 +77,7 @@ public class EmbeddedServerPortListener implements ApplicationListener<Applicati
 	 * @param managementFileName the name of file containing management port
 	 */
 	public EmbeddedServerPortListener(String applicationFileName, String managementFileName) {
-		Assert.notNull(applicationFileName, "ApplicationFileName must not be null");
-		Assert.notNull(managementFileName, "ManagementFileName must not be null");
-		this.applicationFile = new File(applicationFileName);
-		this.managementFile = new File(managementFileName);
+		this(new File(applicationFileName), new File(managementFileName));
 	}
 
 	/**
@@ -89,8 +89,14 @@ public class EmbeddedServerPortListener implements ApplicationListener<Applicati
 	public EmbeddedServerPortListener(File applicationFile, File managementFile) {
 		Assert.notNull(applicationFile, "ApplicationFile must not be null");
 		Assert.notNull(managementFile, "ManagementFile must not be null");
-		this.applicationFile = applicationFile;
-		this.managementFile = managementFile;
+		String actualApplicationFile = SystemPropertyUtils.resolvePlaceholders("${APPLICATIONPORTFILE}", true);
+		actualApplicationFile = !actualApplicationFile.contains("$") ? actualApplicationFile : SystemPropertyUtils
+				.resolvePlaceholders("${applicationportfile}", true);
+		this.applicationFile = !actualApplicationFile.contains("$") ? new File(actualApplicationFile) : applicationFile;
+		String actualManagementFile = SystemPropertyUtils.resolvePlaceholders("${MANAGEMENTPORTFILE}", true);
+		actualManagementFile = !actualManagementFile.contains("$") ? actualManagementFile : SystemPropertyUtils
+				.resolvePlaceholders("${managementportfile}", true);
+		this.managementFile = !actualManagementFile.contains("$") ? new File(actualManagementFile) : managementFile;
 	}
 
 	@Override

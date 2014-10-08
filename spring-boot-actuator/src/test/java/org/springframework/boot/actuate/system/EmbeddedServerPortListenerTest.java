@@ -21,7 +21,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import java.io.File;
 import java.io.FileReader;
 
 import javax.servlet.ServletContext;
@@ -80,12 +79,14 @@ public class EmbeddedServerPortListenerTest {
 		doReturn(servletContext).when(context).getServletContext();
 		ApplicationStartedEvent event = mock(ApplicationStartedEvent.class);
 		doReturn(context).when(event).getSource();
-		File applicationFile = this.temporaryFolder.newFile();
-		File managementFile = this.temporaryFolder.newFile();
-		EmbeddedServerPortListener listener = new EmbeddedServerPortListener(applicationFile, managementFile);
+		System.setProperty("APPLICATIONPORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
+		System.setProperty("MANAGEMENTPORTFILE", this.temporaryFolder.newFile().getAbsolutePath());
+		EmbeddedServerPortListener listener = new EmbeddedServerPortListener();
 		listener.onApplicationEvent(event);
-		assertThat(FileCopyUtils.copyToString(new FileReader(applicationFile)), not(isEmptyString()));
-		assertThat(FileCopyUtils.copyToString(new FileReader(managementFile)), not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(System.getProperty("APPLICATIONPORTFILE"))),
+				not(isEmptyString()));
+		assertThat(FileCopyUtils.copyToString(new FileReader(System.getProperty("MANAGEMENTPORTFILE"))),
+				not(isEmptyString()));
 	}
 
 }

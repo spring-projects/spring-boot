@@ -888,8 +888,10 @@ and path through constructor.
 In Spring Boot Actuator you can find `EmbeddedServerPortListener` which creates file
 containing embedded server port (by default in application directory and file name is
 `application.port`) and management port (by default in application directory and file 
-name is `management.port`). It's not activated by default, but you can do it in two simple
-ways described below.
+name is `management.port`). and the file name can be overridden at runtime with a System 
+property or environment variable named "APPLICATIONPORTFILE" and "MANAGEMENTPORTFILE" 
+(or "applicationportfile" and "managementportfile"). It's not activated by default, 
+but you can do it in two simple ways described below.
 
 
 
