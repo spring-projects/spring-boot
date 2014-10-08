@@ -275,6 +275,7 @@ public class HealthIndicatorAutoConfiguration {
 		public DiskSpaceHealthIndicatorProperties diskSpaceHealthIndicatorProperties() {
 			return new DiskSpaceHealthIndicatorProperties();
 		}
+
 	}
 
 }

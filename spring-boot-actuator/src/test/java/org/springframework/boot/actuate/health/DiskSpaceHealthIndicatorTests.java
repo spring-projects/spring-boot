@@ -27,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 /**
  * Tests for {@link DiskSpaceHealthIndicator}.
@@ -43,22 +43,21 @@ public class DiskSpaceHealthIndicatorTests {
 	public ExpectedException exception = ExpectedException.none();
 
 	@Mock
-	File fileMock;
+	private File fileMock;
 
-	HealthIndicator healthIndicator;
+	private HealthIndicator healthIndicator;
 
 	@Before
 	public void setUp() throws Exception {
-		when(this.fileMock.exists()).thenReturn(true);
-		when(this.fileMock.canRead()).thenReturn(true);
+		given(this.fileMock.exists()).willReturn(true);
+		given(this.fileMock.canRead()).willReturn(true);
 		this.healthIndicator = new DiskSpaceHealthIndicator(createProperties(
 				this.fileMock, THRESHOLD_BYTES));
 	}
 
 	@Test
 	public void diskSpaceIsUp() throws Exception {
-		when(this.fileMock.getFreeSpace()).thenReturn(THRESHOLD_BYTES + 10);
-
+		given(this.fileMock.getFreeSpace()).willReturn(THRESHOLD_BYTES + 10);
 		Health health = this.healthIndicator.health();
 		assertEquals(Status.UP, health.getStatus());
 		assertEquals(THRESHOLD_BYTES, health.getDetails().get("threshold"));
@@ -67,8 +66,7 @@ public class DiskSpaceHealthIndicatorTests {
 
 	@Test
 	public void diskSpaceIsDown() throws Exception {
-		when(this.fileMock.getFreeSpace()).thenReturn(THRESHOLD_BYTES - 10);
-
+		given(this.fileMock.getFreeSpace()).willReturn(THRESHOLD_BYTES - 10);
 		Health health = this.healthIndicator.health();
 		assertEquals(Status.DOWN, health.getStatus());
 		assertEquals(THRESHOLD_BYTES, health.getDetails().get("threshold"));
@@ -81,4 +79,5 @@ public class DiskSpaceHealthIndicatorTests {
 		properties.setThreshold(threshold);
 		return properties;
 	}
+
 }

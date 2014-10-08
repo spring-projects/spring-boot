@@ -37,19 +37,12 @@ public class DiskSpaceHealthIndicatorProperties {
 	}
 
 	public void setPath(File path) {
-		if (!path.exists()) {
-			throw new IllegalArgumentException(String.format("Path '%s' does not exist",
-					path));
-		}
-		if (!path.canRead()) {
-			throw new IllegalStateException(String.format("Path '%s' cannot be read",
-					path));
-		}
+		Assert.isTrue(path.exists(), "Path '" + path + "' does not exist");
+		Assert.isTrue(path.canRead(), "Path '" + path + "' cannot be read");
 		this.path = path;
 	}
 
 	public long getThreshold() {
-
 		return this.threshold;
 	}
 
@@ -57,4 +50,5 @@ public class DiskSpaceHealthIndicatorProperties {
 		Assert.isTrue(threshold >= 0, "threshold must be greater than 0");
 		this.threshold = threshold;
 	}
+
 }
