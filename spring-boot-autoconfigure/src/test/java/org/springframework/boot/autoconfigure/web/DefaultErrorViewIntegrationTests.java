@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -40,10 +44,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Dave Syer
@@ -71,6 +71,22 @@ public class DefaultErrorViewIntegrationTests {
 				.andExpect(status().isOk()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertTrue("Wrong content: " + content, content.contains("<html>"));
+		assertTrue("Wrong content: " + content, content.contains("999"));
+	}
+
+	@Test
+	public void testErrorWithEscape() throws Exception {
+		MvcResult response = this.mockMvc
+				.perform(
+						get("/error").requestAttr(
+								"javax.servlet.error.exception",
+								new RuntimeException(
+										"<script>alert('Hello World')</script>")).accept(
+								MediaType.TEXT_HTML)).andExpect(status().isOk())
+				.andReturn();
+		String content = response.getResponse().getContentAsString();
+		assertTrue("Wrong content: " + content, content.contains("&lt;script&gt;"));
+		assertTrue("Wrong content: " + content, content.contains("Hello World"));
 		assertTrue("Wrong content: " + content, content.contains("999"));
 	}
 

@@ -52,9 +52,11 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to render errors via a MVC error
@@ -173,7 +175,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 					Expression expression = SpelView.this.parser.parseExpression(name);
 					try {
 						Object value = expression.getValue(SpelView.this.context);
-						return (value == null ? null : value.toString());
+						return (value == null ? null : HtmlUtils.htmlEscape(value.toString()));
 					}
 					catch (Exception ex) {
 						return null;
