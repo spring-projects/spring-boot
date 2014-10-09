@@ -33,12 +33,12 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link ApplicationPidListener}.
+ * Tests for {@link ApplicationPidFileWriter}.
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
  */
-public class ApplicationPidListenerTests {
+public class ApplicationPidFileWriterTests {
 
 	private static final ApplicationStartedEvent EVENT = new ApplicationStartedEvent(
 			new SpringApplication(), new String[] {});
@@ -50,13 +50,13 @@ public class ApplicationPidListenerTests {
 	@After
 	public void resetListener() {
 		System.clearProperty("PIDFILE");
-		ApplicationPidListener.reset();
+		ApplicationPidFileWriter.reset();
 	}
 
 	@Test
 	public void createPidFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		ApplicationPidListener listener = new ApplicationPidListener(file);
+		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
 		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
 	}
@@ -65,7 +65,7 @@ public class ApplicationPidListenerTests {
 	public void overridePidFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
 		System.setProperty("PIDFILE", this.temporaryFolder.newFile().getAbsolutePath());
-		ApplicationPidListener listener = new ApplicationPidListener(file);
+		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
 		assertThat(
 				FileCopyUtils.copyToString(new FileReader(System.getProperty("PIDFILE"))),
