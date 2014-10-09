@@ -224,7 +224,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		for (Entry<String, Object> entry : levels.entrySet()) {
 			String name = entry.getKey();
 			try {
-				LogLevel level = LogLevel.valueOf(entry.getValue().toString());
+				LogLevel level = LogLevel.valueOf(environment.resolvePlaceholders(entry.getValue().toString()));
 				if (name.equalsIgnoreCase("root")) {
 					name = null;
 				}
