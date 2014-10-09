@@ -30,6 +30,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.data.rest.webmvc.BaseUri;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -66,7 +67,11 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
-		assertEquals("Custom baseURI not set", URI.create("foo"), bean.getBaseUri());
+		URI expectedUri = URI.create("foo");
+		assertEquals("Custom baseURI not set", expectedUri, bean.getBaseUri());
+		BaseUri baseUri = this.context.getBean(BaseUri.class);
+		assertEquals("Custom baseUri has not been applied to BaseUri bean", expectedUri,
+				baseUri.getUri());
 	}
 
 	@Test

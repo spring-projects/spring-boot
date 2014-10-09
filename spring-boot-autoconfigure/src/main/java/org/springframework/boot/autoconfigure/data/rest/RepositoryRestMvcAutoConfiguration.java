@@ -46,6 +46,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 @ConditionalOnClass(RepositoryRestMvcConfiguration.class)
 public class RepositoryRestMvcAutoConfiguration {
 
+	@Configuration
 	static class RepositoryRestMvcBootConfiguration extends
 			RepositoryRestMvcConfiguration {
 
