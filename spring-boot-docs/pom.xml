@@ -200,7 +200,7 @@
 					<plugin>
 						<groupId>org.asciidoctor</groupId>
 						<artifactId>asciidoctor-maven-plugin</artifactId>
-						<version>0.1.4</version>
+						<version>1.5.0</version>
 						<executions>
 							<execution>
 								<id>generate-docbook</id>

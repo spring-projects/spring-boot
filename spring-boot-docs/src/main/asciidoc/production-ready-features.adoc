@@ -15,7 +15,7 @@ Auditing, health and metrics gathering can be automatically applied to your appl
 == Enabling production-ready features.
 The {github-code}/spring-boot-actuator[`spring-boot-actuator`] module provides all of
 Spring Boot's production-ready features. The simplest way to enable the features is to add
-a dependency to the `spring-boot-starter-actuator` ``Starter POM''.
+a dependency to the `spring-boot-starter-actuator` '`Starter POM`'.
 
 .Definition of Actuator
 ****
@@ -24,7 +24,7 @@ controlling something. Actuators can generate a large amount of motion from a sm
 change.
 ****
 
-To add the actuator to a Maven based project, add the following ``starter''
+To add the actuator to a Maven based project, add the following '`starter`'
 dependency:
 
 [source,xml,indent=0]
@@ -66,7 +66,7 @@ The following endpoints are available:
 
 |`autoconfig`
 |Displays an auto-configuration report showing all auto-configuration candidates and the
- reason why they ``were'' or ``were not'' applied.
+ reason why they '`were`' or '`were not`' applied.
 |true
 
 |`beans`
@@ -86,7 +86,7 @@ The following endpoints are available:
 |true
 
 |`health`
-|Shows application health information (defaulting to a simple ``OK'' message).
+|Shows application health information (defaulting to a simple '`OK`' message).
 |false
 
 |`info`
@@ -94,7 +94,7 @@ The following endpoints are available:
 |false
 
 |`metrics`
-|Shows ``metrics'' information for the current application.
+|Shows '`metrics`' information for the current application.
 |true
 
 |`mappings`
@@ -138,7 +138,7 @@ that is being configured.
 
 [[production-ready-health]]
 === Custom health information
-The default information exposed by the `health` endpoint is a simple ``OK'' message. It
+The default information exposed by the `health` endpoint is a simple '`OK`' message. It
 is often useful to perform some additional health checks, for example you might check
 that a database connection works, or that a remote REST endpoint is functioning.
 
@@ -220,7 +220,7 @@ filtering. In your `pom.xml` you have (inside the `<build/>` element):
     </resources>
 ----
 
-You can then refer to your Maven ``project properties'' via placeholders, e.g.
+You can then refer to your Maven '`project properties`' via placeholders, e.g.
 
 [source,properties,indent=0]
 ----
@@ -299,12 +299,12 @@ all non-sensitive endpoints to be exposed over HTTP. The default convention is t
 
 [[production-ready-sensitive-endpoints]]
 === Exposing sensitive endpoints
-If you use ``Spring Security'' sensitive endpoints will be exposed over HTTP, but also
-protected. By default ``basic'' authentication will be used with the username `user`
+If you use '`Spring Security`' sensitive endpoints will be exposed over HTTP, but also
+protected. By default '`basic`' authentication will be used with the username `user`
 and a generated password (which is printed on the console when the application starts).
 
-TIP: Generated passwords are logged as the application starts. Search for ``Using default
-security password''.
+TIP: Generated passwords are logged as the application starts. Search for '`Using default
+security password`'.
 
 You can use Spring properties to change the username and password and to change the
 security role required to access the endpoints. For example, you might set the following
@@ -480,7 +480,7 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 
 [[production-ready-remote-shell]]
 == Monitoring and management using a remote shell
-Spring Boot supports an integrated Java shell called ``CRaSH''. You can use CRaSH to
+Spring Boot supports an integrated Java shell called '`CRaSH`'. You can use CRaSH to
 `ssh` or `telnet` into your running application. To enable remote shell support add a
 dependency to `spring-boot-starter-remote-shell`:
 
@@ -536,7 +536,7 @@ and `endpoint` commands.
 ==== Remote shell credentials
 You can use the `shell.auth.simple.user.name` and `shell.auth.simple.user.password` properties
 to configure custom connection credentials. It is also possible to use a
-``Spring Security'' `AuthenticationManager` to handle login duties. See the
+'`Spring Security`' `AuthenticationManager` to handle login duties. See the
 {dc-spring-boot-actuator}/autoconfigure/CrshAutoConfiguration.{dc-ext}[`CrshAutoConfiguration`]
 and {dc-spring-boot-actuator}/autoconfigure/ShellProperties.{dc-ext}[`ShellProperties`]
 Javadoc for full details.
@@ -559,7 +559,7 @@ for details). By default Spring Boot will search for commands in the following l
 
 TIP: You can change the search path by settings a `shell.commandPathPatterns` property.
 
-Here is a simple ``hello world'' command that could be loaded from
+Here is a simple '`hello world`' command that could be loaded from
 `src/main/resources/commands/hello.groovy`
 
 [source,groovy,indent=0]
@@ -615,8 +615,8 @@ documentation].
 
 [[production-ready-metrics]]
 == Metrics
-Spring Boot Actuator includes a metrics service with ``gauge'' and ``counter'' support.
-A ``gauge'' records a single value; and a ``counter'' records a delta (an increment or
+Spring Boot Actuator includes a metrics service with '`gauge`' and '`counter`' support.
+A '`gauge`' records a single value; and a '`counter`' records a delta (an increment or
 decrement). Spring Boot Actuator also provides a
 {sc-spring-boot-actuator}/endpoint/PublicMetrics.{sc-ext}[`PublicMetrics`] interface that
 you can implement to expose metrics that you cannot record via one of those two
@@ -657,7 +657,7 @@ endpoint you should see a response similar to this:
 ----
 
 Here we can see basic `memory`, `heap`, `class loading`, `processor` and `thread pool`
-information along with some HTTP metrics. In this instance the `root` (``/'') and `/metrics`
+information along with some HTTP metrics. In this instance the `root` ('`/`') and `/metrics`
 URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears
 that the `root` URL returned `HTTP 401` (unauthorized) `4` times. The double asterix (`star-star`)
 comes from a request matched by Spring MVC as `/**` (normally a static resource).
@@ -768,22 +768,22 @@ an `Exporter` interface and a few basic implementations for you to get started w
 
 [[production-ready-code-hale-metrics]]
 === Coda Hale Metrics
-User of the http://metrics.codahale.com/[Coda Hale ``Metrics'' library] will automatically
+User of the http://metrics.codahale.com/[Coda Hale '`Metrics`' library] will automatically
 find that Spring Boot metrics are published to `com.codahale.metrics.MetricRegistry`. A
 default `com.codahale.metrics.MetricRegistry` Spring bean will be created when you declare
 a dependency to the `com.codahale.metrics:metrics-core` library; you can also register you
 own `@Bean` instance if you need customizations.
 
 Users can create Coda Hale metrics by prefixing their metric names with the appropriate
-type (e.g. `histogram.*`, `meter.*`).
+type (e.g. `histogram.\*`, `meter.\*`).
 
 
 
 [[production-ready-metrics-message-channel-integration]]
 === Message channel integration
-If the ``Spring Messaging'' jar is on your classpath a `MessageChannel` called
+If the '`Spring Messaging`' jar is on your classpath a `MessageChannel` called
 `metricsChannel` is automatically created (unless one already exists). All metric update
-events are additionally published as ``messages'' on that channel. Additional analysis or
+events are additionally published as '`messages`' on that channel. Additional analysis or
 actions can be taken by clients subscribing to that channel.
 
 
@@ -791,7 +791,7 @@ actions can be taken by clients subscribing to that channel.
 [[production-ready-auditing]]
 == Auditing
 Spring Boot Actuator has a flexible audit framework that will publish events once Spring
-Security is in play (``authentication success'', ``failure'' and ``access denied''
+Security is in play ('`authentication success`', '`failure`' and '`access denied`'
 exceptions by default). This can be very useful for reporting, and also to implement a
 lock-out policy based on authentication failures.
 
@@ -898,6 +898,6 @@ look at the actuator {github-code}/spring-boot-samples[sample applications]. You
 might want to read about graphing tools such as http://graphite.wikidot.com/[Graphite].
 
 Otherwise, you can continue on, to read about <<cloud-deployment.adoc#cloud-deployment,
-``cloud deployment options''>> or jump ahead
+'`cloud deployment options`'>> or jump ahead
 for some in depth information about Spring Boot's
 '<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>'.
