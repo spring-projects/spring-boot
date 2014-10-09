@@ -1,5 +1,5 @@
 [[howto]]
-= '`How-to`'     guides
+= '`How-to`' guides
 
 [partintro]
 --
@@ -12,7 +12,7 @@ http://stackoverflow.com/tags/spring-boot[stackoverflow.com] to see if someone h
 already provided an answer; this is also a great place to ask new questions (please use
 the `spring-boot` tag).
 
-We're also more than happy to extend this section; If you want to add a '`how-to`'     you
+We're also more than happy to extend this section; If you want to add a '`how-to`' you
 can send us a {github-code}[pull request].
 --
 
@@ -25,7 +25,7 @@ can send us a {github-code}[pull request].
 
 [[howto-troubleshoot-auto-configuration]]
 === Troubleshoot auto-configuration
-The Spring Boot auto-configuration tries its best to '`do the right thing`'    , but
+The Spring Boot auto-configuration tries its best to '`do the right thing`', but
 sometimes things fail and it can be hard to tell why.
 
 There is a really useful `AutoConfigurationReport` available in any Spring Boot
@@ -80,7 +80,7 @@ The `SpringApplication` sends some special `ApplicationEvents` to the listeners 
 some before the context is created), and then registers the listeners for events published
 by the `ApplicationContext` as well. See
 '<<spring-boot-features.adoc#boot-features-application-events-and-listeners>>' in the
-'`Spring Boot features`'     section for a complete list.
+'`Spring Boot features`' section for a complete list.
 
 
 
@@ -88,7 +88,7 @@ by the `ApplicationContext` as well. See
 === Build an ApplicationContext hierarchy (adding a parent or root context)
 You can use the `ApplicationBuilder` class to create parent/child `ApplicationContext`
 hierarchies. See '<<spring-boot-features.adoc#boot-features-fluent-builder-api>>'
-in the '`Spring Boot features`'     section for more information.
+in the '`Spring Boot features`' section for more information.
 
 
 
@@ -136,7 +136,7 @@ underscores (`_`) as well as dashes (`-`) in property names.
 === Change the location of external properties of an application
 By default properties from different sources are added to the Spring `Environment` in a
 defined order (see '<<spring-boot-features.adoc#boot-features-external-config>>' in
-the '`Spring Boot features`'     section for the exact order).
+the '`Spring Boot features`' section for the exact order).
 
 A nice way to augment and modify this is to add `@PropertySource` annotations to your
 application sources. Classes passed to the `SpringApplication` static convenience
@@ -156,7 +156,7 @@ You can also provide System properties (or environment variables) to change the 
   command line.
 
 No matter what you set in the environment, Spring Boot will always load
-`application.properties` as described above. If YAML is used then files with the '`.yml`'    
+`application.properties` as described above. If YAML is used then files with the '`.yml`'
 extension are also added to the list by default.
 
 See {sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[`ConfigFileApplicationListener`]
@@ -165,7 +165,7 @@ for more detail.
 
 
 [[howto-use-short-command-line-arguments]]
-=== Use '`short`'     command line arguments
+=== Use '`short`' command line arguments
 Some people like to use (for example) `--port=9000` instead of `--server.port=9000` to
 set configuration properties on the command line. You can easily enable this by using
 placeholders in `application.properties`, e.g.
@@ -223,7 +223,7 @@ The example YAML above corresponds to an `application.properties` file
 ----
 
 See '<<spring-boot-features.adoc#boot-features-external-config-yaml>>' in
-the '`Spring Boot features`'     section for more information
+the '`Spring Boot features`' section for more information
 about YAML.
 
 [[howto-set-active-spring-profiles]]
@@ -250,7 +250,7 @@ but not by the `SpringApplicationBuilder.profiles()` method. Thus the latter Jav
 be used to augment the profiles without changing the defaults.
 
 See '<<spring-boot-features.adoc#boot-features-profiles>>' in
-the '`Spring Boot features`'     section for more information.
+the '`Spring Boot features`' section for more information.
 
 
 
@@ -285,8 +285,8 @@ Example:
 		port: 0
 ----
 
-In this example the default port is 9000, but if the Spring profile '`development`'     is
-active then the port is 9001, and if '`production`'     is active then it is 0.
+In this example the default port is 9000, but if the Spring profile '`development`' is
+active then the port is 9001, and if '`production`' is active then it is 0.
 
 The YAML documents are merged in the order they are encountered (so later values override
 earlier ones).
@@ -366,7 +366,7 @@ that and be sure that it has initialized is to add a `@Bean` of type
 out of the event when it is published.
 
 A really useful thing to do in is to use `@IntegrationTest` to set `server.port=0`
-and then inject the actual ('`local`'    ) port as a `@Value`. For example:
+and then inject the actual ('`local`') port as a `@Value`. For example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -772,45 +772,45 @@ added.
 
 `WebMvcAutoConfiguration` adds the following `ViewResolvers` to your context:
 
-* An `InternalResourceViewResolver` with bean id '`defaultViewResolver`'    . This one locates
+* An `InternalResourceViewResolver` with bean id '`defaultViewResolver`'. This one locates
   physical resources that can be rendered using the `DefaultServlet` (e.g. static
   resources and JSP pages if you are using those). It applies a prefix and a suffix to the
   view name and then looks for a physical resource with that path in the servlet context
   (defaults are both empty, but accessible for external configuration via
   `spring.view.prefix` and `spring.view.suffix`). It can be overridden by providing a
   bean of the same type.
-* A `BeanNameViewResolver` with id '`beanNameViewResolver`'    . This is a useful member of the
+* A `BeanNameViewResolver` with id '`beanNameViewResolver`'. This is a useful member of the
   view resolver chain and will pick up any beans with the same name as the `View` being
   resolved. It shouldn't be necessary to override or replace it.
-* A `ContentNegotiatingViewResolver` with id '`viewResolver`'     is only added if there *are*
-  actually beans of type `View` present. This is a '`master`'     resolver, delegating to all
-  the others and attempting to find a match to the '`Accept`'     HTTP header sent by the
+* A `ContentNegotiatingViewResolver` with id '`viewResolver`' is only added if there *are*
+  actually beans of type `View` present. This is a '`master`' resolver, delegating to all
+  the others and attempting to find a match to the '`Accept`' HTTP header sent by the
   client. There is a useful
   https://spring.io/blog/2013/06/03/content-negotiation-using-views[blog about `ContentNegotiatingViewResolver`]
   that you might like to study to learn more, and also look at the source code for detail.
   You can switch off the auto-configured
-  `ContentNegotiatingViewResolver` by defining a bean named '`viewResolver`'    .
+  `ContentNegotiatingViewResolver` by defining a bean named '`viewResolver`'.
 * If you use Thymeleaf you will also have a `ThymeleafViewResolver` with id
-  '`thymeleafViewResolver`'    . It looks for resources by surrounding the view name with a
+  '`thymeleafViewResolver`'. It looks for resources by surrounding the view name with a
   prefix and suffix (externalized to `spring.thymeleaf.prefix` and
-  `spring.thymeleaf.suffix`, defaults '`classpath:/templates/`'     and '`.html`'    
+  `spring.thymeleaf.suffix`, defaults '`classpath:/templates/`' and '`.html`'
   respectively). It can be overridden by providing a bean of the same name.
 * If you use FreeMarker you will also have a `FreeMarkerViewResolver` with id
-  '`freeMarkerViewResolver`'    . It looks for resources in a loader path (externalized to
-  `spring.freemarker.templateLoaderPath`, default '`classpath:/templates/`'    ) by
+  '`freeMarkerViewResolver`'. It looks for resources in a loader path (externalized to
+  `spring.freemarker.templateLoaderPath`, default '`classpath:/templates/`') by
   surrounding the view name with a prefix and suffix (externalized to `spring.freemarker.prefix`
-  and `spring.freemarker.suffix`, with empty and '`.ftl`'     defaults respectively). It can
+  and `spring.freemarker.suffix`, with empty and '`.ftl`' defaults respectively). It can
   be overridden by providing a bean of the same name.
 * If you use Groovy templates (actually if groovy-templates is on your classpath) you will
-  also have a `Groovy TemplateViewResolver` with id '`groovyTemplateViewResolver`'    . It
+  also have a `Groovy TemplateViewResolver` with id '`groovyTemplateViewResolver`'. It
   looks for resources in a loader path by surrounding the view name with a prefix and
   suffix (externalized to `spring.groovy.template.prefix` and
-  `spring.groovy.template.suffix`, defaults '`classpath:/templates/`'     and '`.tpl`'    
+  `spring.groovy.template.suffix`, defaults '`classpath:/templates/`' and '`.tpl`'
   respectively). It can be overriden by providing a bean of the same name.
-* If you use Velocity you will also have a `VelocityViewResolver` with id '`velocityViewResolver`'    .
+* If you use Velocity you will also have a `VelocityViewResolver` with id '`velocityViewResolver`'.
   It looks for resources in a loader path (externalized to `spring.velocity.resourceLoaderPath`,
-  default '`classpath:/templates/`'    ) by surrounding the view name with a prefix and suffix
-  (externalized to `spring.velocity.prefix` and `spring.velocity.suffix`, with empty  and '`.vm`'    
+  default '`classpath:/templates/`') by surrounding the view name with a prefix and suffix
+  (externalized to `spring.velocity.prefix` and `spring.velocity.suffix`, with empty  and '`.vm`'
   defaults respectively). It can be overridden by providing a bean of the same name.
 
 Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
@@ -965,7 +965,7 @@ your own, and bind it to a set of `Environment` properties e.g.
 ----
 
 See '<<spring-boot-features.adoc#boot-features-configure-datasource>>' in the
-'`Spring Boot features`'     section and the
+'`Spring Boot features`' section and the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
 
@@ -1063,7 +1063,7 @@ for more details.
 [[howto-use-custom-entity-manager]]
 === Use a custom EntityManagerFactory
 To take full control of the configuration of the `EntityManagerFactory`, you need to add
-a `@Bean` named '`entityManagerFactory`'    . Spring Boot auto-configuration switches off its
+a `@Bean` named '`entityManagerFactory`'. Spring Boot auto-configuration switches off its
 entity manager based on the presence of a bean of that type.
 
 
@@ -1118,7 +1118,7 @@ might be able to use a JTA transaction manager spanning both.
 Spring doesn't require the use of XML to configure the JPA provider, and Spring Boot
 assumes you want to take advantage of that feature. If you prefer to use `persistence.xml`
 then you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean` (with
-id '`entityManagerFactory`'    , and set the persistence unit name there.
+id '`entityManagerFactory`', and set the persistence unit name there.
 
 See
 https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]
@@ -1134,7 +1134,7 @@ automatically. If they are both present on the classpath, you might have to do s
 configuration to tell Spring Boot which one (or both) you want to create repositories for
 you. The most explicit way to do that is to use the standard Spring Data
 `@Enable*Repositories` and tell it the location of your `Repository` interfaces
-(where '`*`'     is '`Jpa`'     or '`Mongo`'     or both).
+(where '`*`' is '`Jpa`' or '`Mongo`' or both).
 
 There are also flags `spring.data.*.repositories.enabled` that you can use to switch the
 auto-configured repositories on and off in external configuration.  This is useful for
@@ -1173,7 +1173,7 @@ values are `none`, `validate`, `update`, `create-drop`. Spring Boot chooses a de
 value for you based on whether it thinks your database is embedded (default `create-drop`)
 or not (default `none`). An embedded database is detected by looking at the `Connection`
 type: `hsqldb`, `h2` and `derby` are embedded, the rest are not. Be careful when switching
-from in-memory to a '`real`'     database that you don't make assumptions about the existence of
+from in-memory to a '`real`' database that you don't make assumptions about the existence of
 the tables and data in the new platform. You either have to set `ddl-auto` explicitly, or
 use one of the other mechanisms to initialize the database.
 
@@ -1199,7 +1199,7 @@ to start. The script locations can be changed by setting `spring.datasource.sche
 
 To disable the failfast you can set `spring.datasource.continueOnError=true`. This can be
 useful once an application has matured and been deployed a few times, since the scripts
-can act as '`poor man's migrations`'     -- inserts that fail mean that the data is already
+can act as '`poor man's migrations`' -- inserts that fail mean that the data is already
 there, so there would be no need to prevent the application from running, for instance.
 
 If you want to use the `schema.sql` initialization in a JPA app (with
@@ -1236,7 +1236,7 @@ To automatically run Flyway database migrations on startup, add the
 `org.flywaydb:flyway-core` to your classpath.
 
 The migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with `<VERSION>` an
-underscore-separated version, e.g. '`1`'     or '`2_1`'    ). By default they live in a folder
+underscore-separated version, e.g. '`1`' or '`2_1`'). By default they live in a folder
 `classpath:db/migration` but you can modify that using `flyway.locations` (a list). See
 the Flyway class from flyway-core for details of available settings like schemas etc. In
 addition Spring Boot provides a small set of properties in
@@ -1315,13 +1315,13 @@ For more detail look at the
 {sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[`ManagementServerProperties`]
 source code and
 '<<production-ready-features.adoc#production-ready-customizing-management-server-port>>'
-in the '`Production-ready features`'     section.
+in the '`Production-ready features`' section.
 
 
 
 [[howto-customize-the-whitelabel-error-page]]
-=== Customize the '`whitelabel`'     error page
-Spring Boot installs a '`whitelabel`'     error page that you will see in browser client if
+=== Customize the '`whitelabel`' error page
+Spring Boot installs a '`whitelabel`' error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
 see a sensible response with the right error code). To switch it off you can set
 `error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
@@ -1530,7 +1530,7 @@ To configure IntelliJ correctly you can use the `idea` Gradle plugin:
 NOTE: Intellij must be configured to use the same Java version as the command line Gradle
 task and `springloaded` *must* be included as a `buildscript` dependency.
 
-You can also additionally enable '`Make Project Automatically`'     inside  Intellij to
+You can also additionally enable '`Make Project Automatically`' inside  Intellij to
 automatically compile your code whenever a file is saved.
 
 
@@ -1568,7 +1568,7 @@ third-party dependencies. Overriding versions may cause compatibility issues.
 
 [[howto-create-an-executable-jar-with-maven]]
 === Create an executable JAR with Maven
-The `spring-boot-maven-plugin` can be used to create an executable '`fat`'     JAR. If you
+The `spring-boot-maven-plugin` can be used to create an executable '`fat`' JAR. If you
 are using the `spring-boot-starter-parent` POM you can simply declare the plugin and
 your jars will be repackaged:
 
@@ -1617,7 +1617,7 @@ If you want to use your project as a library jar for other projects to depend on
 addition have an executable (e.g. demo) version of it, you will want to configure the
 build in a slightly different way.
 
-For Maven the normal JAR plugin and the Spring Boot plugin both have a '`classifier`'    
+For Maven the normal JAR plugin and the Spring Boot plugin both have a '`classifier`'
 configuration that you can add to create an additional JAR. Example (using the Spring
 Boot Starter Parent to manage the plugin versions and other configuration defaults):
 
@@ -1637,7 +1637,7 @@ Boot Starter Parent to manage the plugin versions and other configuration defaul
 ----
 
 Two jars are produced, the default one, and an executable one using the Boot plugin with
-classifier '`exec`'    .
+classifier '`exec`'.
 
 For Gradle users the steps are similar. Example:
 
@@ -1658,7 +1658,7 @@ jar support which assumes that the `jruby-complete.jar` is always directly avail
 file in its own right.
 
 To deal with any problematic libraries, you can flag that specific nested jars should be
-automatically unpacked to the '`temp folder`'     when the executable jar first runs.
+automatically unpacked to the '`temp folder`' when the executable jar first runs.
 
 For example, to indicate that JRuby should be flagged for unpack using the Maven Plugin
 you would add the following configuration:
@@ -1815,7 +1815,7 @@ archive as normal. To make it executable:
 . Use the appropriate launcher as a `Main-Class`, e.g. `JarLauncher` for a jar file, and
   specify the other properties it needs as manifest entries, principally a `Start-Class`.
 
-. Add the runtime dependencies in a nested '`lib`'     directory (for a jar) and the
+. Add the runtime dependencies in a nested '`lib`' directory (for a jar) and the
   `provided` (embedded container) dependencies in a nested `lib-provided` directory.
   Remember *not* to compress the entries in the archive.
 
@@ -1868,13 +1868,13 @@ after which you can run the application with
 Use the `SpringBootServletInitializer` base class, which is picked up by Spring's
 Servlet 3.0 support on deployment. Add an extension of that to your project and build a
 war file as normal. For more detail, see the
-http://spring.io/guides/gs/convert-jar-to-war['`Converting a jar Project to a war`'    ] guide
+http://spring.io/guides/gs/convert-jar-to-war['`Converting a jar Project to a war`'] guide
 on the spring.io website and the sample below.
 
 The war file can also be executable if you use the Spring Boot build tools. In that case
 the embedded container classes (to launch Tomcat for instance) have to be added to the
 war in a `lib-provided` directory. The tools will take care of that as long as the
-dependencies are marked as '`provided`'     in Maven or Gradle. Here's a Maven example
+dependencies are marked as '`provided`' in Maven or Gradle. Here's a Maven example
 {github-code}/spring-boot-samples/spring-boot-sample-traditional/pom.xml[in the Boot Samples].
 
 
