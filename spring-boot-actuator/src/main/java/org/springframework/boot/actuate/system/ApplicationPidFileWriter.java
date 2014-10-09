@@ -74,30 +74,13 @@ public class ApplicationPidFileWriter implements
 	 */
 	public ApplicationPidFileWriter(File file) {
 		Assert.notNull(file, "File must not be null");
-		String override = getOverride();
+		String override = SystemProperties.get(PROPERTY_VARIABLES);
 		if (override != null) {
 			this.file = new File(override);
 		}
 		else {
 			this.file = file;
 		}
-	}
-
-	private String getOverride() {
-		for (String property : PROPERTY_VARIABLES) {
-			try {
-				String override = System.getProperty(property);
-				override = (override != null ? override : System.getenv(property));
-				if (override != null) {
-					return override;
-				}
-			}
-			catch (Throwable ex) {
-				System.err.println("Could not resolve '" + property
-						+ "' as system property: " + ex);
-			}
-		}
-		return null;
 	}
 
 	@Override
