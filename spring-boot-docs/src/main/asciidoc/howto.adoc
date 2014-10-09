@@ -37,8 +37,8 @@ which not) by Spring Boot at runtime.
 Many more questions can be answered by looking at the source code and the javadoc. Some
 rules of thumb:
 
-* Look for classes called `\*AutoConfiguration` and read their sources, in particular the
-  `@Conditional\*` annotations to find out what features they enable and when. Add
+* Look for classes called `+*AutoConfiguration+` and read their sources, in particular the
+  `+@Conditional*+` annotations to find out what features they enable and when. Add
   `--debug` to the command line or a System property `-Ddebug` to get a log on the
   console of all the autoconfiguration decisions that were made in your app. In a running
   Actuator app look at the `autoconfig` endpoint (`/autoconfig' or the JMX equivalent) for
@@ -117,7 +117,7 @@ Application code that you want to run as your business logic can be implemented 
 === Externalize the configuration of SpringApplication
 A `SpringApplication` has bean properties (mainly setters) so you can use its Java API as
 you create the application to modify its behavior. Or you can externalize the
-configuration using properties in `spring.main.*`. E.g. in `application.properties` you
+configuration using properties in `+spring.main.*+`. E.g. in `application.properties` you
 might have.
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
@@ -177,8 +177,8 @@ placeholders in `application.properties`, e.g.
 
 TIP: If you are inheriting from the `spring-boot-starter-parent` POM, or if have enabled
 maven filtering for the `application.properties` directly, you may want to change the
-default filter token from `${\*}` since it conflicts with those placeholders.
-You can either use `@*@` (i.e. `@maven.token@` instead of `${maven.token}`) or you can
+default filter token from `+${*}+` since it conflicts with those placeholders.
+You can either use `+@*@+` (i.e. `@maven.token@` instead of `${maven.token}`) or you can
 configure the `maven-resources-plugin` to use
 http://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters[other delimiters].
 
@@ -391,7 +391,7 @@ and then inject the actual ('`local`') port as a `@Value`. For example:
 
 [[howto-configure-ssl]]
 === Configure SSL
-SSL can be configured declaratively by setting the various `server.ssl.*` properties,
+SSL can be configured declaratively by setting the various `+server.ssl.*+` properties,
 typically in `application.properties` or `application.yml`. For example:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
@@ -415,7 +415,7 @@ accessible on the filesystem, i.e. it cannot be read from within a jar file.
 Generally you can follow the advice from
 '<<howto-discover-build-in-options-for-external-properties>>' about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
-`EmbeddedServletContainerCustomizer` and various Tomcat specific `*Customizers` that you
+`EmbeddedServletContainerCustomizer` and various Tomcat specific `+*Customizers+` that you
 can add in one of those. The Tomcat APIs are quite rich so once you have access to the
 `TomcatEmbeddedServletContainerFactory` you can modify it in a number of ways. Or the
 nuclear option is to add your own `TomcatEmbeddedServletContainerFactory`.
@@ -1050,7 +1050,7 @@ configuration properties. The most common options to set are:
 (Because of relaxed data binding hyphens or underscores should work equally well as
 property keys.) The `ddl-auto` setting is a special case in that it has different
 defaults depending on whether you are using an embedded database (`create-drop`) or not
-(`none`). In addition all properties in `spring.jpa.properties.*` are passed through as
+(`none`). In addition all properties in `+spring.jpa.properties.*+` are passed through as
 normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
 created.
 
@@ -1133,10 +1133,10 @@ Spring Data JPA and Spring Data Mongo can both create `Repository` implementatio
 automatically. If they are both present on the classpath, you might have to do some extra
 configuration to tell Spring Boot which one (or both) you want to create repositories for
 you. The most explicit way to do that is to use the standard Spring Data
-`@Enable*Repositories` and tell it the location of your `Repository` interfaces
+`+@Enable*Repositories+` and tell it the location of your `Repository` interfaces
 (where '`*`' is '`Jpa`' or '`Mongo`' or both).
 
-There are also flags `spring.data.*.repositories.enabled` that you can use to switch the
+There are also flags `+spring.data.*.repositories.enabled+` that you can use to switch the
 auto-configured repositories on and off in external configuration.  This is useful for
 instance in case you want to switch off the Mongo repositories and still use the
 auto-configured `MongoTemplate`.
@@ -1346,7 +1346,7 @@ how to register handlers in the servlet container.
 === Switch off the Spring Boot security configuration
 If you define a `@Configuration` with `@EnableWebSecurity` anywhere in your application
 it will switch off the default webapp security settings in Spring Boot. To tweak the
-defaults try setting properties in `security.*` (see
+defaults try setting properties in `+security.*+` (see
 {sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
 for details of available settings) and `SECURITY` section of
 <<common-application-properties-security,Common application properties>>.

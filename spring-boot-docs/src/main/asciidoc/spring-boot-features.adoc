@@ -206,7 +206,7 @@ sensible overriding of values, properties are considered in the the following or
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
 . JNDI attributes from `java:comp/env`
-. A `RandomValuePropertySource` that only has properties in `random.*`.
+. A `RandomValuePropertySource` that only has properties in `+random.*+`.
 . Application properties outside of your packaged jar (`application.properties`
   including YAML and profile variants).
 . Application properties packaged inside your jar (`application.properties`
@@ -250,7 +250,7 @@ or test cases). It can produce integers, longs or strings, e.g.
 	my.number.in.range=${random.int[1024,65536]}
 ----
 
-The `random.int*` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any
+The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any
 character and `value,max` are integers. If `max` is provided then `value` is the minimum
 value and `max` is the maximum (exclusive).
 
@@ -737,7 +737,7 @@ As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by 
 === Log Levels
 
 All the supported logging systems can have the logger levels set in the Spring
-`Environment` (so for example in `application.properties`) using '`logging.level.*=LEVEL`'
+`Environment` (so for example in `application.properties`) using '`+logging.level.*=LEVEL+`'
 where '`LEVEL`' is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF. Example
 `application.properties`:
 
@@ -929,7 +929,7 @@ the default MVC configuration) because Spring will always be able to handle requ
 through the `DispatcherServlet`.
 
 In addition to the '`standard`' static resource locations above, a special case is made for
-http://www.webjars.org/[Webjars content]. Any resources with a path in `/webjars/**` will
+http://www.webjars.org/[Webjars content]. Any resources with a path in `+/webjars/**+` will
 be served from jar files if they are packaged in the Webjars format.
 
 TIP: Do not use the `src/main/webapp` folder if your application will be packaged as a
@@ -1045,7 +1045,7 @@ your `application.properties` during configuration.
 
 By default, if the context contains only a single Servlet it will be mapped to `/`. In
 the case of multiple Servlets beans the bean name will be used as a path prefix. Filters
-will map to `/*`.
+will map to `+/*+`.
 
 If convention-based mapping is not flexible enough you can use the
 `ServletRegistrationBean` and `FilterRegistrationBean` classes for complete control. You
@@ -1186,8 +1186,8 @@ The basic features you get out of the box in a web application are:
 
 * An `AuthenticationManager` bean with in-memory store and a single user (see
   `SecurityProperties.User` for the properties of the user).
-* Ignored (unsecure) paths for common static resource locations (`/css/\*\*`, `/js/\*\*`,
-  `/images/\*\*` and `\*\*/favicon.ico`).
+* Ignored (unsecure) paths for common static resource locations (`+/css/**+`, `+/js/**+`,
+  `+/images/**+` and `+**/favicon.ico+`).
 * HTTP Basic security for all other endpoints.
 * Security events published to Spring's `ApplicationEventPublisher` (successful and
   unsuccessful authentication and access denied).
@@ -1195,7 +1195,7 @@ The basic features you get out of the box in a web application are:
   on by default.
 
 All of the above can be switched on and off or modified using external properties
-(`security.*`). To override the access rules without changing any other autoconfigured
+(`+security.*+`). To override the access rules without changing any other autoconfigured
 features add a `@Bean` of type `WebConfigurerAdapter` with
 `@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)`.
 
@@ -1206,7 +1206,7 @@ If the Actuator is also in use, you will find:
 * The default user will have the `ADMIN` role as well as the `USER` role.
 
 The Actuator security features can be modified using external properties
-(`management.security.*`). To override the application access rules
+(`+management.security.*+`). To override the application access rules
 add a `@Bean` of type `WebConfigurerAdapter` and use
 `@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)` if you _don't_ want to override
 the actuator access rules, or `@Order(ManagementServerProperties.ACCESS_OVERRIDE_ORDER)`
@@ -1285,7 +1285,7 @@ NOTE: Additional connection pools can always be configured manually. If you defi
 own `DataSource` bean, auto-configuration will not occur.
 
 DataSource configuration is controlled by external configuration properties in
-`spring.datasource.*`. For example, you might declare the following section
+`+spring.datasource.*+`. For example, you might declare the following section
 in `application.properties`:
 
 [source,properties,indent=0]
@@ -1452,7 +1452,7 @@ their http://projects.spring.io/spring-data-jpa/[reference documentation].
 ==== Creating and dropping JPA databases
 By default JPA database will be automatically created *only* if you use an embedded
 database (H2, HSQL or Derby). You can explicitly configure JPA settings using
-`spring.jpa.*` properties. For example, to create and drop tables you can add the
+`+spring.jpa.*+` properties. For example, to create and drop tables you can add the
 following to your `application.properties`.
 
 [indent=0]
@@ -1462,7 +1462,7 @@ following to your `application.properties`.
 
 NOTE: Hibernate's own internal property name for this (if you happen to remember it
 better) is `hibernate.hbm2ddl.auto`. You can set it, along with other Hibernate native
-properties, using `spring.jpa.properties.*` (the prefix is stripped before adding them
+properties, using `+spring.jpa.properties.*+` (the prefix is stripped before adding them
 to the entity manager). Example:
 
 [indent=0]
@@ -1815,7 +1815,7 @@ to integrate with JMS. Adding `org.hornetq:hornetq-jms-server` to your applicati
 you to use the embedded mode.
 
 HornetQ configuration is controlled by external configuration properties in
-`spring.hornetq.*`. For example, you might declare the following section in
+`+spring.hornetq.*+`. For example, you might declare the following section in
 `application.properties`:
 
 [source,properties,indent=0]
@@ -1848,7 +1848,7 @@ available on the classpath. If the broker is present, an embedded broker is star
 configured automatically (as long as no broker URL is specified through configuration).
 
 ActiveMQ configuration is controlled by external configuration properties in
-`spring.activemq.*`. For example, you might declare the following section in
+`+spring.activemq.*+`. For example, you might declare the following section in
 `application.properties`:
 
 [source,properties,indent=0]
