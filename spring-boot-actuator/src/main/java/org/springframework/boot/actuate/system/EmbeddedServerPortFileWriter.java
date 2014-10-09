@@ -35,6 +35,8 @@ import org.springframework.util.StringUtils;
  *
  * @author David Liu
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ *
  * @since 1.2.0
  */
 public class EmbeddedServerPortFileWriter implements
@@ -122,7 +124,8 @@ public class EmbeddedServerPortFileWriter implements
 
 	private boolean isUpperCase(String name) {
 		for (int i = 0; i < name.length(); i++) {
-			if (!Character.isUpperCase(name.charAt(i))) {
+			if (Character.isLetter(name.charAt(i))
+					&& !Character.isUpperCase(name.charAt(i))) {
 				return false;
 			}
 		}

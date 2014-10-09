@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.system;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,6 +33,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -40,6 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author David Liu
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class EmbeddedServerPortFileWriterTests {
 
@@ -84,6 +88,7 @@ public class EmbeddedServerPortFileWriterTests {
 				+ StringUtils.getFilenameExtension(file.getName());
 		assertThat(FileCopyUtils.copyToString(new FileReader(new File(file
 				.getParentFile(), managementFile))), equalTo("9090"));
+		assertThat(collectFileNames(file.getParentFile()), hasItem(managementFile));
 	}
 
 	@Test
@@ -99,7 +104,7 @@ public class EmbeddedServerPortFileWriterTests {
 				+ StringUtils.getFilenameExtension(file.getName());
 		assertThat(FileCopyUtils.copyToString(new FileReader(new File(file
 				.getParentFile(), managementFile))), equalTo("9090"));
-
+		assertThat(collectFileNames(file.getParentFile()), hasItem(managementFile));
 	}
 
 	private EmbeddedServletContainerInitializedEvent mockEvent(String name, int port) {
@@ -110,6 +115,16 @@ public class EmbeddedServerPortFileWriterTests {
 		EmbeddedServletContainerInitializedEvent event = new EmbeddedServletContainerInitializedEvent(
 				applicationContext, source);
 		return event;
+	}
+
+	private Set<String> collectFileNames(File directory) {
+		Set<String> names = new HashSet<String>();
+		if (directory.isDirectory()) {
+			for (File file : directory.listFiles()) {
+				names.add(file.getName());
+			}
+		}
+		return names;
 	}
 
 }
