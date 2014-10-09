@@ -52,7 +52,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
@@ -107,7 +106,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 						+ "<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>"
 						+ "<div id='created'>${timestamp}</div>"
 						+ "<div>There was an unexpected error (type=${error}, status=${status}).</div>"
-						+ "<div>${message}</div>" + "</body></html>");
+						+ "<div>${message}</div></body></html>");
 
 		@Bean(name = "error")
 		@ConditionalOnMissingBean(name = "error")
@@ -157,8 +156,6 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 		private final String template;
 
-		private final SpelExpressionParser parser = new SpelExpressionParser();
-
 		private final StandardEvaluationContext context = new StandardEvaluationContext();
 
 		private PropertyPlaceholderHelper helper;
@@ -169,19 +166,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 			this.template = template;
 			this.context.addPropertyAccessor(new MapAccessor());
 			this.helper = new PropertyPlaceholderHelper("${", "}");
-			this.resolver = new PlaceholderResolver() {
-				@Override
-				public String resolvePlaceholder(String name) {
-					Expression expression = SpelView.this.parser.parseExpression(name);
-					try {
-						Object value = expression.getValue(SpelView.this.context);
-						return (value == null ? null : HtmlUtils.htmlEscape(value.toString()));
-					}
-					catch (Exception ex) {
-						return null;
-					}
-				}
-			};
+			this.resolver = new SpelPlaceholderResolver(this.context);
 		}
 
 		@Override
@@ -200,6 +185,33 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 			this.context.setRootObject(map);
 			String result = this.helper.replacePlaceholders(this.template, this.resolver);
 			response.getWriter().append(result);
+		}
+
+	}
+
+	/**
+	 * SpEL based {@link PlaceholderResolver}.
+	 */
+	private static class SpelPlaceholderResolver implements PlaceholderResolver {
+
+		private final SpelExpressionParser parser = new SpelExpressionParser();
+
+		private final StandardEvaluationContext context;
+
+		public SpelPlaceholderResolver(StandardEvaluationContext context) {
+			this.context = context;
+		}
+
+		@Override
+		public String resolvePlaceholder(String name) {
+			Expression expression = this.parser.parseExpression(name);
+			try {
+				Object value = expression.getValue(this.context);
+				return HtmlUtils.htmlEscape(value == null ? null : value.toString());
+			}
+			catch (Exception ex) {
+				return null;
+			}
 		}
 
 	}
