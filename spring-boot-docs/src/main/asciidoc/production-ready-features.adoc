@@ -184,7 +184,7 @@ implementations. To configure the severity or order add the following to your ap
 
 [[production-ready-application-info]]
 === Custom application info information
-You can customize the data exposed by the `info` endpoint by setting `info.*` Spring
+You can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring
 properties. All `Environment` properties under the info key will be automatically
 exposed. For example, you could add the following to your `application.properties`:
 
@@ -234,7 +234,7 @@ You can then refer to your Maven '`project properties`' via placeholders, e.g.
 	info.build.version=${project.version}
 ----
 
-NOTE: In the above example we used `project.*` to set some values to be used as
+NOTE: In the above example we used `+project.*+` to set some values to be used as
 fallbacks if the Maven resource filtering has not been switched on for some reason.
 
 
@@ -554,8 +554,8 @@ The remote shell can be extended in a number of interesting ways.
 You can write additional shell commands using Groovy or Java (see the CRaSH documentation
 for details). By default Spring Boot will search for commands in the following locations:
 
-* `classpath*:/commands/**`
-* `classpath*:/crash/commands/**`
+* `+classpath*:/commands/**+`
+* `+classpath*:/crash/commands/**+`
 
 TIP: You can change the search path by settings a `shell.commandPathPatterns` property.
 
@@ -660,7 +660,7 @@ Here we can see basic `memory`, `heap`, `class loading`, `processor` and `thread
 information along with some HTTP metrics. In this instance the `root` ('`/`') and `/metrics`
 URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears
 that the `root` URL returned `HTTP 401` (unauthorized) `4` times. The double asterix (`star-star`)
-comes from a request matched by Spring MVC as `/**` (normally a static resource).
+comes from a request matched by Spring MVC as `+/**+` (normally a static resource).
 
 The `gauge` shows the last response time for a request. So the last request to `root` took
 `2ms` to respond and the last to `/metrics` took `3ms`.
@@ -775,7 +775,7 @@ a dependency to the `com.codahale.metrics:metrics-core` library; you can also re
 own `@Bean` instance if you need customizations.
 
 Users can create Coda Hale metrics by prefixing their metric names with the appropriate
-type (e.g. `histogram.\*`, `meter.\*`).
+type (e.g. `+histogram.*+`, `+meter.*+`).
 
 
 

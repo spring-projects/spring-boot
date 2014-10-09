@@ -57,7 +57,7 @@ using the latest version of Java.
 [[getting-started-installation-instructions-for-java]]
 === Installation instructions for the Java developer
 You can use Spring Boot in the same way as any standard Java library. Simply include the
-appropriate `spring-boot-*.jar` files on your classpath. Spring Boot does not require
+appropriate `+spring-boot-*.jar+` files on your classpath. Spring Boot does not require
 any special tools integration, so you can use any IDE or text editor; and there is
 nothing special about a Spring Boot application, so you can run and debug as you would
 any other Java program.

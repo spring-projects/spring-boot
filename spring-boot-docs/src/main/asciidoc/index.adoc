@@ -6,6 +6,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :source-highlighter: prettify
 :numbered:
 :icons: font
+:hide-uri-scheme:
 :spring-boot-repo: snapshot
 :github-tag: master
 :spring-boot-docs-version: current

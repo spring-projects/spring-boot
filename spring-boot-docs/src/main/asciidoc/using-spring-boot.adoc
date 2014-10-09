@@ -199,7 +199,7 @@ running quickly and with a consistent, supported set of managed transitive depen
 
 .What's in a name
 ****
-All starters follow a similar naming pattern; `spring-boot-starter-\*`, where `*` is
+All starters follow a similar naming pattern; `+spring-boot-starter-*+`, where `+*+` is
 a particular type of application. This naming structure is intended to help when you need
 to find a starter. The Maven integration in many IDEs allow you to search dependencies by
 name. For example, with the appropriate Eclipse or STS plugin installed, you can simply
@@ -430,7 +430,7 @@ is also a good candidate as the primary `@Configuration`.
 
 TIP: Many Spring configuration examples have been published on the Internet that use XML
 configuration. Always try to use the equivalent Java-base configuration if possible.
-Searching for `enable*` annotations can be a good starting point.
+Searching for `+enable*+` annotations can be a good starting point.
 
 
 

@@ -140,7 +140,7 @@ file and it's used to setup an appropriate `URLClassLoader` and ultimately call 
 There are 3 launcher subclasses (`JarLauncher`, `WarLauncher` and `PropertiesLauncher`).
 Their purpose is to load resources (`.class` files etc.) from nested jar files or war
 files in directories (as opposed to explicitly on the classpath). In the case of the
-`[Jar|War]Launcher` the nested paths are fixed `(lib/\*.jar` and `lib-provided/\*.jar` for
+`[Jar|War]Launcher` the nested paths are fixed (`+lib/*.jar+` and `+lib-provided/*.jar+` for
 the war case) so you just add extra jars in those locations if you want more. The
 `PropertiesLauncher` looks in `lib/` by default, but you can add additional locations by
 setting an environment variable `LOADER_PATH` or `loader.path` in `application.properties`
