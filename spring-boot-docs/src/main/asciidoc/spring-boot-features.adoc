@@ -1074,7 +1074,7 @@ All the registered endpoints should be `@Components` with HTTP resource annotati
 
 Since the `Endpoint` is a Spring `@Component` its lifecycle is managed by Spring and you
 can `@Autowired` dependencies and inject external configuration with `@Value`. The Jersey
-servlet will be registered and mapped to '`/\*`' by default. You can change the mapping
+servlet will be registered and mapped to '`+/*+`' by default. You can change the mapping
 by adding `@ApplicationPath` to your `ResourceConfig`.
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-jersey[Jersey sample] so
