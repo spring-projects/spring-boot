@@ -24,9 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.annotation.JmsBootstrapConfiguration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerConfigUtils;
 import org.springframework.jms.support.destination.DestinationResolver;
@@ -42,7 +40,6 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Configuration
 @ConditionalOnClass(EnableJms.class)
-@Import(JmsBootstrapConfiguration.class)
 class JmsAnnotationDrivenConfiguration {
 
 	@Autowired(required = false)
