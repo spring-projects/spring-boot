@@ -106,6 +106,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 		private Set<String> patterns = new LinkedHashSet<String>();
 
 		protected SkipPattern() {
+			// Same as Tomcat
 			add("ant-*.jar");
 			add("aspectj*.jar");
 			add("commons-beanutils*.jar");
@@ -141,6 +142,54 @@ class SkipPatternJarScanner extends StandardJarScanner {
 			add("wsdl4j*.jar");
 			add("xercesImpl-*.jar");
 			add("xmlParserAPIs-*.jar");
+			add("xml-apis-*.jar");
+
+			// Additional
+			add("antlr-*.jar");
+			add("aopalliance-*.jar");
+			add("aspectjrt-*.jar");
+			add("aspectjweaver-*.jar");
+			add("classmate-*.jar");
+			add("dom4j-*.jar");
+			add("ecj-*.jar");
+			add("ehcache-core-*.jar");
+			add("hibernate-core-*.jar");
+			add("hibernate-commons-annotations-*.jar");
+			add("hibernate-entitymanager-*.jar");
+			add("hibernate-jpa-2.1-api-*.jar");
+			add("hibernate-validator-*.jar");
+			add("hsqldb-*.jar");
+			add("jackson-annotations-*.jar");
+			add("jackson-core-*.jar");
+			add("jackson-databind-*.jar");
+			add("jandex-*.jar");
+			add("javassist-*.jar");
+			add("jboss-logging-*.jar");
+			add("jboss-transaction-api_*.jar");
+			add("jcl-over-slf4j-*.jar");
+			add("jdom-*.jar");
+			add("joda-time-*.jar");
+			add("jul-to-slf4j-*.jar");
+			add("log4j-over-slf4j-*.jar");
+			add("logback-classic-*.jar");
+			add("logback-core-*.jar");
+			add("rome-*.jar");
+			add("slf4j-api-*.jar");
+			add("spring-aop-*.jar");
+			add("spring-aspects-*.jar");
+			add("spring-beans-*.jar");
+			add("spring-boot-*.jar");
+			add("spring-core-*.jar");
+			add("spring-context-*.jar");
+			add("spring-data-*.jar");
+			add("spring-expression-*.jar");
+			add("spring-jdbc-*.jar,");
+			add("spring-orm-*.jar");
+			add("spring-oxm-*.jar");
+			add("spring-tx-*.jar");
+			add("snakeyaml-*.jar");
+			add("tomcat-embed-el-*.jar");
+			add("validation-api-*.jar");
 			add("xml-apis-*.jar");
 		}
 
