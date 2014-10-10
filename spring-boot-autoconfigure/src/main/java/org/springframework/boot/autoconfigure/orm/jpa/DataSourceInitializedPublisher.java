@@ -18,8 +18,16 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +41,20 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * {@link BeanPostProcessor} used to fire {@link DataSourceInitializedEvent}s. Should only
- * be registered via the inner {@link Registrar} class.
+ * {@link BeanPostProcessor} used to fire {@link DataSourceInitializedEvent}s.
+ * Should only be registered via the inner {@link Registrar} class.
  *
  * @author Dave Syer
+ * @author David Liu
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 class DataSourceInitializedPublisher implements BeanPostProcessor {
+
+	private static Log logger = LogFactory.getLog(JpaBaseConfiguration.class);
+
+	@PersistenceContext
+	private EntityManager em;
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -48,6 +63,10 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 	private JpaProperties properties;
 
+	private boolean print = false;
+
+	private static final String DEFAULT_DIALECT = "org.hibernate.dialect.H2Dialect";
+
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
@@ -55,8 +74,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof DataSource) {
 			// Normally this will be the right DataSource
 			this.dataSource = (DataSource) bean;
@@ -64,10 +82,24 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (bean instanceof JpaProperties) {
 			this.properties = (JpaProperties) bean;
 		}
-		if (bean instanceof EntityManagerFactory && this.dataSource != null
-				&& isInitializingDatabase()) {
-			this.applicationContext.publishEvent(new DataSourceInitializedEvent(
-					this.dataSource));
+		if (bean instanceof EntityManagerFactory && this.dataSource != null && isInitializingDatabase()) {
+			this.applicationContext.publishEvent(new DataSourceInitializedEvent(this.dataSource));
+		}
+		if (this.print == false && logger.isDebugEnabled() && em != null) {
+			AnnotationConfiguration cfg = new AnnotationConfiguration();
+			if (this.properties != null && StringUtils.isNotEmpty(this.properties.getDatabasePlatform())) {
+				cfg.setProperty("hibernate.dialect", this.properties.getDatabasePlatform());
+			}
+			else {
+				cfg.setProperty("hibernate.dialect", DEFAULT_DIALECT);
+			}
+			for (javax.persistence.metamodel.EntityType<?> et : em.getMetamodel().getEntities()) {
+				Class<?> entityClass = et.getJavaType();
+				cfg.addAnnotatedClass(entityClass);
+			}
+			SchemaExport schemaExport = new SchemaExport(cfg);
+			schemaExport.execute(true, false, false, true);
+			this.print = true;
 		}
 		return bean;
 	}
