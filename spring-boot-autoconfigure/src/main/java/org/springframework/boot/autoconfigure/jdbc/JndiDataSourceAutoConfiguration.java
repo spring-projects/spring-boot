@@ -44,7 +44,7 @@ import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class JndiDataSourceAutoConfiguration {
 
-	@Bean
+	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
 	public DataSource dataSource(DataSourceProperties properties) {
 		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
