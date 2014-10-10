@@ -25,8 +25,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -54,7 +54,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ AgentServlet.class })
-@ConditionalOnExpression("${endpoints.jolokia.enabled:true}")
+@ConditionalOnProperty(prefix = "endpoints.jolokia", name = "enabled", matchIfMissing = true)
 @AutoConfigureBefore(ManagementSecurityAutoConfiguration.class)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 @EnableConfigurationProperties(JolokiaProperties.class)

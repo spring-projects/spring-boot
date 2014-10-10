@@ -25,9 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
 import org.springframework.boot.autoconfigure.web.ErrorController;
@@ -192,8 +192,8 @@ public class SpringBootWebSecurityConfiguration {
 
 	}
 
-	@ConditionalOnExpression("!${security.basic.enabled:true}")
 	@Configuration
+	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "false")
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationNoWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
@@ -208,8 +208,8 @@ public class SpringBootWebSecurityConfiguration {
 		}
 	}
 
-	@ConditionalOnExpression("${security.basic.enabled:true}")
 	@Configuration
+	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {

@@ -30,10 +30,12 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.AuthenticationManagerConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
@@ -44,8 +46,11 @@ import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -165,16 +170,35 @@ public class ManagementSecurityAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnExpression("${management.security.enabled:true} && !${security.basic.enabled:true}")
 	@ConditionalOnMissingBean(WebSecurityConfiguration.class)
 	@ConditionalOnWebApplication
+	@Conditional(WebSecurityEnablerCondition.class)
 	@EnableWebSecurity
 	protected static class WebSecurityEnabler extends AuthenticationManagerConfiguration {
 	}
 
+	/**
+	 * WebSecurityEnabler condition
+	 */
+	static class WebSecurityEnablerCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			String managementEnabled = context.getEnvironment().getProperty(
+					"management.security.enabled", "true");
+			String basicEnabled = context.getEnvironment().getProperty(
+					"security.basic.enabled", "true");
+			return new ConditionOutcome("true".equalsIgnoreCase(managementEnabled)
+					&& !"true".equalsIgnoreCase(basicEnabled),
+					"Management security enabled and basic disabled");
+		}
+
+	}
+
 	@Configuration
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
-	@ConditionalOnExpression("${management.security.enabled:true}")
+	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
 	@ConditionalOnWebApplication
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
 	protected static class ManagementWebSecurityConfigurerAdapter extends

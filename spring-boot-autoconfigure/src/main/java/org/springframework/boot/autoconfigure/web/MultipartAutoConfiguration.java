@@ -22,8 +22,8 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +46,7 @@ import org.springframework.web.multipart.support.StandardServletMultipartResolve
 @Configuration
 @ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class,
 		MultipartConfigElement.class })
-@ConditionalOnExpression("${multipart.enabled:true}")
+@ConditionalOnProperty(prefix = "multipart", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MultipartProperties.class)
 public class MultipartAutoConfiguration {
 

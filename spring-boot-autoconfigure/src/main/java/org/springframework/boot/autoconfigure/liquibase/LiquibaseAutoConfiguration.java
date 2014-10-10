@@ -27,8 +27,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
@@ -54,7 +54,7 @@ import org.springframework.util.Assert;
 @Configuration
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnBean(DataSource.class)
-@ConditionalOnExpression("${liquibase.enabled:true}")
+@ConditionalOnProperty(prefix = "liquibase", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class LiquibaseAutoConfiguration {
 

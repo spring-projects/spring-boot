@@ -44,8 +44,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
@@ -96,7 +96,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(DataSource.class)
-	@ConditionalOnExpression("${health.db.enabled:true}")
+	@ConditionalOnProperty(prefix = "health.db", name = "enabled", matchIfMissing = true)
 	public static class DataSourcesHealthIndicatorConfiguration {
 
 		@Autowired
@@ -143,7 +143,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(MongoTemplate.class)
-	@ConditionalOnExpression("${health.mongo.enabled:true}")
+	@ConditionalOnProperty(prefix = "health.mongo", name = "enabled", matchIfMissing = true)
 	public static class MongoHealthIndicatorConfiguration {
 
 		@Autowired
@@ -172,7 +172,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RedisConnectionFactory.class)
-	@ConditionalOnExpression("${health.redis.enabled:true}")
+	@ConditionalOnProperty(prefix = "health.redis", name = "enabled", matchIfMissing = true)
 	public static class RedisHealthIndicatorConfiguration {
 
 		@Autowired
@@ -202,7 +202,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RabbitTemplate.class)
-	@ConditionalOnExpression("${health.rabbit.enabled:true}")
+	@ConditionalOnProperty(prefix = "health.rabbit", name = "enabled", matchIfMissing = true)
 	public static class RabbitHealthIndicatorConfiguration {
 
 		@Autowired
@@ -232,7 +232,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(SolrServer.class)
-	@ConditionalOnExpression("${health.solr.enabled:true}")
+	@ConditionalOnProperty(prefix = "health.solr", name = "enabled", matchIfMissing = true)
 	public static class SolrHealthIndicatorConfiguration {
 
 		@Autowired
@@ -260,7 +260,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnExpression("${health.diskspace.enabled:true}")
+	@ConditionalOnProperty(prefix = "health.diskspace", name = "enabled", matchIfMissing = true)
 	public static class DiskSpaceHealthIndicatorConfiguration {
 
 		@Bean

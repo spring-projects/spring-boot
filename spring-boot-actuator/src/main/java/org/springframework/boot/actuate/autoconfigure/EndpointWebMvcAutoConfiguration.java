@@ -47,8 +47,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -146,14 +146,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Bean
 	@ConditionalOnBean(EnvironmentEndpoint.class)
-	@ConditionalOnExpression("${endpoints.env.enabled:true}")
+	@ConditionalOnProperty(prefix = "endpoints.env", name = "enabled", matchIfMissing = true)
 	public EnvironmentMvcEndpoint environmentMvcEndpoint(EnvironmentEndpoint delegate) {
 		return new EnvironmentMvcEndpoint(delegate);
 	}
 
 	@Bean
 	@ConditionalOnBean(HealthEndpoint.class)
-	@ConditionalOnExpression("${endpoints.health.enabled:true}")
+	@ConditionalOnProperty(prefix = "endpoints.health", name = "enabled", matchIfMissing = true)
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
@@ -165,14 +165,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Bean
 	@ConditionalOnBean(MetricsEndpoint.class)
-	@ConditionalOnExpression("${endpoints.metrics.enabled:true}")
+	@ConditionalOnProperty(prefix = "endpoints.metrics", name = "enabled", matchIfMissing = true)
 	public MetricsMvcEndpoint metricsMvcEndpoint(MetricsEndpoint delegate) {
 		return new MetricsMvcEndpoint(delegate);
 	}
 
 	@Bean
 	@ConditionalOnBean(ShutdownEndpoint.class)
-	@ConditionalOnExpression("${endpoints.shutdown.enabled:false}")
+	@ConditionalOnProperty(prefix = "endpoints.shutdown", name = "enabled", matchIfMissing = true)
 	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
 		return new ShutdownMvcEndpoint(delegate);
 	}
