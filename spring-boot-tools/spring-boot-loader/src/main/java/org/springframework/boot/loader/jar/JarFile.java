@@ -424,6 +424,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		if (this.url == null) {
 			Handler handler = new Handler(this);
 			String file = this.rootFile.getFile().toURI() + this.pathFromRoot + "!/";
+			file = file.replace("file:////", "file://"); // Fix UNC paths
 			this.url = new URL("jar", "", -1, file, handler);
 		}
 		return this.url;
