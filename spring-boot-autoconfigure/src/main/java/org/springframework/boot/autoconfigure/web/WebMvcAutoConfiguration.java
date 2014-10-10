@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -282,7 +283,9 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Configuration
-		public static class FaviconConfiguration {
+		public static class FaviconConfiguration implements ResourceLoaderAware {
+
+			private ResourceLoader resourceLoader;
 
 			@Bean
 			public SimpleUrlHandlerMapping faviconHandlerMapping() {
@@ -293,13 +296,28 @@ public class WebMvcAutoConfiguration {
 				return mapping;
 			}
 
+			@Override
+			public void setResourceLoader(ResourceLoader resourceLoader) {
+				this.resourceLoader = resourceLoader;
+			}
+
 			@Bean
 			public ResourceHttpRequestHandler faviconRequestHandler() {
 				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
-				requestHandler.setLocations(Arrays
-						.<Resource> asList(new ClassPathResource("/")));
+				requestHandler.setLocations(getLocations());
 				return requestHandler;
 			}
+
+			private List<Resource> getLocations() {
+				List<Resource> locations = new ArrayList<Resource>(
+						CLASSPATH_RESOURCE_LOCATIONS.length + 1);
+				for (String location : CLASSPATH_RESOURCE_LOCATIONS) {
+					locations.add(this.resourceLoader.getResource(location));
+				}
+				locations.add(new ClassPathResource("/"));
+				return Collections.unmodifiableList(locations);
+			}
+
 		}
 
 	}
