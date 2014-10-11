@@ -700,8 +700,8 @@ default converter(s) provided by `Jackson2ObjectMapperBuilder`.
 The `ObjectMapper` (or `XmlMapper` for Jackson XML converter) instance created by default
 have the following customized properties:
 
-* MapperFeature.DEFAULT_VIEW_INCLUSION is disabled
-* DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES is disabled
+* `MapperFeature.DEFAULT_VIEW_INCLUSION` is disabled
+* `DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES` is disabled
 
 Spring Boot has also some features to make it easier to customize this behavior.
 

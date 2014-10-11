@@ -54,7 +54,6 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -271,7 +270,6 @@ public class HealthIndicatorAutoConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties("health.diskspace")
 		public DiskSpaceHealthIndicatorProperties diskSpaceHealthIndicatorProperties() {
 			return new DiskSpaceHealthIndicatorProperties();
 		}

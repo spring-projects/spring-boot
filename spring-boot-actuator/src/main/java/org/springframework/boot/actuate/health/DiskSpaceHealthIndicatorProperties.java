@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import java.io.File;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
@@ -26,11 +27,16 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.2.0
  */
+@ConfigurationProperties("health.diskspace")
 public class DiskSpaceHealthIndicatorProperties {
+
+	private static final int MEGABYTES = 1024 * 1024;
+
+	private static final int DEFAULT_THRESHOLD = 10 * MEGABYTES;
 
 	private File path = new File(".");
 
-	private long threshold = 10 * 1024 * 1024;
+	private long threshold = DEFAULT_THRESHOLD;
 
 	public File getPath() {
 		return this.path;
