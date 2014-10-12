@@ -133,7 +133,7 @@ With the requisite eclipse plugins installed you can select
 need to import the root `spring-boot` pom and the `spring-boot-samples` pom separately.
 
 === Importing into eclipse without m2eclipse
-If you prefer not to use m2eclipse you can generate eclipse project meta-data using the
+If you prefer not to use m2eclipse you can generate eclipse project metadata using the
 following command:
 
 [indent=0]
