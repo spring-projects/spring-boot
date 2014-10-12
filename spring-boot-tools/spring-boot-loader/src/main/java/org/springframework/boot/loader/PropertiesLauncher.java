@@ -86,7 +86,7 @@ public class PropertiesLauncher extends Launcher {
 	/**
 	 * Properties key for classpath entries (directories possibly containing jars).
 	 * Defaults to "lib/" (relative to {@link #HOME loader home directory}). Multiple
-	 * entries can be specified using a comma separeted list.
+	 * entries can be specified using a comma-separated list.
 	 */
 	public static final String PATH = "loader.path";
 

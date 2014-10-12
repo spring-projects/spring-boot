@@ -365,7 +365,7 @@ that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.
 
-A really useful thing to do in is to use `@IntegrationTest` to set `server.port=0`
+A useful practice for use with `@IntegrationTest`s  is to set `server.port=0`
 and then inject the actual ('`local`') port as a `@Value`. For example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
@@ -415,7 +415,7 @@ accessible on the filesystem, i.e. it cannot be read from within a jar file.
 Generally you can follow the advice from
 '<<howto-discover-build-in-options-for-external-properties>>' about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
-`EmbeddedServletContainerCustomizer` and various Tomcat specific `+*Customizers+` that you
+`EmbeddedServletContainerCustomizer` and various Tomcat-specific `+*Customizers+` that you
 can add in one of those. The Tomcat APIs are quite rich so once you have access to the
 `TomcatEmbeddedServletContainerFactory` you can modify it in a number of ways. Or the
 nuclear option is to add your own `TomcatEmbeddedServletContainerFactory`.
@@ -423,9 +423,9 @@ nuclear option is to add your own `TomcatEmbeddedServletContainerFactory`.
 
 
 [[howto-enable-multiple-connectors-in-tomcat]]
-=== Enable Multiple Connectors Tomcat
+=== Enable Multiple Connectors with Tomcat
 Add a `org.apache.catalina.connector.Connector` to the
-`TomcatEmbeddedServletContainerFactory` which can allow multiple connectors eg a HTTP and
+`TomcatEmbeddedServletContainerFactory` which can allow multiple connectors, e.g. an HTTP and
 HTTPS connector:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
@@ -855,7 +855,7 @@ then you can do that in `application.properties` using the "logging.level" prefi
 You can also set the location of a file to log to (in addition to the console) using
 "logging.file".
 
-To configure the more fine grained settings of a logging system you need to use the native
+To configure the more fine-grained settings of a logging system you need to use the native
 configuration format supported by the `LoggingSystem` in question. By default Spring Boot
 picks up the native configuration from its default location for the system (e.g.
 `classpath:logback.xml` for Logback), but you can set the location of the config file
@@ -917,10 +917,10 @@ requires some jiggling with excludes, e.g. in Maven:
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter</artifactId>
 		<exclusions>
-				<exclusion>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-logging</artifactId>
+			</exclusion>
 		</exclusions>
 	</dependency>
 	<dependency>
@@ -930,7 +930,7 @@ requires some jiggling with excludes, e.g. in Maven:
 ----
 
 NOTE: The use of the log4j starter gathers together the dependencies for common logging
-requirements (e.g. including having Tomcat use `java.util.logging` but configure the
+requirements (e.g. including having Tomcat use `java.util.logging` but configuring the
 output using Log4j). See the Actuator Log4j Sample for more detail and to see it in
 action.
 
@@ -1246,7 +1246,7 @@ that can be used to disable the migrations, or switch off the location checking.
 By default Flyway will autowire the (`@Primary`) `DataSource` in your context and
 use that for migrations. If you like to use a different `DataSource` you can create
 one and mark its `@Bean` as `@FlywayDataSource` - if you do that remember to create
-another one and mark it as `@Primary` if you want 2 data sources.
+another one and mark it as `@Primary` if you want two data sources.
 Or you can use Flyway's native `DataSource` by setting `flyway.[url,user,password]`
 in external properties.
 
@@ -1283,7 +1283,7 @@ Spring Batch auto configuration is enabled by adding `@EnableBatchProcessing`
 By default it executes *all* `Jobs` in the application context on startup (see
 {sc-spring-boot-autoconfigure}/batch/JobLauncherCommandLineRunner.{sc-ext}[JobLauncherCommandLineRunner]
 for details). You can narrow down to a specific job or jobs by specifying
-`spring.batch.job.names` (comma separated job name patterns).
+`spring.batch.job.names` (comma-separated job name patterns).
 
 If the application context includes a `JobRegistry` then the jobs in
 `spring.batch.job.names` are looked up in the registry instead of being autowired from the
@@ -1527,7 +1527,7 @@ To configure IntelliJ correctly you can use the `idea` Gradle plugin:
 
 ----
 
-NOTE: Intellij must be configured to use the same Java version as the command line Gradle
+NOTE: IntelliJ must be configured to use the same Java version as the command line Gradle
 task and `springloaded` *must* be included as a `buildscript` dependency.
 
 You can also additionally enable '`Make Project Automatically`' inside  Intellij to
@@ -1556,7 +1556,7 @@ you would add the following:
 	</properties>
 ----
 
-NOTE: this only works if your Maven project inherits (directly or indirectly) from
+NOTE: This only works if your Maven project inherits (directly or indirectly) from
 `spring-boot-dependencies`. If you have added `spring-boot-dependencies` in your
 own `dependencyManagement` section with `<scope>import</scope>` you have to redefine
 the artifact yourself instead of overriding the property	.

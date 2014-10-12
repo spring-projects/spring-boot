@@ -605,7 +605,7 @@ from your command:
 [[production-ready-remote-shell-plugins]]
 ==== Remote shell plugins
 In addition to new commands, it is also possible to extend other CRaSH shell features.
-All Spring Beans that extends `org.crsh.plugin.CRaSHPlugin` will be automatically
+All Spring Beans that extend `org.crsh.plugin.CRaSHPlugin` will be automatically
 registered with the shell.
 
 For more information please refer to the http://www.crashub.org/[CRaSH reference
@@ -832,8 +832,8 @@ In `META-INF/spring.factories` file you have to activate the listener:
 [[production-ready-process-monitoring-programmatically]]
 === Programmatically
 You can also activate this listener by invoking `SpringApplication.addListeners(...)`
-method and passing `ApplicationPidListener` object. You can also customize file name
-and path through constructor.
+method and passing `ApplicationPidListener` object. You can also customize the file
+name and path through its constructor.
 
 
 
@@ -845,5 +845,5 @@ might want to read about graphing tools such as http://graphite.wikidot.com/[Gra
 
 Otherwise, you can continue on, to read about <<cloud-deployment.adoc#cloud-deployment,
 '`cloud deployment options`'>> or jump ahead
-for some in depth information about Spring Boot's
+for some in-depth information about Spring Boot's
 '<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>'.
