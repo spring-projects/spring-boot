@@ -20,9 +20,9 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.JpaWebConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +36,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link JpaWebConfiguration}.
+ * Tests for {@link SpringDataWebAutoConfiguration} and
+ * {@link JpaRepositoriesAutoConfiguration}.
  *
  * @author Dave Syer
  */
@@ -57,6 +58,7 @@ public class JpaWebAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class,
+				SpringDataWebAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));
