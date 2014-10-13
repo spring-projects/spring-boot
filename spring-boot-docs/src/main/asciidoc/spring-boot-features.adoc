@@ -1081,7 +1081,7 @@ There is a {github-code}/spring-boot-samples/spring-boot-sample-jersey[Jersey sa
 you can see how to set things up. There is also a {github-code}/spring-boot-samples/spring-boot-sample-jersey1[Jersey 1.x sample].
 Note that in the Jersey 1.x sample that the spring-boot maven plugin has been configured to
 unpack some Jersey jars so they can be scanned by the JAX-RS implementation (the sample
-asks for them to be scanned in its `Filter` registration.
+asks for them to be scanned in its `Filter` registration).
 
 
 
@@ -1100,7 +1100,7 @@ Spring beans. This can be particularly convenient if you want to refer to a valu
 your `application.properties` during configuration.
 
 By default, if the context contains only a single Servlet it will be mapped to `/`. In
-the case of multiple Servlets beans the bean name will be used as a path prefix. Filters
+the case of multiple Servlet beans the bean name will be used as a path prefix. Filters
 will map to `+/*+`.
 
 If convention-based mapping is not flexible enough you can use the
@@ -1328,7 +1328,7 @@ auto-configured. In this example it's pulled in transitively via
 [[boot-features-connect-to-production-database]]
 ==== Connection to a production database
 Production database connections can also be auto-configured using a pooling
-`DataSource`.  Here's the algorithm for choosing a specific implementation.
+`DataSource`.  Here's the algorithm for choosing a specific implementation:
 
 * We prefer the Tomcat pooling `DataSource` for its performance and concurrency, so if
   that is available we always choose it.
@@ -1370,7 +1370,7 @@ loadable.
 [[boot-features-connecting-to-a-jndi-datasource]]
 ==== Connection to a JNDI DataSource
 If you are deploying your Spring Boot application to an Application Server you might want
-to configure and manage your DataSource using you Application Servers built in features
+to configure and manage your DataSource using your Application Servers built-in features
 and access it using JNDI.
 
 The `spring.datasource.jndi-name` property can be used as an alternative to the
@@ -1532,7 +1532,7 @@ their http://projects.spring.io/spring-data-jpa/[reference documentation].
 
 [[boot-features-creating-and-dropping-jpa-databases]]
 ==== Creating and dropping JPA databases
-By default JPA database will be automatically created *only* if you use an embedded
+By default, JPA databases will be automatically created *only* if you use an embedded
 database (H2, HSQL or Derby). You can explicitly configure JPA settings using
 `+spring.jpa.*+` properties. For example, to create and drop tables you can add the
 following to your `application.properties`.
@@ -1557,7 +1557,7 @@ passes `hibernate.globally_quoted_identifiers` to the Hibernate entity manager.
 By default the DDL execution (or validation) is deferred until
 the `ApplicationContext` has started. There is also a `spring.jpa.generate-ddl` flag, but
 it is not used if Hibernate autoconfig is active because the `ddl-auto`
-settings are more fine grained.
+settings are more fine-grained.
 
 
 
@@ -1892,7 +1892,7 @@ connect to a broker using the the `netty` transport protocol. When the latter is
 configured, Spring Boot configures a `ConnectionFactory` connecting to a broker running
 on the local machine with the default settings.
 
-NOTE: if you are using `spring-boot-starter-hornetq` the necessary dependencies to
+NOTE: If you are using `spring-boot-starter-hornetq` the necessary dependencies to
 connect to an existing HornetQ instance are provided, as well as the Spring infrastructure
 to integrate with JMS. Adding `org.hornetq:hornetq-jms-server` to your application allows
 you to use the embedded mode.
@@ -1909,7 +1909,7 @@ HornetQ configuration is controlled by external configuration properties in
 ----
 
 When embedding the broker, you can chose if you want to enable persistence, and the list
-of destinations that should be made available. These can be specified as a comma separated
+of destinations that should be made available. These can be specified as a comma-separated
 list to create them with the default options; or you can define bean(s) of type
 `org.hornetq.jms.server.config.JMSQueueConfiguration` or
 `org.hornetq.jms.server.config.TopicConfiguration`, for advanced queue and topic
@@ -2167,7 +2167,7 @@ If you use the
 the following provided libraries:
 
 * Spring Test -- integration test support for Spring applications.
-* Junit -- The de-facto standard for unit testing Java applications.
+* JUnit -- The de-facto standard for unit testing Java applications.
 * Hamcrest -- A library of matcher objects (also known as constraints or predicates)
   allowing `assertThat` style JUnit assertions.
 * Mockito -- A Java mocking framework.
@@ -2235,7 +2235,7 @@ it with HTTP (e.g. using `RestTemplate`), annotate your test class (or one of it
 superclasses) with `@IntegrationTest`. This can be very useful because it means you can
 test the full stack of your application, but also inject its components into the test
 class and use them to assert the internal state of the application after an HTTP
-interaction. For Example:
+interaction. For example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2440,7 +2440,7 @@ You can use the
 {sc-spring-boot-autoconfigure}/AutoConfigureAfter.{sc-ext}[`@AutoConfigureAfter`] or
 {sc-spring-boot-autoconfigure}/AutoConfigureBefore.{sc-ext}[`@AutoConfigureBefore`]
 annotations if your configuration needs to be applied in a specific order. For example,
-if you provide web specific configuration, your class may need to be applied after
+if you provide web-specific configuration, your class may need to be applied after
 `WebMvcAutoConfiguration`.
 
 
@@ -2461,7 +2461,7 @@ code by annotating `@Configuration` classes or individual `@Bean` methods.
 ==== Class conditions
 The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations allows configuration
 to be skipped based on the presence or absence of specific classes. Due to the fact that
-annotation meta-data is parsed using http://asm.ow2.org/[ASM] you can actually use the
+annotation metadata is parsed using http://asm.ow2.org/[ASM] you can actually use the
 `value` attribute to refer to the real class, even though that class might not actually
 appear on the running application classpath. You can also use the `name` attribute if you
 prefer to specify the class name using a `String` value.

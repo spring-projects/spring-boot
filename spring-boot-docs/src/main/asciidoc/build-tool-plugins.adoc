@@ -237,7 +237,7 @@ example:
 [[build-tool-plugins-gradle-custom-version-management]]
 ==== Custom version management
 If is possible to customize the versions used by the `ResolutionStrategy` if you need
-to deviate from Spring Boot's ``blessed'' dependencies. Alternative version meta-data
+to deviate from Spring Boot's ``blessed'' dependencies. Alternative version metadata
 is consulted using the `versionManagement` configuration. For example:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]

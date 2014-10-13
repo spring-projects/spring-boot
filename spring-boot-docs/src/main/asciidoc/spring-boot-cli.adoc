@@ -76,7 +76,7 @@ using.
 [[cli-run]]
 === Running applications using the CLI
 You can compile and run Groovy source code using the `run` command. The Spring Boot CLI
-is completely self contained so you don't need any external Groovy installation.
+is completely self-contained so you don't need any external Groovy installation.
 
 Here is an example ``hello world'' web application written in Groovy:
 
@@ -275,7 +275,7 @@ executable jar file. For example:
 The resulting jar will contain the classes produced by compiling the application and all
 of the application's dependencies so that it can then be run using `java -jar`. The jar
 file will also contain entries from the application's classpath. You can add explicit
-paths to the jar using `--include` and `--exclude` (both are comma separated, and both
+paths to the jar using `--include` and `--exclude` (both are comma-separated, and both
 accept prefixes to the values ``+'' and ``-'' to signify that they should be removed from
 the defaults). The default includes are
 

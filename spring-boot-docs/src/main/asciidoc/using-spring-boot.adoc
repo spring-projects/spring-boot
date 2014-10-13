@@ -555,7 +555,7 @@ and build system. Most IDEs can import Maven projects directly, for example Ecli
 can select `Import...` -> `Existing Maven Projects` from the `File` menu.
 
 If you can't directly import your project into your IDE, you may be able to generate IDE
-meta-data using a build plugin. Maven includes plugins for
+metadata using a build plugin. Maven includes plugins for
 http://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and
 http://maven.apache.org/plugins/maven-idea-plugin/[IDEA]; Gradle offers plugins
 for http://www.gradle.org/docs/current/userguide/ide_support.html[various IDEs].
@@ -644,7 +644,7 @@ See the <<howto.adoc#howto-hotswapping, Hot swapping ``How-to''>> section for de
 
 [[using-boot-packaging-for-production]]
 == Packaging your application for production
-Executable jars can be used for production deployment. As they are self contained, they
+Executable jars can be used for production deployment. As they are self-contained, they
 are also ideally suited for cloud-based deployment.
 
 For additional ``production ready'' features, such as health, auditing and metric REST

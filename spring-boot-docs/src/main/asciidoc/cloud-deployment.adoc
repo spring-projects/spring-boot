@@ -12,7 +12,7 @@ _cloud's_ notion of a running process.
 Two popular cloud providers, Heroku and Cloud Foundry, employ a ``buildpack'' approach.
 The buildpack wraps your deployed code in whatever is needed to _start_ your
 application: it might be a JDK and a call to `java`, it might be an embedded webserver,
-or it might be a full fledged application server. A buildpack is pluggable, but ideally
+or it might be a full-fledged application server. A buildpack is pluggable, but ideally
 you should be able to get by with as few customizations to it as possible.
 This reduces the footprint of functionality that is not under your control. It minimizes
 divergence between deployment and production environments.
@@ -103,7 +103,7 @@ able to hit the application at the URI given, in this case
 
 [[cloud-deployment-cloud-foundry-services]]
 === Binding to services
-By default, meta-data about the running application as well as service connection
+By default, metadata about the running application as well as service connection
 information is exposed to the application as environment variables (for example:
 `$VCAP_SERVICES`). This architecture decision is due to Cloud Foundry's polyglot
 (any language and platform can be supported as a buildpack) nature; process-scoped
