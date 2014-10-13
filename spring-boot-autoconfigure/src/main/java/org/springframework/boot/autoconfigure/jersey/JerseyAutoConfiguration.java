@@ -19,11 +19,9 @@ package org.springframework.boot.autoconfigure.jersey;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
 import javax.ws.rs.ApplicationPath;
 
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.spring.SpringComponentProvider;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -48,9 +46,12 @@ import org.springframework.web.filter.RequestContextFilter;
  * {@link EnableAutoConfiguration Auto-configuration} for Jersey.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
+@ConditionalOnClass(name = {
+		"org.glassfish.jersey.server.spring.SpringComponentProvider",
+		"javax.servlet.ServletRegistration" })
 @ConditionalOnBean(ResourceConfig.class)
 @ConditionalOnWebApplication
 @Order(Ordered.HIGHEST_PRECEDENCE)
