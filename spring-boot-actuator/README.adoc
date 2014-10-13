@@ -47,5 +47,5 @@ For Gradle, use the declaration:
   authentication events by default. This can be very useful for reporting, and also to
   implement a lock-out policy based on authentication failures.
 * **Process Monitoring** In Spring Boot Actuator you can find `ApplicationPidListener`
-  which creates file containing application PID (by default in application directory and
-  file name is `application.pid`).
+  which creates a file containing the application PID (by default in the application
+  directory with a file name of `application.pid`).
