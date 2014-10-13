@@ -91,6 +91,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.apache.catalina");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.eclipse.jetty");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
+		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.hibernate.SQL");
 	}
 
 	private static Class<?>[] EVENT_TYPES = { ApplicationStartedEvent.class,
