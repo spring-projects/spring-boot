@@ -20,6 +20,7 @@ org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration,\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
+org.springframework.boot.autoconfigure.hdiv.HdivAutoConfiguration,\
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\

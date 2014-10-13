@@ -162,6 +162,16 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.hdiv</groupId>
+			<artifactId>hdiv-config</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.hdiv</groupId>
+			<artifactId>hdiv-thymeleaf</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<optional>true</optional>

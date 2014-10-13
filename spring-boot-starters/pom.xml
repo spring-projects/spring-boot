@@ -32,6 +32,7 @@
 		<module>spring-boot-starter-data-solr</module>
 		<module>spring-boot-starter-freemarker</module>
 		<module>spring-boot-starter-groovy-templates</module>
+		<module>spring-boot-starter-hdiv</module>
 		<module>spring-boot-starter-hornetq</module>
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jdbc</module>
