@@ -203,9 +203,9 @@ Spring Boot uses a very particular `PropertySource` order that is designed to al
 sensible overriding of values, properties are considered in the the following order:
 
 . Command line arguments.
+. JNDI attributes from `java:comp/env`.
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
-. JNDI attributes from `java:comp/env`
 . A `RandomValuePropertySource` that only has properties in `+random.*+`.
 . Application properties outside of your packaged jar (`application.properties`
   including YAML and profile variants).
