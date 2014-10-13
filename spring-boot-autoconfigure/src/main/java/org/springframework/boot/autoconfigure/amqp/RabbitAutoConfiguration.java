@@ -127,7 +127,7 @@ public class RabbitAutoConfiguration {
 	protected static class MessagingTemplateConfiguration {
 
 		@Bean
-		public RabbitMessagingTemplate jmsMessagingTemplate(RabbitTemplate rabbitTemplate) {
+		public RabbitMessagingTemplate rabbitMessagingTemplate(RabbitTemplate rabbitTemplate) {
 			return new RabbitMessagingTemplate(rabbitTemplate);
 		}
 
