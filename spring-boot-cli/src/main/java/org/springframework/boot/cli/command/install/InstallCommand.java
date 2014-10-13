@@ -140,6 +140,7 @@ public class InstallCommand extends OptionParsingCommand {
 
 			for (URL url : urlsToProcess) {
 				File file = toFile(url);
+				Log.info("Processing: " + file);
 				if (file.getName().endsWith(".jar")) {
 					processor.processFile(file);
 				}
@@ -181,7 +182,8 @@ public class InstallCommand extends OptionParsingCommand {
 			finally {
 				stream.close();
 			}
-			return file.getAbsolutePath();
+			// Windows paths get tricky unless you work with URI
+			return file.getAbsoluteFile().toURI().toString();
 		}
 
 		private static File getDefaultLibDirectory() {
