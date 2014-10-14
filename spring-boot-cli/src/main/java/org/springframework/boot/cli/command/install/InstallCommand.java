@@ -49,19 +49,28 @@ import org.springframework.util.SystemPropertyUtils;
  */
 public class InstallCommand extends OptionParsingCommand {
 
+	private final String usageHelp;
+
 	public static Command install() {
 		return new InstallCommand("install", "Install dependencies to lib directory",
-				new InstallFileProcessorFactory());
+				"[options] <coordinates>", new InstallFileProcessorFactory());
 	}
 
 	public static Command uninstall() {
 		return new InstallCommand("uninstall",
-				"Uninstall dependencies from a lib directory",
+				"Uninstall dependencies from lib directory", "[options] <coordinates>",
 				new UninstallFileProcessorFactory());
 	}
 
-	private InstallCommand(String name, String description, FileProcessorFactory visitor) {
+	private InstallCommand(String name, String description, String usageHelp,
+			FileProcessorFactory visitor) {
 		super(name, description, new InstallOptionHandler(visitor));
+		this.usageHelp = usageHelp;
+	}
+
+	@Override
+	public String getUsageHelp() {
+		return this.usageHelp;
 	}
 
 	private static final class InstallOptionHandler extends CompilerOptionHandler {
