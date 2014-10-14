@@ -33,6 +33,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
  * support through the {@link EnableSpringDataWebSupport} annotation.
  *
  * @author Andy Wilkinson
+ * @since 1.2.0
  */
 @Configuration
 @EnableSpringDataWebSupport
