@@ -118,7 +118,7 @@
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
 					<artifactId>git-commit-id-plugin</artifactId>
-					<version>2.1.11</version>
+					<version>2.1.10</version>
 					<executions>
 						<execution>
 							<goals>
@@ -130,7 +130,8 @@
 						<verbose>true</verbose>
 						<dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
 						<generateGitPropertiesFile>true</generateGitPropertiesFile>
-						<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+						<!-- Workaround until 2.1.11 is released; should be an absolute path -->
+						<generateGitPropertiesFilename>target/classes/git.properties</generateGitPropertiesFilename>
 					</configuration>
 				</plugin>
 				<!-- Support our own plugin -->
