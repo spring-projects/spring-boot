@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.cli.command.install;
 
 import java.util.List;
 
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
@@ -26,17 +28,17 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 
 /**
- * {@link Command} to install additional dependencies into the CLI.
+ * {@link Command} to uninstall dependencies from the CLI's lib directory
  *
  * @author Dave Syer
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-public class InstallCommand extends OptionParsingCommand {
+public class UninstallCommand extends OptionParsingCommand {
 
-	public InstallCommand() {
-		super("install", "Install dependencies to the lib directory",
-				new InstallOptionHandler());
+	public UninstallCommand() {
+		super("uninstall", "Uninstall dependencies from the lib directory",
+				new UninstallOptionHandler());
 	}
 
 	@Override
@@ -44,7 +46,14 @@ public class InstallCommand extends OptionParsingCommand {
 		return "[options] <coordinates>";
 	}
 
-	private static final class InstallOptionHandler extends CompilerOptionHandler {
+	private static class UninstallOptionHandler extends CompilerOptionHandler {
+
+		private OptionSpec<Void> allOption;
+
+		@Override
+		protected void doOptions() {
+			this.allOption = option("all", "Uninstall all");
+		}
 
 		@Override
 		protected ExitStatus run(OptionSet options) throws Exception {
@@ -52,13 +61,21 @@ public class InstallCommand extends OptionParsingCommand {
 			@SuppressWarnings("unchecked")
 			List<String> args = (List<String>) options.nonOptionArguments();
 
-			if (args.isEmpty()) {
-				throw new IllegalArgumentException(
-						"Please specify at least one dependency, in the form group:artifact:version, to install");
-			}
-
 			try {
-				new Installer(options, this).install(args);
+				if (options.has(this.allOption)) {
+					if (!args.isEmpty()) {
+						throw new IllegalArgumentException(
+								"Please use --all without specifying any dependencies");
+					}
+
+					new Installer(options, this).uninstallAll();
+				}
+				if (args.isEmpty()) {
+					throw new IllegalArgumentException(
+							"Please specify at least one dependency, in the form group:artifact:version, to uninstall");
+				}
+
+				new Installer(options, this).uninstall(args);
 			}
 			catch (Exception e) {
 				String message = e.getMessage();
@@ -66,6 +83,7 @@ public class InstallCommand extends OptionParsingCommand {
 			}
 
 			return ExitStatus.OK;
+
 		}
 
 	}
