@@ -95,6 +95,40 @@ Here is an example ``hello world'' web application written in Groovy:
 
 
 
+[[cli-install-uninstall]]
+=== Adding dependencies to the CLI
+You can add dependencies to the CLI using the `install` command. The command takes one
+or more sets of artifact coordinates in the format `group:artifact:version`. For example:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring install com.example:spring-boot-cli-extension:1.0.0.RELEASE
+----
+
+In addition to installing the artifacts identified by the coordinates you supply, all of
+the artifacts' dependencies will also be installed.
+
+To uninstall a dependency use the `uninstall` command. As with the `install` command, it
+takes one or more sets of artifact coordinates in the format `group:artifact:version`.
+For example:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring uninstall com.example:spring-boot-cli-extension:1.0.0.RELEASE
+----
+
+It will uninstall the artifacts identified by the coordinates you supply and their
+dependencies.
+
+To uninstall all additional dependencies you can use the `--all` option. For example:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring uninstall --all
+----
+
+
+
 [[cli-deduced-grab-annotations]]
 ==== Deduced ``grab'' dependencies
 Standard Groovy includes a `@Grab` annotation which allows you to declare dependencies
@@ -172,9 +206,9 @@ metadata can be found in the <<appendix-dependency-versions, appendix>>.
 ===== Custom ``grab'' metadata
 Spring Boot provides a new annotation, `@GrabMetadata` that can be used to provide custom
 dependency metadata that overrides Spring Boot's defaults. This metadata is specified by
-using this annotation to provide the coordinates of one or more properties files (deployed 
+using this annotation to provide the coordinates of one or more properties files (deployed
 to a Maven repository with a "type" identifier: "properties"). For example
-`@GrabMetadata(['com.example:versions-one:1.0.0', 'com.example.versions-two:1.0.0'])` will 
+`@GrabMetadata(['com.example:versions-one:1.0.0', 'com.example.versions-two:1.0.0'])` will
 pick up files in a Maven repository in "com/example/versions-*/1.0.0/versions-*-1.0.0.properties". The
 properties files are applied in the order that they're specified. In the example above, this
 means that properties in `versions-two` will override properties in `versions-one`. Each entry
