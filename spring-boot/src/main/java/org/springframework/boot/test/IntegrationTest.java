@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
@@ -41,15 +42,21 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @Target(ElementType.TYPE)
 // Leave out the ServletTestExecutionListener because it only deals with Mock* servlet
 // stuff. A real embedded application will not need the mocks.
-@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class,
+@TestExecutionListeners(listeners = { IntegrationTestPropertiesListener.class, DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
 		TransactionalTestExecutionListener.class })
+@TestPropertySource
 public @interface IntegrationTest {
+
+	/**
+	 * Synonym for properties().
+	 */
+	String[] value() default {};
 
 	/**
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
 	 */
-	String[] value() default {};
+	String[] properties() default {"server.port=-1", "spring.jmx.enabled=false"};
 
 }

@@ -58,8 +58,8 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
 @IntegrationTest("server.port=0")
+@WebAppConfiguration
 @DirtiesContext
 public class EndpointMvcIntegrationTests {
 

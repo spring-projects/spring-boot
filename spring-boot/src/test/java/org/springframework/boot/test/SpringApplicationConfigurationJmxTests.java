@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test;
 
+import static org.junit.Assert.assertFalse;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +27,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertFalse;
-
 /**
  * Tests for disabling JMX by default
  *
@@ -34,6 +34,7 @@ import static org.junit.Assert.assertFalse;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Config.class)
+@IntegrationTest
 public class SpringApplicationConfigurationJmxTests {
 
 	@Value("${spring.jmx.enabled}")
