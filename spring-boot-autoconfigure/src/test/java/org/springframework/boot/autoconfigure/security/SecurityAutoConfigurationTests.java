@@ -16,9 +16,15 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -45,11 +51,6 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 /**
  * Tests for {@link SecurityAutoConfiguration}.
  *
@@ -58,6 +59,13 @@ import static org.junit.Assert.fail;
 public class SecurityAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;
+
+	@After
+	public void close() {
+		if (context != null) {
+			context.close();
+		}
+	}
 
 	@Test
 	public void testWebConfiguration() throws Exception {
@@ -137,11 +145,12 @@ public class SecurityAutoConfigurationTests {
 	public void testOverrideAuthenticationManager() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
+		this.context.register(TestAuthenticationConfiguration.class,
+				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
+		assertEquals(
+				this.context.getBean(TestAuthenticationConfiguration.class).authenticationManager,
 				this.context.getBean(AuthenticationManager.class));
 	}
 
@@ -168,7 +177,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestConfiguration {
+	protected static class TestAuthenticationConfiguration {
 
 		private AuthenticationManager authenticationManager;
 
