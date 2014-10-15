@@ -36,14 +36,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * The SampleDataGemFireApplicationTest class is a test suite with test cases testing the
+ * The SampleDataGemFireApplicationTests class is a test suite with test cases testing the
  * SampleDataGemFireApplication in Spring Boot.
  *
  * @author John Blum
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleDataGemFireApplication.class)
-public class SampleDataGemFireApplicationTest {
+public class SampleDataGemFireApplicationTests {
 
 	@Autowired
 	private GemstoneService gemstoneService;

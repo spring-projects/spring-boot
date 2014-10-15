@@ -58,7 +58,7 @@ import static org.junit.Assert.assertThat;
 @WebAppConfiguration
 @DirtiesContext
 @IntegrationTest("server.port=0")
-public class BasicErrorControllerIntegrationTest {
+public class BasicErrorControllerIntegrationTests {
 
 	@Value("${local.server.port}")
 	private int port;
