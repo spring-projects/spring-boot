@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
  *
  * @author Phillip Webb
  */
-public class ByteArrayRandomAccessDataTest {
+public class ByteArrayRandomAccessDataTests {
 
 	@Test
 	public void testGetInputStream() throws Exception {

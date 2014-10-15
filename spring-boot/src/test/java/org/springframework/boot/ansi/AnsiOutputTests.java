@@ -34,7 +34,7 @@ import static org.springframework.boot.ansi.AnsiElement.RED;
  *
  * @author Phillip Webb
  */
-public class AnsiOutputTest {
+public class AnsiOutputTests {
 
 	@BeforeClass
 	public static void enable() {
