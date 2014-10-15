@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.rest;
 
 import java.net.URI;
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.Test;
@@ -27,14 +28,19 @@ import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.BaseUri;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,6 +49,7 @@ import static org.junit.Assert.assertNotNull;
  * Tests for {@link RepositoryRestMvcAutoConfiguration}.
  *
  * @author Rob Winch
+ * @author Andy Wilkinson
  */
 public class RepositoryRestMvcAutoConfigurationTests {
 
@@ -85,6 +92,23 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	}
 
+	@Test
+	public void objectMappersAreConfiguredUsingObjectMapperBuilder()
+			throws JsonProcessingException {
+		load(TestConfigurationWithObjectMapperBuilder.class);
+
+		assertThatDateIsFormattedCorrectly("halObjectMapper");
+		assertThatDateIsFormattedCorrectly("objectMapper");
+	}
+
+	public void assertThatDateIsFormattedCorrectly(String beanName)
+			throws JsonProcessingException {
+		ObjectMapper objectMapper = this.context.getBean(beanName, ObjectMapper.class);
+
+		assertEquals("\"2014-10\"",
+				objectMapper.writeValueAsString(new Date(1413387983267L)));
+	}
+
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.setServletContext(new MockServletContext());
@@ -108,6 +132,19 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	@Import({ TestConfiguration.class, RepositoryRestMvcConfiguration.class })
 	protected static class TestConfigurationWithRestMvcConfig {
 
+	}
+
+	@Configuration
+	@TestAutoConfigurationPackage(City.class)
+	@EnableWebMvc
+	static class TestConfigurationWithObjectMapperBuilder {
+
+		@Bean
+		public Jackson2ObjectMapperBuilder objectMapperBuilder() {
+			Jackson2ObjectMapperBuilder objectMapperBuilder = new Jackson2ObjectMapperBuilder();
+			objectMapperBuilder.simpleDateFormat("yyyy-MM");
+			return objectMapperBuilder;
+		}
 	}
 
 }
