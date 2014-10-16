@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,11 @@
 package org.springframework.boot.logging.java;
 
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -56,12 +59,26 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation) {
+	public void initialize(String configLocation, boolean fileOutput, boolean consoleOutput) {
 		Assert.notNull(configLocation, "ConfigLocation must not be null");
 		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
 		try {
 			LogManager.getLogManager().readConfiguration(
 					ResourceUtils.getURL(resolvedLocation).openStream());
+			if (fileOutput) {
+				Enumeration<String> loggerNames = LogManager.getLogManager().getLoggerNames();
+				while (loggerNames.hasMoreElements()) {
+					String nextElement = loggerNames.nextElement();
+					LogManager.getLogManager().getLogger(nextElement).addHandler(new FileHandler());
+				}
+			}
+			if (consoleOutput) {
+				Enumeration<String> loggerNames = LogManager.getLogManager().getLoggerNames();
+				while (loggerNames.hasMoreElements()) {
+					String nextElement = loggerNames.nextElement();
+					LogManager.getLogManager().getLogger(nextElement).addHandler(new ConsoleHandler());
+				}
+			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize logging from "

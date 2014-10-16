@@ -25,6 +25,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
+
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
@@ -86,7 +87,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation) {
+	public void initialize(String configLocation, boolean fileOutput, boolean consoleOutput) {
 		Assert.notNull(configLocation, "ConfigLocation must not be null");
 		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();

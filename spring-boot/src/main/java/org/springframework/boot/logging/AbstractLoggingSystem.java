@@ -46,20 +46,20 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize(boolean fileOutput, boolean consoleOutput) {
 		for (String path : this.paths) {
 			ClassPathResource resource = new ClassPathResource(path, this.classLoader);
 			if (resource.exists()) {
-				initialize("classpath:" + path);
+				initialize("classpath:" + path, fileOutput, consoleOutput);
 				return;
 			}
 		}
 		// Fallback to the non-prefixed value
-		initialize(getPackagedConfigFile(this.paths[this.paths.length - 1]));
+		initialize(getPackagedConfigFile(this.paths[this.paths.length - 1]), fileOutput, consoleOutput);
 	}
 
 	protected void initializeWithSensibleDefaults() {
-		initialize(getPackagedConfigFile("basic-" + this.paths[this.paths.length - 1]));
+		initialize(getPackagedConfigFile("basic-" + this.paths[this.paths.length - 1]), false, false);
 	}
 
 	protected final String getPackagedConfigFile(String fileName) {
@@ -69,5 +69,6 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		defaultPath = "classpath:" + defaultPath;
 		return defaultPath;
 	}
+
 
 }

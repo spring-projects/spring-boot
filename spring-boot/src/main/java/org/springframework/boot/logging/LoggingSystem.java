@@ -31,6 +31,7 @@ import org.springframework.util.ClassUtils;
 public abstract class LoggingSystem {
 
 	private static final Map<String, String> SYSTEMS;
+
 	static {
 		Map<String, String> systems = new LinkedHashMap<String, String>();
 		String pkg = LoggingSystem.class.getPackage().getName();
@@ -53,13 +54,13 @@ public abstract class LoggingSystem {
 	 * try to find system specific configuration on classpath before falling back to
 	 * sensible defaults.
 	 */
-	public abstract void initialize();
+	public abstract void initialize(boolean fileOutput, boolean consoleOutput);
 
 	/**
 	 * Initialize the logging system from a logging configuration location.
 	 * @param configLocation a log configuration location
 	 */
-	public abstract void initialize(String configLocation);
+	public abstract void initialize(String configLocation, boolean fileOutput, boolean consoleOutput);
 
 	/**
 	 * Sets the logging level for a given logger.

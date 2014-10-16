@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -79,6 +80,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING = new HashMap<String, String>();
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.file", "LOG_FILE");
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.path", "LOG_PATH");
+		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.console", "LOG_CONSOLE");
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put(PID_KEY, PID_KEY);
 	}
 
@@ -144,6 +146,18 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		initializeEarlyLoggingLevel(environment);
 		cleanLogTempProperty();
 		LoggingSystem system = LoggingSystem.get(classLoader);
+
+		// if (!StringUtils.isEmpty(environment.getProperty("logging.file"))) {
+		// system.addFileOutput();
+		// }
+		// if (!StringUtils.isEmpty(environment.getProperty("logging.console"))
+		// &&
+		// environment.getProperty("logging.console").equalsIgnoreCase("true"))
+		// {
+		// system.addConsoleOutput();
+		// }
+		// System.setProperty("LOG_CATEGORY", system.getLogCategory());
+
 		boolean systemEnvironmentChanged = mapSystemPropertiesFromSpring(environment);
 		if (systemEnvironmentChanged) {
 			// Re-initialize the defaults in case the system Environment changed
@@ -151,6 +165,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		}
 		initializeSystem(environment, system);
 		initializeFinalLoggingLevels(environment, system);
+
+
 	}
 
 	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {
@@ -192,21 +208,24 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private void initializeSystem(ConfigurableEnvironment environment,
 			LoggingSystem system) {
+		boolean fileOutput = !StringUtils.isEmpty(environment.getProperty("logging.file"));
+		boolean consoleOutput = !StringUtils.isEmpty(environment.getProperty("logging.console"))
+				&& environment.getProperty("logging.console").equalsIgnoreCase("true");
 		if (environment.containsProperty("logging.config")) {
 			String value = environment.getProperty("logging.config");
 			try {
 				ResourceUtils.getURL(value).openStream().close();
-				system.initialize(value);
+				system.initialize(value, fileOutput, consoleOutput);
 			}
 			catch (Exception ex) {
 				this.logger.warn("Logging environment value '" + value
 						+ "' cannot be opened and will be ignored "
 						+ "(using default location instead)");
-				system.initialize();
+				system.initialize(fileOutput, consoleOutput);
 			}
 		}
 		else {
-			system.initialize();
+			system.initialize(fileOutput, consoleOutput);
 		}
 	}
 

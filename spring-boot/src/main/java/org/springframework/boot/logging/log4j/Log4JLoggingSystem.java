@@ -24,6 +24,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
@@ -67,8 +68,16 @@ public class Log4JLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation) {
+	public void initialize(String configLocation, boolean fileOutput, boolean consoleOutput) {
 		Assert.notNull(configLocation, "ConfigLocation must not be null");
+		String logCategory = "INFO";
+		if (fileOutput) {
+			logCategory += ",FILE";
+		}
+		if (consoleOutput) {
+			logCategory += ",CONSOLE";
+		}
+		System.setProperty("LOG_CATEGORY", logCategory);
 		try {
 			Log4jConfigurer.initLogging(configLocation);
 		}
