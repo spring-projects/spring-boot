@@ -49,6 +49,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
  *
  * @author Josh Long
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
 @Configuration
@@ -71,6 +72,10 @@ class AtomikosJtaConfiguration {
 	public UserTransactionService userTransactionService(
 			AtomikosProperties atomikosProperties) {
 		Properties properties = new Properties();
+		if (StringUtils.hasText(this.jtaProperties.getTransactionManagerId())) {
+			properties.setProperty("com.atomikos.icatch.tm_unique_name",
+					this.jtaProperties.getTransactionManagerId());
+		}
 		properties.setProperty("com.atomikos.icatch.log_base_dir", getLogBaseDir());
 		properties.putAll(atomikosProperties.asProperties());
 		return new UserTransactionServiceImp(properties);

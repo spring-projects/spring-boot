@@ -26,6 +26,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  *
  * @author Josh Long
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = JtaProperties.PREFIX, ignoreUnknownFields = true)
@@ -35,12 +36,22 @@ public class JtaProperties {
 
 	private String logDir;
 
+	private String transactionManagerId;
+
 	public void setLogDir(String logDir) {
 		this.logDir = logDir;
 	}
 
 	public String getLogDir() {
 		return this.logDir;
+	}
+
+	public String getTransactionManagerId() {
+		return this.transactionManagerId;
+	}
+
+	public void setTransactionManagerId(String transactionManagerId) {
+		this.transactionManagerId = transactionManagerId;
 	}
 
 }

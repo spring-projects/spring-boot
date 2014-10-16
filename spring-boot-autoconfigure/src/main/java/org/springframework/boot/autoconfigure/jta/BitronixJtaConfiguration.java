@@ -45,6 +45,7 @@ import bitronix.tm.jndi.BitronixContext;
  *
  * @author Josh Long
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
 @Configuration
@@ -60,7 +61,9 @@ class BitronixJtaConfiguration {
 	@ConfigurationProperties(prefix = JtaProperties.PREFIX)
 	public bitronix.tm.Configuration bitronixConfiguration() {
 		bitronix.tm.Configuration config = TransactionManagerServices.getConfiguration();
-		config.setServerId("spring-boot-jta-bitronix");
+		if (StringUtils.hasText(this.jtaProperties.getTransactionManagerId())) {
+			config.setServerId(this.jtaProperties.getTransactionManagerId());
+		}
 		File logBaseDir = getLogBaseDir();
 		config.setLogPart1Filename(new File(logBaseDir, "part1.btm").getAbsolutePath());
 		config.setLogPart2Filename(new File(logBaseDir, "part2.btm").getAbsolutePath());

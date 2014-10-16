@@ -16,28 +16,41 @@
 
 package org.springframework.boot.autoconfigure.jta;
 
+import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.XADataSourceWrapper;
 import org.springframework.boot.jta.atomikos.AtomikosDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.jta.atomikos.AtomikosProperties;
 import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.util.FileSystemUtils;
 
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -45,6 +58,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Josh Long
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class JtaAutoConfigurationTests {
 
@@ -52,6 +66,11 @@ public class JtaAutoConfigurationTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
+
+	@Before
+	public void cleanUpLogs() {
+		FileSystemUtils.deleteRecursively(new File("target/transaction-logs"));
+	}
 
 	@After
 	public void closeContext() {
@@ -92,6 +111,62 @@ public class JtaAutoConfigurationTests {
 		this.context.getBean(XAConnectionFactoryWrapper.class);
 		this.context.getBean(BitronixDependentBeanFactoryPostProcessor.class);
 		this.context.getBean(JtaTransactionManager.class);
+	}
+
+	@Test
+	public void defaultBitronixServerId() throws UnknownHostException {
+		this.context = new AnnotationConfigApplicationContext(
+				JtaPropertiesConfiguration.class, BitronixJtaConfiguration.class);
+		String serverId = this.context.getBean(bitronix.tm.Configuration.class)
+				.getServerId();
+		assertThat(serverId, is(equalTo(InetAddress.getLocalHost().getHostAddress())));
+	}
+
+	@Test
+	public void customBitronixServerId() throws UnknownHostException {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jta.transactionManagerId:custom");
+		this.context.register(JtaPropertiesConfiguration.class,
+				BitronixJtaConfiguration.class);
+		this.context.refresh();
+		String serverId = this.context.getBean(bitronix.tm.Configuration.class)
+				.getServerId();
+		assertThat(serverId, is(equalTo("custom")));
+	}
+
+	@Test
+	public void defaultAtomikosTransactionManagerName() throws UnknownHostException {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jta.logDir:target/transaction-logs");
+		this.context.register(JtaPropertiesConfiguration.class,
+				AtomikosJtaConfiguration.class);
+		this.context.refresh();
+
+		File epochFile = new File("target/transaction-logs/"
+				+ InetAddress.getLocalHost().getHostAddress() + ".tm0.epoch");
+		assertTrue(epochFile.isFile());
+	}
+
+	@Test
+	public void customAtomikosTransactionManagerName() throws BeansException, Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jta.transactionManagerId:custom",
+				"spring.jta.logDir:target/transaction-logs");
+		this.context.register(JtaPropertiesConfiguration.class,
+				AtomikosJtaConfiguration.class);
+		this.context.refresh();
+
+		File epochFile = new File("target/transaction-logs/custom0.epoch");
+		assertTrue(epochFile.isFile());
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(JtaProperties.class)
+	public static class JtaPropertiesConfiguration {
+
 	}
 
 	@Configuration
