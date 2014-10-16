@@ -152,8 +152,6 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		}
 		initializeSystem(environment, system);
 		initializeFinalLoggingLevels(environment, system);
-
-
 	}
 
 	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {
