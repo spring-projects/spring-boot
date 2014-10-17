@@ -49,6 +49,7 @@
 		<activemq.version>5.10.0</activemq.version>
 		<aspectj.version>1.8.2</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
+		<awaitility.version>1.6.0</awaitility.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<codahale-metrics.version>3.0.2</codahale-metrics.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
@@ -477,6 +478,11 @@
 				<version>${h2.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.jayway.awaitility</groupId>
+				<artifactId>awaitility</artifactId>
+				<version>${awaitility.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path</artifactId>
 				<version>${json-path.version}</version>
@@ -606,6 +612,11 @@
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-broker</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-mqtt</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
 			<dependency>
@@ -1444,6 +1455,12 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<repositories>
+		<repository>
+			<id>Eclipse Paho</id>
+			<url>https://repo.eclipse.org/content/repositories/paho-releases/</url>
+		</repository>
+	</repositories>
 	<profiles>
 		<profile>
 			<id>default</id>

@@ -97,6 +97,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-mqtt</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-pool</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -154,6 +159,12 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.paho</groupId>
+			<artifactId>mqtt-client</artifactId>
+			<version>0.4.0</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -386,6 +397,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot</artifactId>
 			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
