@@ -22,12 +22,12 @@
 	</appender>
 
 	<root level="INFO">
-		<if condition='property("LOG_CONSOLE").equalsIgnoreCase("true")'>
+		<if condition='!property("LOG_CONSOLE").equalsIgnoreCase("false")'>
     		<then>
         		<appender-ref ref="CONSOLE" />
    			 </then>
 		</if>
-		<if condition='property("LOG_FILE").equalsIgnoreCase("/tmp/spring.log")'>
+		<if condition='property("LOG_FILE") != null'>
     		<then>
         		<appender-ref ref="FILE" />
     		</then>

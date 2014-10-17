@@ -194,8 +194,11 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	private void initializeSystem(ConfigurableEnvironment environment,
 			LoggingSystem system) {
 		boolean fileOutput = !StringUtils.isEmpty(environment.getProperty("logging.file"));
-		boolean consoleOutput = !StringUtils.isEmpty(environment.getProperty("logging.console"))
-				&& environment.getProperty("logging.console").equalsIgnoreCase("true");
+		boolean consoleOutput = true;
+		if (!StringUtils.isEmpty(environment.getProperty("logging.console"))
+				&& environment.getProperty("logging.console").equalsIgnoreCase("false")) {
+			consoleOutput = false;
+		}
 		if (environment.containsProperty("logging.config")) {
 			String value = environment.getProperty("logging.config");
 			try {
