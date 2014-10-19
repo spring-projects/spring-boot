@@ -52,6 +52,8 @@ public class MongoProperties {
 	private String username;
 
 	private char[] password;
+	
+	private String authenticationdatabase;
 
 	public String getHost() {
 		return this.host;
@@ -93,6 +95,15 @@ public class MongoProperties {
 			this.password[i] = 0;
 		}
 	}
+	
+	public String getAuthenticationdatabase() {
+		return authenticationdatabase;
+	}
+
+	public void setAuthenticationdatabase(String authenticationdatabase) {
+		this.authenticationdatabase = authenticationdatabase;
+	}
+
 
 	public String getUri() {
 		return this.uri;
@@ -134,8 +145,14 @@ public class MongoProperties {
 				}
 				List<MongoCredential> credentials = null;
 				if (this.password != null && this.username != null) {
-					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
-							this.username, getMongoClientDatabase(), this.password));
+					String authdb;
+					if (getAuthenticationdatabase() != null) {
+			                        authdb = getAuthenticationdatabase();
+			                } else {
+						authdb = getMongoClientDatabase();
+					}
+	        		  	credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
+        	                			this.username, authdb, this.getPassword()));
 				}
 				return new MongoClient(Arrays.asList(new ServerAddress(this.host,
 						this.port)), credentials, options);
