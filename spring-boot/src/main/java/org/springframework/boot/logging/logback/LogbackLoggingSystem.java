@@ -23,13 +23,11 @@ import java.util.Map;
 
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
-import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
@@ -43,8 +41,9 @@ import ch.qos.logback.classic.util.ContextInitializer;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
-public class LogbackLoggingSystem extends AbstractLoggingSystem {
+public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
 	static {
@@ -62,27 +61,6 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 	public LogbackLoggingSystem(ClassLoader classLoader) {
 		super(classLoader, "logback-test.groovy", "logback-test.xml", "logback.groovy",
 				"logback.xml");
-	}
-
-	@Override
-	public void beforeInitialize() {
-		super.beforeInitialize();
-		try {
-			if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler",
-					getClassLoader())) {
-				try {
-					SLF4JBridgeHandler.removeHandlersForRootLogger();
-				}
-				catch (NoSuchMethodError ex) {
-					// Method missing in older versions of SLF4J like in JBoss AS 7.1
-					SLF4JBridgeHandler.uninstall();
-				}
-				SLF4JBridgeHandler.install();
-			}
-		}
-		catch (Throwable ex) {
-			// Ignore. No java.util.logging bridge is installed.
-		}
 	}
 
 	@Override

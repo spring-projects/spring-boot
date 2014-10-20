@@ -23,12 +23,10 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.StringUtils;
 
@@ -38,7 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class Log4JLoggingSystem extends AbstractLoggingSystem {
+public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
 	static {
@@ -55,15 +53,6 @@ public class Log4JLoggingSystem extends AbstractLoggingSystem {
 
 	public Log4JLoggingSystem(ClassLoader classLoader) {
 		super(classLoader, "log4j.xml", "log4j.properties");
-	}
-
-	@Override
-	public void beforeInitialize() {
-		super.beforeInitialize();
-		if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler", getClassLoader())) {
-			SLF4JBridgeHandler.removeHandlersForRootLogger();
-			SLF4JBridgeHandler.install();
-		}
 	}
 
 	@Override
