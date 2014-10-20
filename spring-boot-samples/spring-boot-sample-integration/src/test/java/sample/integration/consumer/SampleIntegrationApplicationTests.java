@@ -16,12 +16,15 @@
 
 package sample.integration.consumer;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
@@ -29,6 +32,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 
 import sample.integration.SampleIntegrationApplication;
@@ -40,6 +44,7 @@ import static org.junit.Assert.assertTrue;
  * Basic integration tests for service demo application.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class SampleIntegrationApplicationTests {
 
@@ -57,6 +62,11 @@ public class SampleIntegrationApplicationTests {
 		}
 	}
 
+	@Before
+	public void deleteOutput() {
+		FileSystemUtils.deleteRecursively(new File("target/output"));
+	}
+
 	@Test
 	public void testVanillaExchange() throws Exception {
 		SpringApplication.run(ProducerApplication.class, "World");
@@ -69,12 +79,10 @@ public class SampleIntegrationApplicationTests {
 				new Callable<String>() {
 					@Override
 					public String call() throws Exception {
-						Resource[] resources = new Resource[0];
+						Resource[] resources = getResourcesWithContent();
 						while (resources.length == 0) {
 							Thread.sleep(200);
-							resources = ResourcePatternUtils.getResourcePatternResolver(
-									new DefaultResourceLoader()).getResources(
-									"file:target/output/**");
+							resources = getResourcesWithContent();
 						}
 						StringBuilder builder = new StringBuilder();
 						for (Resource resource : resources) {
@@ -85,5 +93,16 @@ public class SampleIntegrationApplicationTests {
 					}
 				});
 		return future.get(30, TimeUnit.SECONDS);
+	}
+
+	private Resource[] getResourcesWithContent() throws IOException {
+		Resource[] candidates = ResourcePatternUtils.getResourcePatternResolver(
+				new DefaultResourceLoader()).getResources("file:target/output/**");
+		for (Resource candidate : candidates) {
+			if (candidate.contentLength() == 0) {
+				return new Resource[0];
+			}
+		}
+		return candidates;
 	}
 }
