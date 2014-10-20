@@ -16,9 +16,9 @@
 	   <destinationLogger>org.springframework.boot</destinationLogger>
 	</appender>
 
-	<root level="INFO">
+	<!-- <root level="INFO">
 		<appender-ref ref="CONSOLE" />
-	</root>
+	</root> -->
 
 	<logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
 	<logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN"/>

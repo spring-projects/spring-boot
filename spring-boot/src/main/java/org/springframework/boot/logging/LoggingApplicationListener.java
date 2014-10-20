@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -193,21 +194,27 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private void initializeSystem(ConfigurableEnvironment environment,
 			LoggingSystem system) {
+		boolean fileOutput = !StringUtils.isEmpty(environment.getProperty("logging.file"));
+		boolean consoleOutput = true;
+		if (!StringUtils.isEmpty(environment.getProperty("logging.console"))
+				&& environment.getProperty("logging.console").equalsIgnoreCase("false")) {
+			consoleOutput = false;
+		}
 		if (environment.containsProperty("logging.config")) {
 			String value = environment.getProperty("logging.config");
 			try {
 				ResourceUtils.getURL(value).openStream().close();
-				system.initialize(value);
+				system.initialize(value, fileOutput, consoleOutput);
 			}
 			catch (Exception ex) {
 				this.logger.warn("Logging environment value '" + value
 						+ "' cannot be opened and will be ignored "
 						+ "(using default location instead)");
-				system.initialize();
+				system.initialize(fileOutput, consoleOutput);
 			}
 		}
 		else {
-			system.initialize();
+			system.initialize(fileOutput, consoleOutput);
 		}
 	}
 
