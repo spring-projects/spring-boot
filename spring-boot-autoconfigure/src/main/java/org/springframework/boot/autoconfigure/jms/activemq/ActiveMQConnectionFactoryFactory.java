@@ -35,10 +35,17 @@ class ActiveMQConnectionFactoryFactory {
 
 	private final ActiveMQProperties properties;
 
-	public ActiveMQConnectionFactoryFactory(ActiveMQProperties properties) {
+	private final String autodetectedAmqConnectionUrl;
+
+	public ActiveMQConnectionFactoryFactory(ActiveMQProperties properties, String autodetectedAmqConnectionUrl) {
 		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;
+		this.autodetectedAmqConnectionUrl = autodetectedAmqConnectionUrl;
 	}
+
+    public ActiveMQConnectionFactoryFactory(ActiveMQProperties properties) {
+		this(properties, null);
+    }
 
 	public <T extends ActiveMQConnectionFactory> T createConnectionFactory(
 			Class<T> factoryClass) {
@@ -69,6 +76,9 @@ class ActiveMQConnectionFactoryFactory {
 		}
 		if (this.properties.isInMemory()) {
 			return DEFAULT_EMBEDDED_BROKER_URL;
+		}
+		if(properties.isAutodetectConnection() && this.autodetectedAmqConnectionUrl != null) {
+    		return autodetectedAmqConnectionUrl;
 		}
 		return DEFAULT_NETWORK_BROKER_URL;
 	}
