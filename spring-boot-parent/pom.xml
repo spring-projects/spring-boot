@@ -45,11 +45,6 @@
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
 				will generally not need -->
 			<dependency>
-				<groupId>org.codehaus.janino</groupId>
-				<artifactId>janino</artifactId>
-				<version>2.6.1</version>
-			</dependency>
-			<dependency>
 				<groupId>jline</groupId>
 				<artifactId>jline</artifactId>
 				<version>2.11</version>

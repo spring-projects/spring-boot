@@ -76,6 +76,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	public static final String PID_KEY = "PID";
 
+	public static final String LOG_FILE = "LOG_FILE";
+
 	static {
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING = new HashMap<String, String>();
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.file", "LOG_FILE");

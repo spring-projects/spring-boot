@@ -6,7 +6,7 @@
 	<!-- <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/> -->
 	<property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } [%t] --- %-40.40logger{39} : %m%n%wex"/>
 
-	<appender name="FILE"
+	<!-- <appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<encoder>
 			<pattern>${FILE_LOG_PATTERN}</pattern>
@@ -19,19 +19,9 @@
 			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
 			<MaxFileSize>10MB</MaxFileSize>
 		</triggeringPolicy>
-	</appender>
+	</appender> -->
 
 	<root level="INFO">
-		<if condition='!property("LOG_CONSOLE").equalsIgnoreCase("false")'>
-    		<then>
-        		<appender-ref ref="CONSOLE" />
-   			 </then>
-		</if>
-		<if condition='property("LOG_FILE") != null'>
-    		<then>
-        		<appender-ref ref="FILE" />
-    		</then>
-		</if>
 	</root>
 
 </included>
