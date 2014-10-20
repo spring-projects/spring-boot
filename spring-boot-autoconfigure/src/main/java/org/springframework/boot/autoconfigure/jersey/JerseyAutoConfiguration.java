@@ -52,7 +52,7 @@ import org.springframework.web.filter.RequestContextFilter;
 @ConditionalOnClass(name = {
 		"org.glassfish.jersey.server.spring.SpringComponentProvider",
 		"javax.servlet.ServletRegistration" })
-@ConditionalOnBean(ResourceConfig.class)
+@ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @AutoConfigureBefore(DispatcherServletAutoConfiguration.class)
