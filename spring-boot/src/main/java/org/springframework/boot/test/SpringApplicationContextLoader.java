@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +91,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				.addAfter(
 						StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 						new MapPropertySource("integrationTest",
-								extractEnvironmentProperties(config.getPropertySourceProperties())));
+								getEnvironmentProperties(config)));
 		application.setEnvironment(environment);
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(config,
 				application);
@@ -101,34 +102,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			application.setWebEnvironment(false);
 		}
 		application.setInitializers(initializers);
-
 		return application.run();
-	}
-
-	// Instead of parsing the keys ourselves, we rely on standard handling
-	protected Map<String, Object> extractEnvironmentProperties(String[] values) {
-		Map<String, Object> properties = new HashMap<String, Object>();
-		if (values==null) {
-			return properties;
-		}
-		StringBuilder sb = new StringBuilder();
-		for (String value : values) {
-			sb.append(value).append(LINE_SEPARATOR);
-		}
-		String content = sb.toString();
-		Properties props = new Properties();
-		try {
-			props.load(new StringReader(content));
-		}
-		catch (IOException e) {
-			throw new IllegalStateException("Unexpected could not load properties from '"
-					+ content + "'", e);
-		}
-
-		for (String name : props.stringPropertyNames()) {
-			properties.put(name, props.getProperty(name));
-		}
-		return properties;
 	}
 
 	@Override
@@ -176,8 +150,52 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		return AnnotationConfigContextLoaderUtils
 				.detectDefaultConfigurationClasses(declaringClass);
 	}
-	
-	
+
+	protected Map<String, Object> getEnvironmentProperties(
+			MergedContextConfiguration config) {
+		Map<String, Object> properties = new LinkedHashMap<String, Object>();
+		// JMX bean names will clash if the same bean is used in multiple contexts
+		disableJmx(properties);
+		properties.putAll(extractEnvironmentProperties(config
+				.getPropertySourceProperties()));
+		if (AnnotationUtils.findAnnotation(config.getTestClass(), IntegrationTest.class) == null) {
+			properties.putAll(getDefaultEnvironmentProperties());
+		}
+		return properties;
+	}
+
+	private void disableJmx(Map<String, Object> properties) {
+		properties.put("spring.jmx.enabled", "false");
+	}
+
+	private Map<String, String> getDefaultEnvironmentProperties() {
+		return Collections.singletonMap("server.port", "-1");
+	}
+
+	Map<String, Object> extractEnvironmentProperties(String[] values) {
+		// Instead of parsing the keys ourselves, we rely on standard handling
+		if (values == null) {
+			return Collections.emptyMap();
+		}
+		String content = StringUtils.arrayToDelimitedString(values, LINE_SEPARATOR);
+		Properties properties = new Properties();
+		try {
+			properties.load(new StringReader(content));
+			return asMap(properties);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unexpected could not load properties from '"
+					+ content + "'", ex);
+		}
+	}
+
+	private Map<String, Object> asMap(Properties properties) {
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		for (String name : properties.stringPropertyNames()) {
+			map.put(name, properties.getProperty(name));
+		}
+		return map;
+	}
 
 	private List<ApplicationContextInitializer<?>> getInitializers(
 			MergedContextConfiguration mergedConfig, SpringApplication application) {

@@ -19,96 +19,59 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Manipulate the TestContext to merge properties from <code>@IntegrationTest</code> value
- * and properties attributes.
- * 
- * @author Dave Syer
+ * Manipulate the TestContext to merge properties from {@code @IntegrationTest}.
  *
+ * @author Dave Syer
+ * @author Phillip Webb
+ * @since 1.2.0
  */
-public class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {
+class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {
 
-	private String[] defaultValues = (String[]) AnnotationUtils.getDefaultValue(
-			IntegrationTest.class, "properties");
+	private static final String ANNOTATION_TYPE = IntegrationTest.class.getName();
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
-		MergedContextConfiguration config = null;
+		Class<?> testClass = testContext.getTestClass();
+		if (AnnotatedElementUtils.isAnnotated(testClass, ANNOTATION_TYPE)) {
+			AnnotationAttributes annotationAttributes = AnnotatedElementUtils
+					.getAnnotationAttributes(testClass, ANNOTATION_TYPE);
+			addPropertySourceProperties(testContext,
+					annotationAttributes.getStringArray("value"));
+		}
+	}
+
+	private void addPropertySourceProperties(TestContext testContext, String[] properties) {
 		try {
-			// Here be hacks...
-			config = (MergedContextConfiguration) ReflectionTestUtils.getField(
-					testContext, "mergedContextConfiguration");
-			ReflectionTestUtils.setField(config, "propertySourceProperties",
-					getEnvironmentProperties(config));
+			addPropertySourcePropertiesUsingReflection(testContext, properties);
 		}
-		catch (IllegalStateException e) {
-			throw e;
+		catch (RuntimeException ex) {
+			throw ex;
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 
-	protected String[] getEnvironmentProperties(MergedContextConfiguration config) {
-		IntegrationTest annotation = AnnotationUtils.findAnnotation(
-				config.getTestClass(), IntegrationTest.class);
-		return mergeProperties(
-				getDefaultEnvironmentProperties(config.getPropertySourceProperties(),
-						annotation), getEnvironmentProperties(annotation));
-	}
-
-	private String[] getDefaultEnvironmentProperties(String[] original,
-			IntegrationTest annotation) {
-		String[] defaults = mergeProperties(original, defaultValues);
-		if (annotation == null || defaults.length == 0) {
-			// Without an @IntegrationTest we can assume the defaults are fine
-			return defaults;
+	private void addPropertySourcePropertiesUsingReflection(TestContext testContext,
+			String[] properties) throws Exception {
+		if (properties.length == 0) {
+			return;
 		}
-		// If @IntegrationTest is present we don't provide a default for the server.port
-		return filterPorts((String[]) AnnotationUtils.getDefaultValue(annotation,
-				"properties"));
-	}
-
-	private String[] filterPorts(String[] values) {
-
-		Set<String> result = new LinkedHashSet<String>();
-		for (String value : values) {
-			if (!value.contains(".port")) {
-				result.add(value);
-			}
-		}
-		return result.toArray(new String[0]);
-
-	}
-
-	private String[] getEnvironmentProperties(IntegrationTest annotation) {
-		if (annotation == null) {
-			return new String[0];
-		}
-		if (Arrays.asList(annotation.properties()).equals(Arrays.asList(defaultValues))) {
-			return annotation.value();
-		}
-		if (annotation.value().length == 0) {
-			return annotation.properties();
-		}
-		throw new IllegalStateException(
-				"Either properties or value can be provided but not both");
-	}
-
-	private String[] mergeProperties(String[] original, String[] extra) {
-		Set<String> result = new LinkedHashSet<String>();
-		for (String value : original) {
-			result.add(value);
-		}
-		for (String value : extra) {
-			result.add(value);
-		}
-		return result.toArray(new String[0]);
+		MergedContextConfiguration configuration = (MergedContextConfiguration) ReflectionTestUtils
+				.getField(testContext, "mergedContextConfiguration");
+		Set<String> merged = new LinkedHashSet<String>((Arrays.asList(configuration
+				.getPropertySourceProperties())));
+		merged.addAll(Arrays.asList(properties));
+		ReflectionTestUtils.setField(configuration, "propertySourceProperties",
+				merged.toArray(new String[merged.size()]));
 	}
 
 }

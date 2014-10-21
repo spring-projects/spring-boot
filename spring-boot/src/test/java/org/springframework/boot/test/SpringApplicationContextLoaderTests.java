@@ -16,9 +16,6 @@
 
 package org.springframework.boot.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Map;
 
 import org.junit.Test;
@@ -26,6 +23,9 @@ import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SpringApplicationContextLoader}
@@ -44,21 +44,9 @@ public class SpringApplicationContextLoaderTests {
 	}
 
 	@Test
-	public void environmentPropertiesDefaults() throws Exception {
-		Map<String, Object> config = getEnvironmentProperties(SimpleConfig.class);
-		assertMissingKey(config, "server.port");
-		assertKey(config, "spring.jmx.enabled", "false");
-	}
-
-	@Test
 	public void environmentPropertiesOverrideDefaults() throws Exception {
 		Map<String, Object> config = getEnvironmentProperties(OverrideConfig.class);
 		assertKey(config, "server.port", "2345");
-	}
-
-	@Test(expected=IllegalStateException.class)
-	public void environmentPropertiesIllegal() throws Exception {
-		getEnvironmentProperties(IllegalConfig.class);
 	}
 
 	@Test
@@ -82,21 +70,20 @@ public class SpringApplicationContextLoaderTests {
 		assertKey(config, "anotherKey", "another=Value");
 	}
 
-	private Map<String, Object> getEnvironmentProperties(Class<?> testClass) throws Exception {
-		TestContext context = new ExposedTestContextManager(testClass).getExposedTestContext();
+	private Map<String, Object> getEnvironmentProperties(Class<?> testClass)
+			throws Exception {
+		TestContext context = new ExposedTestContextManager(testClass)
+				.getExposedTestContext();
 		new IntegrationTestPropertiesListener().prepareTestInstance(context);
-		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils.getField(
-				context, "mergedContextConfiguration");
-		return this.loader.extractEnvironmentProperties(config.getPropertySourceProperties());
+		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils
+				.getField(context, "mergedContextConfiguration");
+		return this.loader.extractEnvironmentProperties(config
+				.getPropertySourceProperties());
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {
 		assertTrue("Key '" + key + "' not found", actual.containsKey(key));
 		assertEquals(value, actual.get(key));
-	}
-
-	private void assertMissingKey(Map<String, Object> actual, String key) {
-		assertTrue("Key '" + key + "' found", !actual.containsKey(key));
 	}
 
 	@IntegrationTest({ "key=myValue", "anotherKey:anotherValue" })
@@ -107,11 +94,7 @@ public class SpringApplicationContextLoaderTests {
 	static class OverrideConfig {
 	}
 
-	@IntegrationTest(value = { "key=aValue", "anotherKey:anotherValue" }, properties = { "key=myValue", "otherKey=otherValue" })
-	static class IllegalConfig {
-	}
-
-	@IntegrationTest(properties = { "key=myValue", "otherKey=otherValue" })
+	@IntegrationTest({ "key=myValue", "otherKey=otherValue" })
 	static class AppendConfig {
 	}
 
@@ -122,18 +105,20 @@ public class SpringApplicationContextLoaderTests {
 	@IntegrationTest({ "key=my:Value", "anotherKey:another=Value" })
 	static class AnotherSeparatorInValue {
 	}
-	
+
+	/**
+	 * {@link TestContextManager} which exposes the {@link TestContext}.
+	 */
 	private static class ExposedTestContextManager extends TestContextManager {
 
 		public ExposedTestContextManager(Class<?> testClass) {
 			super(testClass);
 		}
-		
+
 		public final TestContext getExposedTestContext() {
 			return super.getTestContext();
 		}
-		
-		
+
 	}
 
 }
