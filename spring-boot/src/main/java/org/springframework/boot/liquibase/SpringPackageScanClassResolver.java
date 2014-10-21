@@ -47,25 +47,20 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 		this.logger = logger;
 	}
 
-	@Override
-	protected void find(PackageScanFilter test, String packageName, ClassLoader loader,
-			Set<Class<?>> classes) {
-		MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(
-				loader);
-		try {
-			Resource[] resources = scan(loader, packageName);
-			for (Resource resource : resources) {
-				Class<?> candidate = loadClass(loader, metadataReaderFactory, resource);
-				if (candidate != null && test.matches(candidate)) {
-					classes.add(candidate);
-				}
-			}
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
-
+    @Override
+    protected void findAllClasses(String packageName, ClassLoader loader) {
+        MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(
+                loader);
+        try {
+            Resource[] resources = scan(loader, packageName);
+            for (Resource resource : resources) {
+                addFoundClass(loadClass(loader, metadataReaderFactory, resource));
+            }
+        }
+        catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
 	private Resource[] scan(ClassLoader loader, String packageName) throws IOException {
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(loader);
 		String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
