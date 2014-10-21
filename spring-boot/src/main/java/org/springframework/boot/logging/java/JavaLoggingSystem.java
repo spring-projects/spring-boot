@@ -17,7 +17,6 @@
 package org.springframework.boot.logging.java;
 
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
@@ -66,18 +65,10 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 			LogManager.getLogManager().readConfiguration(
 					ResourceUtils.getURL(resolvedLocation).openStream());
 			if (fileOutput) {
-				Enumeration<String> loggerNames = LogManager.getLogManager().getLoggerNames();
-				while (loggerNames.hasMoreElements()) {
-					String nextElement = loggerNames.nextElement();
-					LogManager.getLogManager().getLogger(nextElement).addHandler(new FileHandler());
-				}
+				Logger.getLogger("").addHandler(new FileHandler());
 			}
 			if (consoleOutput) {
-				Enumeration<String> loggerNames = LogManager.getLogManager().getLoggerNames();
-				while (loggerNames.hasMoreElements()) {
-					String nextElement = loggerNames.nextElement();
-					LogManager.getLogManager().getLogger(nextElement).addHandler(new ConsoleHandler());
-				}
+				Logger.getLogger("").addHandler(new ConsoleHandler());
 			}
 		}
 		catch (Exception ex) {
