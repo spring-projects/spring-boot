@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -48,6 +45,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests for {@link SpringBootWebSecurityConfiguration}.
  *
@@ -59,8 +59,8 @@ public class SpringBootWebSecurityConfigurationTests {
 
 	@After
 	public void close() {
-		if (context != null) {
-			context.close();
+		if (this.context != null) {
+			this.context.close();
 		}
 	}
 
@@ -95,7 +95,7 @@ public class SpringBootWebSecurityConfigurationTests {
 			WebSecurityConfigurerAdapter {
 
 		// It's a bad idea to inject an AuthenticationManager into a
-		// WebSecurityConfigurerAdapter because it can cascade early instantiation, 
+		// WebSecurityConfigurerAdapter because it can cascade early instantiation,
 		// unless you explicitly want the Boot default AuthenticationManager. It's
 		// better to inject the builder, if you want the global AuthenticationManager. It
 		// might even be necessary to wrap the builder in a lazy AuthenticationManager
@@ -106,8 +106,9 @@ public class SpringBootWebSecurityConfigurationTests {
 
 		@Override
 		public void init(WebSecurity web) throws Exception {
-			auth.getOrBuild();
+			this.auth.getOrBuild();
 		}
+
 	}
 
 	@MinimalWebConfiguration
@@ -118,10 +119,8 @@ public class SpringBootWebSecurityConfigurationTests {
 		@Autowired
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
 			// @formatter:off
-			auth.inMemoryAuthentication()
-				.withUser("dave")
-				.password("secret")
-				.roles("USER");
+			auth.inMemoryAuthentication().withUser("dave").password("secret")
+					.roles("USER");
 			// @formatter:on
 		}
 
@@ -142,6 +141,7 @@ public class SpringBootWebSecurityConfigurationTests {
 			HttpMessageConvertersAutoConfiguration.class,
 			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected static @interface MinimalWebConfiguration {
+
 	}
 
 }
