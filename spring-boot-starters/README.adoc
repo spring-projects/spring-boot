@@ -25,4 +25,7 @@ list it here. Just send a pull request for this page.
 
 | http://hdiv.org/[HDIV]
 | https://github.com/hdiv/spring-boot-starter-hdiv
+
+| https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
+| https://github.com/domix/spring-boot-starter-jade4j
 |===
