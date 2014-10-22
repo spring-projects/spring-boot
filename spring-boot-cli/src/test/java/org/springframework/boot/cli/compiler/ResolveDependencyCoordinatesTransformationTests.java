@@ -46,8 +46,8 @@ import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesRes
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ResolveDependencyCoordinatesTransformation}
@@ -73,9 +73,9 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 	@Before
 	public void setupExpectations() {
-		when(this.coordinatesResolver.getGroupId("spring-core")).thenReturn(
+		given(this.coordinatesResolver.getGroupId("spring-core")).willReturn(
 				"org.springframework");
-		when(this.coordinatesResolver.getVersion("spring-core")).thenReturn("4.0.0.RC1");
+		given(this.coordinatesResolver.getVersion("spring-core")).willReturn("4.0.0.RC1");
 	}
 
 	@Test

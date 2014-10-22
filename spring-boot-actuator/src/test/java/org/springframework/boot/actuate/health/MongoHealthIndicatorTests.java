@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.health;
 
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -33,6 +32,9 @@ import com.mongodb.MongoException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MongoHealthIndicator}.
@@ -64,25 +66,24 @@ public class MongoHealthIndicatorTests {
 
 	@Test
 	public void mongoIsUp() throws Exception {
-		CommandResult commandResult = Mockito.mock(CommandResult.class);
-		Mockito.when(commandResult.getString("version")).thenReturn("2.6.4");
-		MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
-		Mockito.when(mongoTemplate.executeCommand("{ buildInfo: 1 }")).thenReturn(
-				commandResult);
+		CommandResult commandResult = mock(CommandResult.class);
+		given(commandResult.getString("version")).willReturn("2.6.4");
+		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
+		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(commandResult);
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
 		Health health = healthIndicator.health();
 		assertEquals(Status.UP, health.getStatus());
 		assertEquals("2.6.4", health.getDetails().get("version"));
 
-		Mockito.verify(commandResult).getString("version");
-		Mockito.verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
+		verify(commandResult).getString("version");
+		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
 	}
 
 	@Test
 	public void mongoIsDown() throws Exception {
-		MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
-		Mockito.when(mongoTemplate.executeCommand("{ buildInfo: 1 }")).thenThrow(
+		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
+		given(mongoTemplate.executeCommand("{ buildInfo: 1 }")).willThrow(
 				new MongoException("Connection failed"));
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
@@ -91,6 +92,6 @@ public class MongoHealthIndicatorTests {
 		assertTrue(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
 
-		Mockito.verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
+		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
 	}
 }

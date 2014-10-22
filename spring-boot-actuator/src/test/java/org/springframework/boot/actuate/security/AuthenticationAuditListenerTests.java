@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.security;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,6 +29,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
 
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -39,8 +39,7 @@ public class AuthenticationAuditListenerTests {
 
 	private final AuthenticationAuditListener listener = new AuthenticationAuditListener();
 
-	private final ApplicationEventPublisher publisher = Mockito
-			.mock(ApplicationEventPublisher.class);
+	private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
 
 	@Before
 	public void init() {

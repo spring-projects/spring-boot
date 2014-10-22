@@ -28,8 +28,8 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link HealthMvcEndpoint}.
@@ -45,13 +45,13 @@ public class HealthMvcEndpointTests {
 	@Before
 	public void init() {
 		this.endpoint = mock(HealthEndpoint.class);
-		when(this.endpoint.isEnabled()).thenReturn(true);
+		given(this.endpoint.isEnabled()).willReturn(true);
 		this.mvc = new HealthMvcEndpoint(this.endpoint);
 	}
 
 	@Test
 	public void up() {
-		when(this.endpoint.invoke()).thenReturn(new Health.Builder().up().build());
+		given(this.endpoint.invoke()).willReturn(new Health.Builder().up().build());
 		Object result = this.mvc.invoke();
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -60,7 +60,7 @@ public class HealthMvcEndpointTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void down() {
-		when(this.endpoint.invoke()).thenReturn(new Health.Builder().down().build());
+		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		Object result = this.mvc.invoke();
 		assertTrue(result instanceof ResponseEntity);
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
@@ -71,8 +71,8 @@ public class HealthMvcEndpointTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void customMapping() {
-		when(this.endpoint.invoke())
-				.thenReturn(new Health.Builder().status("OK").build());
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().status("OK").build());
 		this.mvc.setStatusMapping(Collections.singletonMap("OK",
 				HttpStatus.INTERNAL_SERVER_ERROR));
 		Object result = this.mvc.invoke();

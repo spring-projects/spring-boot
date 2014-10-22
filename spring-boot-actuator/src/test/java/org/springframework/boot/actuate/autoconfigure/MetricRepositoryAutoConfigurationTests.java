@@ -47,10 +47,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link MetricRepositoryAutoConfiguration}.
@@ -129,7 +129,7 @@ public class MetricRepositoryAutoConfigurationTests {
 
 		RichGaugeReader richGaugeReader = context.getBean(RichGaugeReader.class);
 		assertNotNull(richGaugeReader);
-		when(richGaugeReader.findAll()).thenReturn(
+		given(richGaugeReader.findAll()).willReturn(
 				Collections.singletonList(new RichGauge("bar", 3.7d)));
 
 		RichGaugeReaderPublicMetrics publicMetrics = context

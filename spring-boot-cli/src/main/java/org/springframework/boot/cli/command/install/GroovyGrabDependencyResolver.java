@@ -55,11 +55,9 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 			groovyCompiler.compile(createSources(artifactIdentifiers));
 			List<URL> artifactUrls = getClassPathUrls(groovyCompiler);
 			artifactUrls.removeAll(initialUrls);
-
 			for (URL artifactUrl : artifactUrls) {
 				artifactFiles.add(toFile(artifactUrl));
 			}
-
 		}
 		return artifactFiles;
 	}

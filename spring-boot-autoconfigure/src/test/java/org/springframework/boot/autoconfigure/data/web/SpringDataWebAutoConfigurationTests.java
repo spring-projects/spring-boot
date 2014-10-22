@@ -69,4 +69,5 @@ public class SpringDataWebAutoConfigurationTests {
 				.getBeansOfType(PageableHandlerMethodArgumentResolver.class);
 		assertThat(beans.size(), is(equalTo(0)));
 	}
+
 }

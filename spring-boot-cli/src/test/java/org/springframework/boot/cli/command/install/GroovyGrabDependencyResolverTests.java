@@ -78,6 +78,7 @@ public class GroovyGrabDependencyResolverTests {
 			public String[] getClasspath() {
 				return new String[] { "." };
 			}
+
 		};
 		this.resolver = new GroovyGrabDependencyResolver(configuration);
 	}

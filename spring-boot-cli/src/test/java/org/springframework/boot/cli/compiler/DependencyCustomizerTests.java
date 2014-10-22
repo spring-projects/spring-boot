@@ -35,7 +35,7 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 /**
  * Tests for {@link DependencyCustomizer}
@@ -56,13 +56,12 @@ public class DependencyCustomizerTests {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-
-		when(this.resolver.getGroupId("spring-boot-starter-logging")).thenReturn(
+		given(this.resolver.getGroupId("spring-boot-starter-logging")).willReturn(
 				"org.springframework.boot");
-		when(this.resolver.getArtifactId("spring-boot-starter-logging")).thenReturn(
+		given(this.resolver.getArtifactId("spring-boot-starter-logging")).willReturn(
 				"spring-boot-starter-logging");
-		when(this.resolver.getVersion("spring-boot-starter-logging")).thenReturn("1.2.3");
-
+		given(this.resolver.getVersion("spring-boot-starter-logging"))
+				.willReturn("1.2.3");
 		this.moduleNode.addClass(this.classNode);
 		this.dependencyCustomizer = new DependencyCustomizer(new GroovyClassLoader(
 				getClass().getClassLoader()), this.moduleNode,
@@ -169,4 +168,5 @@ public class DependencyCustomizerTests {
 	private Object getMemberValue(AnnotationNode annotationNode, String member) {
 		return ((ConstantExpression) annotationNode.getMember(member)).getValue();
 	}
+
 }

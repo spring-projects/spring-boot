@@ -2047,7 +2047,7 @@ customize the Atomikos `UserTransactionServiceIml`. See the
 {dc-spring-boot}/jta/atomikos/AtomikosProperties.{dc-ext}[`AtomikosProperties` javadoc]
 for complete details.
 
-CAUTION: To ensure that multiple transaction managers can safely coordinate the same
+NOTE: To ensure that multiple transaction managers can safely coordinate the same
 resource managers, each Atomikos instance must be configured with a unique ID. By default
 this ID is the IP address of the machine on which Atomikos is running. To ensure
 uniqueness in production, you should configure the `spring.jta.transaction-manager-id`
@@ -2069,7 +2069,7 @@ are also bound to the `bitronix.tm.Configuration` bean, allowing for complete
 customization. See the http://btm.codehaus.org/api/2.0.1/bitronix/tm/Configuration.html[Bitronix
 documentation] for details.
 
-CAUTION: To ensure that multiple transaction managers can safely coordinate the same
+NOTE: To ensure that multiple transaction managers can safely coordinate the same
 resource managers, each Bitronix instance must be configured with a unique ID. By default
 this ID is the IP address of the machine on which Bitronix is running. To ensure
 uniqueness in production, you should configure the `spring.jta.transaction-manager-id`

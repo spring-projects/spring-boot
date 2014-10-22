@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -40,6 +39,8 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServerPropertiesAutoConfiguration}.
@@ -57,7 +58,7 @@ public class ServerPropertiesAutoConfigurationTests {
 
 	@Before
 	public void init() {
-		containerFactory = Mockito.mock(AbstractEmbeddedServletContainerFactory.class);
+		containerFactory = mock(AbstractEmbeddedServletContainerFactory.class);
 	}
 
 	@After
@@ -77,12 +78,12 @@ public class ServerPropertiesAutoConfigurationTests {
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertNotNull(server);
 		assertEquals(9000, server.getPort().intValue());
-		Mockito.verify(containerFactory).setPort(9000);
+		verify(containerFactory).setPort(9000);
 	}
 
 	@Test
 	public void tomcatProperties() throws Exception {
-		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
+		containerFactory = mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -92,7 +93,7 @@ public class ServerPropertiesAutoConfigurationTests {
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertNotNull(server);
 		assertEquals(new File("target/foo"), server.getTomcat().getBasedir());
-		Mockito.verify(containerFactory).setPort(9000);
+		verify(containerFactory).setPort(9000);
 	}
 
 	@Test
@@ -113,7 +114,7 @@ public class ServerPropertiesAutoConfigurationTests {
 
 	@Test
 	public void customizeTomcatWithCustomizer() throws Exception {
-		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
+		containerFactory = mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, CustomizeConfig.class,
 				ServerPropertiesAutoConfiguration.class,
@@ -123,7 +124,7 @@ public class ServerPropertiesAutoConfigurationTests {
 		assertNotNull(server);
 		// The server.port environment property was not explicitly set so the container
 		// customizer should take precedence...
-		Mockito.verify(containerFactory).setPort(3000);
+		verify(containerFactory).setPort(3000);
 	}
 
 	@Test

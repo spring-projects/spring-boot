@@ -35,6 +35,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.SystemPropertyUtils;
 
 /**
+ * Shared logic for the {@link InstallCommand} and {@link UninstallCommand}.
+ *
  * @author Andy Wilkinson
  * @since 1.2.0
  */
@@ -44,13 +46,13 @@ class Installer {
 
 	private final Properties installCounts;
 
-	Installer(OptionSet options, CompilerOptionHandler compilerOptionHandler)
+	public Installer(OptionSet options, CompilerOptionHandler compilerOptionHandler)
 			throws IOException {
 		this(new GroovyGrabDependencyResolver(createCompilerConfiguration(options,
 				compilerOptionHandler)));
 	}
 
-	Installer(DependencyResolver resolver) throws IOException {
+	public Installer(DependencyResolver resolver) throws IOException {
 		this.dependencyResolver = resolver;
 		this.installCounts = loadInstallCounts();
 	}
@@ -59,7 +61,6 @@ class Installer {
 			OptionSet options, CompilerOptionHandler compilerOptionHandler) {
 		List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 				.createDefaultRepositoryConfiguration();
-
 		return new OptionSetGroovyCompilerConfiguration(options, compilerOptionHandler,
 				repositoryConfiguration) {
 			@Override
@@ -69,17 +70,14 @@ class Installer {
 		};
 	}
 
-	private static Properties loadInstallCounts() throws IOException {
-
+	private Properties loadInstallCounts() throws IOException {
 		Properties properties = new Properties();
-
 		File installed = getInstalled();
 		if (installed.exists()) {
 			FileReader reader = new FileReader(installed);
 			properties.load(reader);
 			reader.close();
 		}
-
 		return properties;
 	}
 
@@ -96,9 +94,7 @@ class Installer {
 	public void install(List<String> artifactIdentifiers) throws Exception {
 		File libDirectory = getDefaultLibDirectory();
 		libDirectory.mkdirs();
-
 		Log.info("Installing into: " + libDirectory);
-
 		List<File> artifactFiles = this.dependencyResolver.resolve(artifactIdentifiers);
 		for (File artifactFile : artifactFiles) {
 			int installCount = getInstallCount(artifactFile);
@@ -108,7 +104,6 @@ class Installer {
 			}
 			setInstallCount(artifactFile, installCount + 1);
 		}
-
 		saveInstallCounts();
 	}
 
@@ -131,9 +126,7 @@ class Installer {
 
 	public void uninstall(List<String> artifactIdentifiers) throws Exception {
 		File libDirectory = getDefaultLibDirectory();
-
 		Log.info("Uninstalling from: " + libDirectory);
-
 		List<File> artifactFiles = this.dependencyResolver.resolve(artifactIdentifiers);
 		for (File artifactFile : artifactFiles) {
 			int installCount = getInstallCount(artifactFile);
@@ -142,31 +135,27 @@ class Installer {
 			}
 			setInstallCount(artifactFile, installCount - 1);
 		}
-
 		saveInstallCounts();
 	}
 
 	public void uninstallAll() throws Exception {
 		File libDirectory = getDefaultLibDirectory();
-
 		Log.info("Uninstalling from: " + libDirectory);
-
 		for (String name : this.installCounts.stringPropertyNames()) {
 			new File(libDirectory, name).delete();
 		}
-
 		this.installCounts.clear();
 		saveInstallCounts();
 	}
 
-	private static File getDefaultLibDirectory() {
+	private File getDefaultLibDirectory() {
 		String home = SystemPropertyUtils
 				.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
-		final File lib = new File(home, "lib");
-		return lib;
+		return new File(home, "lib");
 	}
 
-	private static File getInstalled() {
+	private File getInstalled() {
 		return new File(getDefaultLibDirectory(), ".installed");
 	}
+
 }

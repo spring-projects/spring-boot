@@ -56,34 +56,28 @@ public class UninstallCommand extends OptionParsingCommand {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		protected ExitStatus run(OptionSet options) throws Exception {
-
-			@SuppressWarnings("unchecked")
 			List<String> args = (List<String>) options.nonOptionArguments();
-
 			try {
 				if (options.has(this.allOption)) {
 					if (!args.isEmpty()) {
 						throw new IllegalArgumentException(
 								"Please use --all without specifying any dependencies");
 					}
-
 					new Installer(options, this).uninstallAll();
 				}
 				if (args.isEmpty()) {
 					throw new IllegalArgumentException(
 							"Please specify at least one dependency, in the form group:artifact:version, to uninstall");
 				}
-
 				new Installer(options, this).uninstall(args);
 			}
-			catch (Exception e) {
-				String message = e.getMessage();
-				Log.error(message != null ? message : e.getClass().toString());
+			catch (Exception ex) {
+				String message = ex.getMessage();
+				Log.error(message != null ? message : ex.getClass().toString());
 			}
-
 			return ExitStatus.OK;
-
 		}
 
 	}

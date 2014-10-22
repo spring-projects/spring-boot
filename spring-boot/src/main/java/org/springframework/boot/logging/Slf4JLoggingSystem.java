@@ -20,7 +20,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.util.ClassUtils;
 
 /**
- * Abstract base class for {@link LoggingSystem} implementations that utilise SLF4J.
+ * Abstract base class for {@link LoggingSystem} implementations that utilize SLF4J.
  *
  * @author Andy Wilkinson
  * @since 1.2.0

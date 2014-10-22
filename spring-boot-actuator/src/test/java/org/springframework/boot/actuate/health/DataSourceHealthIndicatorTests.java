@@ -31,10 +31,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link DataSourceHealthIndicator}.
@@ -88,9 +88,9 @@ public class DataSourceHealthIndicatorTests {
 	public void connectionClosed() throws Exception {
 		DataSource dataSource = mock(DataSource.class);
 		Connection connection = mock(Connection.class);
-		when(connection.getMetaData()).thenReturn(
+		given(connection.getMetaData()).willReturn(
 				this.dataSource.getConnection().getMetaData());
-		when(dataSource.getConnection()).thenReturn(connection);
+		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
 		assertNotNull(health.getDetails().get("database"));

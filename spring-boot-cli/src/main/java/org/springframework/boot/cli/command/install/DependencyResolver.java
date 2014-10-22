@@ -20,6 +20,9 @@ import java.io.File;
 import java.util.List;
 
 /**
+ * Resolve artifact identifiers (typically in the form {@literal group:artifact:version})
+ * to {@link File}s.
+ *
  * @author Andy Wilkinson
  * @since 1.2.0
  */
@@ -28,7 +31,6 @@ interface DependencyResolver {
 	/**
 	 * Resolves the given {@code artifactIdentifiers}, typically in the form
 	 * "group:artifact:version", and their dependencies.
-	 *
 	 * @param artifactIdentifiers The artifacts to resolve
 	 * @return The {@code File}s for the resolved artifacts
 	 * @throws Exception if dependency resolution fails

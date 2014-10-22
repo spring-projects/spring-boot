@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ShutdownMvcEndpoint}.
@@ -36,12 +34,8 @@ import static org.mockito.Mockito.when;
 public class ShutdownMvcEndpointTests {
 
 	private ShutdownEndpoint endpoint = mock(ShutdownEndpoint.class);
-	private ShutdownMvcEndpoint mvc = new ShutdownMvcEndpoint(this.endpoint);
 
-	@Before
-	public void init() {
-		when(this.endpoint.isEnabled()).thenReturn(false);
-	}
+	private ShutdownMvcEndpoint mvc = new ShutdownMvcEndpoint(this.endpoint);
 
 	@Test
 	public void disabled() {

@@ -26,7 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Matchers.any;
@@ -43,8 +42,8 @@ public class ServletListenerRegistrationBeanTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private final ServletContextListener listener = Mockito
-			.mock(ServletContextListener.class);
+	@Mock
+	private ServletContextListener listener;
 
 	@Mock
 	private ServletContext servletContext;

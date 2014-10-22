@@ -32,8 +32,8 @@ import org.springframework.util.FileSystemUtils;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link Installer}
@@ -65,22 +65,17 @@ public class InstallerTests {
 	@Test
 	public void installNewDependency() throws Exception {
 		File foo = createTemporaryFile("foo.jar");
-
-		when(this.resolver.resolve(Arrays.asList("foo"))).thenReturn(Arrays.asList(foo));
+		given(this.resolver.resolve(Arrays.asList("foo"))).willReturn(Arrays.asList(foo));
 		this.installer.install(Arrays.asList("foo"));
-
 		assertThat(getNamesOfFilesInLib(), containsInAnyOrder("foo.jar", ".installed"));
 	}
 
 	@Test
 	public void installAndUninstall() throws Exception {
 		File foo = createTemporaryFile("foo.jar");
-
-		when(this.resolver.resolve(Arrays.asList("foo"))).thenReturn(Arrays.asList(foo));
-
+		given(this.resolver.resolve(Arrays.asList("foo"))).willReturn(Arrays.asList(foo));
 		this.installer.install(Arrays.asList("foo"));
 		this.installer.uninstall(Arrays.asList("foo"));
-
 		assertThat(getNamesOfFilesInLib(), contains(".installed"));
 	}
 
@@ -89,30 +84,24 @@ public class InstallerTests {
 		File alpha = createTemporaryFile("alpha.jar");
 		File bravo = createTemporaryFile("bravo.jar");
 		File charlie = createTemporaryFile("charlie.jar");
-
-		when(this.resolver.resolve(Arrays.asList("bravo"))).thenReturn(
+		given(this.resolver.resolve(Arrays.asList("bravo"))).willReturn(
 				Arrays.asList(bravo, alpha));
-
-		when(this.resolver.resolve(Arrays.asList("charlie"))).thenReturn(
+		given(this.resolver.resolve(Arrays.asList("charlie"))).willReturn(
 				Arrays.asList(charlie, alpha));
 
 		this.installer.install(Arrays.asList("bravo"));
-
 		assertThat(getNamesOfFilesInLib(),
 				containsInAnyOrder("alpha.jar", "bravo.jar", ".installed"));
 
 		this.installer.install(Arrays.asList("charlie"));
-
 		assertThat(getNamesOfFilesInLib(),
 				containsInAnyOrder("alpha.jar", "bravo.jar", "charlie.jar", ".installed"));
 
 		this.installer.uninstall(Arrays.asList("bravo"));
-
 		assertThat(getNamesOfFilesInLib(),
 				containsInAnyOrder("alpha.jar", "charlie.jar", ".installed"));
 
 		this.installer.uninstall(Arrays.asList("charlie"));
-
 		assertThat(getNamesOfFilesInLib(), containsInAnyOrder(".installed"));
 	}
 
@@ -122,20 +111,17 @@ public class InstallerTests {
 		File bravo = createTemporaryFile("bravo.jar");
 		File charlie = createTemporaryFile("charlie.jar");
 
-		when(this.resolver.resolve(Arrays.asList("bravo"))).thenReturn(
+		given(this.resolver.resolve(Arrays.asList("bravo"))).willReturn(
 				Arrays.asList(bravo, alpha));
-
-		when(this.resolver.resolve(Arrays.asList("charlie"))).thenReturn(
+		given(this.resolver.resolve(Arrays.asList("charlie"))).willReturn(
 				Arrays.asList(charlie, alpha));
 
 		this.installer.install(Arrays.asList("bravo"));
 		this.installer.install(Arrays.asList("charlie"));
-
 		assertThat(getNamesOfFilesInLib(),
 				containsInAnyOrder("alpha.jar", "bravo.jar", "charlie.jar", ".installed"));
 
 		this.installer.uninstallAll();
-
 		assertThat(getNamesOfFilesInLib(), containsInAnyOrder(".installed"));
 	}
 
@@ -152,4 +138,5 @@ public class InstallerTests {
 		temporaryFile.deleteOnExit();
 		return temporaryFile;
 	}
+
 }

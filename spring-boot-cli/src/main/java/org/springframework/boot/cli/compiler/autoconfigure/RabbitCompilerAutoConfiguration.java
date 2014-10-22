@@ -22,7 +22,6 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
-import org.springframework.boot.groovy.EnableRabbitMessaging;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Rabbit.
@@ -46,6 +45,7 @@ public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 		imports.addStarImports("org.springframework.amqp.rabbit.annotation",
 				"org.springframework.amqp.rabbit.core",
@@ -54,7 +54,7 @@ public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 				"org.springframework.amqp.rabbit.listener",
 				"org.springframework.amqp.rabbit.listener.adapter",
 				"org.springframework.amqp.core").addImports(
-				EnableRabbitMessaging.class.getCanonicalName());
+				org.springframework.boot.groovy.EnableRabbitMessaging.class.getName());
 	}
 
 }

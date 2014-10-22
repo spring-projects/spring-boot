@@ -25,7 +25,6 @@ import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -53,6 +52,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -365,7 +365,7 @@ public class JacksonAutoConfigurationTests {
 		@Bean
 		@Primary
 		public ObjectMapper objectMapper() {
-			return Mockito.mock(ObjectMapper.class);
+			return mock(ObjectMapper.class);
 		}
 
 	}

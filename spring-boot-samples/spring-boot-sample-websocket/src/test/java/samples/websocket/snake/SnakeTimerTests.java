@@ -22,8 +22,8 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 public class SnakeTimerTests {
@@ -31,7 +31,7 @@ public class SnakeTimerTests {
 	@Test
 	public void removeDysfunctionalSnakes() throws Exception {
 		Snake snake = mock(Snake.class);
-		doThrow(new IOException()).when(snake).sendMessage(anyString());
+		willThrow(new IOException()).given(snake).sendMessage(anyString());
 		SnakeTimer.addSnake(snake);
 
 		SnakeTimer.broadcast("");

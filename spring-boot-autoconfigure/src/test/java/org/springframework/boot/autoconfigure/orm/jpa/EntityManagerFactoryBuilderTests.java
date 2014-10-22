@@ -21,12 +21,12 @@ import java.util.Collections;
 import javax.sql.DataSource;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EntityManagerFactoryBuilder}.
@@ -37,9 +37,9 @@ public class EntityManagerFactoryBuilderTests {
 
 	private JpaProperties properties = new JpaProperties();
 
-	private DataSource dataSource1 = Mockito.mock(DataSource.class);
+	private DataSource dataSource1 = mock(DataSource.class);
 
-	private DataSource dataSource2 = Mockito.mock(DataSource.class);
+	private DataSource dataSource2 = mock(DataSource.class);
 
 	@Test
 	public void entityManagerFactoryPropertiesNotOverwritingDefaults() {

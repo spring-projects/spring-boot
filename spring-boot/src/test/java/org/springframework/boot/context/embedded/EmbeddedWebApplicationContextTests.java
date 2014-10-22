@@ -35,7 +35,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
@@ -206,7 +205,7 @@ public class EmbeddedWebApplicationContextTests {
 		OrderedFilter filter = new OrderedFilter();
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
 		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(Mockito.mock(Filter.class));
+		registration.setFilter(mock(Filter.class));
 		registration.setOrder(100);
 		this.context.registerBeanDefinition("filterRegistrationBean",
 				beanDefinition(registration));

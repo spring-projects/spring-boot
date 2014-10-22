@@ -145,6 +145,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 			objectMapperBuilder.simpleDateFormat("yyyy-MM");
 			return objectMapperBuilder;
 		}
+
 	}
 
 }

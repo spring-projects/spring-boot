@@ -33,7 +33,6 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -51,6 +50,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DataSourceAutoConfiguration}.
@@ -263,7 +263,7 @@ public class DataSourceAutoConfigurationTests {
 
 		@Override
 		public Connection connect(String url, Properties info) throws SQLException {
-			return Mockito.mock(Connection.class);
+			return mock(Connection.class);
 		}
 
 		@Override
@@ -294,7 +294,7 @@ public class DataSourceAutoConfigurationTests {
 
 		@Override
 		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-			return Mockito.mock(Logger.class);
+			return mock(Logger.class);
 		}
 
 	}
