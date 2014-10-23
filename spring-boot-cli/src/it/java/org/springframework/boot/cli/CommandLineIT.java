@@ -43,7 +43,7 @@ public class CommandLineIT {
 		Invocation cli = this.cli.invoke("hint");
 		assertThat(cli.await(), equalTo(0));
 		assertThat(cli.getErrorOutput().length(), equalTo(0));
-		assertThat(cli.getStandardOutputLines().size(), equalTo(9));
+		assertThat(cli.getStandardOutputLines().size(), equalTo(10));
 	}
 
 	@Test
