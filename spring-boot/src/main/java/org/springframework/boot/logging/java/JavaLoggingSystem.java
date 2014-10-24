@@ -19,8 +19,6 @@ package org.springframework.boot.logging.java;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -40,6 +38,11 @@ import org.springframework.util.SystemPropertyUtils;
  */
 public class JavaLoggingSystem extends AbstractLoggingSystem {
 
+
+	public JavaLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
+		super(classLoader, fileOutput, consoleOutput);
+	}
+
 	private static final Map<LogLevel, Level> LEVELS;
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
@@ -53,23 +56,27 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
-	public JavaLoggingSystem(ClassLoader classLoader) {
-		super(classLoader, "logging.properties");
+
+	@Override
+	protected String[] getLogFileName(boolean fileOutput, boolean consoleOutput) {
+		if (fileOutput && consoleOutput) {
+			return new String[] { "logging.properties" };
+		}
+		else if (fileOutput) {
+			return new String[] { "logging-file.properties" };
+		}
+		else {
+			return new String[] { "logging-console.properties" };
+		}
 	}
 
 	@Override
-	public void initialize(String configLocation, boolean fileOutput, boolean consoleOutput) {
+	public void initialize(String configLocation) {
 		Assert.notNull(configLocation, "ConfigLocation must not be null");
 		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
 		try {
 			LogManager.getLogManager().readConfiguration(
 					ResourceUtils.getURL(resolvedLocation).openStream());
-			if (fileOutput) {
-				Logger.getLogger("").addHandler(new FileHandler());
-			}
-			if (consoleOutput) {
-				Logger.getLogger("").addHandler(new ConsoleHandler());
-			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize logging from "

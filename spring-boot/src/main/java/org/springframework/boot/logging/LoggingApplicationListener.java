@@ -133,8 +133,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			if (System.getProperty(PID_KEY) == null) {
 				System.setProperty(PID_KEY, new ApplicationPid().toString());
 			}
-			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
-					.getDefaultClassLoader());
+			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils.getDefaultClassLoader(), false, false);
 			loggingSystem.beforeInitialize();
 		}
 	}
@@ -146,7 +145,13 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
 		initializeEarlyLoggingLevel(environment);
 		cleanLogTempProperty();
-		LoggingSystem system = LoggingSystem.get(classLoader);
+		boolean fileOutput = !StringUtils.isEmpty(environment.getProperty("logging.file"));
+		boolean consoleOutput = true;
+		if (!StringUtils.isEmpty(environment.getProperty("logging.console"))
+				&& environment.getProperty("logging.console").equalsIgnoreCase("false")) {
+			consoleOutput = false;
+		}
+		LoggingSystem system = LoggingSystem.get(classLoader, fileOutput, consoleOutput);
 		boolean systemEnvironmentChanged = mapSystemPropertiesFromSpring(environment);
 		if (systemEnvironmentChanged) {
 			// Re-initialize the defaults in case the system Environment changed
@@ -195,27 +200,21 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private void initializeSystem(ConfigurableEnvironment environment,
 			LoggingSystem system) {
-		boolean fileOutput = !StringUtils.isEmpty(environment.getProperty("logging.file"));
-		boolean consoleOutput = true;
-		if (!StringUtils.isEmpty(environment.getProperty("logging.console"))
-				&& environment.getProperty("logging.console").equalsIgnoreCase("false")) {
-			consoleOutput = false;
-		}
 		if (environment.containsProperty("logging.config")) {
 			String value = environment.getProperty("logging.config");
 			try {
 				ResourceUtils.getURL(value).openStream().close();
-				system.initialize(value, fileOutput, consoleOutput);
+				system.initialize(value);
 			}
 			catch (Exception ex) {
 				this.logger.warn("Logging environment value '" + value
 						+ "' cannot be opened and will be ignored "
 						+ "(using default location instead)");
-				system.initialize(fileOutput, consoleOutput);
+				system.initialize();
 			}
 		}
 		else {
-			system.initialize(fileOutput, consoleOutput);
+			system.initialize();
 		}
 	}
 

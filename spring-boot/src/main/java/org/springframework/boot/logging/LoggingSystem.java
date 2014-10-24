@@ -54,13 +54,13 @@ public abstract class LoggingSystem {
 	 * try to find system specific configuration on classpath before falling back to
 	 * sensible defaults.
 	 */
-	public abstract void initialize(boolean fileOutput, boolean consoleOutput);
+	public abstract void initialize();
 
 	/**
 	 * Initialize the logging system from a logging configuration location.
 	 * @param configLocation a log configuration location
 	 */
-	public abstract void initialize(String configLocation, boolean fileOutput, boolean consoleOutput);
+	public abstract void initialize(String configLocation);
 
 	/**
 	 * Sets the logging level for a given logger.
@@ -73,14 +73,14 @@ public abstract class LoggingSystem {
 	 * Detect and return the logging system in use.
 	 * @return The logging system
 	 */
-	public static LoggingSystem get(ClassLoader classLoader) {
+	public static LoggingSystem get(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
 		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
 			if (ClassUtils.isPresent(entry.getKey(), classLoader)) {
 				try {
 					Class<?> systemClass = ClassUtils.forName(entry.getValue(),
 							classLoader);
-					return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
-							.newInstance(classLoader);
+					return (LoggingSystem) systemClass.getConstructor(ClassLoader.class, boolean.class, boolean.class)
+							.newInstance(classLoader, fileOutput, consoleOutput);
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(ex);

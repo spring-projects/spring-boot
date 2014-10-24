@@ -54,8 +54,21 @@ public class Log4JLoggingSystem extends AbstractLoggingSystem {
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
-	public Log4JLoggingSystem(ClassLoader classLoader) {
-		super(classLoader, "log4j.xml", "log4j.properties");
+	public Log4JLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
+		super(classLoader, fileOutput, consoleOutput);
+	}
+
+	@Override
+	protected String[] getLogFileName(boolean fileOutput, boolean consoleOutput) {
+		if (fileOutput && consoleOutput) {
+			return new String[] { "log4j.xml", "log4j.properties" };
+		}
+		else if (fileOutput) {
+			return new String[] { "log4j-file.xml", "log4j-file.properties" };
+		}
+		else {
+			return new String[] { "log4j-console.xml", "log4j-console.properties" };
+		}
 	}
 
 	@Override
@@ -68,16 +81,8 @@ public class Log4JLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation, boolean fileOutput, boolean consoleOutput) {
+	public void initialize(String configLocation) {
 		Assert.notNull(configLocation, "ConfigLocation must not be null");
-		String logCategory = "INFO";
-		if (fileOutput) {
-			logCategory += ",FILE";
-		}
-		if (consoleOutput) {
-			logCategory += ",CONSOLE";
-		}
-		System.setProperty("LOG_CATEGORY", logCategory);
 		try {
 			Log4jConfigurer.initLogging(configLocation);
 		}

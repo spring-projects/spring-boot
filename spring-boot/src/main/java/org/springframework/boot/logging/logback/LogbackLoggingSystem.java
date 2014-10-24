@@ -17,7 +17,6 @@
 package org.springframework.boot.logging.logback;
 
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +28,6 @@ import org.slf4j.impl.StaticLoggerBinder;
 
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogLevel;
-import org.springframework.boot.logging.LoggingApplicationListener;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -39,11 +37,7 @@ import org.springframework.util.SystemPropertyUtils;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
-import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 
 /**
  * {@link LoggingSystem} for for <a href="http://logback.qos.ch">logback</a>.
@@ -52,6 +46,16 @@ import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
  * @author Dave Syer
  */
 public class LogbackLoggingSystem extends AbstractLoggingSystem {
+
+	/**
+	 * @param classLoader
+	 * @param fileOutput
+	 * @param consoleOutput
+	 */
+	public LogbackLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
+		super(classLoader, fileOutput, consoleOutput);
+		// TODO Auto-generated constructor stub
+	}
 
 	private static final Map<LogLevel, Level> LEVELS;
 
@@ -71,9 +75,20 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
-	public LogbackLoggingSystem(ClassLoader classLoader) {
-		super(classLoader, "logback-test.groovy", "logback-test.xml", "logback.groovy",
-				"logback.xml");
+
+	@Override
+	protected String[] getLogFileName(boolean fileOutput, boolean consoleOutput) {
+		if (fileOutput && consoleOutput) {
+			return new String[] { "logback-test.groovy", "logback-test.xml", "logback.groovy", "logback.xml" };
+		}
+		else if (fileOutput) {
+			return new String[] { "logback-test-file.groovy", "logback-test-file.xml", "logback-file.groovy",
+					"logback-file.xml" };
+		}
+		else {
+			return new String[] { "logback-test-console.groovy", "logback-test-console.xml", "logback-console.groovy",
+					"logback-console.xml" };
+		}
 	}
 
 	@Override
@@ -98,7 +113,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation, boolean fileOutput, boolean consoleOutput) {
+	public void initialize(String configLocation) {
 		Assert.notNull(configLocation, "ConfigLocation must not be null");
 		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
@@ -117,61 +132,6 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		try {
 			URL url = ResourceUtils.getURL(resolvedLocation);
 			new ContextInitializer(context).configureByResource(url);
-			if (consoleOutput) {
-				ch.qos.logback.core.ConsoleAppender consoleAppender = new ch.qos.logback.core.ConsoleAppender();
-				consoleAppender.setContext(context);
-				consoleAppender.setName("CONSOLE");
-				PatternLayoutEncoder encoder=new PatternLayoutEncoder();
-				encoder.setContext(context);
-				encoder.setCharset(Charset.forName("UTF-8"));
-				String resolvedPattern = this.CONSOLE_LOG_PATTERN.replace("${PID}",
-						System.getProperty(LoggingApplicationListener.PID_KEY));
-				encoder.setPattern(resolvedPattern);
-				encoder.start();
-				consoleAppender.setEncoder(encoder);
-				consoleAppender.start();
-				for (ch.qos.logback.classic.Logger logger : context.getLoggerList()) {
-					logger.addAppender(consoleAppender);
-				}
-			}
-			if (fileOutput) {
-				RollingFileAppender rollingFile = new RollingFileAppender();
-				rollingFile.setContext(context);
-				rollingFile.setName("FILE");
-
-				// Optional
-				rollingFile.setFile(System.getProperty(LoggingApplicationListener.LOG_FILE));
-				rollingFile.setAppend(true);
-
-				// Set up rolling policy
-				FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
-				rollingPolicy.setFileNamePattern(LoggingApplicationListener.LOG_FILE + ".%i");
-				rollingPolicy.setParent(rollingFile);
-				rollingPolicy.setContext(context);
-				rollingPolicy.start();
-
-				SizeBasedTriggeringPolicy triggeringPolicy = new SizeBasedTriggeringPolicy();
-				triggeringPolicy.setMaxFileSize("10MB");
-				triggeringPolicy.setContext(context);
-				triggeringPolicy.start();
-
-				// set up pattern encoder
-				PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-				encoder.setContext(context);
-				String resolvedPattern = this.FILE_LOG_PATTERN.replace("${PID}",
-						System.getProperty(LoggingApplicationListener.PID_KEY));
-				encoder.setPattern(resolvedPattern);
-				encoder.start();
-
-				rollingFile.setTriggeringPolicy(triggeringPolicy);
-				rollingFile.setRollingPolicy(rollingPolicy);
-				rollingFile.setEncoder(encoder);
-				rollingFile.start();
-
-				for (ch.qos.logback.classic.Logger logger : context.getLoggerList()) {
-					logger.addAppender(rollingFile);
-				}
-			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize logging from "

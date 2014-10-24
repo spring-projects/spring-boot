@@ -31,10 +31,12 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	private final String[] paths;
 
-	public AbstractLoggingSystem(ClassLoader classLoader, String... paths) {
+	public AbstractLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
 		this.classLoader = classLoader;
-		this.paths = paths.clone();
+		this.paths = getLogFileName(fileOutput, consoleOutput);
 	}
+
+	protected abstract String[] getLogFileName(boolean fileOutput, boolean consoleOutput);
 
 	protected final ClassLoader getClassLoader() {
 		return this.classLoader;
@@ -46,20 +48,24 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	@Override
-	public void initialize(boolean fileOutput, boolean consoleOutput) {
+	public void initialize() {
 		for (String path : this.paths) {
 			ClassPathResource resource = new ClassPathResource(path, this.classLoader);
 			if (resource.exists()) {
-				initialize("classpath:" + path, fileOutput, consoleOutput);
+				initialize("classpath:" + path);
 				return;
 			}
 		}
 		// Fallback to the non-prefixed value
-		initialize(getPackagedConfigFile(this.paths[this.paths.length - 1]), fileOutput, consoleOutput);
+		initialize(getPackagedConfigFile(this.paths[this.paths.length - 1]));
 	}
 
 	protected void initializeWithSensibleDefaults() {
-		initialize(getPackagedConfigFile("basic-" + this.paths[this.paths.length - 1]), false, false);
+		String path = this.paths[this.paths.length - 1];
+		if (path.contains("-")) {
+			path = path.substring(0, path.indexOf("-")) + path.substring(path.indexOf("."));
+		}
+		initialize(getPackagedConfigFile("basic-" + path));
 	}
 
 	protected final String getPackagedConfigFile(String fileName) {
