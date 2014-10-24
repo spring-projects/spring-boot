@@ -94,6 +94,17 @@ Here is an example ``hello world'' web application written in Groovy:
 ----
 
 
+[[cli-jvm-args]]
+=== Passing JVM options to applications using the CLI
+You can pass JVM options to an application launched by the Spring Boot CLI via the `JVM_OPTS` environment variable.
+
+Here s an example for passing the `-Xmx` JVM option to an application.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ JAVA_OPTS="-Xmx2g" spring run -cp . App.groovy	
+----
+
 
 [[cli-install-uninstall]]
 === Adding dependencies to the CLI
