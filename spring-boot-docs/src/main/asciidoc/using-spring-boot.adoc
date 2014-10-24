@@ -216,6 +216,9 @@ The following application starters are provided by Spring Boot under the
 |`spring-boot-starter`
 |The core Spring Boot starter, including auto-configuration support, logging and YAML.
 
+|`spring-boot-starter-actuator`
+|Production ready features to help you monitor and manage your application.
+
 |`spring-boot-starter-amqp`
 |Support for the ``Advanced Message Queuing Protocol'' via `spring-rabbit`.
 
@@ -258,7 +261,7 @@ and Hibernate.
 |Support for common `spring-integration` modules.
 
 |`spring-boot-starter-jdbc`
-|JDBC Database support.
+|Support for JDBC databases.
 
 |`spring-boot-starter-jta-atomikos`
 |Support for JTA distributed transactions via Atomikos.
@@ -271,6 +274,9 @@ and Hibernate.
 
 |`spring-boot-starter-redis`
 |Support for the REDIS key-value data store, including `spring-redis`.
+
+|`spring-boot-starter-remote-shell`
+|Support for `CRaSH`.
 
 |`spring-boot-starter-security`
 |Support for `spring-security`.
