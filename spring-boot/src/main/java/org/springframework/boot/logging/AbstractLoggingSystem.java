@@ -62,9 +62,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	protected void initializeWithSensibleDefaults() {
 		String path = this.paths[this.paths.length - 1];
-		if (path.contains("-")) {
-			path = path.substring(0, path.indexOf("-")) + path.substring(path.indexOf("."));
-		}
+		path = path.replaceAll("-console", "").replaceAll("-file", "");
 		initialize(getPackagedConfigFile("basic-" + path));
 	}
 

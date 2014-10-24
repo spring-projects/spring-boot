@@ -47,22 +47,12 @@ import ch.qos.logback.classic.util.ContextInitializer;
  */
 public class LogbackLoggingSystem extends AbstractLoggingSystem {
 
-	/**
-	 * @param classLoader
-	 * @param fileOutput
-	 * @param consoleOutput
-	 */
 	public LogbackLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
 		super(classLoader, fileOutput, consoleOutput);
-		// TODO Auto-generated constructor stub
 	}
 
 	private static final Map<LogLevel, Level> LEVELS;
 
-	private static final String CONSOLE_LOG_PATTERN = "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) "
-			+ "%clr(${PID}:- ){magenta} %clr(---){faint} %clr([%15.15t{14}]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex";
-
-	private static final String FILE_LOG_PATTERN = "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID}:-  [%t] --- %-40.40logger{39} : %m%n%wex";
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
 		levels.put(LogLevel.TRACE, Level.TRACE);
@@ -79,15 +69,19 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 	@Override
 	protected String[] getLogFileName(boolean fileOutput, boolean consoleOutput) {
 		if (fileOutput && consoleOutput) {
-			return new String[] { "logback-test.groovy", "logback-test.xml", "logback.groovy", "logback.xml" };
+			return new String[] { "logback-test-file-console.groovy", "logback-test-file-console.xml",
+					"logback-file-console.groovy", "logback-file-console.xml" };
 		}
 		else if (fileOutput) {
 			return new String[] { "logback-test-file.groovy", "logback-test-file.xml", "logback-file.groovy",
 					"logback-file.xml" };
 		}
-		else {
+		else if (consoleOutput) {
 			return new String[] { "logback-test-console.groovy", "logback-test-console.xml", "logback-console.groovy",
 					"logback-console.xml" };
+		}
+		else {
+			return new String[] { "logback-test.groovy", "logback-test.xml", "logback.groovy", "logback.xml" };
 		}
 	}
 

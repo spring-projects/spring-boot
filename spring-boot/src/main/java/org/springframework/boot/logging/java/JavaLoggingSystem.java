@@ -60,13 +60,16 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	@Override
 	protected String[] getLogFileName(boolean fileOutput, boolean consoleOutput) {
 		if (fileOutput && consoleOutput) {
-			return new String[] { "logging.properties" };
+			return new String[] { "logging-file-console.properties" };
 		}
 		else if (fileOutput) {
 			return new String[] { "logging-file.properties" };
 		}
-		else {
+		else if (consoleOutput) {
 			return new String[] { "logging-console.properties" };
+		}
+		else {
+			return new String[] { "logging.properties" };
 		}
 	}
 
