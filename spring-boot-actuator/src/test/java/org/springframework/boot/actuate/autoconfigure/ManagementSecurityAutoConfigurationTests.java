@@ -73,8 +73,8 @@ public class ManagementSecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		// 6 for static resources, one for management endpoints and one for the rest
-		assertEquals(8, this.context.getBean(FilterChainProxy.class).getFilterChains()
+		// 4 for static resources, one for management endpoints and one for the rest
+		assertEquals(6, this.context.getBean(FilterChainProxy.class).getFilterChains()
 				.size());
 	}
 
@@ -144,7 +144,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context.refresh();
 		// Just the management endpoints (one filter) and ignores now plus the backup
 		// filter on app endpoints
-		assertEquals(8, this.context.getBean(FilterChainProxy.class).getFilterChains()
+		assertEquals(6, this.context.getBean(FilterChainProxy.class).getFilterChains()
 				.size());
 	}
 

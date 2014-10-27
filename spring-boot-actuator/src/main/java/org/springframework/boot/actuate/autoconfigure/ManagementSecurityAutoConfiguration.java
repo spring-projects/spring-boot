@@ -141,11 +141,9 @@ public class ManagementSecurityAutoConfiguration {
 			// add them back.
 			List<String> ignored = SpringBootWebSecurityConfiguration
 					.getIgnored(this.security);
-			ignored.addAll(Arrays.asList(getEndpointPaths(this.endpointHandlerMapping,
-					false)));
 			if (!this.management.getSecurity().isEnabled()) {
 				ignored.addAll(Arrays.asList(getEndpointPaths(
-						this.endpointHandlerMapping, true)));
+						this.endpointHandlerMapping)));
 			}
 			if (ignored.contains("none")) {
 				ignored.remove("none");
@@ -220,7 +218,7 @@ public class ManagementSecurityAutoConfiguration {
 		protected void configure(HttpSecurity http) throws Exception {
 
 			// secure endpoints
-			String[] paths = getEndpointPaths(this.endpointHandlerMapping, true);
+			String[] paths = getEndpointPaths(this.endpointHandlerMapping);
 			if (paths.length > 0 && this.management.getSecurity().isEnabled()) {
 				// Always protect them if present
 				if (this.security.isRequireSsl()) {
@@ -229,10 +227,12 @@ public class ManagementSecurityAutoConfiguration {
 				http.exceptionHandling().authenticationEntryPoint(entryPoint());
 				paths = this.server.getPathsArray(paths);
 				http.requestMatchers().antMatchers(paths);
-				http.authorizeRequests().anyRequest()
-						.hasRole(this.management.getSecurity().getRole()) //
-						.and().httpBasic() //
-						.and().anonymous().disable();
+				// @formatter:off
+				http.authorizeRequests()
+						.antMatchers(this.server.getPathsArray(getEndpointPaths(this.endpointHandlerMapping, false))).access("permitAll()")
+						.anyRequest().hasRole(this.management.getSecurity().getRole());
+				// @formatter:on
+				http.httpBasic();
 
 				// No cookies for management endpoints by default
 				http.csrf().disable();
@@ -254,6 +254,12 @@ public class ManagementSecurityAutoConfiguration {
 
 	}
 
+	private static String[] getEndpointPaths(EndpointHandlerMapping endpointHandlerMapping) {
+		return StringUtils.mergeStringArrays(
+				getEndpointPaths(endpointHandlerMapping, false),
+				getEndpointPaths(endpointHandlerMapping, true));
+	}
+
 	private static String[] getEndpointPaths(
 			EndpointHandlerMapping endpointHandlerMapping, boolean secure) {
 		if (endpointHandlerMapping == null) {
@@ -264,13 +270,11 @@ public class ManagementSecurityAutoConfiguration {
 		List<String> paths = new ArrayList<String>(endpoints.size());
 		for (MvcEndpoint endpoint : endpoints) {
 			if (endpoint.isSensitive() == secure) {
-				String path = endpointHandlerMapping.getPrefix() + endpoint.getPath();
+				String path = endpointHandlerMapping.getPath(endpoint.getPath());
 				paths.add(path);
-				if (secure) {
-					// Add Spring MVC-generated additional paths
-					paths.add(path + "/");
-					paths.add(path + ".*");
-				}
+				// Add Spring MVC-generated additional paths
+				paths.add(path + "/");
+				paths.add(path + ".*");
 			}
 		}
 		return paths.toArray(new String[paths.size()]);

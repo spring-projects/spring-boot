@@ -16,10 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -33,14 +35,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Adapter to expose {@link HealthEndpoint} as an {@link MvcEndpoint}.
  *
  * @author Christian Dupuis
+ * @author Dave Syer
  * @since 1.1.0
  */
-public class HealthMvcEndpoint extends EndpointMvcAdapter {
+public class HealthMvcEndpoint implements MvcEndpoint {
 
 	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
 
+	private HealthEndpoint delegate;
+
+	private long lastAccess = 0;
+
+	private Health cached;
+
 	public HealthMvcEndpoint(HealthEndpoint delegate) {
-		super(delegate);
+		this.delegate = delegate;
 		setupDefaultStatusMapping();
 	}
 
@@ -91,21 +100,65 @@ public class HealthMvcEndpoint extends EndpointMvcAdapter {
 
 	@RequestMapping
 	@ResponseBody
-	@Override
-	public Object invoke() {
-		if (!this.getDelegate().isEnabled()) {
-			// Shouldn't happen
+	public Object invoke(Principal principal) {
+
+		if (!delegate.isEnabled()) {
+			// Shouldn't happen because the request mapping should not be registered
 			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
 					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
 		}
 
-		Health health = (Health) getDelegate().invoke();
+		Health health = getHealth(principal);
 		Status status = health.getStatus();
 		if (this.statusMapping.containsKey(status.getCode())) {
 			return new ResponseEntity<Health>(health, this.statusMapping.get(status
 					.getCode()));
 		}
+
 		return health;
+
+	}
+
+	private Health getHealth(Principal principal) {
+		Health health = useCachedValue(principal) ? cached : (Health) delegate.invoke();
+		// Not too worried about concurrent access here, the worst that can happen is the
+		// odd extra call to delegate.invoke()
+		cached = health;
+		if (!secure(principal)) {
+			// If not secure we only expose the status
+			health = Health.status(health.getStatus()).build();
+		}
+		return health;
+	}
+
+	private boolean secure(Principal principal) {
+		return principal != null && !principal.getClass().getName().contains("Anonymous");
+	}
+
+	private boolean useCachedValue(Principal principal) {
+		long currentAccess = System.currentTimeMillis();
+		if (cached == null || secure(principal)
+				|| currentAccess - lastAccess > delegate.getTtl()) {
+			lastAccess = currentAccess;
+			return false;
+		}
+		return cached != null;
+	}
+
+	@Override
+	public String getPath() {
+		return "/" + this.delegate.getId();
+	}
+
+	@Override
+	public boolean isSensitive() {
+		return this.delegate.isSensitive();
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public Class<? extends Endpoint> getEndpointType() {
+		return this.delegate.getClass();
 	}
 
 }

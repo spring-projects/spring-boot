@@ -56,6 +56,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
 		this.environment = environment;
 	}
 
+	@SuppressWarnings("serial")
 	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such property")
 	public static class NoSuchPropertyException extends RuntimeException {
 

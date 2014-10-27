@@ -202,6 +202,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 * Extension to {@link JacksonAnnotationIntrospector} to suppress CGLIB generated bean
 	 * properties.
 	 */
+	@SuppressWarnings("serial")
 	private static class CglibAnnotationIntrospector extends
 			JacksonAnnotationIntrospector {
 

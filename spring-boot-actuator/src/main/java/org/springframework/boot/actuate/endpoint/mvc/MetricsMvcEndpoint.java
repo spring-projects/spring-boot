@@ -48,6 +48,7 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 		return value;
 	}
 
+	@SuppressWarnings("serial")
 	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such metric")
 	public static class NoSuchMetricException extends RuntimeException {
 

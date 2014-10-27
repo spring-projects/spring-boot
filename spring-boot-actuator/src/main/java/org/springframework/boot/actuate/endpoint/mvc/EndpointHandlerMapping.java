@@ -18,7 +18,9 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -50,7 +52,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
 		ApplicationContextAware {
 
-	private final Set<? extends MvcEndpoint> endpoints;
+	private final Map<String, MvcEndpoint> endpoints = new HashMap<String, MvcEndpoint>();
 
 	private String prefix = "";
 
@@ -62,7 +64,10 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	 * @param endpoints
 	 */
 	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
-		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
+		HashMap<String, MvcEndpoint> map = (HashMap<String, MvcEndpoint>) this.endpoints;
+		for (MvcEndpoint endpoint : endpoints) {
+			map.put(endpoint.getPath(), endpoint);
+		}
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
 		// and the RequestMappingHandlerMapping is 0 (we ideally want to be before both)
 		setOrder(-100);
@@ -72,7 +77,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 		if (!this.disabled) {
-			for (MvcEndpoint endpoint : this.endpoints) {
+			for (MvcEndpoint endpoint : this.endpoints.values()) {
 				detectHandlerMethods(endpoint);
 			}
 		}
@@ -147,6 +152,13 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	/**
+	 * @return the path used in mappings
+	 */
+	public String getPath(String endpoint) {
+		return this.prefix + endpoint;
+	}
+
+	/**
 	 * Sets if this mapping is disabled.
 	 */
 	public void setDisabled(boolean disabled) {
@@ -164,7 +176,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	 * Return the endpoints
 	 */
 	public Set<? extends MvcEndpoint> getEndpoints() {
-		return this.endpoints;
+		return new HashSet<MvcEndpoint>(this.endpoints.values());
 	}
 
 }
