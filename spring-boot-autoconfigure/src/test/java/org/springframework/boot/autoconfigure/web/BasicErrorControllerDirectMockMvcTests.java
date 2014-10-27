@@ -22,6 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.servlet.ServletException;
+
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
@@ -85,6 +87,13 @@ public class BasicErrorControllerDirectMockMvcTests {
 				.andExpect(status().isOk()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertTrue("Wrong content: " + content, content.contains("status=999"));
+	}
+
+	@Test(expected = ServletException.class)
+	public void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
+		setup((ConfigurableWebApplicationContext) new SpringApplication(
+				WebMvcIncludedConfiguration.class).run("--server.port=0", "--error.whitelabel.enabled=false"));
+		this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML));
 	}
 
 	@Target(ElementType.TYPE)
