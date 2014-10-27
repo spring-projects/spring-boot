@@ -119,6 +119,17 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@Test
+	public void nullMessage() throws Exception {
+		this.request.setAttribute("javax.servlet.error.exception", new RuntimeException());
+		this.request.setAttribute("javax.servlet.error.message", "Test");
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(
+				this.requestAttributes, false);
+		assertThat(attributes.get("exception"),
+				equalTo((Object) RuntimeException.class.getName()));
+		assertThat(attributes.get("message"), equalTo((Object) "Test"));
+	}
+
+	@Test
 	public void unwrapServletException() throws Exception {
 		RuntimeException ex = new RuntimeException("Test");
 		ServletException wrapped = new ServletException(new ServletException(ex));
