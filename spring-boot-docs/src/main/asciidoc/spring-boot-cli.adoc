@@ -80,6 +80,7 @@ is completely self-contained so you don't need any external Groovy installation.
 
 Here is an example ``hello world'' web application written in Groovy:
 
+.hello.groovy
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RestController
@@ -93,7 +94,25 @@ Here is an example ``hello world'' web application written in Groovy:
 	}
 ----
 
+Then
 
+----
+$ spring run hello.groovy
+----
+
+To pass command line arguments to the application, you need to use a
+"--" to separate them from the "spring" command arguments, e.g.
+
+----
+$ spring run hello.groovy -- --server.port=9000
+----
+
+and to set JVM command line arguments you can use the `JAVA_OPTS`
+environment variable, e.g.
+
+----
+$ JAVA_OPTS=-Xmx1024m spring run hello.groovy
+----
 
 [[cli-install-uninstall]]
 === Adding dependencies to the CLI
