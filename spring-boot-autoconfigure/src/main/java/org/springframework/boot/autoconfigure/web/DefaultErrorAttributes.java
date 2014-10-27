@@ -75,7 +75,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 
 	private void storeErrorAttributes(HttpServletRequest request, Exception ex) {
 		request.setAttribute(ERROR_ATTRIBUTE, ex);
-		
+
 	}
 
 	@Override
@@ -121,9 +121,8 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 				addStackTrace(errorAttributes, error);
 			}
 		}
-		if (error==null || errorAttributes.get("message")==null) {
-			Object message = getAttribute(requestAttributes,
-					"javax.servlet.error.message");
+		Object message = getAttribute(requestAttributes, "javax.servlet.error.message");
+		if (message != null || errorAttributes.get("message") == null) {
 			errorAttributes.put("message", message == null ? "No message available"
 					: message);
 		}
