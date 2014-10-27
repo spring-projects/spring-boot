@@ -122,7 +122,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 			}
 		}
 		Object message = getAttribute(requestAttributes, "javax.servlet.error.message");
-		if (message != null || errorAttributes.get("message") == null) {
+		if ((message != null || errorAttributes.get("message") == null) && !(error instanceof BindingResult)) {
 			errorAttributes.put("message", message == null ? "No message available"
 					: message);
 		}
