@@ -74,14 +74,14 @@ public abstract class LoggingSystem {
 	 * Detect and return the logging system in use.
 	 * @return The logging system
 	 */
-	public static LoggingSystem get(ClassLoader classLoader) {
+	public static LoggingSystem get(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
 		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
 			if (ClassUtils.isPresent(entry.getKey(), classLoader)) {
 				try {
 					Class<?> systemClass = ClassUtils.forName(entry.getValue(),
 							classLoader);
-					return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
-							.newInstance(classLoader);
+					return (LoggingSystem) systemClass.getConstructor(ClassLoader.class, boolean.class, boolean.class)
+							.newInstance(classLoader, fileOutput, consoleOutput);
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(ex);
