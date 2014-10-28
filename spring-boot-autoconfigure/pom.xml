@@ -114,6 +114,10 @@
 					<groupId>org.codehaus.woodstox</groupId>
 					<artifactId>wstx-asl</artifactId>
 				</exclusion>
+				<exclusion>
+					<artifactId>log4j</artifactId>
+					<groupId>log4j</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>

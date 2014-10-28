@@ -6,8 +6,8 @@
 		<artifactId>spring-boot-starters</artifactId>
 		<version>1.2.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-starter-cloud</artifactId>
-	<name>Spring Boot Cloud Multiplatform Starter</name>
+	<artifactId>spring-boot-starter-cloud-connectors</artifactId>
+	<name>spring-boot-starter-cloud-connectors</name>
 	<description>Spring Boot Starter for Spring Cloud</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
