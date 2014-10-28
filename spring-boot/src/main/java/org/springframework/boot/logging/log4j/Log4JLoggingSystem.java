@@ -51,24 +51,18 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
-	public Log4JLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
-		super(classLoader, fileOutput, consoleOutput);
+	public Log4JLoggingSystem(ClassLoader classLoader) {
+		this(classLoader, false, true);
 	}
 	
+	public Log4JLoggingSystem(ClassLoader classLoader, boolean fileOutput,
+			boolean consoleOutput) {
+		super(classLoader, fileOutput, consoleOutput);
+	}
+
 	@Override
-	protected String[] getLogFileName(boolean fileOutput, boolean consoleOutput) {
-		if (fileOutput && consoleOutput) {
-			return new String[] { "log4j-file-console.xml", "log4j-file-console.properties" };
-		}
-		else if (fileOutput) {
-			return new String[] { "log4j-file.xml", "log4j-file.properties" };
-		}
-		else if (consoleOutput) {
-			return new String[] { "log4j-console.xml", "log4j-console.properties" };
-		}
-		else {
-			return new String[] { "log4j.xml", "log4j.properties" };
-		}
+	protected String[] getLogFileNames() {
+		return new String[] { "log4j.xml", "log4j.properties" };
 	}
 
 	@Override

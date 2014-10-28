@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Abstract base class for {@link LoggingSystem} implementations.
@@ -31,12 +32,23 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	private final String[] paths;
 
-	public AbstractLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
-		this.classLoader = classLoader;
-		this.paths = getLogFileName(fileOutput, consoleOutput);
+	private boolean fileOutput;
+
+	private boolean consoleOutput;
+
+	public AbstractLoggingSystem(ClassLoader classLoader) {
+		this(classLoader, false, true);
 	}
 	
-	protected abstract String[] getLogFileName(boolean fileOutput, boolean consoleOutput);
+	public AbstractLoggingSystem(ClassLoader classLoader, boolean fileOutput,
+			boolean consoleOutput) {
+		this.classLoader = classLoader;
+		this.fileOutput = fileOutput;
+		this.consoleOutput = consoleOutput;
+		this.paths = getLogFileNames();
+	}
+
+	protected abstract String[] getLogFileNames();
 
 	protected final ClassLoader getClassLoader() {
 		return this.classLoader;
@@ -56,14 +68,12 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 				return;
 			}
 		}
-		// Fallback to the non-prefixed value
-		initialize(getPackagedConfigFile(this.paths[this.paths.length - 1]));
+		// Fallback to the non-prefixed value taking into account file and console preferences
+		initialize(getPackagedConfigFile(addChannels(this.paths[this.paths.length - 1])));
 	}
 
 	protected void initializeWithSensibleDefaults() {
-		String path = this.paths[this.paths.length - 1];
-		path = path.replaceAll("-console", "").replaceAll("-file", "");
-		initialize(getPackagedConfigFile("basic-" + path));
+		initialize(getPackagedConfigFile("basic-" + this.paths[this.paths.length - 1]));
 	}
 
 	protected final String getPackagedConfigFile(String fileName) {
@@ -72,6 +82,16 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		defaultPath = defaultPath + "/" + fileName;
 		defaultPath = "classpath:" + defaultPath;
 		return defaultPath;
+	}
+
+	private String addChannels(String fileName) {
+		String extension = "." + StringUtils.getFilenameExtension(fileName);
+		return fileName.replace(extension, getChannel() + extension);
+	}
+
+	private String getChannel() {
+		return (fileOutput && consoleOutput) ? "-file-console" : (fileOutput ? "-file"
+				: (consoleOutput ? "" : "-none"));
 	}
 
 }

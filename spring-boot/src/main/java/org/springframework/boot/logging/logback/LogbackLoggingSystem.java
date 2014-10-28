@@ -58,27 +58,19 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
-	public LogbackLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
-		super(classLoader, fileOutput, consoleOutput);
+	public LogbackLoggingSystem(ClassLoader classLoader) {
+		this(classLoader, false, true);
 	}
 	
+	public LogbackLoggingSystem(ClassLoader classLoader, boolean fileOutput,
+			boolean consoleOutput) {
+		super(classLoader, fileOutput, consoleOutput);
+	}
+
 	@Override
-	protected String[] getLogFileName(boolean fileOutput, boolean consoleOutput) {
-		if (fileOutput && consoleOutput) {
-			return new String[] { "logback-test-file-console.groovy", "logback-test-file-console.xml",
-					"logback-file-console.groovy", "logback-file-console.xml" };
-		}
-		else if (fileOutput) {
-			return new String[] { "logback-test-file.groovy", "logback-test-file.xml", "logback-file.groovy",
-					"logback-file.xml" };
-		}
-		else if (consoleOutput) {
-			return new String[] { "logback-test-console.groovy", "logback-test-console.xml", "logback-console.groovy",
-					"logback-console.xml" };
-		}
-		else {
-			return new String[] { "logback-test.groovy", "logback-test.xml", "logback.groovy", "logback.xml" };
-		}
+	protected String[] getLogFileNames() {
+		return new String[] { "logback-test.groovy", "logback-test.xml",
+				"logback.groovy", "logback.xml" };
 	}
 
 	@Override

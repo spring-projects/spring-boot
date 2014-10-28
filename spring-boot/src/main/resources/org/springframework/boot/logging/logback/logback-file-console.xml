@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<include resource="org/springframework/boot/logging/logback/base.xml"/>
- 	<include resource="org/springframework/boot/logging/logback/basic-file.xml"/>
- 	<include resource="org/springframework/boot/logging/logback/basic-console.xml"/>
+ 	<include resource="org/springframework/boot/logging/logback/base-file.xml"/>
+ 	<include resource="org/springframework/boot/logging/logback/base.xml"/>
 </configuration>

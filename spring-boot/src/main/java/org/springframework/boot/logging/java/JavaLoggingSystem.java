@@ -51,27 +51,19 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
-	public JavaLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
-		super(classLoader, fileOutput, consoleOutput);
+	public JavaLoggingSystem(ClassLoader classLoader) {
+		this(classLoader, false, true);
 	}
 	
-	@Override
-	protected String[] getLogFileName(boolean fileOutput, boolean consoleOutput) {
-		if (fileOutput && consoleOutput) {
-			return new String[] { "logging-file-console.properties" };
-		}
-		else if (fileOutput) {
-			return new String[] { "logging-file.properties" };
-		}
-		else if (consoleOutput) {
-			return new String[] { "logging-console.properties" };
-		}
-		else {
-			return new String[] { "logging.properties" };
-		}
+	public JavaLoggingSystem(ClassLoader classLoader, boolean fileOutput,
+			boolean consoleOutput) {
+		super(classLoader, fileOutput, consoleOutput);
 	}
 
-
+	@Override
+	protected String[] getLogFileNames() {
+		return new String[] { "logging.properties" };
+	}
 
 	@Override
 	public void initialize(String configLocation) {
