@@ -18,7 +18,6 @@ package org.springframework.boot.cloudfoundry;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -71,7 +70,7 @@ import org.springframework.util.StringUtils;
  * vcap.application.version: 0138c4a6-2a73-416b-aca0-572c09f7ca53
  * vcap.application.name: foo
  * vcap.application.uris[0]: foo.cfapps.io
- *
+ * 
  * vcap.services.mysql.name: mysql
  * vcap.services.mysql.label: rds-mysql-1.0
  * vcap.services.mysql.credentials.name: d04fb13d27d964c62b267bbba1cffb9da
@@ -151,19 +150,7 @@ public class VcapApplicationListener implements
 		try {
 			Map<String, Object> map = this.parser.parseMap(environment.getProperty(
 					VCAP_APPLICATION, "{}"));
-			if (map != null) {
-				map = new LinkedHashMap<String, Object>(map);
-				for (String key : map.keySet()) {
-					Object value = map.get(key);
-					if (!(value instanceof String)) {
-						if (value == null) {
-							value = "";
-						}
-						map.put(key, value.toString());
-					}
-				}
-				properties.putAll(map);
-			}
+			extractPropertiesFromApplication(properties, map);
 		}
 		catch (Exception ex) {
 			logger.error("Could not parse VCAP_APPLICATION", ex);
@@ -176,26 +163,38 @@ public class VcapApplicationListener implements
 		try {
 			Map<String, Object> map = this.parser.parseMap(environment.getProperty(
 					VCAP_SERVICES, "{}"));
-			if (map != null) {
-				for (Object services : map.values()) {
-					@SuppressWarnings("unchecked")
-					List<Object> list = (List<Object>) services;
-					for (Object object : list) {
-						@SuppressWarnings("unchecked")
-						Map<String, Object> service = (Map<String, Object>) object;
-						String key = (String) service.get("name");
-						if (key == null) {
-							key = (String) service.get("label");
-						}
-						flatten(properties, service, key);
-					}
-				}
-			}
+			extractPropertiesFromServices(properties, map);
 		}
 		catch (Exception ex) {
 			logger.error("Could not parse VCAP_SERVICES", ex);
 		}
 		return properties;
+	}
+
+	private void extractPropertiesFromApplication(Properties properties,
+			Map<String, Object> map) {
+		if (map != null) {
+			flatten(properties, map, "");
+		}
+	}
+
+	private void extractPropertiesFromServices(Properties properties,
+			Map<String, Object> map) {
+		if (map != null) {
+			for (Object services : map.values()) {
+				@SuppressWarnings("unchecked")
+				List<Object> list = (List<Object>) services;
+				for (Object object : list) {
+					@SuppressWarnings("unchecked")
+					Map<String, Object> service = (Map<String, Object>) object;
+					String key = (String) service.get("name");
+					if (key == null) {
+						key = (String) service.get("label");
+					}
+					flatten(properties, service, key);
+				}
+			}
+		}
 	}
 
 	private void flatten(Properties properties, Map<String, Object> input, String path) {
