@@ -18,7 +18,7 @@ are themselves contained within a jar). This can be problematic if you are looki
 to distribute a self-contained application that you can just run from the command line
 without unpacking.
 
-To solve this problem, many developers use ``shaded'' jars. A shaded jar simply packages
+To solve this problem, many developers use "`shaded`" jars. A shaded jar simply packages
 all classes, from all jars, into a single 'uber jar'. The problem with shaded jars is
 that it becomes hard to see which libraries you are actually using in your application.
 It can also be problematic if the the same filename is used (but with different content)
@@ -91,7 +91,7 @@ a traditional web container should be placed in `WEB-INF/lib-provided`.
 
 
 [[executable-jar-jarfile]]
-=== Spring Boot's ``JarFile'' class
+=== Spring Boot's "`JarFile`" class
 The core class used to support loading nested jars is
 `org.springframework.boot.loader.jar.JarFile`. It allows  you load jar
 content from a standard jar file, or from nested child jar data. When first  loaded, the
@@ -121,7 +121,7 @@ need to read all entry data into memory.
 
 
 [[executable-jar-jarfile-compatibility]]
-==== Compatibility with the standard Java ``JarFile''
+==== Compatibility with the standard Java "`JarFile`"
 Spring Boot Loader strives to remain compatible with existing code and libraries.
 `org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and
 should work as a drop-in replacement. The `RandomAccessJarFile.getURL()` method will

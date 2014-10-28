@@ -5,8 +5,8 @@
 --
 This section dives into the details of Spring Boot. Here you can learn about the key
 features that you will want to use and customize. If you haven't already, you might want
-to read the '<<getting-started.adoc#getting-started>>' and
-'<<using-spring-boot.adoc#using-boot>>' sections so that you have a good grounding
+to read the _<<getting-started.adoc#getting-started>>_ and
+_<<using-spring-boot.adoc#using-boot>>_ sections so that you have a good grounding
 of the basics.
 --
 
@@ -73,7 +73,7 @@ for spring beans. In most cases these will be references to `@Configuration` cla
 they could also be references to XML configuration or to packages that should be scanned.
 
 It is also possible to configure the `SpringApplication` using an `application.properties`
-file. See '<<boot-features-external-config>>' for details.
+file. See _<<boot-features-external-config>>_ for details.
 
 For a complete list of the configuration options, see the
 {dc-spring-boot}/SpringApplication.{dc-ext}[`SpringApplication` Javadoc].
@@ -341,7 +341,7 @@ properties).
 ----
 
 TIP: You can also use this technique to create '`short`' variants of existing Spring Boot
-properties. See the '<<howto.adoc#howto-use-short-command-line-arguments>>' how-to
+properties. See the _<<howto.adoc#howto-use-short-command-line-arguments>>_ how-to
 for details.
 
 
@@ -369,7 +369,7 @@ For example, the following YAML document:
 [source,yaml,indent=0]
 ----
 	environments:
-		dev:`
+		dev:
 			url: http://dev.bar.com
 			name: Developer Setup
 		prod:
@@ -583,7 +583,7 @@ You can also add a custom Spring `Validator` by creating a bean definition calle
 TIP: The `spring-boot-actuator` module includes an endpoint that exposes all
 `@ConfigurationProperties` beans. Simply point your web browser to `/configprops`
 or use the equivalent JMX endpoint. See the
-'<<production-ready-features.adoc#production-ready-endpoints, Production ready features>>'.
+_<<production-ready-features.adoc#production-ready-endpoints, Production ready features>>_.
 section for details.
 
 
@@ -661,7 +661,7 @@ possible to activate profiles using Spring's `ConfigurableEnvironment` interface
 === Profile specific configuration files
 Profile specific variants of both `application.properties` (or `application.yml`) and
 files referenced via `@ConfigurationProperties` are considered as files are loaded.
-See '<<boot-features-external-config-profile-specific-properties>>' for details.
+See _<<boot-features-external-config-profile-specific-properties>>_ for details.
 
 
 
@@ -812,7 +812,7 @@ use the `spring-boot-starter-web` module to get up and running quickly.
 
 If you haven't yet developed a Spring Boot web application you can follow the
 "Hello World!" example in the
-'<<getting-started.adoc#getting-started-first-application, Getting started>>' section.
+_<<getting-started.adoc#getting-started-first-application, Getting started>>_ section.
 
 
 
@@ -1406,7 +1406,7 @@ considered. A typical entity class would look something like this:
 ----
 
 TIP: You can customize entity scanning locations using the `@EntityScan` annotation.
-See the '<<howto.adoc#howto-separate-entity-definitions-from-spring-configuration>>'
+See the _<<howto.adoc#howto-separate-entity-definitions-from-spring-configuration>>_
 how-to.
 
 

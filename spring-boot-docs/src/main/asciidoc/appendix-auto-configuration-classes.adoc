@@ -10,7 +10,7 @@ application for more details of which features are switched on.
 
 
 [[auto-configuration-classes-from-autoconfigure-module]]
-=== From the ``spring-boot-autoconfigure'' module
+=== From the "`spring-boot-autoconfigure`" module
 The following auto-configuration classes are from the `spring-boot-autoconfigure` module:
 
 include::../../../target/generated-resources/auto-configuration-classes-spring-boot-autoconfigure.adoc[]
@@ -18,7 +18,7 @@ include::../../../target/generated-resources/auto-configuration-classes-spring-b
 
 
 [[auto-configuration-classes-from-actuator]]
-=== From the ``spring-boot-actuator'' module
+=== From the "`spring-boot-actuator`" module
 The following auto-configuration classes are from the `spring-boot-actuator` module:
 
 include::../../../target/generated-resources/auto-configuration-classes-spring-boot-actuator.adoc[]

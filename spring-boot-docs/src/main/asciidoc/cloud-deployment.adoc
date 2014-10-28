@@ -5,11 +5,11 @@
 --
 Spring Boot's executable jars are ready-made for most popular cloud PaaS
 (platform-as-a-service) providers. These providers tend to require that you
-_`bring your own container'_; they manage application processes (not Java applications
+"`bring your own container`"; they manage application processes (not Java applications
 specifically), so they need some intermediary layer that adapts _your_ application to the
 _cloud's_ notion of a running process.
 
-Two popular cloud providers, Heroku and Cloud Foundry, employ a ``buildpack'' approach.
+Two popular cloud providers, Heroku and Cloud Foundry, employ a "`buildpack`" approach.
 The buildpack wraps your deployed code in whatever is needed to _start_ your
 application: it might be a JDK and a call to `java`, it might be an embedded webserver,
 or it might be a full-fledged application server. A buildpack is pluggable, but ideally
@@ -22,7 +22,7 @@ to run packaged within it.
 
 In this section we'll look at what it takes to get the
 <<getting-started.adoc#getting-started-first-application, simple application that we
-developed>> in the ``Getting Started'' section up and running in the Cloud.
+developed>> in the "`Getting Started`" section up and running in the Cloud.
 --
 
 
@@ -226,7 +226,7 @@ Your application should now be up and running on Heroku.
 
 [[cloud-deployment-cloudbees]]
 == CloudBees
-CloudBees provides cloud-based ``continuous integration'' and ``continuous delivery''
+CloudBees provides cloud-based "`continuous integration`" and "`continuous delivery`"
 services as well as Java PaaS hosting. https://github.com/msgilligan[Sean Gilligan]
 has contributed an excellent
 https://github.com/CloudBees-community/springboot-gradle-cloudbees-sample[Spring Boot
@@ -308,9 +308,9 @@ features that a PaaS can offer. These are just three of the most popular Java Pa
 providers, since Spring Boot is so amenable to cloud-based deployment you're free to
 consider other providers as well.
 
-The next section goes on to cover the '<<spring-boot-cli.adoc#cli, Spring Boot CLI>>';
+The next section goes on to cover the _<<spring-boot-cli.adoc#cli, Spring Boot CLI>>_;
 or you can jump ahead to read about
-'<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>'.
+_<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.
 
 
 
