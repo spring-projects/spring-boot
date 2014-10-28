@@ -101,29 +101,26 @@ public class HealthMvcEndpoint implements MvcEndpoint {
 	@RequestMapping
 	@ResponseBody
 	public Object invoke(Principal principal) {
-
-		if (!delegate.isEnabled()) {
+		if (!this.delegate.isEnabled()) {
 			// Shouldn't happen because the request mapping should not be registered
 			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
 					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
 		}
-
 		Health health = getHealth(principal);
 		Status status = health.getStatus();
 		if (this.statusMapping.containsKey(status.getCode())) {
 			return new ResponseEntity<Health>(health, this.statusMapping.get(status
 					.getCode()));
 		}
-
 		return health;
-
 	}
 
 	private Health getHealth(Principal principal) {
-		Health health = useCachedValue(principal) ? cached : (Health) delegate.invoke();
+		Health health = (useCachedValue(principal) ? this.cached : (Health) this.delegate
+				.invoke());
 		// Not too worried about concurrent access here, the worst that can happen is the
 		// odd extra call to delegate.invoke()
-		cached = health;
+		this.cached = health;
 		if (!secure(principal)) {
 			// If not secure we only expose the status
 			health = Health.status(health.getStatus()).build();
@@ -137,12 +134,12 @@ public class HealthMvcEndpoint implements MvcEndpoint {
 
 	private boolean useCachedValue(Principal principal) {
 		long currentAccess = System.currentTimeMillis();
-		if (cached == null || secure(principal)
-				|| currentAccess - lastAccess > delegate.getTtl()) {
-			lastAccess = currentAccess;
+		if (this.cached == null || secure(principal)
+				|| (currentAccess - this.lastAccess) > this.delegate.getTimeToLive()) {
+			this.lastAccess = currentAccess;
 			return false;
 		}
-		return cached != null;
+		return this.cached != null;
 	}
 
 	@Override

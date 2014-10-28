@@ -36,20 +36,19 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	private final HealthIndicator healthIndicator;
 
-	private long ttl = 1000;
+	private long timeToLive = 1000;
 
 	/**
 	 * Time to live for cached result. If accessed anonymously, we might need to cache the
 	 * result of this endpoint to prevent a DOS attack.
-	 * 
 	 * @return time to live in milliseconds (default 1000)
 	 */
-	public long getTtl() {
-		return ttl;
+	public long getTimeToLive() {
+		return this.timeToLive;
 	}
 
-	public void setTtl(long ttl) {
-		this.ttl = ttl;
+	public void setTimeToLive(long ttl) {
+		this.timeToLive = ttl;
 	}
 
 	/**

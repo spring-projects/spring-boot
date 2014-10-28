@@ -374,6 +374,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.health.id=health
 	endpoints.health.sensitive=false
 	endpoints.health.enabled=true
+	endpoints.health.time-to-live=1000
 	endpoints.info.id=info
 	endpoints.info.sensitive=false
 	endpoints.info.enabled=true

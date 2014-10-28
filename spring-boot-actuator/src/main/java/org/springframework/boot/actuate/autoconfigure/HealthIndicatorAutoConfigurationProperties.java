@@ -22,7 +22,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for some health properties
+ *
  * @author Christian Dupuis
+ * @since 1.2.0
  */
 @ConfigurationProperties("health.status")
 public class HealthIndicatorAutoConfigurationProperties {

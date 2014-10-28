@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
-import java.util.Map;
 import java.util.Properties;
+
 import javax.activation.MimeType;
 import javax.mail.internet.MimeMessage;
 
@@ -38,15 +38,17 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  *
  * @author Oliver Gierke
  * @author Stephane Nicoll
+ * @sicne 1.2.0
  */
 @Configuration
-@ConditionalOnClass({MimeMessage.class, MimeType.class})
+@ConditionalOnClass({ MimeMessage.class, MimeType.class })
 @ConditionalOnProperty(prefix = "spring.mail", value = "host")
 @ConditionalOnMissingBean(MailSender.class)
 @EnableConfigurationProperties(MailProperties.class)
 public class MailSenderAutoConfiguration {
 
-	@Autowired MailProperties properties;
+	@Autowired
+	MailProperties properties;
 
 	@Bean
 	public JavaMailSender mailSender() {
@@ -58,13 +60,10 @@ public class MailSenderAutoConfiguration {
 		sender.setUsername(this.properties.getUsername());
 		sender.setPassword(this.properties.getPassword());
 		sender.setDefaultEncoding(this.properties.getDefaultEncoding());
-		Map<String,String> properties = this.properties.getProperties();
-		if (!properties.isEmpty()) {
-			Properties javaMailProperties= new Properties();
-			for (Map.Entry<String, String> entry : properties.entrySet()) {
-				javaMailProperties.setProperty(entry.getKey(), entry.getValue());
-			}
-			sender.setJavaMailProperties(javaMailProperties);
+		if (!this.properties.getProperties().isEmpty()) {
+			Properties properties = new Properties();
+			properties.putAll(this.properties.getProperties());
+			sender.setJavaMailProperties(properties);
 		}
 		return sender;
 	}

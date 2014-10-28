@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Oliver Gierke
  * @author Stephane Nicoll
+ * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.mail")
 public class MailProperties {
@@ -43,7 +44,7 @@ public class MailProperties {
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	public String getHost() {
-		return host;
+		return this.host;
 	}
 
 	public void setHost(String host) {
@@ -51,7 +52,7 @@ public class MailProperties {
 	}
 
 	public Integer getPort() {
-		return port;
+		return this.port;
 	}
 
 	public void setPort(Integer port) {
@@ -59,7 +60,7 @@ public class MailProperties {
 	}
 
 	public String getUsername() {
-		return username;
+		return this.username;
 	}
 
 	public void setUsername(String username) {
@@ -67,7 +68,7 @@ public class MailProperties {
 	}
 
 	public String getPassword() {
-		return password;
+		return this.password;
 	}
 
 	public void setPassword(String password) {
@@ -75,7 +76,7 @@ public class MailProperties {
 	}
 
 	public String getDefaultEncoding() {
-		return defaultEncoding;
+		return this.defaultEncoding;
 	}
 
 	public void setDefaultEncoding(String defaultEncoding) {
@@ -83,7 +84,7 @@ public class MailProperties {
 	}
 
 	public Map<String, String> getProperties() {
-		return properties;
+		return this.properties;
 	}
 
 }

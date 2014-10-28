@@ -120,7 +120,8 @@ public class DefaultErrorAttributesTests {
 
 	@Test
 	public void nullMessage() throws Exception {
-		this.request.setAttribute("javax.servlet.error.exception", new RuntimeException());
+		this.request
+				.setAttribute("javax.servlet.error.exception", new RuntimeException());
 		this.request.setAttribute("javax.servlet.error.message", "Test");
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(
 				this.requestAttributes, false);

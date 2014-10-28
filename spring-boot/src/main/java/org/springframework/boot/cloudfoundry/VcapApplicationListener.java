@@ -70,7 +70,7 @@ import org.springframework.util.StringUtils;
  * vcap.application.version: 0138c4a6-2a73-416b-aca0-572c09f7ca53
  * vcap.application.name: foo
  * vcap.application.uris[0]: foo.cfapps.io
- * 
+ *
  * vcap.services.mysql.name: mysql
  * vcap.services.mysql.label: rds-mysql-1.0
  * vcap.services.mysql.credentials.name: d04fb13d27d964c62b267bbba1cffb9da
@@ -112,13 +112,11 @@ public class VcapApplicationListener implements
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-
 		ConfigurableEnvironment environment = event.getEnvironment();
 		if (!environment.containsProperty(VCAP_APPLICATION)
 				&& !environment.containsProperty(VCAP_SERVICES)) {
 			return;
 		}
-
 		Properties properties = new Properties();
 		addWithPrefix(properties, getPropertiesFromApplication(environment),
 				"vcap.application.");
@@ -130,12 +128,10 @@ public class VcapApplicationListener implements
 			propertySources.addAfter(
 					CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
 					new PropertiesPropertySource("vcap", properties));
-
 		}
 		else {
 			propertySources.addFirst(new PropertiesPropertySource("vcap", properties));
 		}
-
 	}
 
 	private void addWithPrefix(Properties properties, Properties other, String prefix) {

@@ -20,7 +20,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +27,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests for {@link MailSenderAutoConfiguration}.
@@ -53,7 +53,8 @@ public class MailSenderAutoConfigurationTests {
 	public void smtpHostSet() {
 		String host = "192.168.1.234";
 		load(EmptyConfig.class, "spring.mail.host:" + host);
-		JavaMailSenderImpl bean = (JavaMailSenderImpl) context.getBean(JavaMailSender.class);
+		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
+				.getBean(JavaMailSender.class);
 		assertEquals(host, bean.getHost());
 	}
 
@@ -61,8 +62,10 @@ public class MailSenderAutoConfigurationTests {
 	public void smptHostWithSettings() {
 		String host = "192.168.1.234";
 		load(EmptyConfig.class, "spring.mail.host:" + host, "spring.mail.port:42",
-				"spring.mail.username:john", "spring.mail.password:secret", "spring.mail.default-encoding:ISO-9");
-		JavaMailSenderImpl bean = (JavaMailSenderImpl) context.getBean(JavaMailSender.class);
+				"spring.mail.username:john", "spring.mail.password:secret",
+				"spring.mail.default-encoding:ISO-9");
+		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
+				.getBean(JavaMailSender.class);
 		assertEquals(host, bean.getHost());
 		assertEquals(42, bean.getPort());
 		assertEquals("john", bean.getUsername());
@@ -72,29 +75,31 @@ public class MailSenderAutoConfigurationTests {
 
 	@Test
 	public void smptHostWithJavaMailProperties() {
-		load(EmptyConfig.class, "spring.mail.host:localhost", "spring.mail.properties.mail.smtp.auth:true");
-		JavaMailSenderImpl bean = (JavaMailSenderImpl) context.getBean(JavaMailSender.class);
+		load(EmptyConfig.class, "spring.mail.host:localhost",
+				"spring.mail.properties.mail.smtp.auth:true");
+		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
+				.getBean(JavaMailSender.class);
 		assertEquals("true", bean.getJavaMailProperties().get("mail.smtp.auth"));
 	}
 
 	@Test
 	public void smtpHostNotSet() {
 		load(EmptyConfig.class);
-		assertEquals(0, context.getBeansOfType(JavaMailSender.class).size());
+		assertEquals(0, this.context.getBeansOfType(JavaMailSender.class).size());
 	}
 
 	@Test
 	public void mailSenderBackOff() {
 		load(ManualMailConfiguration.class, "spring.mail.host:smtp.acme.org",
 				"spring.mail.user:user", "spring.mail.password:secret");
-		JavaMailSenderImpl bean = (JavaMailSenderImpl) context.getBean(JavaMailSender.class);
+		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
+				.getBean(JavaMailSender.class);
 		assertNull(bean.getUsername());
 		assertNull(bean.getPassword());
 	}
 
-
 	private void load(Class<?> config, String... environment) {
-		this.context = doLoad(new Class<?>[] {config}, environment);
+		this.context = doLoad(new Class<?>[] { config }, environment);
 	}
 
 	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs,
@@ -119,5 +124,7 @@ public class MailSenderAutoConfigurationTests {
 		JavaMailSender customMailSender() {
 			return new JavaMailSenderImpl();
 		}
+
 	}
+
 }

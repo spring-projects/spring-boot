@@ -1564,28 +1564,29 @@ would only ever be a development time trick probably).
 
 [[howto-reload-springloaded-maven]]
 ==== Configuring Spring Loaded for use with Maven
-To use Spring Loaded with the Maven command line, just add it as a dependency in the 
+To use Spring Loaded with the Maven command line, just add it as a dependency in the
 Spring Boot plugin declaration, e.g.
 
-.pom.xml
 [source,xml,indent=0]
 ----
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.springframework</groupId>
-						<artifactId>springloaded</artifactId>
-						<version>1.2.0.RELEASE</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+	<plugin>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-maven-plugin</artifactId>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>springloaded</artifactId>
+				<version>1.2.0.RELEASE</version>
+			</dependency>
+		</dependencies>
+	</plugin>
 ----
 
-This normally works pretty well with Eclipse and IntelliJ as long as
-they have their build configuration aligned with the Maven defaults
-(Eclipse m2e does this out of the box).
+This normally works pretty well with Eclipse and IntelliJ as long as they have their
+build configuration aligned with the Maven defaults (Eclipse m2e does this out of the
+box).
+
+
 
 [[howto-reload-springloaded-gradle-and-intellij]]
 ==== Configuring Spring Loaded for use with Gradle and IntelliJ

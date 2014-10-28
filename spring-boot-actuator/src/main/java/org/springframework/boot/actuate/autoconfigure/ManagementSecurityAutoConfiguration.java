@@ -142,8 +142,8 @@ public class ManagementSecurityAutoConfiguration {
 			List<String> ignored = SpringBootWebSecurityConfiguration
 					.getIgnored(this.security);
 			if (!this.management.getSecurity().isEnabled()) {
-				ignored.addAll(Arrays.asList(getEndpointPaths(
-						this.endpointHandlerMapping)));
+				ignored.addAll(Arrays
+						.asList(getEndpointPaths(this.endpointHandlerMapping)));
 			}
 			if (ignored.contains("none")) {
 				ignored.remove("none");
@@ -227,11 +227,10 @@ public class ManagementSecurityAutoConfiguration {
 				http.exceptionHandling().authenticationEntryPoint(entryPoint());
 				paths = this.server.getPathsArray(paths);
 				http.requestMatchers().antMatchers(paths);
-				// @formatter:off
-				http.authorizeRequests()
-						.antMatchers(this.server.getPathsArray(getEndpointPaths(this.endpointHandlerMapping, false))).access("permitAll()")
+				String[] endpointPaths = this.server.getPathsArray(getEndpointPaths(
+						this.endpointHandlerMapping, false));
+				http.authorizeRequests().antMatchers(endpointPaths).access("permitAll()")
 						.anyRequest().hasRole(this.management.getSecurity().getRole());
-				// @formatter:on
 				http.httpBasic();
 
 				// No cookies for management endpoints by default

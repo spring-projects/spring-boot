@@ -72,7 +72,7 @@ public class ConfigurationPropertiesReportEndpointTests extends
 	@SuppressWarnings("unchecked")
 	public void testKeySanitization() throws Exception {
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		report.setKeysToSanitize(new String[] { "property" });
+		report.setKeysToSanitize("property");
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");

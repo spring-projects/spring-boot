@@ -16,11 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 import java.util.Collections;
 
 import org.junit.Before;
@@ -33,10 +28,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
 /**
  * Tests for {@link HealthMvcEndpoint}.
  *
  * @author Christian Dupuis
+ * @author Dave Syer
  */
 public class HealthMvcEndpointTests {
 
@@ -92,7 +93,7 @@ public class HealthMvcEndpointTests {
 	public void secure() {
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
-		Object result = this.mvc.invoke(user);
+		Object result = this.mvc.invoke(this.user);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
 		assertEquals("bar", ((Health) result).getDetails().get("foo"));
@@ -100,25 +101,25 @@ public class HealthMvcEndpointTests {
 
 	@Test
 	public void secureNotCached() {
-		given(this.endpoint.getTtl()).willReturn(10000L);
+		given(this.endpoint.getTimeToLive()).willReturn(10000L);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
-		Object result = this.mvc.invoke(user);
+		Object result = this.mvc.invoke(this.user);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
-		result = this.mvc.invoke(user);
+		result = this.mvc.invoke(this.user);
 		@SuppressWarnings("unchecked")
-		Health health = (Health) ((ResponseEntity<Health>) result).getBody();
+		Health health = ((ResponseEntity<Health>) result).getBody();
 		assertTrue(health.getStatus() == Status.DOWN);
 	}
 
 	@Test
 	public void unsecureCached() {
-		given(this.endpoint.getTtl()).willReturn(10000L);
+		given(this.endpoint.getTimeToLive()).willReturn(10000L);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
-		Object result = this.mvc.invoke(user);
+		Object result = this.mvc.invoke(this.user);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());

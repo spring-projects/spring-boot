@@ -94,25 +94,29 @@ Here is an example "`hello world`" web application written in Groovy:
 	}
 ----
 
-Then
+To compile and run the application type:
 
+[indent=0,subs="verbatim,quotes,attributes"]
 ----
-$ spring run hello.groovy
-----
-
-To pass command line arguments to the application, you need to use a
-"--" to separate them from the "spring" command arguments, e.g.
-
-----
-$ spring run hello.groovy -- --server.port=9000
+	$ spring run hello.groovy
 ----
 
-and to set JVM command line arguments you can use the `JAVA_OPTS`
-environment variable, e.g.
+To pass command line arguments to the application, you need to use a `--` to separate
+them from the "`spring`" command arguments, e.g.
 
+[indent=0,subs="verbatim,quotes,attributes"]
 ----
-$ JAVA_OPTS=-Xmx1024m spring run hello.groovy
+	$ spring run hello.groovy -- --server.port=9000
 ----
+
+To set JVM command line arguments you can use the `JAVA_OPTS` environment variable, e.g.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ JAVA_OPTS=-Xmx1024m spring run hello.groovy
+----
+
+
 
 [[cli-install-uninstall]]
 === Adding dependencies to the CLI
