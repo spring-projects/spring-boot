@@ -27,6 +27,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
+
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
@@ -56,8 +57,24 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
-	public Log4J2LoggingSystem(ClassLoader classLoader) {
-		super(classLoader, "log4j2.json", "log4j2.jsn", "log4j2.xml");
+	public Log4J2LoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
+		super(classLoader, fileOutput, consoleOutput);
+	}
+	
+	@Override
+	protected String[] getLogFileName(boolean fileOutput, boolean consoleOutput) {
+		if (fileOutput && consoleOutput) {
+			return new String[] { "log4j2-file-console.json", "log4j2-file-console.jsn", "log4j2-file-console.xml" };
+		}
+		else if (fileOutput) {
+			return new String[] { "log4j2-file.json", "log4j2-file.jsn", "log4j2-file.xml" };
+		}
+		else if (consoleOutput) {
+			return new String[] { "log4j2-console.json", "log4j2-console.jsn", "log4j2-console.xml" };
+		}
+		else {
+			return new String[] { "log4j2.json", "log4j2.jsn", "log4j2.xml" };
+		}
 	}
 
 	@Override
