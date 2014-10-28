@@ -66,17 +66,20 @@ public class ConfigurationMetadataMatchers {
 
 		private final String description;
 
+		private final Object defaultValue;
+
 		public ContainsItemMatcher(ItemType itemType, String name) {
-			this(itemType, name, null, null, null);
+			this(itemType, name, null, null, null, null);
 		}
 
 		public ContainsItemMatcher(ItemType itemType, String name, String type,
-				Class<?> sourceType, String description) {
+				Class<?> sourceType, String description, Object defaultValue) {
 			this.itemType = itemType;
 			this.name = name;
 			this.type = type;
 			this.sourceType = sourceType;
 			this.description = description;
+			this.defaultValue = defaultValue;
 		}
 
 		@Override
@@ -91,6 +94,10 @@ public class ConfigurationMetadataMatchers {
 			}
 			if (this.sourceType != null
 					&& !this.sourceType.getName().equals(itemMetadata.getSourceType())) {
+				return false;
+			}
+			if (this.defaultValue != null
+					&& !this.defaultValue.equals(itemMetadata.getDefaultValue())) {
 				return false;
 			}
 			if (this.description != null
@@ -121,6 +128,9 @@ public class ConfigurationMetadataMatchers {
 			if (this.sourceType != null) {
 				description.appendText(" sourceType ").appendValue(this.sourceType);
 			}
+			if (this.defaultValue != null) {
+				description.appendText(" defaultValue ").appendValue(this.defaultValue);
+			}
 			if (this.description != null) {
 				description.appendText(" description ").appendValue(this.description);
 			}
@@ -128,22 +138,27 @@ public class ConfigurationMetadataMatchers {
 
 		public ContainsItemMatcher ofType(Class<?> dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType.getName(),
-					this.sourceType, this.description);
+					this.sourceType, this.description, this.defaultValue);
 		}
 
 		public ContainsItemMatcher ofDataType(String dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType,
-					this.sourceType, this.description);
+					this.sourceType, this.description, this.defaultValue);
 		}
 
 		public ContainsItemMatcher fromSource(Class<?> sourceType) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					sourceType, this.description);
+					sourceType, this.description, this.defaultValue);
 		}
 
 		public ContainsItemMatcher withDescription(String description) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					this.sourceType, description);
+					this.sourceType, description, this.defaultValue);
+		}
+
+		public Matcher<? super ConfigurationMetadata> withDefaultValue(Object defaultValue) {
+			return new ContainsItemMatcher(this.itemType, this.name, this.type,
+					this.sourceType, this.description, defaultValue);
 		}
 
 		private ItemMetadata getFirstPropertyWithName(ConfigurationMetadata metadata,

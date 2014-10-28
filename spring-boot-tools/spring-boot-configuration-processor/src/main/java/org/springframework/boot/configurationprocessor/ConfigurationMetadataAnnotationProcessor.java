@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -38,9 +39,12 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
+import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
+import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCompilerFieldValuesParser;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
@@ -64,6 +68,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private TypeUtils typeUtils;
 
+	private FieldValuesParser fieldValuesParser;
+
 	protected String configurationPropertiesAnnotation() {
 		return CONFIGURATION_PROPERTIES_ANNOTATION;
 	}
@@ -73,6 +79,18 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		super.init(env);
 		this.metadata = new ConfigurationMetadata();
 		this.typeUtils = new TypeUtils(env);
+		try {
+			this.fieldValuesParser = new JavaCompilerFieldValuesParser(env);
+		}
+		catch (Throwable ex) {
+			this.fieldValuesParser = FieldValuesParser.NONE;
+			logWarning("Field value processing of @ConfigurationProperty meta-data is "
+					+ "not supported");
+		}
+	}
+
+	private void logWarning(String msg) {
+		this.processingEnv.getMessager().printMessage(Kind.WARNING, msg);
 	}
 
 	@Override
@@ -126,12 +144,22 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private void processTypeElement(String prefix, TypeElement element) {
 		TypeElementMembers members = new TypeElementMembers(this.processingEnv, element);
-		processSimpleTypes(prefix, element, members);
+		Map<String, Object> fieldValues = getFieldValues(element);
+		processSimpleTypes(prefix, element, members, fieldValues);
 		processNestedTypes(prefix, element, members);
 	}
 
+	private Map<String, Object> getFieldValues(TypeElement element) {
+		try {
+			return this.fieldValuesParser.getFieldValues(element);
+		}
+		catch (Exception ex) {
+			return Collections.emptyMap();
+		}
+	}
+
 	private void processSimpleTypes(String prefix, TypeElement element,
-			TypeElementMembers members) {
+			TypeElementMembers members, Map<String, Object> fieldValues) {
 		for (Map.Entry<String, ExecutableElement> entry : members.getPublicGetters()
 				.entrySet()) {
 			String name = entry.getKey();
@@ -143,8 +171,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				String dataType = this.typeUtils.getType(getter.getReturnType());
 				String sourceType = this.typeUtils.getType(element);
 				String description = this.typeUtils.getJavaDoc(field);
+				Object defaultValue = fieldValues.get(name);
 				this.metadata.add(ItemMetadata.newProperty(prefix, name, dataType,
-						sourceType, null, description));
+						sourceType, null, description, defaultValue));
 			}
 		}
 	}

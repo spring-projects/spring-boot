@@ -67,6 +67,7 @@ public class JsonMarshaller {
 		putIfPresent(jsonObject, "description", item.getDescription());
 		putIfPresent(jsonObject, "sourceType", item.getSourceType());
 		putIfPresent(jsonObject, "sourceMethod", item.getSourceMethod());
+		putIfPresent(jsonObject, "defaultValue", item.getDefaultValue());
 		return jsonObject;
 	}
 
@@ -101,8 +102,9 @@ public class JsonMarshaller {
 		String description = object.optString("description", null);
 		String sourceType = object.optString("sourceType", null);
 		String sourceMethod = object.optString("sourceMethod", null);
+		Object defaultValue = object.opt("defaultValue");
 		return new ItemMetadata(itemType, name, null, type, sourceType, sourceMethod,
-				description);
+				description, defaultValue);
 	}
 
 	private String toString(InputStream inputStream) throws IOException {

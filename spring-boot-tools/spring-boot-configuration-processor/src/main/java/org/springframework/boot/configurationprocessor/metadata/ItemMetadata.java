@@ -38,8 +38,11 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 
 	private String sourceMethod;
 
+	private Object defaultValue;
+
 	ItemMetadata(ItemType itemType, String prefix, String name, String type,
-			String sourceType, String sourceMethod, String description) {
+			String sourceType, String sourceMethod, String description,
+			Object defaultValue) {
 		super();
 		this.itemType = itemType;
 		this.name = buildName(prefix, name);
@@ -47,6 +50,7 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		this.sourceType = sourceType;
 		this.sourceMethod = sourceMethod;
 		this.description = description;
+		this.defaultValue = defaultValue;
 	}
 
 	private String buildName(String prefix, String name) {
@@ -85,12 +89,17 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		return this.description;
 	}
 
+	public Object getDefaultValue() {
+		return this.defaultValue;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder(this.name);
 		buildToStringProperty(string, "type", this.type);
 		buildToStringProperty(string, "sourceType", this.sourceType);
 		buildToStringProperty(string, "description", this.description);
+		buildToStringProperty(string, "defaultValue", this.defaultValue);
 		return string.toString();
 	}
 
@@ -109,13 +118,14 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 	public static ItemMetadata newGroup(String name, String type, String sourceType,
 			String sourceMethod) {
 		return new ItemMetadata(ItemType.GROUP, name, null, type, sourceType,
-				sourceMethod, null);
+				sourceMethod, null, null);
 	}
 
 	public static ItemMetadata newProperty(String prefix, String name, String type,
-			String sourceType, String sourceMethod, String description) {
+			String sourceType, String sourceMethod, String description,
+			Object defaultValue) {
 		return new ItemMetadata(ItemType.PROPERTY, prefix, name, type, sourceType,
-				sourceMethod, description);
+				sourceMethod, description, defaultValue);
 	}
 
 	/**

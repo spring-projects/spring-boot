@@ -71,9 +71,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsGroup("simple").fromSource(SimpleProperties.class));
 		assertThat(
 				metadata,
-				containsProperty("simple.the-name", String.class).fromSource(
-						SimpleProperties.class).withDescription(
-						"The name of this simple properties."));
+				containsProperty("simple.the-name", String.class)
+						.fromSource(SimpleProperties.class)
+						.withDescription("The name of this simple properties.")
+						.withDefaultValue("boot"));
 		assertThat(
 				metadata,
 				containsProperty("simple.flag", Boolean.class).fromSource(
@@ -171,7 +172,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void simpleMethodConfig() throws Exception {
 		ConfigurationMetadata metadata = compile(SimpleMethodConfig.class);
-		assertThat(metadata, containsGroup("foo").fromSource(SimpleMethodConfig.class));
+		assertThat(metadata, containsGroup("foo")
+				.fromSource(SimpleMethodConfig.class));
 		assertThat(
 				metadata,
 				containsProperty("foo.name", String.class).fromSource(
