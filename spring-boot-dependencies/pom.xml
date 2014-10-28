@@ -110,7 +110,7 @@
 		<spring.version>4.1.1.RELEASE</spring.version>
 		<spring-amqp.version>1.4.0.RC1</spring-amqp.version>
 		<spring-cloud.version>1.1.0.RELEASE</spring-cloud.version>
-		<spring-batch.version>3.0.1.RELEASE</spring-batch.version>
+		<spring-batch.version>3.0.2.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Evans-RELEASE</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.16.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.1.0.RC1</spring-integration.version>
@@ -1459,7 +1459,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<repositories>
-				<!-- Repositories to allow snapshot and milestone BOM imports during 
+				<!-- Repositories to allow snapshot and milestone BOM imports during
 					development. This section is stripped out when a full release is prepared. -->
 				<repository>
 					<id>spring-milestones</id>
