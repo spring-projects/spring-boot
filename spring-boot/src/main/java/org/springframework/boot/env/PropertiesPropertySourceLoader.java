@@ -34,7 +34,7 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 
 	@Override
 	public String[] getFileExtensions() {
-		return new String[] { "properties" };
+		return new String[] { "properties", "xml" };
 	}
 
 	@Override
