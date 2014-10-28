@@ -45,6 +45,7 @@ public class AtomikosConnectionFactoryBeanTests {
 		verify(bean).close();
 	}
 
+	@SuppressWarnings("serial")
 	private static class MockAtomikosConnectionFactoryBean extends
 			AtomikosConnectionFactoryBean {
 

@@ -45,6 +45,7 @@ public class AtomikosDataSourceBeanTests {
 		verify(bean).close();
 	}
 
+	@SuppressWarnings("serial")
 	private static class MockAtomikosDataSourceBean extends AtomikosDataSourceBean {
 
 		@Override

@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
  * @see "http://stackoverflow.com/questions/7689206/ejb3namingstrategy-vs-improvednamingstrategy-foreign-key-naming"
  * @since 1.2.0
  */
+@SuppressWarnings("serial")
 public class SpringNamingStrategy extends ImprovedNamingStrategy {
 
 	@Override

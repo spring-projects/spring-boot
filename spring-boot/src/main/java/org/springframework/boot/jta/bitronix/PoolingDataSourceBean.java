@@ -42,6 +42,7 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
  * @author Josh Long
  * @since 1.2.0
  */
+@SuppressWarnings("serial")
 public class PoolingDataSourceBean extends PoolingDataSource implements BeanNameAware,
 		InitializingBean {
 

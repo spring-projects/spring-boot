@@ -81,6 +81,7 @@ public class ParentContextApplicationContextInitializer implements
 
 	}
 
+	@SuppressWarnings("serial")
 	public static class ParentContextAvailableEvent extends ApplicationEvent {
 
 		public ParentContextAvailableEvent(

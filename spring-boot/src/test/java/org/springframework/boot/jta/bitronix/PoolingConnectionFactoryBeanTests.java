@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
  */
 public class PoolingConnectionFactoryBeanTests {
 
+	@SuppressWarnings("serial")
 	private PoolingConnectionFactoryBean bean = new PoolingConnectionFactoryBean() {
 		@Override
 		public synchronized void init() {

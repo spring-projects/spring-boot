@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 1.2.0
  */
+@SuppressWarnings("serial")
 public class AtomikosConnectionFactoryBean extends
 		com.atomikos.jms.AtomikosConnectionFactoryBean implements BeanNameAware,
 		InitializingBean, DisposableBean {

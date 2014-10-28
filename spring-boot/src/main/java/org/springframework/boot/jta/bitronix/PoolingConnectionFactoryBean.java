@@ -39,6 +39,7 @@ import bitronix.tm.resource.jms.PoolingConnectionFactory;
  * @author Josh Long
  * @since 1.2.0
  */
+@SuppressWarnings("serial")
 public class PoolingConnectionFactoryBean extends PoolingConnectionFactory implements
 		BeanNameAware, InitializingBean, DisposableBean {
 

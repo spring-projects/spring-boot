@@ -28,6 +28,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Dave Syer
  */
+@SuppressWarnings("serial")
 public class ApplicationPreparedEvent extends SpringApplicationEvent {
 
 	private final ConfigurableApplicationContext context;
