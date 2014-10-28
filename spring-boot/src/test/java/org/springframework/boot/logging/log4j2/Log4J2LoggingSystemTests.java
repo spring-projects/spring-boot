@@ -96,7 +96,7 @@ public class Log4J2LoggingSystemTests {
 		this.loggingSystem.initialize();
 		java.util.logging.Logger julLogger = java.util.logging.Logger
 				.getLogger(getClass().getName());
-		julLogger.info("Hello world");
+		julLogger.severe("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 	}
