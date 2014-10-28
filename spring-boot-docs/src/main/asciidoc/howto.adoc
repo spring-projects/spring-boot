@@ -41,7 +41,7 @@ rules of thumb:
   `+@Conditional*+` annotations to find out what features they enable and when. Add
   `--debug` to the command line or a System property `-Ddebug` to get a log on the
   console of all the autoconfiguration decisions that were made in your app. In a running
-  Actuator app look at the `autoconfig` endpoint (`/autoconfig' or the JMX equivalent) for
+  Actuator app look at the `autoconfig` endpoint ('`/autoconfig`' or the JMX equivalent) for
   the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
   {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`])
@@ -79,7 +79,7 @@ than one way to register additional ones:
 The `SpringApplication` sends some special `ApplicationEvents` to the listeners (even
 some before the context is created), and then registers the listeners for events published
 by the `ApplicationContext` as well. See
-'<<spring-boot-features.adoc#boot-features-application-events-and-listeners>>' in the
+_<<spring-boot-features.adoc#boot-features-application-events-and-listeners>>_ in the
 '`Spring Boot features`' section for a complete list.
 
 
@@ -87,7 +87,7 @@ by the `ApplicationContext` as well. See
 [[howto-build-an-application-context-hierarchy]]
 === Build an ApplicationContext hierarchy (adding a parent or root context)
 You can use the `ApplicationBuilder` class to create parent/child `ApplicationContext`
-hierarchies. See '<<spring-boot-features.adoc#boot-features-fluent-builder-api>>'
+hierarchies. See _<<spring-boot-features.adoc#boot-features-fluent-builder-api>>_
 in the '`Spring Boot features`' section for more information.
 
 
@@ -135,7 +135,7 @@ underscores (`_`) as well as dashes (`-`) in property names.
 [[howto-change-the-location-of-external-properties]]
 === Change the location of external properties of an application
 By default properties from different sources are added to the Spring `Environment` in a
-defined order (see '<<spring-boot-features.adoc#boot-features-external-config>>' in
+defined order (see _<<spring-boot-features.adoc#boot-features-external-config>>_ in
 the '`Spring Boot features`' section for the exact order).
 
 A nice way to augment and modify this is to add `@PropertySource` annotations to your
@@ -222,7 +222,7 @@ The example YAML above corresponds to an `application.properties` file
 	server.port=9000
 ----
 
-See '<<spring-boot-features.adoc#boot-features-external-config-yaml>>' in
+See _<<spring-boot-features.adoc#boot-features-external-config-yaml>>_ in
 the '`Spring Boot features`' section for more information
 about YAML.
 
@@ -249,7 +249,7 @@ A value set this way is replaced by the System property or environment variable 
 but not by the `SpringApplicationBuilder.profiles()` method. Thus the latter Java API can
 be used to augment the profiles without changing the defaults.
 
-See '<<spring-boot-features.adoc#boot-features-profiles>>' in
+See _<<spring-boot-features.adoc#boot-features-profiles>>_ in
 the '`Spring Boot features`' section for more information.
 
 
@@ -345,7 +345,7 @@ environment variable).
 To switch off the HTTP endpoints completely, but still create a `WebApplicationContext`,
 use `server.port=-1` (this is sometimes useful for testing).
 
-For more details look at '<<spring-boot-features.adoc#boot-features-customizing-embedded-containers>>'
+For more details look at _<<spring-boot-features.adoc#boot-features-customizing-embedded-containers>>_
 in the '`Spring Boot features`' section, or the
 {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`] source
 code.
@@ -365,7 +365,7 @@ that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.
 
-A useful practice for use with `@IntegrationTest`s  is to set `server.port=0`
+A useful practice for use with `@IntegrationTests` is to set `server.port=0`
 and then inject the actual ('`local`') port as a `@Value`. For example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
@@ -413,7 +413,7 @@ accessible on the filesystem, i.e. it cannot be read from within a jar file.
 [[howto-configure-tomcat]]
 === Configure Tomcat
 Generally you can follow the advice from
-'<<howto-discover-build-in-options-for-external-properties>>' about
+_<<howto-discover-build-in-options-for-external-properties>>_ about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
 `EmbeddedServletContainerCustomizer` and various Tomcat-specific `+*Customizers+` that you
 can add in one of those. The Tomcat APIs are quite rich so once you have access to the
@@ -548,7 +548,7 @@ Example in Gradle:
 [[howto-configure-jetty]]
 === Configure Jetty
 Generally you can follow the advice from
-'<<howto-discover-build-in-options-for-external-properties>>' about
+_<<howto-discover-build-in-options-for-external-properties>>_ about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
 `EmbeddedServletContainerCustomizer`. The Jetty APIs are quite rich so once you have
 access to the `JettyEmbeddedServletContainerFactory` you can modify it in a number
@@ -752,7 +752,7 @@ provided of type `HttpMessageConverters` (always available if you use the defaul
 configuration) which has some useful methods to access the default and user-enhanced
 message converters.
 
-See also the '<<howto-customize-the-responsebody-rendering>>' section and the
+See also the _<<howto-customize-the-responsebody-rendering>>_ section and the
 {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
 source code for more details.
 
@@ -1031,7 +1031,7 @@ your own, and bind it to a set of `Environment` properties e.g.
 	datasource.mine.poolSize=30
 ----
 
-See '<<spring-boot-features.adoc#boot-features-configure-datasource>>' in the
+See _<<spring-boot-features.adoc#boot-features-configure-datasource>>_ in the
 '`Spring Boot features`' section and the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
@@ -1381,7 +1381,7 @@ also set `management.address` to a valid IP address that the server is able to b
 For more detail look at the
 {sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[`ManagementServerProperties`]
 source code and
-'<<production-ready-features.adoc#production-ready-customizing-management-server-port>>'
+_<<production-ready-features.adoc#production-ready-customizing-management-server-port>>_
 in the '`Production-ready features`' section.
 
 

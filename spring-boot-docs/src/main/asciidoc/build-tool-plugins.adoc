@@ -7,7 +7,7 @@ Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer 
 variety of features, including the packaging of executable jars. This section provides
 more details on both plugins, as well as some help should you need to extend an
 unsupported build system. If you are just getting started, you might want to read
-``<<using-spring-boot.adoc#using-boot-build-systems>>'' from the
+"`<<using-spring-boot.adoc#using-boot-build-systems>>`" from the
 <<using-spring-boot.adoc#using-boot>> section first.
 --
 
@@ -17,7 +17,7 @@ unsupported build system. If you are just getting started, you might want to rea
 == Spring Boot Maven plugin
 The {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin] provides Spring Boot
 support in Maven, allowing you to package executable jar or war archives and run an
-application ``in-place''. To use it you must be using Maven 3 (or better).
+application "`in-place`". To use it you must be using Maven 3 (or better).
 
 NOTE: Refer to the {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin Site]
 for complete plugin documentation.
@@ -129,7 +129,7 @@ To build and run a project artifact, you can type the following:
 ----
 
 To build a war file that is both executable and deployable into an external container you
-need to mark the embedded container dependencies as ``provided'', e.g:
+need to mark the embedded container dependencies as "`provided`", e.g:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -163,7 +163,7 @@ Advanced configuration options and examples are available in the
 == Spring Boot Gradle plugin
 The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, allowing you to
 package executable jar or war archives, run Spring Boot applications and omit version
-information from your `build.gradle` file for ``blessed'' dependencies.
+information from your `build.gradle` file for "`blessed`" dependencies.
 
 
 
@@ -201,7 +201,7 @@ If you are using a milestone or snapshot release you will also need to add appro
 [[build-tool-plugins-gradle-dependencies-without-versions]]
 === Declaring dependencies without versions
 The `spring-boot` plugin will register a custom Gradle `ResolutionStrategy` with your
-build that allows you to omit version numbers when declaring dependencies to ``blessed''
+build that allows you to omit version numbers when declaring dependencies to "`blessed`"
 artifacts. To make use of this functionality, simply declare dependencies in the usual way,
 but leave the version number empty:
 
@@ -215,7 +215,7 @@ but leave the version number empty:
 ----
 
 NOTE: The version of the `spring-boot` gradle plugin that you declare determines the
-actual versions of the ``blessed'' dependencies (this ensures that builds are always
+actual versions of the "`blessed`" dependencies (this ensures that builds are always
 repeatable). You should always set the version of the `spring-boot` gradle plugin to the
 actual Spring Boot version that you wish to use. Details of the versions that are
 provided can be found in the <<appendix-dependency-versions, appendix>>.
@@ -237,7 +237,7 @@ example:
 [[build-tool-plugins-gradle-custom-version-management]]
 ==== Custom version management
 If is possible to customize the versions used by the `ResolutionStrategy` if you need
-to deviate from Spring Boot's ``blessed'' dependencies. Alternative version metadata
+to deviate from Spring Boot's "`blessed`" dependencies. Alternative version metadata
 is consulted using the `versionManagement` configuration. For example:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
@@ -263,7 +263,7 @@ to override version numbers if necessary.
 
 [[build-tool-plugins-gradle-exclude-rules]]
 === Default exclude rules
-Gradle handles ``exclude rules'' in a slightly different way to Maven which can cause
+Gradle handles "`exclude rules`" in a slightly different way to Maven which can cause
 unexpected results when using the starter POMs. Specifically, exclusions declared on
 a dependency will not be applied when the dependency can be reached through a different
 path. For example, if a starter POM declares the following:
@@ -296,7 +296,7 @@ which does not have an `exclusion` element.
 
 To ensure that correct exclusions are actually applied, the Spring Boot Gradle plugin will
 automatically add exclusion rules. All exclusions defined in the
-`spring-boot-dependencies` POM and implicit rules for the ``starter'' POMs will be added.
+`spring-boot-dependencies` POM and implicit rules for the "`starter`" POMs will be added.
 
 If you don't want exclusion rules automatically applied you can use the following
 configuration:
@@ -331,7 +331,7 @@ To build and run a project artifact, you can type the following:
 
 To build a war file that is both executable and deployable into an external container,
 you need to mark the embedded container dependencies as belonging to a configuration
-named ``providedRuntime'', e.g:
+named "`providedRuntime`", e.g:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -362,7 +362,7 @@ named ``providedRuntime'', e.g:
 
 [[build-tool-plugins-gradle-running-applications]]
 === Running a project in-place
-To run a project in place without building a jar first you can use the ``bootRun'' task:
+To run a project in place without building a jar first you can use the "`bootRun`" task:
 
 [indent=0]
 ----
@@ -513,7 +513,7 @@ The following configuration options are available:
  (defaults to a guess based on the archive type).
 
 |`requiresUnpack`
-|A list of dependencies (in the form ``groupId:artifactId'' that must be unpacked from
+|A list of dependencies (in the form "`groupId:artifactId`" that must be unpacked from
  fat jars in order to run. Items are still packaged into the fat jar, but they will be
  automatically unpacked when it runs.
 |===
@@ -573,7 +573,7 @@ you may find that it includes unnecessary dependencies.
 If you want to use a build tool other than Maven or Gradle, you will likely need to develop
 your own plugin. Executable jars need to follow a specific format and certain entries need
 to be written in an uncompressed form (see the
-'<<appendix-executable-jar-format.adoc#executable-jar, executable jar format>>' section
+_<<appendix-executable-jar-format.adoc#executable-jar, executable jar format>>_ section
 in the appendix for details).
 
 The Spring Boot Maven and Gradle plugins both make use of `spring-boot-loader-tools` to
@@ -637,4 +637,4 @@ technical details of the <<appendix-executable-jar-format.adoc#executable-jar, e
 jar format>> are covered in the appendix.
 
 If you have specific build-related questions you can check out the
-`<<howto.adoc#howto, how-to>>' guides.
+"`<<howto.adoc#howto, how-to>>`" guides.

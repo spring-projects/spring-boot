@@ -4,7 +4,7 @@
 [partintro]
 --
 If you're just getting started with Spring Boot, or 'Spring' in general, this is the section
-for you! Here we answer the basic '``what?''', '``how?''' and '``why?''' questions. You'll
+for you! Here we answer the basic '"`what?`"', '"`how?`"' and '"`why?`"' questions. You'll
 find a gentle introduction to Spring Boot along with installation instructions.
 We'll then build our first Spring Boot application, discussing some core principles as
 we go.
@@ -14,13 +14,13 @@ we go.
 [[getting-started-introducing-spring-boot]]
 == Introducing Spring Boot
 Spring Boot makes it easy to create stand-alone, production-grade Spring based
-Applications that you can ``just run''. We take an opinionated view of the Spring
+Applications that you can "`just run`". We take an opinionated view of the Spring
 platform and third-party libraries so you can get started with minimum fuss. Most Spring
 Boot applications need very little Spring configuration.
 
 You can use Spring Boot to create Java applications that can be started using `java -jar`
 or more traditional war deployments. We also provide a command line tool that runs
-``spring scripts''.
+"`spring scripts`".
 
 Our primary goals are:
 
@@ -36,7 +36,7 @@ diverge from the defaults.
 
 [[getting-started-installing-spring-boot]]
 == Installing Spring Boot
-Spring Boot can be used with ``classic'' Java development tools or installed as a command
+Spring Boot can be used with "`classic`" Java development tools or installed as a command
 line tool. Regardless, you will need http://www.java.com[Java SDK v1.6] or higher. You
 should check your current Java installation before you begin:
 
@@ -47,7 +47,7 @@ should check your current Java installation before you begin:
 
 If you are new to Java development, or if you just want to experiment with Spring Boot
 you might want to try the <<getting-started-installing-the-cli, Spring Boot CLI>> first,
-otherwise, read on for ``classic'' installation instructions.
+otherwise, read on for "`classic`" installation instructions.
 
 TIP: Although Spring Boot is compatible with Java 1.6, if possible, you should consider
 using the latest version of Java.
@@ -78,8 +78,8 @@ OSX Homebrew user try `brew install maven`. Ubuntu users can run
 
 Spring Boot dependencies use the `org.springframework.boot` `groupId`. Typically your
 Maven POM file will inherit from the `spring-boot-starter-parent` project and declare
-dependencies to one or more <<using-spring-boot.adoc#using-boot-starter-poms, ``Starter
-POMs''>>. Spring Boot also provides an optional
+dependencies to one or more <<using-spring-boot.adoc#using-boot-starter-poms, "`Starter
+POMs`">>. Spring Boot also provides an optional
 <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>> to create
 executable jars.
 
@@ -164,13 +164,13 @@ installed you can follow the instructions at http://www.gradle.org/.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more
-<<using-spring-boot.adoc#using-boot-starter-poms, ``Starter POMs''>>. Spring Boot
+<<using-spring-boot.adoc#using-boot-starter-poms, "`Starter POMs`">>. Spring Boot
 provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle plugin>>
 that can be used to simplify dependency declarations and to create executable jars.
 
 .Gradle Wrapper
 ****
-The Gradle Wrapper provides a nice way of ``obtaining'' Gradle when you need to build a
+The Gradle Wrapper provides a nice way of "`obtaining`" Gradle when you need to build a
 project. It's a small script and library that you commit alongside your code to bootstrap
 the build process. See http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
 for details.
@@ -375,9 +375,9 @@ output:
 
 [[getting-started-upgrading-from-an-earlier-version]]
 === Upgrading from an earlier version of Spring Boot
-If you are upgrading from an earlier release of Spring Boot check the ``release notes''
+If you are upgrading from an earlier release of Spring Boot check the "`release notes`"
 hosted on the {github-wiki}[project wiki]. You'll find upgrade instructions along with
-a list of ``new and noteworthy'' features for each release.
+a list of "`new and noteworthy`" features for each release.
 
 To upgrade an existing CLI installation use the appropriate package manager command
 (for example `brew upgrade`) or, if you manually installed the CLI, follow the
@@ -388,11 +388,11 @@ update your `PATH` environment variable to remove any older references.
 
 [[getting-started-first-application]]
 == Developing your first Spring Boot application
-Let's develop a simple ``Hello World!'' web application in Java that highlights some
+Let's develop a simple "`Hello World!`" web application in Java that highlights some
 of Spring Boot's key features. We'll use Maven to build this project since most IDEs
 support it.
 
-TIP: The http://spring.io[spring.io] web site contains many ``Getting Started'' guides
+TIP: The http://spring.io[spring.io] web site contains many "`Getting Started`" guides
 that use Spring Boot. If you're looking to solve a specific problem; check there first.
 
 Before we begin, open a terminal to check that you have valid versions of Java and Maven
@@ -415,7 +415,7 @@ installed.
 ----
 
 NOTE: This sample needs to be created in its own folder. Subsequent instructions assume
-that you have created a suitable folder and that it is your ``current directory''.
+that you have created a suitable folder and that it is your "`current directory`".
 
 
 
@@ -471,7 +471,7 @@ endif::[]
 ----
 
 This should give you a working build, you can test it out by running `mvn package` (you
-can ignore the '``jar will be empty - no content was marked for inclusion!''' warning for
+can ignore the '"`jar will be empty - no content was marked for inclusion!'`"' warning for
 now).
 
 NOTE: At this point you could import the project into an IDE (most modern Java IDE's
@@ -482,13 +482,13 @@ text editor for this example.
 
 [[getting-started-first-application-dependencies]]
 === Adding classpath dependencies
-Spring Boot provides a number of ``Starter POMs'' that make easy to add jars to your
+Spring Boot provides a number of "`Starter POMs`" that make easy to add jars to your
 classpath. Our sample application has already used `spring-boot-starter-parent` in the
 `parent` section of the POM. The `spring-boot-starter-parent` is a special starter
 that provides useful Maven defaults. It also provides a `dependency-management` section
-so that you can omit `version` tags for ``blessed'' dependencies.
+so that you can omit `version` tags for "`blessed`" dependencies.
 
-Other ``Starter POMs'' simply provide dependencies that you are likely to need when
+Other "`Starter POMs`" simply provide dependencies that you are likely to need when
 developing a specific type of application. Since we are developing a web application, we
 will add a `spring-boot-starter-web` dependency -- but before that, let's look at what we
 currently have.
@@ -561,7 +561,7 @@ _stereotype_ annotation. It provides hints for people reading the code, and for 
 that the class plays a specific role. In this case, our class is a web `@Controller` so
 Spring will consider it when handling incoming web requests.
 
-The `@RequestMapping` annotation provides ``routing'' information. It is telling Spring
+The `@RequestMapping` annotation provides "`routing`" information. It is telling Spring
 that any HTTP request with the path "`/`" should be mapped to the `home` method. The
 `@RestController` annotation tells Spring to render the resulting string directly
 back to the caller.
@@ -576,14 +576,14 @@ Reference Documentation for more details.
 [[getting-started-first-application-auto-configuration]]
 ==== The @EnableAutoConfiguration annotation
 The second class-level annotation is `@EnableAutoConfiguration`. This annotation tells
-Spring Boot to ``guess'' how you will want to configure Spring, based on the jar
+Spring Boot to "`guess`" how you will want to configure Spring, based on the jar
 dependencies that you have added. Since `spring-boot-starter-web` added Tomcat and
 Spring MVC, the auto-configuration will assume that you are developing a web application
 and setup Spring accordingly.
 
 .Starter POMs and Auto-Configuration
 ****
-Auto-configuration is designed to work well with ``Starter POMs'', but the two concepts
+Auto-configuration is designed to work well with "`Starter POMs`", but the two concepts
 are not directly tied. You are free to pick-and-choose jar dependencies outside of the
 starter POMs and Spring Boot will still do its best to auto-configure your application.
 ****
@@ -591,7 +591,7 @@ starter POMs and Spring Boot will still do its best to auto-configure your appli
 
 
 [[getting-started-first-application-main-method]]
-==== The ``main'' method
+==== The "`main`" method
 The final part of our application is the `main` method. This is just a standard method
 that follows the Java convention for an application entry point. Our main method delegates
 to Spring Boot's `SpringApplication` class by calling `run`. `SpringApplication` will
@@ -640,7 +640,7 @@ To gracefully exit the application hit `ctrl-c`.
 [[getting-started-first-application-executable-jar]]
 === Creating an executable jar
 Let's finish our example by creating a completely self-contained executable jar file that
-we could run in production. Executable jars (sometimes called ``fat jars'') are archives
+we could run in production. Executable jars (sometimes called "`fat jars`") are archives
 containing your compiled classes along with all of the jar dependencies that your code
 needs to run.
 
@@ -650,8 +650,8 @@ Java does not provide any standard way to load nested jar files (i.e. jar files 
 themselves contained within a jar). This can be problematic if you are looking to
 distribute a self-contained application.
 
-To solve this problem, many developers use ``shaded'' jars. A shaded jar simply packages
-all classes, from all jars, into a single ``uber jar''. The problem with shaded jars is that
+To solve this problem, many developers use "`shaded`" jars. A shaded jar simply packages
+all classes, from all jars, into a single "`uber jar`". The problem with shaded jars is that
 it becomes hard to see which libraries you are actually using in your application. It can
 also be problematic if the the same filename is used (but with different content) in
 multiple jars.
@@ -742,9 +742,9 @@ Hopefully this section has provided you with some of the Spring Boot basics, and
 on your way to writing your own applications. If you're a task-oriented type of
 developer you might want to jump over to http://spring.io and check out some of the
 http://spring.io/guides/[getting started] guides that solve specific
-'``How do I do that with Spring''' problems; we also have Spring Boot-specific
-'<<howto.adoc#howto, How-to>>' reference documentation.
+"`How do I do that with Spring`" problems; we also have Spring Boot-specific
+_<<howto.adoc#howto, How-to>>_ reference documentation.
 
-Otherwise, the next logical step is to read '<<using-spring-boot.adoc#using-boot>>'. If
+Otherwise, the next logical step is to read _<<using-spring-boot.adoc#using-boot>>_. If
 you're really impatient, you could also jump ahead and read about
-'<<spring-boot-features.adoc#boot-features, Spring Boot features>>'.
+_<<spring-boot-features.adoc#boot-features, Spring Boot features>>_.

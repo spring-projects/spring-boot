@@ -14,8 +14,8 @@ familiar Java-like syntax, without so much boilerplate code.
 == Installing the CLI
 The Spring Boot CLI can be installed manually; using GVM (the Groovy Environment
 Manually) or using Homebrew if you are an OSX user. See
-'<<getting-started.adoc#getting-started-installing-the-cli>>'
-in the ``Getting started'' section for comprehensive installation instructions.
+_<<getting-started.adoc#getting-started-installing-the-cli>>_
+in the "`Getting started`" section for comprehensive installation instructions.
 
 
 
@@ -78,7 +78,7 @@ using.
 You can compile and run Groovy source code using the `run` command. The Spring Boot CLI
 is completely self-contained so you don't need any external Groovy installation.
 
-Here is an example ``hello world'' web application written in Groovy:
+Here is an example "`hello world`" web application written in Groovy:
 
 .hello.groovy
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
@@ -149,16 +149,16 @@ To uninstall all additional dependencies you can use the `--all` option. For exa
 
 
 [[cli-deduced-grab-annotations]]
-==== Deduced ``grab'' dependencies
+==== Deduced "`grab`" dependencies
 Standard Groovy includes a `@Grab` annotation which allows you to declare dependencies
 on a third-party libraries. This useful technique allows Groovy to download jars in the
 same way as Maven or Gradle would; but without requiring you to use a build tool.
 
 Spring Boot extends this technique further, and will attempt to deduce which libraries
-to ``grab'' based on your code. For example, since the `WebApplication` code above uses
-`@RestController` annotations, ``Tomcat'' and ``Spring MVC'' will be grabbed.
+to "`grab`" based on your code. For example, since the `WebApplication` code above uses
+`@RestController` annotations, "`Tomcat`" and "`Spring MVC`" will be grabbed.
 
-The following items are used as ``grab hints'':
+The following items are used as "`grab hints`":
 
 |===
 | Items | Grabs
@@ -210,7 +210,7 @@ in the Spring Boot CLI source code to understand exactly how customizations are 
 
 
 [[cli-default-grab-deduced-coordinates]]
-==== Deduced ``grab'' coordinates
+==== Deduced "`grab`" coordinates
 Spring Boot extends Groovy's standard `@Grab` support by allowing you to specify a dependency
 without a group or version, for example `@Grab('freemarker')`. This will consult Spring Boot's
 default dependency metadata to deduce the artifact's group and version. Note that the default
@@ -222,7 +222,7 @@ metadata can be found in the <<appendix-dependency-versions, appendix>>.
 
 
 [[cli-default-grab-deduced-coordinates-custom-metadata]]
-===== Custom ``grab'' metadata
+===== Custom "`grab`" metadata
 Spring Boot provides a new annotation, `@GrabMetadata` that can be used to provide custom
 dependency metadata that overrides Spring Boot's defaults. This metadata is specified by
 using this annotation to provide the coordinates of one or more properties files (deployed
@@ -297,7 +297,7 @@ into a `test` directory.
 
 [[cli-multiple-source-files]]
 === Applications with multiple source files
-You can use ``shell globbing'' with all commands that accept file input. This allows you
+You can use "`shell globbing`" with all commands that accept file input. This allows you
 to easily use multiple files from a single directory, e.g.
 
 [indent=0]
@@ -305,7 +305,7 @@ to easily use multiple files from a single directory, e.g.
 	$ spring run *.groovy
 ----
 
-This technique can also be useful if you want to segregate your ``test'' or ``spec'' code
+This technique can also be useful if you want to segregate your "`test`" or "`spec`" code
 from the main application code:
 
 [indent=0]
@@ -329,7 +329,7 @@ The resulting jar will contain the classes produced by compiling the application
 of the application's dependencies so that it can then be run using `java -jar`. The jar
 file will also contain entries from the application's classpath. You can add explicit
 paths to the jar using `--include` and `--exclude` (both are comma-separated, and both
-accept prefixes to the values ``+'' and ``-'' to signify that they should be removed from
+accept prefixes to the values "`+`" and "`-`" to signify that they should be removed from
 the defaults). The default includes are
 
 [indent=0]
@@ -375,7 +375,7 @@ embedded shell.
 
 [[cli-groovy-beans-dsl]]
 == Developing application with the Groovy beans DSL
-Spring Framework 4.0 has native support for a `beans{}` ``DSL'' (borrowed from
+Spring Framework 4.0 has native support for a `beans{}` "`DSL`" (borrowed from
 http://grails.org/[Grails]),  and you can embed bean definitions in your Groovy
 application scripts using the same format. This is sometimes a good way to include
 external features like middleware declarations. For example:
@@ -417,7 +417,7 @@ Spring Boot CLI. There is also extensive javadoc throughout the
 {sc-spring-boot-cli}[source code].
 
 If you find that you reach the limit of the CLI tool, you will probably want to look
-at converting your application to full Gradle or Maven built ``groovy project''. The
+at converting your application to full Gradle or Maven built "`groovy project`". The
 next section covers Spring Boot's
-'<<build-tool-plugins.adoc#build-tool-plugins, Build tool plugins>>' that you can
+_<<build-tool-plugins.adoc#build-tool-plugins, Build tool plugins>>_ that you can
 use with Gradle or Maven.
