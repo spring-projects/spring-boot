@@ -27,8 +27,8 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
-	public Slf4JLoggingSystem(ClassLoader classLoader, String... paths) {
-		super(classLoader, paths);
+	public Slf4JLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
+		super(classLoader, fileOutput, consoleOutput);
 	}
 
 	@Override
