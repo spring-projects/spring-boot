@@ -67,7 +67,7 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 		// Or maybe there is a document root in a well-known location
 		file = file != null ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isWarnEnabled()) {
-			this.logger.debug("None of the document roots "
+			this.logger.warn("None of the document roots "
 					+ Arrays.asList(COMMON_DOC_ROOTS)
 					+ " point to a directory and will be ignored.");
 		}
