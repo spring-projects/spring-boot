@@ -74,6 +74,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	private static final Map<String, String> ENVIRONMENT_SYSTEM_PROPERTY_MAPPING;
 
 	public static final String PID_KEY = "PID";
+	
+	public static final String LOG_FILE = "LOG_FILE";
 
 	static {
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING = new HashMap<String, String>();
@@ -131,8 +133,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			if (System.getProperty(PID_KEY) == null) {
 				System.setProperty(PID_KEY, new ApplicationPid().toString());
 			}
-			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
-					.getDefaultClassLoader());
+			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils.getDefaultClassLoader(), false, false);
 			loggingSystem.beforeInitialize();
 		}
 	}
@@ -144,7 +145,13 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
 		initializeEarlyLoggingLevel(environment);
 		cleanLogTempProperty();
-		LoggingSystem system = LoggingSystem.get(classLoader);
+		boolean fileOutput = !StringUtils.isEmpty(environment.getProperty("logging.file"));
+		boolean consoleOutput = true;
+		if (!StringUtils.isEmpty(environment.getProperty("logging.console"))
+				&& environment.getProperty("logging.console").equalsIgnoreCase("false")) {
+			consoleOutput = false;
+		}
+		LoggingSystem system = LoggingSystem.get(classLoader, fileOutput, consoleOutput);
 		boolean systemEnvironmentChanged = mapSystemPropertiesFromSpring(environment);
 		if (systemEnvironmentChanged) {
 			// Re-initialize the defaults in case the system Environment changed

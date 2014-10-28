@@ -31,10 +31,12 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	private final String[] paths;
 
-	public AbstractLoggingSystem(ClassLoader classLoader, String... paths) {
+	public AbstractLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
 		this.classLoader = classLoader;
-		this.paths = paths.clone();
+		this.paths = getLogFileName(fileOutput, consoleOutput);
 	}
+	
+	protected abstract String[] getLogFileName(boolean fileOutput, boolean consoleOutput);
 
 	protected final ClassLoader getClassLoader() {
 		return this.classLoader;
@@ -59,7 +61,9 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	protected void initializeWithSensibleDefaults() {
-		initialize(getPackagedConfigFile("basic-" + this.paths[this.paths.length - 1]));
+		String path = this.paths[this.paths.length - 1];
+		path = path.replaceAll("-console", "").replaceAll("-file", "");
+		initialize(getPackagedConfigFile("basic-" + path));
 	}
 
 	protected final String getPackagedConfigFile(String fileName) {
