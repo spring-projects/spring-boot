@@ -1,0 +1,73 @@
+{"groups": [
+  {
+    "name": "logging",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  }
+],"properties": [
+  {
+    "name": "logging.config",
+    "dataType": "java.lang.String",
+    "description": "Location of the logging configuration file."
+  },
+  {
+    "name": "logging.file",
+    "dataType": "java.lang.String",
+    "description": "The name of the log file."
+  },
+  {
+    "name": "logging.path",
+    "dataType": "java.lang.String",
+    "description": "Location of the log file."
+  },
+  {
+    "name": "spring.mandatory-file-encoding",
+    "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
+    "dataType": "java.lang.String",
+    "description": "The character encoding the application must use."
+  },
+  {
+    "name": "spring.application.name",
+    "dataType": "java.lang.String",
+    "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
+    "description": "The name of the application."
+  },
+  {
+    "name": "spring.application.index",
+    "dataType": "java.lang.Integer",
+    "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
+    "description": "Index of the application."
+  },
+  {
+    "name": "spring.config.name",
+    "dataType": "java.lang.String",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+    "description": "Config file name",
+    "defaultValue": "application",
+  },
+  {
+    "name": "spring.config.location",
+    "dataType": "java.lang.String",
+    "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+    "description": "Config file locations",
+  },
+  {
+    "name": "spring.main.show-banner",
+    "dataType": "java.lang.Boolean",
+    "sourceType": "org.springframework.boot.SpringApplication",
+    "description": "Display the banner when the application runs",
+    "defaultValue": true,
+  },
+  {
+    "name": "spring.main.sources",
+    "dataType": "java.util.Set<java.lang.Object>",
+    "sourceType": "org.springframework.boot.SpringApplication",
+    "description": "Sources (class name, package name or XML resource location) used to create the ApplicationContext."
+  },
+  {
+    "name": "spring.main.web-environment",
+    "dataType": "java.lang.Boolean",
+    "sourceType": "org.springframework.boot.SpringApplication",
+    "description": "Run the application in a web environment (auto-detected by default)"
+  }
+]}
+
