@@ -202,7 +202,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-cloud</artifactId>
+				<artifactId>spring-boot-starter-cloud-connectors</artifactId>
 				<version>1.2.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
