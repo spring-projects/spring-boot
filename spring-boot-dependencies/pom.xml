@@ -82,6 +82,7 @@
 		<janino.version>2.6.1</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
+		<javax-mail.version>1.5.2</javax-mail.version>
 		<jedis.version>2.4.2</jedis.version>
 		<jetty.version>8.1.15.v20140411</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
@@ -123,6 +124,7 @@
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.2.RELEASE</spring-security-jwt.version>
 		<spring-ws.version>2.2.0.RELEASE</spring-ws.version>
+		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>2.1.3.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
 		<thymeleaf-layout-dialect.version>1.2.5</thymeleaf-layout-dialect.version>
@@ -489,6 +491,11 @@
 				<version>${json-path.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.sun.mail</groupId>
+				<artifactId>javax.mail</artifactId>
+				<version>${sun-mail.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.zaxxer</groupId>
 				<artifactId>HikariCP</artifactId>
 				<version>${hikaricp.version}</version>
@@ -552,8 +559,8 @@
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
-				<artifactId>mail</artifactId>
-				<version>1.5.0-b01</version>
+				<artifactId>javax.mail-api</artifactId>
+				<version>${javax-mail.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
