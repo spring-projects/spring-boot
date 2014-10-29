@@ -43,6 +43,7 @@
 		<module>spring-boot-starter-logging</module>
 		<module>spring-boot-starter-log4j</module>
 		<module>spring-boot-starter-log4j2</module>
+		<module>spring-boot-starter-mail</module>
 		<module>spring-boot-starter-mobile</module>
 		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-parent</module>
