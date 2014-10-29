@@ -123,7 +123,7 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.requestContextAttribute=
 	spring.freemarker.settings.*=
 	spring.freemarker.suffix=.ftl
-	spring.freemarker.templateLoaderPath=classpath:/templates/
+	spring.freemarker.templateLoaderPath=classpath:/templates/ # comma-separated list
 	spring.freemarker.viewNames= # whitelist of view names that can be resolved
 
 	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[GroovyTemplateAutoConfiguration])

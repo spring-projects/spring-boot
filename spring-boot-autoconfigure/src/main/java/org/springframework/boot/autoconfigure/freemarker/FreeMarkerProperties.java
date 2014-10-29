@@ -40,7 +40,7 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 
 	private Map<String, String> settings = new HashMap<String, String>();
 
-	private String templateLoaderPath = DEFAULT_TEMPLATE_LOADER_PATH;
+	private String[] templateLoaderPath = new String[] { DEFAULT_TEMPLATE_LOADER_PATH };
 
 	public FreeMarkerProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
@@ -54,12 +54,12 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 		this.settings = settings;
 	}
 
-	public String getTemplateLoaderPath() {
+	public String[] getTemplateLoaderPath() {
 		return this.templateLoaderPath;
 	}
 
-	public void setTemplateLoaderPath(String templateLoaderPath) {
-		this.templateLoaderPath = templateLoaderPath;
+	public void setTemplateLoaderPath(String... templateLoaderPaths) {
+		this.templateLoaderPath = templateLoaderPaths;
 	}
 
 }
