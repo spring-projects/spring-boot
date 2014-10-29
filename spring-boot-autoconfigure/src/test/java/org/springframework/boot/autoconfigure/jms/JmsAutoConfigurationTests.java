@@ -20,6 +20,7 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -53,6 +54,13 @@ public class JmsAutoConfigurationTests {
 	private static final String ACTIVEMQ_NETWORK_URL = "tcp://localhost:61616";
 
 	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	public void testDefaultJmsConfiguration() {

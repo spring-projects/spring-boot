@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -49,10 +50,17 @@ import static org.mockito.Mockito.verify;
  */
 public class RabbitAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	public void testDefaultRabbitConfiguration() {
