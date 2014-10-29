@@ -97,7 +97,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "error.whitelable", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "error.whitelabel", name = "enabled", matchIfMissing = true)
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {
 
