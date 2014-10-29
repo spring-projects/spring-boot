@@ -16,17 +16,16 @@
 
 package org.springframework.boot.autoconfigure.groovy.template;
 
-import groovy.text.SimpleTemplateEngine;
-import groovy.text.TemplateEngine;
-import groovy.text.markup.MarkupTemplateEngine;
-import groovy.text.markup.TemplateConfiguration;
-
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.Servlet;
+
+import groovy.text.SimpleTemplateEngine;
+import groovy.text.TemplateEngine;
+import groovy.text.markup.MarkupTemplateEngine;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +43,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 /**
  * Autoconfiguration support for Groovy templates in MVC. By default creates a
  * {@link MarkupTemplateEngine} configured from {@link GroovyTemplateProperties}, but you
- * can override that by providing a {@link TemplateEngine} of a different type.
+ * can override that by providing your own {@link GroovyMarkupConfig} or even
+ * a {@link MarkupTemplateEngine} of a different type.
  *
  * @author Dave Syer
  * @since 1.1.0
@@ -62,14 +64,34 @@ import org.springframework.core.io.ResourceLoader;
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
 public class GroovyTemplateAutoConfiguration {
 
-	@Autowired
-	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+	@Configuration
+	@ConditionalOnClass(MarkupTemplateEngine.class)
+	public static class GroovyMarkupConfiguration {
 
-	@Autowired
-	private GroovyTemplateProperties properties;
+		@Autowired
+		private GroovyTemplateProperties properties;
 
-	public abstract static class BaseGroovyTemplateConfiguration implements
-			BeanClassLoaderAware {
+		@Autowired(required = false)
+		private MarkupTemplateEngine templateEngine;
+
+		@Bean
+		@ConditionalOnMissingBean(GroovyMarkupConfig.class)
+		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
+		public GroovyMarkupConfigurer groovyMarkupConfigurer() {
+			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
+			configurer.setResourceLoaderPath(this.properties.getPrefix());
+			configurer.setCacheTemplates(this.properties.isCache());
+			if(this.templateEngine != null) {
+				configurer.setTemplateEngine(this.templateEngine);
+			}
+			return configurer;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnMissingClass(name = "groovy.text.markup.MarkupTemplateEngine")
+	public static class GroovySimpleConfiguration implements BeanClassLoaderAware {
 
 		@Autowired
 		private GroovyTemplateProperties properties;
@@ -102,42 +124,9 @@ public class GroovyTemplateAutoConfiguration {
 			}
 		}
 
-	}
-
-	@Configuration
-	@ConditionalOnClass(MarkupTemplateEngine.class)
-	public static class GroovyMarkupConfiguration extends BaseGroovyTemplateConfiguration {
-
-		@Autowired
-		private GroovyTemplateProperties properties;
-
-		@Bean
-		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
-		public TemplateConfiguration groovyTemplateConfiguration() {
-			return new TemplateConfiguration();
-		}
-
 		@Bean
 		@ConditionalOnMissingBean(TemplateEngine.class)
-		public TemplateEngine groovyTemplateEngine() throws Exception {
-			TemplateConfiguration configuration = groovyTemplateConfiguration();
-			configuration.setCacheTemplates(this.properties.isCache());
-			return new MarkupTemplateEngine(createParentLoaderForTemplates(),
-					configuration, new GroovyTemplateResolver());
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnMissingClass(name = "groovy.text.markup.MarkupTemplateEngine")
-	public static class GroovySimpleConfiguration extends BaseGroovyTemplateConfiguration {
-
-		@Autowired
-		private GroovyTemplateProperties properties;
-
-		@Bean
-		@ConditionalOnMissingBean(TemplateEngine.class)
-		public TemplateEngine groovyTemplateEngine() throws Exception {
+		public SimpleTemplateEngine groovyTemplateEngine() throws Exception {
 			return new SimpleTemplateEngine(createParentLoaderForTemplates());
 		}
 
@@ -152,23 +141,36 @@ public class GroovyTemplateAutoConfiguration {
 		private GroovyTemplateProperties properties;
 
 		@Bean
+		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
+		@ConditionalOnClass(MarkupTemplateEngine.class)
+		public GroovyMarkupViewResolver groovyMarkupViewResolver() {
+			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();
+			configureViewResolver(resolver);
+			return resolver;
+		}
+
+		@Bean
 		@ConditionalOnMissingBean(name = "groovyTemplateViewResolver")
+		@ConditionalOnMissingClass(MarkupTemplateEngine.class)
 		public GroovyTemplateViewResolver groovyTemplateViewResolver(TemplateEngine engine) {
 			GroovyTemplateViewResolver resolver = new GroovyTemplateViewResolver();
+			configureViewResolver(resolver);
 			resolver.setPrefix(this.properties.getPrefix());
+			resolver.setTemplateEngine(engine);
+			return resolver;
+		}
+
+		private void configureViewResolver(UrlBasedViewResolver resolver) {
 			resolver.setSuffix(this.properties.getSuffix());
 			resolver.setCache(this.properties.isCache());
 			resolver.setContentType(this.properties.getContentType());
 			resolver.setViewNames(this.properties.getViewNames());
-			resolver.setTemplateEngine(engine);
+			resolver.setRequestContextAttribute("spring");
 
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 6);
-
-			return resolver;
 		}
-
 	}
 
 }
