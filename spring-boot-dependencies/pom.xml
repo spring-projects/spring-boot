@@ -24,7 +24,7 @@
 		<developer>
 			<id>pwebb</id>
 			<name>Phillip Webb</name>
-			<email>pwebb at gopivotal.com</email>
+			<email>pwebb at pivotal.io</email>
 			<organization>Pivotal Software, Inc.</organization>
 			<organizationUrl>http://www.spring.io</organizationUrl>
 			<roles>
@@ -34,7 +34,7 @@
 		<developer>
 			<id>dsyer</id>
 			<name>Dave Syer</name>
-			<email>dsyer at gopivotal.com</email>
+			<email>dsyer at pivotal.io</email>
 			<organization>Pivotal Software, Inc.</organization>
 			<organizationUrl>http://www.spring.io</organizationUrl>
 			<roles>
