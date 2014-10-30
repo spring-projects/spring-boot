@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.actuator.log4j2;
+package sample.actuator.log4j;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,10 +26,10 @@ import org.springframework.context.annotation.Configuration;
 @EnableAutoConfiguration
 @EnableConfigurationProperties
 @ComponentScan
-public class SampleActuatorApplication {
+public class SampleActuatorLog4JApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleActuatorApplication.class, args);
+		SpringApplication.run(SampleActuatorLog4JApplication.class, args);
 	}
 
 }

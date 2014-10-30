@@ -107,17 +107,6 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void noConsole() {
-		EnvironmentTestUtils.addEnvironment(this.context, "logging.console: false");
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
-		this.logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
-		assertFalse("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse(new File(tmpDir() + "/spring.log").exists());
-	}
-
-	@Test
 	public void overrideConfigLocation() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-nondefault.xml");
@@ -127,7 +116,8 @@ public class LoggingApplicationListenerTests {
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertTrue("Wrong output:\n" + output, output.startsWith(tmpDir() + "/tmp.log"));
+		assertTrue("Wrong output:\n" + output, output.startsWith("LOG_FILE_IS_UNDEFINED"));
+		assertTrue("Wrong output:\n" + output, output.endsWith("BOOTBOOT"));
 	}
 
 	@Test
@@ -178,7 +168,7 @@ public class LoggingApplicationListenerTests {
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo/tmp.log"));
+		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo/spring.log"));
 	}
 
 	@Test

@@ -19,6 +19,7 @@ package org.springframework.boot.logging;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.SystemPropertyUtils;
 
 /**
  * Abstract base class for {@link LoggingSystem} implementations.
@@ -30,50 +31,70 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	private final ClassLoader classLoader;
 
-	private final String[] paths;
-
-	private boolean fileOutput;
-
-	private boolean consoleOutput;
-
 	public AbstractLoggingSystem(ClassLoader classLoader) {
-		this(classLoader, false, true);
-	}
-	
-	public AbstractLoggingSystem(ClassLoader classLoader, boolean fileOutput,
-			boolean consoleOutput) {
 		this.classLoader = classLoader;
-		this.fileOutput = fileOutput;
-		this.consoleOutput = consoleOutput;
-		this.paths = getLogFileNames();
-	}
-
-	protected abstract String[] getLogFileNames();
-
-	protected final ClassLoader getClassLoader() {
-		return this.classLoader;
 	}
 
 	@Override
 	public void beforeInitialize() {
-		initializeWithSensibleDefaults();
 	}
 
 	@Override
-	public void initialize() {
-		for (String path : this.paths) {
-			ClassPathResource resource = new ClassPathResource(path, this.classLoader);
-			if (resource.exists()) {
-				initialize("classpath:" + path);
-				return;
+	public void initialize(String configLocation, String logFile) {
+		if (StringUtils.hasLength(configLocation)) {
+			// Load a specific configuration
+			configLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
+			loadConfiguration(configLocation, logFile);
+		}
+		else {
+			String selfInitializationConfig = getSelfInitializationConfig();
+			if (selfInitializationConfig == null) {
+				// No self initialization has occurred, use defaults
+				loadDefaults(logFile);
+			}
+			else if (StringUtils.hasLength(logFile)) {
+				// Self initialization has occurred but the file has changed, reload
+				loadConfiguration(selfInitializationConfig, logFile);
 			}
 		}
-		// Fallback to the non-prefixed value taking into account file and console preferences
-		initialize(getPackagedConfigFile(addChannels(this.paths[this.paths.length - 1])));
 	}
 
-	protected void initializeWithSensibleDefaults() {
-		initialize(getPackagedConfigFile("basic-" + this.paths[this.paths.length - 1]));
+	/**
+	 * Return any self initialization config that has been applied. By default this method
+	 * checks {@link #getStandardConfigLocations()} and assumes that any file that exists
+	 * will have been applied.
+	 */
+	protected String getSelfInitializationConfig() {
+		for (String location : getStandardConfigLocations()) {
+			ClassPathResource resource = new ClassPathResource(location, this.classLoader);
+			if (resource.exists()) {
+				return "classpath:" + location;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Return the standard config locations for this system.
+	 * @see #getSelfInitializationConfig()
+	 */
+	protected abstract String[] getStandardConfigLocations();
+
+	/**
+	 * Load sensible defaults for the logging system.
+	 * @param logFile the file to load or {@code null} if no log file is to be written
+	 */
+	protected abstract void loadDefaults(String logFile);
+
+	/**
+	 * Load a specific configuration.
+	 * @param location the location of the configuration to load (never {@code null})
+	 * @param logFile the file to load or {@code null} if no log file is to be written
+	 */
+	protected abstract void loadConfiguration(String location, String logFile);
+
+	protected final ClassLoader getClassLoader() {
+		return this.classLoader;
 	}
 
 	protected final String getPackagedConfigFile(String fileName) {
@@ -82,16 +103,6 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		defaultPath = defaultPath + "/" + fileName;
 		defaultPath = "classpath:" + defaultPath;
 		return defaultPath;
-	}
-
-	private String addChannels(String fileName) {
-		String extension = "." + StringUtils.getFilenameExtension(fileName);
-		return fileName.replace(extension, getChannel() + extension);
-	}
-
-	private String getChannel() {
-		return (fileOutput && consoleOutput) ? "-file-console" : (fileOutput ? "-file"
-				: (consoleOutput ? "" : "-none"));
 	}
 
 }

@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
-    <Properties>
-        <Property name="PID">????</Property>
-        <Property name="LOG_PATH">/tmp</Property>
-        <Property name="LOG_FILE">${sys:LOG_PATH}/spring.log</Property>
-        <Property name="LOG_PATTERN">[%d{yyyy-MM-dd HH:mm:ss.SSS}] boot%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
-    </Properties>
-    <Appenders>
-        <RollingFile name="File" fileName="${sys:LOG_FILE}"
-                     filePattern="logs/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz">
-            <PatternLayout>
-                <Pattern>${LOG_PATTERN}</Pattern>
-            </PatternLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="10 MB"/>
-            </Policies>
-        </RollingFile>
-    </Appenders>
-    <Loggers>
-        <Logger name="org.hibernate.validator.internal.util.Version" level="warn" />
-        <Logger name="org.apache.coyote.http11.Http11NioProtocol" level="warn" />
-        <Logger name="org.crsh.plugin" level="warn" />
-        <Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="warn" />
-        <Logger name="org.apache.catalina.startup.DigesterFactory" level="error" />
-        <Logger name="org.apache.catalina.util.LifecycleBase" level="error" />
-        <Logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="error" />
-
-        <Root level="info">
-            <AppenderRef ref="File"/>
-        </Root>
-    </Loggers>
+	<Properties>
+		<Property name="PID">????</Property>
+		<Property name="LOG_PATTERN">[%d{yyyy-MM-dd HH:mm:ss.SSS}] boot%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
+	</Properties>
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT" follow="true">
+			<PatternLayout pattern="${LOG_PATTERN}" />
+		</Console>
+		<RollingFile name="File" fileName="${sys:LOG_FILE}" filePattern="logs/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>${LOG_PATTERN}</Pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="org.apache.catalina.startup.DigesterFactory" level="error" />
+		<Logger name="org.apache.catalina.util.LifecycleBase" level="error" />
+		<Logger name="org.apache.coyote.http11.Http11NioProtocol" level="warn" />
+		<logger name="org.apache.sshd.common.util.SecurityUtils" level="warn"/>
+		<Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="warn" />
+		<Logger name="org.crsh.plugin" level="warn" />
+		<logger name="org.crsh.ssh" level="warn"/>
+		<Logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="error" />
+		<Logger name="org.hibernate.validator.internal.util.Version" level="warn" />
+		<logger name="org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration" level="warn"/>
+		<logger name="org.springframework.boot.actuate.endpoint.jmx" level="warn"/>
+		<logger name="org.thymeleaf" level="warn"/>
+		<Root level="info">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+		</Root>
+	</Loggers>
 </Configuration>

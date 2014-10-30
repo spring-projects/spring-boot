@@ -27,16 +27,17 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 
-	public Slf4JLoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
-		super(classLoader, fileOutput, consoleOutput);
+	private static final String BRIDGE_HANDLER = "org.slf4j.bridge.SLF4JBridgeHandler";
+
+	public Slf4JLoggingSystem(ClassLoader classLoader) {
+		super(classLoader);
 	}
 
 	@Override
 	public void beforeInitialize() {
 		super.beforeInitialize();
 		try {
-			if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler",
-					getClassLoader())) {
+			if (ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader())) {
 				try {
 					SLF4JBridgeHandler.removeHandlersForRootLogger();
 				}

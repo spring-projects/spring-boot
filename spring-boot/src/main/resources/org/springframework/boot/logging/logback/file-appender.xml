@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
-	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
-	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
-	<property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } [%t] --- %-40.40logger{39} : %m%n%wex"/>
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<encoder>
@@ -17,7 +14,4 @@
 			<MaxFileSize>10MB</MaxFileSize>
 		</triggeringPolicy>
 	</appender>
-	<root level="INFO">
-		<appender-ref ref="FILE" />
- 	</root>
 </included>

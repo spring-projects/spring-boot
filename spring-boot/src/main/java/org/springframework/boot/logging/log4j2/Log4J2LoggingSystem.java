@@ -24,7 +24,6 @@ import java.util.Map;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.springframework.boot.logging.LogLevel;
@@ -32,7 +31,7 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.SystemPropertyUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link LoggingSystem} for <a href="http://logging.apache.org/log4j/2.x/">Log4j 2</a>.
@@ -57,44 +56,53 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	public Log4J2LoggingSystem(ClassLoader classLoader) {
-		this(classLoader, false, true);
+		super(classLoader);
 	}
-	
-	public Log4J2LoggingSystem(ClassLoader classLoader, boolean fileOutput, boolean consoleOutput) {
-		super(classLoader, fileOutput, consoleOutput);
-	}
-	
+
 	@Override
-	protected String[] getLogFileNames() {
+	protected String[] getStandardConfigLocations() {
 		return new String[] { "log4j2.json", "log4j2.jsn", "log4j2.xml" };
 	}
 
 	@Override
-	public void initialize(String configLocation) {
-		Assert.notNull(configLocation, "ConfigLocation must not be null");
-		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
-		try {
-			initializeAndStart(resolvedLocation);
+	public void beforeInitialize() {
+		super.beforeInitialize();
+		setLogLevel("", LogLevel.FATAL);
+	}
+
+	@Override
+	protected void loadDefaults(String logFile) {
+		if (StringUtils.hasLength(logFile)) {
+			loadConfiguration(getPackagedConfigFile("log4j2-file.xml"), logFile);
 		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize logging from "
-					+ configLocation, ex);
+		else {
+			loadConfiguration(getPackagedConfigFile("log4j2.xml"), logFile);
 		}
 	}
 
-	private void initializeAndStart(String resolvedLocation) throws Exception {
-		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-		URL url = ResourceUtils.getURL(resolvedLocation);
-		ConfigurationSource configSource = new ConfigurationSource(url.openStream(), url);
-		Configuration config = ConfigurationFactory.getInstance().getConfiguration(
-				configSource);
-		ctx.start(config);
+	@Override
+	protected void loadConfiguration(String location, String logFile) {
+		Assert.notNull(location, "Location must not be null");
+		if (StringUtils.hasLength(logFile)) {
+			System.setProperty("LOG_FILE", logFile);
+		}
+		try {
+			LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+			URL url = ResourceUtils.getURL(location);
+			ConfigurationSource source = new ConfigurationSource(url.openStream(), url);
+			ctx.start(ConfigurationFactory.getInstance().getConfiguration(source));
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Could not initialize Log4J2 logging from "
+					+ location, ex);
+		}
 	}
 
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-		ctx.getConfiguration().getLoggerConfig(loggerName).setLevel(LEVELS.get(level));
+		ctx.getConfiguration().getLoggerConfig(loggerName == null ? "" : loggerName)
+				.setLevel(LEVELS.get(level));
 		ctx.updateLoggers();
 	}
 

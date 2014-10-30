@@ -111,7 +111,7 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 			this.beanFactory = (ListableBeanFactory) beanFactory;
 		}
 		else {
-			logger.info("EndpointMBeanExporter not running in a ListableBeanFactory: "
+			logger.warn("EndpointMBeanExporter not running in a ListableBeanFactory: "
 					+ "autodetection of Endpoints not available.");
 		}
 	}

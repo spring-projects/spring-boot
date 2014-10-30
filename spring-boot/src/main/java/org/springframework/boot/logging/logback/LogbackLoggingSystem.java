@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.Marker;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
@@ -30,11 +31,12 @@ import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.util.SystemPropertyUtils;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.spi.FilterReply;
 
 /**
  * {@link LoggingSystem} for for <a href="http://logback.qos.ch">logback</a>.
@@ -58,25 +60,54 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
+	private static final TurboFilter FILTER = new TurboFilter() {
+
+		@Override
+		public FilterReply decide(Marker marker, ch.qos.logback.classic.Logger logger,
+				Level level, String format, Object[] params, Throwable t) {
+			return FilterReply.DENY;
+		}
+
+	};
+
 	public LogbackLoggingSystem(ClassLoader classLoader) {
-		this(classLoader, false, true);
-	}
-	
-	public LogbackLoggingSystem(ClassLoader classLoader, boolean fileOutput,
-			boolean consoleOutput) {
-		super(classLoader, fileOutput, consoleOutput);
+		super(classLoader);
 	}
 
 	@Override
-	protected String[] getLogFileNames() {
+	protected String[] getStandardConfigLocations() {
 		return new String[] { "logback-test.groovy", "logback-test.xml",
 				"logback.groovy", "logback.xml" };
 	}
 
 	@Override
-	public void initialize(String configLocation) {
-		Assert.notNull(configLocation, "ConfigLocation must not be null");
-		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
+	public void beforeInitialize() {
+		super.beforeInitialize();
+		getLogger(null).getLoggerContext().getTurboFilterList().add(FILTER);
+	}
+
+	@Override
+	public void initialize(String configLocation, String logFile) {
+		getLogger(null).getLoggerContext().getTurboFilterList().remove(FILTER);
+		super.initialize(configLocation, logFile);
+	}
+
+	@Override
+	protected void loadDefaults(String logFile) {
+		if (StringUtils.hasLength(logFile)) {
+			loadConfiguration(getPackagedConfigFile("logback-file.xml"), logFile);
+		}
+		else {
+			loadConfiguration(getPackagedConfigFile("logback.xml"), logFile);
+		}
+	}
+
+	@Override
+	protected void loadConfiguration(String location, String logFile) {
+		Assert.notNull(location, "Location must not be null");
+		if (StringUtils.hasLength(logFile)) {
+			System.setProperty("LOG_FILE", logFile);
+		}
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		Assert.isInstanceOf(
 				LoggerContext.class,
@@ -92,22 +123,25 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		context.stop();
 		context.reset();
 		try {
-			URL url = ResourceUtils.getURL(resolvedLocation);
+			URL url = ResourceUtils.getURL(location);
 			new ContextInitializer(context).configureByResource(url);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize logging from "
-					+ configLocation, ex);
+			throw new IllegalStateException("Could not initialize Logback logging from "
+					+ location, ex);
 		}
 	}
 
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
+		getLogger(loggerName).setLevel(LEVELS.get(level));
+	}
+
+	private ch.qos.logback.classic.Logger getLogger(String name) {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
-		Logger logger = factory
-				.getLogger(StringUtils.isEmpty(loggerName) ? Logger.ROOT_LOGGER_NAME
-						: loggerName);
-		((ch.qos.logback.classic.Logger) logger).setLevel(LEVELS.get(level));
+		return (ch.qos.logback.classic.Logger) factory.getLogger(StringUtils
+				.isEmpty(name) ? Logger.ROOT_LOGGER_NAME : name);
+
 	}
 
 }

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.java;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +29,9 @@ import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.util.Assert;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.SystemPropertyUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link LoggingSystem} for {@link Logger java.util.logging}.
@@ -52,30 +55,46 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	public JavaLoggingSystem(ClassLoader classLoader) {
-		this(classLoader, false, true);
-	}
-	
-	public JavaLoggingSystem(ClassLoader classLoader, boolean fileOutput,
-			boolean consoleOutput) {
-		super(classLoader, fileOutput, consoleOutput);
+		super(classLoader);
 	}
 
 	@Override
-	protected String[] getLogFileNames() {
+	protected String[] getStandardConfigLocations() {
 		return new String[] { "logging.properties" };
 	}
 
 	@Override
-	public void initialize(String configLocation) {
-		Assert.notNull(configLocation, "ConfigLocation must not be null");
-		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
+	public void beforeInitialize() {
+		super.beforeInitialize();
+		Logger.getLogger("").setLevel(Level.SEVERE);
+	}
+
+	@Override
+	protected void loadDefaults(String logFile) {
+		if (StringUtils.hasLength(logFile)) {
+			loadConfiguration(getPackagedConfigFile("logging-file.properties"), logFile);
+		}
+		else {
+			loadConfiguration(getPackagedConfigFile("logging.properties"), logFile);
+		}
+	}
+
+	@Override
+	protected void loadConfiguration(String location, String logFile) {
+		Assert.notNull(location, "Location must not be null");
 		try {
+			String configuration = FileCopyUtils.copyToString(new InputStreamReader(
+					ResourceUtils.getURL(location).openStream()));
+			if (StringUtils.hasLength(logFile)) {
+				configuration = configuration.replace("${LOG_FILE}",
+						StringUtils.cleanPath(logFile));
+			}
 			LogManager.getLogManager().readConfiguration(
-					ResourceUtils.getURL(resolvedLocation).openStream());
+					new ByteArrayInputStream(configuration.getBytes()));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize logging from "
-					+ configLocation, ex);
+			throw new IllegalStateException("Could not initialize Java logging from "
+					+ location, ex);
 		}
 	}
 

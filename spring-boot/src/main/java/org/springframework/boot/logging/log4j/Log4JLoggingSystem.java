@@ -52,28 +52,42 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	public Log4JLoggingSystem(ClassLoader classLoader) {
-		this(classLoader, false, true);
-	}
-	
-	public Log4JLoggingSystem(ClassLoader classLoader, boolean fileOutput,
-			boolean consoleOutput) {
-		super(classLoader, fileOutput, consoleOutput);
+		super(classLoader);
 	}
 
 	@Override
-	protected String[] getLogFileNames() {
+	protected String[] getStandardConfigLocations() {
 		return new String[] { "log4j.xml", "log4j.properties" };
 	}
 
 	@Override
-	public void initialize(String configLocation) {
-		Assert.notNull(configLocation, "ConfigLocation must not be null");
+	public void beforeInitialize() {
+		super.beforeInitialize();
+		LogManager.getRootLogger().setLevel(Level.FATAL);
+	}
+
+	@Override
+	protected void loadDefaults(String logFile) {
+		if (StringUtils.hasLength(logFile)) {
+			loadConfiguration(getPackagedConfigFile("log4j-file.properties"), logFile);
+		}
+		else {
+			loadConfiguration(getPackagedConfigFile("log4j.properties"), logFile);
+		}
+	}
+
+	@Override
+	protected void loadConfiguration(String location, String logFile) {
+		Assert.notNull(location, "Location must not be null");
+		if (StringUtils.hasLength(logFile)) {
+			System.setProperty("LOG_FILE", logFile);
+		}
 		try {
-			Log4jConfigurer.initLogging(configLocation);
+			Log4jConfigurer.initLogging(location);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize logging from "
-					+ configLocation, ex);
+			throw new IllegalStateException("Could not initialize Log4J logging from "
+					+ location, ex);
 		}
 	}
 
