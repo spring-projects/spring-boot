@@ -47,6 +47,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 /**
  * Autoconfiguration support for Groovy templates in MVC. By default creates a
@@ -54,6 +55,7 @@ import org.springframework.core.io.ResourceLoader;
  * can override that by providing a {@link TemplateEngine} of a different type.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Configuration
@@ -144,7 +146,8 @@ public class GroovyTemplateAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class })
+	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class,
+			UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication
 	public static class GroovyWebConfiguration {
 
