@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -80,6 +81,35 @@ public class SecurityAutoConfigurationTests {
 		List<SecurityFilterChain> filterChains = this.context.getBean(
 				FilterChainProxy.class).getFilterChains();
 		assertEquals(5, filterChains.size());
+	}
+
+	@Test
+	public void testDefaultFilterOrder() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(SecurityAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(
+				0,
+				this.context.getBean("securityFilterChainRegistration",
+						FilterRegistrationBean.class).getOrder());
+	}
+
+	@Test
+	public void testCustomFilterOrder() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "security.filter-order:12345");
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(SecurityAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(
+				12345,
+				this.context.getBean("securityFilterChainRegistration",
+						FilterRegistrationBean.class).getOrder());
 	}
 
 	@Test

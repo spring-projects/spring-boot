@@ -55,6 +55,11 @@ public class SecurityProperties implements SecurityPrequisite {
 	 */
 	public static final int IGNORED_ORDER = Ordered.HIGHEST_PRECEDENCE;
 
+	/**
+	 * The default order of Spring Security's Filter
+	 */
+	public static final int DEFAULT_FILTER_ORDER = 0;
+
 	private boolean requireSsl;
 
 	// Flip this when session creation is disabled by default
@@ -69,6 +74,8 @@ public class SecurityProperties implements SecurityPrequisite {
 	private List<String> ignored = new ArrayList<String>();
 
 	private final User user = new User();
+
+	private int filterOrder = DEFAULT_FILTER_ORDER;
 
 	public Headers getHeaders() {
 		return this.headers;
@@ -116,6 +123,14 @@ public class SecurityProperties implements SecurityPrequisite {
 
 	public List<String> getIgnored() {
 		return this.ignored;
+	}
+
+	public int getFilterOrder() {
+		return this.filterOrder;
+	}
+
+	public void setFilterOrder(int filterOrder) {
+		this.filterOrder = filterOrder;
 	}
 
 	public static class Headers {

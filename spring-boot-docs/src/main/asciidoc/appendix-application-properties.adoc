@@ -168,6 +168,7 @@ content into your application; rather pick only the properties that you need.
 	security.basic.enabled=true
 	security.basic.realm=Spring
 	security.basic.path= # /**
+	security.filter-order=0
 	security.headers.xss=false
 	security.headers.cache=false
 	security.headers.frame=false
