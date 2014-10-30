@@ -50,6 +50,20 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 
 	private Map<Level, Level> remapLevels = DEFAULT_REMAPS;
 
+	/**
+	 * Create a new {@link LevelRemappingAppender}.
+	 */
+	public LevelRemappingAppender() {
+	}
+
+	/**
+	 * Create a new {@link LevelRemappingAppender} with a specific destination logger.
+	 * @param destinationLogger the destination logger
+	 */
+	public LevelRemappingAppender(String destinationLogger) {
+		this.destinationLogger = destinationLogger;
+	}
+
 	@Override
 	protected void append(ILoggingEvent event) {
 		AppendableLogger logger = getLogger(this.destinationLogger);

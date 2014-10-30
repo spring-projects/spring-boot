@@ -94,12 +94,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	protected void loadDefaults(String logFile) {
-		if (StringUtils.hasLength(logFile)) {
-			loadConfiguration(getPackagedConfigFile("logback-file.xml"), logFile);
-		}
-		else {
-			loadConfiguration(getPackagedConfigFile("logback.xml"), logFile);
-		}
+		LoggerContext context = getLoggerContext();
+		context.stop();
+		context.reset();
+		LogbackConfigurator configurator = new LogbackConfigurator(context);
+		new DefaultLogbackConfiguration(logFile).apply(configurator);
 	}
 
 	@Override
@@ -108,18 +107,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		if (StringUtils.hasLength(logFile)) {
 			System.setProperty("LOG_FILE", logFile);
 		}
-		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
-		Assert.isInstanceOf(
-				LoggerContext.class,
-				factory,
-				String.format(
-						"LoggerFactory is not a Logback LoggerContext but Logback is on "
-								+ "the classpath. Either remove Logback or the competing "
-								+ "implementation (%s loaded from %s).",
-						factory.getClass(), factory.getClass().getProtectionDomain()
-								.getCodeSource().getLocation()));
-
-		LoggerContext context = (LoggerContext) factory;
+		LoggerContext context = getLoggerContext();
 		context.stop();
 		context.reset();
 		try {
@@ -135,6 +123,21 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		getLogger(loggerName).setLevel(LEVELS.get(level));
+	}
+
+	private LoggerContext getLoggerContext() {
+		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+		Assert.isInstanceOf(
+				LoggerContext.class,
+				factory,
+				String.format(
+						"LoggerFactory is not a Logback LoggerContext but Logback is on "
+								+ "the classpath. Either remove Logback or the competing "
+								+ "implementation (%s loaded from %s).",
+						factory.getClass(), factory.getClass().getProtectionDomain()
+								.getCodeSource().getLocation()));
+
+		return (LoggerContext) factory;
 	}
 
 	private ch.qos.logback.classic.Logger getLogger(String name) {

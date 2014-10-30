@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+File appender logback configuration provided for import, equivalent to the programmatic
+initialization performed by Boot
+-->
+
 <included>
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
