@@ -31,7 +31,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -57,7 +56,8 @@ class InitializrServiceHttpInvoker {
 	 * Generate a project based on the specified {@link ProjectGenerationRequest}
 	 * @return an entity defining the project
 	 */
-	ProjectGenerationResponse generate(ProjectGenerationRequest request) throws IOException {
+	ProjectGenerationResponse generate(ProjectGenerationRequest request)
+			throws IOException {
 		Log.info("Using service at " + request.getServiceUrl());
 		InitializrServiceMetadata metadata = loadMetadata(request.getServiceUrl());
 		URI url = request.generateUrl(metadata);
@@ -65,7 +65,8 @@ class InitializrServiceHttpInvoker {
 
 		HttpEntity httpEntity = httpResponse.getEntity();
 		if (httpEntity == null) {
-			throw new ProjectGenerationException("No content received from server using '" + url + "'");
+			throw new ProjectGenerationException(
+					"No content received from server using '" + url + "'");
 		}
 		if (httpResponse.getStatusLine().getStatusCode() != 200) {
 			throw buildProjectGenerationException(request.getServiceUrl(), httpResponse);
@@ -79,23 +80,26 @@ class InitializrServiceHttpInvoker {
 	InitializrServiceMetadata loadMetadata(String serviceUrl) throws IOException {
 		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(serviceUrl);
 		if (httpResponse.getEntity() == null) {
-			throw new ProjectGenerationException("No content received from server using '" + serviceUrl + "'");
+			throw new ProjectGenerationException(
+					"No content received from server using '" + serviceUrl + "'");
 		}
 		if (httpResponse.getStatusLine().getStatusCode() != 200) {
 			throw buildProjectGenerationException(serviceUrl, httpResponse);
 		}
 		try {
 			HttpEntity httpEntity = httpResponse.getEntity();
-			JSONObject root = getContentAsJson(getContent(httpEntity), getContentType(httpEntity));
+			JSONObject root = getContentAsJson(getContent(httpEntity),
+					getContentType(httpEntity));
 			return new InitializrServiceMetadata(root);
 		}
 		catch (JSONException e) {
-			throw new ProjectGenerationException("Invalid content received from server (" + e.getMessage() + ")");
+			throw new ProjectGenerationException("Invalid content received from server ("
+					+ e.getMessage() + ")");
 		}
 	}
 
-	private ProjectGenerationResponse createResponse(CloseableHttpResponse httpResponse, HttpEntity httpEntity)
-			throws IOException {
+	private ProjectGenerationResponse createResponse(CloseableHttpResponse httpResponse,
+			HttpEntity httpEntity) throws IOException {
 		ProjectGenerationResponse response = new ProjectGenerationResponse();
 		ContentType contentType = ContentType.getOrDefault(httpEntity);
 		response.setContentType(contentType);
@@ -108,7 +112,8 @@ class InitializrServiceHttpInvoker {
 			in.close();
 		}
 
-		String detectedFileName = extractFileName(httpResponse.getFirstHeader("Content-Disposition"));
+		String detectedFileName = extractFileName(httpResponse
+				.getFirstHeader("Content-Disposition"));
 		if (detectedFileName != null) {
 			response.setFileName(detectedFileName);
 		}
@@ -124,8 +129,8 @@ class InitializrServiceHttpInvoker {
 			return this.httpClient.execute(get);
 		}
 		catch (IOException e) {
-			throw new ProjectGenerationException(
-					"Failed to invoke server at '" + url + "' (" + e.getMessage() + ")");
+			throw new ProjectGenerationException("Failed to invoke server at '" + url
+					+ "' (" + e.getMessage() + ")");
 		}
 	}
 
@@ -140,10 +145,10 @@ class InitializrServiceHttpInvoker {
 		}
 		catch (IOException e) {
 			throw new ProjectGenerationException(
-					"Failed to retrieve metadata from service at '" + serviceUrl + "' (" + e.getMessage() + ")");
+					"Failed to retrieve metadata from service at '" + serviceUrl + "' ("
+							+ e.getMessage() + ")");
 		}
 	}
-
 
 	private byte[] getContent(HttpEntity httpEntity) throws IOException {
 		InputStream in = httpEntity.getContent();
@@ -160,12 +165,14 @@ class InitializrServiceHttpInvoker {
 	}
 
 	private JSONObject getContentAsJson(byte[] content, ContentType contentType) {
-		Charset charset = contentType.getCharset() != null ? contentType.getCharset() : Charset.forName("UTF-8");
+		Charset charset = contentType.getCharset() != null ? contentType.getCharset()
+				: Charset.forName("UTF-8");
 		String data = new String(content, charset);
 		return new JSONObject(data);
 	}
 
-	private ProjectGenerationException buildProjectGenerationException(String url, CloseableHttpResponse httpResponse) {
+	private ProjectGenerationException buildProjectGenerationException(String url,
+			CloseableHttpResponse httpResponse) {
 		StringBuilder sb = new StringBuilder("Project generation failed using '");
 		sb.append(url).append("' - service returned ")
 				.append(httpResponse.getStatusLine().getReasonPhrase());
@@ -174,7 +181,9 @@ class InitializrServiceHttpInvoker {
 			sb.append(": '").append(error).append("'");
 		}
 		else {
-			sb.append(" (unexpected ").append(httpResponse.getStatusLine().getStatusCode()).append(" error)");
+			sb.append(" (unexpected ")
+					.append(httpResponse.getStatusLine().getStatusCode())
+					.append(" error)");
 		}
 		throw new ProjectGenerationException(sb.toString());
 	}
@@ -184,7 +193,8 @@ class InitializrServiceHttpInvoker {
 			return null;
 		}
 		try {
-			JSONObject error = getContentAsJson(getContent(entity), getContentType(entity));
+			JSONObject error = getContentAsJson(getContent(entity),
+					getContentType(entity));
 			if (error.has("message")) {
 				return error.getString("message");
 			}

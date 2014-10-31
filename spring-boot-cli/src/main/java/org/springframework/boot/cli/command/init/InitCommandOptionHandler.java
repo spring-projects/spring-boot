@@ -27,8 +27,8 @@ import java.util.zip.ZipInputStream;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import org.apache.http.impl.client.CloseableHttpClient;
 
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.boot.cli.command.options.OptionHandler;
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
@@ -78,46 +78,61 @@ public class InitCommandOptionHandler extends OptionHandler {
 
 	@Override
 	protected void options() {
-		this.target = option(Arrays.asList("target"),
-				"URL of the service to use").withRequiredArg().defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
-		this.listMetadata = option(Arrays.asList("list", "l"), "List the capabilities of the service. Use it to " +
-				"discover the dependencies and the types that are available.");
+		this.target = option(Arrays.asList("target"), "URL of the service to use")
+				.withRequiredArg().defaultsTo(
+						ProjectGenerationRequest.DEFAULT_SERVICE_URL);
+		this.listMetadata = option(Arrays.asList("list", "l"),
+				"List the capabilities of the service. Use it to "
+						+ "discover the dependencies and the types that are available.");
 
 		// Project generation settings
 		this.bootVersion = option(Arrays.asList("boot-version", "bv"),
 				"Spring Boot version to use (e.g. 1.2.0.RELEASE)").withRequiredArg();
 		this.dependencies = option(Arrays.asList("dependencies", "d"),
-				"Comma separated list of dependencies to include in the generated project").withRequiredArg();
+				"Comma separated list of dependencies to include in the generated project")
+				.withRequiredArg();
 		this.javaVersion = option(Arrays.asList("java-version", "jv"),
 				"Java version to use (e.g. 1.8)").withRequiredArg();
-		this.packaging = option(Arrays.asList("packaging", "p"), "Packaging type to use (e.g. jar)").withRequiredArg();
+		this.packaging = option(Arrays.asList("packaging", "p"),
+				"Packaging type to use (e.g. jar)").withRequiredArg();
 
-		this.build = option("build", "The build system to use (e.g. maven, gradle). To be used alongside " +
-				"--format to uniquely identify one type that is supported by the service. " +
-				"Use --type in case of conflict").withRequiredArg().defaultsTo("maven");
-		this.format = option("format", "The format of the generated content (e.g. build for a build file, " +
-				"project for a project archive). To be used alongside --build to uniquely identify one type " +
-				"that is supported by the service. Use --type in case of conflict")
+		this.build = option(
+				"build",
+				"The build system to use (e.g. maven, gradle). To be used alongside "
+						+ "--format to uniquely identify one type that is supported by the service. "
+						+ "Use --type in case of conflict").withRequiredArg().defaultsTo(
+				"maven");
+		this.format = option(
+				"format",
+				"The format of the generated content (e.g. build for a build file, "
+						+ "project for a project archive). To be used alongside --build to uniquely identify one type "
+						+ "that is supported by the service. Use --type in case of conflict")
 				.withRequiredArg().defaultsTo("project");
-		this.type = option(Arrays.asList("type", "t"), "The project type to use. Not normally needed if you " +
-				"use --build and/or --format. Check the capabilities of the service (--list) for " +
-				"more details.").withRequiredArg();
+		this.type = option(
+				Arrays.asList("type", "t"),
+				"The project type to use. Not normally needed if you "
+						+ "use --build and/or --format. Check the capabilities of the service (--list) for "
+						+ "more details.").withRequiredArg();
 
 		// Others
-		this.extract = option(Arrays.asList("extract", "x"), "Extract the project archive");
-		this.force = option(Arrays.asList("force", "f"), "Force overwrite of existing files");
-		this.output = option(Arrays.asList("output", "o"),
-				"Location of the generated project. Can be an absolute or a relative reference and " +
-						"should refer to a directory when --extract is used.").withRequiredArg();
+		this.extract = option(Arrays.asList("extract", "x"),
+				"Extract the project archive");
+		this.force = option(Arrays.asList("force", "f"),
+				"Force overwrite of existing files");
+		this.output = option(
+				Arrays.asList("output", "o"),
+				"Location of the generated project. Can be an absolute or a relative reference and "
+						+ "should refer to a directory when --extract is used.")
+				.withRequiredArg();
 	}
 
 	@Override
 	protected ExitStatus run(OptionSet options) throws Exception {
-		if (options.has(listMetadata)) {
-			return listServiceCapabilities(options, httpClient);
+		if (options.has(this.listMetadata)) {
+			return listServiceCapabilities(options, this.httpClient);
 		}
 		else {
-			return generateProject(options, httpClient);
+			return generateProject(options, this.httpClient);
 		}
 	}
 
@@ -151,7 +166,8 @@ public class InitCommandOptionHandler extends OptionHandler {
 		return request;
 	}
 
-	protected ExitStatus listServiceCapabilities(OptionSet options, CloseableHttpClient httpClient) throws IOException {
+	protected ExitStatus listServiceCapabilities(OptionSet options,
+			CloseableHttpClient httpClient) throws IOException {
 		ListMetadataCommand command = new ListMetadataCommand(httpClient);
 		Log.info(command.generateReport(determineServiceUrl(options)));
 		return ExitStatus.OK;
@@ -161,19 +177,22 @@ public class InitCommandOptionHandler extends OptionHandler {
 		ProjectGenerationRequest request = createProjectGenerationRequest(options);
 		boolean forceValue = options.has(this.force);
 		try {
-			ProjectGenerationResponse entity = new InitializrServiceHttpInvoker(httpClient).generate(request);
+			ProjectGenerationResponse entity = new InitializrServiceHttpInvoker(
+					httpClient).generate(request);
 			if (options.has(this.extract)) {
 				if (isZipArchive(entity)) {
-					return extractProject(entity, options.valueOf(this.output), forceValue);
+					return extractProject(entity, options.valueOf(this.output),
+							forceValue);
 				}
 				else {
 					Log.info("Could not extract '" + entity.getContentType() + "'");
 				}
 			}
-			String outputFileName = entity.getFileName() != null ? entity.getFileName() : options.valueOf(this.output);
+			String outputFileName = entity.getFileName() != null ? entity.getFileName()
+					: options.valueOf(this.output);
 			if (outputFileName == null) {
-				Log.error("Could not save the project, the server did not set a preferred " +
-						"file name. Use --output to specify the output location for the project.");
+				Log.error("Could not save the project, the server did not set a preferred "
+						+ "file name. Use --output to specify the output location for the project.");
 				return ExitStatus.ERROR;
 			}
 			return writeProject(entity, outputFileName, forceValue);
@@ -192,8 +211,8 @@ public class InitCommandOptionHandler extends OptionHandler {
 		return options.valueOf(this.target);
 	}
 
-	private ExitStatus writeProject(ProjectGenerationResponse entity, String outputFileName, boolean overwrite)
-			throws IOException {
+	private ExitStatus writeProject(ProjectGenerationResponse entity,
+			String outputFileName, boolean overwrite) throws IOException {
 
 		File f = new File(outputFileName);
 		if (f.exists()) {
@@ -204,8 +223,9 @@ public class InitCommandOptionHandler extends OptionHandler {
 				}
 			}
 			else {
-				Log.error("File '" + f.getName() + "' already exists. Use --force if you want to " +
-						"overwrite or --output to specify an alternate location.");
+				Log.error("File '" + f.getName()
+						+ "' already exists. Use --force if you want to "
+						+ "overwrite or --output to specify an alternate location.");
 				return ExitStatus.ERROR;
 			}
 		}
@@ -232,12 +252,15 @@ public class InitCommandOptionHandler extends OptionHandler {
 		}
 	}
 
-	private ExitStatus extractProject(ProjectGenerationResponse entity, String outputValue, boolean overwrite) throws IOException {
-		File output = outputValue != null ? new File(outputValue) : new File(System.getProperty("user.dir"));
+	private ExitStatus extractProject(ProjectGenerationResponse entity,
+			String outputValue, boolean overwrite) throws IOException {
+		File output = outputValue != null ? new File(outputValue) : new File(
+				System.getProperty("user.dir"));
 		if (!output.exists()) {
 			output.mkdirs();
 		}
-		ZipInputStream zipIn = new ZipInputStream(new ByteArrayInputStream(entity.getContent()));
+		ZipInputStream zipIn = new ZipInputStream(new ByteArrayInputStream(
+				entity.getContent()));
 		try {
 			ZipEntry entry = zipIn.getNextEntry();
 			while (entry != null) {
@@ -245,8 +268,10 @@ public class InitCommandOptionHandler extends OptionHandler {
 				if (f.exists() && !overwrite) {
 					StringBuilder sb = new StringBuilder();
 					sb.append(f.isDirectory() ? "Directory" : "File")
-							.append(" '").append(f.getName()).append("' already exists. Use --force if you want to " +
-							"overwrite or --output to specify an alternate location.");
+							.append(" '")
+							.append(f.getName())
+							.append("' already exists. Use --force if you want to "
+									+ "overwrite or --output to specify an alternate location.");
 					Log.error(sb.toString());
 					return ExitStatus.ERROR;
 				}
@@ -268,7 +293,8 @@ public class InitCommandOptionHandler extends OptionHandler {
 	}
 
 	private void extractZipEntry(ZipInputStream in, File outputFile) throws IOException {
-		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outputFile));
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(
+				outputFile));
 		try {
 			StreamUtils.copy(in, out);
 		}

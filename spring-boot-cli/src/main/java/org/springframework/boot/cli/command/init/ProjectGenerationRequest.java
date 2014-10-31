@@ -61,7 +61,7 @@ class ProjectGenerationRequest {
 	 * @see #DEFAULT_SERVICE_URL
 	 */
 	public String getServiceUrl() {
-		return serviceUrl;
+		return this.serviceUrl;
 	}
 
 	public void setServiceUrl(String serviceUrl) {
@@ -69,10 +69,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * The location of the  generated project.
+	 * The location of the generated project.
 	 */
 	public String getOutput() {
-		return output;
+		return this.output;
 	}
 
 	public void setOutput(String output) {
@@ -83,7 +83,7 @@ class ProjectGenerationRequest {
 	 * The Spring Boot version to use or {@code null} if it should not be customized.
 	 */
 	public String getBootVersion() {
-		return bootVersion;
+		return this.bootVersion;
 	}
 
 	public void setBootVersion(String bootVersion) {
@@ -94,14 +94,14 @@ class ProjectGenerationRequest {
 	 * The identifiers of the dependencies to include in the project.
 	 */
 	public List<String> getDependencies() {
-		return dependencies;
+		return this.dependencies;
 	}
 
 	/**
 	 * The Java version to use or {@code null} if it should not be customized.
 	 */
 	public String getJavaVersion() {
-		return javaVersion;
+		return this.javaVersion;
 	}
 
 	public void setJavaVersion(String javaVersion) {
@@ -112,7 +112,7 @@ class ProjectGenerationRequest {
 	 * The packaging type or {@code null} if it should not be customized.
 	 */
 	public String getPackaging() {
-		return packaging;
+		return this.packaging;
 	}
 
 	public void setPackaging(String packaging) {
@@ -120,11 +120,11 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * The build type to use. Ignored if a type is set. Can be used alongside
-	 * the {@link #getFormat() format} to identify the type to use.
+	 * The build type to use. Ignored if a type is set. Can be used alongside the
+	 * {@link #getFormat() format} to identify the type to use.
 	 */
 	public String getBuild() {
-		return build;
+		return this.build;
 	}
 
 	public void setBuild(String build) {
@@ -132,11 +132,11 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * The project format to use. Ignored if a type is set. Can be used alongside
-	 * the {@link #getBuild() build} to identify the type to use.
+	 * The project format to use. Ignored if a type is set. Can be used alongside the
+	 * {@link #getBuild() build} to identify the type to use.
 	 */
 	public String getFormat() {
-		return format;
+		return this.format;
 	}
 
 	public void setFormat(String format) {
@@ -144,11 +144,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Specify if the type should be detected based on the build
-	 * and format value.
+	 * Specify if the type should be detected based on the build and format value.
 	 */
 	public boolean isDetectType() {
-		return detectType;
+		return this.detectType;
 	}
 
 	public void setDetectType(boolean detectType) {
@@ -156,12 +155,11 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * The type of project to generate. Should match one of the advertized type
-	 * that the service supports. If not set, the default is retrieved from
-	 * the service metadata.
+	 * The type of project to generate. Should match one of the advertized type that the
+	 * service supports. If not set, the default is retrieved from the service metadata.
 	 */
 	public String getType() {
-		return type;
+		return this.type;
 	}
 
 	public void setType(String type) {
@@ -169,12 +167,11 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Generates the URL to use to generate a project represented
-	 * by this request
+	 * Generates the URL to use to generate a project represented by this request
 	 */
 	URI generateUrl(InitializrServiceMetadata metadata) {
 		try {
-			URIBuilder builder = new URIBuilder(serviceUrl);
+			URIBuilder builder = new URIBuilder(this.serviceUrl);
 			StringBuilder sb = new StringBuilder();
 			if (builder.getPath() != null) {
 				sb.append(builder.getPath());
@@ -188,7 +185,7 @@ class ProjectGenerationRequest {
 			if (this.bootVersion != null) {
 				builder.setParameter("bootVersion", this.bootVersion);
 			}
-			for (String dependency : dependencies) {
+			for (String dependency : this.dependencies) {
 				builder.addParameter("style", dependency);
 			}
 			if (this.javaVersion != null) {
@@ -204,7 +201,8 @@ class ProjectGenerationRequest {
 			return builder.build();
 		}
 		catch (URISyntaxException e) {
-			throw new ProjectGenerationException("Invalid service URL (" + e.getMessage() + ")");
+			throw new ProjectGenerationException("Invalid service URL (" + e.getMessage()
+					+ ")");
 		}
 	}
 
@@ -212,12 +210,13 @@ class ProjectGenerationRequest {
 		if (this.type != null) {
 			ProjectType result = metadata.getProjectTypes().get(this.type);
 			if (result == null) {
-				throw new ProjectGenerationException(("No project type with id '" + this.type +
-						"' - check the service capabilities (--list)"));
+				throw new ProjectGenerationException(("No project type with id '"
+						+ this.type + "' - check the service capabilities (--list)"));
 			}
 		}
 		if (isDetectType()) {
-			Map<String, ProjectType> types = new HashMap<String, ProjectType>(metadata.getProjectTypes());
+			Map<String, ProjectType> types = new HashMap<String, ProjectType>(
+					metadata.getProjectTypes());
 			if (this.build != null) {
 				filter(types, "build", this.build);
 			}
@@ -228,24 +227,29 @@ class ProjectGenerationRequest {
 				return types.values().iterator().next();
 			}
 			else if (types.size() == 0) {
-				throw new ProjectGenerationException("No type found with build '" + this.build + "' and format '"
-						+ this.format + "' check the service capabilities (--list)");
+				throw new ProjectGenerationException("No type found with build '"
+						+ this.build + "' and format '" + this.format
+						+ "' check the service capabilities (--list)");
 			}
 			else {
-				throw new ProjectGenerationException("Multiple types found with build '" + this.build
-						+ "' and format '" + this.format + "' use --type with a more specific value " + types.keySet());
+				throw new ProjectGenerationException("Multiple types found with build '"
+						+ this.build + "' and format '" + this.format
+						+ "' use --type with a more specific value " + types.keySet());
 			}
 		}
 		ProjectType defaultType = metadata.getDefaultType();
 		if (defaultType == null) {
-			throw new ProjectGenerationException(("No project type is set and no default is defined. " +
-					"Check the service capabilities (--list)"));
+			throw new ProjectGenerationException(
+					("No project type is set and no default is defined. "
+							+ "Check the service capabilities (--list)"));
 		}
 		return defaultType;
 	}
 
-	private static void filter(Map<String, ProjectType> projects, String tag, String tagValue) {
-		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet().iterator(); it.hasNext(); ) {
+	private static void filter(Map<String, ProjectType> projects, String tag,
+			String tagValue) {
+		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet().iterator(); it
+				.hasNext();) {
 			Map.Entry<String, ProjectType> entry = it.next();
 			String value = entry.getValue().getTags().get(tag);
 			if (!tagValue.equals(value)) {

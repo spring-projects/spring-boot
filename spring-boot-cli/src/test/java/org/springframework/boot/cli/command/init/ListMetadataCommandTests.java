@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ListMetadataCommand}
@@ -29,12 +29,12 @@ import static org.junit.Assert.*;
  */
 public class ListMetadataCommandTests extends AbstractHttpClientMockTests {
 
-	private final ListMetadataCommand command = new ListMetadataCommand(httpClient);
+	private final ListMetadataCommand command = new ListMetadataCommand(this.httpClient);
 
 	@Test
 	public void listMetadata() throws IOException {
 		mockSuccessfulMetadataGet();
-		String content = command.generateReport("http://localhost");
+		String content = this.command.generateReport("http://localhost");
 
 		assertTrue(content.contains("aop - AOP"));
 		assertTrue(content.contains("security - Security: Security description"));

@@ -50,7 +50,7 @@ class ProjectGenerationResponse {
 	 * The generated project archive or file.
 	 */
 	public byte[] getContent() {
-		return content;
+		return this.content;
 	}
 
 	public void setContent(byte[] content) {
@@ -58,11 +58,11 @@ class ProjectGenerationResponse {
 	}
 
 	/**
-	 * The preferred file name to use to store the entity on disk or {@code null}
-	 * if no preferred value has been set.
+	 * The preferred file name to use to store the entity on disk or {@code null} if no
+	 * preferred value has been set.
 	 */
 	public String getFileName() {
-		return fileName;
+		return this.fileName;
 	}
 
 	public void setFileName(String fileName) {

@@ -27,12 +27,11 @@ import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link ProjectGenerationRequest}
@@ -41,7 +40,8 @@ import static org.junit.Assert.*;
  */
 public class ProjectGenerationRequestTests {
 
-	public static final Map<String, String> EMPTY_TAGS = Collections.<String, String>emptyMap();
+	public static final Map<String, String> EMPTY_TAGS = Collections
+			.<String, String> emptyMap();
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
@@ -50,63 +50,66 @@ public class ProjectGenerationRequestTests {
 
 	@Test
 	public void defaultSettings() {
-		assertEquals(createDefaultUrl("?type=test-type"), request.generateUrl(createDefaultMetadata()));
+		assertEquals(createDefaultUrl("?type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void customServer() throws URISyntaxException {
 		String customServerUrl = "http://foo:8080/initializr";
-		request.setServiceUrl(customServerUrl);
-		request.getDependencies().add("security");
-		assertEquals(new URI(customServerUrl + "/starter.zip?style=security&type=test-type"),
-				request.generateUrl(createDefaultMetadata()));
+		this.request.setServiceUrl(customServerUrl);
+		this.request.getDependencies().add("security");
+		assertEquals(new URI(customServerUrl
+				+ "/starter.zip?style=security&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void customBootVersion() {
-		request.setBootVersion("1.2.0.RELEASE");
+		this.request.setBootVersion("1.2.0.RELEASE");
 		assertEquals(createDefaultUrl("?bootVersion=1.2.0.RELEASE&type=test-type"),
-				request.generateUrl(createDefaultMetadata()));
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void singleDependency() {
-		request.getDependencies().add("web");
+		this.request.getDependencies().add("web");
 		assertEquals(createDefaultUrl("?style=web&type=test-type"),
-				request.generateUrl(createDefaultMetadata()));
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void multipleDependencies() {
-		request.getDependencies().add("web");
-		request.getDependencies().add("data-jpa");
+		this.request.getDependencies().add("web");
+		this.request.getDependencies().add("data-jpa");
 		assertEquals(createDefaultUrl("?style=web&style=data-jpa&type=test-type"),
-				request.generateUrl(createDefaultMetadata()));
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void customJavaVersion() {
-		request.setJavaVersion("1.8");
+		this.request.setJavaVersion("1.8");
 		assertEquals(createDefaultUrl("?javaVersion=1.8&type=test-type"),
-				request.generateUrl(createDefaultMetadata()));
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void customPackaging() {
-		request.setPackaging("war");
+		this.request.setPackaging("war");
 		assertEquals(createDefaultUrl("?packaging=war&type=test-type"),
-				request.generateUrl(createDefaultMetadata()));
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void customType() throws URISyntaxException {
-		ProjectType projectType = new ProjectType("custom", "Custom Type", "/foo", true, EMPTY_TAGS);
+		ProjectType projectType = new ProjectType("custom", "Custom Type", "/foo", true,
+				EMPTY_TAGS);
 		InitializrServiceMetadata metadata = new InitializrServiceMetadata(projectType);
 
-		request.setType("custom");
-		request.getDependencies().add("data-rest");
-		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL + "/foo?style=data-rest&type=custom"),
-				request.generateUrl(metadata));
+		this.request.setType("custom");
+		this.request.getDependencies().add("data-rest");
+		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
+				+ "/foo?style=data-rest&type=custom"), this.request.generateUrl(metadata));
 	}
 
 	@Test
@@ -114,9 +117,9 @@ public class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("does-not-exist", null);
 
-		thrown.expect(ProjectGenerationException.class);
-		thrown.expectMessage("does-not-exist");
-		request.generateUrl(metadata);
+		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expectMessage("does-not-exist");
+		this.request.generateUrl(metadata);
 	}
 
 	@Test
@@ -124,10 +127,10 @@ public class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = readMetadata("types-conflict");
 		setBuildAndFormat("gradle", null);
 
-		thrown.expect(ProjectGenerationException.class);
-		thrown.expectMessage("gradle-project");
-		thrown.expectMessage("gradle-project-2");
-		request.generateUrl(metadata);
+		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expectMessage("gradle-project");
+		this.thrown.expectMessage("gradle-project-2");
+		this.request.generateUrl(metadata);
 	}
 
 	@Test
@@ -135,29 +138,30 @@ public class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", null);
 
-		assertEquals(createDefaultUrl("?type=gradle-project"), request.generateUrl(metadata));
+		assertEquals(createDefaultUrl("?type=gradle-project"),
+				this.request.generateUrl(metadata));
 	}
 
 	@Test
 	public void invalidType() throws URISyntaxException {
-		request.setType("does-not-exist");
+		this.request.setType("does-not-exist");
 
-		thrown.expect(ProjectGenerationException.class);
-		request.generateUrl(createDefaultMetadata());
+		this.thrown.expect(ProjectGenerationException.class);
+		this.request.generateUrl(createDefaultMetadata());
 	}
 
 	@Test
 	public void noTypeAndNoDefault() throws URISyntaxException {
 
-		thrown.expect(ProjectGenerationException.class);
-		thrown.expectMessage("no default is defined");
-		request.generateUrl(readMetadata("types-conflict"));
+		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expectMessage("no default is defined");
+		this.request.generateUrl(readMetadata("types-conflict"));
 	}
-
 
 	private static URI createDefaultUrl(String param) {
 		try {
-			return new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL + "/starter.zip" + param);
+			return new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL + "/starter.zip"
+					+ param);
 		}
 		catch (URISyntaxException e) {
 			throw new IllegalStateException(e);
@@ -165,13 +169,14 @@ public class ProjectGenerationRequestTests {
 	}
 
 	public void setBuildAndFormat(String build, String format) {
-		request.setBuild(build != null ? build : "maven");
-		request.setFormat(format != null ? format : "project");
-		request.setDetectType(true);
+		this.request.setBuild(build != null ? build : "maven");
+		this.request.setFormat(format != null ? format : "project");
+		this.request.setDetectType(true);
 	}
 
 	private static InitializrServiceMetadata createDefaultMetadata() {
-		ProjectType projectType = new ProjectType("test-type", "The test type", "/starter.zip", true, EMPTY_TAGS);
+		ProjectType projectType = new ProjectType("test-type", "The test type",
+				"/starter.zip", true, EMPTY_TAGS);
 		return new InitializrServiceMetadata(projectType);
 	}
 
@@ -181,8 +186,10 @@ public class ProjectGenerationRequestTests {
 
 	private static InitializrServiceMetadata readMetadata(String version) {
 		try {
-			Resource resource = new ClassPathResource("metadata/service-metadata-" + version + ".json");
-			String content = StreamUtils.copyToString(resource.getInputStream(), Charset.forName("UTF-8"));
+			Resource resource = new ClassPathResource("metadata/service-metadata-"
+					+ version + ".json");
+			String content = StreamUtils.copyToString(resource.getInputStream(),
+					Charset.forName("UTF-8"));
 			JSONObject json = new JSONObject(content);
 			return new InitializrServiceMetadata(json);
 		}

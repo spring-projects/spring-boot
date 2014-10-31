@@ -40,7 +40,8 @@ public class DefaultCommandFactory implements CommandFactory {
 
 	private static final List<Command> DEFAULT_COMMANDS = Arrays.<Command> asList(
 			new VersionCommand(), new RunCommand(), new TestCommand(), new GrabCommand(),
-			new JarCommand(), new InstallCommand(), new UninstallCommand(), new InitCommand());
+			new JarCommand(), new InstallCommand(), new UninstallCommand(),
+			new InitCommand());
 
 	@Override
 	public Collection<Command> getCommands() {

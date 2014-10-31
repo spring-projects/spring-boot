@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.command.init;
 
 import org.apache.http.impl.client.HttpClientBuilder;
-
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 
@@ -30,7 +29,8 @@ import org.springframework.boot.cli.command.OptionParsingCommand;
 public class InitCommand extends OptionParsingCommand {
 
 	InitCommand(InitCommandOptionHandler handler) {
-		super("init", "Initialize a new project structure using Spring Initializr", handler);
+		super("init", "Initialize a new project structure from Spring Initializr",
+				handler);
 	}
 
 	public InitCommand() {

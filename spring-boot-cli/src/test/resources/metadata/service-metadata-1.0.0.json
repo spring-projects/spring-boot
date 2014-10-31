@@ -1,134 +1,134 @@
 {"dependencies": [
-    {
-        "name": "Core",
-        "content": [
-            {
-                "name": "Security",
-                "id": "security",
-                "description": "Security description"
-            },
-            {
-                "name": "AOP",
-                "id": "aop"
-            }
-        ]
-    },
-    {
-        "name": "Data",
-        "content": [
-            {
-                "name": "JDBC",
-                "id": "jdbc"
-            },
-            {
-                "name": "JPA",
-                "id": "data-jpa"
-            },
-            {
-                "name": "MongoDB",
-                "id": "data-mongodb"
-            }
-        ]
-    }
+	{
+		"name": "Core",
+		"content": [
+			{
+				"name": "Security",
+				"id": "security",
+				"description": "Security description"
+			},
+			{
+				"name": "AOP",
+				"id": "aop"
+			}
+		]
+	},
+	{
+		"name": "Data",
+		"content": [
+			{
+				"name": "JDBC",
+				"id": "jdbc"
+			},
+			{
+				"name": "JPA",
+				"id": "data-jpa"
+			},
+			{
+				"name": "MongoDB",
+				"id": "data-mongodb"
+			}
+		]
+	}
 ], "types": [
-    {
-        "name": "Maven POM",
-        "id": "maven-build",
-        "action": "/pom.xml",
-        "default": false
-    },
-    {
-        "name": "Maven Project",
-        "id": "maven-project",
-        "action": "/starter.zip",
-        "default": true
-    },
-    {
-        "name": "Gradle Config",
-        "id": "gradle-build",
-        "action": "/build.gradle",
-        "default": false
-    },
-    {
-        "name": "Gradle Project",
-        "id": "gradle-project",
-        "action": "/starter.zip",
-        "default": false
-    }
+	{
+		"name": "Maven POM",
+		"id": "maven-build",
+		"action": "/pom.xml",
+		"default": false
+	},
+	{
+		"name": "Maven Project",
+		"id": "maven-project",
+		"action": "/starter.zip",
+		"default": true
+	},
+	{
+		"name": "Gradle Config",
+		"id": "gradle-build",
+		"action": "/build.gradle",
+		"default": false
+	},
+	{
+		"name": "Gradle Project",
+		"id": "gradle-project",
+		"action": "/starter.zip",
+		"default": false
+	}
 ], "packagings": [
-    {
-        "name": "Jar",
-        "id": "jar",
-        "default": true
-    },
-    {
-        "name": "War",
-        "id": "war",
-        "default": false
-    }
+	{
+		"name": "Jar",
+		"id": "jar",
+		"default": true
+	},
+	{
+		"name": "War",
+		"id": "war",
+		"default": false
+	}
 ], "javaVersions": [
-    {
-        "name": "1.6",
-        "id": "1.6",
-        "default": false
-    },
-    {
-        "name": "1.7",
-        "id": "1.7",
-        "default": true
-    },
-    {
-        "name": "1.8",
-        "id": "1.8",
-        "default": false
-    }
+	{
+		"name": "1.6",
+		"id": "1.6",
+		"default": false
+	},
+	{
+		"name": "1.7",
+		"id": "1.7",
+		"default": true
+	},
+	{
+		"name": "1.8",
+		"id": "1.8",
+		"default": false
+	}
 ], "languages": [
-    {
-        "name": "Groovy",
-        "id": "groovy",
-        "default": false
-    },
-    {
-        "name": "Java",
-        "id": "java",
-        "default": true
-    }
+	{
+		"name": "Groovy",
+		"id": "groovy",
+		"default": false
+	},
+	{
+		"name": "Java",
+		"id": "java",
+		"default": true
+	}
 ], "bootVersions": [
-    {
-        "name": "1.2.0 M2",
-        "id": "1.2.0.M2",
-        "default": false
-    },
-    {
-        "name": "1.2.0 (SNAPSHOT)",
-        "id": "1.2.0.BUILD-SNAPSHOT",
-        "default": false
-    },
-    {
-        "name": "1.1.8",
-        "id": "1.1.8.RELEASE",
-        "default": true
-    },
-    {
-        "name": "1.1.8 (SNAPSHOT)",
-        "id": "1.1.8.BUILD-SNAPSHOT",
-        "default": false
-    },
-    {
-        "name": "1.0.2",
-        "id": "1.0.2.RELEASE",
-        "default": false
-    }
+	{
+		"name": "1.2.0 M2",
+		"id": "1.2.0.M2",
+		"default": false
+	},
+	{
+		"name": "1.2.0 (SNAPSHOT)",
+		"id": "1.2.0.BUILD-SNAPSHOT",
+		"default": false
+	},
+	{
+		"name": "1.1.8",
+		"id": "1.1.8.RELEASE",
+		"default": true
+	},
+	{
+		"name": "1.1.8 (SNAPSHOT)",
+		"id": "1.1.8.BUILD-SNAPSHOT",
+		"default": false
+	},
+	{
+		"name": "1.0.2",
+		"id": "1.0.2.RELEASE",
+		"default": false
+	}
 ], "defaults": {
-    "groupId": "org.test",
-    "artifactId": "demo",
-    "version": "0.0.1-SNAPSHOT",
-    "name": "demo",
-    "description": "Demo project for Spring Boot",
-    "packageName": "demo",
-    "type": "maven-project",
-    "packaging": "jar",
-    "javaVersion": "1.7",
-    "language": "java",
-    "bootVersion": "1.1.8.RELEASE"
+	"groupId": "org.test",
+	"artifactId": "demo",
+	"version": "0.0.1-SNAPSHOT",
+	"name": "demo",
+	"description": "Demo project for Spring Boot",
+	"packageName": "demo",
+	"type": "maven-project",
+	"packaging": "jar",
+	"javaVersion": "1.7",
+	"language": "java",
+	"bootVersion": "1.1.8.RELEASE"
 }}

@@ -51,19 +51,19 @@ class ListMetadataCommand {
 	 * capabilities as advertized by the root endpoint.
 	 */
 	String generateReport(String serviceUrl) throws IOException {
-		InitializrServiceMetadata metadata = initializrServiceInvoker.loadMetadata(serviceUrl);
+		InitializrServiceMetadata metadata = this.initializrServiceInvoker
+				.loadMetadata(serviceUrl);
 		String header = "Capabilities of " + serviceUrl;
 		int size = header.length();
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(StringUtils.repeat("=", size)).append(NEW_LINE)
-				.append(header).append(NEW_LINE)
-				.append(StringUtils.repeat("=", size)).append(NEW_LINE)
-				.append(NEW_LINE)
-				.append("Available dependencies:").append(NEW_LINE)
+		sb.append(StringUtils.repeat("=", size)).append(NEW_LINE).append(header)
+				.append(NEW_LINE).append(StringUtils.repeat("=", size)).append(NEW_LINE)
+				.append(NEW_LINE).append("Available dependencies:").append(NEW_LINE)
 				.append("-----------------------").append(NEW_LINE);
 
-		List<Dependency> dependencies = new ArrayList<Dependency>(metadata.getDependencies());
+		List<Dependency> dependencies = new ArrayList<Dependency>(
+				metadata.getDependencies());
 		Collections.sort(dependencies, new Comparator<Dependency>() {
 			@Override
 			public int compare(Dependency o1, Dependency o2) {
@@ -78,8 +78,7 @@ class ListMetadataCommand {
 			sb.append(NEW_LINE);
 		}
 
-		sb.append(NEW_LINE)
-				.append("Available project types:").append(NEW_LINE)
+		sb.append(NEW_LINE).append("Available project types:").append(NEW_LINE)
 				.append("------------------------").append(NEW_LINE);
 		List<String> typeIds = new ArrayList<String>(metadata.getProjectTypes().keySet());
 		Collections.sort(typeIds);
@@ -88,7 +87,8 @@ class ListMetadataCommand {
 			sb.append(typeId).append(" -  ").append(type.getName());
 			if (!type.getTags().isEmpty()) {
 				sb.append(" [");
-				Iterator<Map.Entry<String, String>> it = type.getTags().entrySet().iterator();
+				Iterator<Map.Entry<String, String>> it = type.getTags().entrySet()
+						.iterator();
 				while (it.hasNext()) {
 					Map.Entry<String, String> entry = it.next();
 					sb.append(entry.getKey()).append(":").append(entry.getValue());
@@ -104,14 +104,14 @@ class ListMetadataCommand {
 			sb.append(NEW_LINE);
 		}
 
-		sb.append(NEW_LINE)
-				.append("Defaults:").append(NEW_LINE)
-				.append("---------").append(NEW_LINE);
+		sb.append(NEW_LINE).append("Defaults:").append(NEW_LINE).append("---------")
+				.append(NEW_LINE);
 
 		List<String> defaultsKeys = new ArrayList<String>(metadata.getDefaults().keySet());
 		Collections.sort(defaultsKeys);
 		for (String defaultsKey : defaultsKeys) {
-			sb.append(defaultsKey).append(": ").append(metadata.getDefaults().get(defaultsKey)).append(NEW_LINE);
+			sb.append(defaultsKey).append(": ")
+					.append(metadata.getDefaults().get(defaultsKey)).append(NEW_LINE);
 		}
 		return sb.toString();
 	}

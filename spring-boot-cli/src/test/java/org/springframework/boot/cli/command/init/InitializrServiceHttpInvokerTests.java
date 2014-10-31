@@ -25,11 +25,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link InitializrServiceHttpInvoker}
@@ -41,20 +42,21 @@ public class InitializrServiceHttpInvokerTests extends AbstractHttpClientMockTes
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
-	private final InitializrServiceHttpInvoker invoker = new InitializrServiceHttpInvoker(httpClient);
+	private final InitializrServiceHttpInvoker invoker = new InitializrServiceHttpInvoker(
+			this.httpClient);
 
 	@Test
 	public void loadMetadata() throws IOException {
 		mockSuccessfulMetadataGet();
-		InitializrServiceMetadata metadata = invoker.loadMetadata("http://foo/bar");
+		InitializrServiceMetadata metadata = this.invoker.loadMetadata("http://foo/bar");
 		assertNotNull(metadata);
 	}
 
 	@Test
 	public void generateSimpleProject() throws IOException {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/xml", "foo.zip");
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/xml", "foo.zip");
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
 		assertProjectEntity(entity, mockHttpRequest.contentType, mockHttpRequest.fileName);
 	}
@@ -63,8 +65,8 @@ public class InitializrServiceHttpInvokerTests extends AbstractHttpClientMockTes
 	public void generateProjectCustomTargetFilename() throws IOException {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		request.setOutput("bar.zip");
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/xml", null);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/xml", null);
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
 		assertProjectEntity(entity, mockHttpRequest.contentType, null);
 	}
@@ -72,8 +74,8 @@ public class InitializrServiceHttpInvokerTests extends AbstractHttpClientMockTes
 	@Test
 	public void generateProjectNoDefaultFileName() throws IOException {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/xml", null);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/xml", null);
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
 		assertProjectEntity(entity, mockHttpRequest.contentType, null);
 	}
@@ -85,9 +87,9 @@ public class InitializrServiceHttpInvokerTests extends AbstractHttpClientMockTes
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		request.getDependencies().add("foo:bar");
 
-		thrown.expect(ProjectGenerationException.class);
-		thrown.expectMessage(jsonMessage);
-		invoker.generate(request);
+		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expectMessage(jsonMessage);
+		this.invoker.generate(request);
 	}
 
 	@Test
@@ -95,9 +97,9 @@ public class InitializrServiceHttpInvokerTests extends AbstractHttpClientMockTes
 		mockProjectGenerationError(400, null);
 
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		thrown.expect(ProjectGenerationException.class);
-		thrown.expectMessage("unexpected 400 error");
-		invoker.generate(request);
+		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expectMessage("unexpected 400 error");
+		this.invoker.generate(request);
 	}
 
 	@Test
@@ -106,15 +108,14 @@ public class InitializrServiceHttpInvokerTests extends AbstractHttpClientMockTes
 
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockStatus(response, 500);
-		when(httpClient.execute(isA(HttpGet.class))).thenReturn(response);
+		when(this.httpClient.execute(isA(HttpGet.class))).thenReturn(response);
 
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 
-		thrown.expect(ProjectGenerationException.class);
-		thrown.expectMessage("No content received from server");
-		invoker.generate(request);
+		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expectMessage("No content received from server");
+		this.invoker.generate(request);
 	}
-
 
 	@Test
 	public void loadMetadataBadRequest() throws IOException {
@@ -122,9 +123,9 @@ public class InitializrServiceHttpInvokerTests extends AbstractHttpClientMockTes
 		mockMetadataGetError(500, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 
-		thrown.expect(ProjectGenerationException.class);
-		thrown.expectMessage(jsonMessage);
-		invoker.generate(request);
+		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expectMessage(jsonMessage);
+		this.invoker.generate(request);
 	}
 
 	@Test
@@ -132,44 +133,43 @@ public class InitializrServiceHttpInvokerTests extends AbstractHttpClientMockTes
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockHttpEntity(response, "Foo-Bar-Not-JSON".getBytes(), "application/json");
 		mockStatus(response, 200);
-		when(httpClient.execute(isA(HttpGet.class))).thenReturn(response);
+		when(this.httpClient.execute(isA(HttpGet.class))).thenReturn(response);
 
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		thrown.expect(ProjectGenerationException.class);
-		thrown.expectMessage("Invalid content received from server");
-		invoker.generate(request);
+		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expectMessage("Invalid content received from server");
+		this.invoker.generate(request);
 	}
 
 	@Test
 	public void loadMetadataNoContent() throws IOException {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockStatus(response, 500);
-		when(httpClient.execute(isA(HttpGet.class))).thenReturn(response);
+		when(this.httpClient.execute(isA(HttpGet.class))).thenReturn(response);
 
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 
-		thrown.expect(ProjectGenerationException.class);
-		thrown.expectMessage("No content received from server");
-		invoker.generate(request);
+		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expectMessage("No content received from server");
+		this.invoker.generate(request);
 	}
-
-
-
 
 	private ProjectGenerationResponse generateProject(ProjectGenerationRequest request,
 			MockHttpProjectGenerationRequest mockRequest) throws IOException {
 		mockSuccessfulProjectGeneration(mockRequest);
-		ProjectGenerationResponse entity = invoker.generate(request);
+		ProjectGenerationResponse entity = this.invoker.generate(request);
 		assertArrayEquals("wrong body content", mockRequest.content, entity.getContent());
 		return entity;
 	}
 
-	private static void assertProjectEntity(ProjectGenerationResponse entity, String mimeType, String fileName) {
+	private static void assertProjectEntity(ProjectGenerationResponse entity,
+			String mimeType, String fileName) {
 		if (mimeType == null) {
 			assertNull("No content type expected", entity.getContentType());
 		}
 		else {
-			assertEquals("wrong mime type", mimeType, entity.getContentType().getMimeType());
+			assertEquals("wrong mime type", mimeType, entity.getContentType()
+					.getMimeType());
 		}
 		assertEquals("wrong filename", fileName, entity.getFileName());
 	}

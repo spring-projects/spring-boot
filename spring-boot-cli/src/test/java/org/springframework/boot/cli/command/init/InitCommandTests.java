@@ -25,14 +25,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import joptsimple.OptionSet;
+
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
 import org.springframework.boot.cli.command.status.ExitStatus;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link InitCommand}
@@ -44,14 +47,15 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
-	private final TestableInitCommandOptionHandler handler = new TestableInitCommandOptionHandler(httpClient);
+	private final TestableInitCommandOptionHandler handler = new TestableInitCommandOptionHandler(
+			this.httpClient);
 
-	private final InitCommand command = new InitCommand(handler);
+	private final InitCommand command = new InitCommand(this.handler);
 
 	@Test
 	public void listServiceCapabilities() throws Exception {
 		mockSuccessfulMetadataGet();
-		command.run("--list", "--target=http://fake-service");
+		this.command.run("--list", "--target=http://fake-service");
 	}
 
 	@Test
@@ -60,12 +64,12 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		File f = new File(fileName);
 		assertFalse("file should not exist", f.exists());
 
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/zip", fileName);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/zip", fileName);
 		mockSuccessfulProjectGeneration(mockHttpRequest);
 
 		try {
-			assertEquals(ExitStatus.OK, command.run());
+			assertEquals(ExitStatus.OK, this.command.run());
 			assertTrue("file should have been created", f.exists());
 		}
 		finally {
@@ -75,40 +79,44 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	public void generateProjectNoFileNameAvailable() throws Exception {
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/zip", null);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/zip", null);
 		mockSuccessfulProjectGeneration(mockHttpRequest);
-		assertEquals(ExitStatus.ERROR, command.run());
+		assertEquals(ExitStatus.ERROR, this.command.run());
 	}
 
 	@Test
 	public void generateProjectAndExtract() throws Exception {
-		File f = folder.newFolder();
+		File f = this.folder.newFolder();
 
 		byte[] archive = createFakeZipArchive("test.txt", "Fake content");
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/zip", "demo.zip", archive);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(mockHttpRequest);
 
-		assertEquals(ExitStatus.OK, command.run("--extract", "--output=" + f.getAbsolutePath()));
+		assertEquals(ExitStatus.OK,
+				this.command.run("--extract", "--output=" + f.getAbsolutePath()));
 		File archiveFile = new File(f, "test.txt");
-		assertTrue("Archive not extracted properly " + f.getAbsolutePath() + " not found", archiveFile.exists());
+		assertTrue(
+				"Archive not extracted properly " + f.getAbsolutePath() + " not found",
+				archiveFile.exists());
 	}
 
 	@Test
 	public void generateProjectAndExtractUnsupportedArchive() throws Exception {
-		File f = folder.newFolder();
+		File f = this.folder.newFolder();
 		String fileName = UUID.randomUUID().toString() + ".zip";
 		File archiveFile = new File(fileName);
 		assertFalse("file should not exist", archiveFile.exists());
 
 		try {
 			byte[] archive = createFakeZipArchive("test.txt", "Fake content");
-			MockHttpProjectGenerationRequest mockHttpRequest =
-					new MockHttpProjectGenerationRequest("application/foobar", fileName, archive);
+			MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+					"application/foobar", fileName, archive);
 			mockSuccessfulProjectGeneration(mockHttpRequest);
 
-			assertEquals(ExitStatus.OK, command.run("--extract", "--output=" + f.getAbsolutePath()));
+			assertEquals(ExitStatus.OK,
+					this.command.run("--extract", "--output=" + f.getAbsolutePath()));
 			assertTrue("file should have been saved instead", archiveFile.exists());
 		}
 		finally {
@@ -118,18 +126,19 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	public void generateProjectAndExtractUnknownContentType() throws Exception {
-		File f = folder.newFolder();
+		File f = this.folder.newFolder();
 		String fileName = UUID.randomUUID().toString() + ".zip";
 		File archiveFile = new File(fileName);
 		assertFalse("file should not exist", archiveFile.exists());
 
 		try {
 			byte[] archive = createFakeZipArchive("test.txt", "Fake content");
-			MockHttpProjectGenerationRequest mockHttpRequest =
-					new MockHttpProjectGenerationRequest(null, fileName, archive);
+			MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+					null, fileName, archive);
 			mockSuccessfulProjectGeneration(mockHttpRequest);
 
-			assertEquals(ExitStatus.OK, command.run("--extract", "--output=" + f.getAbsolutePath()));
+			assertEquals(ExitStatus.OK,
+					this.command.run("--extract", "--output=" + f.getAbsolutePath()));
 			assertTrue("file should have been saved instead", archiveFile.exists());
 		}
 		finally {
@@ -139,120 +148,125 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 
 	@Test
 	public void fileNotOverwrittenByDefault() throws Exception {
-		File f = folder.newFile();
+		File f = this.folder.newFile();
 		long fileLength = f.length();
 
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/zip", f.getAbsolutePath());
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/zip", f.getAbsolutePath());
 		mockSuccessfulProjectGeneration(mockHttpRequest);
 
-		assertEquals("Should have failed", ExitStatus.ERROR, command.run());
+		assertEquals("Should have failed", ExitStatus.ERROR, this.command.run());
 		assertEquals("File should not have changed", fileLength, f.length());
 	}
 
 	@Test
 	public void overwriteFile() throws Exception {
-		File f = folder.newFile();
+		File f = this.folder.newFile();
 		long fileLength = f.length();
 
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/zip", f.getAbsolutePath());
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/zip", f.getAbsolutePath());
 		mockSuccessfulProjectGeneration(mockHttpRequest);
-		assertEquals("Should not have failed", ExitStatus.OK, command.run("--force"));
+		assertEquals("Should not have failed", ExitStatus.OK, this.command.run("--force"));
 		assertTrue("File should have changed", fileLength != f.length());
 	}
 
 	@Test
 	public void fileInArchiveNotOverwrittenByDefault() throws Exception {
-		File f = folder.newFolder();
+		File f = this.folder.newFolder();
 		File conflict = new File(f, "test.txt");
 		assertTrue("Should have been able to create file", conflict.createNewFile());
 		long fileLength = conflict.length();
 
 		// also contains test.txt
 		byte[] archive = createFakeZipArchive("test.txt", "Fake content");
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/zip", "demo.zip", archive);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(mockHttpRequest);
 
-		assertEquals(ExitStatus.ERROR, command.run("--extract", "--output=" + f.getAbsolutePath()));
+		assertEquals(ExitStatus.ERROR,
+				this.command.run("--extract", "--output=" + f.getAbsolutePath()));
 		assertEquals("File should not have changed", fileLength, conflict.length());
 	}
 
 	@Test
 	public void overwriteFileInArchive() throws Exception {
-		File f = folder.newFolder();
+		File f = this.folder.newFolder();
 		File conflict = new File(f, "test.txt");
 		assertTrue("Should have been able to create file", conflict.createNewFile());
 		long fileLength = conflict.length();
 
 		// also contains test.txt
 		byte[] archive = createFakeZipArchive("test.txt", "Fake content");
-		MockHttpProjectGenerationRequest mockHttpRequest =
-				new MockHttpProjectGenerationRequest("application/zip", "demo.zip", archive);
+		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
+				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(mockHttpRequest);
 
-		assertEquals(ExitStatus.OK, command.run("--force", "--extract", "--output=" + f.getAbsolutePath()));
+		assertEquals(
+				ExitStatus.OK,
+				this.command.run("--force", "--extract",
+						"--output=" + f.getAbsolutePath()));
 		assertTrue("File should have changed", fileLength != conflict.length());
 	}
 
 	@Test
 	public void parseProjectOptions() throws Exception {
-		handler.disableProjectGeneration();
-		command.run("-bv=1.2.0.RELEASE", "-d=web,data-jpa", "-jv=1.9", "-p=war",
+		this.handler.disableProjectGeneration();
+		this.command.run("-bv=1.2.0.RELEASE", "-d=web,data-jpa", "-jv=1.9", "-p=war",
 				"--build=grunt", "--format=web", "-t=ant-project");
 
-		assertEquals("1.2.0.RELEASE", handler.lastRequest.getBootVersion());
-		List<String> dependencies = handler.lastRequest.getDependencies();
+		assertEquals("1.2.0.RELEASE", this.handler.lastRequest.getBootVersion());
+		List<String> dependencies = this.handler.lastRequest.getDependencies();
 		assertEquals(2, dependencies.size());
 		assertTrue(dependencies.contains("web"));
 		assertTrue(dependencies.contains("data-jpa"));
-		assertEquals("1.9", handler.lastRequest.getJavaVersion());
-		assertEquals("war", handler.lastRequest.getPackaging());
-		assertEquals("grunt", handler.lastRequest.getBuild());
-		assertEquals("web", handler.lastRequest.getFormat());
-		assertEquals("ant-project", handler.lastRequest.getType());
+		assertEquals("1.9", this.handler.lastRequest.getJavaVersion());
+		assertEquals("war", this.handler.lastRequest.getPackaging());
+		assertEquals("grunt", this.handler.lastRequest.getBuild());
+		assertEquals("web", this.handler.lastRequest.getFormat());
+		assertEquals("ant-project", this.handler.lastRequest.getType());
 	}
 
 	@Test
 	public void parseTypeOnly() throws Exception {
-		handler.disableProjectGeneration();
-		command.run("-t=ant-project");
-		assertEquals("maven", handler.lastRequest.getBuild());
-		assertEquals("project", handler.lastRequest.getFormat());
-		assertFalse(handler.lastRequest.isDetectType());
-		assertEquals("ant-project", handler.lastRequest.getType());
+		this.handler.disableProjectGeneration();
+		this.command.run("-t=ant-project");
+		assertEquals("maven", this.handler.lastRequest.getBuild());
+		assertEquals("project", this.handler.lastRequest.getFormat());
+		assertFalse(this.handler.lastRequest.isDetectType());
+		assertEquals("ant-project", this.handler.lastRequest.getType());
 	}
 
 	@Test
 	public void parseBuildOnly() throws Exception {
-		handler.disableProjectGeneration();
-		command.run("--build=ant");
-		assertEquals("ant", handler.lastRequest.getBuild());
-		assertEquals("project", handler.lastRequest.getFormat());
-		assertTrue(handler.lastRequest.isDetectType());
-		assertNull(handler.lastRequest.getType());
+		this.handler.disableProjectGeneration();
+		this.command.run("--build=ant");
+		assertEquals("ant", this.handler.lastRequest.getBuild());
+		assertEquals("project", this.handler.lastRequest.getFormat());
+		assertTrue(this.handler.lastRequest.isDetectType());
+		assertNull(this.handler.lastRequest.getType());
 	}
 
 	@Test
 	public void parseFormatOnly() throws Exception {
-		handler.disableProjectGeneration();
-		command.run("--format=web");
-		assertEquals("maven", handler.lastRequest.getBuild());
-		assertEquals("web", handler.lastRequest.getFormat());
-		assertTrue(handler.lastRequest.isDetectType());
-		assertNull(handler.lastRequest.getType());
+		this.handler.disableProjectGeneration();
+		this.command.run("--format=web");
+		assertEquals("maven", this.handler.lastRequest.getBuild());
+		assertEquals("web", this.handler.lastRequest.getFormat());
+		assertTrue(this.handler.lastRequest.isDetectType());
+		assertNull(this.handler.lastRequest.getType());
 	}
 
 	@Test
 	public void parseOutput() throws Exception {
-		handler.disableProjectGeneration();
-		command.run("--output=foobar.zip");
+		this.handler.disableProjectGeneration();
+		this.command.run("--output=foobar.zip");
 
-		assertEquals("foobar.zip", handler.lastRequest.getOutput());
+		assertEquals("foobar.zip", this.handler.lastRequest.getOutput());
 	}
 
-	private byte[] createFakeZipArchive(String fileName, String content) throws IOException {
+	private byte[] createFakeZipArchive(String fileName, String content)
+			throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(out);
 		try {
@@ -268,8 +282,8 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		return out.toByteArray();
 	}
 
-
-	private static class TestableInitCommandOptionHandler extends InitCommandOptionHandler {
+	private static class TestableInitCommandOptionHandler extends
+			InitCommandOptionHandler {
 
 		private boolean disableProjectGeneration;
 
@@ -280,13 +294,14 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		}
 
 		void disableProjectGeneration() {
-			disableProjectGeneration = true;
+			this.disableProjectGeneration = true;
 		}
 
 		@Override
-		protected ExitStatus generateProject(OptionSet options, CloseableHttpClient httpClient) {
-			lastRequest = createProjectGenerationRequest(options);
-			if (!disableProjectGeneration) {
+		protected ExitStatus generateProject(OptionSet options,
+				CloseableHttpClient httpClient) {
+			this.lastRequest = createProjectGenerationRequest(options);
+			if (!this.disableProjectGeneration) {
 				return super.generateProject(options, httpClient);
 			}
 			return ExitStatus.OK;

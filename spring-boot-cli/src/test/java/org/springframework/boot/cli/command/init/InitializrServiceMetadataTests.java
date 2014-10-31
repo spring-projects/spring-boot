@@ -22,12 +22,12 @@ import java.nio.charset.Charset;
 
 import org.json.JSONObject;
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link InitializrServiceMetadata}
@@ -35,7 +35,6 @@ import static org.junit.Assert.*;
  * @author Stephane Nicoll
  */
 public class InitializrServiceMetadataTests {
-
 
 	@Test
 	public void parseDefaults() {
@@ -53,7 +52,8 @@ public class InitializrServiceMetadataTests {
 		// Security description
 		assertEquals("AOP", metadata.getDependency("aop").getName());
 		assertEquals("Security", metadata.getDependency("security").getName());
-		assertEquals("Security description", metadata.getDependency("security").getDescription());
+		assertEquals("Security description", metadata.getDependency("security")
+				.getDescription());
 		assertEquals("JDBC", metadata.getDependency("jdbc").getName());
 		assertEquals("JPA", metadata.getDependency("data-jpa").getName());
 		assertEquals("MongoDB", metadata.getDependency("data-mongodb").getName());
@@ -76,7 +76,6 @@ public class InitializrServiceMetadataTests {
 		assertEquals("project", projectType.getTags().get("format"));
 	}
 
-
 	private static InitializrServiceMetadata createInstance(String version) {
 		try {
 			return new InitializrServiceMetadata(readJson(version));
@@ -87,7 +86,8 @@ public class InitializrServiceMetadataTests {
 	}
 
 	private static JSONObject readJson(String version) throws IOException {
-		Resource resource = new ClassPathResource("metadata/service-metadata-" + version + ".json");
+		Resource resource = new ClassPathResource("metadata/service-metadata-" + version
+				+ ".json");
 		InputStream stream = resource.getInputStream();
 		try {
 			String json = StreamUtils.copyToString(stream, Charset.forName("UTF-8"));

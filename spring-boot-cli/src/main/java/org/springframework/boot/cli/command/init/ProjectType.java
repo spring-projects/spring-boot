@@ -38,7 +38,8 @@ class ProjectType {
 
 	private final Map<String, String> tags = new HashMap<String, String>();
 
-	public ProjectType(String id, String name, String action, boolean defaultType, Map<String, String> tags) {
+	public ProjectType(String id, String name, String action, boolean defaultType,
+			Map<String, String> tags) {
 		this.id = id;
 		this.name = name;
 		this.action = action;
@@ -49,22 +50,22 @@ class ProjectType {
 	}
 
 	public String getId() {
-		return id;
+		return this.id;
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public String getAction() {
-		return action;
+		return this.action;
 	}
 
 	public boolean isDefaultType() {
-		return defaultType;
+		return this.defaultType;
 	}
 
 	public Map<String, String> getTags() {
-		return Collections.unmodifiableMap(tags);
+		return Collections.unmodifiableMap(this.tags);
 	}
 }

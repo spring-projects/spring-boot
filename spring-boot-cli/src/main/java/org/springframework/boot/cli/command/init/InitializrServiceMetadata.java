@@ -50,13 +50,11 @@ class InitializrServiceMetadata {
 
 	private static final String DEFAULT_ATTRIBUTE = "default";
 
-
 	private final Map<String, Dependency> dependencies;
 
 	private final MetadataHolder<String, ProjectType> projectTypes;
 
 	private final Map<String, String> defaults;
-
 
 	/**
 	 * Creates a new instance using the specified root {@link JSONObject}.
@@ -70,7 +68,8 @@ class InitializrServiceMetadata {
 	InitializrServiceMetadata(ProjectType defaultProjectType) {
 		this.dependencies = new HashMap<String, Dependency>();
 		this.projectTypes = new MetadataHolder<String, ProjectType>();
-		this.projectTypes.getContent().put(defaultProjectType.getId(), defaultProjectType);
+		this.projectTypes.getContent()
+				.put(defaultProjectType.getId(), defaultProjectType);
 		this.projectTypes.setDefaultItem(defaultProjectType);
 		this.defaults = new HashMap<String, String>();
 	}
@@ -79,35 +78,35 @@ class InitializrServiceMetadata {
 	 * Return the dependencies supported by the service.
 	 */
 	public Collection<Dependency> getDependencies() {
-		return dependencies.values();
+		return this.dependencies.values();
 	}
 
 	/**
-	 * Return the dependency with the specified id or {@code null} if no
-	 * such dependency exists.
+	 * Return the dependency with the specified id or {@code null} if no such dependency
+	 * exists.
 	 */
 	public Dependency getDependency(String id) {
-		return dependencies.get(id);
+		return this.dependencies.get(id);
 	}
 
 	/**
 	 * Return the project types supported by the service.
 	 */
 	public Map<String, ProjectType> getProjectTypes() {
-		return projectTypes.getContent();
+		return this.projectTypes.getContent();
 	}
 
 	/**
-	 * Return the default type to use or {@code null} or the metadata does
-	 * not define any default.
+	 * Return the default type to use or {@code null} or the metadata does not define any
+	 * default.
 	 */
 	public ProjectType getDefaultType() {
-		if (projectTypes.getDefaultItem() != null) {
-			return projectTypes.getDefaultItem();
+		if (this.projectTypes.getDefaultItem() != null) {
+			return this.projectTypes.getDefaultItem();
 		}
 		String defaultTypeId = getDefaults().get("type");
 		if (defaultTypeId != null) {
-			return projectTypes.getContent().get(defaultTypeId);
+			return this.projectTypes.getContent().get(defaultTypeId);
 		}
 		return null;
 	}
@@ -116,7 +115,7 @@ class InitializrServiceMetadata {
 	 * Returns the defaults applicable to the service.
 	 */
 	public Map<String, String> getDefaults() {
-		return defaults;
+		return this.defaults;
 	}
 
 	private Map<String, Dependency> parseDependencies(JSONObject root) {
@@ -221,11 +220,11 @@ class InitializrServiceMetadata {
 		}
 
 		public Map<K, T> getContent() {
-			return content;
+			return this.content;
 		}
 
 		public T getDefaultItem() {
-			return defaultItem;
+			return this.defaultItem;
 		}
 
 		public void setDefaultItem(T defaultItem) {
