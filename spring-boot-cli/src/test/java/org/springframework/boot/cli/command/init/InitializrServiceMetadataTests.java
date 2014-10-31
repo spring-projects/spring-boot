@@ -80,8 +80,8 @@ public class InitializrServiceMetadataTests {
 		try {
 			return new InitializrServiceMetadata(readJson(version));
 		}
-		catch (IOException e) {
-			throw new IllegalStateException("Failed to read json", e);
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to read json", ex);
 		}
 	}
 
@@ -90,8 +90,8 @@ public class InitializrServiceMetadataTests {
 				+ ".json");
 		InputStream stream = resource.getInputStream();
 		try {
-			String json = StreamUtils.copyToString(stream, Charset.forName("UTF-8"));
-			return new JSONObject(json);
+			return new JSONObject(StreamUtils.copyToString(stream,
+					Charset.forName("UTF-8")));
 		}
 		finally {
 			stream.close();

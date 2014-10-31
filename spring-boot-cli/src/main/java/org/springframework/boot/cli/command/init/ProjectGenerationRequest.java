@@ -201,7 +201,7 @@ class ProjectGenerationRequest {
 			return builder.build();
 		}
 		catch (URISyntaxException e) {
-			throw new ProjectGenerationException("Invalid service URL (" + e.getMessage()
+			throw new ReportableException("Invalid service URL (" + e.getMessage()
 					+ ")");
 		}
 	}
@@ -210,7 +210,7 @@ class ProjectGenerationRequest {
 		if (this.type != null) {
 			ProjectType result = metadata.getProjectTypes().get(this.type);
 			if (result == null) {
-				throw new ProjectGenerationException(("No project type with id '"
+				throw new ReportableException(("No project type with id '"
 						+ this.type + "' - check the service capabilities (--list)"));
 			}
 		}
@@ -227,19 +227,19 @@ class ProjectGenerationRequest {
 				return types.values().iterator().next();
 			}
 			else if (types.size() == 0) {
-				throw new ProjectGenerationException("No type found with build '"
+				throw new ReportableException("No type found with build '"
 						+ this.build + "' and format '" + this.format
 						+ "' check the service capabilities (--list)");
 			}
 			else {
-				throw new ProjectGenerationException("Multiple types found with build '"
+				throw new ReportableException("Multiple types found with build '"
 						+ this.build + "' and format '" + this.format
 						+ "' use --type with a more specific value " + types.keySet());
 			}
 		}
 		ProjectType defaultType = metadata.getDefaultType();
 		if (defaultType == null) {
-			throw new ProjectGenerationException(
+			throw new ReportableException(
 					("No project type is set and no default is defined. "
 							+ "Check the service capabilities (--list)"));
 		}

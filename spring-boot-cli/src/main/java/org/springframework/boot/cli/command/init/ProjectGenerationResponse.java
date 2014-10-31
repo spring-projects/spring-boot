@@ -26,13 +26,14 @@ import org.apache.http.entity.ContentType;
  */
 class ProjectGenerationResponse {
 
-	private ContentType contentType;
+	private final ContentType contentType;
 
 	private byte[] content;
 
 	private String fileName;
 
-	ProjectGenerationResponse() {
+	public ProjectGenerationResponse(ContentType contentType) {
+		this.contentType = contentType;
 	}
 
 	/**
@@ -40,10 +41,6 @@ class ProjectGenerationResponse {
 	 */
 	public ContentType getContentType() {
 		return this.contentType;
-	}
-
-	public void setContentType(ContentType contentType) {
-		this.contentType = contentType;
 	}
 
 	/**

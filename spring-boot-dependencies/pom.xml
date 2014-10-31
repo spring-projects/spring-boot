@@ -89,7 +89,6 @@
 		<jersey.version>2.13</jersey.version>
 		<joda-time.version>2.4</joda-time.version>
 		<jolokia.version>1.2.2</jolokia.version>
-		<json.version>20140107</json.version>
 		<json-path.version>0.9.1</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.11</junit.version>
@@ -985,11 +984,6 @@
 				<groupId>org.jdom</groupId>
 				<artifactId>jdom2</artifactId>
 				<version>${jdom2.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.json</groupId>
-				<artifactId>json</artifactId>
-				<version>${json.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>

@@ -68,4 +68,5 @@ class ProjectType {
 	public Map<String, String> getTags() {
 		return Collections.unmodifiableMap(this.tags);
 	}
+
 }

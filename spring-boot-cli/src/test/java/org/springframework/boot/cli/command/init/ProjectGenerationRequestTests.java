@@ -105,7 +105,6 @@ public class ProjectGenerationRequestTests {
 		ProjectType projectType = new ProjectType("custom", "Custom Type", "/foo", true,
 				EMPTY_TAGS);
 		InitializrServiceMetadata metadata = new InitializrServiceMetadata(projectType);
-
 		this.request.setType("custom");
 		this.request.getDependencies().add("data-rest");
 		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
@@ -116,8 +115,7 @@ public class ProjectGenerationRequestTests {
 	public void buildNoMatch() {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("does-not-exist", null);
-
-		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expect(ReportableException.class);
 		this.thrown.expectMessage("does-not-exist");
 		this.request.generateUrl(metadata);
 	}
@@ -126,8 +124,7 @@ public class ProjectGenerationRequestTests {
 	public void buildMultipleMatch() {
 		InitializrServiceMetadata metadata = readMetadata("types-conflict");
 		setBuildAndFormat("gradle", null);
-
-		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expect(ReportableException.class);
 		this.thrown.expectMessage("gradle-project");
 		this.thrown.expectMessage("gradle-project-2");
 		this.request.generateUrl(metadata);
@@ -137,7 +134,6 @@ public class ProjectGenerationRequestTests {
 	public void buildOneMatch() {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", null);
-
 		assertEquals(createDefaultUrl("?type=gradle-project"),
 				this.request.generateUrl(metadata));
 	}
@@ -145,15 +141,13 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void invalidType() throws URISyntaxException {
 		this.request.setType("does-not-exist");
-
-		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expect(ReportableException.class);
 		this.request.generateUrl(createDefaultMetadata());
 	}
 
 	@Test
 	public void noTypeAndNoDefault() throws URISyntaxException {
-
-		this.thrown.expect(ProjectGenerationException.class);
+		this.thrown.expect(ReportableException.class);
 		this.thrown.expectMessage("no default is defined");
 		this.request.generateUrl(readMetadata("types-conflict"));
 	}
@@ -163,8 +157,8 @@ public class ProjectGenerationRequestTests {
 			return new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL + "/starter.zip"
 					+ param);
 		}
-		catch (URISyntaxException e) {
-			throw new IllegalStateException(e);
+		catch (URISyntaxException ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 
@@ -193,8 +187,8 @@ public class ProjectGenerationRequestTests {
 			JSONObject json = new JSONObject(content);
 			return new InitializrServiceMetadata(json);
 		}
-		catch (IOException e) {
-			throw new IllegalStateException("Failed to read metadata", e);
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to read metadata", ex);
 		}
 	}
 

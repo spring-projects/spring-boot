@@ -23,19 +23,19 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link ListMetadataCommand}
+ * Tests for {@link ServiceCapabilitiesReportGenerator}
  *
  * @author Stephane Nicoll
  */
-public class ListMetadataCommandTests extends AbstractHttpClientMockTests {
+public class ServiceCapabilitiesReportGeneratorTests extends AbstractHttpClientMockTests {
 
-	private final ListMetadataCommand command = new ListMetadataCommand(this.httpClient);
+	private final ServiceCapabilitiesReportGenerator command = new ServiceCapabilitiesReportGenerator(
+			new InitializrService(this.http));
 
 	@Test
 	public void listMetadata() throws IOException {
 		mockSuccessfulMetadataGet();
-		String content = this.command.generateReport("http://localhost");
-
+		String content = this.command.generate("http://localhost");
 		assertTrue(content.contains("aop - AOP"));
 		assertTrue(content.contains("security - Security: Security description"));
 		assertTrue(content.contains("type: maven-project"));

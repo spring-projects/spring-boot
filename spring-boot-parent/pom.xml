@@ -18,10 +18,11 @@
 	</organization>
 	<properties>
 		<main.basedir>..</main.basedir>
-		<aether.version>0.9.1.v20140329</aether.version>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<aether.version>0.9.1.v20140329</aether.version>
+		<json.version>20140107</json.version>
 		<maven.version>3.1.1</maven.version>
 	</properties>
 	<prerequisites>
@@ -183,6 +184,11 @@
 				<groupId>org.gradle</groupId>
 				<artifactId>gradle-plugins</artifactId>
 				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>${json.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.zeroturnaround</groupId>

@@ -22,36 +22,30 @@ package org.springframework.boot.cli.command.init;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-class Dependency {
+final class Dependency {
 
-	private String id;
+	private final String id;
 
-	private String name;
+	private final String name;
 
-	private String description;
+	private final String description;
+
+	public Dependency(String id, String name, String description) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+	}
 
 	public String getId() {
 		return this.id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getDescription() {
 		return this.description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 }

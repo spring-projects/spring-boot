@@ -59,13 +59,13 @@ class InitializrServiceMetadata {
 	/**
 	 * Creates a new instance using the specified root {@link JSONObject}.
 	 */
-	InitializrServiceMetadata(JSONObject root) {
+	public InitializrServiceMetadata(JSONObject root) {
 		this.dependencies = parseDependencies(root);
 		this.projectTypes = parseProjectTypes(root);
 		this.defaults = Collections.unmodifiableMap(parseDefaults(root));
 	}
 
-	InitializrServiceMetadata(ProjectType defaultProjectType) {
+	public InitializrServiceMetadata(ProjectType defaultProjectType) {
 		this.dependencies = new HashMap<String, Dependency>();
 		this.projectTypes = new MetadataHolder<String, ProjectType>();
 		this.projectTypes.getContent()
@@ -169,11 +169,10 @@ class InitializrServiceMetadata {
 	}
 
 	private Dependency parseDependency(JSONObject object) {
-		Dependency dependency = new Dependency();
-		dependency.setName(getStringValue(object, NAME_ATTRIBUTE, null));
-		dependency.setId(getStringValue(object, ID_ATTRIBUTE, null));
-		dependency.setDescription(getStringValue(object, DESCRIPTION_ATTRIBUTE, null));
-		return dependency;
+		String id = getStringValue(object, ID_ATTRIBUTE, null);
+		String name = getStringValue(object, NAME_ATTRIBUTE, null);
+		String description = getStringValue(object, DESCRIPTION_ATTRIBUTE, null);
+		return new Dependency(id, name, description);
 	}
 
 	private ProjectType parseType(JSONObject object) {
@@ -230,6 +229,7 @@ class InitializrServiceMetadata {
 		public void setDefaultItem(T defaultItem) {
 			this.defaultItem = defaultItem;
 		}
+
 	}
 
 }

@@ -34,18 +34,19 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
+ * Abstract base class for tests that use a mock {@link CloseableHttpClient}.
  *
  * @author Stephane Nicoll
  */
 public abstract class AbstractHttpClientMockTests {
 
-	protected final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
+	protected final CloseableHttpClient http = mock(CloseableHttpClient.class);
 
 	protected void mockSuccessfulMetadataGet() throws IOException {
 		mockSuccessfulMetadataGet("1.1.0");
@@ -58,34 +59,31 @@ public abstract class AbstractHttpClientMockTests {
 		byte[] content = StreamUtils.copyToByteArray(resource.getInputStream());
 		mockHttpEntity(response, content, "application/json");
 		mockStatus(response, 200);
-		when(this.httpClient.execute(argThat(getForJsonData()))).thenReturn(response);
+		given(this.http.execute(argThat(getForJsonData()))).willReturn(response);
 	}
 
 	protected void mockSuccessfulProjectGeneration(
 			MockHttpProjectGenerationRequest request) throws IOException {
 		// Required for project generation as the metadata is read first
 		mockSuccessfulMetadataGet();
-
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockHttpEntity(response, request.content, request.contentType);
 		mockStatus(response, 200);
-
-		String header = request.fileName != null ? contentDispositionValue(request.fileName)
-				: null;
+		String header = (request.fileName != null ? contentDispositionValue(request.fileName)
+				: null);
 		mockHttpHeader(response, "Content-Disposition", header);
-		when(this.httpClient.execute(argThat(getForNonJsonData()))).thenReturn(response);
+		given(this.http.execute(argThat(getForNonJsonData()))).willReturn(response);
 	}
 
 	protected void mockProjectGenerationError(int status, String message)
 			throws IOException {
 		// Required for project generation as the metadata is read first
 		mockSuccessfulMetadataGet();
-
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockHttpEntity(response, createJsonError(status, message).getBytes(),
 				"application/json");
 		mockStatus(response, status);
-		when(this.httpClient.execute(isA(HttpGet.class))).thenReturn(response);
+		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 	}
 
 	protected void mockMetadataGetError(int status, String message) throws IOException {
@@ -93,35 +91,35 @@ public abstract class AbstractHttpClientMockTests {
 		mockHttpEntity(response, createJsonError(status, message).getBytes(),
 				"application/json");
 		mockStatus(response, status);
-		when(this.httpClient.execute(isA(HttpGet.class))).thenReturn(response);
+		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 	}
 
 	protected HttpEntity mockHttpEntity(CloseableHttpResponse response, byte[] content,
 			String contentType) {
 		try {
 			HttpEntity entity = mock(HttpEntity.class);
-			when(entity.getContent()).thenReturn(new ByteArrayInputStream(content));
+			given(entity.getContent()).willReturn(new ByteArrayInputStream(content));
 			Header contentTypeHeader = contentType != null ? new BasicHeader(
 					"Content-Type", contentType) : null;
-			when(entity.getContentType()).thenReturn(contentTypeHeader);
-			when(response.getEntity()).thenReturn(entity);
+			given(entity.getContentType()).willReturn(contentTypeHeader);
+			given(response.getEntity()).willReturn(entity);
 			return entity;
 		}
-		catch (IOException e) {
-			throw new IllegalStateException("Should not happen", e);
+		catch (IOException ex) {
+			throw new IllegalStateException("Should not happen", ex);
 		}
 	}
 
 	protected void mockStatus(CloseableHttpResponse response, int status) {
 		StatusLine statusLine = mock(StatusLine.class);
-		when(statusLine.getStatusCode()).thenReturn(status);
-		when(response.getStatusLine()).thenReturn(statusLine);
+		given(statusLine.getStatusCode()).willReturn(status);
+		given(response.getStatusLine()).willReturn(statusLine);
 	}
 
 	protected void mockHttpHeader(CloseableHttpResponse response, String headerName,
 			String value) {
 		Header header = value != null ? new BasicHeader(headerName, value) : null;
-		when(response.getFirstHeader(headerName)).thenReturn(header);
+		given(response.getFirstHeader(headerName)).willReturn(header);
 	}
 
 	protected Matcher<HttpGet> getForJsonData() {
@@ -153,6 +151,10 @@ public abstract class AbstractHttpClientMockTests {
 
 		byte[] content = new byte[] { 0, 0, 0, 0 };
 
+		public MockHttpProjectGenerationRequest(String contentType, String fileName) {
+			this(contentType, fileName, new byte[] { 0, 0, 0, 0 });
+		}
+
 		public MockHttpProjectGenerationRequest(String contentType, String fileName,
 				byte[] content) {
 			this.contentType = contentType;
@@ -160,9 +162,6 @@ public abstract class AbstractHttpClientMockTests {
 			this.content = content;
 		}
 
-		public MockHttpProjectGenerationRequest(String contentType, String fileName) {
-			this(contentType, fileName, new byte[] { 0, 0, 0, 0 });
-		}
 	}
 
 	private static class HasAcceptHeader extends ArgumentMatcher<HttpGet> {
@@ -186,10 +185,7 @@ public abstract class AbstractHttpClientMockTests {
 			if (this.shouldMatch) {
 				return acceptHeader != null && this.value.equals(acceptHeader.getValue());
 			}
-			else {
-				return acceptHeader == null
-						|| !this.value.equals(acceptHeader.getValue());
-			}
+			return acceptHeader == null || !this.value.equals(acceptHeader.getValue());
 		}
 	}
 

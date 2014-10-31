@@ -17,15 +17,19 @@
 package org.springframework.boot.cli.command.init;
 
 /**
- * Thrown when a project could not be generated.
+ * Exception with a message that can be reported to the user.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class ProjectGenerationException extends RuntimeException {
+public class ReportableException extends RuntimeException {
 
-	public ProjectGenerationException(String message) {
+	public ReportableException(String message) {
 		super(message);
+	}
+
+	public ReportableException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }
