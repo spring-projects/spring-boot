@@ -39,6 +39,7 @@ import org.springframework.boot.configurationsample.simple.SimpleTypeProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
+import org.springframework.boot.configurationsample.specific.SimplePojo;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -238,11 +239,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 						.fromSource(InnerClassProperties.class));
 		assertThat(metadata, containsProperty("config.the-second.name"));
 		assertThat(metadata, containsProperty("config.the-second.bar.name"));
-		assertThat(
-				metadata,
-				containsGroup("config.third").ofType(
-						InnerClassProperties.SimplePojo.class).fromSource(
-						InnerClassProperties.class));
+		assertThat(metadata, containsGroup("config.third").ofType(SimplePojo.class)
+				.fromSource(InnerClassProperties.class));
 		assertThat(metadata, containsProperty("config.third.value"));
 	}
 
@@ -267,11 +265,18 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 		static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
 
+		static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.NestedConfigurationProperty";
+
 		private ConfigurationMetadata metadata;
 
 		@Override
 		protected String configurationPropertiesAnnotation() {
 			return CONFIGURATION_PROPERTIES_ANNOTATION;
+		}
+
+		@Override
+		protected String nestedConfigurationPropertyAnnotation() {
+			return NESTED_CONFIGURATION_PROPERTY_ANNOTATION;
 		}
 
 		@Override

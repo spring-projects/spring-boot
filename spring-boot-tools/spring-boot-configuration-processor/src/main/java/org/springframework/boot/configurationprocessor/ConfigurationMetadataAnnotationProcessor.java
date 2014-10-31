@@ -64,6 +64,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.ConfigurationProperties";
 
+	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
+			+ "context.properties.NestedConfigurationProperty";
+
 	private ConfigurationMetadata metadata;
 
 	private TypeUtils typeUtils;
@@ -72,6 +75,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	protected String configurationPropertiesAnnotation() {
 		return CONFIGURATION_PROPERTIES_ANNOTATION;
+	}
+
+	protected String nestedConfigurationPropertyAnnotation() {
+		return NESTED_CONFIGURATION_PROPERTY_ANNOTATION;
 	}
 
 	@Override
@@ -166,8 +173,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			ExecutableElement getter = entry.getValue();
 			ExecutableElement setter = members.getPublicSetters().get(name);
 			VariableElement field = members.getFields().get(name);
-			if (setter != null
-					|| this.typeUtils.isCollectionOrMap(getter.getReturnType())) {
+			boolean isNested = getAnnotation(field,
+					nestedConfigurationPropertyAnnotation()) != null;
+			boolean isCollection = this.typeUtils.isCollectionOrMap(getter
+					.getReturnType());
+			if (!isNested && (setter != null || isCollection)) {
 				String dataType = this.typeUtils.getType(getter.getReturnType());
 				String sourceType = this.typeUtils.getType(element);
 				String description = this.typeUtils.getJavaDoc(field);
@@ -182,17 +192,21 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			TypeElementMembers members) {
 		for (Map.Entry<String, ExecutableElement> entry : members.getPublicGetters()
 				.entrySet()) {
+			String name = entry.getKey();
 			ExecutableElement getter = entry.getValue();
+			VariableElement field = members.getFields().get(name);
 			Element returnType = this.processingEnv.getTypeUtils().asElement(
 					getter.getReturnType());
 			AnnotationMirror annotation = getAnnotation(getter,
 					configurationPropertiesAnnotation());
+			boolean isNested = getAnnotation(field,
+					nestedConfigurationPropertyAnnotation()) != null;
 			if (returnType != null && returnType instanceof TypeElement
 					&& annotation == null) {
 				TypeElement returns = (TypeElement) returnType;
-				if (this.typeUtils.isEnclosedIn(returnType, element)) {
-					String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix,
-							entry.getKey());
+				if (this.typeUtils.isEnclosedIn(returnType, element) || isNested) {
+					String nestedPrefix = ConfigurationMetadata
+							.nestedPrefix(prefix, name);
 					this.metadata.add(ItemMetadata.newGroup(nestedPrefix,
 							this.typeUtils.getType(returns),
 							this.typeUtils.getType(element), getter.toString()));
@@ -203,9 +217,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private AnnotationMirror getAnnotation(Element element, String type) {
-		for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
-			if (type.equals(annotation.getAnnotationType().toString())) {
-				return annotation;
+		if (element != null) {
+			for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
+				if (type.equals(annotation.getAnnotationType().toString())) {
+					return annotation;
+				}
 			}
 		}
 		return null;
