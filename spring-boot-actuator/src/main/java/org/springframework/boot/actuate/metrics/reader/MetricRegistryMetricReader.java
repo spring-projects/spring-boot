@@ -209,6 +209,11 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 			String name = iterator.next();
 			return MetricRegistryMetricReader.this.findOne(name);
 		}
+		
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("You cannot remove from this iterator.");
+		}
 
 	}
 
