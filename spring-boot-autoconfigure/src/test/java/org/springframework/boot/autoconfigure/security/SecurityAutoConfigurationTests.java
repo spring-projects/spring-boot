@@ -16,11 +16,18 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -41,16 +48,15 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SecurityAutoConfiguration}.
@@ -185,6 +191,56 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
+	public void testOverrideAuthenticationManagerAndInjectIntoSecurityFilter()
+			throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(TestAuthenticationConfiguration.class,
+				SecurityCustomizer.class, SecurityAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(
+				this.context.getBean(TestAuthenticationConfiguration.class).authenticationManager,
+				this.context.getBean(AuthenticationManager.class));
+	}
+
+	@Test
+	@Ignore("gh-1801")
+	public void testOverrideAuthenticationManagerWithBuilderAndInjectIntoSecurityFilter()
+			throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(AuthenticationManagerCustomizer.class,
+				SecurityCustomizer.class, SecurityAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
+				"foo", "bar",
+				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
+		assertNotNull(this.context.getBean(AuthenticationManager.class)
+				.authenticate(user));
+	}
+
+	@Test
+	public void testOverrideAuthenticationManagerWithBuilderAndInjectBuilderIntoSecurityFilter()
+			throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(AuthenticationManagerCustomizer.class,
+				WorkaroundSecurityCustomizer.class, SecurityAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
+				"foo", "bar",
+				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
+		assertNotNull(this.context.getBean(AuthenticationManager.class)
+				.authenticate(user));
+	}
+
+	@Test
 	public void testJpaCoexistsHappily() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
@@ -222,6 +278,47 @@ public class SecurityAutoConfigurationTests {
 				}
 			};
 			return this.authenticationManager;
+		}
+
+	}
+
+	@Configuration
+	protected static class SecurityCustomizer extends WebSecurityConfigurerAdapter {
+
+		@Autowired
+		private AuthenticationManager authenticationManager;
+
+	}
+
+	@Configuration
+	protected static class WorkaroundSecurityCustomizer extends WebSecurityConfigurerAdapter {
+
+		@Autowired
+		private AuthenticationManagerBuilder builder;
+		
+		@SuppressWarnings("unused")
+		private AuthenticationManager authenticationManager;
+		
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			authenticationManager = new AuthenticationManager() {			
+				@Override
+				public Authentication authenticate(Authentication authentication)
+						throws AuthenticationException {
+					return builder.getOrBuild().authenticate(authentication);
+				}
+			};
+		}
+
+	}
+
+	@Configuration
+	protected static class AuthenticationManagerCustomizer extends
+			GlobalAuthenticationConfigurerAdapter {
+
+		@Override
+		public void init(AuthenticationManagerBuilder auth) throws Exception {
+			auth.inMemoryAuthentication().withUser("foo").password("bar").roles("USER");
 		}
 
 	}
