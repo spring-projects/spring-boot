@@ -32,7 +32,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,6 +41,8 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -57,8 +58,8 @@ import org.springframework.stereotype.Component;
  */
 @Configuration
 @ConditionalOnBean(ObjectPostProcessor.class)
-@ConditionalOnMissingBean(AuthenticationManager.class)
-@Order(Ordered.LOWEST_PRECEDENCE - 3)
+@ConditionalOnMissingBean({ AuthenticationManager.class })
+@Order(0)
 public class AuthenticationManagerConfiguration extends
 		GlobalAuthenticationConfigurerAdapter {
 
@@ -84,18 +85,27 @@ public class AuthenticationManagerConfiguration extends
 
 	@Bean
 	@Primary
-	public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth)
-			throws Exception {
+	public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth,
+			ApplicationContext context) throws Exception {
+
+		if (isAuthenticationManagerAlreadyConfigured(context)) {
+			return new LazyAuthenticationManager(auth);
+		}
+
 		/*
 		 * This AuthenticationManagerBuilder is for the global AuthenticationManager
 		 */
 		BootDefaultingAuthenticationConfigurerAdapter configurer = new BootDefaultingAuthenticationConfigurerAdapter();
-		configurer.init(auth);
 		configurer.configure(auth);
 		AuthenticationManager manager = configurer.getAuthenticationManagerBuilder()
 				.getOrBuild();
 		configurer.configureParent(auth);
 		return manager;
+
+	}
+
+	private boolean isAuthenticationManagerAlreadyConfigured(ApplicationContext context) {
+		return context.getBeanNamesForType(GlobalAuthenticationConfigurerAdapter.class).length > 2;
 	}
 
 	@Component
@@ -142,8 +152,7 @@ public class AuthenticationManagerConfiguration extends
 	 * methods are invoked before configure, which cannot be guaranteed at this point.</li>
 	 * </ul>
 	 */
-	private class BootDefaultingAuthenticationConfigurerAdapter extends
-			GlobalAuthenticationConfigurerAdapter {
+	private class BootDefaultingAuthenticationConfigurerAdapter {
 
 		private AuthenticationManagerBuilder defaultAuth;
 
@@ -159,7 +168,6 @@ public class AuthenticationManagerConfiguration extends
 			return this.defaultAuth;
 		}
 
-		@Override
 		public void configure(AuthenticationManagerBuilder auth) throws Exception {
 			if (auth.isConfigured()) {
 				this.defaultAuth = auth;
@@ -186,6 +194,22 @@ public class AuthenticationManagerConfiguration extends
 			// here.
 
 		}
+	}
+
+	private static class LazyAuthenticationManager implements AuthenticationManager {
+
+		private AuthenticationManagerBuilder builder;
+
+		public LazyAuthenticationManager(AuthenticationManagerBuilder builder) {
+			this.builder = builder;
+		}
+
+		@Override
+		public Authentication authenticate(Authentication authentication)
+				throws AuthenticationException {
+			return builder.getOrBuild().authenticate(authentication);
+		}
+
 	}
 
 }
