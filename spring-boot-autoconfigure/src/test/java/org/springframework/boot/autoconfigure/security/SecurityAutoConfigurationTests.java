@@ -16,11 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -57,6 +52,11 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SecurityAutoConfiguration}.
@@ -291,21 +291,23 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class WorkaroundSecurityCustomizer extends WebSecurityConfigurerAdapter {
+	protected static class WorkaroundSecurityCustomizer extends
+			WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private AuthenticationManagerBuilder builder;
-		
+
 		@SuppressWarnings("unused")
 		private AuthenticationManager authenticationManager;
-		
+
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			authenticationManager = new AuthenticationManager() {			
+			this.authenticationManager = new AuthenticationManager() {
 				@Override
 				public Authentication authenticate(Authentication authentication)
 						throws AuthenticationException {
-					return builder.getOrBuild().authenticate(authentication);
+					return WorkaroundSecurityCustomizer.this.builder.getOrBuild()
+							.authenticate(authentication);
 				}
 			};
 		}
