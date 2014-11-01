@@ -22,7 +22,6 @@ import java.util.Arrays;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.OptionHandler;
@@ -38,16 +37,12 @@ import org.springframework.boot.cli.util.Log;
 public class InitCommand extends OptionParsingCommand {
 
 	public InitCommand() {
-		this(new InitOptionHandler(getInitializrService()));
+		this(new InitOptionHandler(new InitializrService()));
 	}
 
 	public InitCommand(InitOptionHandler handler) {
 		super("init", "Initialize a new project using Spring "
 				+ "Initialzr (start.spring.io)", handler);
-	}
-
-	private static InitializrService getInitializrService() {
-		return new InitializrService(HttpClientBuilder.create().build());
 	}
 
 	static class InitOptionHandler extends OptionHandler {

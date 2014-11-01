@@ -28,6 +28,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,13 +48,23 @@ class InitializrService {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-	private final CloseableHttpClient http;
-
 	/**
-	 * Create a new instance with the given {@link CloseableHttpClient HTTP client}.
+	 * Late binding HTTP client.
 	 */
-	public InitializrService(CloseableHttpClient http) {
+	private CloseableHttpClient http;
+
+	public InitializrService() {
+	}
+
+	InitializrService(CloseableHttpClient http) {
 		this.http = http;
+	}
+
+	protected CloseableHttpClient getHttp() {
+		if (this.http == null) {
+			this.http = HttpClientBuilder.create().build();
+		}
+		return this.http;
 	}
 
 	/**
@@ -130,7 +141,7 @@ class InitializrService {
 	private CloseableHttpResponse execute(HttpUriRequest request, Object url,
 			String description) {
 		try {
-			return this.http.execute(request);
+			return getHttp().execute(request);
 		}
 		catch (IOException ex) {
 			throw new ReportableException("Failed to " + description
