@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -35,6 +34,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -174,7 +174,8 @@ public class SecurityAutoConfigurationTests {
 		catch (BadCredentialsException e) {
 			// expected
 		}
-		assertTrue(wrapper.get() instanceof AuthenticationFailureBadCredentialsEvent);
+		assertTrue("Wrong event type: " + wrapper.get(),
+				wrapper.get() instanceof AuthenticationFailureBadCredentialsEvent);
 	}
 
 	@Test
@@ -206,7 +207,6 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("gh-1801")
 	public void testOverrideAuthenticationManagerWithBuilderAndInjectIntoSecurityFilter()
 			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
@@ -315,6 +315,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Configuration
+	@Order(-1)
 	protected static class AuthenticationManagerCustomizer extends
 			GlobalAuthenticationConfigurerAdapter {
 
