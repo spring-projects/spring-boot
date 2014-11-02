@@ -27,18 +27,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.Ordered;
-import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
@@ -57,15 +53,16 @@ import org.springframework.util.StringUtils;
  * @author Jakub Kubrynski
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-class OnBeanCondition extends SpringBootCondition implements ConfigurationCondition {
+public class OnBeanCondition extends SpringBootCondition implements
+		ConfigurationCondition {
+
+	private static final String[] NO_BEANS = {};
 
 	/**
 	 * Bean definition attribute name for factory beans to signal their product type (if
 	 * known and it can't be deduced from the factory bean class).
 	 */
-	public static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
-
-	private static final String[] NO_BEANS = {};
+	public static final String FACTORY_BEAN_OBJECT_TYPE = BeanTypeRegistry.FACTORY_BEAN_OBJECT_TYPE;
 
 	@Override
 	public ConfigurationPhase getConfigurationPhase() {
@@ -75,9 +72,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-
 		StringBuffer matchMessage = new StringBuffer();
-
 		if (metadata.isAnnotated(ConditionalOnBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
 					ConditionalOnBean.class);
@@ -89,7 +84,6 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			matchMessage.append("@ConditionalOnBean " + spec + " found the following "
 					+ matching);
 		}
-
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
 					ConditionalOnMissingBean.class);
@@ -101,12 +95,10 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			matchMessage.append(matchMessage.length() == 0 ? "" : " ");
 			matchMessage.append("@ConditionalOnMissingBean " + spec + " found no beans");
 		}
-
 		return ConditionOutcome.match(matchMessage.toString());
 	}
 
 	private List<String> getMatchingBeans(ConditionContext context, BeanSearchSpec beans) {
-
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beans.getStrategy() == SearchStrategy.PARENTS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
@@ -145,9 +137,9 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		return beanFactory.containsLocalBean(beanName);
 	}
 
-	private Collection<String> getBeanNamesForType(
-			ConfigurableListableBeanFactory beanFactory, String type,
-			ClassLoader classLoader, boolean considerHierarchy) throws LinkageError {
+	private Collection<String> getBeanNamesForType(ListableBeanFactory beanFactory,
+			String type, ClassLoader classLoader, boolean considerHierarchy)
+			throws LinkageError {
 		try {
 			Set<String> result = new LinkedHashSet<String>();
 			collectBeanNamesForType(result, beanFactory,
@@ -161,12 +153,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private void collectBeanNamesForType(Set<String> result,
 			ListableBeanFactory beanFactory, Class<?> type, boolean considerHierarchy) {
-		// eagerInit set to false to prevent early instantiation
-		result.addAll(Arrays.asList(beanFactory.getBeanNamesForType(type, true, false)));
-		if (beanFactory instanceof ConfigurableListableBeanFactory) {
-			collectBeanNamesForTypeFromFactoryBeans(result,
-					(ConfigurableListableBeanFactory) beanFactory, type);
-		}
+		result.addAll(BeanTypeRegistry.get(beanFactory).getNamesForType(type));
 		if (considerHierarchy && beanFactory instanceof HierarchicalBeanFactory) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory)
 					.getParentBeanFactory();
@@ -175,73 +162,6 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 						considerHierarchy);
 			}
 		}
-	}
-
-	/**
-	 * Attempt to collect bean names for type by considering FactoryBean generics. Some
-	 * factory beans will not be able to determine their object type at this stage, so
-	 * those are not eligible for matching this condition.
-	 */
-	private void collectBeanNamesForTypeFromFactoryBeans(Set<String> result,
-			ConfigurableListableBeanFactory beanFactory, Class<?> type) {
-		String[] names = beanFactory.getBeanNamesForType(FactoryBean.class, true, false);
-		for (String name : names) {
-			name = BeanFactoryUtils.transformedBeanName(name);
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(name);
-			Class<?> generic = getFactoryBeanGeneric(beanFactory, beanDefinition, name);
-			if (generic != null && ClassUtils.isAssignable(type, generic)) {
-				result.add(name);
-			}
-		}
-	}
-
-	private Class<?> getFactoryBeanGeneric(ConfigurableListableBeanFactory beanFactory,
-			BeanDefinition definition, String name) {
-		try {
-			if (StringUtils.hasLength(definition.getFactoryBeanName())
-					&& StringUtils.hasLength(definition.getFactoryMethodName())) {
-				return getConfigurationClassFactoryBeanGeneric(beanFactory, definition,
-						name);
-			}
-			if (StringUtils.hasLength(definition.getBeanClassName())) {
-				return getDirectFactoryBeanGeneric(beanFactory, definition, name);
-			}
-		}
-		catch (Exception ex) {
-		}
-		return null;
-	}
-
-	private Class<?> getConfigurationClassFactoryBeanGeneric(
-			ConfigurableListableBeanFactory beanFactory, BeanDefinition definition,
-			String name) throws Exception {
-		BeanDefinition factoryDefinition = beanFactory.getBeanDefinition(definition
-				.getFactoryBeanName());
-		Class<?> factoryClass = ClassUtils.forName(factoryDefinition.getBeanClassName(),
-				beanFactory.getBeanClassLoader());
-		Method method = ReflectionUtils.findMethod(factoryClass,
-				definition.getFactoryMethodName());
-		Class<?> generic = ResolvableType.forMethodReturnType(method)
-				.as(FactoryBean.class).resolveGeneric();
-		if ((generic == null || generic.equals(Object.class))
-				&& definition.hasAttribute(FACTORY_BEAN_OBJECT_TYPE)) {
-			generic = (Class<?>) definition.getAttribute(FACTORY_BEAN_OBJECT_TYPE);
-		}
-		return generic;
-	}
-
-	private Class<?> getDirectFactoryBeanGeneric(
-			ConfigurableListableBeanFactory beanFactory, BeanDefinition definition,
-			String name) throws ClassNotFoundException, LinkageError {
-		Class<?> factoryBeanClass = ClassUtils.forName(definition.getBeanClassName(),
-				beanFactory.getBeanClassLoader());
-		Class<?> generic = ResolvableType.forClass(factoryBeanClass)
-				.as(FactoryBean.class).resolveGeneric();
-		if ((generic == null || generic.equals(Object.class))
-				&& definition.hasAttribute(FACTORY_BEAN_OBJECT_TYPE)) {
-			generic = (Class<?>) definition.getAttribute(FACTORY_BEAN_OBJECT_TYPE);
-		}
-		return generic;
 	}
 
 	private String[] getBeanNamesForAnnotation(
