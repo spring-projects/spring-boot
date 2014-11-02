@@ -207,7 +207,7 @@ public class AuthenticationManagerConfiguration extends
 		@Override
 		public Authentication authenticate(Authentication authentication)
 				throws AuthenticationException {
-			return builder.getOrBuild().authenticate(authentication);
+			return this.builder.getOrBuild().authenticate(authentication);
 		}
 
 	}
