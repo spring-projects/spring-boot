@@ -16,9 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.SQLException;
+
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +32,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor.Registrar;
@@ -59,6 +65,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Import({ Registrar.class, DataSourcePoolMetadataProvidersConfiguration.class })
 public class DataSourceAutoConfiguration {
+	
+	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
 
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from
@@ -134,7 +142,25 @@ public class DataSourceAutoConfiguration {
 		public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
 			return new NamedParameterJdbcTemplate(this.dataSource);
 		}
+	}
 
+	@Configuration
+	@ConditionalOnExpression("${spring.datasource.jmxEnabled:true}")
+	@ConditionalOnClass(name = "org.apache.tomcat.jdbc.pool.DataSourceProxy")
+	@Conditional(DataSourceAutoConfiguration.DataSourceAvailableCondition.class)
+	protected static class TomcatDataSourceJmxConfiguration {
+		@Bean
+		public Object dataSourceMBean(DataSource dataSource) {
+			if (dataSource instanceof DataSourceProxy) {
+				try {
+					return ((DataSourceProxy) dataSource).createPool().getJmxPool();
+				}
+				catch (SQLException e) {
+					logger.warn("Cannot expose DataSource to JMX (could not connect)");
+				}
+			}
+			return null;
+		}
 	}
 
 	/**
