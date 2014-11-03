@@ -19,9 +19,10 @@
 	<properties>
 		<main.basedir>..</main.basedir>
 		<java.version>1.6</java.version>
+		<aether.version>0.9.1.v20140329</aether.version>
+		<json.version>20140107</json.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<aether.version>0.9.1.v20140329</aether.version>
 		<json.version>20140107</json.version>
 		<maven.version>3.1.1</maven.version>
 	</properties>

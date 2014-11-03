@@ -80,7 +80,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 				.get(this.classLoader);
 	}
 
-	protected String getDriverClassName() {
+	public String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
 			Assert.state(ClassUtils.isPresent(this.driverClassName, null),
 					"Cannot load driver class: " + this.driverClassName);

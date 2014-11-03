@@ -38,6 +38,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomize
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -60,6 +61,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	private String contextPath;
 
+	@NestedConfigurationProperty
 	private Ssl ssl;
 
 	@NotNull
@@ -381,4 +383,5 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		}
 
 	}
+
 }

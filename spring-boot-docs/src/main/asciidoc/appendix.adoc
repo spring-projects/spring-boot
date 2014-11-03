@@ -2,6 +2,7 @@
 = Appendices
 
 include::appendix-application-properties.adoc[]
+include::appendix-configuration-metadata.adoc[]
 include::appendix-auto-configuration-classes.adoc[]
 include::appendix-executable-jar-format.adoc[]
 include::appendix-dependency-versions.adoc[]
