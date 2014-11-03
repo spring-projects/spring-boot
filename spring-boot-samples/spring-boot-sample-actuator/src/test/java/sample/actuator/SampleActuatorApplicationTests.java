@@ -146,6 +146,15 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
+	public void testInfo() throws Exception {
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/info", String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"artifact\":\"spring-boot-sample-actuator\""));
+	}
+
+	@Test
 	public void testErrorPage() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port + "/foo", String.class);
