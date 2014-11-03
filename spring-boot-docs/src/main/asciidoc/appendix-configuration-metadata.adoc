@@ -1,0 +1,234 @@
+[appendix]
+[[configuration-metadata]]
+== Configuration meta-data
+Spring Boot jars are shipped with meta-data files that provide details of all supported
+configuration properties. The files are designed to allow IDE developers to offer
+contextual help and "`code completion`" as users are working with `application.properies`
+or `application.yml` files.
+
+The majority of the meta-data file is generated automatically at compile time by
+processing all items annotated with `@ConfigurationProperties`.
+
+
+
+[[configuration-metadata-format]]
+=== Meta-data format
+Configuration meta-data files are located inside jars under
+`META-INF/spring-configuration-metadata.json` They use a simple JSON format with items
+categorized under either "`groups`" or "`properties`":
+
+[source,json,indent=0]
+----
+	{"groups": [
+		{
+			"name": "server",
+			"type": "org.springframework.boot.autoconfigure.web.ServerProperties",
+			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+		}
+		...
+	],"properties": [
+		{
+			"name": "server.port",
+			"type": "java.lang.Integer",
+			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+		},
+		{
+			"name": "server.servlet-path",
+			"type": "java.lang.String",
+			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+			"defaultValue": "/"
+		}
+		...
+	]}
+----
+
+Each "`property`" is a configuration item that the user specifies with a given value.
+For example `server.port` and `server.servlet-path` might be specified in
+`application.properties` as follows:
+
+[source,properties,indent=0]
+----
+	server.port=9090
+	server.servlet-path=/home
+----
+
+The "`groups`" are higher level items that don't themselves specify a value, but instead
+provide a contextual grouping for properties. For example the `server.port` and
+`server.servlet-path` properties are part of the `server` group.
+
+NOTE: It is not required that every "`property`" has a "`group`", some properties might
+just exist in their own right.
+
+
+
+[[configuration-metadata-group-attributes]]
+==== Group Attributes
+The JSON object contained in the `groups` array can contain the following attributes:
+
+[cols="1,1,4"]
+|===
+|Name | Type |Purpose
+
+|`name`
+| String
+| The full name of the group. This attribute is mandatory.
+
+|`type`
+| String
+| The class name of the data type of the group. For example, if the group was based
+  on a class annotated with `@ConfigurationProperties` the attribute would contain the
+  fully qualified name of that class. If it was based on a `@Bean` method, it would be
+  the return type of that method. The attribute may be omitted if the type is not known.
+
+|`description`
+| String
+| A short description of the group that can be displayed to users. May be omitted if no
+  description is available.
+
+|`sourceType`
+| String
+| The class name of the source that contributed this group. For example, if the group
+  was based on a `@Bean` method annotated with `@ConfigurationProperties` this attribute
+  would contain the fully qualified name of the `@Configuration` class containing the
+  method. The attribute may be omitted if the source type is not known.
+
+|`sourceMethod`
+| String
+| The full name of the method (include parenthesis and argument types) that contributed
+  this group. For example, the name of a `@ConfigurationProperties` annotated `@Bean`
+  method.  May be omitted if the source method is not known.
+|===
+
+
+
+[[configuration-metadata-property-attributes]]
+==== Property Attributes
+The JSON object contained in the `properties` array can contain the following attributes:
+
+[cols="1,1,4"]
+|===
+|Name | Type |Purpose
+
+|`name`
+| String
+| The full name of the property. Names are in lowercase dashed form (e.g.
+  `server.servlet-path`). This attribute is mandatory.
+
+|`type`
+| String
+| The class name of the data type of the property. For example, `java.lang.String`. This
+  attribute can be used to guide the user as to the types of values that they can enter.
+  For consistency, the type of a primitive is specified using its wrapper counterpart,
+  i.e. `boolean` becomes `java.lang.Boolean`. Note that this class may be a complex type
+  that gets converted from a String as values are bound. May be omitted if the type is
+  not known.
+
+|`description`
+| String
+| A short description of the property that can be displayed to users. May be omitted if
+  no description is available.
+
+|`sourceType`
+| String
+| The class name of the source that contributed this property. For example, if the
+  property was from a class annotated with `@ConfigurationProperties` this attribute
+  would contain the fully qualified name of that class. May be omitted if the source type
+  is not known.
+
+|`sourceMethod`
+| String
+| The full name of the method (include parenthesis and argument types) that contributed
+  this property. For example, the name of a getter in a `@ConfigurationProperties`
+  annotated class.  May be omitted if the source method is not known.
+
+|`defaultValue`
+| Object
+| The default value which will be used if the property is not specified. May be omitted
+  if the default value is not known.
+|===
+
+
+
+[[configuration-metadata-repeated-items]]
+==== Repeated meta-data items
+It is perfectly acceptable for "`property`" and "`group`" objects with the same name to
+appear multiple times within a meta-data file. For example, Spring Boot binds
+`spring.datasource` properties to Hikari, Tomcat and DBCP classes, with each potentially
+offering overlap of property names. Consumers of meta-data should take care to ensure
+that they support such scenarios.
+
+
+
+[[configuration-metadata-annotation-processor]]
+=== Generating your own meta-data using the annotation processor
+You can easily generate your own configuration meta-data file from items annotated with
+`@ConfigurationProperties` by using the `spring-boot-configuration-processor` jar.
+The jar includes a Java annotation processor which is invoked as your project is
+compiled. To use the processor, simply include `spring-boot-configuration-processor` as
+an optional dependency, for example with Maven you would add:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-configuration-processor</artifactId>
+		<optional>true</optional>
+	</dependency>
+----
+
+The annotation will pickup both classes and methods that are annotated with
+`@ConfigurationProperties`. The Javadoc for field values within configuration classes
+will be used to populate the `description` attribute.
+
+NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc since
+they are not processed before being added to the JSON.
+
+
+
+[[configuration-metadata-nested-properties]]
+==== Nested properties
+The annotation processor will automatically consider inner classes as nested properties.
+For example, the following class:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@ConfigurationProperties(prefix="server")
+	public class ServerProperties {
+
+		private String name;
+
+		private Host host;
+
+		// ... getter and setters
+
+		private static class Host {
+
+			private String ip;
+
+			private int port;
+
+			// ... getter and setters
+
+		}
+
+	}
+----
+
+Will produce meta-data information for `server.name`, `server.host.ip` and
+`server.host.port` properties. You can use the `@NestedConfigurationProperty`
+annotation on a field to indicate that a regular (non-inner) class should be treated as
+if it were nested.
+
+
+
+[[configuration-metadata-additional-metadata]]
+==== Adding additional meta-data
+Spring Boot's configuration file handling is quite flexible; and it often the case that
+properties may exist that are not bound to a `@ConfigurationProperties` bean. To support
+such cases, the annotation processor will automatically merge items from
+`META-INF/additional-spring-configuration-metadata.json` into the main meta-data file.
+
+The format of the `additional-spring-configuration-metadata.json` file is exactly the same
+as the regular `spring-configuration-metadata.json`. The additional properties file is
+optional, if you don't have any additional properties, simply don't add it.
+
