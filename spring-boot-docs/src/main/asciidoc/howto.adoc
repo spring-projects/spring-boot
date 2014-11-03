@@ -2064,3 +2064,7 @@ context.
 
 Applications that are not already Spring applications might be convertible to a Spring
 Boot application, and the guidance above might help, but your mileage may vary.
+
+[[howto-servlet-2-5]]
+===  Deploying a WAR in an Old (Servlet 2.5) Container
+include::servlet-2.5.adoc[]
