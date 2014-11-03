@@ -101,6 +101,12 @@ public class HelpCommand extends AbstractCommand {
 							+ " " + command.getUsageHelp());
 					Log.info("");
 				}
+				if (command.getExamples() != null) {
+					Log.info("example(s):");
+					Log.info("");
+					Log.info(command.getExamples());
+					Log.info("");
+				}
 				if (command.getHelp() != null) {
 					Log.info(command.getHelp());
 				}

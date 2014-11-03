@@ -53,6 +53,16 @@ public class InitCommand extends OptionParsingCommand {
 		return "[options] [location]";
 	}
 
+	@Override
+	public String getExamples() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Lists the capabilities of the service: spring init --list").append(NEW_LINE);
+		sb.append("Creates a default project: spring init").append(NEW_LINE);
+		sb.append("Creates a web my-app.zip: spring init -d=web my-app.zip").append(NEW_LINE);
+		sb.append("Creates a web/data-jpa gradle project unpacked: spring init -d=web,jpa --build=gradle my-dir/");
+		return sb.toString();
+	}
+
 	static class InitOptionHandler extends OptionHandler {
 
 		private final ServiceCapabilitiesReportGenerator serviceCapabilitiesReport;

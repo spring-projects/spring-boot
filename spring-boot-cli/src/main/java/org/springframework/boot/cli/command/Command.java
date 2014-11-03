@@ -26,6 +26,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @see #run(String...)
  */
 public interface Command {
@@ -46,6 +47,13 @@ public interface Command {
 	 * the command in this string.
 	 */
 	String getUsageHelp();
+
+	/**
+	 * Return some examples for the command. This can be a multi-lined string with
+	 * one example per line, starting with the description and ending with the
+	 * example.
+	 */
+	String getExamples();
 
 	/**
 	 * Gets full help text for the command, e.g. a longer description and one line per
