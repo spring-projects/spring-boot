@@ -175,11 +175,11 @@ placeholders in `application.properties`, e.g.
 	server.port=${port:8080}
 ----
 
-TIP: If you are inheriting from the `spring-boot-starter-parent` POM, or if have enabled
-maven filtering for the `application.properties` directly, you may want to change the
-default filter token from `+${*}+` since it conflicts with those placeholders.
-You can either use `+@*@+` (i.e. `@maven.token@` instead of `${maven.token}`) or you can
-configure the `maven-resources-plugin` to use
+TIP: If you are inheriting from the `spring-boot-starter-parent` POM, the default filter
+token of the `maven-resources-plugins` has been changed from `+${*}+` to `@` (i.e.
+`@maven.token@` instead of `${maven.token}`) as the former conflicts with those
+placeholders. If you have enabled the maven filtering for the `application.properties`
+directly, you may want to change the default filter token to use
 http://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters[other delimiters].
 
 NOTE: In this specific case the port binding will work in a PaaS environment like Heroku
