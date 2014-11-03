@@ -95,7 +95,21 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(request);
 		assertEquals(ExitStatus.OK,
-				this.command.run("--extract", "--output=" + folder.getAbsolutePath()));
+				this.command.run("--extract", folder.getAbsolutePath()));
+		File archiveFile = new File(folder, "test.txt");
+		assertTrue("Archive not extracted properly " + folder.getAbsolutePath()
+				+ " not found", archiveFile.exists());
+	}
+
+	@Test
+	public void generateProjectAndExtractWithConvention() throws Exception {
+		File folder = this.temporaryFolder.newFolder();
+		byte[] archive = createFakeZipArchive("test.txt", "Fake content");
+		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
+				"application/zip", "demo.zip", archive);
+		mockSuccessfulProjectGeneration(request);
+		assertEquals(ExitStatus.OK,
+				this.command.run(folder.getAbsolutePath()+ "/"));
 		File archiveFile = new File(folder, "test.txt");
 		assertTrue("Archive not extracted properly " + folder.getAbsolutePath()
 				+ " not found", archiveFile.exists());
@@ -113,7 +127,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 					"application/foobar", fileName, archive);
 			mockSuccessfulProjectGeneration(request);
 			assertEquals(ExitStatus.OK,
-					this.command.run("--extract", "--output=" + folder.getAbsolutePath()));
+					this.command.run("--extract", folder.getAbsolutePath()));
 			assertTrue("file should have been saved instead", file.exists());
 		}
 		finally {
@@ -133,7 +147,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 					null, fileName, archive);
 			mockSuccessfulProjectGeneration(request);
 			assertEquals(ExitStatus.OK,
-					this.command.run("--extract", "--output=" + folder.getAbsolutePath()));
+					this.command.run("--extract", folder.getAbsolutePath()));
 			assertTrue("file should have been saved instead", file.exists());
 		}
 		finally {
@@ -175,7 +189,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(request);
 		assertEquals(ExitStatus.ERROR,
-				this.command.run("--extract", "--output=" + folder.getAbsolutePath()));
+				this.command.run("--extract", folder.getAbsolutePath()));
 		assertEquals("File should not have changed", fileLength, conflict.length());
 	}
 
@@ -192,8 +206,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		mockSuccessfulProjectGeneration(request);
 		assertEquals(
 				ExitStatus.OK,
-				this.command.run("--force", "--extract",
-						"--output=" + folder.getAbsolutePath()));
+				this.command.run("--force", "--extract", folder.getAbsolutePath()));
 		assertTrue("File should have changed", fileLength != conflict.length());
 	}
 
@@ -245,10 +258,24 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
-	public void parseOutput() throws Exception {
+	public void parseLocation() throws Exception {
 		this.handler.disableProjectGeneration();
-		this.command.run("--output=foobar.zip");
+		this.command.run("foobar.zip");
 		assertEquals("foobar.zip", this.handler.lastRequest.getOutput());
+	}
+
+	@Test
+	public void parseLocationWithSlash() throws Exception {
+		this.handler.disableProjectGeneration();
+		this.command.run("foobar/");
+		assertEquals("foobar", this.handler.lastRequest.getOutput());
+		assertTrue(this.handler.lastRequest.isExtract());
+	}
+
+	@Test
+	public void parseMoreThanOneArg() throws Exception {
+		this.handler.disableProjectGeneration();
+		assertEquals(ExitStatus.ERROR, this.command.run("foobar", "barfoo"));
 	}
 
 	private byte[] createFakeZipArchive(String fileName, String content)

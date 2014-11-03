@@ -41,24 +41,23 @@ public class ProjectGenerator {
 		this.initializrService = initializrService;
 	}
 
-	public void generateProject(ProjectGenerationRequest request, boolean force,
-			boolean extract, String output) throws IOException {
+	public void generateProject(ProjectGenerationRequest request, boolean force) throws IOException {
 		ProjectGenerationResponse response = this.initializrService.generate(request);
-		if (extract) {
+		String fileName = (request.getOutput() != null ? request.getOutput() : response.getFileName());
+		if (request.isExtract()) {
 			if (isZipArchive(response)) {
-				extractProject(response, output, force);
+				extractProject(response, request.getOutput(), force);
 				return;
 			}
 			else {
 				Log.info("Could not extract '" + response.getContentType() + "'");
+				fileName = response.getFileName(); // Use value from the server since we can't extract it
 			}
 		}
-		String fileName = response.getFileName();
-		fileName = (fileName != null ? fileName : output);
 		if (fileName == null) {
 			throw new ReportableException(
 					"Could not save the project, the server did not set a preferred "
-							+ "file name. Use --output to specify the output location "
+							+ "file name and no location was set. Specify the output location "
 							+ "for the project.");
 		}
 		writeProject(response, fileName, force);
@@ -102,7 +101,7 @@ public class ProjectGenerator {
 				throw new ReportableException(file.isDirectory() ? "Directory" : "File"
 						+ " '" + file.getName()
 						+ "' already exists. Use --force if you want to overwrite or "
-						+ "--output to specify an alternate location.");
+						+ "specify an alternate location.");
 			}
 			if (!entry.isDirectory()) {
 				FileCopyUtils.copy(StreamUtils.nonClosing(zipStream),
@@ -123,7 +122,7 @@ public class ProjectGenerator {
 			if (!overwrite) {
 				throw new ReportableException("File '" + outputFile.getName()
 						+ "' already exists. Use --force if you want to "
-						+ "overwrite or --output to specify an alternate location.");
+						+ "overwrite or specify an alternate location.");
 			}
 			if (!outputFile.delete()) {
 				throw new ReportableException("Failed to delete existing file "

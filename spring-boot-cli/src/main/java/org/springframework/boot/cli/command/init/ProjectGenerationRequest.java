@@ -40,6 +40,8 @@ class ProjectGenerationRequest {
 
 	private String output;
 
+	private boolean extract;
+
 	private String bootVersion;
 
 	private List<String> dependencies = new ArrayList<String>();
@@ -76,7 +78,25 @@ class ProjectGenerationRequest {
 	}
 
 	public void setOutput(String output) {
-		this.output = output;
+		if (output != null && output.endsWith("/")) {
+			this.output = output.substring(0, output.length() - 1);
+			this.extract = true;
+		} else {
+			this.output = output;
+		}
+	}
+
+	/**
+	 * Specify if the project archive should be extract in the output location. If
+	 * the {@link #getOutput() output} ends with "/", the project is extracted
+	 * automatically.
+	 */
+	public boolean isExtract() {
+		return extract;
+	}
+
+	public void setExtract(boolean extract) {
+		this.extract = extract;
 	}
 
 	/**

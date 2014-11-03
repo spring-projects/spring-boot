@@ -17,7 +17,9 @@
 package org.springframework.boot.cli.command.init;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -27,6 +29,7 @@ import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.OptionHandler;
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
+import org.springframework.util.Assert;
 
 /**
  * {@link Command} that initializes a project using Spring initializr.
@@ -43,6 +46,11 @@ public class InitCommand extends OptionParsingCommand {
 	public InitCommand(InitOptionHandler handler) {
 		super("init", "Initialize a new project using Spring "
 				+ "Initialzr (start.spring.io)", handler);
+	}
+
+	@Override
+	public String getUsageHelp() {
+		return "[options] [location]";
 	}
 
 	static class InitOptionHandler extends OptionHandler {
@@ -72,8 +80,6 @@ public class InitCommand extends OptionParsingCommand {
 		private OptionSpec<Void> extract;
 
 		private OptionSpec<Void> force;
-
-		private OptionSpec<String> output;
 
 		InitOptionHandler(InitializrService initializrService) {
 			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(
@@ -123,14 +129,9 @@ public class InitCommand extends OptionParsingCommand {
 
 		private void otherOptions() {
 			this.extract = option(Arrays.asList("extract", "x"),
-					"Extract the project archive");
+					"Extract the project archive. Inferred if a location is specified and ends with /");
 			this.force = option(Arrays.asList("force", "f"),
 					"Force overwrite of existing files");
-			this.output = option(
-					Arrays.asList("output", "o"),
-					"Location of the generated project. Can be an absolute or a "
-							+ "relative reference and should refer to a directory when "
-							+ "--extract is used").withRequiredArg();
 		}
 
 		@Override
@@ -160,12 +161,17 @@ public class InitCommand extends OptionParsingCommand {
 
 		protected void generateProject(OptionSet options) throws IOException {
 			ProjectGenerationRequest request = createProjectGenerationRequest(options);
-			this.projectGenerator.generateProject(request, options.has(this.force),
-					options.has(this.extract), options.valueOf(this.output));
+			this.projectGenerator.generateProject(request, options.has(this.force));
 		}
 
 		protected ProjectGenerationRequest createProjectGenerationRequest(
 				OptionSet options) {
+
+			List<?> nonOptionArguments = new ArrayList<Object>(
+					options.nonOptionArguments());
+			Assert.isTrue(nonOptionArguments.size() <= 1,
+					"Only the target location may be specified");
+
 			ProjectGenerationRequest request = new ProjectGenerationRequest();
 			request.setServiceUrl(options.valueOf(this.target));
 			if (options.has(this.bootVersion)) {
@@ -188,8 +194,10 @@ public class InitCommand extends OptionParsingCommand {
 			if (options.has(this.type)) {
 				request.setType(options.valueOf(this.type));
 			}
-			if (options.has(this.output)) {
-				request.setOutput(options.valueOf(this.output));
+			request.setExtract(options.has(this.extract));
+			if (nonOptionArguments.size() == 1) {
+				String output = (String) nonOptionArguments.get(0);
+				request.setOutput(output);
 			}
 			return request;
 		}
