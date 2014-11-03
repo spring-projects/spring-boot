@@ -16,30 +16,19 @@
 
 package org.springframework.boot.autoconfigure.groovy.template;
 
-import groovy.text.SimpleTemplateEngine;
-import groovy.text.TemplateEngine;
 import groovy.text.markup.MarkupTemplateEngine;
-
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.groovy.template.web.GroovyTemplateViewResolver;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -65,13 +54,13 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass(TemplateEngine.class)
+@ConditionalOnClass(MarkupTemplateEngine.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
 public class GroovyTemplateAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnClass({ MarkupTemplateEngine.class, GroovyMarkupConfigurer.class })
+	@ConditionalOnClass(GroovyMarkupConfigurer.class)
 	public static class GroovyMarkupConfiguration {
 
 		@Autowired
@@ -111,48 +100,6 @@ public class GroovyTemplateAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnMissingClass(name = "groovy.text.markup.MarkupTemplateEngine")
-	public static class GroovySimpleTemplateEngineConfiguration implements
-			BeanClassLoaderAware {
-
-		@Autowired
-		private GroovyTemplateProperties properties;
-
-		@Autowired
-		private ApplicationContext resourceLoader;
-
-		private ClassLoader classLoader = GroovyWebConfiguration.class.getClassLoader();
-
-		@Override
-		public void setBeanClassLoader(ClassLoader classLoader) {
-			this.classLoader = classLoader;
-		}
-
-		protected ClassLoader createParentLoaderForTemplates() throws Exception {
-			Resource[] resources = this.resourceLoader.getResources(this.properties
-					.getPrefix());
-			if (resources.length > 0) {
-				List<URL> urls = new ArrayList<URL>();
-				for (Resource resource : resources) {
-					if (resource.exists()) {
-						urls.add(resource.getURL());
-					}
-				}
-				return new URLClassLoader(urls.toArray(new URL[urls.size()]),
-						this.classLoader);
-			}
-			return this.classLoader;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(TemplateEngine.class)
-		public SimpleTemplateEngine groovyTemplateEngine() throws Exception {
-			return new SimpleTemplateEngine(createParentLoaderForTemplates());
-		}
-
-	}
-
-	@Configuration
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class,
 			UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication
@@ -163,21 +110,9 @@ public class GroovyTemplateAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
-		@ConditionalOnClass(MarkupTemplateEngine.class)
 		public GroovyMarkupViewResolver groovyMarkupViewResolver() {
 			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();
 			configureViewResolver(resolver);
-			return resolver;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(name = "groovyTemplateViewResolver")
-		@ConditionalOnMissingClass(MarkupTemplateEngine.class)
-		public GroovyTemplateViewResolver groovyTemplateViewResolver(TemplateEngine engine) {
-			GroovyTemplateViewResolver resolver = new GroovyTemplateViewResolver();
-			configureViewResolver(resolver);
-			resolver.setPrefix(this.properties.getPrefix());
-			resolver.setTemplateEngine(engine);
 			return resolver;
 		}
 
