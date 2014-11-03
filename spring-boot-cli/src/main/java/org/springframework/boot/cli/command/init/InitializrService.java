@@ -162,7 +162,7 @@ class InitializrService {
 			int statusCode = httpResponse.getStatusLine().getStatusCode();
 			message += " (unexpected " + statusCode + " error)";
 		}
-		throw new ReportableException(message.toString());
+		throw new ReportableException(message);
 	}
 
 	private String extractMessage(HttpEntity entity) {
