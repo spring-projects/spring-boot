@@ -16,11 +16,16 @@
 
 package org.springframework.boot.autoconfigure.jersey;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 import javax.annotation.PostConstruct;
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.ws.rs.ApplicationPath;
 
+import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
@@ -30,10 +35,13 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -56,8 +64,12 @@ import org.springframework.web.filter.RequestContextFilter;
 @ConditionalOnWebApplication
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @AutoConfigureBefore(DispatcherServletAutoConfiguration.class)
+@EnableConfigurationProperties(JerseyProperties.class)
 public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
+	@Autowired
+	private JerseyProperties jersey;
+	
 	@Autowired
 	private ListableBeanFactory context;
 
@@ -74,18 +86,41 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RequestContextFilter requestContextFilter() {
-		return new RequestContextFilter();
+	public FilterRegistrationBean requestContextFilter() {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(new RequestContextFilter());
+		registration.setOrder(jersey.getFilter().getOrder()-1);
+		registration.setName("requestContextFilter");
+		return registration;
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
+	@ConditionalOnExpression("'${spring.jersey.type:servlet}' == 'filter'")
+	public FilterRegistrationBean jerseyFilterRegistration() {
+		Class<? extends ResourceConfig> configType = this.config.getClass();
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(new ServletContainer());
+		registration.setUrlPatterns(Arrays.asList(this.path));
+		registration.setOrder(jersey.getFilter().getOrder());
+		registration.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
+				configType.getName());
+		registration.addInitParameter(CommonProperties.METAINF_SERVICES_LOOKUP_DISABLE,  "true");
+		registration.setName("jerseyFilter");
+        registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
+		return registration;
+	}
+	
+	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
+	@ConditionalOnExpression("'${spring.jersey.type:servlet}' == 'servlet'")
 	public ServletRegistrationBean jerseyServletRegistration() {
 		Class<? extends ResourceConfig> configType = this.config.getClass();
 		ServletRegistrationBean registration = new ServletRegistrationBean(
 				new ServletContainer(), this.path);
 		registration.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
 				configType.getName());
+		registration.addInitParameter(CommonProperties.METAINF_SERVICES_LOOKUP_DISABLE,  "true");
 		registration.setName("jerseyServlet");
 		return registration;
 	}
