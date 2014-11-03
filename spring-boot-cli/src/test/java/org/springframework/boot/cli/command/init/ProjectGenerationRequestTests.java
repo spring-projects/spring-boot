@@ -139,6 +139,15 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
+	public void typeAndBuildAndFormat() {
+		InitializrServiceMetadata metadata = readMetadata();
+		setBuildAndFormat("gradle", "project");
+		request.setType("maven-build");
+		assertEquals(createUrl("/pom.xml?type=maven-build"),
+				this.request.generateUrl(metadata));
+	}
+
+	@Test
 	public void invalidType() throws URISyntaxException {
 		this.request.setType("does-not-exist");
 		this.thrown.expect(ReportableException.class);
@@ -152,14 +161,17 @@ public class ProjectGenerationRequestTests {
 		this.request.generateUrl(readMetadata("types-conflict"));
 	}
 
-	private static URI createDefaultUrl(String param) {
+	private static URI createUrl(String actionAndParam) {
 		try {
-			return new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL + "/starter.zip"
-					+ param);
+			return new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL + actionAndParam);
 		}
 		catch (URISyntaxException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private static URI createDefaultUrl(String param) {
+		return createUrl("/starter.zip" + param);
 	}
 
 	public void setBuildAndFormat(String build, String format) {

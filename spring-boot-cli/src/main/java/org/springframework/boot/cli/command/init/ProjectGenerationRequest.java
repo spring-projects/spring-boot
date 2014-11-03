@@ -233,8 +233,9 @@ class ProjectGenerationRequest {
 				throw new ReportableException(("No project type with id '"
 						+ this.type + "' - check the service capabilities (--list)"));
 			}
+			return result;
 		}
-		if (isDetectType()) {
+		else if (isDetectType()) {
 			Map<String, ProjectType> types = new HashMap<String, ProjectType>(
 					metadata.getProjectTypes());
 			if (this.build != null) {
@@ -257,13 +258,15 @@ class ProjectGenerationRequest {
 						+ "' use --type with a more specific value " + types.keySet());
 			}
 		}
-		ProjectType defaultType = metadata.getDefaultType();
-		if (defaultType == null) {
-			throw new ReportableException(
-					("No project type is set and no default is defined. "
-							+ "Check the service capabilities (--list)"));
+		else {
+			ProjectType defaultType = metadata.getDefaultType();
+			if (defaultType == null) {
+				throw new ReportableException(
+						("No project type is set and no default is defined. "
+								+ "Check the service capabilities (--list)"));
+			}
+			return defaultType;
 		}
-		return defaultType;
 	}
 
 	private static void filter(Map<String, ProjectType> projects, String tag,
