@@ -28,10 +28,12 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
 /**
+ * Helper class used to generate the project.
+ *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class ProjectGenerator {
+class ProjectGenerator {
 
 	private static final String ZIP_MIME_TYPE = "application/zip";
 
@@ -41,9 +43,11 @@ public class ProjectGenerator {
 		this.initializrService = initializrService;
 	}
 
-	public void generateProject(ProjectGenerationRequest request, boolean force) throws IOException {
+	public void generateProject(ProjectGenerationRequest request, boolean force)
+			throws IOException {
 		ProjectGenerationResponse response = this.initializrService.generate(request);
-		String fileName = (request.getOutput() != null ? request.getOutput() : response.getFileName());
+		String fileName = (request.getOutput() != null ? request.getOutput() : response
+				.getFileName());
 		if (request.isExtract()) {
 			if (isZipArchive(response)) {
 				extractProject(response, request.getOutput(), force);
@@ -51,7 +55,8 @@ public class ProjectGenerator {
 			}
 			else {
 				Log.info("Could not extract '" + response.getContentType() + "'");
-				fileName = response.getFileName(); // Use value from the server since we can't extract it
+				fileName = response.getFileName(); // Use value from the server since we
+													// can't extract it
 			}
 		}
 		if (fileName == null) {

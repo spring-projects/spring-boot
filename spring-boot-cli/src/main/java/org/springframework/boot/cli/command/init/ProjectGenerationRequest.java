@@ -81,18 +81,18 @@ class ProjectGenerationRequest {
 		if (output != null && output.endsWith("/")) {
 			this.output = output.substring(0, output.length() - 1);
 			this.extract = true;
-		} else {
+		}
+		else {
 			this.output = output;
 		}
 	}
 
 	/**
-	 * Specify if the project archive should be extract in the output location. If
-	 * the {@link #getOutput() output} ends with "/", the project is extracted
-	 * automatically.
+	 * Specify if the project archive should be extract in the output location. If the
+	 * {@link #getOutput() output} ends with "/", the project is extracted automatically.
 	 */
 	public boolean isExtract() {
-		return extract;
+		return this.extract;
 	}
 
 	public void setExtract(boolean extract) {
@@ -221,8 +221,7 @@ class ProjectGenerationRequest {
 			return builder.build();
 		}
 		catch (URISyntaxException e) {
-			throw new ReportableException("Invalid service URL (" + e.getMessage()
-					+ ")");
+			throw new ReportableException("Invalid service URL (" + e.getMessage() + ")");
 		}
 	}
 
@@ -230,8 +229,8 @@ class ProjectGenerationRequest {
 		if (this.type != null) {
 			ProjectType result = metadata.getProjectTypes().get(this.type);
 			if (result == null) {
-				throw new ReportableException(("No project type with id '"
-						+ this.type + "' - check the service capabilities (--list)"));
+				throw new ReportableException(
+						("No project type with id '" + this.type + "' - check the service capabilities (--list)"));
 			}
 			return result;
 		}
@@ -248,8 +247,8 @@ class ProjectGenerationRequest {
 				return types.values().iterator().next();
 			}
 			else if (types.size() == 0) {
-				throw new ReportableException("No type found with build '"
-						+ this.build + "' and format '" + this.format
+				throw new ReportableException("No type found with build '" + this.build
+						+ "' and format '" + this.format
 						+ "' check the service capabilities (--list)");
 			}
 			else {

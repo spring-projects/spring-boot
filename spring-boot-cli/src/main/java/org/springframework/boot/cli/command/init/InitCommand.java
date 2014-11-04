@@ -19,12 +19,14 @@ package org.springframework.boot.cli.command.init;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.command.Command;
+import org.springframework.boot.cli.command.HelpExample;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.OptionHandler;
 import org.springframework.boot.cli.command.status.ExitStatus;
@@ -54,13 +56,16 @@ public class InitCommand extends OptionParsingCommand {
 	}
 
 	@Override
-	public String getExamples() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Lists the capabilities of the service: spring init --list").append(NEW_LINE);
-		sb.append("Creates a default project: spring init").append(NEW_LINE);
-		sb.append("Creates a web my-app.zip: spring init -d=web my-app.zip").append(NEW_LINE);
-		sb.append("Creates a web/data-jpa gradle project unpacked: spring init -d=web,jpa --build=gradle my-dir/");
-		return sb.toString();
+	public Collection<HelpExample> getExamples() {
+		List<HelpExample> examples = new ArrayList<HelpExample>();
+		examples.add(new HelpExample("To list all the capabilities of the service",
+				"spring init --list"));
+		examples.add(new HelpExample("To creates a default project", "spring init"));
+		examples.add(new HelpExample("To create a web my-app.zip",
+				"spring init -d=web my-app.zip"));
+		examples.add(new HelpExample("To create a web/data-jpa gradle project unpacked",
+				"spring init -d=web,jpa --build=gradle my-dir/"));
+		return examples;
 	}
 
 	static class InitOptionHandler extends OptionHandler {

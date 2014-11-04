@@ -25,6 +25,7 @@ import java.util.Set;
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandRunner;
+import org.springframework.boot.cli.command.HelpExample;
 import org.springframework.boot.cli.command.NoHelpCommandArgumentsException;
 import org.springframework.boot.cli.command.NoSuchCommandException;
 import org.springframework.boot.cli.command.options.OptionHelp;
@@ -101,14 +102,19 @@ public class HelpCommand extends AbstractCommand {
 							+ " " + command.getUsageHelp());
 					Log.info("");
 				}
-				if (command.getExamples() != null) {
-					Log.info("example(s):");
-					Log.info("");
-					Log.info(command.getExamples());
-					Log.info("");
-				}
 				if (command.getHelp() != null) {
 					Log.info(command.getHelp());
+				}
+				Collection<HelpExample> examples = command.getExamples();
+				if (examples != null) {
+					Log.info(examples.size() == 1 ? "example:" : "examples:");
+					Log.info("");
+					for (HelpExample example : examples) {
+						Log.info("    " + example.getDescription() + ":");
+						Log.info("        $ " + example.getExample());
+						Log.info("");
+					}
+					Log.info("");
 				}
 				return ExitStatus.OK;
 			}

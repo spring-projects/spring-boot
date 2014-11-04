@@ -49,13 +49,6 @@ public interface Command {
 	String getUsageHelp();
 
 	/**
-	 * Return some examples for the command. This can be a multi-lined string with
-	 * one example per line, starting with the description and ending with the
-	 * example.
-	 */
-	String getExamples();
-
-	/**
 	 * Gets full help text for the command, e.g. a longer description and one line per
 	 * option.
 	 */
@@ -65,6 +58,11 @@ public interface Command {
 	 * Returns help for each supported option.
 	 */
 	Collection<OptionHelp> getOptionsHelp();
+
+	/**
+	 * Return some examples for the command.
+	 */
+	Collection<HelpExample> getExamples();
 
 	/**
 	 * Run the command.

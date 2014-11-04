@@ -108,8 +108,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(request);
-		assertEquals(ExitStatus.OK,
-				this.command.run(folder.getAbsolutePath()+ "/"));
+		assertEquals(ExitStatus.OK, this.command.run(folder.getAbsolutePath() + "/"));
 		File archiveFile = new File(folder, "test.txt");
 		assertTrue("Archive not extracted properly " + folder.getAbsolutePath()
 				+ " not found", archiveFile.exists());
@@ -204,8 +203,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", "demo.zip", archive);
 		mockSuccessfulProjectGeneration(request);
-		assertEquals(
-				ExitStatus.OK,
+		assertEquals(ExitStatus.OK,
 				this.command.run("--force", "--extract", folder.getAbsolutePath()));
 		assertTrue("File should have changed", fileLength != conflict.length());
 	}

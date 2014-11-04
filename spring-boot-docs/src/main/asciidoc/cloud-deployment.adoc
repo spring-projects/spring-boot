@@ -299,10 +299,14 @@ run the app. A http://issues.gradle.org/browse/GRADLE-2871[bug in Gradle] curren
 prevents you from using Gradle newer than 1.6.
 
 
+
 [[cloud-deployment-gae]]
 == Google App Engine
 Google App Engine is tied to the Servlet 2.5 API, so you can't deploy a Spring Application
-there without some modifications. See the <<howto.adoc#howto-servlet-2-5, Servlet 2.5 section>> of this guide.
+there without some modifications. See the <<howto.adoc#howto-servlet-2-5, Servlet 2.5 section>>
+of this guide.
+
+
 
 [[cloud-deployment-whats-next]]
 == What to read next

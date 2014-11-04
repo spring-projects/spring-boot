@@ -29,8 +29,6 @@ import org.springframework.boot.cli.command.options.OptionHelp;
  */
 public abstract class AbstractCommand implements Command {
 
-	protected static final String NEW_LINE = System.getProperty("line.separator");
-
 	private final String name;
 
 	private final String description;
@@ -61,11 +59,6 @@ public abstract class AbstractCommand implements Command {
 	}
 
 	@Override
-	public String getExamples() {
-		return null;
-	}
-
-	@Override
 	public String getHelp() {
 		return null;
 	}
@@ -73,6 +66,11 @@ public abstract class AbstractCommand implements Command {
 	@Override
 	public Collection<OptionHelp> getOptionsHelp() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public Collection<HelpExample> getExamples() {
+		return null;
 	}
 
 }

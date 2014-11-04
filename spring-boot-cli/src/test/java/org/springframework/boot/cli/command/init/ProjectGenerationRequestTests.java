@@ -142,7 +142,7 @@ public class ProjectGenerationRequestTests {
 	public void typeAndBuildAndFormat() {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("gradle", "project");
-		request.setType("maven-build");
+		this.request.setType("maven-build");
 		assertEquals(createUrl("/pom.xml?type=maven-build"),
 				this.request.generateUrl(metadata));
 	}

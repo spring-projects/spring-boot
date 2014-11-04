@@ -32,8 +32,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor.Registrar;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
@@ -65,7 +65,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Import({ Registrar.class, DataSourcePoolMetadataProvidersConfiguration.class })
 public class DataSourceAutoConfiguration {
-	
+
 	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
 
 	/**
@@ -145,22 +145,24 @@ public class DataSourceAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnExpression("${spring.datasource.jmxEnabled:true}")
+	@ConditionalOnProperty(prefix = "spring.datasource", name = "jmx-enabled", havingValue = "true", matchIfMissing = true)
 	@ConditionalOnClass(name = "org.apache.tomcat.jdbc.pool.DataSourceProxy")
 	@Conditional(DataSourceAutoConfiguration.DataSourceAvailableCondition.class)
 	protected static class TomcatDataSourceJmxConfiguration {
+
 		@Bean
 		public Object dataSourceMBean(DataSource dataSource) {
 			if (dataSource instanceof DataSourceProxy) {
 				try {
 					return ((DataSourceProxy) dataSource).createPool().getJmxPool();
 				}
-				catch (SQLException e) {
+				catch (SQLException ex) {
 					logger.warn("Cannot expose DataSource to JMX (could not connect)");
 				}
 			}
 			return null;
 		}
+
 	}
 
 	/**

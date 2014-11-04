@@ -1,10 +1,5 @@
 package sample.data.jpa;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.lang.management.ManagementFactory;
 
 import javax.management.ObjectName;
@@ -22,6 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * Integration test to run the application.
  *
@@ -32,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
 @WebAppConfiguration
 // Enable JMX so we can test the MBeans (you can't do this in a properties file)
-@TestPropertySource(properties="spring.jmx.enabled:true")
+@TestPropertySource(properties = "spring.jmx.enabled:true")
 @ActiveProfiles("scratch")
 // Separate profile for web tests to avoid clashing databases
 public class SampleDataJpaApplicationTests {
@@ -56,8 +56,12 @@ public class SampleDataJpaApplicationTests {
 
 	@Test
 	public void testJmx() throws Exception {
-		assertEquals(1, ManagementFactory.getPlatformMBeanServer().queryMBeans(
-				new ObjectName("jpa.sample:type=ConnectionPool,*"), null).size());
+		assertEquals(
+				1,
+				ManagementFactory
+						.getPlatformMBeanServer()
+						.queryMBeans(new ObjectName("jpa.sample:type=ConnectionPool,*"),
+								null).size());
 	}
 
 }
