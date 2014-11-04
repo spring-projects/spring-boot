@@ -86,11 +86,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private ConversionService conversionService;
 
-	private final DefaultConversionService defaultConversionService = new DefaultConversionService();
+	private DefaultConversionService defaultConversionService;
 
 	private BeanFactory beanFactory;
-
-	private final boolean initialized = false;
 
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
@@ -341,11 +339,13 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private ConversionService getDefaultConversionService() {
-		if (!this.initialized) {
+		if (this.defaultConversionService == null) {
+			DefaultConversionService conversionService = new DefaultConversionService();
 			for (Converter<?, ?> converter : ((ListableBeanFactory) this.beanFactory)
 					.getBeansOfType(Converter.class, false, false).values()) {
-				this.defaultConversionService.addConverter(converter);
+				conversionService.addConverter(converter);
 			}
+			this.defaultConversionService = conversionService;
 		}
 		return this.defaultConversionService;
 	}
