@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ExcludeFilter}.
  *
  * @author Stephane Nicoll
+ * @author David Turanski
  */
 @SuppressWarnings("rawtypes")
 public class ExcludeFilterTests {
@@ -111,18 +112,18 @@ public class ExcludeFilterTests {
 		assertSame(anotherAcme, result.iterator().next());
 	}
 
-	private Exclude createExclude(String groupId, String artifactId, String classifier) {
-		Exclude e = new Exclude();
-		e.setGroupId(groupId);
-		e.setArtifactId(artifactId);
-		if (classifier != null) {
-			e.setClassifier(classifier);
-		}
-		return e;
-	}
-
 	private Exclude createExclude(String groupId, String artifactId) {
 		return createExclude(groupId, artifactId, null);
+	}
+
+	private Exclude createExclude(String groupId, String artifactId, String classifier) {
+		Exclude exclude = new Exclude();
+		exclude.setGroupId(groupId);
+		exclude.setArtifactId(artifactId);
+		if (classifier != null) {
+			exclude.setClassifier(classifier);
+		}
+		return exclude;
 	}
 
 	private Artifact createArtifact(String groupId, String artifactId, String classifier) {
@@ -136,4 +137,5 @@ public class ExcludeFilterTests {
 	private Artifact createArtifact(String groupId, String artifactId) {
 		return createArtifact(groupId, artifactId, null);
 	}
+
 }
