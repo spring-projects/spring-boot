@@ -39,6 +39,8 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
+
+import org.springframework.boot.loader.MainMethodRunner;
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
@@ -55,6 +57,13 @@ import org.springframework.boot.loader.tools.RunProcess;
 public class RunMojo extends AbstractDependencyFilterMojo {
 
 	private static final String SPRING_LOADED_AGENT_CLASSNAME = "org.springsource.loaded.agent.SpringLoadedAgent";
+
+	/**
+	 * Flag to say that whether fork a process to run
+	 * @since 1.1.4
+	 */
+	@Parameter(property = "fork", defaultValue = "false")
+	private boolean fork;
 
 	/**
 	 * The Maven project.
@@ -156,18 +165,23 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void run(String startClassName) throws MojoExecutionException {
-		List<String> args = new ArrayList<String>();
-		addAgents(args);
-		addJvmArgs(args);
-		addClasspath(args);
-		args.add(startClassName);
-		addArgs(args);
-		try {
-			new RunProcess(new JavaExecutable().toString()).run(args
+		if (this.agent != null || this.fork == true) {
+			List<String> args = new ArrayList<String>();
+			addAgents(args);
+			addJvmArgs(args);
+			addClasspath(args);
+			args.add(startClassName);
+			addArgs(args);
+			try {
+				new RunProcess(new JavaExecutable().toString()).run(args
 					.toArray(new String[args.size()]));
+			}
+			catch (Exception ex) {
+				throw new MojoExecutionException("Could not exec java", ex);
+			}
 		}
-		catch (Exception e) {
-			throw new MojoExecutionException("Could not exec java", e);
+		else {
+			new MainMethodRunner(startClassName, this.arguments).run();
 		}
 	}
 
