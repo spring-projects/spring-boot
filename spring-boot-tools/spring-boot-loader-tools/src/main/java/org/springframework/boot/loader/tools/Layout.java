@@ -43,5 +43,4 @@ public interface Layout {
 	 * Returns the location of classes within the archive.
 	 */
 	String getClassesLocation();
-
 }

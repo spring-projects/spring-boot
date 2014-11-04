@@ -33,21 +33,26 @@ import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
  * A base mojo filtering the dependencies of the project.
  *
  * @author Stephane Nicoll
+ * @author David Turanski
  * @since 1.1
  */
 public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	/**
-	 * Collection of artifact definitions to exclude. The {@link Exclude} element defines
-	 * a {@code groupId} and {@code artifactId} mandatory properties and an optional
-	 * {@code classifier} property.
+	 * Collection of artifact definitions to exclude. The {@link Dependency} element defines a {@code groupId} and
+	 * {@code artifactId} mandatory properties and an optional {@code classifier} property.
+	 *
 	 * @since 1.1
 	 */
 	@Parameter
-	private List<Exclude> excludes;
+	private List<Dependency> excludes;
+
+	@Parameter
+	private List<Dependency> includes;
 
 	/**
 	 * Comma separated list of groupId names to exclude (exact match).
+	 *
 	 * @since 1.1
 	 */
 	@Parameter(property = "excludeGroupIds", defaultValue = "")
@@ -55,13 +60,19 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	/**
 	 * Comma separated list of artifact names to exclude (exact match).
+	 *
 	 * @since 1.1
 	 */
 	@Parameter(property = "excludeArtifactIds", defaultValue = "")
 	private String excludeArtifactIds;
 
-	protected void setExcludes(List<Exclude> excludes) {
+
+	protected void setExcludes(List<Dependency> excludes) {
 		this.excludes = excludes;
+	}
+
+	protected void setIncludes(List<Dependency> includes) {
+		this.includes = includes;
 	}
 
 	protected void setExcludeGroupIds(String excludeGroupIds) {
@@ -85,6 +96,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	/**
 	 * Return artifact filters configured for this MOJO.
+	 *
 	 * @param additionalFilters optional additional filters to apply
 	 * @return the filters
 	 */
@@ -99,6 +111,9 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 				cleanFilterConfig(this.excludeGroupIds)));
 		if (this.excludes != null) {
 			filters.addFilter(new ExcludeFilter(this.excludes));
+		}
+		if (this.includes != null) {
+			filters.addFilter(new IncludeFilter(this.includes));
 		}
 		return filters;
 	}

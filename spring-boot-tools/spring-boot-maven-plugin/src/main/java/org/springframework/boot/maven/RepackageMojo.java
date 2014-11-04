@@ -115,7 +115,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0
 	 */
 	@Parameter
-	private LayoutType layout;
+	private String layout;
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
@@ -158,7 +158,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
-			repackager.setLayout(this.layout.layout());
+			repackager.setLayout(Layouts.forName(this.layout));
 		}
 
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
@@ -189,19 +189,4 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		return new File(this.outputDirectory, this.finalName + classifier + "."
 				+ this.project.getPackaging());
 	}
-
-	public static enum LayoutType {
-		JAR(new Layouts.Jar()), WAR(new Layouts.War()), ZIP(new Layouts.Expanded()), DIR(
-				new Layouts.Expanded()), NONE(new Layouts.None());
-		private final Layout layout;
-
-		public Layout layout() {
-			return this.layout;
-		}
-
-		private LayoutType(Layout layout) {
-			this.layout = layout;
-		}
-	}
-
 }
