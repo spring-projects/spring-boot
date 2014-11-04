@@ -25,23 +25,33 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.mock.env.MockPropertySource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ApplicationPidFileWriter}.
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class ApplicationPidFileWriterTests {
 
-	private static final ApplicationStartedEvent EVENT = new ApplicationStartedEvent(
-			new SpringApplication(), new String[] {});
+	private static final ApplicationPreparedEvent EVENT = new ApplicationPreparedEvent(
+			new SpringApplication(), new String[] {},
+			mock(ConfigurableApplicationContext.class));
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -70,6 +80,49 @@ public class ApplicationPidFileWriterTests {
 		assertThat(
 				FileCopyUtils.copyToString(new FileReader(System.getProperty("PIDFILE"))),
 				not(isEmptyString()));
+	}
+
+	@Test
+	public void overridePidFileWithSpring() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		MockPropertySource propertySource = new MockPropertySource();
+		propertySource.setProperty("spring.application.pidfile", file.getAbsolutePath());
+		environment.getPropertySources().addLast(propertySource);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
+		given(context.getEnvironment()).willReturn(environment);
+		ApplicationPreparedEvent event = new ApplicationPreparedEvent(
+				new SpringApplication(), new String[] {}, context);
+		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
+		listener.onApplicationEvent(event);
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
+	}
+
+	@Test
+	public void differentEventTypes() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		MockPropertySource propertySource = new MockPropertySource();
+		propertySource.setProperty("spring.application.pidfile", file.getAbsolutePath());
+		environment.getPropertySources().addLast(propertySource);
+		ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
+				new SpringApplication(), new String[] {}, environment);
+		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
+		listener.onApplicationEvent(event);
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)), isEmptyString());
+		listener.setTriggerEventType(ApplicationEnvironmentPreparedEvent.class);
+		listener.onApplicationEvent(event);
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
+	}
+
+	@Test
+	public void withNoEnvironment() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+		listener.setTriggerEventType(ApplicationStartedEvent.class);
+		listener.onApplicationEvent(new ApplicationStartedEvent(new SpringApplication(),
+				new String[] {}));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
 	}
 
 }

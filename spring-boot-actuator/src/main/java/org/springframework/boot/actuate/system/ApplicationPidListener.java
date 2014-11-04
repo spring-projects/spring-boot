@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.system;
 
+import java.io.File;
+
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+
 /**
  * An {@link org.springframework.context.ApplicationListener} that saves application PID
  * into file. This application listener will be triggered exactly once per JVM, and the
@@ -30,5 +34,20 @@ package org.springframework.boot.actuate.system;
  */
 @Deprecated
 public class ApplicationPidListener extends ApplicationPidFileWriter {
+
+	public ApplicationPidListener() {
+		super();
+		setTriggerEventType(ApplicationStartedEvent.class);
+	}
+
+	public ApplicationPidListener(File file) {
+		super(file);
+		setTriggerEventType(ApplicationStartedEvent.class);
+	}
+
+	public ApplicationPidListener(String filename) {
+		super(filename);
+		setTriggerEventType(ApplicationStartedEvent.class);
+	}
 
 }
