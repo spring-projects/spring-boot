@@ -42,20 +42,20 @@
     "dataType": "java.lang.String",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
     "description": "Config file name",
-    "defaultValue": "application",
+    "defaultValue": "application"
   },
   {
     "name": "spring.config.location",
     "dataType": "java.lang.String",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
-    "description": "Config file locations",
+    "description": "Config file locations"
   },
   {
     "name": "spring.main.show-banner",
     "dataType": "java.lang.Boolean",
     "sourceType": "org.springframework.boot.SpringApplication",
     "description": "Display the banner when the application runs",
-    "defaultValue": true,
+    "defaultValue": true
   },
   {
     "name": "spring.main.sources",
