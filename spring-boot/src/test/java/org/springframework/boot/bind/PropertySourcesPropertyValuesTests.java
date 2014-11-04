@@ -16,6 +16,7 @@
 
 package org.springframework.boot.bind;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Before;
@@ -98,7 +99,8 @@ public class PropertySourcesPropertyValuesTests {
 
 		});
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
-				this.propertySources, null, Collections.singleton("baz"));
+				this.propertySources, (Collection<String>) null,
+				Collections.singleton("baz"));
 		assertEquals("bar", propertyValues.getPropertyValue("baz").getValue());
 	}
 
@@ -123,8 +125,8 @@ public class PropertySourcesPropertyValuesTests {
 	public void testPlaceholdersBindingNonEnumerable() {
 		FooBean target = new FooBean();
 		DataBinder binder = new DataBinder(target);
-		binder.bind(new PropertySourcesPropertyValues(this.propertySources, null,
-				Collections.singleton("foo")));
+		binder.bind(new PropertySourcesPropertyValues(this.propertySources,
+				(Collection<String>) null, Collections.singleton("foo")));
 		assertEquals("bar", target.getFoo());
 	}
 
@@ -148,8 +150,8 @@ public class PropertySourcesPropertyValuesTests {
 				return new Object();
 			}
 		});
-		binder.bind(new PropertySourcesPropertyValues(this.propertySources, null,
-				Collections.singleton("name")));
+		binder.bind(new PropertySourcesPropertyValues(this.propertySources,
+				(Collection<String>) null, Collections.singleton("name")));
 		assertEquals(null, target.getName());
 	}
 
