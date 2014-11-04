@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -47,10 +49,13 @@ import com.google.gson.Gson;
  * @author David Liu
  * @author Andy Wilkinson
  * @author Sebastien Deleuze
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)
 public class HttpMessageConvertersAutoConfiguration {
+
+	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	@Autowired(required = false)
 	private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
@@ -114,6 +119,18 @@ public class HttpMessageConvertersAutoConfiguration {
 			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
 			converter.setGson(gson);
 			return converter;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(StringHttpMessageConverter.class)
+	protected static class StringHttpMessageConverterConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public StringHttpMessageConverter stringHttpMessageConverter() {
+			return new StringHttpMessageConverter(UTF_8);
 		}
 
 	}
