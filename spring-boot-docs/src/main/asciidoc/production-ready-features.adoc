@@ -208,7 +208,25 @@ configuration instead. This is possible in both Maven and Gradle.
 [[production-ready-application-info-automatic-expansion-maven]]
 ===== Automatic property expansion using Maven
 You can automatically expand info properties from the Maven project using resource
-filtering. In your `pom.xml` you have (inside the `<build/>` element):
+filtering. If you use the `spring-boot-starter-parent` you can then refer to your 
+Maven '`project properties`' via `@..@` placeholders, e.g.
+
+[source,properties,indent=0]
+----
+	project.artifactId=myproject
+	project.name=Demo
+	project.version=X.X.X.X
+	project.description=Demo project for info endpoint
+	info.build.artifact=${project.artifactId}
+	info.build.name=@project.name@
+	info.build.description=@project.description@
+	info.build.version=@project.version@
+----
+
+NOTE: In the above example we used `+project.*+` to set some values to be used as
+fallbacks if the Maven resource filtering has not been switched on for some reason.
+
+NOTE: If you don't use the starter parent, in your `pom.xml` you need (inside the `<build/>` element):
 
 [source,xml,indent=0]
 ----
@@ -220,24 +238,21 @@ filtering. In your `pom.xml` you have (inside the `<build/>` element):
     </resources>
 ----
 
-You can then refer to your Maven '`project properties`' via placeholders, e.g.
+and (inside `<plugins/>`):
 
-[source,properties,indent=0]
+[source,xml,indent=0]
 ----
-	project.artifactId=myproject
-	project.name=Demo
-	project.version=X.X.X.X
-	project.description=Demo project for info endpoint
-	info.build.artifact=${project.artifactId}
-	info.build.name=${project.name}
-	info.build.description=${project.description}
-	info.build.version=${project.version}
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<delimiters>
+							<delimiter>@</delimiter>
+						</delimiters>
+					</configuration>
+				</plugin>
 ----
-
-NOTE: In the above example we used `+project.*+` to set some values to be used as
-fallbacks if the Maven resource filtering has not been switched on for some reason.
-
-
 
 [[production-ready-application-info-automatic-expansion-gradle]]
 ===== Automatic property expansion using Gradle
