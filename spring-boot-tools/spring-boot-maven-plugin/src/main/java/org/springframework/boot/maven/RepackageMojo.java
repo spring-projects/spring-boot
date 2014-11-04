@@ -34,8 +34,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import sun.font.LayoutPathImpl;
-
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
@@ -49,7 +47,6 @@ import org.springframework.boot.loader.tools.Repackager;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
- * @author David Turanski
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractDependencyFilterMojo {
@@ -118,7 +115,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0
 	 */
 	@Parameter
-	private LayoutType layout;
+	private String layout;
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
@@ -126,13 +123,6 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter
 	private List<Dependency> requiresUnpack;
-
-	/**
-	 * The module configuration resources root. Only applies to XD_MODULE layout
-	 * @since 1.2
-	 */
-	@Parameter(defaultValue = "module")
-	private String moduleConfigRoot;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -168,15 +158,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
-			Layout layoutInstance = this.layout.layout();
-			if (this.layout.equals(LayoutType.XD_MODULE)) {
-				Layouts.XdModule xdModuleLayout = (Layouts.XdModule) layoutInstance;
-				xdModuleLayout.setModuleConfigRoot(this.moduleConfigRoot);
-			}
-			repackager.setLayout(layoutInstance);
+			repackager.setLayout(Layouts.forName(this.layout));
 		}
-
-
 
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				getFilters());
@@ -206,19 +189,4 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		return new File(this.outputDirectory, this.finalName + classifier + "."
 				+ this.project.getPackaging());
 	}
-
-	public static enum LayoutType {
-		JAR(new Layouts.Jar()), WAR(new Layouts.War()), ZIP(new Layouts.Expanded()), DIR(
-				new Layouts.Expanded()), NONE(new Layouts.None()),XD_MODULE(new Layouts.XdModule());
-		private final Layout layout;
-
-		public Layout layout() {
-			return this.layout;
-		}
-
-		private LayoutType(Layout layout) {
-			this.layout = layout;
-		}
-	}
-
 }
