@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jta;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Import;
  * @since 1.2.0
  */
 @ConditionalOnClass(javax.transaction.Transaction.class)
+@ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
 @Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class,
 		AtomikosJtaConfiguration.class })
 @EnableConfigurationProperties(JtaProperties.class)

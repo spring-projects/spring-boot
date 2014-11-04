@@ -49,6 +49,7 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -85,6 +86,18 @@ public class JtaAutoConfigurationTests {
 				CustomTransactionManagerConfig.class, JtaAutoConfiguration.class);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(JtaTransactionManager.class);
+	}
+
+	@Test
+	public void disableJtaSupport() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jta.enabled:false");
+		this.context.register(JtaAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(0, this.context.getBeansOfType(JtaTransactionManager.class).size());
+		assertEquals(0, this.context.getBeansOfType(XADataSourceWrapper.class).size());
+		assertEquals(0, this.context.getBeansOfType(XAConnectionFactoryWrapper.class).size());
 	}
 
 	@Test

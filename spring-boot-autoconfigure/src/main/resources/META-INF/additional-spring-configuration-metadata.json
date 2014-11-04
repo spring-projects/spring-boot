@@ -60,6 +60,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.jta.enabled",
+    "dataType": "java.lang.Boolean",
+    "description": "Enable JTA support.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.mobile.devicedelegatingviewresolver.enabled",
     "dataType": "java.lang.Boolean",
     "description": "Enable device view resolver.",

@@ -2032,7 +2032,9 @@ transactions are also supported when deploying to a suitable Java EE Application
 When a JTA environment is detected, Spring's `JtaTransactionManager` will be used to manage
 transactions. Auto-configured JMS, DataSource and JPA beans will be upgraded to support
 XA transactions. You can use standard Spring idioms such as `@Transactional` to
-participate in a distributed transaction.
+participate in a distributed transaction. If you are within a JTA environment and still
+want to use local transactions you can set the `spring.jta.enabled` property to `false` to
+disable the JTA auto-configuration.
 
 
 
