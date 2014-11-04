@@ -91,13 +91,13 @@ public class JtaAutoConfigurationTests {
 	@Test
 	public void disableJtaSupport() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jta.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jta.enabled:false");
 		this.context.register(JtaAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeansOfType(JtaTransactionManager.class).size());
 		assertEquals(0, this.context.getBeansOfType(XADataSourceWrapper.class).size());
-		assertEquals(0, this.context.getBeansOfType(XAConnectionFactoryWrapper.class).size());
+		assertEquals(0, this.context.getBeansOfType(XAConnectionFactoryWrapper.class)
+				.size());
 	}
 
 	@Test

@@ -208,7 +208,7 @@ configuration instead. This is possible in both Maven and Gradle.
 [[production-ready-application-info-automatic-expansion-maven]]
 ===== Automatic property expansion using Maven
 You can automatically expand info properties from the Maven project using resource
-filtering. If you use the `spring-boot-starter-parent` you can then refer to your 
+filtering. If you use the `spring-boot-starter-parent` you can then refer to your
 Maven '`project properties`' via `@..@` placeholders, e.g.
 
 [source,properties,indent=0]
@@ -242,16 +242,16 @@ and (inside `<plugins/>`):
 
 [source,xml,indent=0]
 ----
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.6</version>
-					<configuration>
-						<delimiters>
-							<delimiter>@</delimiter>
-						</delimiters>
-					</configuration>
-				</plugin>
+	<plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-resources-plugin</artifactId>
+		<version>2.6</version>
+		<configuration>
+			<delimiters>
+				<delimiter>@</delimiter>
+			</delimiters>
+		</configuration>
+	</plugin>
 ----
 
 [[production-ready-application-info-automatic-expansion-gradle]]

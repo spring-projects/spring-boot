@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -27,21 +28,25 @@ import javax.naming.spi.InitialContextFactory;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ConditionalOnJndi}
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
  */
 public class ConditionalOnJndiTests {
 
@@ -49,11 +54,14 @@ public class ConditionalOnJndiTests {
 
 	private ConfigurableApplicationContext context;
 
+	private MockableOnJndi condition = new MockableOnJndi();
+
 	@After
 	public void close() {
 		TestableInitialContextFactory.clearAll();
 		if (this.initialContextFactory != null) {
-			System.setProperty(Context.INITIAL_CONTEXT_FACTORY, this.initialContextFactory);
+			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+					this.initialContextFactory);
 		}
 		else {
 			System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
@@ -91,12 +99,26 @@ public class ConditionalOnJndiTests {
 		assertPresent(true);
 	}
 
+	@Test
+	public void jndiLocationNotFound() {
+		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
+				mockMetaData("java:/a"));
+		assertThat(outcome.isMatch(), equalTo(false));
+	}
+
+	@Test
+	public void jndiLocationFound() {
+		this.condition.setFoundLocation("java:/b");
+		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
+				mockMetaData("java:/a", "java:/b"));
+		assertThat(outcome.isMatch(), equalTo(true));
+	}
+
 	private void setupJndi() {
 		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
 		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
 				TestableInitialContextFactory.class.getName());
 	}
-
 
 	private void assertPresent(boolean expected) {
 		int expectedNumber = expected ? 1 : 0;
@@ -111,6 +133,15 @@ public class ConditionalOnJndiTests {
 		applicationContext.register(JndiConditionConfiguration.class);
 		applicationContext.refresh();
 		this.context = applicationContext;
+	}
+
+	private AnnotatedTypeMetadata mockMetaData(String... value) {
+		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		attributes.put("value", value);
+		given(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()))
+				.willReturn(attributes);
+		return metadata;
 	}
 
 	@Configuration
@@ -133,11 +164,37 @@ public class ConditionalOnJndiTests {
 		}
 	}
 
+	private static class MockableOnJndi extends OnJndiCondition {
+
+		private boolean jndiAvailable = true;
+
+		private String foundLocation;
+
+		@Override
+		protected boolean isJndiAvailable() {
+			return this.jndiAvailable;
+		}
+
+		@Override
+		protected JndiLocator getJndiLocator(String[] locations) {
+			return new JndiLocator(locations) {
+				@Override
+				public String lookupFirstLocation() {
+					return MockableOnJndi.this.foundLocation;
+				}
+			};
+		}
+
+		public void setFoundLocation(String foundLocation) {
+			this.foundLocation = foundLocation;
+		}
+	}
 
 	public static class TestableInitialContextFactory implements InitialContextFactory {
 
 		private static TestableContext context;
 
+		@Override
 		public Context getInitialContext(Hashtable<?, ?> environment)
 				throws NamingException {
 			return getContext();
@@ -147,8 +204,8 @@ public class ConditionalOnJndiTests {
 			try {
 				getContext().bind(name, obj);
 			}
-			catch (NamingException o_O) {
-				throw new IllegalStateException(o_O);
+			catch (NamingException ex) {
+				throw new IllegalStateException(ex);
 			}
 		}
 
@@ -161,13 +218,12 @@ public class ConditionalOnJndiTests {
 				try {
 					context = new TestableContext();
 				}
-				catch (NamingException o_O) {
-					throw new IllegalStateException(o_O);
+				catch (NamingException ex) {
+					throw new IllegalStateException(ex);
 				}
 			}
 			return context;
 		}
-
 
 		private static class TestableContext extends InitialContext {
 
@@ -178,8 +234,7 @@ public class ConditionalOnJndiTests {
 			}
 
 			@Override
-			public void bind(String name, Object obj)
-					throws NamingException {
+			public void bind(String name, Object obj) throws NamingException {
 				this.bindings.put(name, obj);
 			}
 
@@ -190,7 +245,8 @@ public class ConditionalOnJndiTests {
 
 			@Override
 			public Hashtable<?, ?> getEnvironment() throws NamingException {
-				return new Hashtable<Object, Object>(); // Used to detect if JNDI is available
+				return new Hashtable<Object, Object>(); // Used to detect if JNDI is
+														// available
 			}
 
 			public void clearAll() {
