@@ -148,6 +148,7 @@ public class DataSourceAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.datasource", name = "jmx-enabled", havingValue = "true", matchIfMissing = true)
 	@ConditionalOnClass(name = "org.apache.tomcat.jdbc.pool.DataSourceProxy")
 	@Conditional(DataSourceAutoConfiguration.DataSourceAvailableCondition.class)
+	@ConditionalOnMissingBean(name = "dataSourceMBean")
 	protected static class TomcatDataSourceJmxConfiguration {
 
 		@Bean
