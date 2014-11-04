@@ -177,9 +177,9 @@ placeholders in `application.properties`, e.g.
 
 TIP: If you are inheriting from the `spring-boot-starter-parent` POM, the default filter
 token of the `maven-resources-plugins` has been changed from `+${*}+` to `@` (i.e.
-`@maven.token@` instead of `${maven.token}`) as the former conflicts with those
-placeholders. If you have enabled the maven filtering for the `application.properties`
-directly, you may want to change the default filter token to use
+`@maven.token@` instead of `${maven.token}`) to prevent conflicts with Spring-style
+placeholders. If you have enabled maven filtering for the `application.properties`
+directly, you may want to also change the default filter token to use
 http://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters[other delimiters].
 
 NOTE: In this specific case the port binding will work in a PaaS environment like Heroku

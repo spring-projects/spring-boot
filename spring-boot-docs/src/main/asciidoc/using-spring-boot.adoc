@@ -42,7 +42,12 @@ defaults. The parent project provides the following features:
   http://maven.apache.org/surefire/maven-surefire-plugin/[surefire],
   https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID],
   http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
+* Sensible resource filtering for `application.properties` and `application.yml`
 
+On the last point: since the default config files files accept
+Spring style placeholders (`${...}`) the Maven filtering is changed to
+use `@..@` placeholders (you can override that with a Maven property
+`resource.delimiter`).
 
 
 [[using-boot-maven-parent-pom]]
