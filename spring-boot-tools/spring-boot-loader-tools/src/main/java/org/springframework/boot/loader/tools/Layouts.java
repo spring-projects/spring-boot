@@ -26,6 +26,7 @@ import java.util.Map;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author David Turanski
  */
 public class Layouts {
 
@@ -121,6 +122,27 @@ public class Layouts {
 		@Override
 		public String getClassesLocation() {
 			return "WEB-INF/classes/";
+		}
+	}
+
+	/**
+	 * XD Module Layout.
+	 */
+	public static class XdModule extends None {
+
+		private String moduleConfigRoot;
+
+		@Override
+		public String getLibraryDestination(String libraryName, LibraryScope scope) {
+			return scope.equals(LibraryScope.PROVIDED) ? null : "lib/";
+		}
+
+		public void setModuleConfigRoot(String moduleConfigRoot) {
+			this.moduleConfigRoot = moduleConfigRoot;
+		}
+
+		public String getModuleConfigRoot() {
+			return moduleConfigRoot;
 		}
 	}
 

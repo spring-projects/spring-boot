@@ -34,6 +34,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import sun.font.LayoutPathImpl;
+
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
@@ -47,6 +49,7 @@ import org.springframework.boot.loader.tools.Repackager;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author David Turanski
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractDependencyFilterMojo {
@@ -124,6 +127,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	@Parameter
 	private List<Dependency> requiresUnpack;
 
+	/**
+	 * The module configuration resources root. Only applies to XD_MODULE layout
+	 * @since 1.2
+	 */
+	@Parameter(defaultValue = "module")
+	private String moduleConfigRoot;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -158,8 +168,15 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
-			repackager.setLayout(this.layout.layout());
+			Layout layoutInstance = this.layout.layout();
+			if (this.layout.equals(LayoutType.XD_MODULE)) {
+				Layouts.XdModule xdModuleLayout = (Layouts.XdModule) layoutInstance;
+				xdModuleLayout.setModuleConfigRoot(this.moduleConfigRoot);
+			}
+			repackager.setLayout(layoutInstance);
 		}
+
+
 
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				getFilters());
@@ -192,7 +209,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	public static enum LayoutType {
 		JAR(new Layouts.Jar()), WAR(new Layouts.War()), ZIP(new Layouts.Expanded()), DIR(
-				new Layouts.Expanded()), NONE(new Layouts.None());
+				new Layouts.Expanded()), NONE(new Layouts.None()),XD_MODULE(new Layouts.XdModule());
 		private final Layout layout;
 
 		public Layout layout() {

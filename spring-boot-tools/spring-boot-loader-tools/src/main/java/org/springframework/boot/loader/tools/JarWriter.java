@@ -40,11 +40,11 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
 /**
- * Writes JAR content, ensuring valid directory entries are always create and duplicate
- * items are ignored.
+ * Writes JAR content, ensuring valid directory entries are always create and duplicate items are ignored.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author David Turanski
  */
 public class JarWriter {
 
@@ -58,6 +58,7 @@ public class JarWriter {
 
 	/**
 	 * Create a new {@link JarWriter} instance.
+	 *
 	 * @param file the file to write
 	 * @throws IOException
 	 * @throws FileNotFoundException
@@ -68,6 +69,7 @@ public class JarWriter {
 
 	/**
 	 * Write the specified manifest.
+	 *
 	 * @param manifest the manifest to write
 	 * @throws IOException
 	 */
@@ -83,6 +85,7 @@ public class JarWriter {
 
 	/**
 	 * Write all entries from the specified jar file.
+	 *
 	 * @param jarFile the source jar file
 	 * @throws IOException
 	 */
@@ -90,6 +93,9 @@ public class JarWriter {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
+
+			JarEntry targetEntry = destinationEntry(entry);
+
 			ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(
 					jarFile.getInputStream(entry));
 			try {
@@ -100,7 +106,7 @@ public class JarWriter {
 							jarFile.getInputStream(entry));
 				}
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream, true);
-				writeEntry(entry, entryWriter);
+				writeEntry(targetEntry, entryWriter);
 			}
 			finally {
 				inputStream.close();
@@ -109,7 +115,17 @@ public class JarWriter {
 	}
 
 	/**
+	 * Subclasses may override the destination Entry.
+	 * @param entry the source Entry
+	 * @return the destination Entry
+	 */
+	protected JarEntry destinationEntry(JarEntry entry) {
+		return entry;
+	}
+
+	/**
 	 * Writes an entry. The {@code inputStream} is closed once the entry has been written
+	 *
 	 * @param entryName The name of the entry
 	 * @param inputStream The stream from which the entry's data can be read
 	 * @throws IOException if the write fails
@@ -121,6 +137,7 @@ public class JarWriter {
 
 	/**
 	 * Write a nested library.
+	 *
 	 * @param destination the destination of the library
 	 * @param library the library
 	 * @throws IOException if the write fails
@@ -138,6 +155,7 @@ public class JarWriter {
 
 	/**
 	 * Write the required spring-boot-loader classes to the JAR.
+	 *
 	 * @throws IOException
 	 */
 	public void writeLoaderClasses() throws IOException {
@@ -155,6 +173,7 @@ public class JarWriter {
 
 	/**
 	 * Close the writer.
+	 *
 	 * @throws IOException
 	 */
 	public void close() throws IOException {
@@ -162,13 +181,13 @@ public class JarWriter {
 	}
 
 	/**
-	 * Perform the actual write of a {@link JarEntry}. All other {@code write} method
-	 * delegate to this one.
+	 * Perform the actual write of a {@link JarEntry}. All other {@code write} method delegate to this one.
+	 *
 	 * @param entry the entry to write
 	 * @param entryWriter the entry writer or {@code null} if there is no content
 	 * @throws IOException
 	 */
-	private void writeEntry(JarEntry entry, EntryWriter entryWriter) throws IOException {
+	protected void writeEntry(JarEntry entry, EntryWriter entryWriter) throws IOException {
 		String parent = entry.getName();
 		if (parent.endsWith("/")) {
 			parent = parent.substring(0, parent.length() - 1);
@@ -192,10 +211,11 @@ public class JarWriter {
 	/**
 	 * Interface used to write jar entry date.
 	 */
-	private static interface EntryWriter {
+	protected static interface EntryWriter {
 
 		/**
 		 * Write entry data to the specified output stream
+		 *
 		 * @param outputStream the destination for the data
 		 * @throws IOException
 		 */
@@ -206,7 +226,7 @@ public class JarWriter {
 	/**
 	 * {@link EntryWriter} that writes content from an {@link InputStream}.
 	 */
-	private static class InputStreamEntryWriter implements EntryWriter {
+	protected static class InputStreamEntryWriter implements EntryWriter {
 
 		private final InputStream inputStream;
 
@@ -235,9 +255,9 @@ public class JarWriter {
 	/**
 	 * {@link InputStream} that can peek ahead at zip header bytes.
 	 */
-	private static class ZipHeaderPeekInputStream extends FilterInputStream {
+	protected static class ZipHeaderPeekInputStream extends FilterInputStream {
 
-		private static final byte[] ZIP_HEADER = new byte[] { 0x50, 0x4b, 0x03, 0x04 };
+		private static final byte[] ZIP_HEADER = new byte[] {0x50, 0x4b, 0x03, 0x04};
 
 		private final byte[] header;
 
@@ -284,7 +304,7 @@ public class JarWriter {
 	/**
 	 * Data holder for CRC and Size
 	 */
-	private static class CrcAndSize {
+	protected static class CrcAndSize {
 
 		private final CRC32 crc = new CRC32();
 

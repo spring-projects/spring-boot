@@ -26,8 +26,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 /**
- * Utility class that can be used to repackage an archive so that it can be executed using
- * '{@literal java -jar}'.
+ * Utility class that can be used to repackage an archive so that it can be executed using '{@literal java -jar}'.
  *
  * @author Phillip Webb
  */
@@ -39,7 +38,7 @@ public class Repackager {
 
 	private static final String BOOT_VERSION_ATTRIBUTE = "Spring-Boot-Version";
 
-	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
+	private static final byte[] ZIP_FILE_HEADER = new byte[] {'P', 'K', 3, 4};
 
 	private String mainClass;
 
@@ -58,9 +57,9 @@ public class Repackager {
 	}
 
 	/**
-	 * Sets the main class that should be run. If not specified the value from the
-	 * MANIFEST will be used, or if no manifest entry is found the archive will be
-	 * searched for a suitable class.
+	 * Sets the main class that should be run. If not specified the value from the MANIFEST will be used, or if no
+	 * manifest entry is found the archive will be searched for a suitable class.
+	 *
 	 * @param mainClass the main class name
 	 */
 	public void setMainClass(String mainClass) {
@@ -69,6 +68,7 @@ public class Repackager {
 
 	/**
 	 * Sets if source files should be backed up when they would be overwritten.
+	 *
 	 * @param backupSource if source files should be backed up
 	 */
 	public void setBackupSource(boolean backupSource) {
@@ -77,6 +77,7 @@ public class Repackager {
 
 	/**
 	 * Sets the layout to use for the jar. Defaults to {@link Layouts#forFile(File)}.
+	 *
 	 * @param layout the layout
 	 */
 	public void setLayout(Layout layout) {
@@ -88,6 +89,7 @@ public class Repackager {
 
 	/**
 	 * Repackage the source file so that it can be run using '{@literal java -jar}'
+	 *
 	 * @param libraries the libraries required to run the archive
 	 * @throws IOException
 	 */
@@ -96,8 +98,8 @@ public class Repackager {
 	}
 
 	/**
-	 * Repackage to the given destination so that it can be launched using '
-	 * {@literal java -jar}'
+	 * Repackage to the given destination so that it can be launched using ' {@literal java -jar}'
+	 *
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
 	 * @throws IOException
@@ -153,7 +155,9 @@ public class Repackager {
 
 	private void repackage(JarFile sourceJar, File destination, Libraries libraries)
 			throws IOException {
-		final JarWriter writer = new JarWriter(destination);
+		final JarWriter writer = this.layout instanceof Layouts.XdModule ?
+				new XdModuleWriter(destination, ((Layouts.XdModule) this.layout).getModuleConfigRoot()) :
+				new JarWriter(destination);
 		try {
 			final Set<String> seen = new HashSet<String>();
 			writer.writeManifest(buildManifest(sourceJar));

@@ -111,8 +111,8 @@ public class ExcludeFilterTests {
 		assertSame(anotherAcme, result.iterator().next());
 	}
 
-	private Exclude createExclude(String groupId, String artifactId, String classifier) {
-		Exclude e = new Exclude();
+	private Dependency createExclude(String groupId, String artifactId, String classifier) {
+		Dependency e = new Dependency();
 		e.setGroupId(groupId);
 		e.setArtifactId(artifactId);
 		if (classifier != null) {
@@ -121,7 +121,7 @@ public class ExcludeFilterTests {
 		return e;
 	}
 
-	private Exclude createExclude(String groupId, String artifactId) {
+	private Dependency createExclude(String groupId, String artifactId) {
 		return createExclude(groupId, artifactId, null);
 	}
 
