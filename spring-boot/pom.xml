@@ -169,12 +169,6 @@
 			<artifactId>snakeyaml</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!-- Annotation processing -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
