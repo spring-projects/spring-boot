@@ -356,6 +356,9 @@ content into your application; rather pick only the properties that you need.
 	management.contextPath= # default to '/'
 	management.add-application-context-header= # default to true
 
+	# PID FILE ({sc-spring-boot-actuator}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
+	spring.pidfile= # Location of the PID file to write
+
 	# ENDPOINTS ({sc-spring-boot-actuator}/endpoint/AbstractEndpoint.{sc-ext}[AbstractEndpoint] subclasses)
 	endpoints.autoconfig.id=autoconfig
 	endpoints.autoconfig.sensitive=true

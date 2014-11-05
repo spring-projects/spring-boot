@@ -87,7 +87,7 @@ public class ApplicationPidFileWriterTests {
 		File file = this.temporaryFolder.newFile();
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MockPropertySource propertySource = new MockPropertySource();
-		propertySource.setProperty("spring.application.pidfile", file.getAbsolutePath());
+		propertySource.setProperty("spring.pidfile", file.getAbsolutePath());
 		environment.getPropertySources().addLast(propertySource);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		given(context.getEnvironment()).willReturn(environment);
@@ -103,7 +103,7 @@ public class ApplicationPidFileWriterTests {
 		File file = this.temporaryFolder.newFile();
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		MockPropertySource propertySource = new MockPropertySource();
-		propertySource.setProperty("spring.application.pidfile", file.getAbsolutePath());
+		propertySource.setProperty("spring.pidfile", file.getAbsolutePath());
 		environment.getPropertySources().addLast(propertySource);
 		ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
 				new SpringApplication(), new String[] {}, environment);

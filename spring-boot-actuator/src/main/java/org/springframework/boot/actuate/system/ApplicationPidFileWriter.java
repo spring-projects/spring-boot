@@ -53,7 +53,7 @@ public class ApplicationPidFileWriter implements
 
 	private static final String[] SYSTEM_PROPERTY_VARIABLES = { "PIDFILE", "pidfile" };
 
-	private static final String SPRING_PROPERTY = "spring.application.pidfile";
+	private static final String SPRING_PROPERTY = "spring.pidfile";
 
 	private static final AtomicBoolean created = new AtomicBoolean(false);
 
