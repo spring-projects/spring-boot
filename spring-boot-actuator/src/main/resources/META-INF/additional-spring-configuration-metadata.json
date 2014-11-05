@@ -3,7 +3,7 @@
     "name": "spring.git.properties",
     "dataType": "java.lang.String",
     "description": "Resource reference to a generated git info properties file."
-  }.
+  },
   {
     "name": "spring.pidfile",
     "dataType": "java.lang.String",
