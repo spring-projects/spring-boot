@@ -41,6 +41,7 @@
 		<module>spring-boot-sample-jersey</module>
 		<module>spring-boot-sample-jersey1</module>
 		<module>spring-boot-sample-jetty</module>
+		<module>spring-boot-sample-jetty9</module>
 		<module>spring-boot-sample-jta-atomikos</module>
 		<module>spring-boot-sample-jta-bitronix</module>
 		<module>spring-boot-sample-jta-jndi</module>
