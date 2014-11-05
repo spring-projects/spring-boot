@@ -51,7 +51,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * Collection of artifact definitions to include. The {@link Dependency} element defines
 	 * a {@code groupId} and {@code artifactId} mandatory properties and an optional
 	 * {@code classifier} property.
-	 * @since 1.1
+	 * @since 1.2
 	 */
 	@Parameter
 	private List<Dependency> includes;
@@ -74,7 +74,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		this.excludes = excludes;
 	}
 
-	protected void setIxcludes(List<Dependency> includes) {
+	protected void setIncludes(List<Dependency> includes) {
 		this.includes = includes;
 	}
 
