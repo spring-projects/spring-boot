@@ -128,7 +128,8 @@ public class BasicErrorControllerMockMvcTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+	@Import({ EmbeddedServletContainerAutoConfiguration.EmbeddedTomcat.class,
+			EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,

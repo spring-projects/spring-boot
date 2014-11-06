@@ -52,12 +52,11 @@ public class WarPackagingTests {
 
 	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
 			Arrays.asList("spring-boot-starter-jetty-", "jetty-util-", "jetty-xml-",
-					"javax.servlet-", "jetty-continuation-", "jetty-io-", "jetty-http-",
+					"jetty-schemas-", "javax.servlet-", "jetty-io-", "jetty-http-",
 					"jetty-server-", "jetty-security-", "jetty-servlet-",
-					"jetty-webapp-", "javax.servlet.jsp-",
-					"org.apache.jasper.glassfish-", "javax.servlet.jsp.jstl-",
-					"org.apache.taglibs.standard.glassfish-", "javax.el-", "com.sun.el-",
-					"org.eclipse.jdt.core-", "jetty-jsp-"));
+					"jetty-webapp-", "javax.servlet.jsp-2", "javax.servlet.jsp-api-",
+					"javax.servlet.jsp.jstl-1.2.2", "javax.servlet.jsp.jstl-1.2.0",
+					"javax.el-", "org.eclipse.jdt.core-", "jetty-jsp-"));
 
 	private static final String BOOT_VERSION = ManagedDependencies.get()
 			.find("spring-boot").getVersion();

@@ -21,9 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.server.ssl.SslConnector;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
@@ -114,9 +115,11 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		this.container.start();
 
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
-		SslConnector sslConnector = (SslConnector) jettyContainer.getServer()
+		ServerConnector connector = (ServerConnector) jettyContainer.getServer()
 				.getConnectors()[0];
-		assertThat(sslConnector.getSslContextFactory().getIncludeCipherSuites(),
+		SslConnectionFactory connectionFactory = connector
+				.getConnectionFactory(SslConnectionFactory.class);
+		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites(),
 				equalTo(new String[] { "ALPHA", "BRAVO", "CHARLIE" }));
 	}
 

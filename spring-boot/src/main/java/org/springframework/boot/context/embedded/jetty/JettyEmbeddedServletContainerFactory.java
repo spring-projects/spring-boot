@@ -25,11 +25,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
@@ -117,10 +120,10 @@ public class JettyEmbeddedServletContainerFactory extends
 		if (getSsl() != null) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			configureSsl(sslContextFactory, getSsl());
-
-			SslSocketConnector sslConnector = new SslSocketConnector(sslContextFactory);
-			sslConnector.setPort(port);
-			server.setConnectors(new Connector[] { sslConnector });
+			ServerConnector connector = getSslServerConnectorFactory().getConnector(
+					server, sslContextFactory);
+			connector.setPort(port);
+			server.setConnectors(new Connector[] { connector });
 		}
 
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
@@ -128,6 +131,13 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 
 		return getJettyEmbeddedServletContainer(server);
+	}
+
+	private SslServerConnectorFactory getSslServerConnectorFactory() {
+		if (ClassUtils.isPresent("org.eclipse.jetty.server.ssl.SslSocketConnector", null)) {
+			return new Jetty8SslServerConnectorFactory();
+		}
+		return new Jetty9SslServerConnectorFactory();
 	}
 
 	/**
@@ -246,7 +256,7 @@ public class JettyEmbeddedServletContainerFactory extends
 					handler.setBaseResource(resource);
 				}
 				else {
-					handler.setBaseResource(Resource.newResource(root));
+					handler.setBaseResource(Resource.newResource(root.getCanonicalFile()));
 				}
 			}
 			catch (Exception ex) {
@@ -456,6 +466,52 @@ public class JettyEmbeddedServletContainerFactory extends
 				}
 			}
 		}
+	}
+
+	/**
+	 * Factory to create the SSL {@link ServerConnector}.
+	 */
+	private static interface SslServerConnectorFactory {
+
+		ServerConnector getConnector(Server server, SslContextFactory sslContextFactory);
+
+	}
+
+	/**
+	 * {@link SslServerConnectorFactory} for Jetty 9.
+	 */
+	private static class Jetty9SslServerConnectorFactory implements
+			SslServerConnectorFactory {
+
+		@Override
+		public ServerConnector getConnector(Server server,
+				SslContextFactory sslContextFactory) {
+			return new ServerConnector(server, new SslConnectionFactory(
+					sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+					new HttpConnectionFactory());
+		}
+	}
+
+	/**
+	 * {@link SslServerConnectorFactory} for Jetty 8.
+	 */
+	private static class Jetty8SslServerConnectorFactory implements
+			SslServerConnectorFactory {
+
+		@Override
+		public ServerConnector getConnector(Server server,
+				SslContextFactory sslContextFactory) {
+			try {
+				Class<?> connectorClass = Class
+						.forName("org.eclipse.jetty.server.ssl.SslSocketConnector");
+				return (ServerConnector) connectorClass.getConstructor(
+						SslContextFactory.class).newInstance(sslContextFactory);
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
 	}
 
 }

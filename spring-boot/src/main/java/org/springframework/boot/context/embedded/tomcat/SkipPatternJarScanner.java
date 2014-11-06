@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -27,6 +26,7 @@ import javax.servlet.ServletContext;
 
 import org.apache.tomcat.JarScanner;
 import org.apache.tomcat.JarScannerCallback;
+import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -45,8 +45,6 @@ class SkipPatternJarScanner extends StandardJarScanner {
 
 	private static final String JAR_SCAN_FILTER_CLASS = "org.apache.tomcat.JarScanFilter";
 
-	private static final String STANDARD_JAR_SCAN_FILTER_CLASS = "org.apache.tomcat.util.scan.StandardJarScanFilter";
-
 	private final JarScanner jarScanner;
 
 	private final SkipPattern pattern;
@@ -60,34 +58,24 @@ class SkipPatternJarScanner extends StandardJarScanner {
 
 	private void setPatternToTomcat8SkipFilter(SkipPattern pattern) {
 		if (ClassUtils.isPresent(JAR_SCAN_FILTER_CLASS, null)) {
-			try {
-				Class<?> filterClass = Class.forName(JAR_SCAN_FILTER_CLASS);
-				Method setJarScanner = ReflectionUtils.findMethod(
-						StandardJarScanner.class, "setJarScanFilter", filterClass);
-				setJarScanner.invoke(this, createStandardJarScanFilter(pattern));
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
-			}
+			new Tomcat8TldSkipSetter(this).setSkipPattern(pattern);
 		}
 	}
 
-	private Object createStandardJarScanFilter(SkipPattern pattern)
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException, InvocationTargetException {
-		Class<?> filterClass = Class.forName(STANDARD_JAR_SCAN_FILTER_CLASS);
-		Method setTldSkipMethod = ReflectionUtils.findMethod(filterClass, "setTldSkip",
-				String.class);
-		Object scanner = filterClass.newInstance();
-		setTldSkipMethod.invoke(scanner, pattern.asCommaDelimitedString());
-		return scanner;
-	}
-
-	@Override
+	// For Tomcat 7 compatibility
 	public void scan(ServletContext context, ClassLoader classloader,
 			JarScannerCallback callback, Set<String> jarsToSkip) {
-		this.jarScanner.scan(context, classloader, callback,
-				(jarsToSkip == null ? this.pattern.asSet() : jarsToSkip));
+		Method scanMethod = ReflectionUtils.findMethod(this.jarScanner.getClass(),
+				"scan", ServletContext.class, ClassLoader.class,
+				JarScannerCallback.class, Set.class);
+		Assert.notNull(scanMethod, "Unable to find scan method");
+		try {
+			scanMethod.invoke(this.jarScanner, context, classloader, callback,
+					(jarsToSkip == null ? this.pattern.asSet() : jarsToSkip));
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Tomcat 7 reflection failed", ex);
+		}
 	}
 
 	/**
@@ -101,6 +89,28 @@ class SkipPatternJarScanner extends StandardJarScanner {
 		context.setJarScanner(scanner);
 	}
 
+	/**
+	 * Tomcat 8 specific logic to setup the scanner.
+	 */
+	private static class Tomcat8TldSkipSetter {
+
+		private final StandardJarScanner jarScanner;
+
+		public Tomcat8TldSkipSetter(StandardJarScanner jarScanner) {
+			this.jarScanner = jarScanner;
+		}
+
+		public void setSkipPattern(SkipPattern pattern) {
+			StandardJarScanFilter filter = new StandardJarScanFilter();
+			filter.setTldSkip(pattern.asCommaDelimitedString());
+			this.jarScanner.setJarScanFilter(filter);
+		}
+
+	}
+
+	/**
+	 * Skip patterns used by Spring Boot
+	 */
 	private static class SkipPattern {
 
 		private Set<String> patterns = new LinkedHashSet<String>();

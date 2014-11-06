@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.context.request.RequestAttributes;
@@ -121,10 +122,10 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 			}
 		}
 		Object message = getAttribute(requestAttributes, "javax.servlet.error.message");
-		if ((message != null || errorAttributes.get("message") == null)
+		if ((!StringUtils.isEmpty(message) || errorAttributes.get("message") == null)
 				&& !(error instanceof BindingResult)) {
-			errorAttributes.put("message", message == null ? "No message available"
-					: message);
+			errorAttributes.put("message",
+					StringUtils.isEmpty(message) ? "No message available" : message);
 		}
 	}
 
