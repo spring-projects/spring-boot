@@ -41,9 +41,9 @@ import org.springframework.boot.configurationsample.specific.InnerClassPropertie
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
@@ -63,7 +63,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void notAnnotated() throws Exception {
 		ConfigurationMetadata metadata = compile(NotAnnotated.class);
 		assertThat("No config metadata file should have been generated when "
-				+ "no metadata is discovered", metadata, nullValue());
+				+ "no metadata is discovered", metadata.getItems(), empty());
 	}
 
 	@Test
@@ -173,8 +173,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void simpleMethodConfig() throws Exception {
 		ConfigurationMetadata metadata = compile(SimpleMethodConfig.class);
-		assertThat(metadata, containsGroup("foo")
-				.fromSource(SimpleMethodConfig.class));
+		assertThat(metadata, containsGroup("foo").fromSource(SimpleMethodConfig.class));
 		assertThat(
 				metadata,
 				containsProperty("foo.name", String.class).fromSource(
@@ -258,7 +257,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		return processor.getMetadata();
 	}
 
-	@SupportedAnnotationTypes({ TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION })
+	@SupportedAnnotationTypes({ "*" })
 	@SupportedSourceVersion(SourceVersion.RELEASE_6)
 	private static class TestConfigurationMetadataAnnotationProcessor extends
 			ConfigurationMetadataAnnotationProcessor {

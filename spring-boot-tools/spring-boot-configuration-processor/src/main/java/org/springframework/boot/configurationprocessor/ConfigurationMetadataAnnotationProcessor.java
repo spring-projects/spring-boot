@@ -39,6 +39,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -57,7 +58,7 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  * @author Phillip Webb
  * @since 1.2.0
  */
-@SupportedAnnotationTypes({ ConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION })
+@SupportedAnnotationTypes({ "*" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
 
@@ -103,10 +104,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations,
 			RoundEnvironment roundEnv) {
-		for (TypeElement annotation : annotations) {
-			for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
-				processElement(element);
-			}
+		Elements elementUtils = this.processingEnv.getElementUtils();
+		for (Element element : roundEnv.getElementsAnnotatedWith(elementUtils
+				.getTypeElement(configurationPropertiesAnnotation()))) {
+			processElement(element);
 		}
 		if (roundEnv.processingOver()) {
 			writeMetaData(this.metadata);
@@ -290,7 +291,6 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			}
 		}
 		catch (IOException ex) {
-			ex.printStackTrace();
 			return metadata;
 		}
 	}
