@@ -94,8 +94,9 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	private boolean hasEnableAutoConfigureAnnotation(ClassNode classNode) {
 		for (AnnotationNode node : classNode.getAnnotations()) {
-			if ("EnableAutoConfiguration".equals(node.getClassNode()
-					.getNameWithoutPackage())) {
+			String name = node.getClassNode().getNameWithoutPackage();
+			if ("EnableAutoConfiguration".equals(name)
+					|| "SpringBootApplication".equals(name)) {
 				return true;
 			}
 		}
