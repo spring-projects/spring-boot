@@ -38,7 +38,7 @@ public abstract class AbstractTemplateViewResolverProperties {
 
 	private String contentType = "text/html";
 
-	private String charSet = "UTF-8";
+	private String charset = "UTF-8";
 
 	private String[] viewNames;
 
@@ -87,19 +87,35 @@ public abstract class AbstractTemplateViewResolverProperties {
 	public String getContentType() {
 		return this.contentType
 				+ (this.contentType.contains(";charset=") ? "" : ";charset="
-						+ this.charSet);
+						+ this.charset);
 	}
 
 	public void setContentType(String contentType) {
 		this.contentType = contentType;
 	}
 
+	/**
+	 * @deprecated since 1.2.0 in favor of {@link #getCharset()}
+	 */
+	@Deprecated
 	public String getCharSet() {
-		return this.charSet;
+		return getCharset();
 	}
 
+	/**
+	 * @deprecated since 1.2.0 in favor of {@link #setCharset(String)}
+	 */
+	@Deprecated
 	public void setCharSet(String charSet) {
-		this.charSet = charSet;
+		setCharset(charSet);
+	}
+
+	public String getCharset() {
+		return this.charset;
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;
 	}
 
 	public String getPrefix() {

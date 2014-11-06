@@ -115,7 +115,7 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.allow-request-override=false
 	spring.freemarker.cache=true
 	spring.freemarker.check-template-location=true
-	spring.freemarker.char-set=UTF-8
+	spring.freemarker.charset=UTF-8
 	spring.freemarker.contentType=text/html
 	spring.freemarker.exposeRequestAttributes=false
 	spring.freemarker.exposeSessionAttributes=false
@@ -129,7 +129,7 @@ content into your application; rather pick only the properties that you need.
 
 	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[GroovyTemplateAutoConfiguration])
 	spring.groovy.template.cache=true
-	spring.groovy.template.char-set=UTF-8
+	spring.groovy.template.charset=UTF-8
 	spring.groovy.template.configuration.*= # See Groovy's TemplateConfiguration
 	spring.groovy.template.contentType=text/html
 	spring.groovy.template.prefix=classpath:/templates/
@@ -140,7 +140,7 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.allow-request-override=false
 	spring.velocity.cache=true
 	spring.velocity.check-template-location=true
-	spring.velocity.char-set=UTF-8
+	spring.velocity.charset=UTF-8
 	spring.velocity.content-type=text/html
 	spring.velocity.date-tool-attribute=
 	spring.velocity.expose-Request-attributes=false
