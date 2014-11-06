@@ -17,9 +17,7 @@
 package sample.data.gemfire;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.gemfire.repository.config.EnableGemfireRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -31,10 +29,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *
  * @author John Blum
  */
-@Configuration
+@SpringBootApplication
 @ImportResource("/spring-data-gemfire-cache.xml")
-@ComponentScan
-@EnableAutoConfiguration
 @EnableGemfireRepositories
 @EnableTransactionManagement
 public class SampleDataGemFireApplication {
