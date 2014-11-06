@@ -21,6 +21,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
+import liquibase.servicelocator.ServiceLocator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -33,6 +34,7 @@ import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDepen
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -82,6 +84,9 @@ public class LiquibaseAutoConfiguration {
 						+ resource + " (please add changelog or check your Liquibase "
 						+ "configuration)");
 			}
+			ServiceLocator serviceLocator = ServiceLocator.getInstance();
+			serviceLocator.addPackageToScan(CommonsLoggingLiquibaseLogger.class
+					.getPackage().getName());
 		}
 
 		@Bean
