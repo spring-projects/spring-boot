@@ -41,7 +41,7 @@
 		<module>spring-boot-sample-jersey</module>
 		<module>spring-boot-sample-jersey1</module>
 		<module>spring-boot-sample-jetty</module>
-		<module>spring-boot-sample-jetty9</module>
+		<module>spring-boot-sample-jetty8</module>
 		<module>spring-boot-sample-jta-atomikos</module>
 		<module>spring-boot-sample-jta-bitronix</module>
 		<module>spring-boot-sample-jta-jndi</module>
@@ -51,10 +51,11 @@
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-simple</module>
+		<module>spring-boot-sample-tomcat-jsp</module>
 		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
-		<module>spring-boot-sample-tomcat8-jsp</module>
+		<module>spring-boot-sample-tomcat7-jsp</module>
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-velocity</module>
 		<module>spring-boot-sample-web-freemarker</module>
