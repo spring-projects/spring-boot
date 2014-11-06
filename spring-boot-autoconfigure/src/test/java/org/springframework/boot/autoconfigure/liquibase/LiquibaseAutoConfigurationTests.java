@@ -26,12 +26,18 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.liquibase.SpringLiquibaseLogger;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
+
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -150,5 +156,19 @@ public class LiquibaseAutoConfigurationTests {
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
+	}
+
+	@Test
+	public void testSpringLogger() throws Exception {
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+
+		Field field = ReflectionUtils.findField(SpringLiquibase.class, "log");
+		field.setAccessible(true);
+		Object resolver = field.get(liquibase);
+		assertThat(resolver, instanceOf(SpringLiquibaseLogger.class));
 	}
 }
