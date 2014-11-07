@@ -24,5 +24,8 @@ settings.xml
 activemq-data
 overridedb.*
 *.iml
+*.ipr
+*.iws
 .idea
 *.jar
+.DS_Store
