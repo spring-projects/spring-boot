@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Johannes Stelzer
  * @since 1.2.0
  */
 public class SystemPublicMetrics implements PublicMetrics, Ordered {
@@ -74,6 +75,8 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 				.getUptime()));
 		result.add(new Metric<Long>("instance.uptime", System.currentTimeMillis()
 				- this.timestamp));
+		result.add(new Metric<Double>("systemload.average", ManagementFactory
+				.getOperatingSystemMXBean().getSystemLoadAverage()));
 	}
 
 	/**
