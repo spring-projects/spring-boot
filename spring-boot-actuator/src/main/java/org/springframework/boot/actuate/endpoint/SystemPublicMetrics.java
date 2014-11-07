@@ -74,6 +74,8 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 				.getUptime()));
 		result.add(new Metric<Long>("instance.uptime", System.currentTimeMillis()
 				- this.timestamp));
+		result.add(new Metric<Double>("systemLoadAverage", ManagementFactory
+				.getOperatingSystemMXBean().getSystemLoadAverage()));
 	}
 
 	/**
