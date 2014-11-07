@@ -32,8 +32,8 @@ import ch.qos.logback.core.util.OptionHelper;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
- * improve startup time. See also the {@code base.xml}, {@code console-appender.xml} and
- * {@code file-appender.xml} files provided for classic {@code logback.xml} use.
+ * improve startup time. See also the {@code defaults.xml}, {@code console-appender.xml}
+ * and {@code file-appender.xml} files provided for classic {@code logback.xml} use.
  *
  * @author Phillip Webb
  * @since 1.1.2
