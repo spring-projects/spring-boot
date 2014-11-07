@@ -203,7 +203,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.time-between-eviction-runs-millis=
 	spring.datasource.min-evictable-idle-time-millis=
 	spring.datasource.max-wait=
-	spring.datasource.jmx-enabled=true # Export JMX MBeans (if supported)
+	spring.datasource.jmx-enabled=false # Export JMX MBeans (if supported)
 
 	# DATASOURCE ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration]
 	spring.dao.exceptiontranslation.enabled=true

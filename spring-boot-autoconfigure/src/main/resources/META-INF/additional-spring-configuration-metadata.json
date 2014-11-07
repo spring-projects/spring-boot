@@ -27,7 +27,7 @@
     "name": "spring.datasource.jmx-enabled",
     "dataType": "java.lang.Boolean",
     "description": "Enables JMX support (if provided by the underlying pool).",
-    "defaultValue": true
+    "defaultValue": false
   },
   {
     "name": "spring.data.elasticsearch.repositories.enabled",
