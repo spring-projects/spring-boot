@@ -550,6 +550,36 @@ as `final`, indicating that it cannot be subsequently changed.
 
 
 
+[[using-boot-using-springbootapplication-annotation]]
+== Using the @SpringBootApplication annotation
+Many Spring Boot developers always have their main class annotated with `@Configuration`,
+`@EnableAutoConfiguration` and `@ComponentScan`. Since these annotations are so frequently
+used together (especially if you follow the <<using-boot-structuring-your-code, best practices>>
+above), Spring Boot provides a convenient `@SpringBootApplication` alternative.
+
+The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
+`@EnableAutoConfiguration` and `@ComponentScan` with their default attributes:
+
+
+[source,java,indent=0]
+----
+	package com.example.myproject;
+
+	import org.springframework.boot.SpringApplication;
+	import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+	@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
+	public class Application {
+
+		public static void main(String[] args) {
+			SpringApplication.run(Application.class, args);
+		}
+
+	}
+----
+
+
+
 [[using-boot-running-your-application]]
 == Running your application
 One of the biggest advantages of packaging your application as jar and using an embedded
