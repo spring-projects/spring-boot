@@ -205,6 +205,9 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.max-wait=
 	spring.datasource.jmx-enabled=true # Export JMX MBeans (if supported)
 
+	# DATASOURCE ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration]
+	spring.dao.exceptiontranslation.enabled=true
+
 	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
 	spring.data.mongodb.host= # the db host
 	spring.data.mongodb.port=27017 # the connection port (defaults to 27107)

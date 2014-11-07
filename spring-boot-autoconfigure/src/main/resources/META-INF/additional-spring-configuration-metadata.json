@@ -18,6 +18,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.dao.exceptiontranslation.enabled",
+    "dataType": "java.lang.Boolean",
+    "description": "Enables the PersistenceExceptionTranslationPostProcessor.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.datasource.jmx-enabled",
     "dataType": "java.lang.Boolean",
     "description": "Enables JMX support (if provided by the underlying pool).",

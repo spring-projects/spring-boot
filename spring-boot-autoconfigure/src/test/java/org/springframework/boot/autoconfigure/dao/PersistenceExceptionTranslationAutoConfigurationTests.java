@@ -25,6 +25,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.stereotype.Repository;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -60,6 +62,19 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
 		assertThat(beans.size(), is(equalTo(1)));
+		assertThat(beans.values().iterator().next().isProxyTargetClass(), equalTo(true));
+	}
+
+	@Test
+	public void exceptionTranslationPostProcessorBeanIsDisabled() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.dao.exceptiontranslation.enabled=false");
+		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
+				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
+		assertThat(beans.entrySet(), empty());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
