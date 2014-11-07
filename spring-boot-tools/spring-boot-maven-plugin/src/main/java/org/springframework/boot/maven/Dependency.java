@@ -24,7 +24,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  * @author Stephane Nicoll
  * @since 1.1
  */
-public class Exclude {
+public class Dependency {
 
 	/**
 	 * The groupId of the artifact to exclude.

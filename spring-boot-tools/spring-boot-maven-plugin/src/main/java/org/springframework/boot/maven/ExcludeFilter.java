@@ -27,19 +27,20 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterExceptio
 /**
  * An {@link org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter
  * ArtifactsFilter} that filters out any artifact matching a configurable list of
- * {@link Exclude} instances.
+ * {@link Dependency} instances.
  *
  * @author Stephane Nicoll
+ * @author David Turanski
  * @since 1.1
  */
 public class ExcludeFilter extends AbstractArtifactsFilter {
 
-	private final List<Exclude> excludes;
+	private final List<Dependency> excludes;
 
 	/**
-	 * Create a new instance with the list of {@link Exclude} instance(s) to use.
+	 * Create a new instance with the list of {@link Dependency} instance(s) to use.
 	 */
-	public ExcludeFilter(List<Exclude> excludes) {
+	public ExcludeFilter(List<Dependency> excludes) {
 		this.excludes = excludes;
 	}
 
@@ -61,7 +62,7 @@ public class ExcludeFilter extends AbstractArtifactsFilter {
 	 * {@code true} if it should be excluded
 	 */
 	private boolean matchExclude(Artifact artifact) {
-		for (Exclude exclude : this.excludes) {
+		for (Dependency exclude : this.excludes) {
 			if (match(artifact, exclude)) {
 				return true;
 			}
@@ -70,10 +71,10 @@ public class ExcludeFilter extends AbstractArtifactsFilter {
 	}
 
 	/**
-	 * Check if the specified {@link Artifact} matches the specified {@link Exclude}.
+	 * Check if the specified {@link Artifact} matches the specified {@link Dependency}.
 	 * Returns {@code true} if it should be excluded
 	 */
-	private boolean match(Artifact artifact, Exclude exclude) {
+	private boolean match(Artifact artifact, Dependency exclude) {
 		if (!exclude.getGroupId().equals(artifact.getGroupId())) {
 			return false;
 		}

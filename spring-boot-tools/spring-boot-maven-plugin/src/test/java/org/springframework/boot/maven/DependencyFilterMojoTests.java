@@ -36,13 +36,14 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link AbstractDependencyFilterMojo}.
  *
  * @author Stephane Nicoll
+ * @author David Turanski
  */
 public class DependencyFilterMojoTests {
 
 	@Test
 	public void filterDependencies() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.<Exclude> emptyList(), "com.foo", "exclude-id");
+				Collections.<Dependency> emptyList(), "com.foo", "exclude-id");
 
 		Artifact artifact = createArtifact("com.bar", "one");
 		Set<Artifact> artifacts = mojo.filterDependencies(
@@ -55,7 +56,7 @@ public class DependencyFilterMojoTests {
 	@Test
 	public void filterGroupIdExactMatch() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.<Exclude> emptyList(), "com.foo", "");
+				Collections.<Dependency> emptyList(), "com.foo", "");
 
 		Artifact artifact = createArtifact("com.foo.bar", "one");
 		Set<Artifact> artifacts = mojo.filterDependencies(
@@ -75,7 +76,7 @@ public class DependencyFilterMojoTests {
 	private static class TestableDependencyFilterMojo extends
 			AbstractDependencyFilterMojo {
 
-		private TestableDependencyFilterMojo(List<Exclude> excludes,
+		private TestableDependencyFilterMojo(List<Dependency> excludes,
 				String excludeGroupIds, String excludeArtifactIds) {
 			setExcludes(excludes);
 			setExcludeGroupIds(excludeGroupIds);
