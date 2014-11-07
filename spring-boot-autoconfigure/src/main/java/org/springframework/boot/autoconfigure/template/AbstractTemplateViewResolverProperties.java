@@ -22,13 +22,14 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 /**
- * Abstract base class for {@link ConfigurationProperties} for
- * {@link AbstractTemplateViewResolver view resolvers}.
+ * Base class for {@link ConfigurationProperties} of a
+ * {@link AbstractTemplateViewResolver}.
  *
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public abstract class AbstractTemplateViewResolverProperties extends AbstractBasicTemplateViewResolverProperties {
+public abstract class AbstractTemplateViewResolverProperties extends
+		AbstractViewResolverProperties {
 
 	private String prefix;
 

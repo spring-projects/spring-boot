@@ -17,14 +17,17 @@
 package org.springframework.boot.autoconfigure.template;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.web.servlet.ViewResolver;
 
 /**
- * Basic base {@link ConfigurationProperties} class for view resolvers.
+ * Base class for {@link ConfigurationProperties} of a {@link ViewResolver}.
  *
+ * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 1.2.0
+ * @see AbstractTemplateViewResolverProperties
  */
-public abstract class AbstractBasicTemplateViewResolverProperties {
+public abstract class AbstractViewResolverProperties {
 
 	private boolean cache;
 
@@ -63,7 +66,7 @@ public abstract class AbstractBasicTemplateViewResolverProperties {
 	public String getContentType() {
 		return this.contentType
 				+ (this.contentType.contains(";charset=") ? "" : ";charset="
-				+ this.charset);
+						+ this.charset);
 	}
 
 	public void setContentType(String contentType) {
