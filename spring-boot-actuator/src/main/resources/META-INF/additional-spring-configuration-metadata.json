@@ -44,7 +44,7 @@
     "name": "spring.pidfile",
     "dataType": "java.lang.String",
     "description": "The location of the PID file to write (if ApplicationPidFileWriter is used).",
-    sourceType: "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
+    "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
   }
 ]}
 
