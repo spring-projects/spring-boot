@@ -1,6 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
- *
+ * Copyright 2014 the original author or authors.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,29 +18,29 @@ package org.springframework.boot.maven;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 
 /**
- * An {@ArtifactsFilter} that filters out any artifact matching an
- * {@link Exclude}.
+ * An {@link ArtifactsFilter} that filters out any artifact not matching an
+ * {@link Include}.
  *
- * @author Stephane Nicoll
  * @author David Turanski
- * @since 1.1
+ * @since 1.2
  */
-public class ExcludeFilter extends DependencyFilter {
+public class IncludeFilter extends DependencyFilter {
 
-	public ExcludeFilter(List<Exclude> excludes) {
-		super(excludes);
+	public IncludeFilter(List<Include> includes) {
+		super(includes);
 	}
 
 	@Override
 	protected boolean filter(Artifact artifact) {
 		for (FilterableDependency dependency : getFilters()) {
 			if (equals(artifact, dependency)) {
-				return true;
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 
 }
