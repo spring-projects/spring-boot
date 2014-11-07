@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.groovy.template;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.template.AbstractBasicTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -28,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.groovy.template", ignoreUnknownFields = false)
-public class GroovyTemplateProperties {
+public class GroovyTemplateProperties extends AbstractBasicTemplateViewResolverProperties {
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
@@ -38,59 +39,7 @@ public class GroovyTemplateProperties {
 
 	private String suffix = DEFAULT_SUFFIX;
 
-	private boolean cache;
-
-	private String contentType = "text/html";
-
-	private String charSet = "UTF-8";
-
-	private String[] viewNames;
-
-	private boolean checkTemplateLocation = false;
-
 	private Map<String, Object> configuration = new HashMap<String, Object>();
-
-	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
-		this.checkTemplateLocation = checkTemplateLocation;
-	}
-
-	public boolean isCheckTemplateLocation() {
-		return this.checkTemplateLocation;
-	}
-
-	public String[] getViewNames() {
-		return this.viewNames;
-	}
-
-	public void setViewNames(String[] viewNames) {
-		this.viewNames = viewNames;
-	}
-
-	public boolean isCache() {
-		return this.cache;
-	}
-
-	public void setCache(boolean cache) {
-		this.cache = cache;
-	}
-
-	public String getContentType() {
-		return this.contentType
-				+ (this.contentType.contains(";charset=") ? "" : ";charset="
-						+ this.charSet);
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
-
-	public String getCharSet() {
-		return this.charSet;
-	}
-
-	public void setCharSet(String charSet) {
-		this.charSet = charSet;
-	}
 
 	public String getPrefix() {
 		return this.prefix;

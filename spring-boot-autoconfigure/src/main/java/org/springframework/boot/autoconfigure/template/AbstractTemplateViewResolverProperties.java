@@ -28,21 +28,11 @@ import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public abstract class AbstractTemplateViewResolverProperties {
+public abstract class AbstractTemplateViewResolverProperties extends AbstractBasicTemplateViewResolverProperties {
 
 	private String prefix;
 
 	private String suffix;
-
-	private boolean cache;
-
-	private String contentType = "text/html";
-
-	private String charset = "UTF-8";
-
-	private String[] viewNames;
-
-	private boolean checkTemplateLocation = true;
 
 	private String requestContextAttribute;
 
@@ -58,64 +48,6 @@ public abstract class AbstractTemplateViewResolverProperties {
 			String defaultSuffix) {
 		this.prefix = defaultPrefix;
 		this.suffix = defaultSuffix;
-	}
-
-	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
-		this.checkTemplateLocation = checkTemplateLocation;
-	}
-
-	public boolean isCheckTemplateLocation() {
-		return this.checkTemplateLocation;
-	}
-
-	public String[] getViewNames() {
-		return this.viewNames;
-	}
-
-	public void setViewNames(String[] viewNames) {
-		this.viewNames = viewNames;
-	}
-
-	public boolean isCache() {
-		return this.cache;
-	}
-
-	public void setCache(boolean cache) {
-		this.cache = cache;
-	}
-
-	public String getContentType() {
-		return this.contentType
-				+ (this.contentType.contains(";charset=") ? "" : ";charset="
-						+ this.charset);
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
-
-	/**
-	 * @deprecated since 1.2.0 in favor of {@link #getCharset()}
-	 */
-	@Deprecated
-	public String getCharSet() {
-		return getCharset();
-	}
-
-	/**
-	 * @deprecated since 1.2.0 in favor of {@link #setCharset(String)}
-	 */
-	@Deprecated
-	public void setCharSet(String charSet) {
-		setCharset(charSet);
-	}
-
-	public String getCharset() {
-		return this.charset;
-	}
-
-	public void setCharset(String charset) {
-		this.charset = charset;
 	}
 
 	public String getPrefix() {
