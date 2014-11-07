@@ -1065,7 +1065,7 @@ JDBC or JPA (then that one will be picked up by any `@Autowired` injections).
 [[howto-use-spring-data-repositories]]
 === Use Spring Data repositories
 Spring Data can create implementations for you of `@Repository` interfaces of various
-flavours. Spring Boot will handle all of that for you as long as those `@Repositories`
+flavors. Spring Boot will handle all of that for you as long as those `@Repositories`
 are included in the same package (or a sub-package) of your `@EnableAutoConfiguration`
 class.
 

@@ -50,6 +50,7 @@ use `@..@` placeholders (you can override that with a Maven property
 `resource.delimiter`).
 
 
+
 [[using-boot-maven-parent-pom]]
 ==== Inheriting the starter parent
 To configure your project to inherit from the `spring-boot-starter-parent` simply set
@@ -546,6 +547,8 @@ required `RiskAssessor` bean.
 
 TIP: Notice how using constructor injection allows the `riskAssessor` field to be marked
 as `final`, indicating that it cannot be subsequently changed.
+
+
 
 [[using-boot-running-your-application]]
 == Running your application
