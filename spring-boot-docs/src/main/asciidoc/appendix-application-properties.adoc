@@ -398,8 +398,15 @@ content into your application; rather pick only the properties that you need.
 	endpoints.trace.enabled=true
 
 	# HEALTH INDICATORS
-	health.diskspace.path=.
-	health.diskspace.threshold=10485760
+	management.health.db.enabled=true
+	management.health.diskspace.enabled=true
+    management.health.mongo.enabled=true
+    management.health.rabbit.enabled=true
+    management.health.redis.enabled=true
+    management.health.solr.enabled=true
+	management.health.diskspace.path=.
+	management.health.diskspace.threshold=10485760
+	management.health.status.order: DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 
 	# MVC ONLY ENDPOINTS
 	endpoints.jolokia.path=jolokia

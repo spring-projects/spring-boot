@@ -95,7 +95,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(DataSource.class)
-	@ConditionalOnProperty(prefix = "health.db", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "management.health.db", name = "enabled", matchIfMissing = true)
 	public static class DataSourcesHealthIndicatorConfiguration {
 
 		@Autowired
@@ -142,7 +142,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(MongoTemplate.class)
-	@ConditionalOnProperty(prefix = "health.mongo", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "management.health.mongo", name = "enabled", matchIfMissing = true)
 	public static class MongoHealthIndicatorConfiguration {
 
 		@Autowired
@@ -171,7 +171,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RedisConnectionFactory.class)
-	@ConditionalOnProperty(prefix = "health.redis", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "management.health.redis", name = "enabled", matchIfMissing = true)
 	public static class RedisHealthIndicatorConfiguration {
 
 		@Autowired
@@ -201,7 +201,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RabbitTemplate.class)
-	@ConditionalOnProperty(prefix = "health.rabbit", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "management.health.rabbit", name = "enabled", matchIfMissing = true)
 	public static class RabbitHealthIndicatorConfiguration {
 
 		@Autowired
@@ -231,7 +231,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(SolrServer.class)
-	@ConditionalOnProperty(prefix = "health.solr", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "management.health.solr", name = "enabled", matchIfMissing = true)
 	public static class SolrHealthIndicatorConfiguration {
 
 		@Autowired
@@ -259,7 +259,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "health.diskspace", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "management.health.diskspace", name = "enabled", matchIfMissing = true)
 	public static class DiskSpaceHealthIndicatorConfiguration {
 
 		@Bean

@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-@ConfigurationProperties("health.diskspace")
+@ConfigurationProperties("management.health.diskspace")
 public class DiskSpaceHealthIndicatorProperties {
 
 	private static final int MEGABYTES = 1024 * 1024;

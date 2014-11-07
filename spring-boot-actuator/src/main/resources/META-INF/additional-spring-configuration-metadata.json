@@ -1,5 +1,41 @@
 {"properties": [
   {
+    "name": "management.health.db.enabled",
+    "dataType": "java.lang.Boolean",
+    "description": "Enable database health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.diskspace.enabled",
+    "dataType": "java.lang.Boolean",
+    "description": "Enable disk space health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.mongo.enabled",
+    "dataType": "java.lang.Boolean",
+    "description": "Enable MongoDB health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.rabbit.enabled",
+    "dataType": "java.lang.Boolean",
+    "description": "Enable RabbitMQ health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.redis.enabled",
+    "dataType": "java.lang.Boolean",
+    "description": "Enable Redis health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.solr.enabled",
+    "dataType": "java.lang.Boolean",
+    "description": "Enable Solr health check.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.git.properties",
     "dataType": "java.lang.String",
     "description": "Resource reference to a generated git info properties file."

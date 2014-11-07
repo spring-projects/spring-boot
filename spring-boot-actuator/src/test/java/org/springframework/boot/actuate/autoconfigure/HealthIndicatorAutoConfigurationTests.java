@@ -78,7 +78,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -93,7 +93,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(RedisAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -107,8 +107,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(RedisAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "health.redis.enabled:false",
-				"health.diskspace.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.health.redis.enabled:false",
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -123,7 +123,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -137,8 +137,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "health.mongo.enabled:false",
-				"health.diskspace.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.health.mongo.enabled:false",
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -165,7 +165,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -183,7 +183,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.validation-query:SELECT from FOOBAR",
-				"health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -199,8 +199,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "health.db.enabled:false",
-				"health.diskspace.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.health.db.enabled:false",
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -215,7 +215,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(RabbitAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -229,8 +229,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(RabbitAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "health.rabbit.enabled:false",
-				"health.diskspace.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.health.rabbit.enabled:false",
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -245,7 +245,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(SolrAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"health.diskspace.enabled:false");
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
@@ -259,8 +259,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(SolrAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "health.solr.enabled:false",
-				"health.diskspace.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "management.health.solr.enabled:false",
+				"management.health.diskspace.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);

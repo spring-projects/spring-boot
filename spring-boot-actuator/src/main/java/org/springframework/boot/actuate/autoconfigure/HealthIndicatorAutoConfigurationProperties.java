@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Christian Dupuis
  * @since 1.2.0
  */
-@ConfigurationProperties("health.status")
+@ConfigurationProperties("management.health.status")
 public class HealthIndicatorAutoConfigurationProperties {
 
 	private List<String> order = null;
