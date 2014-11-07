@@ -1442,7 +1442,7 @@ and  http://hibernate.org/orm/documentation/[Hibernate] reference documentation.
 Traditionally, JPA '`Entity`' classes are specified in a `persistence.xml` file. With
 Spring Boot this file is not necessary and instead '`Entity Scanning`' is used. By
 default all packages below your main configuration class (the one annotated with
-`@EnableAutoConfiguration`) will be searched.
+`@EnableAutoConfiguration` or `@SpringBootApplication`) will be searched.
 
 Any classes annotated with `@Entity`, `@Embeddable` or `@MappedSuperclass` will be
 considered. A typical entity class would look something like this:
@@ -1511,7 +1511,8 @@ Spring Data repositories usually extend from the
 {spring-data-commons-javadoc}/repository/Repository.html[`Repository`] or
 {spring-data-commons-javadoc}/repository/CrudRepository.html[`CrudRepository`] interfaces. If you are using
 auto-configuration, repositories will be searched from the package containing your
-main configuration class (the one annotated with `@EnableAutoConfiguration`) down.
+main configuration class (the one annotated with `@EnableAutoConfiguration` or
+`@SpringBootApplication`) down.
 
 Here is a typical Spring Data repository:
 
