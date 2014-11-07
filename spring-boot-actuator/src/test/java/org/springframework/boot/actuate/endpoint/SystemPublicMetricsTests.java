@@ -42,6 +42,7 @@ public class SystemPublicMetricsTests {
 		assertTrue(results.containsKey("mem.free"));
 		assertTrue(results.containsKey("processors"));
 		assertTrue(results.containsKey("uptime"));
+		assertTrue(results.containsKey("systemload.average"));
 
 		assertTrue(results.containsKey("heap.committed"));
 		assertTrue(results.containsKey("heap.init"));
