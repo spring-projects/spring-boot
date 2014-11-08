@@ -276,7 +276,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					StandardLocation.CLASS_PATH, "",
 					"META-INF/additional-spring-configuration-metadata.json");
 			if (!"file".equals(manualMetadata.toUri().getScheme())) {
-				// We only wan't local files, not any classpath jars
+				// We only want local files, not any classpath jars
 				return metadata;
 			}
 			InputStream inputStream = manualMetadata.openInputStream();
