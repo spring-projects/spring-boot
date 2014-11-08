@@ -1,5 +1,17 @@
 {"properties": [
   {
+    "name": "endpoints.configprops.keys-to-sanitize",
+    "dataType": "java.lang.String",
+    "sourceType": "org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint",
+    "description": "The keys that should be sanitize. Keys can be simple strings that the property ends with or regex expressions."
+  },
+  {
+    "name": "endpoints.env.keys-to-sanitize",
+    "dataType": "java.lang.String",
+    "sourceType": "org.springframework.boot.actuate.endpoint.EnvironmentEndpoint",
+    "description": "The keys that should be sanitize. Keys can be simple strings that the property ends with or regex expressions."
+  },
+  {
     "name": "management.health.db.enabled",
     "dataType": "java.lang.Boolean",
     "description": "Enable database health check.",

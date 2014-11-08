@@ -68,6 +68,16 @@
     "dataType": "java.lang.Boolean",
     "sourceType": "org.springframework.boot.SpringApplication",
     "description": "Run the application in a web environment (auto-detected by default)"
+  },
+  {
+    "name": "spring.profiles.active",
+    "dataType": "java.lang.String",
+    "description": "Set the active profiles as a comma separated list. Can be overridden by a command line switch."
+  },
+  {
+    "name": "spring.profiles.include",
+    "dataType": "java.lang.String",
+    "description": "Unconditionally activate the specified comma separated profiles."
   }
 ]}
 

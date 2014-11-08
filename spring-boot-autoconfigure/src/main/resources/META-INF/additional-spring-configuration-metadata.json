@@ -12,7 +12,7 @@
     "defaultValue": false
   },
   {
-    "name": "spring.batch.enabled",
+    "name": "spring.batch.job.enabled",
     "dataType": "java.lang.Boolean",
     "description": "Execute all Spring Batch jobs in the context on startup.",
     "defaultValue": true
