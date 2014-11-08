@@ -91,7 +91,12 @@ class TypeElementMembers {
 	private boolean isSetter(ExecutableElement method) {
 		final String name = method.getSimpleName().toString();
 		return name.startsWith("set") && method.getParameters().size() == 1
-				&& (TypeKind.VOID == method.getReturnType().getKind());
+				&& (isSetterReturnType(method));
+	}
+
+	private boolean isSetterReturnType(ExecutableElement method) {
+		return (TypeKind.VOID == method.getReturnType().getKind()
+				|| method.getEnclosingElement().asType().equals(method.getReturnType()));
 	}
 
 	private String getAccessorName(String methodName) {

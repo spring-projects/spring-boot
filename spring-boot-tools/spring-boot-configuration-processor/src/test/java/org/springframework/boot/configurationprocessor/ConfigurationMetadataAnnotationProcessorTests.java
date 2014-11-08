@@ -36,6 +36,7 @@ import org.springframework.boot.configurationsample.simple.SimpleCollectionPrope
 import org.springframework.boot.configurationsample.simple.SimplePrefixValueProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
 import org.springframework.boot.configurationsample.simple.SimpleTypeProperties;
+import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
@@ -249,6 +250,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsProperty("specific.value"));
 		assertThat(metadata, containsProperty("foo.name"));
 		assertThat(metadata, not(containsProperty("specific.foo")));
+	}
+
+	@Test
+	public void builderPojo() throws IOException {
+		ConfigurationMetadata metadata = compile(BuilderPojo.class);
+		assertThat(metadata, containsProperty("builder.name"));
 	}
 
 	private ConfigurationMetadata compile(Class<?>... types) throws IOException {
