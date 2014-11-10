@@ -617,6 +617,26 @@ change the version properties, e.g. for a simple webapp or service:
 
 
 
+[[howto-create-websocket-endpoints-using-serverendpoint]]
+=== Create WebSocket endpoints using @ServerEndpoint
+If you want to use `@ServerEndpoint` in a Spring Boot application that used an embedded
+container, you must declare a single `ServerEndpointExporter` `@Bean`:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public ServerEndpointExporter serverEndpointExporter() {
+		return new ServerEndpointExporter();
+	}
+----
+
+This bean will register any `@ServerEndpoint` annotated beans with the underlying
+WebSocket container. When deployed to a standalone servlet container this role is
+performed by a servlet container initializer and the `ServerEndpointExporter` bean is
+not required.
+
+
+
 [[howto-spring-mvc]]
 == Spring MVC
 

@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package samples.websocket.echo;
+package samples.websocket;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -54,42 +55,64 @@ public class SampleWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
 
-	private static String WS_URI;
-
 	@Value("${local.server.port}")
-	private int port;
+	private int port = 1234;
 
-	@Before
-	public void init() {
-		WS_URI = "ws://localhost:" + this.port + "/echo/websocket";
+	@Test
+	public void echoEndpoint() throws Exception {
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(
+				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
+				.properties(
+						"websocket.uri:ws://localhost:" + this.port + "/echo/websocket")
+				.run("--spring.main.web_environment=false");
+		long count = context.getBean(ClientConfiguration.class).latch.getCount();
+		AtomicReference<String> messagePayloadReference = context
+				.getBean(ClientConfiguration.class).messagePayload;
+		context.close();
+		assertEquals(0, count);
+		assertEquals("Did you say \"Hello world!\"?", messagePayloadReference.get());
 	}
 
 	@Test
-	public void runAndWait() throws Exception {
-		ConfigurableApplicationContext context = SpringApplication.run(
-				ClientConfiguration.class, "--spring.main.web_environment=false");
+	public void reverseEndpoint() throws Exception {
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(
+				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
+				.properties("websocket.uri:ws://localhost:" + this.port + "/reverse")
+				.run("--spring.main.web_environment=false");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
+		AtomicReference<String> messagePayloadReference = context
+				.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
 		assertEquals(0, count);
+		assertEquals("Reversed: !dlrow olleH", messagePayloadReference.get());
 	}
 
 	@Configuration
 	static class ClientConfiguration implements CommandLineRunner {
 
+		@Value("${websocket.uri}")
+		private String webSocketUri;
+
 		private final CountDownLatch latch = new CountDownLatch(1);
+
+		private final AtomicReference<String> messagePayload = new AtomicReference<String>();
 
 		@Override
 		public void run(String... args) throws Exception {
 			logger.info("Waiting for response: latch=" + this.latch.getCount());
-			this.latch.await(10, TimeUnit.SECONDS);
-			logger.info("Got response: latch=" + this.latch.getCount());
+			if (this.latch.await(10, TimeUnit.SECONDS)) {
+				logger.info("Got response: " + this.messagePayload.get());
+			}
+			else {
+				logger.info("Response not received: latch=" + this.latch.getCount());
+			}
 		}
 
 		@Bean
 		public WebSocketConnectionManager wsConnectionManager() {
 
 			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(),
-					handler(), WS_URI);
+					handler(), this.webSocketUri);
 			manager.setAutoStartup(true);
 
 			return manager;
@@ -102,7 +125,8 @@ public class SampleWebSocketsApplicationTests {
 
 		@Bean
 		public SimpleClientWebSocketHandler handler() {
-			return new SimpleClientWebSocketHandler(greetingService(), this.latch);
+			return new SimpleClientWebSocketHandler(greetingService(), this.latch,
+					this.messagePayload);
 		}
 
 		@Bean

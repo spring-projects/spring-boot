@@ -26,12 +26,14 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 import samples.websocket.client.GreetingService;
 import samples.websocket.client.SimpleGreetingService;
 import samples.websocket.echo.DefaultEchoService;
 import samples.websocket.echo.EchoService;
 import samples.websocket.echo.EchoWebSocketHandler;
+import samples.websocket.reverse.ReverseWebSocketEndpoint;
 import samples.websocket.snake.SnakeWebSocketHandler;
 
 @SpringBootApplication
@@ -72,6 +74,16 @@ public class SampleWebSocketsApplication extends SpringBootServletInitializer im
 	@Bean
 	public WebSocketHandler snakeWebSocketHandler() {
 		return new PerConnectionWebSocketHandler(SnakeWebSocketHandler.class);
+	}
+
+	@Bean
+	public ReverseWebSocketEndpoint reverseWebSocketEndpoint() {
+		return new ReverseWebSocketEndpoint();
+	}
+
+	@Bean
+	public ServerEndpointExporter serverEndpointExporter() {
+		return new ServerEndpointExporter();
 	}
 
 }
