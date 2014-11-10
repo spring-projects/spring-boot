@@ -372,6 +372,12 @@ To run a project in place without building a jar first you can use the "`bootRun
 Running this way makes your static classpath resources (i.e. in `src/main/resources` by
 default) reloadable in the live application, which can be helpful at development time.
 
+NOTE: Making static classpath resources reloadable means that `bootRun` does not use the
+output of the `processResources` task. When invoked using `bootRun` your application will
+use the resources in their unprocessed form.
+
+
+
 [[build-tool-plugins-gradle-global-configuration]]
 === Spring Boot plugin configuration
 The gradle plugin automatically extends your build script DSL with a `springBoot` element
