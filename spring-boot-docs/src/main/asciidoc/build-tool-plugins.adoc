@@ -568,6 +568,80 @@ you may find that it includes unnecessary dependencies.
 
 
 
+[[build-tool-plugins-gradle-publishing-artifacts-to-a-maven-repository]]
+=== Publishing artifacts to a Maven repository using Gradle
+If you are <<build-tool-plugins-gradle-dependencies-without-versions, declaring
+dependencies without versions>> and you want to publish artifacts to a Maven repository
+you will need to configure the Maven publication with details of Spring Boot's
+dependency management. This can be achieved by configuring it to publish poms that
+inherit from `spring-boot-starter-parent` or that import dependency management from
+`spring-boot-dependencies`. The exact details of this configuration depend on how you're
+using Gradle and how you're trying to publish the artifacts.
+
+
+
+[[build-tool-plugins-gradle-publishing-artifacts-to-a-maven-repository-inherit]]
+==== Configuring Gradle to produce a pom that inherits dependency management
+The following is an example of configuring Gradle to generate a pom that inherits
+from `spring-boot-starter-parent`. Please refer to the
+http://www.gradle.org/docs/current/userguide/userguide.html[Gradle User Guide] for
+further information.
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				pom {
+					project {
+						parent {
+							groupId "org.springframework.boot"
+							artifactId "spring-boot-starter-parent"
+							version "{spring-boot-version}"
+						}
+					}
+				}
+			}
+		}
+	}
+----
+
+
+
+[[build-tool-plugins-gradle-publishing-artifacts-to-a-maven-repository-import]]
+==== Configuring Gradle to produce a pom that imports dependency management
+The following is an example of configuring Gradle to generate a pom that imports
+the dependency management provided by `spring-boot-dependencies`. Please refer to the
+http://www.gradle.org/docs/current/userguide/userguide.html[Gradle User Guide] for
+further information.
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				pom {
+					project {
+						dependencyManagement {
+							dependencies {
+								dependency {
+									groupId "org.springframework.boot"
+									artifactId "spring-boot-dependencies"
+									version "{spring-boot-version}"
+									type "pom"
+									scope "import"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+----
+
+
+
 [[build-tool-plugins-other-build-systems]]
 == Supporting other build systems
 If you want to use a build tool other than Maven or Gradle, you will likely need to develop
