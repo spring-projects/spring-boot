@@ -103,7 +103,7 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void metricEndpointsHasSystemMetricsByDefault() {
-		load(EndpointAutoConfiguration.class);
+		load(PublicMetricsAutoConfiguration.class, EndpointAutoConfiguration.class);
 		MetricsEndpoint endpoint = this.context.getBean(MetricsEndpoint.class);
 		Map<String, Object> metrics = endpoint.invoke();
 		assertTrue(metrics.containsKey("mem"));
@@ -112,7 +112,8 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void metricEndpointCustomPublicMetrics() {
-		load(CustomPublicMetricsConfig.class, EndpointAutoConfiguration.class);
+		load(CustomPublicMetricsConfig.class, PublicMetricsAutoConfiguration.class,
+				EndpointAutoConfiguration.class);
 		MetricsEndpoint endpoint = this.context.getBean(MetricsEndpoint.class);
 		Map<String, Object> metrics = endpoint.invoke();
 

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,18 +35,14 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
-import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
-import org.springframework.boot.actuate.endpoint.SystemPublicMetrics;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
-import org.springframework.boot.actuate.metrics.reader.MetricReader;
-import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -58,6 +55,7 @@ import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
@@ -85,9 +83,6 @@ public class EndpointAutoConfiguration {
 
 	@Autowired(required = false)
 	Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
-
-	@Autowired(required = false)
-	private MetricReader metricReader = new InMemoryMetricRepository();
 
 	@Autowired(required = false)
 	private Collection<PublicMetrics> publicMetrics;
@@ -132,11 +127,10 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public MetricsEndpoint metricsEndpoint() {
 		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
-		publicMetrics.add(new SystemPublicMetrics());
-		publicMetrics.add(new MetricReaderPublicMetrics(this.metricReader));
 		if (this.publicMetrics != null) {
 			publicMetrics.addAll(this.publicMetrics);
 		}
+		Collections.sort(publicMetrics, AnnotationAwareOrderComparator.INSTANCE);
 		return new MetricsEndpoint(publicMetrics);
 	}
 
