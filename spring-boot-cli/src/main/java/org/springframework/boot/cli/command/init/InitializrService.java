@@ -141,6 +141,8 @@ class InitializrService {
 	private CloseableHttpResponse execute(HttpUriRequest request, Object url,
 			String description) {
 		try {
+			request.addHeader("User-Agent", "SpringBootCli/"
+					+ getClass().getPackage().getImplementationVersion());
 			return getHttp().execute(request);
 		}
 		catch (IOException ex) {

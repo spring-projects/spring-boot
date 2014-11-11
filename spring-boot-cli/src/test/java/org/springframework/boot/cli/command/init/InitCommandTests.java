@@ -26,15 +26,24 @@ import java.util.zip.ZipOutputStream;
 
 import joptsimple.OptionSet;
 
+import org.apache.http.Header;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.cli.command.status.ExitStatus;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link InitCommand}
@@ -49,6 +58,14 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	private final TestableInitCommandOptionHandler handler;
 
 	private final InitCommand command;
+
+	@Captor
+	private ArgumentCaptor<HttpUriRequest> requestCaptor;
+
+	@Before
+	public void setupMocks() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	public InitCommandTests() {
 		InitializrService initializrService = new InitializrService(this.http);
@@ -274,6 +291,14 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	public void parseMoreThanOneArg() throws Exception {
 		this.handler.disableProjectGeneration();
 		assertEquals(ExitStatus.ERROR, this.command.run("foobar", "barfoo"));
+	}
+
+	@Test
+	public void userAgent() throws Exception {
+		this.command.run("--list", "--target=http://fake-service");
+		verify(this.http).execute(this.requestCaptor.capture());
+		Header agent = this.requestCaptor.getValue().getHeaders("User-Agent")[0];
+		assertThat(agent.getValue(), startsWith("SpringBootCli/"));
 	}
 
 	private byte[] createFakeZipArchive(String fileName, String content)
