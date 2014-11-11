@@ -16,14 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import javax.servlet.Servlet;
 import javax.sql.DataSource;
 
+import org.apache.catalina.startup.Tomcat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RichGaugeReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.SystemPublicMetrics;
+import org.springframework.boot.actuate.endpoint.TomcatPublicMetrics;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
@@ -43,6 +46,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Johannes Stelzer
  * @since 1.2.0
  */
 @Configuration
@@ -71,7 +75,6 @@ public class PublicMetricsAutoConfiguration {
 		return new RichGaugeReaderPublicMetrics(richGaugeReader);
 	}
 
-	@Configuration
 	@ConditionalOnClass(DataSource.class)
 	@ConditionalOnBean(DataSource.class)
 	static class DataSourceMetricsConfiguration {
@@ -81,6 +84,17 @@ public class PublicMetricsAutoConfiguration {
 		@ConditionalOnBean(DataSourcePoolMetadataProvider.class)
 		public DataSourcePublicMetrics dataSourcePublicMetrics() {
 			return new DataSourcePublicMetrics();
+		}
+
+	}
+
+	@ConditionalOnClass({ Servlet.class, Tomcat.class })
+	static class TomcatMetricsConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public TomcatPublicMetrics tomcatPublicMetrics() {
+			return new TomcatPublicMetrics();
 		}
 
 	}

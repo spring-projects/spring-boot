@@ -33,12 +33,14 @@ import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RichGaugeReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.SystemPublicMetrics;
+import org.springframework.boot.actuate.endpoint.TomcatPublicMetrics;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.rich.RichGauge;
 import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +48,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.SocketUtils;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -175,6 +178,12 @@ public class PublicMetricsAutoConfigurationTests {
 				"ds.second.usage");
 	}
 
+	@Test
+	public void tomcatMetrics() throws Exception {
+		load(TomcatConfiguration.class);
+		assertEquals(1, this.context.getBeansOfType(TomcatPublicMetrics.class).size());
+	}
+
 	private void assertHasMetric(Collection<Metric<?>> metrics, Metric<?> metric) {
 		for (Metric<?> m : metrics) {
 			if (m.getValue().equals(metric.getValue())
@@ -267,6 +276,18 @@ public class PublicMetricsAutoConfigurationTests {
 		@Bean
 		public RichGaugeReader richGaugeReader() {
 			return mock(RichGaugeReader.class);
+		}
+
+	}
+
+	@Configuration
+	static class TomcatConfiguration {
+
+		@Bean
+		public TomcatEmbeddedServletContainerFactory containerFactory() {
+			TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+			factory.setPort(SocketUtils.findAvailableTcpPort(40000));
+			return factory;
 		}
 
 	}
