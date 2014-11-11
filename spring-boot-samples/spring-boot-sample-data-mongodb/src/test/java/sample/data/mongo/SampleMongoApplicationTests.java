@@ -16,6 +16,8 @@
 
 package sample.data.mongo;
 
+import java.util.regex.Pattern;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
@@ -32,6 +34,9 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 public class SampleMongoApplicationTests {
+
+	private static final Pattern TIMEOUT_MESSAGE_PATTERN = Pattern
+			.compile("Timed out after [0-9]+ ms while waiting for a server.*");
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
@@ -61,7 +66,7 @@ public class SampleMongoApplicationTests {
 			if (root.getMessage().contains("Unable to connect to any server")) {
 				return true;
 			}
-			if (root.getMessage().contains("Timed out while waiting for a server")) {
+			if (TIMEOUT_MESSAGE_PATTERN.matcher(root.getMessage()).matches()) {
 				return true;
 			}
 		}
