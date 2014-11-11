@@ -39,11 +39,14 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MultipartAutoConfiguration}. Tests an empty configuration, no
@@ -165,6 +168,16 @@ public class MultipartAutoConfigurationTests {
 		assertEquals(0, this.context.getBeansOfType(MultipartConfigElement.class).size());
 	}
 
+	@Test
+	public void containerWithCustomMulipartResolver() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				ContainerWithCustomMultipartResolver.class, BaseConfiguration.class);
+		MultipartResolver multipartResolver = this.context
+				.getBean(MultipartResolver.class);
+		assertThat(multipartResolver,
+				not(instanceOf(StandardServletMultipartResolver.class)));
+	}
+
 	private void verifyServletWorks() {
 		RestTemplate restTemplate = new RestTemplate();
 		assertEquals("Hello", restTemplate.getForObject("http://localhost:"
@@ -239,6 +252,15 @@ public class MultipartAutoConfigurationTests {
 		@Bean
 		WebController webController() {
 			return new WebController();
+		}
+
+	}
+
+	public static class ContainerWithCustomMultipartResolver {
+
+		@Bean
+		MultipartResolver multipartResolver() {
+			return mock(MultipartResolver.class);
 		}
 
 	}

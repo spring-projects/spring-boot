@@ -21,12 +21,14 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.user.SecurityConfig;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
@@ -39,6 +41,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = JpaUserDetailsTests.Main.class)
+@DirtiesContext
 public class JpaUserDetailsTests {
 
 	@Test
@@ -49,7 +52,8 @@ public class JpaUserDetailsTests {
 		SpringApplication.run(Main.class, args);
 	}
 
-	@Import({ DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
+	@Import({ EmbeddedDataSourceConfiguration.class, DataSourceAutoConfiguration.class,
+			HibernateJpaAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, SecurityAutoConfiguration.class })
 	@ComponentScan(basePackageClasses = SecurityConfig.class)
 	public static class Main {
