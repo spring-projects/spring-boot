@@ -27,7 +27,7 @@
 		<maven.version>3.1.1</maven.version>
 	</properties>
 	<prerequisites>
-		<maven>3.0.0</maven>
+		<maven>3.0.2</maven>
 	</prerequisites>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -243,6 +243,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.18</version>
 					<executions>
 						<execution>
 							<goals>
@@ -265,7 +266,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.3</version>
+					<version>3.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
@@ -275,7 +276,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>2.2</version>
+					<version>2.4</version>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
@@ -532,6 +533,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.10.1</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
