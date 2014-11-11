@@ -176,11 +176,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.hornetq</groupId>
 			<artifactId>hornetq-jms-client</artifactId>
 			<optional>true</optional>
