@@ -16,9 +16,6 @@
 
 package org.springframework.boot.loader;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.util.AsciiBytes;
 
@@ -28,12 +25,11 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * classes are loaded from {@code WEB-INF/classes}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class WarLauncher extends ExecutableArchiveLauncher {
 
 	private static final AsciiBytes WEB_INF = new AsciiBytes("WEB-INF/");
-
-	private static final AsciiBytes META_INF = new AsciiBytes("META-INF/");
 
 	private static final AsciiBytes WEB_INF_CLASSES = WEB_INF.append("classes/");
 
@@ -41,6 +37,14 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 
 	private static final AsciiBytes WEB_INF_LIB_PROVIDED = WEB_INF
 			.append("lib-provided/");
+
+	public WarLauncher() {
+		super();
+	}
+
+	WarLauncher(Archive archive) {
+		super(archive);
+	}
 
 	@Override
 	public boolean isNestedArchive(Archive.Entry entry) {
@@ -51,29 +55,6 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 			return entry.getName().startsWith(WEB_INF_LIB)
 					|| entry.getName().startsWith(WEB_INF_LIB_PROVIDED);
 		}
-	}
-
-	@Override
-	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
-		archives.add(0, getFilteredArchive());
-	}
-
-	/**
-	 * Filter the specified WAR file to exclude elements that should not appear on the
-	 * classpath.
-	 * @return the filtered archive
-	 * @throws IOException on error
-	 */
-	protected Archive getFilteredArchive() throws IOException {
-		return getArchive().getFilteredArchive(new Archive.EntryRenameFilter() {
-			@Override
-			public AsciiBytes apply(AsciiBytes entryName, Archive.Entry entry) {
-				if (entryName.startsWith(META_INF) || entryName.startsWith(WEB_INF)) {
-					return null;
-				}
-				return entryName;
-			}
-		});
 	}
 
 	public static void main(String[] args) {
