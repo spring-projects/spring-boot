@@ -70,7 +70,7 @@
 		<hibernate-entitymanager.version>${hibernate.version}</hibernate-entitymanager.version>
 		<hibernate-jpa-api.version>1.0.1.Final</hibernate-jpa-api.version>
 		<hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
-		<hikaricp.version>2.1.0</hikaricp.version>
+		<hikaricp.version>2.2.4</hikaricp.version>
 		<httpclient.version>4.3.6</httpclient.version>
 		<httpasyncclient.version>4.0.2</httpasyncclient.version>
 		<hornetq.version>2.4.5.Final</hornetq.version>
