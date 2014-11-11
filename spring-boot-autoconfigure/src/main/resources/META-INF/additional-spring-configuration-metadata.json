@@ -54,6 +54,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.http.encoding.enabled",
+    "dataType": "java.lang.Boolean",
+    "description": "Enable http encoding support.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.jmx.enabled",
     "dataType": "java.lang.Boolean",
     "description": "Automatically expose management beans to the JMX domain",

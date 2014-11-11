@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,7 +54,6 @@ import com.google.gson.Gson;
 @ConditionalOnClass(HttpMessageConverter.class)
 public class HttpMessageConvertersAutoConfiguration {
 
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	@Autowired(required = false)
 	private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
@@ -125,12 +123,16 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(StringHttpMessageConverter.class)
+	@EnableConfigurationProperties(HttpEncodingProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {
+
+		@Autowired
+		private HttpEncodingProperties httpEncodingProperties;
 
 		@Bean
 		@ConditionalOnMissingBean
 		public StringHttpMessageConverter stringHttpMessageConverter() {
-			return new StringHttpMessageConverter(UTF_8);
+			return new StringHttpMessageConverter(httpEncodingProperties.getCharset());
 		}
 
 	}

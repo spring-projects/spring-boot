@@ -60,6 +60,7 @@ org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfigura
 org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.HttpEncodingAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
