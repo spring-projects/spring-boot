@@ -68,18 +68,18 @@
 		<hibernate-jpa-api.version>1.0.1.Final</hibernate-jpa-api.version>
 		<hibernate-validator.version>5.0.3.Final</hibernate-validator.version>
 		<hikaricp.version>1.4.0</hikaricp.version>
-		<httpclient.version>4.3.6</httpclient.version>
-		<httpasyncclient.version>4.0.2</httpasyncclient.version>
 		<hornetq.version>2.4.5.Final</hornetq.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
+		<httpasyncclient.version>4.0.2</httpasyncclient.version>
+		<httpclient.version>4.3.6</httpclient.version>
 		<jackson.version>2.3.4</jackson.version>
 		<janino.version>2.6.1</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
+		<jaxen.version>1.1.6</jaxen.version>
+		<jdom2.version>2.0.5</jdom2.version>
 		<jedis.version>2.4.2</jedis.version>
 		<jetty.version>8.1.15.v20140411</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
-		<jaxen.version>1.1.6</jaxen.version>
-		<jdom2.version>2.0.5</jdom2.version>
 		<joda-time.version>2.3</joda-time.version>
 		<jolokia.version>1.2.3</jolokia.version>
 		<json-path.version>0.9.1</json-path.version>
@@ -106,12 +106,12 @@
 		<spring-integration.version>4.0.4.RELEASE</spring-integration.version>
 		<spring-loaded.version>1.2.1.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.3.RELEASE</spring-mobile.version>
-		<spring-social.version>1.1.0.RELEASE</spring-social.version>
-		<spring-social-facebook.version>1.1.1.RELEASE</spring-social-facebook.version>
-		<spring-social-twitter.version>1.1.0.RELEASE</spring-social-twitter.version>
-		<spring-social-linkedin.version>1.0.1.RELEASE</spring-social-linkedin.version>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.2.RELEASE</spring-security-jwt.version>
+		<spring-social.version>1.1.0.RELEASE</spring-social.version>
+		<spring-social-facebook.version>1.1.1.RELEASE</spring-social-facebook.version>
+		<spring-social-linkedin.version>1.0.1.RELEASE</spring-social-linkedin.version>
+		<spring-social-twitter.version>1.1.0.RELEASE</spring-social-twitter.version>
 		<spring-ws.version>2.2.0.RELEASE</spring-ws.version>
 		<thymeleaf.version>2.1.3.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
@@ -349,7 +349,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.codahale.metrics</groupId>
-				<artifactId>metrics-graphite</artifactId>
+				<artifactId>metrics-core</artifactId>
 				<version>${codahale-metrics.version}</version>
 			</dependency>
 			<dependency>
@@ -359,18 +359,13 @@
 			</dependency>
 			<dependency>
 				<groupId>com.codahale.metrics</groupId>
-				<artifactId>metrics-core</artifactId>
+				<artifactId>metrics-graphite</artifactId>
 				<version>${codahale-metrics.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.codahale.metrics</groupId>
 				<artifactId>metrics-servlets</artifactId>
 				<version>${codahale-metrics.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.codehaus.janino</groupId>
-				<artifactId>janino</artifactId>
-				<version>${janino.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
@@ -501,12 +496,12 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-client</artifactId>
+				<artifactId>activemq-broker</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-broker</artifactId>
+				<artifactId>activemq-client</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
 			<dependency>
@@ -518,6 +513,17 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-pool2</artifactId>
 				<version>${commons-pool2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpasyncclient</artifactId>
+				<version>${httpasyncclient.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
@@ -536,17 +542,6 @@
 				<version>${httpclient.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpasyncclient</artifactId>
-				<version>${httpasyncclient.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-core</artifactId>
 				<version>${tomcat.version}</version>
@@ -558,12 +553,12 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-logging-juli</artifactId>
+				<artifactId>tomcat-embed-jasper</artifactId>
 				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-jasper</artifactId>
+				<artifactId>tomcat-embed-logging-juli</artifactId>
 				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
@@ -708,6 +703,11 @@
 				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.codehaus.janino</groupId>
+				<artifactId>janino</artifactId>
+				<version>${janino.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.crashub</groupId>
 				<artifactId>crash.cli</artifactId>
 				<version>${crashub.version}</version>
@@ -766,12 +766,12 @@
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-webapp</artifactId>
+				<artifactId>jetty-util</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-util</artifactId>
+				<artifactId>jetty-webapp</artifactId>
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
@@ -780,14 +780,14 @@
 				<version>${jetty-jsp.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.freemarker</groupId>
-				<artifactId>freemarker</artifactId>
-				<version>${freemarker.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-core</artifactId>
 				<version>${flyway.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>${freemarker.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
@@ -816,12 +816,12 @@
 			</dependency>
 			<dependency>
 				<groupId>org.hornetq</groupId>
-				<artifactId>hornetq-jms-server</artifactId>
+				<artifactId>hornetq-jms-client</artifactId>
 				<version>${hornetq.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hornetq</groupId>
-				<artifactId>hornetq-jms-client</artifactId>
+				<artifactId>hornetq-jms-server</artifactId>
 				<version>${hornetq.version}</version>
 			</dependency>
 			<dependency>
@@ -835,19 +835,24 @@
 				<version>${javassist.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jolokia</groupId>
-				<artifactId>jolokia-core</artifactId>
-				<version>${jolokia.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.jdom</groupId>
 				<artifactId>jdom2</artifactId>
 				<version>${jdom2.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.jolokia</groupId>
+				<artifactId>jolokia-core</artifactId>
+				<version>${jolokia.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
 				<version>${liquibase.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mongodb</groupId>
@@ -881,12 +886,12 @@
 			</dependency>
 			<dependency>
 				<groupId>org.projectreactor.spring</groupId>
-				<artifactId>reactor-spring-core</artifactId>
+				<artifactId>reactor-spring-context</artifactId>
 				<version>${reactor-spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.projectreactor.spring</groupId>
-				<artifactId>reactor-spring-context</artifactId>
+				<artifactId>reactor-spring-core</artifactId>
 				<version>${reactor-spring.version}</version>
 			</dependency>
 			<dependency>
@@ -900,13 +905,13 @@
 				<version>${reactor-spring.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>${mockito.version}</version>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
-				<artifactId>jcl-over-slf4j</artifactId>
+				<artifactId>jul-to-slf4j</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
@@ -917,11 +922,6 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>jul-to-slf4j</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
@@ -957,15 +957,15 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
 				<version>${spring.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-core</artifactId>
-				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -1111,7 +1111,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.ws</groupId>
-				<artifactId>spring-ws-support</artifactId>
+				<artifactId>spring-ws-security</artifactId>
 				<version>${spring-ws.version}</version>
 				<exclusions>
 					<exclusion>
@@ -1122,7 +1122,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.ws</groupId>
-				<artifactId>spring-ws-security</artifactId>
+				<artifactId>spring-ws-support</artifactId>
 				<version>${spring-ws.version}</version>
 				<exclusions>
 					<exclusion>
