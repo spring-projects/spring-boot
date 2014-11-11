@@ -17,13 +17,9 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.io.File;
-import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.appender.AbstractOutputStreamAppender;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -57,17 +53,6 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Before
 	public void setup() {
 		this.logger = LogManager.getLogger(getClass());
-	}
-
-	@After
-	public void flushAllOutputStreamAppenders() {
-		for (Entry<String, Appender> entry : ((org.apache.logging.log4j.core.Logger) this.logger)
-				.getAppenders().entrySet()) {
-			Appender appender = entry.getValue();
-			if (appender instanceof AbstractOutputStreamAppender) {
-				((AbstractOutputStreamAppender<?>) appender).getManager().flush();
-			}
-		}
 	}
 
 	@Test

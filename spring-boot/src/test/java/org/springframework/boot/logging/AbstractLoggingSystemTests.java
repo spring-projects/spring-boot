@@ -19,15 +19,35 @@ package org.springframework.boot.logging;
 import java.io.File;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.springframework.util.StringUtils;
 
 /**
  * Base for {@link LoggingSystem} tests.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public abstract class AbstractLoggingSystemTests {
+
+	private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+
+	private static String tempDir;
+
+	@BeforeClass
+	public static void configureTempdir() {
+		tempDir = System.getProperty(JAVA_IO_TMPDIR);
+		File newTempDir = new File("target/tmp");
+		newTempDir.mkdirs();
+		System.setProperty(JAVA_IO_TMPDIR, newTempDir.getAbsolutePath());
+	}
+
+	@AfterClass
+	public static void reinstateTempDir() {
+		System.setProperty(JAVA_IO_TMPDIR, tempDir);
+	}
 
 	@Before
 	public void deleteTempLog() {
@@ -41,7 +61,7 @@ public abstract class AbstractLoggingSystemTests {
 	}
 
 	protected final String tmpDir() {
-		String path = StringUtils.cleanPath(System.getProperty("java.io.tmpdir"));
+		String path = StringUtils.cleanPath(System.getProperty(JAVA_IO_TMPDIR));
 		if (path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);
 		}
