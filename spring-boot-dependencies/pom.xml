@@ -81,7 +81,7 @@
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
 		<javax-mail.version>1.5.2</javax-mail.version>
-		<jedis.version>2.4.2</jedis.version>
+		<jedis.version>2.5.2</jedis.version>
 		<jetty.version>9.2.4.v20141103</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jaxen.version>1.1.6</jaxen.version>
