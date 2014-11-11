@@ -55,7 +55,7 @@ public class TestRestTemplate extends RestTemplate {
 	 * Create a new {@link TestRestTemplate} instance.
 	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
 	 */
-	public TestRestTemplate(HtppClientOption... httpClientOptions) {
+	public TestRestTemplate(HttpClientOption... httpClientOptions) {
 		this(null, null, httpClientOptions);
 	}
 
@@ -66,7 +66,7 @@ public class TestRestTemplate extends RestTemplate {
 	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
 	 */
 	public TestRestTemplate(String username, String password,
-			HtppClientOption... httpClientOptions) {
+			HttpClientOption... httpClientOptions) {
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
 			setRequestFactory(new CustomHttpComponentsClientHttpRequestFactory(
 					httpClientOptions));
@@ -94,7 +94,7 @@ public class TestRestTemplate extends RestTemplate {
 	/**
 	 * Options used to customize the Apache Http Client if it is used.
 	 */
-	public static enum HtppClientOption {
+	public static enum HttpClientOption {
 
 		/**
 		 * Enable cookies.
@@ -139,12 +139,12 @@ public class TestRestTemplate extends RestTemplate {
 		private final boolean enableRedirects;
 
 		public CustomHttpComponentsClientHttpRequestFactory(
-				HtppClientOption[] httpClientOptions) {
-			Set<HtppClientOption> options = new HashSet<TestRestTemplate.HtppClientOption>(
+				HttpClientOption[] httpClientOptions) {
+			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
 					Arrays.asList(httpClientOptions));
-			this.cookieSpec = (options.contains(HtppClientOption.ENABLE_COOKIES) ? CookieSpecs.STANDARD
+			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? CookieSpecs.STANDARD
 					: CookieSpecs.IGNORE_COOKIES);
-			this.enableRedirects = options.contains(HtppClientOption.ENABLE_REDIRECTS);
+			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
 		}
 
 		@Override
@@ -162,4 +162,5 @@ public class TestRestTemplate extends RestTemplate {
 		}
 
 	}
+
 }
