@@ -137,10 +137,6 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		return NO_PACKAGES;
 	}
 
-	protected void configure(
-			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
-	}
-
 	/**
 	 * @return the jtaTransactionManager or {@code null}
 	 */
