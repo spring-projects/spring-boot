@@ -90,11 +90,11 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
 		super.customizeVendorProperties(vendorProperties);
 		if (!vendorProperties.containsKey(JTA_PLATFORM)) {
-			dunno(vendorProperties);
+			configureJtaPlatform(vendorProperties);
 		}
 	}
 
-	private void dunno(Map<String, Object> vendorProperties) throws LinkageError {
+	private void configureJtaPlatform(Map<String, Object> vendorProperties) throws LinkageError {
 		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
 		if (jtaTransactionManager != null) {
 			vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(
