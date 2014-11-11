@@ -19,7 +19,7 @@ package org.springframework.boot.test;
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Test;
 import org.springframework.boot.test.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
-import org.springframework.boot.test.TestRestTemplate.HtppClientOption;
+import org.springframework.boot.test.TestRestTemplate.HttpClientOption;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 
@@ -49,10 +49,11 @@ public class TestRestTemplateTests {
 	@Test
 	public void options() throws Exception {
 		TestRestTemplate template = new TestRestTemplate(
-				HtppClientOption.ENABLE_REDIRECTS);
+				HttpClientOption.ENABLE_REDIRECTS);
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
 				.getRequestFactory();
 		RequestConfig config = factory.getRequestConfig();
 		assertThat(config.isRedirectsEnabled(), equalTo(true));
 	}
+
 }
