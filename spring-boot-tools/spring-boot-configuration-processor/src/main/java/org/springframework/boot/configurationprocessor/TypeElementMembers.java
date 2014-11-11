@@ -95,8 +95,8 @@ class TypeElementMembers {
 	}
 
 	private boolean isSetterReturnType(ExecutableElement method) {
-		return (TypeKind.VOID == method.getReturnType().getKind()
-				|| method.getEnclosingElement().asType().equals(method.getReturnType()));
+		return (TypeKind.VOID == method.getReturnType().getKind() || method
+				.getEnclosingElement().asType().equals(method.getReturnType()));
 	}
 
 	private String getAccessorName(String methodName) {
