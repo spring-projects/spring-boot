@@ -29,8 +29,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for configuring the
- * encoding to use in web applications.
+ * {@link EnableAutoConfiguration Auto-configuration} for configuring the encoding to use
+ * in web applications.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
@@ -44,13 +44,13 @@ public class HttpEncodingAutoConfiguration {
 	@Autowired
 	private HttpEncodingProperties httpEncodingProperties;
 
-	@ConditionalOnMissingBean
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
+	@ConditionalOnMissingBean
 	public CharacterEncodingFilter characterEncodingFilter() {
 		CharacterEncodingFilter filter = new CharacterEncodingFilter();
-		filter.setEncoding(httpEncodingProperties.getCharset().name());
-		filter.setForceEncoding(httpEncodingProperties.isForce());
+		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
+		filter.setForceEncoding(this.httpEncodingProperties.isForce());
 		return filter;
 	}
 

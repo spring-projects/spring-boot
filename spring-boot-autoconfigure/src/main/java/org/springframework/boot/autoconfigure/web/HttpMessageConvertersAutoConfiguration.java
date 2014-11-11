@@ -54,7 +54,6 @@ import com.google.gson.Gson;
 @ConditionalOnClass(HttpMessageConverter.class)
 public class HttpMessageConvertersAutoConfiguration {
 
-
 	@Autowired(required = false)
 	private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
 
@@ -127,12 +126,12 @@ public class HttpMessageConvertersAutoConfiguration {
 	protected static class StringHttpMessageConverterConfiguration {
 
 		@Autowired
-		private HttpEncodingProperties httpEncodingProperties;
+		private HttpEncodingProperties encodingProperties;
 
 		@Bean
 		@ConditionalOnMissingBean
 		public StringHttpMessageConverter stringHttpMessageConverter() {
-			return new StringHttpMessageConverter(httpEncodingProperties.getCharset());
+			return new StringHttpMessageConverter(this.encodingProperties.getCharset());
 		}
 
 	}

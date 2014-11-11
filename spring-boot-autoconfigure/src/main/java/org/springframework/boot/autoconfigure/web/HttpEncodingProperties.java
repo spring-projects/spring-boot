@@ -37,12 +37,13 @@ public class HttpEncodingProperties {
 	private Charset charset = DEFAULT_CHARSET;
 
 	/**
-	 * To force the encoding to the configured charset typically on HTTP requests and responses.
+	 * To force the encoding to the configured charset typically on HTTP requests and
+	 * responses.
 	 */
 	private boolean force = true;
 
 	public Charset getCharset() {
-		return charset;
+		return this.charset;
 	}
 
 	public void setCharset(Charset charset) {
@@ -50,7 +51,7 @@ public class HttpEncodingProperties {
 	}
 
 	public boolean isForce() {
-		return force;
+		return this.force;
 	}
 
 	public void setForce(boolean force) {

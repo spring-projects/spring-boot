@@ -121,4 +121,5 @@ public class WarLauncherTests {
 		jarOutputStream.close();
 		return warRoot;
 	}
+
 }

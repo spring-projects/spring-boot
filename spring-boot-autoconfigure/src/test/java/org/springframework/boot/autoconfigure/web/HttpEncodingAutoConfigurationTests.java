@@ -20,7 +20,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -53,40 +52,46 @@ public class HttpEncodingAutoConfigurationTests {
 	@Test
 	public void defaultConfiguration() {
 		load(EmptyConfiguration.class);
-		CharacterEncodingFilter filter = context.getBean(CharacterEncodingFilter.class);
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
 		assertCharacterEncodingFilter(filter, "UTF-8", true);
 	}
 
 	@Test
 	public void disableConfiguration() {
 		load(EmptyConfiguration.class, "spring.http.encoding.enabled:false");
-
-		thrown.expect(NoSuchBeanDefinitionException.class);
-		context.getBean(CharacterEncodingFilter.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(CharacterEncodingFilter.class);
 	}
 
 	@Test
 	public void customConfiguration() {
-		load(EmptyConfiguration.class, "spring.http.encoding.charset:ISO-8859-15", "spring.http.encoding.force:false");
-		CharacterEncodingFilter filter = context.getBean(CharacterEncodingFilter.class);
+		load(EmptyConfiguration.class, "spring.http.encoding.charset:ISO-8859-15",
+				"spring.http.encoding.force:false");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
 		assertCharacterEncodingFilter(filter, "ISO-8859-15", false);
 	}
 
 	@Test
 	public void customFilterConfiguration() {
-		load(FilterConfiguration.class, "spring.http.encoding.charset:ISO-8859-15", "spring.http.encoding.force:false");
-		CharacterEncodingFilter filter = context.getBean(CharacterEncodingFilter.class);
+		load(FilterConfiguration.class, "spring.http.encoding.charset:ISO-8859-15",
+				"spring.http.encoding.force:false");
+		CharacterEncodingFilter filter = this.context
+				.getBean(CharacterEncodingFilter.class);
 		assertCharacterEncodingFilter(filter, "US-ASCII", false);
 	}
 
-	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual, String encoding, boolean forceEncoding) {
+	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
+			String encoding, boolean forceEncoding) {
 		DirectFieldAccessor accessor = new DirectFieldAccessor(actual);
 		assertEquals("Wrong encoding", encoding, accessor.getPropertyValue("encoding"));
-		assertEquals("Wrong forceEncoding flag", forceEncoding, accessor.getPropertyValue("forceEncoding"));
+		assertEquals("Wrong forceEncoding flag", forceEncoding,
+				accessor.getPropertyValue("forceEncoding"));
 	}
 
 	private void load(Class<?> config, String... environment) {
-		this.context = doLoad(new Class<?>[] {config}, environment);
+		this.context = doLoad(new Class<?>[] { config }, environment);
 	}
 
 	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs,
@@ -99,9 +104,9 @@ public class HttpEncodingAutoConfigurationTests {
 		return applicationContext;
 	}
 
-
 	@Configuration
 	static class EmptyConfiguration {
+
 	}
 
 	@Configuration
@@ -114,6 +119,7 @@ public class HttpEncodingAutoConfigurationTests {
 			filter.setForceEncoding(false);
 			return filter;
 		}
+
 	}
 
 }
