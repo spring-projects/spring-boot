@@ -68,7 +68,7 @@
 		<hibernate-jpa-api.version>1.0.1.Final</hibernate-jpa-api.version>
 		<hibernate-validator.version>5.0.3.Final</hibernate-validator.version>
 		<hikaricp.version>1.4.0</hikaricp.version>
-		<httpclient.version>4.3.5</httpclient.version>
+		<httpclient.version>4.3.6</httpclient.version>
 		<httpasyncclient.version>4.0.2</httpasyncclient.version>
 		<hornetq.version>2.4.3.Final</hornetq.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
