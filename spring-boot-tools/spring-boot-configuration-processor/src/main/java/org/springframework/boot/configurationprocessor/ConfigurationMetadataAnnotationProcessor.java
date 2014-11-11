@@ -253,20 +253,22 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	protected void writeMetaData(ConfigurationMetadata metadata) {
 		metadata = mergeManualMetadata(metadata);
-		try {
-			FileObject resource = this.processingEnv.getFiler().createResource(
-					StandardLocation.CLASS_OUTPUT, "",
-					"META-INF/spring-configuration-metadata.json");
-			OutputStream outputStream = resource.openOutputStream();
+		if (!metadata.getItems().isEmpty()) {
 			try {
-				new JsonMarshaller().write(metadata, outputStream);
+				FileObject resource = this.processingEnv.getFiler().createResource(
+						StandardLocation.CLASS_OUTPUT, "",
+						"META-INF/spring-configuration-metadata.json");
+				OutputStream outputStream = resource.openOutputStream();
+				try {
+					new JsonMarshaller().write(metadata, outputStream);
+				}
+				finally {
+					outputStream.close();
+				}
 			}
-			finally {
-				outputStream.close();
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
 			}
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
 		}
 	}
 
