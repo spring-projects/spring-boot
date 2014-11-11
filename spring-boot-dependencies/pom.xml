@@ -63,7 +63,7 @@
 		<groovy.version>2.3.7</groovy.version>
 		<h2.version>1.3.176</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<hibernate.version>4.3.6.Final</hibernate.version>
+		<hibernate.version>4.3.7.Final</hibernate.version>
 		<hibernate-entitymanager.version>${hibernate.version}</hibernate-entitymanager.version>
 		<hibernate-jpa-api.version>1.0.1.Final</hibernate-jpa-api.version>
 		<hibernate-validator.version>5.0.3.Final</hibernate-validator.version>
