@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.1.9.BUILD-SNAPSHOT</version>
+		<version>1.1.10.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-tomcat</artifactId>
 	<name>Spring Boot Tomcat Starter</name>
