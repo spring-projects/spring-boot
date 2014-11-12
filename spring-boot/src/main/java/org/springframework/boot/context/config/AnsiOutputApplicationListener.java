@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ansi;
+package org.springframework.boot.context.config;
 
+import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 
 /**
  * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the the
- * value of the property <code>spring.output.ansi.enabled</code>. See
- * {@link AnsiOutput.Enabled} for valid values.
+ * value of the property <code>spring.output.ansi.enabled</code>. See {@link Enabled} for
+ * valid values.
  *
  * @author Raphael von der Grün
  * @since 1.2.0

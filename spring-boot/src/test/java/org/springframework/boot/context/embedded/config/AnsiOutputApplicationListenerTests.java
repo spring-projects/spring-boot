@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ansi;
+package org.springframework.boot.context.embedded.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
+import org.springframework.boot.ansi.AnsiOutputEnabledValue;
+import org.springframework.boot.context.config.AnsiOutputApplicationListener;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -53,7 +56,7 @@ public class AnsiOutputApplicationListenerTests {
 		props.put("spring.output.ansi.enabled", "ALWAYS");
 		application.setDefaultProperties(props);
 		application.run();
-		assertThat(AnsiOutput.getEnabled(), equalTo(Enabled.ALWAYS));
+		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.ALWAYS));
 	}
 
 	@Test
@@ -64,7 +67,7 @@ public class AnsiOutputApplicationListenerTests {
 		props.put("spring.output.ansi.enabled", "never");
 		application.setDefaultProperties(props);
 		application.run();
-		assertThat(AnsiOutput.getEnabled(), equalTo(Enabled.NEVER));
+		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
 	}
 
 	@Test
@@ -75,7 +78,7 @@ public class AnsiOutputApplicationListenerTests {
 		application.setWebEnvironment(false);
 		application.setEnvironment(environment);
 		application.run();
-		assertThat(AnsiOutput.getEnabled(), equalTo(Enabled.NEVER));
+		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
 	}
 
 	@Configuration
