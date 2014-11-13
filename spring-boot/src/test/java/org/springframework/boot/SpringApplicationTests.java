@@ -157,6 +157,14 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void disableBannerViaProperty() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		application.run("--spring.main.show_banner=false");
+		verify(application, never()).printBanner((Environment) anyObject());
+	}
+
+	@Test
 	@SuppressWarnings("deprecation")
 	public void customBanner() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));

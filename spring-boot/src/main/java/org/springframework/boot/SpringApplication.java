@@ -282,11 +282,11 @@ public class SpringApplication {
 			// Create and configure the environment
 			ConfigurableEnvironment environment = getOrCreateEnvironment();
 			configureEnvironment(environment, args);
-			if (this.showBanner) {
-				printBanner(environment);
-			}
 			for (SpringApplicationRunListener runListener : runListeners) {
 				runListener.environmentPrepared(environment);
+			}
+			if (this.showBanner) {
+				printBanner(environment);
 			}
 
 			// Create, load, refresh and run the ApplicationContext
