@@ -62,16 +62,24 @@ class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {
 
 	private void addPropertySourcePropertiesUsingReflection(TestContext testContext,
 			String[] properties) throws Exception {
-		if (properties.length == 0) {
-			return;
-		}
 		MergedContextConfiguration configuration = (MergedContextConfiguration) ReflectionTestUtils
 				.getField(testContext, "mergedContextConfiguration");
 		Set<String> merged = new LinkedHashSet<String>((Arrays.asList(configuration
 				.getPropertySourceProperties())));
 		merged.addAll(Arrays.asList(properties));
+		addIntegrationTestProperty(merged);
 		ReflectionTestUtils.setField(configuration, "propertySourceProperties",
 				merged.toArray(new String[merged.size()]));
 	}
 
+	/**
+	 * Add an "IntegrationTest" property to ensure that there is something to
+	 * differentiate regular tests and {@code @IntegrationTest} tests. Without this
+	 * property a cached context could be returned that hadn't started the embedded
+	 * servlet container.
+	 * @param propertySourceProperties the property source properties
+	 */
+	private void addIntegrationTestProperty(Set<String> propertySourceProperties) {
+		propertySourceProperties.add(IntegrationTest.class.getName() + "=true");
+	}
 }
