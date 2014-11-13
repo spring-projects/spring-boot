@@ -90,6 +90,9 @@ public class JacksonAutoConfiguration {
 				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
 						true);
 			}
+			if (this.properties.isJsonPrettyPrint()) {
+				objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+			}
 			return objectMapper;
 		}
 
