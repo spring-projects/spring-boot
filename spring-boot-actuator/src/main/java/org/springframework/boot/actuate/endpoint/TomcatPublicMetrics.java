@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Manager;
+import org.apache.catalina.session.ManagerBase;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -74,10 +75,16 @@ public class TomcatPublicMetrics implements PublicMetrics, ApplicationContextAwa
 
 	private Collection<Metric<?>> metrics(Manager manager) {
 		List<Metric<?>> metrics = new ArrayList<Metric<?>>(2);
-		metrics.add(new Metric<Integer>("httpsessions.max", manager.getMaxActive()));
-		metrics.add(new Metric<Integer>("httpsessions.active", manager
-				.getActiveSessions()));
+		if (manager instanceof ManagerBase) {
+			addMetric(metrics, "httpsessions.max",
+					((ManagerBase) manager).getMaxActiveSessions());
+		}
+		addMetric(metrics, "httpsessions.active", manager.getActiveSessions());
 		return metrics;
+	}
+
+	private void addMetric(List<Metric<?>> metrics, String name, Integer value) {
+		metrics.add(new Metric<Integer>(name, value));
 	}
 
 	@Override
