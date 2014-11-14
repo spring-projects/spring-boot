@@ -174,7 +174,7 @@ public class Verify {
 			super.verifyZipEntries(verifier);
 			verifier.assertHasEntryNameStartingWith("lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("lib/spring-core");
-			verifier.assertHasEntryNameStartingWith("lib/javax.servlet-api-3.0.1.jar");
+			verifier.assertHasEntryNameStartingWith("lib/javax.servlet-api-3");
 			assertTrue("Unpacked launcher classes", verifier.hasEntry("org/"
 					+ "springframework/boot/loader/JarLauncher.class"));
 			assertTrue("Own classes", verifier.hasEntry("org/"
@@ -201,7 +201,7 @@ public class Verify {
 			super.verifyZipEntries(verifier);
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-core");
-			verifier.assertHasEntryNameStartingWith("WEB-INF/lib-provided/javax.servlet-api-3.0.1.jar");
+			verifier.assertHasEntryNameStartingWith("WEB-INF/lib-provided/javax.servlet-api-3");
 			assertTrue("Unpacked launcher classes", verifier.hasEntry("org/"
 					+ "springframework/boot/loader/JarLauncher.class"));
 			assertTrue("Own classes", verifier.hasEntry("WEB-INF/classes/org/"
