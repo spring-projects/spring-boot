@@ -78,7 +78,9 @@ public class HttpMessageConvertersAutoConfiguration {
 				ObjectMapper objectMapper) {
 			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 			converter.setObjectMapper(objectMapper);
-			converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
+			if (this.properties.isJsonPrettyPrint() != null) {
+				converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
+			}
 			return converter;
 		}
 
@@ -99,7 +101,9 @@ public class HttpMessageConvertersAutoConfiguration {
 				Jackson2ObjectMapperBuilder builder) {
 			MappingJackson2XmlHttpMessageConverter converter = new MappingJackson2XmlHttpMessageConverter();
 			converter.setObjectMapper(builder.createXmlMapper(true).build());
-			converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
+			if (this.properties.isJsonPrettyPrint() != null) {
+				converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
+			}
 			return converter;
 		}
 

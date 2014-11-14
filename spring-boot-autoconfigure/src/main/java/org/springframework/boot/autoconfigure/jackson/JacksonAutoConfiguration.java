@@ -109,7 +109,8 @@ public class JacksonAutoConfiguration {
 		@ConditionalOnMissingBean(Jackson2ObjectMapperBuilder.class)
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder() {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-			if (this.httpMapperProperties.isJsonSortKeys()) {
+			Boolean isJsonSortKeys = this.httpMapperProperties.isJsonSortKeys();
+			if (isJsonSortKeys != null && isJsonSortKeys) {
 				builder.featuresToEnable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
 			}
 			configureFeatures(builder, this.jacksonProperties.getDeserialization());
