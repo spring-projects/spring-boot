@@ -8,6 +8,7 @@
 .classpath
 .project
 .settings
+.metadata
 bin
 build
 lib/

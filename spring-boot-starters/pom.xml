@@ -56,6 +56,7 @@
 		<module>spring-boot-starter-test</module>
 		<module>spring-boot-starter-thymeleaf</module>
 		<module>spring-boot-starter-tomcat</module>
+		<module>spring-boot-starter-undertow</module>
 		<module>spring-boot-starter-velocity</module>
 		<module>spring-boot-starter-web</module>
 		<module>spring-boot-starter-websocket</module>

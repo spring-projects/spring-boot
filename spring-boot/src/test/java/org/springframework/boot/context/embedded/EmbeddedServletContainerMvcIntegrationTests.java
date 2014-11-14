@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -68,13 +69,23 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 				TomcatConfig.class);
 		doTest(this.context, "/hello");
 	}
-
+	
 	@Test
 	public void jetty() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				JettyConfig.class);
 		doTest(this.context, "/hello");
 	}
+
+	@Test
+	public void undertow() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				UndertowConfig.class);
+		doTest(this.context, "/hello");
+	}
+	
+
+	
 
 	@Test
 	public void advancedConfig() throws Exception {
@@ -115,6 +126,15 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
 			return new JettyEmbeddedServletContainerFactory(0);
+		}
+	}
+	
+	@Configuration
+	@Import(Config.class)
+	public static class UndertowConfig {
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			return new UndertowEmbeddedServletContainerFactory(0);
 		}
 	}
 
