@@ -87,13 +87,23 @@ public class Verify {
 			}
 		}
 
-		public boolean hasNonUnpackEntry(String entry) {
-			return !hasUnpackEntry(entry);
+		public boolean hasNonUnpackEntry(String entryName) {
+			return !hasUnpackEntry(entryName);
 		}
 
-		public boolean hasUnpackEntry(String entry) {
-			String comment = this.content.get(entry).getComment();
+		public boolean hasUnpackEntry(String entryName) {
+			String comment = getEntryStartingWith(entryName).getComment();
 			return comment != null && comment.startsWith("UNPACK:");
+		}
+
+		private ZipEntry getEntryStartingWith(String entryName) {
+			for (Map.Entry<String, ZipEntry> entry : this.content.entrySet()) {
+				if (entry.getKey().startsWith(entryName)) {
+					return entry.getValue();
+				}
+			}
+			throw new IllegalStateException("Unable to find entry starting with "
+					+ entryName);
 		}
 
 		public boolean hasEntry(String entry) {
