@@ -143,6 +143,19 @@ public class DefaultErrorAttributesTests {
 				equalTo((Object) RuntimeException.class.getName()));
 		assertThat(attributes.get("message"), equalTo((Object) "Test"));
 	}
+	
+	@Test
+	public void getError() throws Exception {
+		Error error = new OutOfMemoryError("Test error");
+		this.request.setAttribute("javax.servlet.error.exception", error);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(
+				this.requestAttributes, false);
+		assertThat(this.errorAttributes.getError(this.requestAttributes),
+				sameInstance((Object) error));
+		assertThat(attributes.get("exception"),
+				equalTo((Object) OutOfMemoryError.class.getName()));
+		assertThat(attributes.get("message"), equalTo((Object) "Test error"));
+	}
 
 	@Test
 	public void extractBindingResultErrors() throws Exception {

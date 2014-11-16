@@ -163,7 +163,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 
 	@Override
 	public Throwable getError(RequestAttributes requestAttributes) {
-		Exception exception = getAttribute(requestAttributes, ERROR_ATTRIBUTE);
+		Throwable exception = getAttribute(requestAttributes, ERROR_ATTRIBUTE);
 		if (exception == null) {
 			exception = getAttribute(requestAttributes, "javax.servlet.error.exception");
 		}
