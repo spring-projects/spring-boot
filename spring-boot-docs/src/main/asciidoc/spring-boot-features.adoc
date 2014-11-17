@@ -2025,6 +2025,19 @@ The following component creates a listener endpoint on the `someQueue` destinati
 Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the javadoc of `@EnableJms`]
 for more details.
 
+[[boot-features-mail]]
+== Mail integration
+The Spring Framework provides an easy abstraction for sending email using the `JavaMailSender`
+interface and Spring Boot provides auto-configuration for it as well as a starter module.
+
+TIP: Check the {spring-reference}/#mail[reference documentation] for a detailed explanation
+of how you can use `JavaMailSender`.
+
+If `spring.mail.host` and the relevant libraries (as defined by `spring-boot-starter-mail`)
+are available, a default `JavaMailSender` is created if none exists. The sender can be
+further customized by configuration items from the `spring.mail` namespace, see the
+{sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[`MailProperties`] for more details.
+
 [[boot-features-jta]]
 == Distributed Transactions with JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources using
