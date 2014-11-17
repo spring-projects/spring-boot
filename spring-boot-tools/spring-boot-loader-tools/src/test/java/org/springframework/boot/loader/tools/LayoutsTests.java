@@ -24,6 +24,7 @@ import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -79,6 +80,17 @@ public class LayoutsTests {
 				equalTo("WEB-INF/lib-provided/"));
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME),
 				equalTo("WEB-INF/lib/"));
+	}
+
+	@Test
+	public void moduleLayout() throws Exception {
+		Layout layout = new Layouts.Module();
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE),
+				equalTo("lib/"));
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED),
+				nullValue());
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME),
+				equalTo("lib/"));
 	}
 
 }

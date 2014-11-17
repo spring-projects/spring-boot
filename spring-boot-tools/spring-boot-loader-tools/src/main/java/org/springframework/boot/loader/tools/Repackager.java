@@ -177,7 +177,7 @@ public class Repackager {
 				}
 			});
 
-			if (!(this.layout instanceof Layouts.None)) {
+			if (this.layout.isExecutable()) {
 				writer.writeLoaderClasses();
 			}
 		}

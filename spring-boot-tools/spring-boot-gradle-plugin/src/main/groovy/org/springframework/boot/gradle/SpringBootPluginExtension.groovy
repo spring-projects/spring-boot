@@ -48,6 +48,8 @@ public class SpringBootPluginExtension {
 
 		DIR(new Layouts.Expanded()),
 
+		MODULE(new Layouts.Module()),
+
 		NONE(new Layouts.None());
 
 		Layout layout;

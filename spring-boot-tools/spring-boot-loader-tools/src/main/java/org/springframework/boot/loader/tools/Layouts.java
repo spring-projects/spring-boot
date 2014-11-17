@@ -69,6 +69,12 @@ public class Layouts {
 		public String getClassesLocation() {
 			return "";
 		}
+
+		@Override
+		public boolean isExecutable() {
+			return true;
+		}
+
 	}
 
 	/**
@@ -84,7 +90,7 @@ public class Layouts {
 	}
 
 	/**
-	 * Executable expanded archive layout.
+	 * No layout.
 	 */
 	public static class None extends Jar {
 
@@ -92,6 +98,12 @@ public class Layouts {
 		public String getLauncherClassName() {
 			return null;
 		}
+
+		@Override
+		public boolean isExecutable() {
+			return false;
+		}
+
 	}
 
 	/**
@@ -122,6 +134,42 @@ public class Layouts {
 		public String getClassesLocation() {
 			return "WEB-INF/classes/";
 		}
+
+		@Override
+		public boolean isExecutable() {
+			return true;
+		}
+
+	}
+
+	/**
+	 * Module layout (designed to be used as a "plug-in")
+	 */
+	public static class Module implements Layout {
+
+		@Override
+		public String getLauncherClassName() {
+			return null;
+		}
+
+		@Override
+		public String getLibraryDestination(String libraryName, LibraryScope scope) {
+			if (LibraryScope.COMPILE.equals(scope) || LibraryScope.RUNTIME.equals(scope)) {
+				return "lib/";
+			}
+			return null;
+		}
+
+		@Override
+		public String getClassesLocation() {
+			return "";
+		}
+
+		@Override
+		public boolean isExecutable() {
+			return false;
+		}
+
 	}
 
 }

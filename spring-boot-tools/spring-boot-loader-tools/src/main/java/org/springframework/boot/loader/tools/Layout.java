@@ -44,4 +44,9 @@ public interface Layout {
 	 */
 	String getClassesLocation();
 
+	/**
+	 * Returns if loader classes should be included to make the archive executable.
+	 */
+	boolean isExecutable();
+
 }
