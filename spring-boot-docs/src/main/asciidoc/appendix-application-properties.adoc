@@ -54,6 +54,7 @@ content into your application; rather pick only the properties that you need.
 	server.port=8080
 	server.address= # bind to a specific NIC
 	server.session-timeout= # session timeout in seconds
+	server.context-parameters.*= # Servlet context init parameters, e.g. server.context-parameters.a=alpha
 	server.context-path= # the context path, defaults to '/'
 	server.servlet-path= # the servlet path, defaults to '/'
 	server.ssl.client-auth= # want or need

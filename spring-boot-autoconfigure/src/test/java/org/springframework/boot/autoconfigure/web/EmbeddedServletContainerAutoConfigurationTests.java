@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +31,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -110,6 +112,19 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 				CallbackEmbeddedContainerCustomizer.class, BaseConfiguration.class);
 		verifyContext();
 		assertEquals(9000, getContainerFactory().getPort());
+	}
+
+	@Test
+	public void initParametersAreConfiguredOnTheServletContext() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"server.context_parameters.a:alpha", "server.context_parameters.b:bravo");
+		this.context.register(BaseConfiguration.class);
+		this.context.refresh();
+
+		ServletContext servletContext = this.context.getServletContext();
+		assertEquals("alpha", servletContext.getInitParameter("a"));
+		assertEquals("bravo", servletContext.getInitParameter("b"));
 	}
 
 	private void verifyContext() {

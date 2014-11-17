@@ -17,8 +17,11 @@
 package org.springframework.boot.context.embedded;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import javax.servlet.Filter;
@@ -42,6 +45,7 @@ import static org.mockito.Mockito.spy;
  * Mock {@link EmbeddedServletContainerFactory}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class MockEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory {
@@ -51,7 +55,8 @@ public class MockEmbeddedServletContainerFactory extends
 	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
-		this.container = spy(new MockEmbeddedServletContainer(initializers, getPort()));
+		this.container = spy(new MockEmbeddedServletContainer(
+				mergeInitializers(initializers), getPort()));
 		return this.container;
 	}
 
@@ -119,8 +124,30 @@ public class MockEmbeddedServletContainerFactory extends
 								return registeredFilter.getRegistration();
 							}
 						});
+				final Map<String, String> initParameters = new HashMap<String, String>();
+				given(this.servletContext.setInitParameter(anyString(), anyString()))
+						.will(new Answer<Void>() {
+							@Override
+							public Void answer(InvocationOnMock invocation)
+									throws Throwable {
+								initParameters.put(
+										invocation.getArgumentAt(0, String.class),
+										invocation.getArgumentAt(1, String.class));
+								return null;
+							}
+
+						});
 				given(this.servletContext.getInitParameterNames()).willReturn(
-						MockEmbeddedServletContainer.<String> emptyEnumeration());
+						Collections.enumeration(initParameters.keySet()));
+				given(this.servletContext.getInitParameter(anyString())).willAnswer(
+						new Answer<String>() {
+							@Override
+							public String answer(InvocationOnMock invocation)
+									throws Throwable {
+								return initParameters.get(invocation.getArgumentAt(0,
+										String.class));
+							}
+						});
 				given(this.servletContext.getAttributeNames()).willReturn(
 						MockEmbeddedServletContainer.<String> emptyEnumeration());
 				given(this.servletContext.getNamedDispatcher("default")).willReturn(

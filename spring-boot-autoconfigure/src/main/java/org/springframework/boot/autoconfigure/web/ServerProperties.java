@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.web;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -33,6 +35,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.InitParameterConfiguringServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
@@ -68,6 +71,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	private String servletPath = "/";
 
 	private final Tomcat tomcat = new Tomcat();
+
+	private final Map<String, String> contextParameters = new HashMap<String, String>();
 
 	public Tomcat getTomcat() {
 		return this.tomcat;
@@ -145,6 +150,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.ssl = ssl;
 	}
 
+	public Map<String, String> getContextParameters() {
+		return this.contextParameters;
+	}
+
 	public void setLoader(String value) {
 		// no op to support Tomcat running as a traditional container (not embedded)
 	}
@@ -170,6 +179,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			getTomcat()
 					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
 		}
+
+		container.addInitializers(new InitParameterConfiguringServletContextInitializer(
+				getContextParameters()));
 	}
 
 	public String[] getPathsArray(Collection<String> paths) {
