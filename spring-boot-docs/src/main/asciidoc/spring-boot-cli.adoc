@@ -5,7 +5,8 @@
 --
 The Spring Boot CLI is a command line tool that can be used if you want to quickly
 prototype with Spring. It allows you to run Groovy scripts, which means that you have a
-familiar Java-like syntax, without so much boilerplate code.
+familiar Java-like syntax, without so much boilerplate code. You can also bootstrap
+a new project or write your own command for it.
 --
 
 
@@ -351,6 +352,56 @@ and the default excludes are
 See the output of `spring help jar` for more information.
 
 
+[[cli-init]]
+=== Initialize a new project
+The `init` command allows you to create a new project using https://start.spring.io
+without leaving the shell.  For example:
+
+[indent=0]
+----
+	$ spring init --dependencies=web,data-jpa my-project/
+	Using service at https://start.spring.io
+    Project extracted to '/Users/developer/example/my-project'
+----
+
+This creates a `my-project` directory with a Maven-based project using `spring-boot-starter-web`
+and `spring-boot-starter-data-jpa`. You can list the capabilities of the service
+using the `--list` flag
+
+[indent=0]
+----
+	$ spring init --list
+    =======================================
+    Capabilities of https://start.spring.io
+    =======================================
+
+    Available dependencies:
+    -----------------------
+    actuator - Actuator: Production ready features to help you monitor and manage your application
+    ...
+    web - Web: Support for full-stack web development, including Tomcat and spring-webmvc
+    websocket - Websocket: Support for websocket development with Tomcat
+    ws - WS: Support for Spring Web Services
+
+    Available project types:
+    ------------------------
+    gradle-build -  Gradle Config [format:build, build:gradle]
+    gradle-project -  Gradle Project [format:project, build:gradle]
+    maven-build -  Maven POM [format:build, build:maven]
+    maven-project -  Maven Project [format:project, build:maven] (default)
+
+    ...
+----
+
+The `init` command supports many options, check the `help` output for more details. For
+instance, the following command creates a gradle project using Java 8 and `war` packaging:
+
+[indent=0]
+----
+	$ spring init --build=gradle --java-version=1.8 --dependencies=websocket --packaging=war sample-app.zip
+	Using service at https://start.spring.io
+	Content saved to 'sample-app.zip'
+----
 
 [[cli-shell]]
 === Using the embedded shell
