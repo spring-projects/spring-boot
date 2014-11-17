@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -120,9 +121,8 @@ public class JettyEmbeddedServletContainerFactory extends
 		if (getSsl() != null) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			configureSsl(sslContextFactory, getSsl());
-			ServerConnector connector = getSslServerConnectorFactory().getConnector(
-					server, sslContextFactory);
-			connector.setPort(port);
+			AbstractConnector connector = getSslServerConnectorFactory().getConnector(
+					server, sslContextFactory, port);
 			server.setConnectors(new Connector[] { connector });
 		}
 
@@ -473,7 +473,8 @@ public class JettyEmbeddedServletContainerFactory extends
 	 */
 	private static interface SslServerConnectorFactory {
 
-		ServerConnector getConnector(Server server, SslContextFactory sslContextFactory);
+		AbstractConnector getConnector(Server server,
+				SslContextFactory sslContextFactory, int port);
 
 	}
 
@@ -485,10 +486,12 @@ public class JettyEmbeddedServletContainerFactory extends
 
 		@Override
 		public ServerConnector getConnector(Server server,
-				SslContextFactory sslContextFactory) {
-			return new ServerConnector(server, new SslConnectionFactory(
-					sslContextFactory, HttpVersion.HTTP_1_1.asString()),
-					new HttpConnectionFactory());
+				SslContextFactory sslContextFactory, int port) {
+			ServerConnector serverConnector = new ServerConnector(server,
+					new SslConnectionFactory(sslContextFactory,
+							HttpVersion.HTTP_1_1.asString()), new HttpConnectionFactory());
+			serverConnector.setPort(port);
+			return serverConnector;
 		}
 	}
 
@@ -499,13 +502,17 @@ public class JettyEmbeddedServletContainerFactory extends
 			SslServerConnectorFactory {
 
 		@Override
-		public ServerConnector getConnector(Server server,
-				SslContextFactory sslContextFactory) {
+		public AbstractConnector getConnector(Server server,
+				SslContextFactory sslContextFactory, int port) {
 			try {
 				Class<?> connectorClass = Class
 						.forName("org.eclipse.jetty.server.ssl.SslSocketConnector");
-				return (ServerConnector) connectorClass.getConstructor(
-						SslContextFactory.class).newInstance(sslContextFactory);
+				AbstractConnector connector = (AbstractConnector) connectorClass
+						.getConstructor(SslContextFactory.class).newInstance(
+								sslContextFactory);
+				connector.getClass().getMethod("setPort", int.class)
+						.invoke(connector, port);
+				return connector;
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);

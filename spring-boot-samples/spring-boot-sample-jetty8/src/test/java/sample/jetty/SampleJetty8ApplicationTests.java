@@ -40,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 @DirtiesContext
-public class SampleJettyApplicationTests {
+public class SampleJetty8ApplicationTests {
 
 	@Value("${local.server.port}")
 	private int port;
