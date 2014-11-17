@@ -38,7 +38,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  *
  * @author Oliver Gierke
  * @author Stephane Nicoll
- * @sicne 1.2.0
+ * @since 1.2.0
  */
 @Configuration
 @ConditionalOnClass({ MimeMessage.class, MimeType.class })
