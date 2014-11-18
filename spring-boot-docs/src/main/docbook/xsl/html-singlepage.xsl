@@ -22,7 +22,7 @@ under the License.
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 				version='1.0'>
 
-	<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl"/>
+	<xsl:import href="urn:docbkx:stylesheet"/>
 	<xsl:import href="html.xsl"/>
 
 	<xsl:param name="html.stylesheet">css/manual-singlepage.css</xsl:param>

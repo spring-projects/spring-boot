@@ -21,10 +21,11 @@ under the License.
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		xmlns:xslthl="http://xslthl.sf.net"
+		xmlns:d="http://docbook.org/ns/docbook"
 		exclude-result-prefixes="xslthl"
 		version='1.0'>
 
-	<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/html/highlight.xsl"/>
+	<xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/>
 	<xsl:import href="common.xsl"/>
 
 	<!-- Only use scaling in FO -->
@@ -99,7 +100,7 @@ under the License.
 	</xsl:template>
 
 	<!-- Custom Title Page -->
-	<xsl:template match="author" mode="titlepage.mode">
+	<xsl:template match="d:author" mode="titlepage.mode">
 		<xsl:if test="name(preceding-sibling::*[1]) = 'author'">
 			<xsl:text>, </xsl:text>
 		</xsl:if>
@@ -108,7 +109,7 @@ under the License.
 			<xsl:apply-templates mode="titlepage.mode" select="./contrib"/>
 		</span>
 	</xsl:template>
-	<xsl:template match="authorgroup" mode="titlepage.mode">
+	<xsl:template match="d:authorgroup" mode="titlepage.mode">
 		<div class="{name(.)}">
 			<h2>Authors</h2>
 			<xsl:apply-templates mode="titlepage.mode"/>
