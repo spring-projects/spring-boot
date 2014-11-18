@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -153,6 +156,30 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				"customStringMessageConverter");
 
 		assertConverterBeanRegisteredWithHttpMessageConverters(StringHttpMessageConverter.class);
+	}
+
+	@Test
+	public void httpMapperPropertiesAreNotAppliedWhenNotConfigured() throws Exception {
+		this.context.register(JacksonObjectMapperConfig.class,
+				HttpMessageConvertersAutoConfiguration.class);
+		this.context.refresh();
+		MappingJackson2HttpMessageConverter converter = this.context
+				.getBean(MappingJackson2HttpMessageConverter.class);
+		assertNull(new DirectFieldAccessor(converter)
+				.getPropertyValue("prettyPrint"));
+	}
+
+	@Test
+	public void httpMapperPropertiesAreAppliedWhenConfigured() throws Exception {
+		this.context.register(JacksonObjectMapperConfig.class,
+				HttpMessageConvertersAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"http.mappers.jsonPrettyPrint:true");
+		this.context.refresh();
+		MappingJackson2HttpMessageConverter converter = this.context
+				.getBean(MappingJackson2HttpMessageConverter.class);
+		assertTrue((Boolean) new DirectFieldAccessor(converter)
+				.getPropertyValue("prettyPrint"));
 	}
 
 	private void assertConverterBeanExists(Class<?> type, String beanName) {
