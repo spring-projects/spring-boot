@@ -130,6 +130,7 @@
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
+        	<undertow.version>1.1.0.Final</undertow.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0.2</maven>
@@ -287,6 +288,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jta-bitronix</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-undertow</artifactId>
 				<version>1.2.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -700,6 +706,11 @@
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jsp-api</artifactId>
 				<version>${tomcat.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.undertow</groupId>
+				<artifactId>undertow-servlet</artifactId>
+				<version>${undertow.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
