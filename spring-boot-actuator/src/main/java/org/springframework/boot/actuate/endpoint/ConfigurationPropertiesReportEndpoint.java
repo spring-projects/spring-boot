@@ -26,7 +26,6 @@ import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaD
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.StringUtils;
@@ -116,9 +115,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
-
 			Map<String, Object> root = new HashMap<String, Object>();
-			root.put("prefix", extractPrefix(beanName, bean));
+			root.put("prefix", extractPrefix(context, beanName, bean));
 			root.put("properties", sanitize(mapper.convertValue(bean, Map.class)));
 			result.put(beanName, root);
 		}
@@ -162,9 +160,9 @@ public class ConfigurationPropertiesReportEndpoint extends
 	/**
 	 * Extract configuration prefix from {@link ConfigurationProperties} annotation.
 	 */
-	private String extractPrefix(String beanName, Object bean) {
-		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
-				bean.getClass(), ConfigurationProperties.class);
+	private String extractPrefix(ApplicationContext context, String beanName, Object bean) {
+		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
+				ConfigurationProperties.class);
 		if (this.beanFactoryMetaData != null) {
 			ConfigurationProperties override = this.beanFactoryMetaData
 					.findFactoryAnnotation(beanName, ConfigurationProperties.class);
