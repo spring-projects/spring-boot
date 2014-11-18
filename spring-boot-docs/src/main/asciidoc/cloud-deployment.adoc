@@ -158,8 +158,8 @@ for our starter REST application:
 
 Spring Boot makes `-D` arguments available as properties accessible from a Spring
 `Environment` instance. The `server.port` configuration property is fed to the embedded
-Tomcat or Jetty instance which then uses it when it starts up. The `$PORT` environment
-variable is assigned to us by the Heroku PaaS.
+Tomcat, Jetty or Undertow instance which then uses it when it starts up. The `$PORT`
+environment variable is assigned to us by the Heroku PaaS.
 
 Heroku by default will use Java 1.6. This is fine as long as your Maven or Gradle build
 is set to use the same version (Maven users can use the `java.version` property). If you

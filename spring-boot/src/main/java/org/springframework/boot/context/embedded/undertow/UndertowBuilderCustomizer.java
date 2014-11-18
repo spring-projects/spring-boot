@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package sample.undertow.web;
+package org.springframework.boot.context.embedded.undertow;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import io.undertow.Undertow.Builder;
 
-import sample.undertow.service.HelloWorldService;
+/**
+ * Callback interface that can be used to customize an Undertow {@link Builder}.
+ *
+ * @author Andy Wilkinson
+ * @since 1.2.0
+ * @see UndertowEmbeddedServletContainerFactory
+ */
+public interface UndertowBuilderCustomizer {
 
-@Controller
-public class SampleController {
+	/**
+	 * @param builder the {@code Builder} to customize
+	 */
+	void customize(Builder builder);
 
-	@Autowired
-	private HelloWorldService helloWorldService;
-
-	@RequestMapping("/")
-	@ResponseBody
-	public String helloWorld() {
-		return this.helloWorldService.getHelloMessage();
-	}
 }

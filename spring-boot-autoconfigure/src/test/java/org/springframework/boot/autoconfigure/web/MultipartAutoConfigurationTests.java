@@ -16,9 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.servlet.MultipartConfigElement;
 
@@ -65,6 +63,7 @@ import static org.mockito.Mockito.mock;
  * @author Greg Turnquist
  * @author Dave Syer
  * @author Josh Long
+ * @author Ivan Sopov
  */
 public class MultipartAutoConfigurationTests {
 

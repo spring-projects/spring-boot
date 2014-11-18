@@ -53,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Ivan Sopov
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer {
@@ -72,7 +73,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	private String servletPath = "/";
 
 	private final Tomcat tomcat = new Tomcat();
-	
+
 	private final Undertow undertow = new Undertow();
 
 	private final Map<String, String> contextParameters = new HashMap<String, String>();
@@ -218,62 +219,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			path = "/" + path;
 		}
 		return prefix + path;
-	}
-
-	public static class Undertow {
-		private Integer bufferSize;
-		private Integer buffersPerRegion;
-		private Integer ioThreads;
-		private Integer workerThreads;
-		private Boolean directBuffers;
-
-		public Integer getBufferSize() {
-			return this.bufferSize;
-		}
-
-		public void setBufferSize(Integer bufferSize) {
-			this.bufferSize = bufferSize;
-		}
-
-		public Integer getBuffersPerRegion() {
-			return this.buffersPerRegion;
-		}
-
-		public void setBuffersPerRegion(Integer buffersPerRegion) {
-			this.buffersPerRegion = buffersPerRegion;
-		}
-
-		public Integer getIoThreads() {
-			return this.ioThreads;
-		}
-
-		public void setIoThreads(Integer ioThreads) {
-			this.ioThreads = ioThreads;
-		}
-
-		public Integer getWorkerThreads() {
-			return this.workerThreads;
-		}
-
-		public void setWorkerThreads(Integer workerThreads) {
-			this.workerThreads = workerThreads;
-		}
-
-		public Boolean getDirectBuffers() {
-			return this.directBuffers;
-		}
-
-		public void setDirectBuffers(Boolean directBuffers) {
-			this.directBuffers = directBuffers;
-		}
-
-		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
-			factory.setBufferSize(bufferSize);
-			factory.setBuffersPerRegion(buffersPerRegion);
-			factory.setIoThreads(ioThreads);
-			factory.setWorkerThreads(workerThreads);
-			factory.setDirectBuffers(directBuffers);
-		}
 	}
 
 	public static class Tomcat {
@@ -458,6 +403,68 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			if (getUriEncoding() != null) {
 				factory.setUriEncoding(getUriEncoding());
 			}
+		}
+
+	}
+
+	public static class Undertow {
+
+		private Integer bufferSize;
+
+		private Integer buffersPerRegion;
+
+		private Integer ioThreads;
+
+		private Integer workerThreads;
+
+		private Boolean directBuffers;
+
+		public Integer getBufferSize() {
+			return this.bufferSize;
+		}
+
+		public void setBufferSize(Integer bufferSize) {
+			this.bufferSize = bufferSize;
+		}
+
+		public Integer getBuffersPerRegion() {
+			return this.buffersPerRegion;
+		}
+
+		public void setBuffersPerRegion(Integer buffersPerRegion) {
+			this.buffersPerRegion = buffersPerRegion;
+		}
+
+		public Integer getIoThreads() {
+			return this.ioThreads;
+		}
+
+		public void setIoThreads(Integer ioThreads) {
+			this.ioThreads = ioThreads;
+		}
+
+		public Integer getWorkerThreads() {
+			return this.workerThreads;
+		}
+
+		public void setWorkerThreads(Integer workerThreads) {
+			this.workerThreads = workerThreads;
+		}
+
+		public Boolean getDirectBuffers() {
+			return this.directBuffers;
+		}
+
+		public void setDirectBuffers(Boolean directBuffers) {
+			this.directBuffers = directBuffers;
+		}
+
+		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
+			factory.setBufferSize(this.bufferSize);
+			factory.setBuffersPerRegion(this.buffersPerRegion);
+			factory.setIoThreads(this.ioThreads);
+			factory.setWorkerThreads(this.workerThreads);
+			factory.setDirectBuffers(this.directBuffers);
 		}
 
 	}

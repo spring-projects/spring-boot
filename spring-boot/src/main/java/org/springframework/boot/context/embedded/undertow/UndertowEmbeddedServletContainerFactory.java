@@ -1,12 +1,21 @@
+/*
+ * Copyright 2012-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.boot.context.embedded.undertow;
 
-import static io.undertow.servlet.Servlets.defaultContainer;
-import static io.undertow.servlet.Servlets.deployment;
-import static io.undertow.servlet.Servlets.servlet;
-import static org.xnio.Options.SSL_CLIENT_AUTH_MODE;
-import static org.xnio.SslClientAuthMode.NOT_REQUESTED;
-import static org.xnio.SslClientAuthMode.REQUESTED;
-import static org.xnio.SslClientAuthMode.REQUIRED;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowMessages;
@@ -27,12 +36,15 @@ import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceHandle;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -45,6 +57,7 @@ import javax.servlet.ServletException;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
@@ -52,176 +65,178 @@ import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.SocketUtils;
 
+import static io.undertow.servlet.Servlets.defaultContainer;
+import static io.undertow.servlet.Servlets.deployment;
+import static io.undertow.servlet.Servlets.servlet;
+import static org.xnio.Options.SSL_CLIENT_AUTH_MODE;
+import static org.xnio.SslClientAuthMode.NOT_REQUESTED;
+import static org.xnio.SslClientAuthMode.REQUESTED;
+import static org.xnio.SslClientAuthMode.REQUIRED;
+
 /**
+ * {@link EmbeddedServletContainerFactory} that can be used to create
+ * {@link UndertowEmbeddedServletContainer}s.
+ * <p>
+ * Unless explicitly configured otherwise, the factory will create containers that listen
+ * for HTTP requests on port 8080.
+ *
  * @author Ivan Sopov
+ * @author Andy Wilkinson
+ * @since 1.2.0
+ * @see UndertowEmbeddedServletContainer
  */
 public class UndertowEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
+	private List<UndertowBuilderCustomizer> undertowBuilderCustomizers = new ArrayList<UndertowBuilderCustomizer>();
+
 	private ResourceLoader resourceLoader;
 
 	private Integer bufferSize;
+
 	private Integer buffersPerRegion;
+
 	private Integer ioThreads;
+
 	private Integer workerThreads;
+
 	private Boolean directBuffers;
 
 	/**
-	 * Create a new
-	 * {@link org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory}
-	 * instance.
+	 * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
 	 */
 	public UndertowEmbeddedServletContainerFactory() {
 		super();
+		setRegisterJspServlet(false);
 	}
 
 	/**
-	 * Create a new
-	 * {@link org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory}
-	 * that listens for requests using the specified port.
-	 *
+	 * Create a new {@link UndertowEmbeddedServletContainerFactory} that listens for
+	 * requests using the specified port.
 	 * @param port the port to listen on
 	 */
 	public UndertowEmbeddedServletContainerFactory(int port) {
 		super(port);
+		setRegisterJspServlet(false);
 	}
 
 	/**
-	 * Create a new
-	 * {@link org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory}
-	 * with the specified context path and port.
-	 *
+	 * Create a new {@link UndertowEmbeddedServletContainerFactory} with the specified
+	 * context path and port.
 	 * @param contextPath root the context path
 	 * @param port the port to listen on
 	 */
 	public UndertowEmbeddedServletContainerFactory(String contextPath, int port) {
 		super(contextPath, port);
+		setRegisterJspServlet(false);
+	}
+
+	/**
+	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
+	 * {@link Builder}. Calling this method will replace any existing customizers.
+	 * @param undertowBuilderCustomizers the customizers to set
+	 */
+	public void setUndertowBuilderCustomizers(
+			Collection<? extends UndertowBuilderCustomizer> undertowBuilderCustomizers) {
+		Assert.notNull(undertowBuilderCustomizers,
+				"undertowBuilderCustomizers must not be null");
+		this.undertowBuilderCustomizers = new ArrayList<UndertowBuilderCustomizer>(
+				undertowBuilderCustomizers);
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
+	 * applied to the Undertow {@link Builder} .
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowBuilderCustomizer> getUndertowBuilderCustomizers() {
+		return this.undertowBuilderCustomizers;
+	}
+
+	/**
+	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
+	 * Undertow {@link Builder}.
+	 * @param undertowBuilderCustomizers the customizers to add
+	 */
+	public void addUndertowBuilderCustomizers(
+			UndertowBuilderCustomizer... undertowBuilderCustomizers) {
+		Assert.notNull(undertowBuilderCustomizers,
+				"undertowBuilderCustomizers must not be null");
+		this.undertowBuilderCustomizers.addAll(Arrays.asList(undertowBuilderCustomizers));
 	}
 
 	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
-		DeploymentInfo servletBuilder = deployment();
+		DeploymentManager manager = createDeploymentManager(initializers);
 
-		servletBuilder.addListener(new ListenerInfo(
-				UndertowSpringServletContextListener.class,
-				new UndertowSpringServletContextListenerFactory(
-						new UndertowSpringServletContextListener(
-								mergeInitializers(initializers)))));
+		int port = getPort();
+		if (port == 0) {
+			port = SocketUtils.findAvailableTcpPort(40000);
+		}
 
-		if (resourceLoader != null) {
-			servletBuilder.setClassLoader(resourceLoader.getClassLoader());
+		Builder builder = createBuilder(port);
+
+		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
+				port, port >= 0);
+	}
+
+	private Builder createBuilder(int port) {
+		Builder builder = Undertow.builder();
+		if (this.bufferSize != null) {
+			builder.setBufferSize(this.bufferSize);
+		}
+		if (this.buffersPerRegion != null) {
+			builder.setBuffersPerRegion(this.buffersPerRegion);
+		}
+		if (this.ioThreads != null) {
+			builder.setIoThreads(this.ioThreads);
+		}
+		if (this.workerThreads != null) {
+			builder.setWorkerThreads(this.workerThreads);
+		}
+		if (this.directBuffers != null) {
+			builder.setDirectBuffers(this.directBuffers);
+		}
+
+		if (getSsl() == null) {
+			builder.addHttpListener(port, "0.0.0.0");
 		}
 		else {
-			servletBuilder.setClassLoader(getClass().getClassLoader());
+			configureSsl(port, builder);
 		}
-		servletBuilder.setContextPath(getContextPath());
-		servletBuilder.setDeploymentName("spring-boot");
-		if (isRegisterDefaultServlet()) {
-			servletBuilder.addServlet(servlet("default", DefaultServlet.class));
+		for (UndertowBuilderCustomizer customizer : this.undertowBuilderCustomizers) {
+			customizer.customize(builder);
 		}
-		if (isRegisterJspServlet()) {
-			logger.error("JSPs are not supported with Undertow");
-		}
-		for (ErrorPage springErrorPage : getErrorPages()) {
-			if (springErrorPage.getStatus() != null) {
-				io.undertow.servlet.api.ErrorPage undertowErrorpage = new io.undertow.servlet.api.ErrorPage(
-						springErrorPage.getPath(), springErrorPage.getStatusCode());
-				servletBuilder.addErrorPage(undertowErrorpage);
+		return builder;
+	}
+
+	private void configureSsl(int port, Builder builder) {
+		try {
+			Ssl ssl = getSsl();
+			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
+			sslContext.init(getKeyManagers(), getTrustManagers(), null);
+			builder.addHttpsListener(port, "0.0.0.0", sslContext);
+			if (ssl.getClientAuth() == ClientAuth.NEED) {
+				builder.setSocketOption(SSL_CLIENT_AUTH_MODE, REQUIRED);
 			}
-			else if (springErrorPage.getException() != null) {
-				io.undertow.servlet.api.ErrorPage undertowErrorpage = new io.undertow.servlet.api.ErrorPage(
-						springErrorPage.getPath(), springErrorPage.getException());
-				servletBuilder.addErrorPage(undertowErrorpage);
+			else if (ssl.getClientAuth() == ClientAuth.WANT) {
+				builder.setSocketOption(SSL_CLIENT_AUTH_MODE, REQUESTED);
 			}
 			else {
-				io.undertow.servlet.api.ErrorPage undertowErrorpage = new io.undertow.servlet.api.ErrorPage(
-						springErrorPage.getPath());
-				servletBuilder.addErrorPage(undertowErrorpage);
+				builder.setSocketOption(SSL_CLIENT_AUTH_MODE, NOT_REQUESTED);
 			}
 		}
-		servletBuilder.setServletStackTraces(ServletStackTraces.NONE);
-
-		File root = getValidDocumentRoot();
-		if (root != null && root.isDirectory()) {
-			servletBuilder.setResourceManager(new FileResourceManager(root, 0));
+		catch (NoSuchAlgorithmException ex) {
+			throw new RuntimeException(ex);
 		}
-		else if (root != null && root.isFile()) {
-			servletBuilder.setResourceManager(new JarResourcemanager(root));
+		catch (KeyManagementException ex) {
+			throw new RuntimeException(ex);
 		}
-		else if (resourceLoader != null) {
-			servletBuilder.setResourceManager(new ClassPathResourceManager(resourceLoader
-					.getClassLoader(), ""));
-		}
-		else {
-			servletBuilder.setResourceManager(new ClassPathResourceManager(getClass()
-					.getClassLoader(), ""));
-		}
-		for (Mapping mimeMapping : getMimeMappings()) {
-			servletBuilder.addMimeMapping(new MimeMapping(mimeMapping.getExtension(),
-					mimeMapping.getMimeType()));
-		}
-
-		DeploymentManager manager = defaultContainer().addDeployment(servletBuilder);
-
-		manager.deploy();
-
-		manager.getDeployment().getSessionManager()
-				.setDefaultSessionTimeout(getSessionTimeout());
-
-		Builder builder = Undertow.builder();
-		if (bufferSize != null) {
-			builder.setBufferSize(bufferSize);
-		}
-		if (buffersPerRegion != null) {
-			builder.setBuffersPerRegion(buffersPerRegion);
-		}
-		if (ioThreads != null) {
-			builder.setIoThreads(ioThreads);
-		}
-		if (workerThreads != null) {
-			builder.setWorkerThreads(workerThreads);
-		}
-		if (directBuffers != null) {
-			builder.setDirectBuffers(directBuffers);
-		}
-
-		int realPort = getPort();
-		if (realPort == 0) {
-			realPort = SocketUtils.findAvailableTcpPort(40000);
-		}
-		if (getSsl() == null) {
-			builder.addHttpListener(realPort, "0.0.0.0");
-		}
-		else {
-			try {
-				Ssl ssl = getSsl();
-				SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
-				sslContext.init(getKeyManagers(), getTrustManagers(), null);
-				builder.addHttpsListener(realPort, "0.0.0.0", sslContext);
-				if (ssl.getClientAuth() == ClientAuth.NEED) {
-					builder.setSocketOption(SSL_CLIENT_AUTH_MODE, REQUIRED);
-				}
-				else if (ssl.getClientAuth() == ClientAuth.WANT) {
-					builder.setSocketOption(SSL_CLIENT_AUTH_MODE, REQUESTED);
-				}
-				else {
-					builder.setSocketOption(SSL_CLIENT_AUTH_MODE, NOT_REQUESTED);
-				}
-			}
-			catch (NoSuchAlgorithmException e) {
-				throw new RuntimeException(e);
-			}
-			catch (KeyManagementException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				realPort, realPort > 0);
-
 	}
 
 	private KeyManager[] getKeyManagers() {
@@ -244,8 +259,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 			keyManagerFactory.init(keyStore, keyPassword);
 			return keyManagerFactory.getKeyManagers();
 		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -271,10 +286,100 @@ public class UndertowEmbeddedServletContainerFactory extends
 			trustManagerFactory.init(trustedKeyStore);
 			return trustManagerFactory.getTrustManagers();
 		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	private DeploymentManager createDeploymentManager(
+			ServletContextInitializer... initializers) {
+		DeploymentInfo servletBuilder = deployment();
+
+		servletBuilder.addListener(new ListenerInfo(
+				UndertowSpringServletContextListener.class,
+				new UndertowSpringServletContextListenerFactory(
+						new UndertowSpringServletContextListener(
+								mergeInitializers(initializers)))));
+
+		if (this.resourceLoader != null) {
+			servletBuilder.setClassLoader(this.resourceLoader.getClassLoader());
+		}
+		else {
+			servletBuilder.setClassLoader(getClass().getClassLoader());
+		}
+		servletBuilder.setContextPath(getContextPath());
+		servletBuilder.setDeploymentName("spring-boot");
+		if (isRegisterDefaultServlet()) {
+			servletBuilder.addServlet(servlet("default", DefaultServlet.class));
 		}
 
+		configureErrorPages(servletBuilder);
+		servletBuilder.setServletStackTraces(ServletStackTraces.NONE);
+
+		File root = getValidDocumentRoot();
+		if (root != null && root.isDirectory()) {
+			servletBuilder.setResourceManager(new FileResourceManager(root, 0));
+		}
+		else if (root != null && root.isFile()) {
+			servletBuilder.setResourceManager(new JarResourcemanager(root));
+		}
+		else if (this.resourceLoader != null) {
+			servletBuilder.setResourceManager(new ClassPathResourceManager(
+					this.resourceLoader.getClassLoader(), ""));
+		}
+		else {
+			servletBuilder.setResourceManager(new ClassPathResourceManager(getClass()
+					.getClassLoader(), ""));
+		}
+		for (Mapping mimeMapping : getMimeMappings()) {
+			servletBuilder.addMimeMapping(new MimeMapping(mimeMapping.getExtension(),
+					mimeMapping.getMimeType()));
+		}
+
+		DeploymentManager manager = defaultContainer().addDeployment(servletBuilder);
+
+		manager.deploy();
+
+		manager.getDeployment().getSessionManager()
+				.setDefaultSessionTimeout(getSessionTimeout());
+		return manager;
+	}
+
+	private void configureErrorPages(DeploymentInfo servletBuilder) {
+		for (ErrorPage errorPage : getErrorPages()) {
+			if (errorPage.getStatus() != null) {
+				io.undertow.servlet.api.ErrorPage undertowErrorpage = new io.undertow.servlet.api.ErrorPage(
+						errorPage.getPath(), errorPage.getStatusCode());
+				servletBuilder.addErrorPage(undertowErrorpage);
+			}
+			else if (errorPage.getException() != null) {
+				io.undertow.servlet.api.ErrorPage undertowErrorpage = new io.undertow.servlet.api.ErrorPage(
+						errorPage.getPath(), errorPage.getException());
+				servletBuilder.addErrorPage(undertowErrorpage);
+			}
+			else {
+				io.undertow.servlet.api.ErrorPage undertowErrorpage = new io.undertow.servlet.api.ErrorPage(
+						errorPage.getPath());
+				servletBuilder.addErrorPage(undertowErrorpage);
+			}
+		}
+	}
+
+	/**
+	 * Factory method called to create the {@link UndertowEmbeddedServletContainer}.
+	 * Subclasses can override this method to return a different
+	 * {@link UndertowEmbeddedServletContainer} or apply additional processing to the
+	 * {@link Builder} and {@link DeploymentManager} used to bootstrap Undertow
+	 *
+	 * @param builder the builder
+	 * @param manager the deployment manager
+	 * @param port the port that Undertow should listen on
+	 * @return a new {@link UndertowEmbeddedServletContainer} instance
+	 */
+	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
+			Builder builder, DeploymentManager manager, int port) {
+		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
+				port, port >= 0);
 	}
 
 	@Override
@@ -302,6 +407,12 @@ public class UndertowEmbeddedServletContainerFactory extends
 		this.directBuffers = directBuffers;
 	}
 
+	@Override
+	public void setRegisterJspServlet(boolean registerJspServlet) {
+		Assert.isTrue(!registerJspServlet, "Undertow does not support JSPs");
+		super.setRegisterJspServlet(registerJspServlet);
+	}
+
 	private static class JarResourcemanager implements ResourceManager {
 		private final String jarPath;
 
@@ -320,7 +431,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 		@Override
 		public Resource getResource(String path) throws IOException {
-			URL url = new URL("jar:file:" + jarPath + "!" + path);
+			URL url = new URL("jar:file:" + this.jarPath + "!" + path);
 			URLResource resource = new URLResource(url, url.openConnection(), path);
 			if (resource.getContentLength() < 0) {
 				return null;
@@ -361,7 +472,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 		public InstanceHandle<UndertowSpringServletContextListener> createInstance()
 				throws InstantiationException {
 			return new ImmediateInstanceHandle<UndertowSpringServletContextListener>(
-					listener);
+					this.listener);
 		}
 
 	}
@@ -376,14 +487,14 @@ public class UndertowEmbeddedServletContainerFactory extends
 		}
 
 		@Override
-		public void contextInitialized(ServletContextEvent sce) {
+		public void contextInitialized(ServletContextEvent event) {
 			try {
-				for (ServletContextInitializer initializer : initializers) {
-					initializer.onStartup(sce.getServletContext());
+				for (ServletContextInitializer initializer : this.initializers) {
+					initializer.onStartup(event.getServletContext());
 				}
 			}
-			catch (ServletException e) {
-				throw new RuntimeException(e);
+			catch (ServletException ex) {
+				throw new RuntimeException(ex);
 			}
 		}
 

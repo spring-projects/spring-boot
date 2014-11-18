@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Basic integration tests for demo application.
  *
- * @author Dave Syer
+ * @author Ivan Sopov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleUndertowSslApplication.class)

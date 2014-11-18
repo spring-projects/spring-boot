@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.boot.context.embedded.undertow;
 
 import io.undertow.Handlers;
@@ -14,16 +30,29 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerExcepti
 import org.springframework.util.StringUtils;
 
 /**
+ * {@link EmbeddedServletContainer} that can be used to control an embedded Undertow
+ * server. Typically this class should be created using
+ * {@link UndertowEmbeddedServletContainerFactory} and not directly.
+ *
  * @author Ivan Sopov
+ * @author Andy Wilkinson
+ * @since 1.2.0
+ * @see UndertowEmbeddedServletContainer
  */
 public class UndertowEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	private final DeploymentManager manager;
+
 	private final Builder builder;
+
 	private final String contextPath;
+
 	private final int port;
+
 	private final boolean autoStart;
+
 	private Undertow undertow;
+
 	private boolean started = false;
 
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
@@ -40,38 +69,39 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		if (!this.autoStart) {
 			return;
 		}
-		if (undertow == null) {
+		if (this.undertow == null) {
 			try {
-				HttpHandler servletHandler = manager.start();
-				if (StringUtils.isEmpty(contextPath)) {
-					builder.setHandler(servletHandler);
+				HttpHandler servletHandler = this.manager.start();
+				if (StringUtils.isEmpty(this.contextPath)) {
+					this.builder.setHandler(servletHandler);
 				}
 				else {
-					PathHandler pathHandler = Handlers.path().addPrefixPath(contextPath,
-							servletHandler);
-					builder.setHandler(pathHandler);
+					PathHandler pathHandler = Handlers.path().addPrefixPath(
+							this.contextPath, servletHandler);
+					this.builder.setHandler(pathHandler);
 				}
-				undertow = builder.build();
+				this.undertow = this.builder.build();
 			}
 			catch (ServletException ex) {
 				throw new EmbeddedServletContainerException(
 						"Unable to start embdedded Undertow", ex);
 			}
 		}
-		undertow.start();
-		started = true;
+		this.undertow.start();
+		this.started = true;
 	}
 
 	@Override
 	public synchronized void stop() throws EmbeddedServletContainerException {
-		if (started) {
-			started = false;
-			undertow.stop();
+		if (this.started) {
+			this.started = false;
+			this.undertow.stop();
 		}
 	}
 
 	@Override
 	public int getPort() {
-		return port;
+		return this.port;
 	}
+
 }

@@ -810,8 +810,8 @@ possible.
 [[boot-features-developing-web-applications]]
 == Developing web applications
 Spring Boot is well suited for web application development. You can easily create a
-self-contained HTTP server using embedded Tomcat or Jetty. Most web applications will
-use the `spring-boot-starter-web` module to get up and running quickly.
+self-contained HTTP server using embedded Tomcat, Jetty, or Undertow. Most web
+applications will use the `spring-boot-starter-web` module to get up and running quickly.
 
 If you haven't yet developed a Spring Boot web application you can follow the
 "Hello World!" example in the
@@ -1093,9 +1093,9 @@ asks for them to be scanned in its `Filter` registration).
 
 [[boot-features-embedded-container]]
 === Embedded servlet container support
-Spring Boot includes support for embedded Tomcat and Jetty servers. Most developers will
-simply use the appropriate '`Starter POM`' to obtain a fully configured instance. By
-default both Tomcat and Jetty will listen for HTTP requests on port `8080`.
+Spring Boot includes support for embedded Tomcat, Jetty, and Undertow servers. Most
+developers will simply use the appropriate '`Starter POM`' to obtain a fully configured
+instance. By default the embedded server will listen for HTTP requests on port `8080`.
 
 
 
@@ -1121,8 +1121,9 @@ interface.
 Under the hood Spring Boot uses a new type of `ApplicationContext` for embedded
 servlet container support.  The `EmbeddedWebApplicationContext` is a special
 type of `WebApplicationContext` that bootstraps itself by searching for a single
-`EmbeddedServletContainerFactory` bean. Usually a `TomcatEmbeddedServletContainerFactory`
-or `JettyEmbeddedServletContainerFactory` will have been auto-configured.
+`EmbeddedServletContainerFactory` bean. Usually a `TomcatEmbeddedServletContainerFactory`,
+`JettyEmbeddedServletContainerFactory`, or `UndertowEmbeddedServletContainerFactory` will
+have been auto-configured.
 
 NOTE: You usually won't need to be aware of these implementation classes. Most
 applications will be auto-configured and the appropriate `ApplicationContext` and
@@ -1176,8 +1177,8 @@ methods.
 [[boot-features-customizing-configurableembeddedservletcontainerfactory-directly]]
 ===== Customizing ConfigurableEmbeddedServletContainer directly
 If the above customization techniques are too limited, you can register the
-`TomcatEmbeddedServletContainerFactory` or `JettyEmbeddedServletContainerFactory` bean
-yourself.
+`TomcatEmbeddedServletContainerFactory`, `JettyEmbeddedServletContainerFactory` or
+`UndertowEmbeddedServletContainerFactory` bean yourself.
 
 [source,java,indent=0]
 ----
@@ -1207,6 +1208,8 @@ packaged as an executable archive), there are some limitations in the JSP suppor
   Tomcat). An executable jar will not work because of a hard coded file pattern in Tomcat.
 
 * Jetty does not currently work as an embedded container with JSPs.
+
+* Undertow does not support JSPs
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so
 you can see how to set things up.

@@ -54,6 +54,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Ivan Sopov
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -90,7 +91,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 		}
 
 	}
-	
+
 	/**
 	 * Nested configuration if Undertow is being used.
 	 */
@@ -105,7 +106,6 @@ public class EmbeddedServletContainerAutoConfiguration {
 		}
 
 	}
-	
 
 	/**
 	 * Registers a {@link EmbeddedServletContainerCustomizerBeanPostProcessor}. Registered

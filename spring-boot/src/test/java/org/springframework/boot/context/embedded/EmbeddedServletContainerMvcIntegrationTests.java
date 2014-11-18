@@ -49,6 +49,7 @@ import static org.junit.Assert.assertThat;
  * {@link EmbeddedServletContainer}s running Spring MVC.
  *
  * @author Phillip Webb
+ * @author Ivan Sopov
  */
 public class EmbeddedServletContainerMvcIntegrationTests {
 
@@ -69,7 +70,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 				TomcatConfig.class);
 		doTest(this.context, "/hello");
 	}
-	
+
 	@Test
 	public void jetty() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
@@ -83,9 +84,6 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 				UndertowConfig.class);
 		doTest(this.context, "/hello");
 	}
-	
-
-	
 
 	@Test
 	public void advancedConfig() throws Exception {
@@ -128,7 +126,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 			return new JettyEmbeddedServletContainerFactory(0);
 		}
 	}
-	
+
 	@Configuration
 	@Import(Config.class)
 	public static class UndertowConfig {

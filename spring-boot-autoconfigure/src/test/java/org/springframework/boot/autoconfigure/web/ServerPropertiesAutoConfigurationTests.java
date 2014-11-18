@@ -47,6 +47,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link ServerPropertiesAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Ivan Sopov
  */
 public class ServerPropertiesAutoConfigurationTests {
 
@@ -112,8 +113,7 @@ public class ServerPropertiesAutoConfigurationTests {
 		// factory should take precedence...
 		assertEquals(3000, containerFactory.getPort());
 	}
-	
-	
+
 	@Test
 	public void customizeWithUndertowContainerFactory() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
@@ -127,7 +127,6 @@ public class ServerPropertiesAutoConfigurationTests {
 		assertNotNull(server);
 		assertEquals(3000, containerFactory.getPort());
 	}
-	
 
 	@Test
 	public void customizeTomcatWithCustomizer() throws Exception {
@@ -186,7 +185,7 @@ public class ServerPropertiesAutoConfigurationTests {
 		}
 
 	}
-	
+
 	@Configuration
 	protected static class CustomUndertowContainerConfig {
 
@@ -203,9 +202,6 @@ public class ServerPropertiesAutoConfigurationTests {
 		}
 
 	}
-	
-	
-	
 
 	@Configuration
 	protected static class CustomizeConfig {
