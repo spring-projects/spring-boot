@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -45,6 +47,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
 
@@ -99,6 +102,29 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new Foo()));
+	}
+
+	@Test
+	public void httpMappersJsonPrettyPrintIsApplied() {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"http.mappers.json-pretty-print:true");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
+		assertTrue(objectMapper.getSerializationConfig().isEnabled(
+				SerializationFeature.INDENT_OUTPUT));
+	}
+
+	@Test
+	public void httpMappersJsonSortKeysIsApplied() {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"http.mappers.json-sort-keys:true");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
+		assertTrue(objectMapper.getSerializationConfig().isEnabled(
+				SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS));
+
 	}
 
 	@Configuration
