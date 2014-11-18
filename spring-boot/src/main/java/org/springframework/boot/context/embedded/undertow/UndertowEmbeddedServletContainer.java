@@ -20,7 +20,6 @@ import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.PathHandler;
 import io.undertow.servlet.api.DeploymentManager;
 
 import javax.servlet.ServletException;
@@ -70,25 +69,30 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 			return;
 		}
 		if (this.undertow == null) {
-			try {
-				HttpHandler servletHandler = this.manager.start();
-				if (StringUtils.isEmpty(this.contextPath)) {
-					this.builder.setHandler(servletHandler);
-				}
-				else {
-					PathHandler pathHandler = Handlers.path().addPrefixPath(
-							this.contextPath, servletHandler);
-					this.builder.setHandler(pathHandler);
-				}
-				this.undertow = this.builder.build();
-			}
-			catch (ServletException ex) {
-				throw new EmbeddedServletContainerException(
-						"Unable to start embdedded Undertow", ex);
-			}
+			this.undertow = createUndertowServer();
 		}
 		this.undertow.start();
 		this.started = true;
+	}
+
+	private Undertow createUndertowServer() {
+		try {
+			HttpHandler servletHandler = this.manager.start();
+			this.builder.setHandler(getContextHandler(servletHandler));
+			return this.builder.build();
+		}
+		catch (ServletException ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to start embdedded Undertow", ex);
+		}
+	}
+
+	private HttpHandler getContextHandler(HttpHandler servletHandler) {
+		if (StringUtils.isEmpty(this.contextPath)) {
+			return servletHandler;
+		}
+		return Handlers.path().addPrefixPath(this.contextPath, servletHandler);
+
 	}
 
 	@Override

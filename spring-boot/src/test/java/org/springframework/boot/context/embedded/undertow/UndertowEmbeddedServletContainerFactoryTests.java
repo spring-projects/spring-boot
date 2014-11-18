@@ -93,4 +93,10 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 			ordered.verify(customizer).customize((Builder) anyObject());
 		}
 	}
+
+	@Test
+	public void basicSslClasspathKeyStore() throws Exception {
+		testBasicSllWithKeystore("classpath:test.jks");
+	}
+
 }
