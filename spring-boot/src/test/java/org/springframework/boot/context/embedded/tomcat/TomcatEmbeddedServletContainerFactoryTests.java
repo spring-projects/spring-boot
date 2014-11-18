@@ -33,6 +33,7 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
@@ -65,6 +66,13 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {
 		return new TomcatEmbeddedServletContainerFactory(0);
+	}
+
+	@Override
+	@Test
+	@Ignore("https://issues.apache.org/bugzilla/show_bug.cgi?id=56777")
+	public void basicSslClasspathKeyStore() throws Exception {
+		super.basicSslClasspathKeyStore();
 	}
 
 	// JMX MBean names clash if you get more than one Engine with the same name...
