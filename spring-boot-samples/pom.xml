@@ -59,6 +59,8 @@
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
 		<module>spring-boot-sample-tomcat7-jsp</module>
 		<module>spring-boot-sample-traditional</module>
+		<module>spring-boot-sample-undertow</module>
+		<module>spring-boot-sample-undertow-ssl</module>
 		<module>spring-boot-sample-velocity</module>
 		<module>spring-boot-sample-web-freemarker</module>
 		<module>spring-boot-sample-web-groovy-templates</module>

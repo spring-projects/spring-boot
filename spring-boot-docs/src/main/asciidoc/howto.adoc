@@ -556,6 +556,61 @@ of ways. Or the nuclear option is to add your own `JettyEmbeddedServletContainer
 
 
 
+[[howto-use-undertow-instead-of-tomcat]]
+=== Use Undertow instead of Tomcat
+Using Undertow instead of Tomcat is very similar to <<howto-use-jetty-instead-of-tomcat,
+using Jetty instead of Tomcat>>. You need to exclude the Tomcat dependencies and include
+the Undertow starter instead.
+
+Example in Maven:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+		<exclusions>
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-undertow</artifactId>
+	</dependency>
+----
+
+Example in Gradle:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	configurations {
+		compile.exclude module: "spring-boot-starter-tomcat"
+	}
+
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
+		compile("org.springframework.boot:spring-boot-starter-undertow:{spring-boot-version}")
+		// ...
+	}
+----
+
+
+[[howto-configure-undertow]]
+=== Configure Undertow
+Generally you can follow the advice from
+_<<howto-discover-build-in-options-for-external-properties>>_ about
+`@ConfigurationProperties` (`ServerProperties` and `ServerProperties.Undertow are the
+main ones here), but also look at
+`EmbeddedServletContainerCustomizer`. Once you have access to the
+`UndertowEmbeddedServletContainerFactory` you can use an `UndertowBuilderCustomizer` to
+modify Undertow's configuration to meet your needs. Or the nuclear option is to add your
+own `UndertowEmbeddedServletContainerFactory`.
+
+
+
 [[howto-use-tomcat-8]]
 === Use Tomcat 8
 Tomcat 8 works with Spring Boot, but the default is to use Tomcat 7 (so we can support

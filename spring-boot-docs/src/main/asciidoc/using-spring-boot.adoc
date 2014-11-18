@@ -348,6 +348,9 @@ swap specific technical facets.
 
 |`spring-boot-starter-tomcat`
 |Import Spring Boot's default HTTP engine (Tomcat).
+
+|`spring-boot-starter-undertow`
+|Imports the Undertow HTTP engine (to be used as an alternative to Tomcat)
 |===
 
 TIP: For a list of additional community contributed starter POMs, see the

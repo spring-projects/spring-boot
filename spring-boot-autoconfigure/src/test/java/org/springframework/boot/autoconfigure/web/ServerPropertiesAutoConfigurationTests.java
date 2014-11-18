@@ -32,6 +32,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +47,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link ServerPropertiesAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Ivan Sopov
  */
 public class ServerPropertiesAutoConfigurationTests {
 
@@ -97,9 +99,9 @@ public class ServerPropertiesAutoConfigurationTests {
 	}
 
 	@Test
-	public void customizeWithContainerFactory() throws Exception {
+	public void customizeWithJettyContainerFactory() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(CustomContainerConfig.class,
+		this.context.register(CustomJettyContainerConfig.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -109,6 +111,20 @@ public class ServerPropertiesAutoConfigurationTests {
 		assertNotNull(server);
 		// The server.port environment property was not explicitly set so the container
 		// factory should take precedence...
+		assertEquals(3000, containerFactory.getPort());
+	}
+
+	@Test
+	public void customizeWithUndertowContainerFactory() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(CustomUndertowContainerConfig.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		containerFactory = this.context
+				.getBean(AbstractEmbeddedServletContainerFactory.class);
+		ServerProperties server = this.context.getBean(ServerProperties.class);
+		assertNotNull(server);
 		assertEquals(3000, containerFactory.getPort());
 	}
 
@@ -154,11 +170,28 @@ public class ServerPropertiesAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class CustomContainerConfig {
+	protected static class CustomJettyContainerConfig {
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
 			JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory();
+			factory.setPort(3000);
+			return factory;
+		}
+
+		@Bean
+		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
+			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		}
+
+	}
+
+	@Configuration
+	protected static class CustomUndertowContainerConfig {
+
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			UndertowEmbeddedServletContainerFactory factory = new UndertowEmbeddedServletContainerFactory();
 			factory.setPort(3000);
 			return factory;
 		}

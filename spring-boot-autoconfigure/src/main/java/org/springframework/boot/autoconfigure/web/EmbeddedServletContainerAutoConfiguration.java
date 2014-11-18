@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import io.undertow.Undertow;
+
 import javax.servlet.Servlet;
 
 import org.apache.catalina.startup.Tomcat;
@@ -37,6 +39,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -51,6 +54,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Ivan Sopov
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
@@ -84,6 +88,21 @@ public class EmbeddedServletContainerAutoConfiguration {
 		@Bean
 		public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
 			return new JettyEmbeddedServletContainerFactory();
+		}
+
+	}
+
+	/**
+	 * Nested configuration if Undertow is being used.
+	 */
+	@Configuration
+	@ConditionalOnClass({ Servlet.class, Undertow.class })
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
+	public static class EmbeddedUndertow {
+
+		@Bean
+		public UndertowEmbeddedServletContainerFactory undertowEmbeddedServletContainerFactory() {
+			return new UndertowEmbeddedServletContainerFactory();
 		}
 
 	}
