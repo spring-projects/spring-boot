@@ -9,6 +9,7 @@
 .project
 .settings
 .metadata
+.factorypath
 bin
 build
 lib/
@@ -29,3 +30,4 @@ overridedb.*
 *.iws
 .idea
 *.jar
+.DS_Store

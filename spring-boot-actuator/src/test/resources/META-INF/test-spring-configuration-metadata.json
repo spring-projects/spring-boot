@@ -1,0 +1,10 @@
+{"properties": [
+  {
+    "name": "bar.name",
+    "dataType": "java.lang.String"
+  },
+  {
+    "name": "spam.map.name",
+    "dataType": "java.lang.String"
+  }  ]}
+

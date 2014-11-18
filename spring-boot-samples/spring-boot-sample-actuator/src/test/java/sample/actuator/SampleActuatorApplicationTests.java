@@ -221,6 +221,18 @@ public class SampleActuatorApplicationTests {
 				((String) body.get("context")).startsWith("application"));
 	}
 
+	@Test
+	public void testConfigProps() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/configprops", Map.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertTrue("Wrong body: " + body,
+				body.containsKey("spring.datasource.CONFIGURATION_PROPERTIES"));
+	}
+
 	private String getPassword() {
 		return this.security.getUser().getPassword();
 	}
