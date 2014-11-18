@@ -22,13 +22,12 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -92,7 +91,7 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 	 * on an {@link EntityScan} annotation.
 	 */
 	static class EntityScanBeanPostProcessor implements BeanPostProcessor,
-			ApplicationListener<ContextRefreshedEvent> {
+			SmartInitializingSingleton {
 
 		private final String[] packagesToScan;
 
@@ -120,7 +119,7 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 		}
 
 		@Override
-		public void onApplicationEvent(ContextRefreshedEvent event) {
+		public void afterSingletonsInstantiated() {
 			Assert.state(this.processed, "Unable to configure "
 					+ "LocalContainerEntityManagerFactoryBean from @EntityScan, "
 					+ "ensure an appropriate bean is registered.");

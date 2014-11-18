@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
@@ -64,7 +65,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.web.context.WebApplicationContext;
@@ -90,7 +90,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 		ManagementServerPropertiesAutoConfiguration.class })
 @EnableConfigurationProperties(HealthMvcEndpointProperties.class)
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
-		ApplicationListener<ContextRefreshedEvent> {
+		SmartInitializingSingleton {
 
 	private static Log logger = LogFactory.getLog(EndpointWebMvcAutoConfiguration.class);
 
@@ -122,19 +122,17 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	}
 
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (event.getApplicationContext() == this.applicationContext) {
-			ManagementServerPort managementPort = ManagementServerPort
-					.get(this.applicationContext);
-			if (managementPort == ManagementServerPort.DIFFERENT
-					&& this.applicationContext instanceof WebApplicationContext) {
-				createChildManagementContext();
-			}
-			if (managementPort == ManagementServerPort.SAME
-					&& this.applicationContext.getEnvironment() instanceof ConfigurableEnvironment) {
-				addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.applicationContext
-						.getEnvironment());
-			}
+	public void afterSingletonsInstantiated() {
+		ManagementServerPort managementPort = ManagementServerPort
+				.get(this.applicationContext);
+		if (managementPort == ManagementServerPort.DIFFERENT
+				&& this.applicationContext instanceof WebApplicationContext) {
+			createChildManagementContext();
+		}
+		if (managementPort == ManagementServerPort.SAME
+				&& this.applicationContext.getEnvironment() instanceof ConfigurableEnvironment) {
+			addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.applicationContext
+					.getEnvironment());
 		}
 	}
 

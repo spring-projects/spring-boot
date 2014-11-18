@@ -28,12 +28,11 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -193,7 +192,7 @@ abstract class BeanTypeRegistry {
 	 * implementations that allow eager class loading.
 	 */
 	static class OptimizedBeanTypeRegistry extends BeanTypeRegistry implements
-			ApplicationListener<ContextRefreshedEvent> {
+			SmartInitializingSingleton {
 
 		private static final String BEAN_NAME = BeanTypeRegistry.class.getName();
 
@@ -208,7 +207,7 @@ abstract class BeanTypeRegistry {
 		}
 
 		@Override
-		public void onApplicationEvent(ContextRefreshedEvent event) {
+		public void afterSingletonsInstantiated() {
 			// We're done at this point, free up some memory
 			this.beanTypes.clear();
 			this.lastBeanDefinitionCount = 0;
