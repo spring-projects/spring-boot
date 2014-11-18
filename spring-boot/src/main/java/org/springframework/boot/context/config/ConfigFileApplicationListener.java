@@ -391,7 +391,7 @@ public class ConfigFileApplicationListener implements
 			msg.append(propertySource == null ? "Skipped " : "Loaded ");
 			msg.append("config file ");
 			msg.append("'" + location + "' ");
-			msg.append(StringUtils.hasLength(profile) ? "for profile " : "");
+			msg.append(StringUtils.hasLength(profile) ? "for profile " + profile : "");
 			msg.append(resource == null || !resource.exists() ? "resource not found" : "");
 			this.debug.add(msg);
 
