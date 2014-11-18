@@ -312,6 +312,16 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void basicSsl() throws Exception {
+		basicSsl("src/test/resources/test.jks");
+	}
+	
+	
+	@Test
+	public void basicSslClasspathKeyStore() throws Exception {
+		basicSsl("classpath:test.jks");
+	}
+	
+	private void basicSsl(String keyStore) throws Exception{
 		FileCopyUtils.copy("test",
 				new FileWriter(this.temporaryFolder.newFile("test.txt")));
 
@@ -319,7 +329,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		factory.setDocumentRoot(this.temporaryFolder.getRoot());
 
 		Ssl ssl = new Ssl();
-		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStore(keyStore);
 		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword("password");
 		factory.setSsl(ssl);
