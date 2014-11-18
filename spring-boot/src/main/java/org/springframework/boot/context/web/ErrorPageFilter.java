@@ -164,9 +164,9 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 			IOException {
 
 		if (logger.isErrorEnabled()) {
-			String message = "Forwarding to error page from request ["
-					+ request.getServletPath() + request.getPathInfo()
-					+ "] due to exception [" + ex.getMessage() + "]";
+			String message = "Forwarding to error page from request "
+					+ getDescription(request) + " due to exception [" + ex.getMessage()
+					+ "]";
 			logger.error(message, ex);
 		}
 
@@ -179,9 +179,14 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 		request.getRequestDispatcher(path).forward(request, response);
 	}
 
+	private String getDescription(HttpServletRequest request) {
+		return "[" + request.getServletPath()
+				+ (request.getPathInfo() == null ? "" : request.getPathInfo()) + "]";
+	}
+
 	private void handleCommittedResponse(HttpServletRequest request, Throwable ex) {
-		String message = "Cannot forward to error page for request to "
-				+ request.getRequestURI() + " as the response has already been"
+		String message = "Cannot forward to error page for request "
+				+ getDescription(request) + " as the response has already been"
 				+ " committed. As a result, the response may have the wrong status"
 				+ " code. If your application is running on WebSphere Application"
 				+ " Server you may be able to resolve this problem by setting"
