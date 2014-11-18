@@ -112,7 +112,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 				handleErrorStatus(request, response, status, wrapped.getMessage());
 				response.flushBuffer();
 			}
-			else if (!request.isAsyncStarted()) {
+			else if (!request.isAsyncStarted() && !response.isCommitted()) {
 				response.flushBuffer();
 			}
 		}
@@ -184,7 +184,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 				+ request.getRequestURI() + " as the response has already been"
 				+ " committed. As a result, the response may have the wrong status"
 				+ " code. If your application is running on WebSphere Application"
-				+ " Server you may be able to resolve this problem by setting "
+				+ " Server you may be able to resolve this problem by setting"
 				+ " com.ibm.ws.webcontainer.invokeFlushAfterService to false";
 		if (ex == null) {
 			logger.error(message);
