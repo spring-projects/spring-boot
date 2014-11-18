@@ -16,8 +16,12 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.converter.HttpMessageConverter;
+
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Configuration properties to configure {@link HttpMessageConverter}s.
@@ -27,13 +31,18 @@ import org.springframework.http.converter.HttpMessageConverter;
  * @author Sebastien Deleuze
  */
 @ConfigurationProperties(prefix = "http.mappers", ignoreUnknownFields = false)
+@Deprecated
 public class HttpMapperProperties {
+
+	private final Log logger = LogFactory.getLog(HttpMapperProperties.class);
 
 	private Boolean jsonPrettyPrint;
 
 	private Boolean jsonSortKeys;
 
 	public void setJsonPrettyPrint(Boolean jsonPrettyPrint) {
+		this.logger.warn(getDeprecationMessage("http.mappers.json-pretty-print",
+				SerializationFeature.INDENT_OUTPUT));
 		this.jsonPrettyPrint = jsonPrettyPrint;
 	}
 
@@ -42,11 +51,20 @@ public class HttpMapperProperties {
 	}
 
 	public void setJsonSortKeys(Boolean jsonSortKeys) {
+		this.logger.warn(getDeprecationMessage("http.mappers.json-sort-keys",
+				SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS));
 		this.jsonSortKeys = jsonSortKeys;
 	}
 
 	public Boolean isJsonSortKeys() {
 		return this.jsonSortKeys;
+	}
+
+	private String getDeprecationMessage(String property,
+			SerializationFeature alternativeFeature) {
+		return String.format("%s is deprecated. If you are using Jackson,"
+				+ " spring.jackson.serialization.%s=true should be used instead.",
+				property, alternativeFeature.name());
 	}
 
 }

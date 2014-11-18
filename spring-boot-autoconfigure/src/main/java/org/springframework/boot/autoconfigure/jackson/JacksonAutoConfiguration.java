@@ -63,6 +63,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
+@SuppressWarnings("deprecation")
 public class JacksonAutoConfiguration {
 
 	@Autowired

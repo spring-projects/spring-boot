@@ -67,6 +67,7 @@ public class HttpMessageConvertersAutoConfiguration {
 	@ConditionalOnClass(ObjectMapper.class)
 	@ConditionalOnBean(ObjectMapper.class)
 	@EnableConfigurationProperties(HttpMapperProperties.class)
+	@SuppressWarnings("deprecation")
 	protected static class MappingJackson2HttpMessageConverterConfiguration {
 
 		@Autowired
@@ -90,6 +91,7 @@ public class HttpMessageConvertersAutoConfiguration {
 	@ConditionalOnClass(XmlMapper.class)
 	@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
 	@EnableConfigurationProperties(HttpMapperProperties.class)
+	@SuppressWarnings("deprecation")
 	protected static class XmlMappers {
 
 		@Autowired

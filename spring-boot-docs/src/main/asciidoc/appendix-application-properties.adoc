@@ -83,9 +83,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.max-threads = 0 # number of threads in protocol handler
 	server.tomcat.uri-encoding = UTF-8 # character encoding to use for URL decoding
 
-	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/HttpMapperProperties.{sc-ext}[HttpMapperProperties])
-	http.mappers.json-pretty-print=false # pretty print JSON
-	http.mappers.json-sort-keys=false # sort keys
+	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.locale= # set fixed locale, e.g. en_UK
 	spring.mvc.date-format= # set fixed date format, e.g. dd/MM/yyyy
 	spring.mvc.message-codes-resolver-format= # PREFIX_ERROR_CODE / POSTFIX_ERROR_CODE
