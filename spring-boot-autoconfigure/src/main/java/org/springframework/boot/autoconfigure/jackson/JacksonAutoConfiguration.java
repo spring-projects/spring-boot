@@ -113,6 +113,10 @@ public class JacksonAutoConfiguration {
 			if (isJsonSortKeys != null && isJsonSortKeys) {
 				builder.featuresToEnable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
 			}
+			Boolean isJsonPrettyPrint = this.httpMapperProperties.isJsonPrettyPrint();
+			if (isJsonPrettyPrint != null && isJsonPrettyPrint) {
+				builder.featuresToEnable(SerializationFeature.INDENT_OUTPUT);
+			}
 			configureFeatures(builder, this.jacksonProperties.getDeserialization());
 			configureFeatures(builder, this.jacksonProperties.getSerialization());
 			configureFeatures(builder, this.jacksonProperties.getMapper());
