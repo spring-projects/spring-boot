@@ -154,4 +154,9 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
 	}
 
+	@Test
+	public void basicSslClasspathKeyStore() throws Exception {
+		testBasicSllWithKeystore("classpath:test.jks");
+	}
+
 }
