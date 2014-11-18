@@ -40,6 +40,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ErrorPageFilter}.
@@ -341,6 +345,18 @@ public class ErrorPageFilterTests {
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertTrue(this.response.isCommitted());
+	}
+
+	@Test
+	public void responseIsNotFlushedIfStatusIsLessThan400AndItHasAlreadyBeenCommitted()
+			throws Exception {
+		HttpServletResponse committedResponse = mock(HttpServletResponse.class);
+		given(committedResponse.isCommitted()).willReturn(true);
+		given(committedResponse.getStatus()).willReturn(200);
+
+		this.filter.doFilter(this.request, committedResponse, this.chain);
+
+		verify(committedResponse, times(0)).flushBuffer();
 	}
 
 }
