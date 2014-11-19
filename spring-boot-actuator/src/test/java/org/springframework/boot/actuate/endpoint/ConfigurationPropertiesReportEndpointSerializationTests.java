@@ -166,7 +166,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
 		assertNotNull(map);
-		assertEquals(2, map.size());
+		assertEquals(3, map.size());
 		assertEquals(null, (map.get("map")));
 	}
 
@@ -206,7 +206,8 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
 		assertNotNull(map);
-		assertEquals(2, map.size());
+		// Only one property is mapped in metadata so the others are ignored
+		assertEquals(1, map.size());
 		assertEquals("foo", ((Map<String, Object>) map.get("map")).get("name"));
 	}
 

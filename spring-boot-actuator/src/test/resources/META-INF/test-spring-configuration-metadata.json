@@ -1,10 +1,12 @@
 {"properties": [
   {
     "name": "bar.name",
+    "type": "java.util.Map",
     "dataType": "java.lang.String"
   },
   {
     "name": "spam.map.name",
+    "type": "java.util.Map",
     "dataType": "java.lang.String"
   }  ]}
 
