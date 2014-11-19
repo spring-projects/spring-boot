@@ -84,7 +84,9 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private ConfigurationBeanFactoryMetaData beanFactoryMetaData;
 
-	private ConfigurationPropertiesMetaData metadata = new ConfigurationPropertiesMetaData();
+	private ConfigurationPropertiesMetaData metadata;
+
+	private String metadataLocations = "classpath:*/META-INF/*spring-configuration-metadata.json";
 
 	public ConfigurationPropertiesReportEndpoint() {
 		super("configprops");
@@ -102,6 +104,15 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	public void setKeysToSanitize(String... keysToSanitize) {
 		this.sanitizer.setKeysToSanitize(keysToSanitize);
+	}
+
+	/**
+	 * Location path for JSON metadata about config properties.
+	 *
+	 * @param metadataLocations the metadataLocations to set
+	 */
+	public void setMetadataLocations(String metadataLocations) {
+		this.metadataLocations = metadataLocations;
 	}
 
 	@Override
@@ -150,6 +161,9 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 */
 	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean,
 			String prefix) {
+		if (this.metadata == null) {
+			this.metadata = new ConfigurationPropertiesMetaData(this.metadataLocations);
+		}
 		try {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> result = new HashMap<String, Object>(mapper.convertValue(
@@ -315,6 +329,11 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 		private Map<String, Set<String>> matched = new HashMap<String, Set<String>>();
 		private Set<String> keys = null;
+		private String metadataLocations;
+
+		public ConfigurationPropertiesMetaData(String metadataLocations) {
+			this.metadataLocations = metadataLocations;
+		}
 
 		public boolean matches(String prefix) {
 			if (this.matched.containsKey(prefix)) {
@@ -348,7 +367,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 					this.keys = new HashSet<String>();
 					ObjectMapper mapper = new ObjectMapper();
 					Resource[] resources = new PathMatchingResourcePatternResolver()
-							.getResources("classpath*:/META-INF/*spring-configuration-metadata.json");
+							.getResources(this.metadataLocations);
 					for (Resource resource : resources) {
 						addKeys(mapper, resource);
 					}

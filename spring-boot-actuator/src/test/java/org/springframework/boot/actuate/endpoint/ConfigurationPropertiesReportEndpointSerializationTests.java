@@ -206,6 +206,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		Map<String, Object> map = (Map<String, Object>) nestedProperties
 				.get("properties");
 		assertNotNull(map);
+		System.err.println(nestedProperties);
 		// Only one property is mapped in metadata so the others are ignored
 		assertEquals(1, map.size());
 		assertEquals("foo", ((Map<String, Object>) map.get("map")).get("name"));
@@ -241,6 +242,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 				ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
 			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
 			endpoint.setConfigurationBeanFactoryMetaData(beanFactoryMetaData);
+			endpoint.setMetadataLocations("classpath*:/test-metadata.json");
 			return endpoint;
 		}
 
