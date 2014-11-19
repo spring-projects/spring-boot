@@ -26,6 +26,8 @@ import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
 
+import org.springframework.util.StringUtils;
+
 /**
  * Represent the settings to apply to generating the project.
  *
@@ -205,8 +207,9 @@ class ProjectGenerationRequest {
 			if (this.bootVersion != null) {
 				builder.setParameter("bootVersion", this.bootVersion);
 			}
-			for (String dependency : this.dependencies) {
-				builder.addParameter("style", dependency);
+
+			if (!this.dependencies.isEmpty()) {
+				builder.setParameter("dependencies", StringUtils.collectionToCommaDelimitedString(this.dependencies));
 			}
 			if (this.javaVersion != null) {
 				builder.setParameter("javaVersion", this.javaVersion);

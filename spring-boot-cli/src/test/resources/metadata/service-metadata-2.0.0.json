@@ -1,19 +1,19 @@
 {
   "_links": {
     "maven-build": {
-      "href": "http://localhost:8080/pom.xml?style={dependencies}{&type,packaging,javaVersion,language,bootVersion,groupId,artifactId,version,name,description,packageName}",
+      "href": "http://localhost:8080/pom.xml?{dependencies,type,packaging,javaVersion,language,bootVersion,groupId,artifactId,version,name,description,packageName}",
       "templated": true
     },
     "maven-project": {
-      "href": "http://localhost:8080/starter.zip?style={dependencies}{&type,packaging,javaVersion,language,bootVersion,groupId,artifactId,version,name,description,packageName}",
+      "href": "http://localhost:8080/starter.zip{?dependencies,type,packaging,javaVersion,language,bootVersion,groupId,artifactId,version,name,description,packageName}",
       "templated": true
     },
     "gradle-build": {
-      "href": "http://localhost:8080/build.gradle?style={dependencies}{&type,packaging,javaVersion,language,bootVersion,groupId,artifactId,version,name,description,packageName}",
+      "href": "http://localhost:8080/build.gradle{?dependencies,type,packaging,javaVersion,language,bootVersion,groupId,artifactId,version,name,description,packageName}",
       "templated": true
     },
     "gradle-project": {
-      "href": "http://localhost:8080/starter.zip?style={dependencies}{&type,packaging,javaVersion,language,bootVersion,groupId,artifactId,version,name,description,packageName}",
+      "href": "http://localhost:8080/starter.zip{?dependencies,type,packaging,javaVersion,language,bootVersion,groupId,artifactId,version,name,description,packageName}",
       "templated": true
     }
   },
@@ -55,6 +55,7 @@
   },
   "type": {
     "type": "action",
+    "default": "maven-project",
     "values": [
       {
         "id": "maven-build",
@@ -75,15 +76,6 @@
         }
       },
       {
-        "id": "maven-project-2",
-        "name": "Another Maven Project",
-        "action": "/starter.zip",
-        "tags": {
-          "build": "maven",
-          "format": "project"
-        }
-      },
-      {
         "id": "gradle-build",
         "name": "Gradle Config",
         "action": "/build.gradle",
@@ -95,15 +87,6 @@
       {
         "id": "gradle-project",
         "name": "Gradle Project",
-        "action": "/starter.zip",
-        "tags": {
-          "build": "gradle",
-          "format": "project"
-        }
-      },
-      {
-        "id": "gradle-project-2",
-        "name": "Another Gradle Project",
         "action": "/starter.zip",
         "tags": {
           "build": "gradle",

@@ -19,6 +19,7 @@ package org.springframework.boot.cli.command.init;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -34,11 +35,9 @@ class InitializrServiceMetadata {
 
 	private static final String DEPENDENCIES_EL = "dependencies";
 
-	private static final String TYPES_EL = "types";
+	private static final String TYPE_EL = "type";
 
-	private static final String DEFAULTS_EL = "defaults";
-
-	private static final String CONTENT_EL = "content";
+	private static final String VALUES_EL = "values";
 
 	private static final String NAME_ATTRIBUTE = "name";
 
@@ -123,7 +122,8 @@ class InitializrServiceMetadata {
 		if (!root.has(DEPENDENCIES_EL)) {
 			return result;
 		}
-		JSONArray array = root.getJSONArray(DEPENDENCIES_EL);
+		JSONObject dependencies = root.getJSONObject(DEPENDENCIES_EL);
+		JSONArray array = dependencies.getJSONArray(VALUES_EL);
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject group = array.getJSONObject(i);
 			parseGroup(group, result);
@@ -133,13 +133,15 @@ class InitializrServiceMetadata {
 
 	private MetadataHolder<String, ProjectType> parseProjectTypes(JSONObject root) {
 		MetadataHolder<String, ProjectType> result = new MetadataHolder<String, ProjectType>();
-		if (!root.has(TYPES_EL)) {
+		if (!root.has(TYPE_EL)) {
 			return result;
 		}
-		JSONArray array = root.getJSONArray(TYPES_EL);
+		JSONObject type = root.getJSONObject(TYPE_EL);
+		JSONArray array = type.getJSONArray(VALUES_EL);
+		String defaultType = type.has(DEFAULT_ATTRIBUTE) ? type.getString(DEFAULT_ATTRIBUTE) : null;
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject typeJson = array.getJSONObject(i);
-			ProjectType projectType = parseType(typeJson);
+			ProjectType projectType = parseType(typeJson, defaultType);
 			result.getContent().put(projectType.getId(), projectType);
 			if (projectType.isDefaultType()) {
 				result.setDefaultItem(projectType);
@@ -150,17 +152,23 @@ class InitializrServiceMetadata {
 
 	private Map<String, String> parseDefaults(JSONObject root) {
 		Map<String, String> result = new HashMap<String, String>();
-		if (!root.has(DEFAULTS_EL)) {
-			return result;
+		Iterator<?> keys = root.keys();
+		while (keys.hasNext()) {
+			String key = (String) keys.next();
+			Object o = root.get(key);
+			if (o instanceof JSONObject) {
+				JSONObject child = (JSONObject) o;
+				if (child.has(DEFAULT_ATTRIBUTE)) {
+					result.put(key, child.getString(DEFAULT_ATTRIBUTE));
+				}
+			}
 		}
-		JSONObject defaults = root.getJSONObject(DEFAULTS_EL);
-		result.putAll(parseStringItems(defaults));
 		return result;
 	}
 
 	private void parseGroup(JSONObject group, Map<String, Dependency> dependencies) {
-		if (group.has(CONTENT_EL)) {
-			JSONArray content = group.getJSONArray(CONTENT_EL);
+		if (group.has(VALUES_EL)) {
+			JSONArray content = group.getJSONArray(VALUES_EL);
 			for (int i = 0; i < content.length(); i++) {
 				Dependency dependency = parseDependency(content.getJSONObject(i));
 				dependencies.put(dependency.getId(), dependency);
@@ -175,11 +183,11 @@ class InitializrServiceMetadata {
 		return new Dependency(id, name, description);
 	}
 
-	private ProjectType parseType(JSONObject object) {
+	private ProjectType parseType(JSONObject object, String defaultId) {
 		String id = getStringValue(object, ID_ATTRIBUTE, null);
 		String name = getStringValue(object, NAME_ATTRIBUTE, null);
 		String action = getStringValue(object, ACTION_ATTRIBUTE, null);
-		boolean defaultType = getBooleanValue(object, DEFAULT_ATTRIBUTE, false);
+		boolean defaultType = id.equals(defaultId);
 		Map<String, String> tags = new HashMap<String, String>();
 		if (object.has("tags")) {
 			JSONObject jsonTags = object.getJSONObject("tags");
@@ -190,10 +198,6 @@ class InitializrServiceMetadata {
 
 	private String getStringValue(JSONObject object, String name, String defaultValue) {
 		return object.has(name) ? object.getString(name) : defaultValue;
-	}
-
-	private boolean getBooleanValue(JSONObject object, String name, boolean defaultValue) {
-		return object.has(name) ? object.getBoolean(name) : defaultValue;
 	}
 
 	private Map<String, String> parseStringItems(JSONObject json) {

@@ -60,7 +60,7 @@ public class ProjectGenerationRequestTests {
 		this.request.setServiceUrl(customServerUrl);
 		this.request.getDependencies().add("security");
 		assertEquals(new URI(customServerUrl
-				+ "/starter.zip?style=security&type=test-type"),
+				+ "/starter.zip?dependencies=security&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -74,7 +74,7 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void singleDependency() {
 		this.request.getDependencies().add("web");
-		assertEquals(createDefaultUrl("?style=web&type=test-type"),
+		assertEquals(createDefaultUrl("?dependencies=web&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -82,7 +82,7 @@ public class ProjectGenerationRequestTests {
 	public void multipleDependencies() {
 		this.request.getDependencies().add("web");
 		this.request.getDependencies().add("data-jpa");
-		assertEquals(createDefaultUrl("?style=web&style=data-jpa&type=test-type"),
+		assertEquals(createDefaultUrl("?dependencies=web%2Cdata-jpa&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -108,7 +108,7 @@ public class ProjectGenerationRequestTests {
 		this.request.setType("custom");
 		this.request.getDependencies().add("data-rest");
 		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
-				+ "/foo?style=data-rest&type=custom"), this.request.generateUrl(metadata));
+				+ "/foo?dependencies=data-rest&type=custom"), this.request.generateUrl(metadata));
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public class ProjectGenerationRequestTests {
 	}
 
 	private static InitializrServiceMetadata readMetadata() {
-		return readMetadata("1.1.0");
+		return readMetadata("2.0.0");
 	}
 
 	private static InitializrServiceMetadata readMetadata(String version) {

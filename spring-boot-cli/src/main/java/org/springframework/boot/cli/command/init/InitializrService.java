@@ -134,7 +134,7 @@ class InitializrService {
 	 */
 	private CloseableHttpResponse executeInitializrMetadataRetrieval(String url) {
 		HttpGet request = new HttpGet(url);
-		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, "application/json"));
+		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, "application/vnd.initializr.v2+json"));
 		return execute(request, url, "retrieve metadata");
 	}
 

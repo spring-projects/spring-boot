@@ -38,15 +38,24 @@ public class InitializrServiceMetadataTests {
 
 	@Test
 	public void parseDefaults() {
-		InitializrServiceMetadata metadata = createInstance("1.0.0");
-		assertEquals("maven-project", metadata.getDefaults().get("type"));
+		InitializrServiceMetadata metadata = createInstance("2.0.0");
+		assertEquals("1.1.8.RELEASE", metadata.getDefaults().get("bootVersion"));
+		assertEquals("1.7", metadata.getDefaults().get("javaVersion"));
+		assertEquals("org.test", metadata.getDefaults().get("groupId"));
+		assertEquals("demo", metadata.getDefaults().get("name"));
+		assertEquals("Demo project for Spring Boot", metadata.getDefaults().get("description"));
 		assertEquals("jar", metadata.getDefaults().get("packaging"));
 		assertEquals("java", metadata.getDefaults().get("language"));
+		assertEquals("demo", metadata.getDefaults().get("artifactId"));
+		assertEquals("demo", metadata.getDefaults().get("packageName"));
+		assertEquals("maven-project", metadata.getDefaults().get("type"));
+		assertEquals("0.0.1-SNAPSHOT", metadata.getDefaults().get("version"));
+		assertEquals("Wrong number of defaults", 11, metadata.getDefaults().size());
 	}
 
 	@Test
 	public void parseDependencies() {
-		InitializrServiceMetadata metadata = createInstance("1.0.0");
+		InitializrServiceMetadata metadata = createInstance("2.0.0");
 		assertEquals(5, metadata.getDependencies().size());
 
 		// Security description
@@ -60,16 +69,8 @@ public class InitializrServiceMetadataTests {
 	}
 
 	@Test
-	public void parseTypesNoTag() {
-		InitializrServiceMetadata metadata = createInstance("1.0.0");
-		ProjectType projectType = metadata.getProjectTypes().get("maven-project");
-		assertNotNull(projectType);
-		assertEquals(0, projectType.getTags().size());
-	}
-
-	@Test
-	public void parseTypesWithTags() {
-		InitializrServiceMetadata metadata = createInstance("1.1.0");
+	public void parseTypes() {
+		InitializrServiceMetadata metadata = createInstance("2.0.0");
 		ProjectType projectType = metadata.getProjectTypes().get("maven-project");
 		assertNotNull(projectType);
 		assertEquals("maven", projectType.getTags().get("build"));

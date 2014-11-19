@@ -49,7 +49,7 @@ public abstract class AbstractHttpClientMockTests {
 	protected final CloseableHttpClient http = mock(CloseableHttpClient.class);
 
 	protected void mockSuccessfulMetadataGet() throws IOException {
-		mockSuccessfulMetadataGet("1.1.0");
+		mockSuccessfulMetadataGet("2.0.0");
 	}
 
 	protected void mockSuccessfulMetadataGet(String version) throws IOException {
@@ -57,9 +57,9 @@ public abstract class AbstractHttpClientMockTests {
 		Resource resource = new ClassPathResource("metadata/service-metadata-" + version
 				+ ".json");
 		byte[] content = StreamUtils.copyToByteArray(resource.getInputStream());
-		mockHttpEntity(response, content, "application/json");
+		mockHttpEntity(response, content, "application/vnd.initializr.v2+json");
 		mockStatus(response, 200);
-		given(this.http.execute(argThat(getForJsonData()))).willReturn(response);
+		given(this.http.execute(argThat(getForJsonMetadata()))).willReturn(response);
 	}
 
 	protected void mockSuccessfulProjectGeneration(
@@ -72,7 +72,7 @@ public abstract class AbstractHttpClientMockTests {
 		String header = (request.fileName != null ? contentDispositionValue(request.fileName)
 				: null);
 		mockHttpHeader(response, "Content-Disposition", header);
-		given(this.http.execute(argThat(getForNonJsonData()))).willReturn(response);
+		given(this.http.execute(argThat(getForNonJsonMetadata()))).willReturn(response);
 	}
 
 	protected void mockProjectGenerationError(int status, String message)
@@ -122,12 +122,12 @@ public abstract class AbstractHttpClientMockTests {
 		given(response.getFirstHeader(headerName)).willReturn(header);
 	}
 
-	protected Matcher<HttpGet> getForJsonData() {
-		return new HasAcceptHeader("application/json", true);
+	protected Matcher<HttpGet> getForJsonMetadata() {
+		return new HasAcceptHeader("application/vnd.initializr.v2+json", true);
 	}
 
-	protected Matcher<HttpGet> getForNonJsonData() {
-		return new HasAcceptHeader("application/json", false);
+	protected Matcher<HttpGet> getForNonJsonMetadata() {
+		return new HasAcceptHeader("application/vnd.initializr.v2+json", false);
 	}
 
 	private String contentDispositionValue(String fileName) {
