@@ -24,8 +24,12 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.CannotLoadBeanClassException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -54,7 +58,7 @@ import org.springframework.util.StringUtils;
  */
 abstract class BeanTypeRegistry {
 
-	public static long check;
+	static Log logger = LogFactory.getLog(BeanTypeRegistry.class);
 
 	static final String FACTORY_BEAN_OBJECT_TYPE = "factoryBeanObjectType";
 
@@ -239,6 +243,12 @@ abstract class BeanTypeRegistry {
 				this.beanTypes.put(name, this.beanFactory.getType(name));
 			}
 			else if (!this.beanFactory.isAlias(name)) {
+				addBeanTypeForNonAliasDefinition(name);
+			}
+		}
+
+		private void addBeanTypeForNonAliasDefinition(String name) {
+			try {
 				String factoryName = BeanFactory.FACTORY_BEAN_PREFIX + name;
 				RootBeanDefinition beanDefinition = (RootBeanDefinition) this.beanFactory
 						.getMergedBeanDefinition(name);
@@ -255,6 +265,21 @@ abstract class BeanTypeRegistry {
 						this.beanTypes.put(name, this.beanFactory.getType(name));
 					}
 				}
+			}
+			catch (CannotLoadBeanClassException ex) {
+				// Probably contains a placeholder
+				logIgnoredError("bean class loading failure for bean", name, ex);
+			}
+			catch (BeanDefinitionStoreException ex) {
+				// Probably contains a placeholder
+				logIgnoredError("unresolvable metadata in bean definition", name, ex);
+			}
+		}
+
+		private void logIgnoredError(String message, String name, Exception ex) {
+			if (BeanTypeRegistry.logger.isDebugEnabled()) {
+				BeanTypeRegistry.logger.debug("Ignoring " + message + " '" + name + "'",
+						ex);
 			}
 		}
 

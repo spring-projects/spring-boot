@@ -19,11 +19,17 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.Date;
 
 import org.junit.Test;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import static org.junit.Assert.assertEquals;
@@ -116,6 +122,14 @@ public class ConditionalOnBeanTests {
 		assertFalse(this.context.containsBean("bar"));
 	}
 
+	@Test
+	public void withPropertyPlaceholderClassName() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context, "mybeanclass=java.lang.String");
+		this.context.register(PropertySourcesPlaceholderConfigurer.class,
+				WithPropertyPlaceholderClassName.class, OnBeanClassConfiguration.class);
+		this.context.refresh();
+	}
+
 	@Configuration
 	@ConditionalOnBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
@@ -189,4 +203,24 @@ public class ConditionalOnBeanTests {
 	@Import(OnBeanNameConfiguration.class)
 	protected static class CombinedXmlConfiguration {
 	}
+
+	@Configuration
+	@Import(WithPropertyPlaceholderClassNameRegistrar.class)
+	protected static class WithPropertyPlaceholderClassName {
+
+	}
+
+	protected static class WithPropertyPlaceholderClassNameRegistrar implements
+			ImportBeanDefinitionRegistrar {
+
+		@Override
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+				BeanDefinitionRegistry registry) {
+			RootBeanDefinition bd = new RootBeanDefinition();
+			bd.setBeanClassName("${mybeanclass}");
+			registry.registerBeanDefinition("mybean", bd);
+		}
+
+	}
+
 }
