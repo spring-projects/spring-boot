@@ -1,8 +1,9 @@
 = Contributing to Spring Boot
 
-Spring Boot is released under the non-restrictive Apache 2.0 license. If you would like
-to contribute something, or simply want to hack on the code this document should help
-you get started.
+Spring Boot is released under the Apache 2.0 license. If you would like to contribute
+something, or simply want to hack on the code this document should help you get started.
+
+
 
 == Sign the Contributor License Agreement
 Before we accept a non-trivial patch or pull request we will need you to sign the
@@ -11,6 +12,8 @@ Signing the contributor's agreement does not grant anyone commit rights to the m
 repository, but it does mean that we can accept your contributions, and you will get an
 author credit if we do.  Active contributors might be asked to join the core team, and
 given the ability to merge pull requests.
+
+
 
 == Code Conventions and Housekeeping
 None of these is essential for a pull request, but they will all help.  They can also be
@@ -37,6 +40,8 @@ added after the original pull request but before a merge.
   if you are fixing an existing issue please add `Fixes gh-XXXX` at the end of the commit
   message (where XXXX is the issue number).
 
+
+
 == Working with the code
 If you don't have an IDE preference we would recommend that you use
 http://www.springsource.com/developer/sts[Spring Tools Suite] or
@@ -44,9 +49,13 @@ http://eclipse.org[Eclipse] when working with the code. We use the
 http://eclipse.org/m2e/[m2eclipe] eclipse plugin for maven support. Other IDEs and tools
 should also work without issue.
 
+
+
 === Building from source
 To build the source you will need to install
 http://maven.apache.org/run-maven/index.html[Apache Maven] v3.0.6 or above and JDK 1.7.
+
+
 
 ==== Default build
 The project can be built from the root directory using the standard maven command:
@@ -66,6 +75,8 @@ to submit a pull request:
 ----
 	$ mvn clean install -DskipTests
 ----
+
+
 
 ==== Full Build
 Multi-module Maven builds cannot directly include maven plugins that are part of the
@@ -109,6 +120,8 @@ to Maven by setting a `MAVEN_OPTS` environment variable with the value
 `-Xmx512m -XX:MaxPermSize=128m`. We generate more artifacts when running the full build
 (such as Javadoc jars), so you may find the process a little slower than the standard build.
 
+
+
 === Importing into eclipse with m2eclipse
 We recommend the http://eclipse.org/m2e/[m2eclipe] eclipse plugin when working with
 eclipse. If you don't already have m2eclipse installed it is available from the "eclipse
@@ -132,6 +145,8 @@ With the requisite eclipse plugins installed you can select
 `import existing maven projects` from the `file` menu to import the code. You will
 need to import the root `spring-boot` pom and the `spring-boot-samples` pom separately.
 
+
+
 === Importing into eclipse without m2eclipse
 If you prefer not to use m2eclipse you can generate eclipse project metadata using the
 following command:
@@ -144,8 +159,12 @@ following command:
 The generated eclipse projects can be imported by selecting `import existing projects`
 from the `file` menu.
 
+
+
 === Importing into other IDEs
 Maven is well supported by most Java IDEs. Refer to your vendor documentation.
+
+
 
 == Integration tests
 The sample application are used as integration tests during the build (when you
