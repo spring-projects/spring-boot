@@ -302,8 +302,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		}
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
-			String parenType = beanDesc.getType().getTypeName();
-			String type = writer.getType().getTypeName();
+			String parenType = beanDesc.getType().getRawClass().getName();
+			String type = writer.getPropertyType().getName();
 			AnnotatedMethod setter = beanDesc.findMethod(
 					"set" + StringUtils.capitalize(writer.getName()),
 					new Class<?>[] { writer.getPropertyType() });
