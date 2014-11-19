@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -27,6 +31,7 @@ import javax.naming.spi.InitialContextFactory;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -47,14 +52,24 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ConditionalOnJndiTests {
+
+	private ClassLoader threadContextClassLoader;
 
 	private String initialContextFactory;
 
 	private ConfigurableApplicationContext context;
 
 	private MockableOnJndi condition = new MockableOnJndi();
+
+	@Before
+	public void setupThreadContextClassLoader() {
+		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader(
+				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
+	}
 
 	@After
 	public void close() {
@@ -69,6 +84,7 @@ public class ConditionalOnJndiTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+		Thread.currentThread().setContextClassLoader(this.threadContextClassLoader);
 	}
 
 	@Test
@@ -253,6 +269,29 @@ public class ConditionalOnJndiTests {
 				this.bindings.clear();
 			}
 		}
+	}
+
+	/**
+	 * Used as the thread context classloader to prevent jndi.properties resources found
+	 * on the classpath from triggering configuration of an InitialContextFactory that is
+	 * outside the control of these tests.
+	 */
+	private static class JndiPropertiesHidingClassLoader extends ClassLoader {
+
+		public JndiPropertiesHidingClassLoader(ClassLoader parent) {
+			super(parent);
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			if ("jndi.properties".equals(name)) {
+				return Collections.enumeration(Collections.<URL> emptyList());
+			}
+			else {
+				return super.getResources(name);
+			}
+		}
+
 	}
 
 }

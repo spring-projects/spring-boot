@@ -2550,6 +2550,18 @@ result of a {spring-reference}/#expressions[SpEL expression].
 
 
 
+[[boot-features-websockets]]
+== WebSockets
+Spring Boot provides WebSockets auto-configuration for embedded Tomcat (7 and 8) and
+embedded Jetty 9. If you're deploying a war file to a standalone container, Spring Boot
+assumes that the container will be responsible for the configuration of its WebSocket
+support.
+
+Spring Framework provides {spring-reference}/#websocket[rich WebSocket support] that can
+be easily accessed via the `spring-boot-starter-websocket` module.
+
+
+
 [[boot-features-whats-next]]
 == What to read next
 If you want to learn more about any of the classes discussed in this section you can

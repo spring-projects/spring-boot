@@ -57,7 +57,13 @@ public class WarPackagingTests {
 					"jetty-server-", "jetty-security-", "jetty-servlet-",
 					"jetty-webapp-", "javax.servlet.jsp-2", "javax.servlet.jsp-api-",
 					"javax.servlet.jsp.jstl-1.2.2", "javax.servlet.jsp.jstl-1.2.0",
-					"javax.el-", "org.eclipse.jdt.core-", "jetty-jsp-"));
+					"javax.el-", "org.eclipse.jdt.core-", "jetty-jsp-", "websocket-api",
+					"javax.annotation-api", "jetty-plus", "javax-websocket-server-impl-",
+					"asm-", "javax.websocket-api-", "asm-tree-", "asm-commons-",
+					"websocket-common-", "jetty-annotations-",
+					"javax-websocket-client-impl-", "websocket-client-",
+					"websocket-server-", "jetty-jndi-", "jetty-xml-",
+					"websocket-servlet-"));
 
 	private static final String BOOT_VERSION = ManagedDependencies.get()
 			.find("spring-boot").getVersion();

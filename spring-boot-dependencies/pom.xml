@@ -926,6 +926,16 @@
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax-websocket-server-impl</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-server</artifactId>
+				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-core</artifactId>
 				<version>${flyway.version}</version>

@@ -161,6 +161,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.jetty.websocket</groupId>
+			<artifactId>javax-websocket-server-impl</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>io.undertow</groupId>
 			<artifactId>undertow-servlet</artifactId>
 			<optional>true</optional>
@@ -401,6 +406,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot</artifactId>
 			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-websocket</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

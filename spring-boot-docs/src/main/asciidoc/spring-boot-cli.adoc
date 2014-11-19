@@ -381,7 +381,7 @@ capabilities of the service using the `--list` flag
 	actuator - Actuator: Production ready features to help you monitor and manage your application
 	...
 	web - Web: Support for full-stack web development, including Tomcat and spring-webmvc
-	websocket - Websocket: Support for websocket development with Tomcat
+	websocket - Websocket: Support for WebSocket development
 	ws - WS: Support for Spring Web Services
 
 	Available project types:

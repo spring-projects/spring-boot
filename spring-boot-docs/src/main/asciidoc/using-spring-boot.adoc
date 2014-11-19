@@ -310,7 +310,7 @@ and Hibernate.
 |Support for full-stack web development, including Tomcat and `spring-webmvc`.
 
 |`spring-boot-starter-websocket`
-|Support for websocket development with Tomcat.
+|Support for WebSocket development.
 
 |`spring-boot-starter-ws`
 |Support for Spring Web Services
