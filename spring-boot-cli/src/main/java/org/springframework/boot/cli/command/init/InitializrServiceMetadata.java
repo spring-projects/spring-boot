@@ -138,7 +138,8 @@ class InitializrServiceMetadata {
 		}
 		JSONObject type = root.getJSONObject(TYPE_EL);
 		JSONArray array = type.getJSONArray(VALUES_EL);
-		String defaultType = type.has(DEFAULT_ATTRIBUTE) ? type.getString(DEFAULT_ATTRIBUTE) : null;
+		String defaultType = type.has(DEFAULT_ATTRIBUTE) ? type
+				.getString(DEFAULT_ATTRIBUTE) : null;
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject typeJson = array.getJSONObject(i);
 			ProjectType projectType = parseType(typeJson, defaultType);

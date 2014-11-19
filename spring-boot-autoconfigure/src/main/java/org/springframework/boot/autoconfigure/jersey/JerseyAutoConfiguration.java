@@ -36,8 +36,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
@@ -98,7 +98,7 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
-	@ConditionalOnExpression("'${spring.jersey.type:servlet}' == 'filter'")
+	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
 	public FilterRegistrationBean jerseyFilterRegistration() {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
 		registration.setFilter(new ServletContainer());
@@ -121,7 +121,7 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
-	@ConditionalOnExpression("'${spring.jersey.type:servlet}' == 'servlet'")
+	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
 	public ServletRegistrationBean jerseyServletRegistration() {
 		ServletRegistrationBean registration = new ServletRegistrationBean(
 				new ServletContainer(), this.path);

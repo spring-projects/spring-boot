@@ -20,9 +20,14 @@ package org.springframework.boot.actuate.endpoint.mvc;
  * Callback for customizing the {@link EndpointHandlerMapping} at configuration time.
  *
  * @author Dave Syer
+ * @since 1.2.0
  */
 public interface EndpointHandlerMappingCustomizer {
 
+	/**
+	 * Customize the specified {@link EndpointHandlerMapping}
+	 * @param mapping the {@link EndpointHandlerMapping} to customize
+	 */
 	void customize(EndpointHandlerMapping mapping);
 
 }

@@ -97,6 +97,7 @@ public class EndpointMvcIntegrationTests {
 			HttpMessageConvertersAutoConfiguration.class,
 			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected static @interface MinimalWebConfiguration {
+
 	}
 
 	@Configuration
@@ -134,9 +135,11 @@ public class EndpointMvcIntegrationTests {
 		protected TestInterceptor interceptor() {
 			return new TestInterceptor();
 		}
+
 	}
 
 	protected static class TestInterceptor extends HandlerInterceptorAdapter {
+
 		private int count = 0;
 
 		@Override
@@ -148,6 +151,7 @@ public class EndpointMvcIntegrationTests {
 		public int getCount() {
 			return this.count;
 		}
+
 	}
 
 }

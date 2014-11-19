@@ -43,7 +43,8 @@ public class InitializrServiceMetadataTests {
 		assertEquals("1.7", metadata.getDefaults().get("javaVersion"));
 		assertEquals("org.test", metadata.getDefaults().get("groupId"));
 		assertEquals("demo", metadata.getDefaults().get("name"));
-		assertEquals("Demo project for Spring Boot", metadata.getDefaults().get("description"));
+		assertEquals("Demo project for Spring Boot",
+				metadata.getDefaults().get("description"));
 		assertEquals("jar", metadata.getDefaults().get("packaging"));
 		assertEquals("java", metadata.getDefaults().get("language"));
 		assertEquals("demo", metadata.getDefaults().get("artifactId"));

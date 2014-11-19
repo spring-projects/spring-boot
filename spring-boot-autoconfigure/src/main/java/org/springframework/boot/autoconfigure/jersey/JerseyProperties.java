@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.jersey;
 
 import java.util.HashMap;
@@ -21,17 +22,15 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @author Dave Syer
+ * {@link ConfigurationProperties} for Jersey.
  *
+ * @author Dave Syer
+ * @since 1.2.0
  */
 @ConfigurationProperties("spring.jersey")
 public class JerseyProperties {
 
-	public enum Type {
-		servlet, filter;
-	}
-
-	private Type type = Type.servlet;
+	private Type type = Type.SERVLET;
 
 	private Map<String, String> init = new HashMap<String, String>();
 
@@ -59,6 +58,10 @@ public class JerseyProperties {
 
 	public void setInit(Map<String, String> init) {
 		this.init = init;
+	}
+
+	public enum Type {
+		SERVLET, FILTER;
 	}
 
 	public static class Filter {

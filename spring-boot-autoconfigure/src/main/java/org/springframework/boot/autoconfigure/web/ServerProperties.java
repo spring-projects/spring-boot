@@ -46,8 +46,8 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ConfigurationProperties properties} for a web server (e.g. port and path
- * settings). Will be used to customize an {@link EmbeddedServletContainerFactory} when an
+ * {@link ConfigurationProperties} for a web server (e.g. port and path settings). Will be
+ * used to customize an {@link EmbeddedServletContainerFactory} when an
  * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} is active.
  *
  * @author Dave Syer

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
-
 import org.springframework.util.StringUtils;
 
 /**
@@ -209,7 +208,8 @@ class ProjectGenerationRequest {
 			}
 
 			if (!this.dependencies.isEmpty()) {
-				builder.setParameter("dependencies", StringUtils.collectionToCommaDelimitedString(this.dependencies));
+				builder.setParameter("dependencies",
+						StringUtils.collectionToCommaDelimitedString(this.dependencies));
 			}
 			if (this.javaVersion != null) {
 				builder.setParameter("javaVersion", this.javaVersion);

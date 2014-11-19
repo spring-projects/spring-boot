@@ -471,6 +471,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		public EmbeddedServletContainer getServletContainer() {
 			return this.servletContainer;
 		}
+
 	}
 
 }

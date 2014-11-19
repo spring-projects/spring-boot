@@ -157,6 +157,11 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.suffix=.vm
 	spring.velocity.view-names= # whitelist of view names that can be resolved
 
+	# JERSEY ({sc-spring-boot-autoconfigure}}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
+	spring.jersey.type=servlet # servlet or filter
+	spring.jersey.init= # init params
+	spring.jersey.filter.order=
+
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
 	spring.messages.basename=messages
 	spring.messages.cacheSeconds=-1

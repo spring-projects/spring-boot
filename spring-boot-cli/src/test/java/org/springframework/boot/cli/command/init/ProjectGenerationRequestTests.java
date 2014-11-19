@@ -108,7 +108,8 @@ public class ProjectGenerationRequestTests {
 		this.request.setType("custom");
 		this.request.getDependencies().add("data-rest");
 		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
-				+ "/foo?dependencies=data-rest&type=custom"), this.request.generateUrl(metadata));
+				+ "/foo?dependencies=data-rest&type=custom"),
+				this.request.generateUrl(metadata));
 	}
 
 	@Test

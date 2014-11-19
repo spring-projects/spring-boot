@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -286,6 +287,9 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	}
 
+	/**
+	 * {@link BeanSerializerModifier} to return only relevant configuration properties.
+	 */
 	protected static class GenericSerializerModifier extends BeanSerializerModifier {
 
 		@Override
@@ -302,7 +306,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 		}
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
-			String parenType = beanDesc.getType().getRawClass().getName();
+			String parentType = beanDesc.getType().getRawClass().getName();
 			String type = writer.getPropertyType().getName();
 			AnnotatedMethod setter = beanDesc.findMethod(
 					"set" + StringUtils.capitalize(writer.getName()),
@@ -312,10 +316,9 @@ public class ConfigurationPropertiesReportEndpoint extends
 			// that its a nested class used solely for binding to config props, so it
 			// should be kosher. This filter is not used if there is JSON metadata for
 			// the property, so it's mainly for user-defined beans.
-			boolean readable = setter != null
-					|| ClassUtils.getPackageName(parenType).equals(
+			return (setter != null)
+					|| ClassUtils.getPackageName(parentType).equals(
 							ClassUtils.getPackageName(type));
-			return readable;
 		}
 	}
 
@@ -327,9 +330,11 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 */
 	protected static class ConfigurationPropertiesMetaData {
 
-		private Map<String, Set<String>> matched = new HashMap<String, Set<String>>();
+		private final String metadataLocations;
+
+		private final Map<String, Set<String>> matched = new HashMap<String, Set<String>>();
+
 		private Set<String> keys = null;
-		private String metadataLocations;
 
 		public ConfigurationPropertiesMetaData(String metadataLocations) {
 			this.metadataLocations = metadataLocations;
@@ -349,53 +354,45 @@ public class ConfigurationPropertiesReportEndpoint extends
 		}
 
 		private boolean matchesInternal(String prefix) {
-			if (this.matched.get(prefix) != null) {
-				return true;
-			}
-			else {
-				return false;
-			}
+			return this.matched.get(prefix) != null;
 		}
 
 		private Set<String> findKeys(String prefix) {
-
-			HashSet<String> set = new HashSet<String>();
-
-			try {
-				if (this.keys == null) {
-
-					this.keys = new HashSet<String>();
-					ObjectMapper mapper = new ObjectMapper();
-					Resource[] resources = new PathMatchingResourcePatternResolver()
-							.getResources(this.metadataLocations);
-					for (Resource resource : resources) {
-						addKeys(mapper, resource);
-					}
-
-				}
-			}
-			catch (IOException e) {
-				logger.warn("Could not deserialize config properties metadata", e);
-			}
-			for (String key : this.keys) {
+			HashSet<String> keys = new HashSet<String>();
+			for (String key : getKeys()) {
 				if (key.length() > prefix.length()
 						&& key.startsWith(prefix)
 						&& ".".equals(key.substring(prefix.length(), prefix.length() + 1))) {
-					set.add(key.substring(prefix.length() + 1));
+					keys.add(key.substring(prefix.length() + 1));
 				}
 			}
-			if (set.isEmpty()) {
-				return null;
-			}
-			return set;
+			return (keys.isEmpty() ? null : keys);
 		}
 
+		private Set<String> getKeys() {
+			if (this.keys != null) {
+				return this.keys;
+			}
+			this.keys = new HashSet<String>();
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				Resource[] resources = new PathMatchingResourcePatternResolver()
+						.getResources(this.metadataLocations);
+				for (Resource resource : resources) {
+					addKeys(mapper, resource);
+				}
+			}
+			catch (IOException ex) {
+				logger.warn("Could not deserialize config properties metadata", ex);
+			}
+			return this.keys;
+		}
+
+		@SuppressWarnings("unchecked")
 		private void addKeys(ObjectMapper mapper, Resource resource) throws IOException,
 				JsonParseException, JsonMappingException {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> map = mapper.readValue(resource.getInputStream(),
-					Map.class);
-			@SuppressWarnings("unchecked")
+			InputStream inputStream = resource.getInputStream();
+			Map<String, Object> map = mapper.readValue(inputStream, Map.class);
 			Collection<Map<String, Object>> metadata = (Collection<Map<String, Object>>) map
 					.get("properties");
 			for (Map<String, Object> value : metadata) {
@@ -404,8 +401,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 						this.keys.add((String) value.get("name"));
 					}
 				}
-				catch (Exception e) {
-					logger.warn("Could not parse config properties metadata", e);
+				catch (Exception ex) {
+					logger.warn("Could not parse config properties metadata", ex);
 				}
 			}
 		}
@@ -421,13 +418,13 @@ public class ConfigurationPropertiesReportEndpoint extends
 			return map;
 		}
 
+		@SuppressWarnings("unchecked")
 		private void addProperty(Object bean, String key, Map<String, Object> map) {
-			String prefix = key.contains(".") ? StringUtils.split(key, ".")[0] : key;
-			String suffix = key.length() > prefix.length() ? key.substring(prefix
-					.length() + 1) : null;
+			String prefix = (key.contains(".") ? StringUtils.split(key, ".")[0] : key);
+			String suffix = (key.length() > prefix.length() ? key.substring(prefix
+					.length() + 1) : null);
 			String property = prefix;
 			if (bean instanceof Map) {
-				@SuppressWarnings("unchecked")
 				Map<String, Object> value = (Map<String, Object>) bean;
 				bean = new MapHolder(value);
 				property = "map[" + property + "]";
@@ -446,14 +443,15 @@ public class ConfigurationPropertiesReportEndpoint extends
 					map.put(prefix, value);
 				}
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 				// Probably just lives on a different bean (it happens)
 				logger.debug("Could not parse config properties metadata '" + key + "': "
-						+ e.getMessage());
+						+ ex.getMessage());
 			}
 		}
 
 		protected static class MapHolder {
+
 			Map<String, Object> map = new HashMap<String, Object>();
 
 			public MapHolder(Map<String, Object> bean) {
@@ -467,6 +465,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 			public void setMap(Map<String, Object> map) {
 				this.map = map;
 			}
+
 		}
 
 	}
