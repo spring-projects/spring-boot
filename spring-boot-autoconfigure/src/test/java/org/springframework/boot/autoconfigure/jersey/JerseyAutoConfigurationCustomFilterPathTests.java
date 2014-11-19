@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jersey;
 
-import static org.junit.Assert.assertEquals;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -34,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationFilterTests.Application;
+import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfigurationCustomFilterPathTests.Application;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.IntegrationTest;
@@ -47,6 +45,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Tests for {@link JerseyAutoConfiguration} when using custom servlet paths.
  *
@@ -56,7 +56,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringApplicationConfiguration(classes = Application.class)
 @IntegrationTest({ "server.port=0", "spring.jersey.type=filter" })
 @WebAppConfiguration
-public class JerseyAutoConfigurationFilterTests {
+public class JerseyAutoConfigurationCustomFilterPathTests {
 
 	@Value("${local.server.port}")
 	private int port;
@@ -71,7 +71,7 @@ public class JerseyAutoConfigurationFilterTests {
 	}
 
 	@MinimalWebConfiguration
-	@ApplicationPath("/rest")
+	@ApplicationPath("rest")
 	@Path("/hello")
 	public static class Application extends ResourceConfig {
 

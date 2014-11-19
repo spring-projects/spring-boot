@@ -15,6 +15,9 @@
  */
 package org.springframework.boot.autoconfigure.jersey;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -30,10 +33,12 @@ public class JerseyProperties {
 
 	private Type type = Type.servlet;
 
+	private Map<String, String> init = new HashMap<String, String>();
+
 	private Filter filter = new Filter();
 
 	public Filter getFilter() {
-		return filter;
+		return this.filter;
 	}
 
 	public void setFilter(Filter filter) {
@@ -41,11 +46,19 @@ public class JerseyProperties {
 	}
 
 	public Type getType() {
-		return type;
+		return this.type;
 	}
 
 	public void setType(Type type) {
 		this.type = type;
+	}
+
+	public Map<String, String> getInit() {
+		return this.init;
+	}
+
+	public void setInit(Map<String, String> init) {
+		this.init = init;
 	}
 
 	public static class Filter {
@@ -53,7 +66,7 @@ public class JerseyProperties {
 		private int order;
 
 		public int getOrder() {
-			return order;
+			return this.order;
 		}
 
 		public void setOrder(int order) {
