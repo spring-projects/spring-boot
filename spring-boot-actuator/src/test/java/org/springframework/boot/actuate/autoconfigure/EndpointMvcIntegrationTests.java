@@ -24,11 +24,17 @@ import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.EndpointMvcIntegrationTests.Application;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -39,6 +45,7 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
@@ -47,7 +54,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -66,12 +76,16 @@ public class EndpointMvcIntegrationTests {
 	@Value("${local.server.port}")
 	private int port;
 
+	@Autowired
+	private TestInterceptor interceptor;
+
 	@Test
 	public void envEndpointNotHidden() {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
 				+ "/env/user.dir", String.class);
 		assertNotNull(body);
 		assertTrue("Wrong body: \n" + body, body.contains("spring-boot-actuator"));
+		assertEquals(1, this.interceptor.getCount());
 	}
 
 	@Target(ElementType.TYPE)
@@ -104,6 +118,36 @@ public class EndpointMvcIntegrationTests {
 			return Collections.singletonMap("foo", (Object) "bar");
 		}
 
+		@Bean
+		public EndpointHandlerMappingCustomizer mappingCustomizer() {
+			return new EndpointHandlerMappingCustomizer() {
+
+				@Override
+				public void customize(EndpointHandlerMapping mapping) {
+					mapping.setInterceptors(new Object[] { interceptor() });
+				}
+
+			};
+		}
+
+		@Bean
+		protected TestInterceptor interceptor() {
+			return new TestInterceptor();
+		}
+	}
+
+	protected static class TestInterceptor extends HandlerInterceptorAdapter {
+		private int count = 0;
+
+		@Override
+		public void postHandle(HttpServletRequest request, HttpServletResponse response,
+				Object handler, ModelAndView modelAndView) throws Exception {
+			this.count++;
+		}
+
+		public int getCount() {
+			return this.count;
+		}
 	}
 
 }

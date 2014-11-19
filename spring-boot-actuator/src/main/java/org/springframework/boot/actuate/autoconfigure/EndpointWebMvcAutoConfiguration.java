@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -38,6 +39,7 @@ import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
@@ -102,6 +104,9 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Autowired
 	private ManagementServerProperties managementServerProperties;
 
+	@Autowired(required = false)
+	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
+
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
@@ -117,6 +122,11 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		mapping.setDisabled(disabled);
 		if (!disabled) {
 			mapping.setPrefix(this.managementServerProperties.getContextPath());
+		}
+		if (this.mappingCustomizers != null) {
+			for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
+				customizer.customize(mapping);
+			}
 		}
 		return mapping;
 	}
