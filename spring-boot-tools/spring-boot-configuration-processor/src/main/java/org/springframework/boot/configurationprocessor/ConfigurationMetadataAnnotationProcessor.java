@@ -183,8 +183,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				String sourceType = this.typeUtils.getType(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
+				boolean deprecated = hasDeprecateAnnotation(getter)
+						|| hasDeprecateAnnotation(setter);
 				this.metadata.add(ItemMetadata.newProperty(prefix, name, dataType,
-						sourceType, null, description, defaultValue));
+						sourceType, null, description, defaultValue, deprecated));
 			}
 		}
 	}
@@ -215,6 +217,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				}
 			}
 		}
+	}
+
+	private boolean hasDeprecateAnnotation(Element element) {
+		return getAnnotation(element, "java.lang.Deprecated") != null;
 	}
 
 	private AnnotationMirror getAnnotation(Element element, String type) {

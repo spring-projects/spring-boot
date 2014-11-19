@@ -36,13 +36,15 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 
 	private final String sourceType;
 
-	private String sourceMethod;
+	private final String sourceMethod;
 
-	private Object defaultValue;
+	private final Object defaultValue;
+
+	private final boolean deprecated;
 
 	ItemMetadata(ItemType itemType, String prefix, String name, String type,
 			String sourceType, String sourceMethod, String description,
-			Object defaultValue) {
+			Object defaultValue, boolean deprecated) {
 		super();
 		this.itemType = itemType;
 		this.name = buildName(prefix, name);
@@ -51,6 +53,7 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		this.sourceMethod = sourceMethod;
 		this.description = description;
 		this.defaultValue = defaultValue;
+		this.deprecated = deprecated;
 	}
 
 	private String buildName(String prefix, String name) {
@@ -93,6 +96,10 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		return this.defaultValue;
 	}
 
+	public boolean isDeprecated() {
+		return this.deprecated;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder(this.name);
@@ -100,6 +107,7 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		buildToStringProperty(string, "sourceType", this.sourceType);
 		buildToStringProperty(string, "description", this.description);
 		buildToStringProperty(string, "defaultValue", this.defaultValue);
+		buildToStringProperty(string, "deprecated", this.deprecated);
 		return string.toString();
 	}
 
@@ -118,14 +126,14 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 	public static ItemMetadata newGroup(String name, String type, String sourceType,
 			String sourceMethod) {
 		return new ItemMetadata(ItemType.GROUP, name, null, type, sourceType,
-				sourceMethod, null, null);
+				sourceMethod, null, null, false);
 	}
 
 	public static ItemMetadata newProperty(String prefix, String name, String type,
 			String sourceType, String sourceMethod, String description,
-			Object defaultValue) {
+			Object defaultValue, boolean deprecated) {
 		return new ItemMetadata(ItemType.PROPERTY, prefix, name, type, sourceType,
-				sourceMethod, description, defaultValue);
+				sourceMethod, description, defaultValue, deprecated);
 	}
 
 	/**

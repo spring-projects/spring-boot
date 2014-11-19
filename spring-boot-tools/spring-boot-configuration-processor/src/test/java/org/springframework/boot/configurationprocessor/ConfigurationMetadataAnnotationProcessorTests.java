@@ -76,11 +76,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("simple.the-name", String.class)
 						.fromSource(SimpleProperties.class)
 						.withDescription("The name of this simple properties.")
-						.withDefaultValue("boot"));
+						.withDefaultValue("boot").withDeprecated());
 		assertThat(
 				metadata,
-				containsProperty("simple.flag", Boolean.class).fromSource(
-						SimpleProperties.class).withDescription("A simple flag."));
+				containsProperty("simple.flag", Boolean.class)
+						.fromSource(SimpleProperties.class)
+						.withDescription("A simple flag.").withDeprecated());
 		assertThat(metadata, containsProperty("simple.comparator"));
 		assertThat(metadata, not(containsProperty("simple.counter")));
 		assertThat(metadata, not(containsProperty("simple.size")));

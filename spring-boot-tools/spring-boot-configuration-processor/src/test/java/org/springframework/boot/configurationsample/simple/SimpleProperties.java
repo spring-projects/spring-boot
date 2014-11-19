@@ -58,10 +58,12 @@ public class SimpleProperties {
 		return this.theName;
 	}
 
+	@Deprecated
 	public void setTheName(String name) {
 		this.theName = name;
 	}
 
+	@Deprecated
 	public boolean isFlag() {
 		return this.flag;
 	}

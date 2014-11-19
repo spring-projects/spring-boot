@@ -38,11 +38,13 @@ public class JsonMarshallerTests {
 	public void marshallAndUnmarshal() throws IOException {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(),
-				InputStream.class.getName(), "sourceMethod", "desc", "x"));
-		metadata.add(ItemMetadata
-				.newProperty("b.c.d", null, null, null, null, null, null));
-		metadata.add(ItemMetadata.newProperty("c", null, null, null, null, null, 123));
-		metadata.add(ItemMetadata.newProperty("d", null, null, null, null, null, true));
+				InputStream.class.getName(), "sourceMethod", "desc", "x", true));
+		metadata.add(ItemMetadata.newProperty("b.c.d", null, null, null, null, null,
+				null, false));
+		metadata.add(ItemMetadata.newProperty("c", null, null, null, null, null, 123,
+				false));
+		metadata.add(ItemMetadata.newProperty("d", null, null, null, null, null, true,
+				false));
 		metadata.add(ItemMetadata.newGroup("d", null, null, null));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
@@ -52,7 +54,7 @@ public class JsonMarshallerTests {
 				outputStream.toByteArray()));
 		assertThat(read,
 				containsProperty("a.b", StringBuffer.class).fromSource(InputStream.class)
-						.withDescription("desc").withDefaultValue("x"));
+						.withDescription("desc").withDefaultValue("x").withDeprecated());
 		assertThat(read, containsProperty("b.c.d"));
 		assertThat(read, containsProperty("c").withDefaultValue(123));
 		assertThat(read, containsProperty("d").withDefaultValue(true));

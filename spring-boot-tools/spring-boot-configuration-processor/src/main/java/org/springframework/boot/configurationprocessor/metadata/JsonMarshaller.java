@@ -68,6 +68,9 @@ public class JsonMarshaller {
 		putIfPresent(jsonObject, "sourceType", item.getSourceType());
 		putIfPresent(jsonObject, "sourceMethod", item.getSourceMethod());
 		putIfPresent(jsonObject, "defaultValue", item.getDefaultValue());
+		if (item.isDeprecated()) {
+			jsonObject.put("deprecated", true);
+		}
 		return jsonObject;
 	}
 
@@ -103,8 +106,9 @@ public class JsonMarshaller {
 		String sourceType = object.optString("sourceType", null);
 		String sourceMethod = object.optString("sourceMethod", null);
 		Object defaultValue = object.opt("defaultValue");
+		boolean deprecated = object.optBoolean("deprecated");
 		return new ItemMetadata(itemType, name, null, type, sourceType, sourceMethod,
-				description, defaultValue);
+				description, defaultValue, deprecated);
 	}
 
 	private String toString(InputStream inputStream) throws IOException {

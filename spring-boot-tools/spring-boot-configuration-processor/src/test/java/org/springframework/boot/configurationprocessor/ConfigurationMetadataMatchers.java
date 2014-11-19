@@ -68,18 +68,22 @@ public class ConfigurationMetadataMatchers {
 
 		private final Object defaultValue;
 
+		private final boolean deprecated;
+
 		public ContainsItemMatcher(ItemType itemType, String name) {
-			this(itemType, name, null, null, null, null);
+			this(itemType, name, null, null, null, null, false);
 		}
 
 		public ContainsItemMatcher(ItemType itemType, String name, String type,
-				Class<?> sourceType, String description, Object defaultValue) {
+				Class<?> sourceType, String description, Object defaultValue,
+				boolean deprecated) {
 			this.itemType = itemType;
 			this.name = name;
 			this.type = type;
 			this.sourceType = sourceType;
 			this.description = description;
 			this.defaultValue = defaultValue;
+			this.deprecated = deprecated;
 		}
 
 		@Override
@@ -102,6 +106,9 @@ public class ConfigurationMetadataMatchers {
 			}
 			if (this.description != null
 					&& !this.description.equals(itemMetadata.getDescription())) {
+				return false;
+			}
+			if (this.deprecated != itemMetadata.isDeprecated()) {
 				return false;
 			}
 			return true;
@@ -134,31 +141,39 @@ public class ConfigurationMetadataMatchers {
 			if (this.description != null) {
 				description.appendText(" description ").appendValue(this.description);
 			}
+			if (this.deprecated) {
+				description.appendText(" deprecated ").appendValue(true);
+			}
 		}
 
 		public ContainsItemMatcher ofType(Class<?> dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType.getName(),
-					this.sourceType, this.description, this.defaultValue);
+					this.sourceType, this.description, this.defaultValue, this.deprecated);
 		}
 
 		public ContainsItemMatcher ofDataType(String dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType,
-					this.sourceType, this.description, this.defaultValue);
+					this.sourceType, this.description, this.defaultValue, this.deprecated);
 		}
 
 		public ContainsItemMatcher fromSource(Class<?> sourceType) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					sourceType, this.description, this.defaultValue);
+					sourceType, this.description, this.defaultValue, this.deprecated);
 		}
 
 		public ContainsItemMatcher withDescription(String description) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					this.sourceType, description, this.defaultValue);
+					this.sourceType, description, this.defaultValue, this.deprecated);
 		}
 
-		public Matcher<? super ConfigurationMetadata> withDefaultValue(Object defaultValue) {
+		public ContainsItemMatcher withDefaultValue(Object defaultValue) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					this.sourceType, this.description, defaultValue);
+					this.sourceType, this.description, defaultValue, this.deprecated);
+		}
+
+		public ContainsItemMatcher withDeprecated() {
+			return new ContainsItemMatcher(this.itemType, this.name, this.type,
+					this.sourceType, this.description, this.defaultValue, true);
 		}
 
 		private ItemMetadata getFirstPropertyWithName(ConfigurationMetadata metadata,
