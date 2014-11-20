@@ -23,7 +23,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * @author dsyer
+ * Thin wrapper to adapt {@link Gson} to a {@link JsonParser}.
+ *
+ * @author Dave Syer
+ * @since 1.2.0
+ * @see JsonParserFactory
  */
 public class GsonJsonParser implements JsonParser {
 

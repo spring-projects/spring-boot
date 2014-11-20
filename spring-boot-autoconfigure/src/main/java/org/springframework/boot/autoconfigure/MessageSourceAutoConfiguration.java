@@ -160,7 +160,7 @@ public class MessageSourceAutoConfiguration {
 					classLoader = classLoader.getParent();
 				}
 			}
-			catch (Throwable e) {
+			catch (Throwable ex) {
 			}
 			ROOT_CLASSLOADER = classLoader;
 		}

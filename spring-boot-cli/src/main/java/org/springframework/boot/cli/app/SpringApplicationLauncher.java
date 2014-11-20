@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cli.app;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,6 @@ public class SpringApplicationLauncher {
 	/**
 	 * Creates a new launcher that will use the given {@code classLoader} to load
 	 * {@code SpringApplication}.
-	 *
 	 * @param classLoader the {@code ClassLoader} to use
 	 */
 	public SpringApplicationLauncher(ClassLoader classLoader) {
@@ -46,7 +46,6 @@ public class SpringApplicationLauncher {
 	/**
 	 * Launches the application created using the given {@code sources}. The application
 	 * is launched with the given {@code args}.
-	 *
 	 * @param sources The sources for the application
 	 * @param args The args for the application
 	 * @return The application's {@code ApplicationContext}
@@ -55,10 +54,9 @@ public class SpringApplicationLauncher {
 	public Object launch(Object[] sources, String[] args) throws Exception {
 		Map<String, Object> defaultProperties = new HashMap<String, Object>();
 		defaultProperties.put("spring.groovy.template.check-template-location", "false");
-
 		Class<?> applicationClass = this.classLoader.loadClass(SPRING_APPLICATION_CLASS);
-		Object application = applicationClass.getConstructor(Object[].class).newInstance(
-				(Object) sources);
+		Constructor<?> constructor = applicationClass.getConstructor(Object[].class);
+		Object application = constructor.newInstance((Object) sources);
 		applicationClass.getMethod("setDefaultProperties", Map.class).invoke(application,
 				defaultProperties);
 		Method method = applicationClass.getMethod("run", String[].class);
