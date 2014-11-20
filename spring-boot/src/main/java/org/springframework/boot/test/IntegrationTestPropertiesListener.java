@@ -82,4 +82,5 @@ class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {
 	private void addIntegrationTestProperty(Set<String> propertySourceProperties) {
 		propertySourceProperties.add(IntegrationTest.class.getName() + "=true");
 	}
+
 }
