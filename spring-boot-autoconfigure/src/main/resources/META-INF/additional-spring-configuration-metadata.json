@@ -1,108 +1,108 @@
 {"properties": [
   {
     "name": "spring.aop.auto",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Automatically adds @EnableAspectJAutoProxy.",
     "defaultValue": true
   },
   {
     "name": "spring.aop.proxy-target-class",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
     "defaultValue": false
   },
   {
     "name": "spring.batch.job.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Execute all Spring Batch jobs in the context on startup.",
     "defaultValue": true
   },
   {
     "name": "spring.dao.exceptiontranslation.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Enables the PersistenceExceptionTranslationPostProcessor.",
     "defaultValue": true
   },
   {
     "name": "spring.datasource.jmx-enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Enables JMX support (if provided by the underlying pool).",
     "defaultValue": false
   },
   {
     "name": "spring.data.elasticsearch.repositories.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Automatically enable Elasticsearch repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.jpa.repositories.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Automatically enable JPA repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.mongo.repositories.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Automatically enable Mongo repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.solr.repositories.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Automatically enable Solr repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.http.encoding.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Enable http encoding support.",
     "defaultValue": true
   },
   {
     "name": "spring.jmx.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Automatically expose management beans to the JMX domain",
     "defaultValue": true
   },
   {
     "name": "spring.jpa.open-in-view",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Automatically register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.",
     "defaultValue": true
   },
   {
     "name": "spring.jta.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Enable JTA support.",
     "defaultValue": true
   },
   {
     "name": "spring.mobile.devicedelegatingviewresolver.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Enable device view resolver.",
     "defaultValue": false
   },
   {
     "name": "spring.mobile.sitepreference.enabled",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Enable SitePreferenceHandler.",
     "defaultValue": true
   },
   {
     "name": "spring.social.auto-connection-views",
-    "dataType": "java.lang.Boolean",
+    "type": "java.lang.Boolean",
     "description": "Automatically enable the connection status view for supported providers.",
     "defaultValue": false
   },
   {
     "name": "spring.view.prefix",
-    "dataType": "java.lang.String",
+    "type": "java.lang.String",
     "description": "Spring MVC view prefix."
   },
   {
     "name": "spring.view.suffix",
-    "dataType": "java.lang.String",
+    "type": "java.lang.String",
     "description": "Spring MVC view suffix."
   }
 ]}
