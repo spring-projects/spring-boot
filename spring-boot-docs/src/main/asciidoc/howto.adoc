@@ -474,7 +474,7 @@ most proxies, and if you only set one the other will be set automatically):
 [indent=0]
 ----
 	server.tomcat.remote_ip_header=x-forwarded-for
-	server.tomcat.protocol_header=x-forwarded-protocol
+	server.tomcat.protocol_header=x-forwarded-proto
 ----
 
 If your proxy uses different headers you can customize the valve's configuration by adding
@@ -1450,7 +1450,7 @@ by adding some entries to `application.properties`, e.g.
 
 Spring Security can also be configured to require a secure channel for all (or some
 requests). To switch that on in a Spring Boot application you just need to set
-`security.require_https` to `true` in `application.properties`.
+`security.require_ssl` to `true` in `application.properties`.
 
 
 
