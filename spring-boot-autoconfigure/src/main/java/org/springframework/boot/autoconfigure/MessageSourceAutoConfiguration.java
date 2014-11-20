@@ -137,7 +137,7 @@ public class MessageSourceAutoConfiguration {
 				return new SkipPatternPathMatchingResourcePatternResolver(classLoader)
 						.getResources("classpath*:" + name + "*.properties");
 			}
-			catch (IOException ex) {
+			catch (Exception ex) {
 				return NO_RESOURCES;
 			}
 		}
@@ -153,9 +153,14 @@ public class MessageSourceAutoConfiguration {
 
 		private static final ClassLoader ROOT_CLASSLOADER;
 		static {
-			ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-			while (classLoader.getParent() != null) {
-				classLoader = classLoader.getParent();
+			ClassLoader classLoader = null;
+			try {
+				classLoader = ClassLoader.getSystemClassLoader();
+				while (classLoader.getParent() != null) {
+					classLoader = classLoader.getParent();
+				}
+			}
+			catch (Throwable e) {
 			}
 			ROOT_CLASSLOADER = classLoader;
 		}
