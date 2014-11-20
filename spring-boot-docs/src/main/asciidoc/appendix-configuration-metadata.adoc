@@ -83,7 +83,9 @@ The JSON object contained in the `groups` array can contain the following attrib
 |`description`
 | String
 | A short description of the group that can be displayed to users. May be omitted if no
-  description is available.
+  description is available. It is recommended that descriptions are a short paragraphs,
+  with the first line providing a concise summary. The last line in the description should
+  end with a period (`.`).
 
 |`sourceType`
 | String
@@ -125,8 +127,10 @@ The JSON object contained in the `properties` array can contain the following at
 
 |`description`
 | String
-| A short description of the property that can be displayed to users. May be omitted if
-  no description is available.
+| A short description of the group that can be displayed to users. May be omitted if no
+  description is available. It is recommended that descriptions are a short paragraphs,
+  with the first line providing a concise summary. The last line in the description should
+  end with a period (`.`).
 
 |`sourceType`
 | String
@@ -134,12 +138,6 @@ The JSON object contained in the `properties` array can contain the following at
   property was from a class annotated with `@ConfigurationProperties` this attribute
   would contain the fully qualified name of that class. May be omitted if the source type
   is not known.
-
-|`sourceMethod`
-| String
-| The full name of the method (include parenthesis and argument types) that contributed
-  this property. For example, the name of a getter in a `@ConfigurationProperties`
-  annotated class.  May be omitted if the source method is not known.
 
 |`defaultValue`
 | Object
@@ -236,4 +234,3 @@ such cases, the annotation processor will automatically merge items from
 The format of the `additional-spring-configuration-metadata.json` file is exactly the same
 as the regular `spring-configuration-metadata.json`. The additional properties file is
 optional, if you don't have any additional properties, simply don't add it.
-
