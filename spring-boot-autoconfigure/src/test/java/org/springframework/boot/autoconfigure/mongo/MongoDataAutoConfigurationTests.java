@@ -16,15 +16,24 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
+import com.mongodb.Mongo;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MongoDataAutoConfiguration}.
@@ -61,4 +70,34 @@ public class MongoDataAutoConfigurationTests {
 		assertEquals(1, this.context.getBeanNamesForType(GridFsTemplate.class).length);
 	}
 
+	@Test
+	public void customConversions() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomConversionsConfig.class);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoTemplate template = this.context.getBean(MongoTemplate.class);
+		assertTrue(template.getConverter().getConversionService()
+				.canConvert(Mongo.class, Boolean.class));
+	}
+
+	@Configuration
+	static class CustomConversionsConfig {
+
+		@Bean
+		public CustomConversions customConversions() {
+			return new CustomConversions(Arrays.asList(new MyConverter()));
+		}
+
+	}
+
+	private static class MyConverter implements Converter<Mongo, Boolean> {
+
+		@Override
+		public Boolean convert(Mongo source) {
+			return null;
+		}
+
+	}
 }

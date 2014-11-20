@@ -220,6 +220,11 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.host= # the db host
 	spring.data.mongodb.port=27017 # the connection port (defaults to 27107)
 	spring.data.mongodb.uri=mongodb://localhost/test # connection URL
+	spring.data.mongodb.database=
+	spring.data.mongodb.authentication-database=
+	spring.data.mongodb.grid-fs-database=
+	spring.data.mongodb.username=
+	spring.data.mongodb.password=
 	spring.data.mongo.repositories.enabled=true # if spring data repository support is enabled
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])

@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
 
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,9 +30,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
+import org.springframework.data.authentication.UserCredentials;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.core.convert.DbRefResolver;
+import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -50,6 +59,7 @@ import com.mongodb.Mongo;
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Josh Long
+ * @author Phillip Webb
  * @since 1.1.0
  */
 @Configuration
@@ -64,15 +74,45 @@ public class MongoDataAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MongoDbFactory mongoDbFactory(Mongo mongo) throws Exception {
-		String db = this.properties.getMongoClientDatabase();
-		return new SimpleMongoDbFactory(mongo, db);
+		String database = this.properties.getMongoClientDatabase();
+		String authDatabase = this.properties.getAuthenticationDatabase();
+		if (StringUtils.hasLength(authDatabase)) {
+			String username = this.properties.getUsername();
+			String password = new String(this.properties.getPassword());
+			UserCredentials credentials = new UserCredentials(username, password);
+			return new SimpleMongoDbFactory(mongo, database, credentials, authDatabase);
+		}
+		return new SimpleMongoDbFactory(mongo, database);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory)
-			throws UnknownHostException {
-		return new MongoTemplate(mongoDbFactory);
+	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory,
+			MongoConverter converter) throws UnknownHostException {
+		return new MongoTemplate(mongoDbFactory, converter);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(MongoConverter.class)
+	public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory,
+			MongoMappingContext context, BeanFactory beanFactory) {
+		DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
+		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver,
+				context);
+		try {
+			mappingConverter.setCustomConversions(beanFactory
+					.getBean(CustomConversions.class));
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// Ignore
+		}
+		return mappingConverter;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public MongoMappingContext mongoMappingContext() {
+		return new MongoMappingContext();
 	}
 
 	@Bean

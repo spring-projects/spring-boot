@@ -47,6 +47,8 @@ public class MongoProperties {
 
 	private String database;
 
+	private String authenticationDatabase;
+
 	private String gridFsDatabase;
 
 	private String username;
@@ -67,6 +69,14 @@ public class MongoProperties {
 
 	public void setDatabase(String database) {
 		this.database = database;
+	}
+
+	public String getAuthenticationDatabase() {
+		return this.authenticationDatabase;
+	}
+
+	public void setAuthenticationDatabase(String authenticationDatabase) {
+		this.authenticationDatabase = authenticationDatabase;
 	}
 
 	public String getUsername() {
