@@ -42,7 +42,7 @@
     "defaultValue": true
   },
   {
-    "name": "spring.data.mongo.repositories.enabled",
+    "name": "spring.data.mongodb.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Automatically enable Mongo repositories.",
     "defaultValue": true

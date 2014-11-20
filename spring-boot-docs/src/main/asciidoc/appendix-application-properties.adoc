@@ -225,7 +225,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.grid-fs-database=
 	spring.data.mongodb.username=
 	spring.data.mongodb.password=
-	spring.data.mongo.repositories.enabled=true # if spring data repository support is enabled
+	spring.data.mongodb.repositories.enabled=true # if spring data repository support is enabled
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.jpa.properties.*= # properties to set on the JPA connection
