@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,30 +19,28 @@ package org.springframework.boot.json;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
- * Parser that can read JSON formatted strings into {@link Map}s or {@link List}s.
- *
- * @author Dave Syer
- * @see JsonParserFactory
- * @see SimpleJsonParser
- * @see JacksonJsonParser
- * @see GsonJsonParser
- * @see YamlJsonParser
+ * @author dsyer
  */
-public interface JsonParser {
+public class GsonJsonParser implements JsonParser {
 
-	/**
-	 * Parse the specified JSON string into a Map.
-	 * @param json the JSON to parse
-	 * @return the parsed JSON as a map
-	 */
-	Map<String, Object> parseMap(String json);
+	private Gson gson = new GsonBuilder().create();
 
-	/**
-	 * Parse the specified JSON string into a List.
-	 * @param json the JSON to parse
-	 * @return the parsed JSON as a list
-	 */
-	List<Object> parseList(String json);
+	@Override
+	public Map<String, Object> parseMap(String json) {
+		@SuppressWarnings("unchecked")
+		Map<String, Object> value = this.gson.fromJson(json, Map.class);
+		return value;
+	}
+
+	@Override
+	public List<Object> parseList(String json) {
+		@SuppressWarnings("unchecked")
+		List<Object> value = this.gson.fromJson(json, List.class);
+		return value;
+	}
 
 }

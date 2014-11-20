@@ -16,33 +16,15 @@
 
 package org.springframework.boot.json;
 
-import java.util.List;
-import java.util.Map;
-
 /**
- * Parser that can read JSON formatted strings into {@link Map}s or {@link List}s.
+ * Tests for {@link YamlJsonParser}.
  *
  * @author Dave Syer
- * @see JsonParserFactory
- * @see SimpleJsonParser
- * @see JacksonJsonParser
- * @see GsonJsonParser
- * @see YamlJsonParser
  */
-public interface JsonParser {
+public class GsonJsonParserTests extends SimpleJsonParserTests {
 
-	/**
-	 * Parse the specified JSON string into a Map.
-	 * @param json the JSON to parse
-	 * @return the parsed JSON as a map
-	 */
-	Map<String, Object> parseMap(String json);
-
-	/**
-	 * Parse the specified JSON string into a List.
-	 * @param json the JSON to parse
-	 * @return the parsed JSON as a list
-	 */
-	List<Object> parseList(String json);
-
+	@Override
+	protected JsonParser getParser() {
+		return new GsonJsonParser();
+	}
 }
