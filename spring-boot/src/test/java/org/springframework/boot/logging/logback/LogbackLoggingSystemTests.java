@@ -34,6 +34,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -44,6 +45,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -132,6 +134,12 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		julLogger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+	}
+
+	@Test
+	public void jbossLoggingIsConfiguredToUseSlf4j() {
+		this.loggingSystem.beforeInitialize();
+		assertEquals("slf4j", System.getProperty("org.jboss.logging.provider"));
 	}
 
 }

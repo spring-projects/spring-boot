@@ -84,6 +84,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	public void beforeInitialize() {
 		super.beforeInitialize();
 		getLogger(null).getLoggerContext().getTurboFilterList().add(FILTER);
+		configureJBossLoggingToUseSlf4j();
 	}
 
 	@Override
@@ -118,6 +119,10 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			throw new IllegalStateException("Could not initialize Logback logging from "
 					+ location, ex);
 		}
+	}
+
+	private void configureJBossLoggingToUseSlf4j() {
+		System.setProperty("org.jboss.logging.provider", "slf4j");
 	}
 
 	@Override
