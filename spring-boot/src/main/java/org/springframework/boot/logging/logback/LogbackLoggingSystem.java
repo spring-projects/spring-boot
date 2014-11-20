@@ -43,6 +43,7 @@ import ch.qos.logback.classic.util.ContextInitializer;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class LogbackLoggingSystem extends AbstractLoggingSystem {
 
@@ -67,6 +68,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 	@Override
 	public void beforeInitialize() {
 		super.beforeInitialize();
+		configureJdkLoggingBridgeHandler();
+		configureJBossLoggingToUseSlf4j();
+	}
+
+	private void configureJdkLoggingBridgeHandler() {
 		try {
 			if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler",
 					getClassLoader())) {
@@ -83,6 +89,10 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		catch (Throwable ex) {
 			// Ignore. No java.util.logging bridge is installed.
 		}
+	}
+
+	private void configureJBossLoggingToUseSlf4j() {
+		System.setProperty("org.jboss.logging.provider", "slf4j");
 	}
 
 	@Override
