@@ -145,6 +145,11 @@ The JSON object contained in the `properties` array can contain the following at
 | Object
 | The default value which will be used if the property is not specified. May be omitted
   if the default value is not known.
+
+|`deprecated`
+| boolean
+| Specify if the property is deprecated. May be omitted if the field is not deprecated
+  or if that information is not known.
 |===
 
 
