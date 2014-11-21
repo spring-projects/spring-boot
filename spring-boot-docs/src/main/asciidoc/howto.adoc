@@ -612,15 +612,20 @@ own `UndertowEmbeddedServletContainerFactory`.
 
 
 [[howto-use-tomcat-8]]
-=== Use Tomcat 8
-Tomcat 8 works with Spring Boot, but the default is to use Tomcat 7 (so we can support
-Java 1.6 out of the box). You should only need to change the classpath to use
-Tomcat 8 for it to work. For example, using the starter poms in Maven:
+[[howto-use-tomcat-7]]
+=== Use Tomcat 7
+Tomcat 7 works with Spring Boot, but the default is to use Tomcat 8. If you cannot use
+Tomcat 8 (for example, because you are using Java 1.6) you will need to change your
+classpath to reference Tomcat 7 and Servlet API 3.0.
+
+If you are using the starter poms and parent you can just change the version properties,
+e.g. for a simple webapp or service:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<properties>
-		<tomcat.version>8.0.8</tomcat.version>
+		<tomcat.version>7.0.56</tomcat.version>
+		<servlet-api.version>3.0.1</servlet-api.version>
 	</properties>
 	<dependencies>
 		...
@@ -632,15 +637,14 @@ Tomcat 8 for it to work. For example, using the starter poms in Maven:
 	</dependencies>
 ----
 
-change the classpath to use Tomcat 8 for it to work.
-
 
 
 [[howto-use-jetty-9]]
-=== Use Jetty 9
-Jetty 9 works with Spring Boot, but the default is to use Jetty 8 (so we can support
-Java 1.6 out of the box). You should only need to change the classpath to use Jetty 9
-for it to work.
+[[howto-use-jetty-8]]
+=== Use Jetty 8
+Jetty 8 works with Spring Boot, but the default is to use Jetty 9. If you cannot use
+Jetty 9 (for example, because you are using Java 1.6) you will need to change your
+classpath to reference Jetty 8 and Servlet API 3.0.
 
 If you are using the starter poms and parent you can just add the Jetty starter and
 change the version properties, e.g. for a simple webapp or service:
@@ -648,9 +652,9 @@ change the version properties, e.g. for a simple webapp or service:
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<properties>
-		<java.version>1.7</java.version>
-		<jetty.version>9.1.0.v20131115</jetty.version>
-		<servlet-api.version>3.1.0</servlet-api.version>
+		<jetty.version>8.1.15.v20140411</jetty.version>
+		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
+		<servlet-api.version>3.0.1</servlet-api.version>
 	</properties>
 	<dependencies>
 		<dependency>
