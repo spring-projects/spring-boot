@@ -34,6 +34,8 @@ public class InnerClassProperties {
 	@NestedConfigurationProperty
 	private final SimplePojo third = new SimplePojo();
 
+	private Fourth fourth;
+
 	public Foo getFirst() {
 		return this.first;
 	}
@@ -48,6 +50,14 @@ public class InnerClassProperties {
 
 	public SimplePojo getThird() {
 		return this.third;
+	}
+
+	public Fourth getFourth() {
+		return fourth;
+	}
+
+	public void setFourth(Fourth fourth) {
+		this.fourth = fourth;
 	}
 
 	public static class Foo {
@@ -81,6 +91,11 @@ public class InnerClassProperties {
 			}
 		}
 
+	}
+
+	public static enum Fourth {
+		YES,
+		NO
 	}
 
 }

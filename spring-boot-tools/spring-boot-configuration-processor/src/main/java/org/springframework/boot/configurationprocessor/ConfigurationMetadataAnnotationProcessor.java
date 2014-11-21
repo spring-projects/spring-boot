@@ -34,6 +34,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -207,7 +208,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			if (returnType != null && returnType instanceof TypeElement
 					&& annotation == null) {
 				TypeElement returns = (TypeElement) returnType;
-				if (this.typeUtils.isEnclosedIn(returnType, element) || isNested) {
+				if ((this.typeUtils.isEnclosedIn(returnType, element) && returnType.getKind() != ElementKind.ENUM)
+						|| isNested) {
 					String nestedPrefix = ConfigurationMetadata
 							.nestedPrefix(prefix, name);
 					this.metadata.add(ItemMetadata.newGroup(nestedPrefix,
