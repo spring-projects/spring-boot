@@ -208,8 +208,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			if (returnType != null && returnType instanceof TypeElement
 					&& annotation == null) {
 				TypeElement returns = (TypeElement) returnType;
-				if ((this.typeUtils.isEnclosedIn(returnType, element) && returnType.getKind() != ElementKind.ENUM)
-						|| isNested) {
+				if ((this.typeUtils.isEnclosedIn(returnType, element) && returnType
+						.getKind() != ElementKind.ENUM) || isNested) {
 					String nestedPrefix = ConfigurationMetadata
 							.nestedPrefix(prefix, name);
 					this.metadata.add(ItemMetadata.newGroup(nestedPrefix,

@@ -53,7 +53,7 @@ public class InnerClassProperties {
 	}
 
 	public Fourth getFourth() {
-		return fourth;
+		return this.fourth;
 	}
 
 	public void setFourth(Fourth fourth) {
@@ -94,8 +94,7 @@ public class InnerClassProperties {
 	}
 
 	public static enum Fourth {
-		YES,
-		NO
+		YES, NO
 	}
 
 }

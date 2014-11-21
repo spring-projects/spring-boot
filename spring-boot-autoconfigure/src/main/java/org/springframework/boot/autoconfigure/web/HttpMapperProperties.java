@@ -27,11 +27,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 /**
  * Configuration properties to configure {@link HttpMessageConverter}s.
  *
- * @deprecated pleas use {@link JacksonProperties} instead
- *
  * @author Dave Syer
  * @author Piotr Maj
  * @author Sebastien Deleuze
+ * @deprecated in favor of {@link JacksonProperties}
  */
 @ConfigurationProperties(prefix = "http.mappers", ignoreUnknownFields = false)
 @Deprecated

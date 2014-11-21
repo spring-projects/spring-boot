@@ -243,7 +243,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsGroup("config.third").ofType(SimplePojo.class)
 				.fromSource(InnerClassProperties.class));
 		assertThat(metadata, containsProperty("config.third.value"));
-		assertThat(metadata, containsProperty("config.fourth").ofType(InnerClassProperties.Fourth.class));
+		assertThat(
+				metadata,
+				containsProperty("config.fourth").ofType(
+						InnerClassProperties.Fourth.class));
 		assertThat(metadata, not(containsGroup("config.fourth")));
 	}
 
