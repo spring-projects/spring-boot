@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.autoconfigure.jackson.JacksonProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.converter.HttpMessageConverter;
 
@@ -25,6 +26,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Configuration properties to configure {@link HttpMessageConverter}s.
+ *
+ * @deprecated pleas use {@link JacksonProperties} instead
  *
  * @author Dave Syer
  * @author Piotr Maj

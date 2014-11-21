@@ -71,6 +71,8 @@ public class HttpMessageConvertersAutoConfiguration {
 	@SuppressWarnings("deprecation")
 	protected static class MappingJackson2HttpMessageConverterConfiguration {
 
+		// This can be removed when the deprecated class is removed (the ObjectMapper will
+		// already have all the correct properties).
 		@Autowired
 		private HttpMapperProperties properties = new HttpMapperProperties();
 
