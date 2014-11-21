@@ -51,6 +51,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  */
 public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> {
 
+	private static final List<Class<?>> NON_REPLACING_CONVERTERS;
+	static {
+		List<Class<?>> nonReplacingConverters = new ArrayList<Class<?>>();
+		addClassIfExists(nonReplacingConverters, "org.springframework.hateoas.mvc."
+				+ "TypeConstrainedMappingJackson2HttpMessageConverter");
+		NON_REPLACING_CONVERTERS = Collections.unmodifiableList(nonReplacingConverters);
+	}
+
 	private final List<HttpMessageConverter<?>> converters;
 
 	/**
@@ -95,8 +103,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 				Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
 				while (iterator.hasNext()) {
 					HttpMessageConverter<?> candidate = iterator.next();
-					if (ClassUtils.isAssignableValue(defaultConverter.getClass(),
-							candidate)) {
+					if (isReplacement(defaultConverter, candidate)) {
 						combined.add(candidate);
 						iterator.remove();
 					}
@@ -107,6 +114,16 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		combined.addAll(0, processing);
 		combined = postProcessConverters(combined);
 		this.converters = Collections.unmodifiableList(combined);
+	}
+
+	private boolean isReplacement(HttpMessageConverter<?> defaultConverter,
+			HttpMessageConverter<?> candidate) {
+		for (Class<?> nonRelacingConverter : NON_REPLACING_CONVERTERS) {
+			if (nonRelacingConverter.isInstance(candidate)) {
+				return false;
+			}
+		}
+		return ClassUtils.isAssignableValue(defaultConverter.getClass(), candidate);
 	}
 
 	/**
@@ -163,6 +180,15 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	 */
 	public List<HttpMessageConverter<?>> getConverters() {
 		return this.converters;
+	}
+
+	private static void addClassIfExists(List<Class<?>> list, String className) {
+		try {
+			list.add(Class.forName(className));
+		}
+		catch (ClassNotFoundException ex) {
+			// Ignore
+		}
 	}
 
 }
