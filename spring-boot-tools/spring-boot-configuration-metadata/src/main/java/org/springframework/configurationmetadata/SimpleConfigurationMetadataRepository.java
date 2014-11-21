@@ -58,7 +58,7 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 			}
 			String sourceType = source.getType();
 			if (sourceType != null) {
-				group.getSources().putIfAbsent(sourceType, source);
+				putIfAbsent(group.getSources(), sourceType, source);
 			}
 		}
 	}
@@ -69,9 +69,9 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 	 */
 	public void add(ConfigurationMetadataProperty property, ConfigurationMetadataSource source) {
 		if (source != null) {
-			source.getProperties().putIfAbsent(property.getId(), property);
+			putIfAbsent(source.getProperties(),property.getId(), property);
 		}
-		getGroup(source).getProperties().putIfAbsent(property.getId(), property);
+		putIfAbsent(getGroup(source).getProperties(), property.getId(), property);
 	}
 
 
@@ -87,11 +87,11 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 			else {
 				// Merge properties
 				for (Map.Entry<String, ConfigurationMetadataProperty> entry : group.getProperties().entrySet()) {
-					existingGroup.getProperties().putIfAbsent(entry.getKey(), entry.getValue());
+					putIfAbsent(existingGroup.getProperties(), entry.getKey(), entry.getValue());
 				}
 				// Merge sources
 				for (Map.Entry<String, ConfigurationMetadataSource> entry : group.getSources().entrySet()) {
-					existingGroup.getSources().putIfAbsent(entry.getKey(), entry.getValue());
+					putIfAbsent(existingGroup.getSources(), entry.getKey(), entry.getValue());
 				}
 			}
 		}
@@ -109,6 +109,12 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 		}
 		else {
 			return this.allGroups.get(source.getGroupId());
+		}
+	}
+
+	private <V> void putIfAbsent(Map<String, V> map, String key, V value) {
+		if (!map.containsKey(key)) {
+			map.put(key, value);
 		}
 	}
 
