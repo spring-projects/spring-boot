@@ -20,7 +20,6 @@
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<modules>
-		<module>spring-boot-configuration-metadata</module>
 		<module>spring-boot-configuration-processor</module>
 		<module>spring-boot-dependency-tools</module>
 		<module>spring-boot-loader</module>
