@@ -236,17 +236,14 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsProperty("config.first.name"));
 		assertThat(metadata, containsProperty("config.first.bar.name"));
 		assertThat(metadata,
-				containsProperty("config.the-second", InnerClassProperties.Foo.class)
+				containsGroup("config.the-second", InnerClassProperties.Foo.class)
 						.fromSource(InnerClassProperties.class));
 		assertThat(metadata, containsProperty("config.the-second.name"));
 		assertThat(metadata, containsProperty("config.the-second.bar.name"));
 		assertThat(metadata, containsGroup("config.third").ofType(SimplePojo.class)
 				.fromSource(InnerClassProperties.class));
 		assertThat(metadata, containsProperty("config.third.value"));
-		assertThat(
-				metadata,
-				containsProperty("config.fourth").ofType(
-						InnerClassProperties.Fourth.class));
+		assertThat(metadata, containsProperty("config.fourth"));
 		assertThat(metadata, not(containsGroup("config.fourth")));
 	}
 

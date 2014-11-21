@@ -175,8 +175,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			ExecutableElement getter = entry.getValue();
 			ExecutableElement setter = members.getPublicSetters().get(name);
 			VariableElement field = members.getFields().get(name);
-			boolean isNested = getAnnotation(field,
-					nestedConfigurationPropertyAnnotation()) != null;
+			Element returnType = this.processingEnv.getTypeUtils().asElement(
+					getter.getReturnType());
+			boolean isNested = isNested(returnType, field, element);
 			boolean isCollection = this.typeUtils.isCollectionOrMap(getter
 					.getReturnType());
 			if (!isNested && (setter != null || isCollection)) {
@@ -203,22 +204,25 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 					getter.getReturnType());
 			AnnotationMirror annotation = getAnnotation(getter,
 					configurationPropertiesAnnotation());
-			boolean isNested = getAnnotation(field,
-					nestedConfigurationPropertyAnnotation()) != null;
+			boolean isNested = isNested(returnType, field, element);
 			if (returnType != null && returnType instanceof TypeElement
-					&& annotation == null) {
-				TypeElement returns = (TypeElement) returnType;
-				if ((this.typeUtils.isEnclosedIn(returnType, element) && returnType
-						.getKind() != ElementKind.ENUM) || isNested) {
-					String nestedPrefix = ConfigurationMetadata
-							.nestedPrefix(prefix, name);
-					this.metadata.add(ItemMetadata.newGroup(nestedPrefix,
-							this.typeUtils.getType(returns),
-							this.typeUtils.getType(element), getter.toString()));
-					processTypeElement(nestedPrefix, returns);
-				}
+					&& annotation == null && isNested) {
+				String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
+				this.metadata.add(ItemMetadata.newGroup(nestedPrefix,
+						this.typeUtils.getType(returnType),
+						this.typeUtils.getType(element), getter.toString()));
+				processTypeElement(nestedPrefix, (TypeElement) returnType);
 			}
 		}
+	}
+
+	private boolean isNested(Element returnType, VariableElement field,
+			TypeElement element) {
+		if (getAnnotation(field, nestedConfigurationPropertyAnnotation()) != null) {
+			return true;
+		}
+		return this.typeUtils.isEnclosedIn(returnType, element)
+				&& returnType.getKind() != ElementKind.ENUM;
 	}
 
 	private boolean hasDeprecateAnnotation(Element element) {

@@ -119,10 +119,13 @@ public class ConfigurationMetadataMatchers {
 			ConfigurationMetadata metadata = (ConfigurationMetadata) item;
 			ItemMetadata property = getFirstPropertyWithName(metadata, this.name);
 			if (property == null) {
-				description.appendText("missing property " + this.name);
+				description.appendText("missing "
+						+ this.itemType.toString().toLowerCase() + " " + this.name);
 			}
 			else {
-				description.appendText("was property ").appendValue(property);
+				description.appendText(
+						"was " + this.itemType.toString().toLowerCase() + " ")
+						.appendValue(property);
 			}
 		}
 
