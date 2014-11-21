@@ -121,10 +121,9 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		this.context.register(GsonConfig.class,
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-		assertConverterBeanExists(GsonHttpMessageConverter.class,
-				"gsonHttpMessageConverter");
-
-		assertConverterBeanRegisteredWithHttpMessageConverters(GsonHttpMessageConverter.class);
+		// Shouldn't be registered because we have Jackson
+		assertEquals(0, this.context.getBeansOfType(GsonHttpMessageConverter.class)
+				.size());
 	}
 
 	@Test
@@ -165,8 +164,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		this.context.refresh();
 		MappingJackson2HttpMessageConverter converter = this.context
 				.getBean(MappingJackson2HttpMessageConverter.class);
-		assertNull(new DirectFieldAccessor(converter)
-				.getPropertyValue("prettyPrint"));
+		assertNull(new DirectFieldAccessor(converter).getPropertyValue("prettyPrint"));
 	}
 
 	@Test
@@ -189,7 +187,6 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	private void assertConverterBeanRegisteredWithHttpMessageConverters(Class<?> type) {
-
 		Object converter = this.context.getBean(type);
 		HttpMessageConverters converters = this.context
 				.getBean(HttpMessageConverters.class);
