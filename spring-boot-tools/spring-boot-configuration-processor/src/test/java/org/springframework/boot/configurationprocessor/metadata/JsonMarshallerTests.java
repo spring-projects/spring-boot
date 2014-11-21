@@ -49,7 +49,6 @@ public class JsonMarshallerTests {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
-		System.out.println(outputStream);
 		ConfigurationMetadata read = marshaller.read(new ByteArrayInputStream(
 				outputStream.toByteArray()));
 		assertThat(read,
