@@ -7,17 +7,20 @@
   {
     "name": "logging.config",
     "type": "java.lang.String",
-    "description": "Location of the logging configuration file."
+    "description": "Location of the logging configuration file.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.file",
     "type": "java.lang.String",
-    "description": "The name of the log file."
+    "description": "The name of the log file.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.path",
     "type": "java.lang.String",
-    "description": "Location of the log file."
+    "description": "Location of the log file.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
     "name": "spring.mandatory-file-encoding",
