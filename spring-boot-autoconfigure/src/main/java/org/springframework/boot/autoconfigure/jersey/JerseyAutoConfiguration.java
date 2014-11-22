@@ -101,7 +101,7 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "filter")
 	public FilterRegistrationBean jerseyFilterRegistration() {
 		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(new ServletContainer());
+		registration.setFilter(new ServletContainer(this.config));
 		registration.setUrlPatterns(Arrays.asList(this.path));
 		registration.setOrder(this.jersey.getFilter().getOrder());
 		registration.addInitParameter(ServletProperties.FILTER_CONTEXT_PATH,
@@ -124,16 +124,13 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 	@ConditionalOnProperty(prefix = "spring.jersey", name = "type", havingValue = "servlet", matchIfMissing = true)
 	public ServletRegistrationBean jerseyServletRegistration() {
 		ServletRegistrationBean registration = new ServletRegistrationBean(
-				new ServletContainer(), this.path);
+				new ServletContainer(this.config), this.path);
 		addInitParameters(registration);
 		registration.setName("jerseyServlet");
 		return registration;
 	}
 
 	private void addInitParameters(RegistrationBean registration) {
-		Class<? extends ResourceConfig> configType = this.config.getClass();
-		registration.addInitParameter(ServletProperties.JAXRS_APPLICATION_CLASS,
-				configType.getName());
 		registration.addInitParameter(CommonProperties.METAINF_SERVICES_LOOKUP_DISABLE,
 				"true");
 		for (Entry<String, String> entry : this.jersey.getInit().entrySet()) {
