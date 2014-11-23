@@ -83,8 +83,6 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private ApplicationContext context;
 
-	private ConfigurationBeanFactoryMetaData beanFactoryMetaData;
-
 	private ConfigurationPropertiesMetaData metadata;
 
 	private String metadataLocations = "classpath:*/META-INF/*spring-configuration-metadata.json";
@@ -96,11 +94,6 @@ public class ConfigurationPropertiesReportEndpoint extends
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.context = context;
-	}
-
-	public void setConfigurationBeanFactoryMetaData(
-			ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
-		this.beanFactoryMetaData = beanFactoryMetaData;
 	}
 
 	public void setKeysToSanitize(String... keysToSanitize) {
@@ -130,8 +123,10 @@ public class ConfigurationPropertiesReportEndpoint extends
 		Map<String, Object> result = new HashMap<String, Object>();
 		Map<String, Object> beans = new HashMap<String, Object>(
 				context.getBeansWithAnnotation(ConfigurationProperties.class));
-		if (this.beanFactoryMetaData != null) {
-			beans.putAll(this.beanFactoryMetaData
+		ConfigurationBeanFactoryMetaData beanFactoryMetaData = null;
+		if (context.getBeanNamesForType(ConfigurationBeanFactoryMetaData.class).length == 1) {
+			beanFactoryMetaData = context.getBean(ConfigurationBeanFactoryMetaData.class);
+			beans.putAll(beanFactoryMetaData
 					.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
 		}
 
@@ -143,7 +138,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
 			Map<String, Object> root = new HashMap<String, Object>();
-			String prefix = extractPrefix(context, beanName, bean);
+			String prefix = extractPrefix(context, beanFactoryMetaData, beanName, bean);
 			root.put("prefix", prefix);
 			root.put("properties", sanitize(safeSerialize(mapper, bean, prefix)));
 			result.put(beanName, root);
@@ -209,13 +204,16 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	/**
 	 * Extract configuration prefix from {@link ConfigurationProperties} annotation.
+	 * @param beanFactoryMetaData
 	 */
-	private String extractPrefix(ApplicationContext context, String beanName, Object bean) {
+	private String extractPrefix(ApplicationContext context,
+			ConfigurationBeanFactoryMetaData beanFactoryMetaData, String beanName,
+			Object bean) {
 		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
 				ConfigurationProperties.class);
-		if (this.beanFactoryMetaData != null) {
-			ConfigurationProperties override = this.beanFactoryMetaData
-					.findFactoryAnnotation(beanName, ConfigurationProperties.class);
+		if (beanFactoryMetaData != null) {
+			ConfigurationProperties override = beanFactoryMetaData.findFactoryAnnotation(
+					beanName, ConfigurationProperties.class);
 			if (override != null) {
 				// The @Bean-level @ConfigurationProperties overrides the one at type
 				// level when binding. Arguably we should render them both, but this one

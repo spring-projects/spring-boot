@@ -20,6 +20,8 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -61,6 +63,23 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 		// System.err.println(result);
 	}
 
+	@Test
+	public void testInvokeWithFactory() throws Exception {
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.register(Parent.class);
+		parent.refresh();
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		this.context.register(Factory.class);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint endpoint = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+		Map<String, Object> result = endpoint.invoke();
+		assertTrue(result.containsKey("parent"));
+		assertEquals(3, result.size()); // the endpoint, the test props and the parent
+		// System.err.println(result);
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Parent {
@@ -80,10 +99,33 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 		}
 
 		@Bean
-		public TestProperties testProperties() {
+		public TestProperties someProperties() {
 			return new TestProperties();
 		}
 
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class Factory {
+
+		@Autowired
+		private ConfigurationBeanFactoryMetaData beanFactoryMetaData;
+
+		@Bean
+		public ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint();
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "other")
+		public OtherProperties otherProperties() {
+			return new OtherProperties();
+		}
+
+	}
+
+	public static class OtherProperties {
 	}
 
 	@ConfigurationProperties(prefix = "test")

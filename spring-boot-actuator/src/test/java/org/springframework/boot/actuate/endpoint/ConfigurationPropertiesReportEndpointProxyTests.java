@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -78,11 +77,8 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 	public static class Config {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint(
-				ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
-			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-			endpoint.setConfigurationBeanFactoryMetaData(beanFactoryMetaData);
-			return endpoint;
+		public ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 		@Bean

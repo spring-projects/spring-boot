@@ -162,9 +162,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
-		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-		endpoint.setConfigurationBeanFactoryMetaData(this.beanFactoryMetaData);
-		return endpoint;
+		return new ConfigurationPropertiesReportEndpoint();
 	}
 
 	@Configuration

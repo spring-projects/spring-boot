@@ -23,7 +23,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -238,10 +237,8 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 	public static class Base {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint(
-				ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
+		public ConfigurationPropertiesReportEndpoint endpoint() {
 			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-			endpoint.setConfigurationBeanFactoryMetaData(beanFactoryMetaData);
 			endpoint.setMetadataLocations("classpath*:/test-metadata.json");
 			return endpoint;
 		}
