@@ -26,8 +26,12 @@ import org.springframework.stereotype.Component;
 @Path("/hello")
 public class Endpoint {
 
-	@Autowired
 	private Service service;
+
+	@Autowired
+	public Endpoint(Service service) {
+		this.service = service;
+	}
 
 	@GET
 	public String message() {
