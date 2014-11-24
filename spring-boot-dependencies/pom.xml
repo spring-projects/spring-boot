@@ -62,6 +62,7 @@
 		<flyway.version>3.0</flyway.version>
 		<freemarker.version>2.3.21</freemarker.version>
 		<gemfire.version>7.0.2</gemfire.version>
+		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.6</gradle.version>
 		<groovy.version>2.3.7</groovy.version>
 		<gson.version>2.3</gson.version>
@@ -949,6 +950,11 @@
 				<groupId>org.freemarker</groupId>
 				<artifactId>freemarker</artifactId>
 				<version>${freemarker.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish</groupId>
+				<artifactId>javax.el</artifactId>
+				<version>${glassfish-el.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
