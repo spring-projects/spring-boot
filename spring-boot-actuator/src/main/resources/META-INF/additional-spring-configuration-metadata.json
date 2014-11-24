@@ -12,6 +12,11 @@
     "description": "The keys that should be sanitize. Keys can be simple strings that the property ends with or regex expressions."
   },
   {
+    "name": "info",
+    "type": "java.util.Map<java.lang.String,java.lang.Object>",
+    "description": "Arbitrary properties to add to the info endpoint."
+  },
+  {
     "name": "management.health.db.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable database health check.",
