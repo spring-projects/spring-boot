@@ -17,6 +17,12 @@
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
+    "name": "logging.level",
+    "type": "java.util.Map<java.lang.String,java.lang.Object>",
+    "description": "The log levels. Use 'root' for the root logger.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
     "name": "logging.path",
     "type": "java.lang.String",
     "description": "Location of the log file.",
