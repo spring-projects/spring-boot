@@ -39,7 +39,7 @@ public class TestAutoConfigurationPackageRegistrar implements
 		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
 				.getAnnotationAttributes(TestAutoConfigurationPackage.class.getName(),
 						true));
-		AutoConfigurationPackages.set(registry,
+		AutoConfigurationPackages.register(registry,
 				ClassUtils.getPackageName(attributes.getString("value")));
 	}
 
