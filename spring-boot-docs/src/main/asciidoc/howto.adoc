@@ -639,15 +639,16 @@ e.g. for a simple webapp or service:
 
 
 
-[[howto-use-jetty-9]]
 [[howto-use-jetty-8]]
 === Use Jetty 8
 Jetty 8 works with Spring Boot, but the default is to use Jetty 9. If you cannot use
 Jetty 9 (for example, because you are using Java 1.6) you will need to change your
-classpath to reference Jetty 8 and Servlet API 3.0.
+classpath to reference Jetty 8 and Servlet API 3.0. You will also need to exclude
+Jetty's WebSocket-related dependencies.
 
-If you are using the starter poms and parent you can just add the Jetty starter and
-change the version properties, e.g. for a simple webapp or service:
+If you are using the starter poms and parent you can just add the Jetty starter with
+the required WebSocket exclusion and change the version properties, e.g. for a simple
+webapp or service:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -670,6 +671,12 @@ change the version properties, e.g. for a simple webapp or service:
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jetty</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.jetty.websocket</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 ----
