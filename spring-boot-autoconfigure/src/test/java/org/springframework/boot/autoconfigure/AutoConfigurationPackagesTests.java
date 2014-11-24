@@ -17,16 +17,22 @@
 package org.springframework.boot.autoconfigure;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages.BasePackages;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages.Registrar;
+import org.springframework.boot.autoconfigure.packages.one.FirstConfiguration;
+import org.springframework.boot.autoconfigure.packages.two.SecondConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link AutoConfigurationPackages}.
@@ -56,6 +62,20 @@ public class AutoConfigurationPackagesTests {
 				.expectMessage("Unable to retrieve @EnableAutoConfiguration base packages");
 		AutoConfigurationPackages.get(context.getBeanFactory());
 	}
+	
+	/**
+	 * @see #1983
+	 */
+	@Test
+	public void detectsMultipleAutoConfigurationPackages() {
+
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(FirstConfiguration.class, SecondConfiguration.class);
+		
+		List<String> packages = AutoConfigurationPackages.get(context.getBeanFactory());
+
+		assertThat(packages, hasItems(FirstConfiguration.class.getPackage().getName(), SecondConfiguration.class.getPackage().getName()));
+		assertThat(packages, hasSize(2));
+	}
 
 	@Configuration
 	@Import(AutoConfigurationPackages.Registrar.class)
@@ -66,4 +86,10 @@ public class AutoConfigurationPackagesTests {
 	static class EmptyConfig {
 	}
 
+	/**
+	 * Test helper to allow {@link Registrar} to be referenced from other packages.
+	 *
+	 * @author Oliver Gierke
+	 */
+	public static class TestRegistrar extends Registrar {}
 }

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -24,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -39,6 +42,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Oliver Gierke
  */
 public abstract class AutoConfigurationPackages {
 
@@ -75,21 +79,48 @@ public abstract class AutoConfigurationPackages {
 	}
 
 	/**
-	 * Programmatically set the auto-configuration package names. You can use this method
-	 * to manually define the base packages that will be used for a given
-	 * {@link BeanDefinitionRegistry}. Generally it's recommended that you don't call this
-	 * method directly, but instead rely on the default convention where the package name
-	 * is set from your {@code @EnableAutoConfiguration} configuration class.
+	 * Programmatically registers the auto-configuration package names. Subsequent invocations
+	 * will cause the packages to add up. You can use this method to manually define the base
+	 * packages that will be used for a given {@link BeanDefinitionRegistry}. Generally it's
+	 * recommended that you don't call this method directly, but instead rely on the default
+	 * convention where the package name is set from your {@code @EnableAutoConfiguration}
+	 * configuration class.
 	 * @param registry the bean definition registry
-	 * @param packageNames the pacakge names to set
+	 * @param packageNames the package names to set
 	 */
-	public static void set(BeanDefinitionRegistry registry, String... packageNames) {
-		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-		beanDefinition.setBeanClass(BasePackages.class);
-		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-				packageNames);
-		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(BEAN, beanDefinition);
+	public static void register(BeanDefinitionRegistry registry, String... packageNames) {
+		
+		if (registry.containsBeanDefinition(BEAN)) {
+
+			BeanDefinition beanDefinition = registry.getBeanDefinition(BEAN);
+			ConstructorArgumentValues constructorArguments = beanDefinition.getConstructorArgumentValues();
+			constructorArguments.addIndexedArgumentValue(0, augmentBasePackages(constructorArguments, packageNames));
+
+		} else {
+
+			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+			beanDefinition.setBeanClass(BasePackages.class);
+			beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0, packageNames);
+			beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			registry.registerBeanDefinition(BEAN, beanDefinition);
+		}
+	}
+	
+	/**
+	 * Augments the package names contained in the given {@link ConstructorArgumentValues} with the given package names.
+	 * 
+	 * @param constructorArguments must not be {@literal null}.
+	 * @param packageNames must not be {@literal null}.
+	 * @return
+	 */
+	private static String[] augmentBasePackages(ConstructorArgumentValues constructorArguments, String[] packageNames) {
+		
+		ValueHolder valueHolder = constructorArguments.getIndexedArgumentValue(0, List.class);
+
+		List<String> packages = new ArrayList<String>(Arrays.asList((String[])valueHolder.getValue()));
+		packages.addAll(Arrays.asList(packageNames));
+		
+		return packages.toArray(new String[packages.size()]);
 	}
 
 	/**
@@ -102,9 +133,8 @@ public abstract class AutoConfigurationPackages {
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata metadata,
 				BeanDefinitionRegistry registry) {
-			set(registry, ClassUtils.getPackageName(metadata.getClassName()));
+			register(registry, ClassUtils.getPackageName(metadata.getClassName()));
 		}
-
 	}
 
 	/**
