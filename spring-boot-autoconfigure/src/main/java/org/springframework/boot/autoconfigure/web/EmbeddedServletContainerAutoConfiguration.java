@@ -48,6 +48,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
+import org.xnio.SslClientAuthMode;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for an embedded servlet containers.
@@ -96,7 +97,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 * Nested configuration if Undertow is being used.
 	 */
 	@Configuration
-	@ConditionalOnClass({ Servlet.class, Undertow.class })
+	@ConditionalOnClass({ Servlet.class, Undertow.class, SslClientAuthMode.class })
 	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
 	public static class EmbeddedUndertow {
 
