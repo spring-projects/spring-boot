@@ -165,7 +165,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnProperty(prefix = "endpoints.health", name = "enabled", matchIfMissing = true)
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
-		boolean secure = this.managementServerProperties.getSecurity().isEnabled()
+		boolean secure = this.managementServerProperties.getSecurity() != null
+				&& this.managementServerProperties.getSecurity().isEnabled()
 				&& ClassUtils.isPresent(
 						"org.springframework.security.core.Authentication", null);
 		delegate.setSensitive(secure);
