@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = true)
 public class HealthEndpoint extends AbstractEndpoint<Health> {
@@ -38,18 +39,7 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	private long timeToLive = 1000;
 
-	/**
-	 * Time to live for cached result. If accessed anonymously, we might need to cache the
-	 * result of this endpoint to prevent a DOS attack.
-	 * @return time to live in milliseconds (default 1000)
-	 */
-	public long getTimeToLive() {
-		return this.timeToLive;
-	}
-
-	public void setTimeToLive(long ttl) {
-		this.timeToLive = ttl;
-	}
+	private boolean restrictAnonymousAccess = true;
 
 	/**
 	 * Create a new {@link HealthIndicator} instance.
@@ -67,6 +57,27 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 			healthIndicator.addHealthIndicator(getKey(h.getKey()), h.getValue());
 		}
 		this.healthIndicator = healthIndicator;
+	}
+
+	/**
+	 * Time to live for cached result. If accessed anonymously, we might need to cache the
+	 * result of this endpoint to prevent a DOS attack.
+	 * @return time to live in milliseconds (default 1000)
+	 */
+	public long getTimeToLive() {
+		return this.timeToLive;
+	}
+
+	public void setTimeToLive(long ttl) {
+		this.timeToLive = ttl;
+	}
+
+	public boolean isRestrictAnonymousAccess() {
+		return this.restrictAnonymousAccess;
+	}
+
+	public void setRestrictAnonymousAccess(boolean restrictAnonymousAccess) {
+		this.restrictAnonymousAccess = restrictAnonymousAccess;
 	}
 
 	/**

@@ -28,7 +28,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -93,6 +96,7 @@ public class HealthMvcEndpointTests {
 	public void secure() {
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
+		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(true);
 		Object result = this.mvc.invoke(this.user);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -102,6 +106,7 @@ public class HealthMvcEndpointTests {
 	@Test
 	public void secureNotCached() {
 		given(this.endpoint.getTimeToLive()).willReturn(10000L);
+		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(true);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.user);
@@ -117,16 +122,66 @@ public class HealthMvcEndpointTests {
 	@Test
 	public void unsecureCached() {
 		given(this.endpoint.getTimeToLive()).willReturn(10000L);
+		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(true);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.user);
 		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
+		Health health = (Health) result;
+		assertTrue(health.getStatus() == Status.UP);
+		assertThat(health.getDetails().size(), is(equalTo(1)));
+		assertThat(health.getDetails().get("foo"), is(equalTo((Object) "bar")));
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		result = this.mvc.invoke(null); // insecure now
-		Health health = (Health) result;
+		assertTrue(result instanceof Health);
+		health = (Health) result;
 		// so the result is cached
 		assertTrue(health.getStatus() == Status.UP);
+		// but the details are hidden
+		assertThat(health.getDetails().size(), is(equalTo(0)));
 	}
 
+	@Test
+	public void unsecureAnonymousAccessUnrestricted() {
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().up().withDetail("foo", "bar").build());
+		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(false);
+		Object result = this.mvc.invoke(null);
+		assertTrue(result instanceof Health);
+		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+	}
+
+	@Test
+	public void unsecureIsNotCachedWhenAnonymousAccessIsUnrestricted() {
+		given(this.endpoint.getTimeToLive()).willReturn(10000L);
+		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(false);
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(null);
+		assertTrue(result instanceof Health);
+		assertTrue(((Health) result).getStatus() == Status.UP);
+		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
+		result = this.mvc.invoke(null);
+		@SuppressWarnings("unchecked")
+		Health health = ((ResponseEntity<Health>) result).getBody();
+		assertTrue(health.getStatus() == Status.DOWN);
+	}
+
+	@Test
+	public void newValueIsReturnedOnceTtlExpires() throws InterruptedException {
+		given(this.endpoint.getTimeToLive()).willReturn(50L);
+		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(true);
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(null);
+		assertTrue(result instanceof Health);
+		assertTrue(((Health) result).getStatus() == Status.UP);
+		Thread.sleep(100);
+		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
+		result = this.mvc.invoke(null);
+		@SuppressWarnings("unchecked")
+		Health health = ((ResponseEntity<Health>) result).getBody();
+		assertTrue(health.getStatus() == Status.DOWN);
+	}
 }

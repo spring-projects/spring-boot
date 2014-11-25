@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *
  * @author Christian Dupuis
  * @author Dave Syer
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 public class HealthMvcEndpoint implements MvcEndpoint {
@@ -121,7 +122,7 @@ public class HealthMvcEndpoint implements MvcEndpoint {
 		// Not too worried about concurrent access here, the worst that can happen is the
 		// odd extra call to delegate.invoke()
 		this.cached = health;
-		if (!secure(principal)) {
+		if (this.delegate.isRestrictAnonymousAccess() && !secure(principal)) {
 			// If not secure we only expose the status
 			health = Health.status(health.getStatus()).build();
 		}
@@ -133,13 +134,18 @@ public class HealthMvcEndpoint implements MvcEndpoint {
 	}
 
 	private boolean useCachedValue(Principal principal) {
-		long currentAccess = System.currentTimeMillis();
-		if (this.cached == null || secure(principal)
-				|| (currentAccess - this.lastAccess) > this.delegate.getTimeToLive()) {
-			this.lastAccess = currentAccess;
+		long accessTime = System.currentTimeMillis();
+		if (cacheIsStale(accessTime) || secure(principal)
+				|| !this.delegate.isRestrictAnonymousAccess()) {
+			this.lastAccess = accessTime;
 			return false;
 		}
 		return this.cached != null;
+	}
+
+	private boolean cacheIsStale(long accessTime) {
+		return this.cached == null
+				|| (accessTime - this.lastAccess) > this.delegate.getTimeToLive();
 	}
 
 	@Override
