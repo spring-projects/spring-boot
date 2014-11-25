@@ -30,11 +30,20 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "endpoints.jmx")
 public class EndpointMBeanExportProperties {
 
+	/**
+	 * JMX domain name. Initialized with the value of 'spring.jmx.default-domain' if set.
+	 */
 	@Value("${spring.jmx.default_domain:}")
 	private String domain;
 
+	/**
+	 * Ensure that ObjectNames are modified in case of conflict.
+	 */
 	private boolean uniqueNames = false;
 
+	/**
+	 * Enable the JMX endpoints.
+	 */
 	private boolean enabled = true;
 
 	private Properties staticNames = new Properties();

@@ -34,8 +34,14 @@ public class DiskSpaceHealthIndicatorProperties {
 
 	private static final int DEFAULT_THRESHOLD = 10 * MEGABYTES;
 
+	/**
+	 * Path used to compute the available disk space.
+	 */
 	private File path = new File(".");
 
+	/**
+	 * Minimum disk space that should be available, in bytes.
+	 */
 	private long threshold = DEFAULT_THRESHOLD;
 
 	public File getPath() {

@@ -28,10 +28,19 @@ import org.springframework.validation.DefaultMessageCodesResolver;
 @ConfigurationProperties("spring.mvc")
 public class WebMvcProperties {
 
+	/**
+	 * Formatting strategy for message codes (PREFIX_ERROR_CODE, POSTFIX_ERROR_CODE).
+	 */
 	private DefaultMessageCodesResolver.Format messageCodesResolverFormat;
 
+	/**
+	 * Locale to use.
+	 */
 	private String locale;
 
+	/**
+	 * Date format to use (e.g. dd/MM/yyyy)
+	 */
 	private String dateFormat;
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {

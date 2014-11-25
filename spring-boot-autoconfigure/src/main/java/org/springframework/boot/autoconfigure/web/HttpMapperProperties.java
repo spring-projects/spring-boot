@@ -38,8 +38,14 @@ public class HttpMapperProperties {
 
 	private final Log logger = LogFactory.getLog(HttpMapperProperties.class);
 
+	/**
+	 * Enable json pretty print.
+	 */
 	private Boolean jsonPrettyPrint;
 
+	/**
+	 * Enable key sorting.
+	 */
 	private Boolean jsonSortKeys;
 
 	public void setJsonPrettyPrint(Boolean jsonPrettyPrint) {

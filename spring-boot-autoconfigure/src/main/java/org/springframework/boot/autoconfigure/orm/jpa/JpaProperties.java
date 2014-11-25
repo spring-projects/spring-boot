@@ -40,14 +40,31 @@ public class JpaProperties {
 
 	private static final Log logger = LogFactory.getLog(JpaProperties.class);
 
+	/**
+	 * Additional native properties to set on the JPA provider.
+	 */
 	private Map<String, String> properties = new HashMap<String, String>();
 
+	/**
+	 * Name of the target database to operate on, auto-detected by default. Can be
+	 * alternatively set using the "Database" enum.
+	 */
 	private String databasePlatform;
 
+	/**
+	 * Target database to operate on, auto-detected by default. Can be alternatively
+	 * set using the "databasePlatform" property.
+	 */
 	private Database database = Database.DEFAULT;
 
+	/**
+	 * Initialize the schema on startup.
+	 */
 	private boolean generateDdl = false;
 
+	/**
+	 * Enable logging of SQL statements.
+	 */
 	private boolean showSql = false;
 
 	private Hibernate hibernate = new Hibernate();
@@ -114,8 +131,16 @@ public class JpaProperties {
 
 		private static final String DEFAULT_NAMING_STRATEGY = "org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy";
 
+		/**
+		 * Naming strategy fully qualified name.
+		 */
 		private Class<?> namingStrategy;
 
+		/**
+		 * DDL mode ("none", "validate", "update", "create", "create-drop"). This is actually a shortcut
+		 * for the "hibernate.hbm2ddl.auto" property. Default to "create-drop" when using an embedded database,
+		 * "none" otherwise.
+		 */
 		private String ddlAuto;
 
 		public Class<?> getNamingStrategy() {

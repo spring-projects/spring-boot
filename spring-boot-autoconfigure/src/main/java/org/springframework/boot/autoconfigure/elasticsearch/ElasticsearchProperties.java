@@ -28,8 +28,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.data.elasticsearch")
 public class ElasticsearchProperties {
 
+	/**
+	 * Elasticsearch cluster name.
+	 */
 	private String clusterName = "elasticsearch";
 
+	/**
+	 * Comma-separated list of cluster node addresses. If not specified, starts a client node.
+	 */
 	private String clusterNodes;
 
 	public String getClusterName() {

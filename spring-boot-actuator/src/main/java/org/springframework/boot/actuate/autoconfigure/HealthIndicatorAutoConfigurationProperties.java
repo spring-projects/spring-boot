@@ -29,6 +29,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("management.health.status")
 public class HealthIndicatorAutoConfigurationProperties {
 
+	/**
+	 * Comma-separated list of health statuses in order of severity.
+	 */
 	private List<String> order = null;
 
 	public List<String> getOrder() {

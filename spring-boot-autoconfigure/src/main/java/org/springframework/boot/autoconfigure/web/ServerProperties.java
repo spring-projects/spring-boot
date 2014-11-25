@@ -58,17 +58,32 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
+	/**
+	 * Server HTTP port.
+	 */
 	private Integer port;
 
+	/**
+	 * Network address to which the server should bind to.
+	 */
 	private InetAddress address;
 
+	/**
+	 * Session timeout in seconds.
+	 */
 	private Integer sessionTimeout;
 
+	/**
+	 * Context path of the application.
+	 */
 	private String contextPath;
 
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
+	/**
+	 * Path of the main dispatcher servlet.
+	 */
 	@NotNull
 	private String servletPath = "/";
 
@@ -76,6 +91,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	private final Undertow undertow = new Undertow();
 
+	/**
+	 * ServletContext parameters.
+	 */
 	private final Map<String, String> contextParameters = new HashMap<String, String>();
 
 	public Tomcat getTomcat() {
@@ -223,29 +241,64 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	public static class Tomcat {
 
+		/**
+		 * Format pattern for access logs.
+		 */
 		private String accessLogPattern;
 
+		/**
+		 * Enable access log.
+		 */
 		private boolean accessLogEnabled = false;
 
+		/**
+		 * Regular expression that matches proxies that are to be trusted.
+		 */
 		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"; // 127/8
 
+		/**
+		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto". Configured
+		 * as a RemoteIpValve only if remoteIpHeader is also set.
+		 */
 		private String protocolHeader;
 
+		/**
+		 * Name of the HTTP header used to override the original port value.
+		 */
 		private String portHeader;
 
+		/**
+		 * Name of the http header from which the remote ip is extracted. Configured as a
+		 * RemoteIpValve only if remoteIpHeader is also set.
+		 */
 		private String remoteIpHeader;
 
+		/**
+		 * Tomcat base directory. If not specified a temporary directory will be used.
+		 */
 		private File basedir;
 
+		/**
+		 *  Delay in seconds between the invocation of backgroundProcess methods.
+		 */
 		private int backgroundProcessorDelay = 30; // seconds
 
+		/**
+		 * Maximum amount of worker threads.
+		 */
 		private int maxThreads = 0; // Number of threads in protocol handler
 
+		/**
+		 *  Maximum size in bytes of the HTTP message header.
+		 */
 		private int maxHttpHeaderSize = 0; // bytes
 
+		/**
+		 * Character encoding to use to decode the URI.
+		 */
 		private String uriEncoding;
 
 		public int getMaxThreads() {
@@ -409,12 +462,24 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	public static class Undertow {
 
+		/**
+		 * Size of each buffer in bytes.
+		 */
 		private Integer bufferSize;
 
+		/**
+		 * Number of buffer per region.
+		 */
 		private Integer buffersPerRegion;
 
+		/**
+		 * Number of I/O threads to create for the worker.
+		 */
 		private Integer ioThreads;
 
+		/**
+		 * Number of worker threads.
+		 */
 		private Integer workerThreads;
 
 		private Boolean directBuffers;

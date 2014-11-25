@@ -27,12 +27,22 @@ import javax.validation.constraints.Pattern;
  */
 public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 
+	/**
+	 * Endpoint identifier. With HTTP monitoring the identifier
+	 * of the endpoint is mapped to a URL (e.g. 'foo' is mapped to '/foo').
+	 */
 	@NotNull
 	@Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
 	private String id;
 
+	/**
+	 * Enable security on the endpoint.
+	 */
 	private boolean sensitive;
 
+	/**
+	 * Enable the endpoint.
+	 */
 	private boolean enabled = true;
 
 	public AbstractEndpoint(String id) {

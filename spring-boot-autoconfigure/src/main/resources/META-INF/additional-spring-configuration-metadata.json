@@ -2,7 +2,7 @@
   {
     "name": "spring.aop.auto",
     "type": "java.lang.Boolean",
-    "description": "Automatically adds @EnableAspectJAutoProxy.",
+    "description": "Add @EnableAspectJAutoProxy.",
     "defaultValue": true
   },
   {
@@ -20,37 +20,37 @@
   {
     "name": "spring.dao.exceptiontranslation.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enables the PersistenceExceptionTranslationPostProcessor.",
+    "description": "Enable the PersistenceExceptionTranslationPostProcessor.",
     "defaultValue": true
   },
   {
     "name": "spring.datasource.jmx-enabled",
     "type": "java.lang.Boolean",
-    "description": "Enables JMX support (if provided by the underlying pool).",
+    "description": "Enable JMX support (if provided by the underlying pool).",
     "defaultValue": false
   },
   {
     "name": "spring.data.elasticsearch.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Automatically enable Elasticsearch repositories.",
+    "description": "Enable Elasticsearch repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.jpa.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Automatically enable JPA repositories.",
+    "description": "Enable JPA repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.mongodb.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Automatically enable Mongo repositories.",
+    "description": "Enable Mongo repositories.",
     "defaultValue": true
   },
   {
     "name": "spring.data.solr.repositories.enabled",
     "type": "java.lang.Boolean",
-    "description": "Automatically enable Solr repositories.",
+    "description": "Enable Solr repositories.",
     "defaultValue": true
   },
   {
@@ -62,13 +62,13 @@
   {
     "name": "spring.jmx.enabled",
     "type": "java.lang.Boolean",
-    "description": "Automatically expose management beans to the JMX domain",
+    "description": "Expose management beans to the JMX domain.",
     "defaultValue": true
   },
   {
     "name": "spring.jpa.open-in-view",
     "type": "java.lang.Boolean",
-    "description": "Automatically register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.",
+    "description": "Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the thread for the entire processing of the request.",
     "defaultValue": true
   },
   {
@@ -92,7 +92,7 @@
   {
     "name": "spring.social.auto-connection-views",
     "type": "java.lang.Boolean",
-    "description": "Automatically enable the connection status view for supported providers.",
+    "description": "Enable the connection status view for supported providers.",
     "defaultValue": false
   },
   {

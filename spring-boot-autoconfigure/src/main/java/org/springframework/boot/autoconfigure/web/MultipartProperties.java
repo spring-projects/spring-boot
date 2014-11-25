@@ -50,12 +50,27 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "multipart", ignoreUnknownFields = false)
 public class MultipartProperties {
 
+	/**
+	 * Intermediate location of uploaded files.
+	 */
 	private String location;
 
+	/**
+	 * Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte
+	 * or Kilobyte size.
+	 */
 	private String maxFileSize = "1Mb";
 
+	/**
+	 * Max request size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte
+	 * or Kilobyte size.
+	 */
 	private String maxRequestSize = "10Mb";
 
+	/**
+	 * Threshold after which files will be written to disk. Values can use the suffixed "MB"
+	 * or "KB" to indicate a Megabyte or Kilobyte size.
+	 */
 	private String fileSizeThreshold = "0";
 
 	public String getMaxFileSize() {

@@ -33,10 +33,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.hornetq")
 public class HornetQProperties {
 
+	/**
+	 * HornetQ deployment mode, auto-detected by default. Can be explicitly set to "native" or "embedded".
+	 */
 	private HornetQMode mode;
 
+	/**
+	 * HornetQ broker host.
+	 */
 	private String host = "localhost";
 
+	/**
+	 * HornetQ broker port.
+	 */
 	private int port = 5445;
 
 	private final Embedded embedded = new Embedded();
@@ -76,18 +85,39 @@ public class HornetQProperties {
 
 		private static final AtomicInteger serverIdCounter = new AtomicInteger();
 
+		/**
+		 * Server id. By default, an auto-incremented counter is used.
+		 */
 		private int serverId = serverIdCounter.getAndIncrement();
 
+		/**
+		 * Enable embedded mode if the HornetQ server APIs are available.
+		 */
 		private boolean enabled = true;
 
+		/**
+		 * Enable persistent store.
+		 */
 		private boolean persistent;
 
+		/**
+		 * Journal file directory. Not necessary if persistence is turned off.
+		 */
 		private String dataDirectory;
 
+		/**
+		 * Comma-separate list of queues to create on startup.
+		 */
 		private String[] queues = new String[0];
 
+		/**
+		 * Comma-separate list of topics to create on startup.
+		 */
 		private String[] topics = new String[0];
 
+		/**
+		 * Cluster password. Randomly generated on startup by default
+		 */
 		private String clusterPassword = UUID.randomUUID().toString();
 
 		private boolean defaultClusterPassword = true;

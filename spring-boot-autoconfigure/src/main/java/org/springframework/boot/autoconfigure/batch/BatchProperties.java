@@ -30,6 +30,9 @@ public class BatchProperties {
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 			+ "batch/core/schema-@@platform@@.sql";
 
+	/**
+	 * Path to the SQL file to use to initialize the database schema.
+	 */
 	private String schema = DEFAULT_SCHEMA_LOCATION;
 
 	private final Initializer initializer = new Initializer();
@@ -54,6 +57,9 @@ public class BatchProperties {
 
 	public static class Initializer {
 
+		/**
+		 * Create the required batch tables on startup if necessary.
+		 */
 		private boolean enabled = true;
 
 		public boolean isEnabled() {
@@ -68,6 +74,10 @@ public class BatchProperties {
 
 	public static class Job {
 
+		/**
+		 * Comma-separated list of job names to execute on startup. By default, all Jobs
+		 * found in the context are executed.
+		 */
 		private String names = "";
 
 		public String getNames() {

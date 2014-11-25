@@ -38,7 +38,7 @@ class Sanitizer {
 	}
 
 	/**
-	 * Set the keys that should be sanitize. Keys can be simple strings that the property
+	 * Keys that should be sanitized. Keys can be simple strings that the property
 	 * ends with or regex expressions.
 	 * @param keysToSanitize the keys to sanitize
 	 */

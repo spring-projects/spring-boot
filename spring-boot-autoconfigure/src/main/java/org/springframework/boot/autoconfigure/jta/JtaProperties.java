@@ -34,8 +34,14 @@ public class JtaProperties {
 
 	public static final String PREFIX = "spring.jta";
 
+	/**
+	 * Transaction logs directory.
+	 */
 	private String logDir;
 
+	/**
+	 * Transaction manager unique identifier.
+	 */
 	private String transactionManagerId;
 
 	public void setLogDir(String logDir) {

@@ -39,30 +39,66 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	public static final String PREFIX = "spring.datasource";
 
+	/**
+	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
+	 */
 	private String driverClassName;
 
+	/**
+	 * JDBC url of the database.
+	 */
 	private String url;
 
+	/**
+	 * Login user of the database.
+	 */
 	private String username;
 
+	/**
+	 * Login password of the database.
+	 */
 	private String password;
 
 	private ClassLoader classLoader;
 
+	/**
+	 * JNDI location of the datasource. Class, url, username & password are ignored when set.
+	 */
 	private String jndiName;
 
+	/**
+	 * Populate the database using 'data.sql'.
+	 */
 	private boolean initialize = true;
 
+	/**
+	 * Platform to use in the schema resource (schema-${platform}.sql).
+	 */
 	private String platform = "all";
 
+	/**
+	 * Schema (DDL) script resource reference.
+	 */
 	private String schema;
 
+	/**
+	 * Data (DML) script resource reference.
+	 */
 	private String data;
 
+	/**
+	 * Do not stop if an error occurs while initializing the database.
+	 */
 	private boolean continueOnError = false;
 
+	/**
+	 * Statement separator in SQL initialization scripts.
+	 */
 	private String separator = ";";
 
+	/**
+	 * SQL scripts encoding.
+	 */
 	private String sqlScriptEncoding;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
@@ -244,8 +280,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 */
 	public static class Xa {
 
+		/**
+		 * XA datasource fully qualified name.
+		 */
 		private String dataSourceClassName;
 
+		/**
+		 * Properties to pass to the XA data source.
+		 */
 		private Map<String, String> properties = new LinkedHashMap<String, String>();
 
 		public String getDataSourceClassName() {

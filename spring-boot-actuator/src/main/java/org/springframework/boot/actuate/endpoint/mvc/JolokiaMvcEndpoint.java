@@ -47,12 +47,21 @@ import org.springframework.web.util.UrlPathHelper;
 public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		ApplicationContextAware, ServletContextAware {
 
+	/**
+	 * Endpoint URL path.
+	 */
 	@NotNull
 	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
 	private String path;
 
+	/**
+	 * Enable security on the endpoint.
+	 */
 	private boolean sensitive;
 
+	/**
+	 * Enable the endpoint.
+	 */
 	private boolean enabled = true;
 
 	private final ServletWrappingController controller = new ServletWrappingController();

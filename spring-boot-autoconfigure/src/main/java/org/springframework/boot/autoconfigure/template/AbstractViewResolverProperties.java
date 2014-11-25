@@ -29,14 +29,29 @@ import org.springframework.web.servlet.ViewResolver;
  */
 public abstract class AbstractViewResolverProperties {
 
+	/**
+	 * Enable template caching.
+	 */
 	private boolean cache;
 
+	/**
+	 * Content-Type value.
+	 */
 	private String contentType = "text/html";
 
+	/**
+	 * Template encoding.
+	 */
 	private String charset = "UTF-8";
 
+	/**
+	 * White list of view names that can be resolved.
+	 */
 	private String[] viewNames;
 
+	/**
+	 * Check that the templates location exists.
+	 */
 	private boolean checkTemplateLocation = true;
 
 	public void setCheckTemplateLocation(boolean checkTemplateLocation) {

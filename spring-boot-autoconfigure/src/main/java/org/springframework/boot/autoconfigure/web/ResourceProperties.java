@@ -27,8 +27,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
 public class ResourceProperties {
 
+	/**
+	 * Cache period for the resources served by the resource handler, in seconds.
+	 */
 	private Integer cachePeriod;
 
+	/**
+	 * Enable default resource handling.
+	 */
 	private boolean addMappings = true;
 
 	public Integer getCachePeriod() {

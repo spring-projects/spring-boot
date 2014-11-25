@@ -31,23 +31,51 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "liquibase", ignoreUnknownFields = false)
 public class LiquibaseProperties {
 
+	/**
+	 * Change log configuration path.
+	 */
 	@NotNull
 	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
 
+	/**
+	 * Check the change log location exists.
+	 */
 	private boolean checkChangeLogLocation = true;
 
+	/**
+	 * Comma-separated list of runtime contexts to use.
+	 */
 	private String contexts;
 
+	/**
+	 * Default database schema.
+	 */
 	private String defaultSchema;
 
+	/**
+	 * Drop the database schema first.
+	 */
 	private boolean dropFirst;
 
+	/**
+	 * Enable liquibase support.
+	 */
 	private boolean enabled = true;
 
+	/**
+	 * Login user of the database to migrate.
+	 */
 	private String user;
 
+	/**
+	 * Login password of the database to migrate.
+	 */
 	private String password;
 
+	/**
+	 * JDBC url of the database to migrate. If not set, the primary configured
+	 * data source is used.
+	 */
 	private String url;
 
 	public String getChangeLog() {

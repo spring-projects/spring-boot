@@ -31,16 +31,34 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.mail")
 public class MailProperties {
 
+	/**
+	 * SMTP server host.
+	 */
 	private String host;
 
+	/**
+	 * SMTP server port.
+	 */
 	private Integer port;
 
+	/**
+	 * Login user of the SMTP server.
+	 */
 	private String username;
 
+	/**
+	 * Login password of the SMTP server.
+	 */
 	private String password;
 
+	/**
+	 * Default MimeMessage encoding.
+	 */
 	private String defaultEncoding = "UTF-8";
 
+	/**
+	 * Additional JavaMail session properties.
+	 */
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	public String getHost() {

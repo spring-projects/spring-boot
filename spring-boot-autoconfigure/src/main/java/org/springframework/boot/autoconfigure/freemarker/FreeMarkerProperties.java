@@ -38,8 +38,14 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 
 	public static final String DEFAULT_SUFFIX = ".ftl";
 
+	/**
+	 * Well-known FreeMarker keys which will be passed to FreeMarker's Configuration.
+	 */
 	private Map<String, String> settings = new HashMap<String, String>();
 
+	/**
+	 * Comma-separated list of template paths.
+	 */
 	private String[] templateLoaderPath = new String[] { DEFAULT_TEMPLATE_LOADER_PATH };
 
 	public FreeMarkerProperties() {

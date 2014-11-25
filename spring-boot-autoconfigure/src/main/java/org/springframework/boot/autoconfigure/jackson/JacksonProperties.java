@@ -37,18 +37,40 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 @ConfigurationProperties(prefix = "spring.jackson")
 public class JacksonProperties {
 
+	/**
+	 * Date format string (yyyy-MM-dd HH:mm:ss), or a fully-qualified date format class name.
+	 */
 	private String dateFormat;
 
+	/**
+	 * One of the constants on Jackson's PropertyNamingStrategy (CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES).
+	 * Can also be a fully-qualified class name of a PropertyNamingStrategy subclass.
+	 */
 	private String propertyNamingStrategy;
 
+	/**
+	 * Jackson on/off features that affect the way Java objects are serialized.
+	 */
 	private Map<SerializationFeature, Boolean> serialization = new HashMap<SerializationFeature, Boolean>();
 
+	/**
+	 * Jackson on/off features that affect the way Java objects are deserialized.
+	 */
 	private Map<DeserializationFeature, Boolean> deserialization = new HashMap<DeserializationFeature, Boolean>();
 
+	/**
+	 * Jackson general purpose on/off features.
+	 */
 	private Map<MapperFeature, Boolean> mapper = new HashMap<MapperFeature, Boolean>();
 
+	/**
+	 * Jackson on/off features for parsers.
+	 */
 	private Map<JsonParser.Feature, Boolean> parser = new HashMap<JsonParser.Feature, Boolean>();
 
+	/**
+	 * Jackson on/off features for generators.
+	 */
 	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<JsonGenerator.Feature, Boolean>();
 
 	public String getDateFormat() {

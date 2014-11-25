@@ -3,13 +3,13 @@
     "name": "endpoints.configprops.keys-to-sanitize",
     "type": "java.lang.String",
     "sourceType": "org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint",
-    "description": "The keys that should be sanitize. Keys can be simple strings that the property ends with or regex expressions."
+    "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions."
   },
   {
     "name": "endpoints.env.keys-to-sanitize",
     "type": "java.lang.String",
     "sourceType": "org.springframework.boot.actuate.endpoint.EnvironmentEndpoint",
-    "description": "The keys that should be sanitize. Keys can be simple strings that the property ends with or regex expressions."
+    "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions."
   },
   {
     "name": "info",
@@ -60,7 +60,7 @@
   {
     "name": "spring.pidfile",
     "type": "java.lang.String",
-    "description": "The location of the PID file to write (if ApplicationPidFileWriter is used).",
+    "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
     "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
   }
 ]}

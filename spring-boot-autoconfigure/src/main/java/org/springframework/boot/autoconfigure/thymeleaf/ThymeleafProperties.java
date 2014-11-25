@@ -31,22 +31,49 @@ public class ThymeleafProperties {
 
 	public static final String DEFAULT_SUFFIX = ".html";
 
+	/**
+	 * Check that the templates location exists.
+	 */
 	private boolean checkTemplateLocation = true;
 
+	/**
+	 * Prefix that gets prepended to view names when building a URL.
+	 */
 	private String prefix = DEFAULT_PREFIX;
 
+	/**
+	 * Suffix that gets appended to view names when building a URL.
+	 */
 	private String suffix = DEFAULT_SUFFIX;
 
+	/**
+	 * Template mode to be applied to templates. See also StandardTemplateModeHandlers.
+	 */
 	private String mode = "HTML5";
 
+	/**
+	 * Template encoding.
+	 */
 	private String encoding = "UTF-8";
 
+	/**
+	 * Content-Type value.
+	 */
 	private String contentType = "text/html";
 
+	/**
+	 * Enable template caching.
+	 */
 	private boolean cache = true;
 
+	/**
+	 * Comma-separated list of view names that can be resolved.
+	 */
 	private String[] viewNames;
 
+	/**
+	 * Comma-separated list of view names that should be excluded from resolution.
+	 */
 	private String[] excludedViewNames;
 
 	public boolean isCheckTemplateLocation() {

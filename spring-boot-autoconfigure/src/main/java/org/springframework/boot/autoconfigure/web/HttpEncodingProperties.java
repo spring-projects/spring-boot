@@ -32,13 +32,13 @@ public class HttpEncodingProperties {
 	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	/**
-	 * The Charset to use.
+	 * Charset of HTTP requests and responses. Added to the "Content-Type" header if not
+	 * set explicitly.
 	 */
 	private Charset charset = DEFAULT_CHARSET;
 
 	/**
-	 * To force the encoding to the configured charset typically on HTTP requests and
-	 * responses.
+	 * Force the encoding to the configured charset on HTTP requests and responses.
 	 */
 	private boolean force = true;
 

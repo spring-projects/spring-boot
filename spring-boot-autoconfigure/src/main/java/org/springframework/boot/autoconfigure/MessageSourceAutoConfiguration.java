@@ -59,10 +59,22 @@ public class MessageSourceAutoConfiguration {
 
 	private static final Resource[] NO_RESOURCES = {};
 
+	/**
+	 * Comma-separated list of basenames, each following the ResourceBundle convention. Essentially
+	 * a fully-qualified classpath location. If it doesn't contain a package qualifier (such as
+	 * "org.mypackage"), it will be resolved from the classpath root.
+	 */
 	private String basename = "messages";
 
+	/**
+	 * Message bundles encoding.
+	 */
 	private String encoding = "utf-8";
 
+	/**
+	 * Loaded resource bundle files cache expiration, in seconds. When set to
+	 * -1, bundles are cached forever.
+	 */
 	private int cacheSeconds = -1;
 
 	@Bean

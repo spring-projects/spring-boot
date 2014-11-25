@@ -41,6 +41,11 @@ public class ShellProperties {
 
 	private static Log logger = LogFactory.getLog(ShellProperties.class);
 
+	/**
+	 * Authentication type (can be "simple", "spring", "key" or "jaas"). Auto-detected
+	 * according to the environment (i.e. if Spring Security is available, "spring" is used by
+	 * default).
+	 */
 	private String auth = "simple";
 
 	private boolean defaultAuth = true;
@@ -48,15 +53,31 @@ public class ShellProperties {
 	@Autowired(required = false)
 	private CrshShellProperties[] additionalProperties = new CrshShellProperties[] { new SimpleAuthenticationProperties() };
 
+	/**
+	 * Scan for changes and update the command if necessary (in seconds).
+	 */
 	private int commandRefreshInterval = -1;
 
+	/**
+	 * Patterns to use to look for commands.
+	 */
 	private String[] commandPathPatterns = new String[] { "classpath*:/commands/**",
 			"classpath*:/crash/commands/**" };
 
+	/**
+	 * Patterns to use to look for configurations.
+	 */
 	private String[] configPathPatterns = new String[] { "classpath*:/crash/*" };
 
+	/**
+	 * Comma-separated list of commands to disable.
+	 */
 	private String[] disabledCommands = new String[] { "jpa*", "jdbc*", "jndi*" };
 
+	/**
+	 * Comma-separated list of plugins to disable. Certain plugins are disabled
+	 * by default based on the environment.
+	 */
 	private String[] disabledPlugins = new String[0];
 
 	private final Ssh ssh = new Ssh();
@@ -207,10 +228,19 @@ public class ShellProperties {
 	 */
 	public static class Ssh extends CrshShellProperties {
 
+		/**
+		 * Enable CRaSH SSH support.
+		 */
 		private boolean enabled = true;
 
+		/**
+		 * Path to the SSH server key.
+		 */
 		private String keyPath;
 
+		/**
+		 * SSH port.
+		 */
 		private String port = "2000";
 
 		@Override
@@ -256,9 +286,15 @@ public class ShellProperties {
 	 */
 	public static class Telnet extends CrshShellProperties {
 
+		/**
+		 * Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is available.
+		 */
 		private boolean enabled = ClassUtils.isPresent("org.crsh.telnet.TelnetPlugin",
 				ClassUtils.getDefaultClassLoader());
 
+		/**
+		 * Telnet port.
+		 */
 		private String port = "5000";
 
 		@Override
@@ -294,6 +330,9 @@ public class ShellProperties {
 	public static class JaasAuthenticationProperties extends
 			CrshShellAuthenticationProperties {
 
+		/**
+		 * JAAS domain.
+		 */
 		private String domain = "my-domain";
 
 		@Override
@@ -320,6 +359,9 @@ public class ShellProperties {
 	public static class KeyAuthenticationProperties extends
 			CrshShellAuthenticationProperties {
 
+		/**
+		 * Path to the authentication key. This should point to a valid ".pem" file.
+		 */
 		private String path;
 
 		@Override
@@ -374,8 +416,14 @@ public class ShellProperties {
 
 		public static class User {
 
+			/**
+			 * Login user.
+			 */
 			private String name = "user";
 
+			/**
+			 * Login password.
+			 */
 			private String password = UUID.randomUUID().toString();
 
 			private boolean defaultPassword = true;
@@ -417,6 +465,9 @@ public class ShellProperties {
 	public static class SpringAuthenticationProperties extends
 			CrshShellAuthenticationProperties {
 
+		/**
+		 * Comma-separated list of required roles to login to the CRaSH console.
+		 */
 		private String[] roles = new String[] { "ADMIN" };
 
 		@Override

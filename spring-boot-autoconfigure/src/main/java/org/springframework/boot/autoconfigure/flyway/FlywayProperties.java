@@ -35,18 +35,40 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = true)
 public class FlywayProperties {
 
+	/**
+	 * Locations of migrations scripts.
+	 */
 	private List<String> locations = Arrays.asList("db/migration");
 
+	/**
+	 * Check that migration scripts location exists.
+	 */
 	private boolean checkLocation = false;
 
+	/**
+	 * Enable flyway.
+	 */
 	private boolean enabled = true;
 
+	/**
+	 * Login user of the database to migrate.
+	 */
 	private String user;
 
+	/**
+	 *Login password of the database to migrate.
+	 */
 	private String password;
 
+	/**
+	 * JDBC url of the database to migrate. If not set, the primary configured
+	 * data source is used.
+	 */
 	private String url;
 
+	/**
+	 * SQL statements to execute to initialize a connection immediately after obtaining it.
+	 */
 	private List<String> initSqls = Collections.emptyList();
 
 	public void setLocations(List<String> locations) {

@@ -26,8 +26,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 abstract class SocialProperties {
 
+	/**
+	 * Application id.
+	 */
 	private String appId;
 
+	/**
+	 * Application secret.
+	 */
 	private String appSecret;
 
 	public String getAppId() {

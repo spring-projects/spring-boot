@@ -37,6 +37,9 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	private final HealthIndicator healthIndicator;
 
+	/**
+	 * Time to live for cached result, in milliseconds.
+	 */
 	private long timeToLive = 1000;
 
 	/**

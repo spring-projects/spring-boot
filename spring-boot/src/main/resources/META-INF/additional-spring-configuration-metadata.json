@@ -13,13 +13,13 @@
   {
     "name": "logging.file",
     "type": "java.lang.String",
-    "description": "The name of the log file.",
+    "description": "Log file name.",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
     "name": "logging.level",
     "type": "java.util.Map<java.lang.String,java.lang.Object>",
-    "description": "The log levels. Use 'root' for the root logger.",
+    "description": "Log levels severity mapping. Use 'root' for the root logger.",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
@@ -32,38 +32,38 @@
     "name": "spring.mandatory-file-encoding",
     "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
     "type": "java.lang.String",
-    "description": "The character encoding the application must use."
+    "description": "Expected character encoding the application must use."
   },
   {
     "name": "spring.application.name",
     "type": "java.lang.String",
     "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
-    "description": "The name of the application."
+    "description": "Application name."
   },
   {
     "name": "spring.application.index",
     "type": "java.lang.Integer",
     "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
-    "description": "Index of the application."
+    "description": "Application index."
   },
   {
     "name": "spring.config.name",
     "type": "java.lang.String",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
-    "description": "Config file name",
+    "description": "Config file name.",
     "defaultValue": "application"
   },
   {
     "name": "spring.config.location",
     "type": "java.lang.String",
     "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
-    "description": "Config file locations"
+    "description": "Config file locations."
   },
   {
     "name": "spring.main.show-banner",
     "type": "java.lang.Boolean",
     "sourceType": "org.springframework.boot.SpringApplication",
-    "description": "Display the banner when the application runs",
+    "description": "Display the banner when the application runs.",
     "defaultValue": true
   },
   {
@@ -76,12 +76,12 @@
     "name": "spring.main.web-environment",
     "type": "java.lang.Boolean",
     "sourceType": "org.springframework.boot.SpringApplication",
-    "description": "Run the application in a web environment (auto-detected by default)"
+    "description": "Run the application in a web environment (auto-detected by default)."
   },
   {
     "name": "spring.profiles.active",
     "type": "java.lang.String",
-    "description": "Set the active profiles as a comma separated list. Can be overridden by a command line switch."
+    "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
   },
   {
     "name": "spring.profiles.include",

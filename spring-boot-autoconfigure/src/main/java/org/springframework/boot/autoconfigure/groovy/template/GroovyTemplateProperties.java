@@ -35,10 +35,19 @@ public class GroovyTemplateProperties extends AbstractViewResolverProperties {
 
 	public static final String DEFAULT_SUFFIX = ".tpl";
 
+	/**
+	 * Prefix that gets prepended to view names when building a URL.
+	 */
 	private String prefix = DEFAULT_PREFIX;
 
+	/**
+	 *Suffix that gets appended to view names when building a URL.
+	 */
 	private String suffix = DEFAULT_SUFFIX;
 
+	/**
+	 * Configuration to pass to TemplateConfiguration.
+	 */
 	private Map<String, Object> configuration = new HashMap<String, Object>();
 
 	public String getPrefix() {

@@ -30,8 +30,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("spring.jersey")
 public class JerseyProperties {
 
+	/**
+	 * Jersey integration type. Can be either "servlet" or "filter".
+	 */
 	private Type type = Type.SERVLET;
 
+	/**
+	 * Init parameters to pass to Jersey.
+	 */
 	private Map<String, String> init = new HashMap<String, String>();
 
 	private Filter filter = new Filter();
@@ -66,6 +72,9 @@ public class JerseyProperties {
 
 	public static class Filter {
 
+		/**
+		 * Jersey filter chain order.
+		 */
 		private int order;
 
 		public int getOrder() {

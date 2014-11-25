@@ -27,16 +27,34 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("spring.mobile.devicedelegatingviewresolver")
 public class DeviceDelegatingViewResolverProperties {
 
+	/**
+	 * Prefix that gets prepended to view names for normal devices.
+	 */
 	private String normalPrefix = "";
 
+	/**
+	 * Suffix that gets appended to view names for normal devices.
+	 */
 	private String normalSuffix = "";
 
+	/**
+	 * Prefix that gets prepended to view names for mobile devices.
+	 */
 	private String mobilePrefix = "mobile/";
 
+	/**
+	 * Suffix that gets appended to view names for mobile devices.
+	 */
 	private String mobileSuffix = "";
 
+	/**
+	 * Prefix that gets prepended to view names for tablet devices.
+	 */
 	private String tabletPrefix = "tablet/";
 
+	/**
+	 * Suffix that gets appended to view names for tablet devices.
+	 */
 	private String tabletSuffix = "";
 
 	public String getNormalPrefix() {
