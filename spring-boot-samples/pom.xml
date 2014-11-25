@@ -44,6 +44,7 @@
 		<module>spring-boot-sample-jetty-ssl</module>
 		<module>spring-boot-sample-jetty8</module>
 		<module>spring-boot-sample-jetty8-ssl</module>
+		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
 		<module>spring-boot-sample-jta-bitronix</module>
 		<module>spring-boot-sample-jta-jndi</module>
