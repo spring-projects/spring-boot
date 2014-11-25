@@ -410,6 +410,22 @@ If you don't want to expose endpoints over HTTP you can set the management port 
 
 
 
+[[production-ready-health-access-restrictions]]
+=== Health endpoint anonymous access restrictions
+The information exposed by the health endpoint varies depending on whether or not it's
+accessed anonymously. When accessed anonymously, any details about the server's health
+are hidden and the endpoint will simply indicate whether or not the server is up or
+down. Furthermore, when accessed anonymously, the response is cached for a configurable
+period to prevent the endpoint being used in a denial of service attack.
+The `endpoints.health.time-to-live` property is used to configure the caching period in
+milliseconds. It defaults to 1000, i.e. one second.
+
+The above-described restrictions can be disabled, thereby allowing anonymous users full
+access to the health endpoint. To do so, set `endpoints.health.restrict-anonymous-access`
+to `false`.
+
+
+
 [[production-ready-jmx]]
 == Monitoring and management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage
