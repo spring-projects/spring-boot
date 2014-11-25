@@ -23,7 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,7 +59,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -81,12 +81,12 @@ public class EndpointMvcIntegrationTests {
 	private TestInterceptor interceptor;
 
 	@Test
-	public void envEndpointNotHidden() {
+	public void envEndpointNotHidden() throws InterruptedException {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
 				+ "/env/user.dir", String.class);
 		assertNotNull(body);
 		assertTrue("Wrong body: \n" + body, body.contains("spring-boot-actuator"));
-		assertEquals(1, this.interceptor.getCount());
+		assertTrue(this.interceptor.invoked());
 	}
 
 	@Target(ElementType.TYPE)
@@ -141,16 +141,16 @@ public class EndpointMvcIntegrationTests {
 
 	protected static class TestInterceptor extends HandlerInterceptorAdapter {
 
-		private final AtomicInteger count = new AtomicInteger(0);
+		private final CountDownLatch latch = new CountDownLatch(1);
 
 		@Override
 		public void postHandle(HttpServletRequest request, HttpServletResponse response,
 				Object handler, ModelAndView modelAndView) throws Exception {
-			this.count.incrementAndGet();
+			this.latch.countDown();
 		}
 
-		public int getCount() {
-			return this.count.get();
+		public boolean invoked() throws InterruptedException {
+			return this.latch.await(30, TimeUnit.SECONDS);
 		}
 
 	}
