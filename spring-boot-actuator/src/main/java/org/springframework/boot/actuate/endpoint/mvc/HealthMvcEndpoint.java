@@ -122,7 +122,7 @@ public class HealthMvcEndpoint implements MvcEndpoint {
 		// Not too worried about concurrent access here, the worst that can happen is the
 		// odd extra call to delegate.invoke()
 		this.cached = health;
-		if (this.delegate.isRestrictAnonymousAccess() && !secure(principal)) {
+		if (!secure(principal) && this.delegate.isSensitive()) {
 			// If not secure we only expose the status
 			health = Health.status(health.getStatus()).build();
 		}
@@ -135,8 +135,7 @@ public class HealthMvcEndpoint implements MvcEndpoint {
 
 	private boolean useCachedValue(Principal principal) {
 		long accessTime = System.currentTimeMillis();
-		if (cacheIsStale(accessTime) || secure(principal)
-				|| !this.delegate.isRestrictAnonymousAccess()) {
+		if (cacheIsStale(accessTime) || secure(principal) || !this.delegate.isSensitive()) {
 			this.lastAccess = accessTime;
 			return false;
 		}

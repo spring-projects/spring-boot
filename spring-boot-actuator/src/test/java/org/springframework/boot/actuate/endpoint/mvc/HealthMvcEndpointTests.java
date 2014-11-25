@@ -96,7 +96,7 @@ public class HealthMvcEndpointTests {
 	public void secure() {
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
-		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(true);
+		given(this.endpoint.isSensitive()).willReturn(false);
 		Object result = this.mvc.invoke(this.user);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -106,7 +106,7 @@ public class HealthMvcEndpointTests {
 	@Test
 	public void secureNotCached() {
 		given(this.endpoint.getTimeToLive()).willReturn(10000L);
-		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(true);
+		given(this.endpoint.isSensitive()).willReturn(false);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.user);
@@ -122,7 +122,7 @@ public class HealthMvcEndpointTests {
 	@Test
 	public void unsecureCached() {
 		given(this.endpoint.getTimeToLive()).willReturn(10000L);
-		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(true);
+		given(this.endpoint.isSensitive()).willReturn(true);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.user);
@@ -145,7 +145,7 @@ public class HealthMvcEndpointTests {
 	public void unsecureAnonymousAccessUnrestricted() {
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
-		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(false);
+		given(this.endpoint.isSensitive()).willReturn(false);
 		Object result = this.mvc.invoke(null);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -155,7 +155,7 @@ public class HealthMvcEndpointTests {
 	@Test
 	public void unsecureIsNotCachedWhenAnonymousAccessIsUnrestricted() {
 		given(this.endpoint.getTimeToLive()).willReturn(10000L);
-		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(false);
+		given(this.endpoint.isSensitive()).willReturn(false);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
@@ -171,7 +171,7 @@ public class HealthMvcEndpointTests {
 	@Test
 	public void newValueIsReturnedOnceTtlExpires() throws InterruptedException {
 		given(this.endpoint.getTimeToLive()).willReturn(50L);
-		given(this.endpoint.isRestrictAnonymousAccess()).willReturn(true);
+		given(this.endpoint.isSensitive()).willReturn(false);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);

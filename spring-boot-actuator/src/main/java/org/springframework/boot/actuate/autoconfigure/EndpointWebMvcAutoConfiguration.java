@@ -69,6 +69,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -164,6 +165,10 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnProperty(prefix = "endpoints.health", name = "enabled", matchIfMissing = true)
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
+		boolean secure = this.managementServerProperties.getSecurity().isEnabled()
+				&& ClassUtils.isPresent(
+						"org.springframework.security.core.Authentication", null);
+		delegate.setSensitive(secure);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
 			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
 					.getMapping());

@@ -39,8 +39,6 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	private long timeToLive = 1000;
 
-	private boolean restrictAnonymousAccess = true;
-
 	/**
 	 * Create a new {@link HealthIndicator} instance.
 	 */
@@ -70,14 +68,6 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	public void setTimeToLive(long ttl) {
 		this.timeToLive = ttl;
-	}
-
-	public boolean isRestrictAnonymousAccess() {
-		return this.restrictAnonymousAccess;
-	}
-
-	public void setRestrictAnonymousAccess(boolean restrictAnonymousAccess) {
-		this.restrictAnonymousAccess = restrictAnonymousAccess;
 	}
 
 	/**
