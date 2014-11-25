@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -140,16 +141,16 @@ public class EndpointMvcIntegrationTests {
 
 	protected static class TestInterceptor extends HandlerInterceptorAdapter {
 
-		private int count = 0;
+		private final AtomicInteger count = new AtomicInteger(0);
 
 		@Override
 		public void postHandle(HttpServletRequest request, HttpServletResponse response,
 				Object handler, ModelAndView modelAndView) throws Exception {
-			this.count++;
+			this.count.incrementAndGet();
 		}
 
 		public int getCount() {
-			return this.count;
+			return this.count.get();
 		}
 
 	}
