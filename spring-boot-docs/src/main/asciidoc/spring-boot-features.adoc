@@ -2358,6 +2358,10 @@ Boot specific context loader:
 	}
 ----
 
+NOTE: The annotations <<boot-features-testing-spring-boot-applications,described above>>
+can be used with Spock, i.e. you can annotate your `Specification` with
+`@IntegrationTest` and `@WebAppConfiguration` to suit the needs of your tests.
+
 
 
 [[boot-features-test-utilities]]
