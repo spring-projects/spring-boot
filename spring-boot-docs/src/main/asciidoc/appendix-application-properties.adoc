@@ -119,22 +119,22 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.cache=true
 	spring.freemarker.check-template-location=true
 	spring.freemarker.charset=UTF-8
-	spring.freemarker.contentType=text/html
-	spring.freemarker.exposeRequestAttributes=false
-	spring.freemarker.exposeSessionAttributes=false
-	spring.freemarker.exposeSpringMacroHelpers=false
+	spring.freemarker.content-type=text/html
+	spring.freemarker.expose-request-attributes=false
+	spring.freemarker.expose-session-attributes=false
+	spring.freemarker.expose-spring-macro-helpers=false
 	spring.freemarker.prefix=
-	spring.freemarker.requestContextAttribute=
+	spring.freemarker.request-context-attribute=
 	spring.freemarker.settings.*=
 	spring.freemarker.suffix=.ftl
 	spring.freemarker.template-loader-path=classpath:/templates/ # comma-separated list
-	spring.freemarker.viewNames= # whitelist of view names that can be resolved
+	spring.freemarker.view-names= # whitelist of view names that can be resolved
 
 	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[GroovyTemplateAutoConfiguration])
 	spring.groovy.template.cache=true
 	spring.groovy.template.charset=UTF-8
 	spring.groovy.template.configuration.*= # See Groovy's TemplateConfiguration
-	spring.groovy.template.contentType=text/html
+	spring.groovy.template.content-type=text/html
 	spring.groovy.template.prefix=classpath:/templates/
 	spring.groovy.template.suffix=.tpl
 	spring.groovy.template.view-names= # whitelist of view names that can be resolved
@@ -146,9 +146,9 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.charset=UTF-8
 	spring.velocity.content-type=text/html
 	spring.velocity.date-tool-attribute=
-	spring.velocity.expose-Request-attributes=false
-	spring.velocity.expose-Session-attributes=false
-	spring.velocity.expose-Spring-macro-helpers=false
+	spring.velocity.expose-request-attributes=false
+	spring.velocity.expose-session-attributes=false
+	spring.velocity.expose-spring-macro-helpers=false
 	spring.velocity.number-tool-attribute=
 	spring.velocity.prefix=
 	spring.velocity.properties.*=
@@ -164,7 +164,7 @@ content into your application; rather pick only the properties that you need.
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
 	spring.messages.basename=messages
-	spring.messages.cacheSeconds=-1
+	spring.messages.cache-seconds=-1
 	spring.messages.encoding=UTF-8
 
 	[[common-application-properties-security]]
