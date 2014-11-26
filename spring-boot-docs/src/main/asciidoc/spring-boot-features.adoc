@@ -2478,6 +2478,26 @@ documentation].
 
 
 
+[[boot-features-mongo-embedded]]
+==== Embedded Mongo
+Spring Boot offers auto-configuration for
+[https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo] Embedded Mongo. To use
+it in your Spring Boot application add a dependency on
+`de.flapdoodle.embed:de.flapdoodle.embed.mongo`.
+
+The port that Mongo will listen on can be configured using the `spring.data.mongodb.port`
+property. To use a randomly allocated free port use a value of zero. The `MongoClient`
+created by `MongoAutoConfiguration` will be automatically configured to use the randomly
+allocated port.
+
+If you have SLF4J on the classpath, output produced by Mongo will be automatically routed
+to a logger named `org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongo`.
+
+You can declare your own `IMongodConfig` and `IRuntimeConfig` beans to take control of the
+Mongo instance's configuration and logging routing.
+
+
+
 [[boot-features-gemfire]]
 === Gemfire
 https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides

@@ -63,7 +63,7 @@
 		<derby.version>10.11.1.1</derby.version>
 		<dropwizard-metrics.version>3.1.2</dropwizard-metrics.version>
 		<ehcache.version>2.10.0</ehcache.version>
-		<embedmongo.version>1.46.4</embedmongo.version>
+		<embedded-mongo.version>1.48.0</embedded-mongo.version>
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.22</freemarker.version>
 		<elasticsearch.version>1.5.2</elasticsearch.version>
@@ -475,11 +475,6 @@
 				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>de.flapdoodle.embed</groupId>
-				<artifactId>de.flapdoodle.embed.mongo</artifactId>
-				<version>${embedmongo.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-jdbc</artifactId>
 				<version>${atomikos.version}</version>
@@ -663,6 +658,11 @@
 				<groupId>commons-pool</groupId>
 				<artifactId>commons-pool</artifactId>
 				<version>${commons-pool.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.flapdoodle.embed</groupId>
+				<artifactId>de.flapdoodle.embed.mongo</artifactId>
+				<version>${embedded-mongo.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.dropwizard.metrics</groupId>
