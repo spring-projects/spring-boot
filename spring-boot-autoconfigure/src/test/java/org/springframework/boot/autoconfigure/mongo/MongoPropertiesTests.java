@@ -16,19 +16,29 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.net.UnknownHostException;
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
+
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link MongoProperties}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class MongoPropertiesTests {
 
@@ -41,6 +51,66 @@ public class MongoPropertiesTests {
 		context.refresh();
 		MongoProperties properties = context.getBean(MongoProperties.class);
 		assertThat(properties.getPassword(), equalTo("word".toCharArray()));
+	}
+
+	@Test
+	public void portCanBeCustomized() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setPort(12345);
+		MongoClient client = properties.createMongoClient(null);
+		List<ServerAddress> allAddresses = client.getAllAddress();
+		assertThat(allAddresses, hasSize(1));
+		assertServerAddress(allAddresses.get(0), "localhost", 12345);
+	}
+
+	@Test
+	public void hostCanBeCustomized() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setHost("mongo.example.com");
+		MongoClient client = properties.createMongoClient(null);
+		List<ServerAddress> allAddresses = client.getAllAddress();
+		assertThat(allAddresses, hasSize(1));
+		assertServerAddress(allAddresses.get(0), "mongo.example.com", 27017);
+	}
+
+	@Test
+	public void credentialsCanBeCustomized() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties.setUsername("user");
+		properties.setPassword("secret".toCharArray());
+
+		MongoClient client = properties.createMongoClient(null);
+
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret");
+	}
+
+	@Test
+	public void uriCanBeCustomized() throws UnknownHostException {
+		MongoProperties properties = new MongoProperties();
+		properties
+				.setUri("mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test");
+		MongoClient client = properties.createMongoClient(null);
+
+		List<ServerAddress> allAddresses = client.getAllAddress();
+		assertEquals(2, allAddresses.size());
+		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
+		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
+
+		List<MongoCredential> credentialsList = client.getCredentialsList();
+		assertEquals(1, credentialsList.size());
+		assertMongoCredential(credentialsList.get(0), "user", "secret");
+	}
+
+	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
+			int expectedPort) {
+		assertThat(serverAddress.getHost(), equalTo(expectedHost));
+		assertThat(serverAddress.getPort(), equalTo(expectedPort));
+	}
+
+	private void assertMongoCredential(MongoCredential credentials,
+			String expectedUsername, String expectedPassword) {
+		assertThat(credentials.getUserName(), equalTo(expectedUsername));
+		assertThat(credentials.getPassword(), equalTo(expectedPassword.toCharArray()));
 	}
 
 	@Configuration
