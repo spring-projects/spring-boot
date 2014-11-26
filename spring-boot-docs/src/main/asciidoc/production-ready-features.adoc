@@ -289,7 +289,7 @@ If your app is packaged as a WAR file, you will have to specify the location of 
 
 [source,properties,indent=0]
 ----
-	git.properties: /WEB-INF/classes/git.properties
+	git.properties=/WEB-INF/classes/git.properties
 ----
 
 For Maven users the `spring-boot-starter-parent` POM includes a pre-configured plugin to
