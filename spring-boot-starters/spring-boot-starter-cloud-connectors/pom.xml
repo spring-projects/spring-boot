@@ -7,7 +7,7 @@
 		<version>1.2.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-cloud-connectors</artifactId>
-	<name>spring-boot-starter-cloud-connectors</name>
+	<name>Spring Boot Spring Cloud Connectors Starter</name>
 	<description>Spring Boot Starter for Spring Cloud Connectors</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>

@@ -8,7 +8,7 @@
 		<version>1.2.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-jersey</artifactId>
-	<name>spring-boot-starter-jersey</name>
+	<name>Spring Boot Jersey Starter</name>
 	<description>Spring Boot Jersey Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
