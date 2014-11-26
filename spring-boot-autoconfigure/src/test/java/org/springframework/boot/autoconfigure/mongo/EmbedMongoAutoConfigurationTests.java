@@ -39,10 +39,11 @@ public class EmbedMongoAutoConfigurationTests {
 
 	@Test
 	public void shouldReturnVersionOfEmbeddedMongoServer() {
-		this.context = new AnnotationConfigApplicationContext(
-				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class, EmbedMongoAutoConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext();
 		int mongoPort = findAvailableTcpPort();
 		addEnvironment(context, "spring.data.mongodb.host=localhost", "spring.data.mongodb.port=" + mongoPort);
+		context.register(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class, EmbedMongoAutoConfiguration.class);
+		context.refresh();
 		MongoTemplate mongo = context.getBean(MongoTemplate.class);
 		CommandResult buildInfo = mongo.executeCommand("{ buildInfo: 1 }");
 		assertEquals("2.6.1", buildInfo.getString("version"));
