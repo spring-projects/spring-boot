@@ -606,7 +606,7 @@ Example in Gradle:
 === Configure Undertow
 Generally you can follow the advice from
 _<<howto-discover-build-in-options-for-external-properties>>_ about
-`@ConfigurationProperties` (`ServerProperties` and `ServerProperties.Undertow are the
+`@ConfigurationProperties` (`ServerProperties` and `ServerProperties.Undertow` are the
 main ones here), but also look at
 `EmbeddedServletContainerCustomizer`. Once you have access to the
 `UndertowEmbeddedServletContainerFactory` you can use an `UndertowBuilderCustomizer` to
