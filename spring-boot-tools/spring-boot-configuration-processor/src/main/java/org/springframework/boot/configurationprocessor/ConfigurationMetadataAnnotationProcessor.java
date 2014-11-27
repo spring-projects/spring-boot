@@ -186,7 +186,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
 				boolean deprecated = hasDeprecateAnnotation(getter)
-						|| hasDeprecateAnnotation(setter);
+						|| hasDeprecateAnnotation(setter)
+						|| hasDeprecateAnnotation(element);
 				this.metadata.add(ItemMetadata.newProperty(prefix, name, dataType,
 						sourceType, null, description, defaultValue, deprecated));
 			}

@@ -30,6 +30,7 @@ import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
 import org.springframework.boot.configurationsample.method.SimpleMethodConfig;
+import org.springframework.boot.configurationsample.simple.DeprecatedProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
 import org.springframework.boot.configurationsample.simple.SimpleCollectionProperties;
@@ -142,6 +143,22 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(HierarchicalProperties.class));
 		assertThat(metadata, containsProperty("hierarchical.third", String.class)
 				.fromSource(HierarchicalProperties.class));
+	}
+
+	@Test
+	public void deprecatedProperties() throws Exception {
+		ConfigurationMetadata metadata = compile(DeprecatedProperties.class);
+		assertThat(metadata, containsGroup("deprecated").fromSource(DeprecatedProperties.class));
+		assertThat(
+				metadata,
+				containsProperty("deprecated.name", String.class)
+						.fromSource(DeprecatedProperties.class)
+						.withDeprecated());
+		assertThat(
+				metadata,
+				containsProperty("deprecated.description", String.class)
+						.fromSource(DeprecatedProperties.class)
+						.withDeprecated());
 	}
 
 	@Test
