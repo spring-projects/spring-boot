@@ -32,7 +32,7 @@ public class DeprecatedProperties {
 	private String description;
 
 	public String getName() {
-	Flf	return name;
+		return name;
 	}
 
 	public void setName(String name) {
