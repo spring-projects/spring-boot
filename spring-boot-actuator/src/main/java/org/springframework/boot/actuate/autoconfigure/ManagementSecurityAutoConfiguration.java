@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.mvc.AnonymouslyAccessibleMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -268,7 +269,8 @@ public class ManagementSecurityAutoConfiguration {
 		Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
 		List<String> paths = new ArrayList<String>(endpoints.size());
 		for (MvcEndpoint endpoint : endpoints) {
-			if (endpoint.isSensitive() == secure) {
+			if (endpoint.isSensitive() == secure
+					|| (!secure && endpoint instanceof AnonymouslyAccessibleMvcEndpoint)) {
 				String path = endpointHandlerMapping.getPath(endpoint.getPath());
 				paths.add(path);
 				// Add Spring MVC-generated additional paths
