@@ -90,6 +90,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.rabbitmq.dynamic",
+    "type": "java.lang.Boolean",
+    "description": "Create an AmqpAdmin bean.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.social.auto-connection-views",
     "type": "java.lang.Boolean",
     "description": "Enable the connection status view for supported providers.",

@@ -61,8 +61,6 @@ public class RabbitProperties {
 	 */
 	private String addresses;
 
-	private boolean dynamic = true;
-
 	public String getHost() {
 		if (this.addresses == null) {
 			return this.host;
@@ -147,14 +145,6 @@ public class RabbitProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public boolean isDynamic() {
-		return this.dynamic;
-	}
-
-	public void setDynamic(boolean dynamic) {
-		this.dynamic = dynamic;
 	}
 
 	public String getVirtualHost() {
