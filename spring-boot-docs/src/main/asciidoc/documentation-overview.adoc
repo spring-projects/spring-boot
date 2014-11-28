@@ -40,6 +40,8 @@ Having trouble with Spring Boot, We'd like to help!
 NOTE: All of Spring Boot is open source, including the documentation! If you find problems
 with the docs; or if you just want to improve them, please {github-code}[get involved].
 
+
+
 [[boot-documentation-first-steps]]
 == First steps
 If you're just getting started with Spring Boot, or 'Spring' in general,
@@ -47,6 +49,7 @@ If you're just getting started with Spring Boot, or 'Spring' in general,
 
 * *From scratch:*
   <<getting-started.adoc#getting-started-introducing-spring-boot, Overview>> |
+  <<getting-started.adoc#getting-started-system-requirements, Requirements>> |
   <<getting-started.adoc#getting-started-installing-spring-boot, Installation>>
 * *Tutorial:*
   <<getting-started.adoc#getting-started-first-application, Part 1>> |
@@ -81,6 +84,8 @@ got you covered>>.
 * *Spring Boot CLI:*
 <<using-spring-boot-cli.adoc#cli, Using the CLI>>
 
+
+
 == Learning about Spring Boot features
 Need more details about Spring Boot's core features?
 <<spring-boot-features.adoc#boot-features, This is for you>>!
@@ -108,6 +113,7 @@ Need more details about Spring Boot's core features?
   <<spring-boot-features.adoc#boot-features-condition-annotations, @Conditions>>
 
 
+
 == Moving to production
 When you're ready to push your Spring Boot application to production, we've got
 <<production-ready-features.adoc#production-ready, some tricks that you might like>>!
@@ -124,6 +130,8 @@ When you're ready to push your Spring Boot application to production, we've got
 <<production-ready-features.adoc#production-ready-auditing, Auditing>> |
 <<production-ready-features.adoc#production-ready-tracing, Tracing>> |
 <<production-ready-features.adoc#production-ready-process-monitoring, Process>>
+
+
 
 == Advanced topics
 Lastly, we have a few topics for the more advanced user.

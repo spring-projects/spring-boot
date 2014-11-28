@@ -34,6 +34,46 @@ diverge from the defaults.
 
 
 
+[[getting-started-system-requirements]]
+== System Requirements
+Spring Boot {spring-boot-version} requires http://www.java.com[Java 6] and Spring
+Framework 4.2.3 or above. Explicit build support is provided for Maven (3.2+) and
+Gradle (1.12+).
+
+TIP: Although you can use Spring Boot with Java 6, we generally recommend Java 8 if at
+all possible.
+
+=== Servlet containers
+The following embedded servlet containers are supported out of the box:
+
+|===
+|Name |Servlet Version |Java Version
+
+|Tomcat 8
+|3.1
+|Java 7+
+
+|Tomcat 7
+|3.0
+|Java 6+
+
+|Jetty 9
+|3.1
+|Java 7+
+
+|Jetty 8
+|3.0
+|Java 6+
+
+|Undertow 1.1
+|3.1
+|Java 7+
+|===
+
+You can also deploy Spring Boot applications to any Servlet 3.0+ compatible container.
+
+
+
 [[getting-started-installing-spring-boot]]
 == Installing Spring Boot
 Spring Boot can be used with "`classic`" Java development tools or installed as a command
