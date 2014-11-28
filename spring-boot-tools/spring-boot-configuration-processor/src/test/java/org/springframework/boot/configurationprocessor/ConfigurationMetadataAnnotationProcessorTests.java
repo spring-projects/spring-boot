@@ -145,6 +145,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(HierarchicalProperties.class));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void deprecatedProperties() throws Exception {
 		ConfigurationMetadata metadata = compile(DeprecatedProperties.class);
