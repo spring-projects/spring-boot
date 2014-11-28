@@ -79,10 +79,13 @@ public class EndpointAutoConfiguration {
 	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
+	private ManagementServerProperties management;
+
+	@Autowired(required = false)
 	private HealthAggregator healthAggregator = new OrderedHealthAggregator();
 
 	@Autowired(required = false)
-	Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
+	private Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
 
 	@Autowired(required = false)
 	private Collection<PublicMetrics> publicMetrics;
@@ -102,7 +105,14 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthEndpoint healthEndpoint() {
-		return new HealthEndpoint(this.healthAggregator, this.healthIndicators);
+		// The default sensitivity depends on whether all the endpoints by default are
+		// secure or not. User can always override with endpoints.health.sensitive.
+		boolean secure = this.management != null && this.management.getSecurity() != null
+				&& this.management.getSecurity().isEnabled();
+		HealthEndpoint endpoint = new HealthEndpoint(this.healthAggregator,
+				this.healthIndicators);
+		endpoint.setSensitive(secure);
+		return endpoint;
 	}
 
 	@Bean

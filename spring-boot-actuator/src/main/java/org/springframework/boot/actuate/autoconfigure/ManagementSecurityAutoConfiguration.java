@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.mvc.AnonymouslyAccessibleMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -59,8 +59,10 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity.I
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
 /**
@@ -215,6 +217,11 @@ public class ManagementSecurityAutoConfiguration {
 		@Autowired(required = false)
 		private EndpointHandlerMapping endpointHandlerMapping;
 
+		public void setEndpointHandlerMapping(
+				EndpointHandlerMapping endpointHandlerMapping) {
+			this.endpointHandlerMapping = endpointHandlerMapping;
+		}
+
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 
@@ -230,8 +237,15 @@ public class ManagementSecurityAutoConfiguration {
 				http.requestMatchers().antMatchers(paths);
 				String[] endpointPaths = this.server.getPathsArray(getEndpointPaths(
 						this.endpointHandlerMapping, false));
-				http.authorizeRequests().antMatchers(endpointPaths).access("permitAll()")
-						.anyRequest().hasRole(this.management.getSecurity().getRole());
+				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests = http
+						.authorizeRequests();
+				authorizeRequests.antMatchers(endpointPaths).permitAll();
+				if (this.endpointHandlerMapping != null) {
+					authorizeRequests.requestMatchers(
+							new PrincipalHandlerRequestMatcher()).permitAll();
+				}
+				authorizeRequests.anyRequest().hasRole(
+						this.management.getSecurity().getRole());
 				http.httpBasic();
 
 				// No cookies for management endpoints by default
@@ -252,6 +266,14 @@ public class ManagementSecurityAutoConfiguration {
 			return entryPoint;
 		}
 
+		private final class PrincipalHandlerRequestMatcher implements RequestMatcher {
+			@Override
+			public boolean matches(HttpServletRequest request) {
+				return ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping
+						.isPrincipalHandler(request);
+			}
+		}
+
 	}
 
 	private static String[] getEndpointPaths(EndpointHandlerMapping endpointHandlerMapping) {
@@ -269,8 +291,7 @@ public class ManagementSecurityAutoConfiguration {
 		Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
 		List<String> paths = new ArrayList<String>(endpoints.size());
 		for (MvcEndpoint endpoint : endpoints) {
-			if (endpoint.isSensitive() == secure
-					|| (!secure && endpoint instanceof AnonymouslyAccessibleMvcEndpoint)) {
+			if (endpoint.isSensitive() == secure) {
 				String path = endpointHandlerMapping.getPath(endpoint.getPath());
 				paths.add(path);
 				// Add Spring MVC-generated additional paths

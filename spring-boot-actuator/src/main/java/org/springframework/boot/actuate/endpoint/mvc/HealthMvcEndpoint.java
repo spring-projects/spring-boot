@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public class HealthMvcEndpoint implements AnonymouslyAccessibleMvcEndpoint {
+public class HealthMvcEndpoint implements MvcEndpoint {
 
 	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
 
