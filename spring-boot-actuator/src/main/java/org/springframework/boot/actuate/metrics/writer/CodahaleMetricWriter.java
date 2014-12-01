@@ -103,8 +103,9 @@ public class CodahaleMetricWriter implements MetricWriter {
 	private Object getGuageLock(String name) {
 		Object lock = this.gaugeLocks.get(name);
 		if (lock == null) {
-			this.gaugeLocks.putIfAbsent(name, new Object());
-			lock = this.gaugeLocks.get(name);
+			Object newLock = new Object();
+			lock = this.gaugeLocks.putIfAbsent(name, newLock);
+			lock = (lock == null ? newLock : lock);
 		}
 		return lock;
 	}
