@@ -56,7 +56,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer implements
+public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer implements
 		Filter, NonEmbeddedServletContainerFactory {
 
 	private static Log logger = LogFactory.getLog(ErrorPageFilter.class);
