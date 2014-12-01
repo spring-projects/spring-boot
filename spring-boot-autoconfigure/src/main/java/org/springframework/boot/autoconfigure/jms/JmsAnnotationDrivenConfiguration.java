@@ -48,12 +48,16 @@ class JmsAnnotationDrivenConfiguration {
 	@Autowired(required = false)
 	private PlatformTransactionManager transactionManager;
 
+	@Autowired
+	private JmsProperties properties;
+
 	@Bean
 	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
 			ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
+		factory.setPubSubDomain(properties.isPubSubDomain());
 		if (this.transactionManager != null) {
 			factory.setTransactionManager(this.transactionManager);
 		}
