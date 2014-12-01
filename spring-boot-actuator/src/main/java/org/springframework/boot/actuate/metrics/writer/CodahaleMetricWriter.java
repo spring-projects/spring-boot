@@ -90,23 +90,23 @@ public class CodahaleMetricWriter implements MetricWriter {
 		}
 		else {
 			final double gauge = value.getValue().doubleValue();
-			Object lock = null;
-			if (this.gaugeLocks.containsKey(name)) {
-				lock = this.gaugeLocks.get(name);
-			}
-			else {
-				this.gaugeLocks.putIfAbsent(name, new Object());
-				lock = this.gaugeLocks.get(name);
-			}
-
 			// Ensure we synchronize to avoid another thread pre-empting this thread after
 			// remove causing an error in CodaHale metrics
 			// NOTE: CodaHale provides no way to do this atomically
-			synchronized (lock) {
+			synchronized (getGuageLock(name)) {
 				this.registry.remove(name);
 				this.registry.register(name, new SimpleGauge(gauge));
 			}
 		}
+	}
+
+	private Object getGuageLock(String name) {
+		Object lock = this.gaugeLocks.get(name);
+		if (lock == null) {
+			this.gaugeLocks.putIfAbsent(name, new Object());
+			lock = this.gaugeLocks.get(name);
+		}
+		return lock;
 	}
 
 	@Override
