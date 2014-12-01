@@ -284,6 +284,14 @@ about the state of your `git` source code repository when the project was built.
 `git.properties` file is contained in your jar the `git.branch` and `git.commit`
 properties will be loaded.
 
+If your app is packaged as a WAR file, you will have to specify the location of the
+`git.properties` file, as loading resources in this context requires a `URL` to the file:
+
+[source,properties,indent=0]
+----
+	git.properties=/WEB-INF/classes/git.properties
+----
+
 For Maven users the `spring-boot-starter-parent` POM includes a pre-configured plugin to
 generate a `git.properties` file. Simply add the following declaration to your POM:
 
