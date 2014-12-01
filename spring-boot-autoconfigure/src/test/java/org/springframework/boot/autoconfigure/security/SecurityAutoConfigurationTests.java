@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.security;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
 import org.junit.Test;
@@ -41,6 +40,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
@@ -159,23 +159,22 @@ public class SecurityAutoConfigurationTests {
 	@Test
 	public void testEventPublisherInjected() throws Exception {
 		testAuthenticationManagerCreated();
-		final AtomicReference<ApplicationEvent> wrapper = new AtomicReference<ApplicationEvent>();
-		this.context.addApplicationListener(new ApplicationListener<ApplicationEvent>() {
-			@Override
-			public void onApplicationEvent(ApplicationEvent event) {
-				wrapper.set(event);
-			};
-		});
+		pingAuthenticationListener();
+	}
+
+	private void pingAuthenticationListener() {
+		AuthenticationListener listener = new AuthenticationListener();
+		this.context.addApplicationListener(listener);
 		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
 		try {
-			manager.authenticate(new UsernamePasswordAuthenticationToken("foo", "bar"));
+			manager.authenticate(new UsernamePasswordAuthenticationToken("foo", "wrong"));
 			fail("Expected BadCredentialsException");
 		}
 		catch (BadCredentialsException e) {
 			// expected
 		}
-		assertTrue("Wrong event type: " + wrapper.get(),
-				wrapper.get() instanceof AuthenticationFailureBadCredentialsEvent);
+		assertTrue("Wrong event type: " + listener.event,
+				listener.event instanceof AuthenticationFailureBadCredentialsEvent);
 	}
 
 	@Test
@@ -221,6 +220,7 @@ public class SecurityAutoConfigurationTests {
 				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
 		assertNotNull(this.context.getBean(AuthenticationManager.class)
 				.authenticate(user));
+		pingAuthenticationListener();
 	}
 
 	@Test
@@ -254,6 +254,17 @@ public class SecurityAutoConfigurationTests {
 		// HibernateJpaAutoConfiguration (e.g. the EntityManagerFactory is not found)
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JpaTransactionManager.class));
+	}
+
+	private static final class AuthenticationListener implements
+			ApplicationListener<AbstractAuthenticationEvent> {
+
+		private ApplicationEvent event;
+
+		@Override
+		public void onApplicationEvent(AbstractAuthenticationEvent event) {
+			this.event = event;
+		}
 	}
 
 	@Configuration

@@ -128,6 +128,10 @@ public class AuthenticationManagerConfiguration extends
 				((ProviderManager) manager)
 						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
 			}
+			else if (manager instanceof LazyAuthenticationManager) {
+				((LazyAuthenticationManager) manager)
+						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
+			}
 		}
 
 	}
@@ -201,15 +205,29 @@ public class AuthenticationManagerConfiguration extends
 	private static class LazyAuthenticationManager implements AuthenticationManager {
 
 		private AuthenticationManagerBuilder builder;
+		private AuthenticationManager authenticationManager;
+		private AuthenticationEventPublisher authenticationEventPublisher;
 
 		public LazyAuthenticationManager(AuthenticationManagerBuilder builder) {
 			this.builder = builder;
 		}
 
+		public void setAuthenticationEventPublisher(
+				AuthenticationEventPublisher authenticationEventPublisher) {
+			this.authenticationEventPublisher = authenticationEventPublisher;
+		}
+
 		@Override
 		public Authentication authenticate(Authentication authentication)
 				throws AuthenticationException {
-			return this.builder.getOrBuild().authenticate(authentication);
+			if (this.authenticationManager == null) {
+				this.authenticationManager = this.builder.getOrBuild();
+				if (this.authenticationManager instanceof ProviderManager) {
+					((ProviderManager) this.authenticationManager)
+							.setAuthenticationEventPublisher(this.authenticationEventPublisher);
+				}
+			}
+			return this.authenticationManager.authenticate(authentication);
 		}
 
 	}
