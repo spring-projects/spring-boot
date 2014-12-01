@@ -90,14 +90,9 @@ public class CodahaleMetricWriter implements MetricWriter {
 		}
 		else {
 			final double gauge = value.getValue().doubleValue();
-			Object lock = null;
-			if (this.gaugeLocks.containsKey(name)) {
-				lock = this.gaugeLocks.get(name);
-			}
-			else {
-				this.gaugeLocks.putIfAbsent(name, new Object());
-				lock = this.gaugeLocks.get(name);
-			}
+			final Object newLock = new Object();
+			final Object existingLock = this.gaugeLocks.putIfAbsent(name, newLock);
+			final Object lock = existingLock == null ? newLock : existingLock;
 
 			// Ensure we synchronize to avoid another thread pre-empting this thread after
 			// remove causing an error in CodaHale metrics
