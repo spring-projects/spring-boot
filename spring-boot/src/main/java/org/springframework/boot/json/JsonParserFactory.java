@@ -30,12 +30,20 @@ public abstract class JsonParserFactory {
 
 	/**
 	 * Static factory for the "best" JSON parser available on the classpath. Tries Jackson
-	 * 2, then Snake YAML, and then falls back to the {@link SimpleJsonParser}.
+	 * 2, then JSON (from eclipse), Simple JSON, Gson, Snake YAML, and then falls back to
+	 * the {@link SimpleJsonParser}.
+	 *
 	 * @return a {@link JsonParser}
 	 */
 	public static JsonParser getJsonParser() {
 		if (ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", null)) {
 			return new JacksonJsonParser();
+		}
+		if (ClassUtils.isPresent("org.json.JSONObject", null)) {
+			return new JsonJsonParser();
+		}
+		if (ClassUtils.isPresent("org.json.simple.JSONObject", null)) {
+			return new SimpleJsonJsonParser();
 		}
 		if (ClassUtils.isPresent("com.google.gson.Gson", null)) {
 			return new GsonJsonParser();
