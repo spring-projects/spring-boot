@@ -48,7 +48,9 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	private boolean dumpRequests = false;
 
-	private int order = Integer.MAX_VALUE;
+	// Not LOWEST_PRECEDENCE, but near the end, so it has a good chance of catching all
+	// enriched headers, but users can add stuff after this if they want to
+	private int order = Ordered.LOWEST_PRECEDENCE - 10;
 
 	private final TraceRepository traceRepository;
 
