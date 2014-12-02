@@ -5,6 +5,13 @@
   }
 ],"properties": [
   {
+    "name": "debug",
+    "type": "java.lang.Boolean",
+    "description": "Enable debug logs.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener",
+    "defaultValue": false
+  },
+  {
     "name": "logging.config",
     "type": "java.lang.String",
     "description": "Location of the logging configuration file.",
