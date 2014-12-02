@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.cli.command.status.ExitStatus;
+import org.springframework.boot.cli.command.test.TestFailedException;
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -176,6 +177,9 @@ public class CommandRunner implements Iterable<Command> {
 		}
 		catch (NoArgumentsException ex) {
 			showUsage();
+			return 1;
+		}
+		catch(TestFailedException e) {
 			return 1;
 		}
 		catch (Exception ex) {

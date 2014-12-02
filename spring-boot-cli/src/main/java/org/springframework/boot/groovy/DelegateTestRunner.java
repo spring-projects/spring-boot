@@ -18,6 +18,7 @@ package org.springframework.boot.groovy;
 
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 import org.springframework.boot.cli.command.test.TestRunner;
 
 /**
@@ -28,9 +29,10 @@ import org.springframework.boot.cli.command.test.TestRunner;
  */
 public class DelegateTestRunner {
 
-	public static void run(Class<?>[] testClasses) {
+	public static void run(Class<?>[] testClasses, Result result) {
 		JUnitCore jUnitCore = new JUnitCore();
 		jUnitCore.addListener(new TextListener(System.out));
+		jUnitCore.addListener(result.createListener());
 		jUnitCore.run(testClasses);
 	}
 

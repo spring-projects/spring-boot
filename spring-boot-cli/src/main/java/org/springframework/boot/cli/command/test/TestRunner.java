@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command.test;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public class TestRunner {
 	private final String[] sources;
 
 	private final GroovyCompiler compiler;
+
+	private volatile Throwable threadException;
 
 	/**
 	 * Create a new {@link TestRunner} instance.
@@ -58,7 +61,20 @@ public class TestRunner {
 		// Run in new thread to ensure that the context classloader is setup
 		RunThread runThread = new RunThread(sources);
 		runThread.start();
+		runThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				// rethrow exception
+				threadException = e;
+			}
+		});
+
 		runThread.join();
+		if(threadException != null) {
+			Throwable t = threadException;
+			threadException = null;
+			throw new TestFailedException(t);
+		}
 	}
 
 	/**
@@ -131,15 +147,33 @@ public class TestRunner {
 					System.out.println("No tests found");
 				}
 				else {
-					Class<?> delegateClass = Thread.currentThread()
-							.getContextClassLoader()
-							.loadClass(DelegateTestRunner.class.getName());
-					Method runMethod = delegateClass.getMethod("run", Class[].class);
-					runMethod.invoke(null, new Object[] { this.testClasses });
+					ClassLoader contextClassLoader = Thread.currentThread()
+							.getContextClassLoader();
+					Class<?> delegateClass = contextClassLoader
+												.loadClass(DelegateTestRunner.class.getName());
+					Class resultClass = contextClassLoader.loadClass("org.junit.runner.Result");
+					Method runMethod = delegateClass.getMethod("run", Class[].class, resultClass);
+					Object result = resultClass.newInstance();
+					runMethod.invoke(null, this.testClasses, result);
+					Boolean wasSuccessful = (Boolean)resultClass.getMethod("wasSuccessful").invoke(result);
+					if(!wasSuccessful) {
+						try {
+							throw new RuntimeException("Tests Failed.");
+						} catch (Throwable throwable) {
+							throw new RuntimeException(throwable);
+						}
+					}
 				}
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException("Exception occurred running tests: " + e.getMessage(), e);
+			} catch (NoSuchMethodException e) {
+				throw new RuntimeException("Exception occurred running tests: " + e.getMessage(), e);
+			} catch (InstantiationException e) {
+				throw new RuntimeException("Exception occurred running tests: " + e.getMessage(), e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException("Exception occurred running tests: " + e.getMessage(), e);
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException("Exception occurred running tests: " + e.getMessage(), e);
 			}
 		}
 	}
