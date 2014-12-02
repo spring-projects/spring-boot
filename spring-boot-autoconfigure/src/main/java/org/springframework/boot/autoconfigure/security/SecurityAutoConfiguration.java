@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
@@ -41,9 +42,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * <code>@Configuration</code> of type {@link WebSecurityConfigurerAdapter}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass(AuthenticationManager.class)
+@ConditionalOnClass({ AuthenticationManager.class,
+		GlobalAuthenticationConfigurerAdapter.class })
 @EnableConfigurationProperties
 @Import({ SpringBootWebSecurityConfiguration.class,
 		AuthenticationManagerConfiguration.class })
