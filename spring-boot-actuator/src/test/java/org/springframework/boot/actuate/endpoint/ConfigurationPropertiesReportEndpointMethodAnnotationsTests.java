@@ -31,6 +31,11 @@ import org.springframework.context.annotation.Configuration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Tests for {@link ConfigurationPropertiesReportEndpoint} when used with bean methods.
+ *
+ * @author Dave Syer
+ */
 public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	private AnnotationConfigApplicationContext context;

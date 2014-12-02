@@ -21,12 +21,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
- * Thin wrapper to adapt {@link JSONObject} to a {@link JsonParser}.
+ * Thin wrapper to adapt {@link org.json.JSONObject} to a {@link JsonParser}.
  *
  * @author Dave Syer
  * @since 1.2.0
@@ -37,29 +36,50 @@ public class JsonJsonParser implements JsonParser {
 	@Override
 	public Map<String, Object> parseMap(String json) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
-		try {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> value = (Map<String, Object>) new JSONParser()
-					.parse(json);
-			map.putAll(value);
-		}
-		catch (ParseException e) {
-			throw new IllegalArgumentException("Cannot parse Json", e);
-		}
+		putAll(map, new JSONObject(json));
 		return map;
+	}
+
+	private void putAll(Map<String, Object> map, JSONObject object) {
+		for (Object key : object.keySet()) {
+			String name = key.toString();
+			Object value = object.get(name);
+			if (value instanceof JSONObject) {
+				Map<String, Object> nested = new LinkedHashMap<String, Object>();
+				putAll(nested, (JSONObject) value);
+				value = nested;
+			}
+			if (value instanceof JSONArray) {
+				List<Object> nested = new ArrayList<Object>();
+				addAll(nested, (JSONArray) value);
+				value = nested;
+			}
+			map.put(name, value);
+		}
+	}
+
+	private void addAll(List<Object> list, JSONArray array) {
+		for (int i = 0; i < array.length(); i++) {
+			Object value = array.get(i);
+			if (value instanceof JSONObject) {
+				Map<String, Object> nested = new LinkedHashMap<String, Object>();
+				putAll(nested, (JSONObject) value);
+				value = nested;
+			}
+			if (value instanceof JSONArray) {
+				List<Object> nested = new ArrayList<Object>();
+				addAll(nested, (JSONArray) value);
+				value = nested;
+			}
+			list.add(value);
+		}
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
 		List<Object> nested = new ArrayList<Object>();
-		try {
-			@SuppressWarnings("unchecked")
-			List<Object> value = (List<Object>) new JSONParser().parse(json);
-			nested.addAll(value);
-		}
-		catch (ParseException e) {
-			throw new IllegalArgumentException("Cannot parse Json", e);
-		}
+		addAll(nested, new JSONArray(json));
 		return nested;
 	}
+
 }

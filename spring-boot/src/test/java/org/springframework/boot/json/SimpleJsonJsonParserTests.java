@@ -17,14 +17,15 @@
 package org.springframework.boot.json;
 
 /**
- * Tests for {@link SimpleJsonJsonParser}.
+ * Tests for {@link JsonJsonParser}.
  *
  * @author Dave Syer
  */
-public class SimpleJsonJsonParserTests extends SimpleJsonParserTests {
+public class SimpleJsonJsonParserTests extends AbstractJsonParserTests {
 
 	@Override
 	protected JsonParser getParser() {
-		return new SimpleJsonJsonParser();
+		return new JsonJsonParser();
 	}
+
 }

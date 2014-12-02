@@ -31,6 +31,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+/**
+ * Tests for {@link ConfigurationPropertiesReportEndpoint}.
+ *
+ * @author Dave Syer
+ */
 public class ConfigurationPropertiesReportEndpointTests extends
 		AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
 

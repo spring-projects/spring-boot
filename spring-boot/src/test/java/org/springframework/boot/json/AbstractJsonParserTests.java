@@ -24,17 +24,15 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests for {@link SimpleJsonParser}.
+ * Base for {@link JsonParser} tests.
  *
  * @author Dave Syer
  */
-public class SimpleJsonParserTests {
+public abstract class AbstractJsonParserTests {
 
 	private final JsonParser parser = getParser();
 
-	protected JsonParser getParser() {
-		return new SimpleJsonParser();
-	}
+	protected abstract JsonParser getParser();
 
 	@Test
 	public void testSimpleMap() {

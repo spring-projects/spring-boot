@@ -119,21 +119,17 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 * {@link Map}.
 	 */
 	protected Map<String, Object> extract(ApplicationContext context) {
-
-		Map<String, Object> result = new HashMap<String, Object>();
-		Map<String, Object> beans = new HashMap<String, Object>(
-				context.getBeansWithAnnotation(ConfigurationProperties.class));
-		ConfigurationBeanFactoryMetaData beanFactoryMetaData = null;
-		if (context.getBeanNamesForType(ConfigurationBeanFactoryMetaData.class).length == 1) {
-			beanFactoryMetaData = context.getBean(ConfigurationBeanFactoryMetaData.class);
-			beans.putAll(beanFactoryMetaData
-					.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
-		}
-
 		// Serialize beans into map structure and sanitize values
 		ObjectMapper mapper = new ObjectMapper();
 		configureObjectMapper(mapper);
+		return extract(context, mapper);
+	}
 
+	private Map<String, Object> extract(ApplicationContext context, ObjectMapper mapper) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(context);
+		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
+				beanFactoryMetaData);
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
@@ -143,12 +139,32 @@ public class ConfigurationPropertiesReportEndpoint extends
 			root.put("properties", sanitize(safeSerialize(mapper, bean, prefix)));
 			result.put(beanName, root);
 		}
-
 		if (context.getParent() != null) {
-			result.put("parent", extract(context.getParent()));
+			result.put("parent", extract(context.getParent(), mapper));
 		}
-
 		return result;
+	}
+
+	private ConfigurationBeanFactoryMetaData getBeanFactoryMetaData(
+			ApplicationContext context) {
+		Map<String, ConfigurationBeanFactoryMetaData> beans = context
+				.getBeansOfType(ConfigurationBeanFactoryMetaData.class);
+		if (beans.size() == 1) {
+			return beans.values().iterator().next();
+		}
+		return null;
+	}
+
+	private Map<String, Object> getConfigurationPropertiesBeans(
+			ApplicationContext context,
+			ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
+		Map<String, Object> beans = new HashMap<String, Object>();
+		beans.putAll(context.getBeansWithAnnotation(ConfigurationProperties.class));
+		if (beanFactoryMetaData != null) {
+			beans.putAll(beanFactoryMetaData
+					.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
+		}
+		return beans;
 	}
 
 	/**
@@ -166,7 +182,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 					this.metadata.extractMap(bean, prefix), Map.class));
 			return result;
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			return new HashMap<String, Object>(Collections.<String, Object> singletonMap(
 					"error", "Cannot serialize '" + prefix + "'"));
 		}

@@ -23,8 +23,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages.Registrar;
-import org.springframework.boot.autoconfigure.packages.one.FirstConfiguration;
-import org.springframework.boot.autoconfigure.packages.two.SecondConfiguration;
+import org.springframework.boot.autoconfigure.packagestest.one.FirstConfiguration;
+import org.springframework.boot.autoconfigure.packagestest.two.SecondConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -66,16 +66,12 @@ public class AutoConfigurationPackagesTests {
 
 	@Test
 	public void detectsMultipleAutoConfigurationPackages() {
-
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				FirstConfiguration.class, SecondConfiguration.class);
-
 		List<String> packages = AutoConfigurationPackages.get(context.getBeanFactory());
-
-		assertThat(
-				packages,
-				hasItems(FirstConfiguration.class.getPackage().getName(),
-						SecondConfiguration.class.getPackage().getName()));
+		Package package1 = FirstConfiguration.class.getPackage();
+		Package package2 = SecondConfiguration.class.getPackage();
+		assertThat(packages, hasItems(package1.getName(), package2.getName()));
 		assertThat(packages, hasSize(2));
 	}
 

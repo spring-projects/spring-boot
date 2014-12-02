@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.json;
+package org.springframework.boot.autoconfigure.packagestest.two;
+
+import org.springframework.boot.autoconfigure.AutoConfigurationPackagesTests;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackagesTests.TestRegistrar;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
- * Really basic JSON parser for when you have nothing else available. Comes with some
- * limitations with respect to the JSON specification (e.g. only supports String values),
- * so users will probably prefer to have a library handle things instead (Jackson or Snake
- * YAML are supported).
+ * Sample configuration used in {@link AutoConfigurationPackagesTests}.
  *
- * @author Dave Syer
- * @see JsonParserFactory
- * @deprecated since 1.2.0 in favor of {@link BasicJsonParser}.
+ * @author Oliver Gierke
  */
-@Deprecated
-public class SimpleJsonParser extends BasicJsonParser {
+@Configuration
+@Import(TestRegistrar.class)
+public class SecondConfiguration {
+
 }

@@ -165,12 +165,12 @@ public class MongoProperties {
 	public MongoClient createMongoClient(MongoClientOptions options)
 			throws UnknownHostException {
 		try {
-			if (customAddress() || customCredentials()) {
+			if (hasCustomAddress() || hasCustomCredentials()) {
 				if (options == null) {
 					options = MongoClientOptions.builder().build();
 				}
 				List<MongoCredential> credentials = null;
-				if (customCredentials()) {
+				if (hasCustomCredentials()) {
 					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
 							this.username, getMongoClientDatabase(), this.password));
 				}
@@ -187,11 +187,11 @@ public class MongoProperties {
 		}
 	}
 
-	private boolean customAddress() {
+	private boolean hasCustomAddress() {
 		return this.host != null || this.port != null;
 	}
 
-	private boolean customCredentials() {
+	private boolean hasCustomCredentials() {
 		return this.username != null && this.password != null;
 	}
 

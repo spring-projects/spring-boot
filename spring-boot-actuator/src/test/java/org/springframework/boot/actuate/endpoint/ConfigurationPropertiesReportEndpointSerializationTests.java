@@ -34,6 +34,11 @@ import org.springframework.context.annotation.Import;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Tests for {@link ConfigurationPropertiesReportEndpoint} serialization.
+ *
+ * @author Dave Syer
+ */
 public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	private AnnotationConfigApplicationContext context;

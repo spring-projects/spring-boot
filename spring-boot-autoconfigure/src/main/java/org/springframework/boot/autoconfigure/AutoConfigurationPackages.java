@@ -18,7 +18,9 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,7 +28,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -90,13 +91,12 @@ public abstract class AutoConfigurationPackages {
 	 * @param packageNames the package names to set
 	 */
 	public static void register(BeanDefinitionRegistry registry, String... packageNames) {
-
 		if (registry.containsBeanDefinition(BEAN)) {
 			BeanDefinition beanDefinition = registry.getBeanDefinition(BEAN);
 			ConstructorArgumentValues constructorArguments = beanDefinition
 					.getConstructorArgumentValues();
 			constructorArguments.addIndexedArgumentValue(0,
-					augmentBasePackages(constructorArguments, packageNames));
+					addBasePackages(constructorArguments, packageNames));
 		}
 		else {
 			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
@@ -108,17 +108,14 @@ public abstract class AutoConfigurationPackages {
 		}
 	}
 
-	private static String[] augmentBasePackages(
+	private static String[] addBasePackages(
 			ConstructorArgumentValues constructorArguments, String[] packageNames) {
-
-		ValueHolder valueHolder = constructorArguments.getIndexedArgumentValue(0,
-				List.class);
-
-		List<String> packages = new ArrayList<String>(
-				Arrays.asList((String[]) valueHolder.getValue()));
-		packages.addAll(Arrays.asList(packageNames));
-
-		return packages.toArray(new String[packages.size()]);
+		String[] existing = (String[]) constructorArguments.getIndexedArgumentValue(0,
+				String[].class).getValue();
+		Set<String> merged = new LinkedHashSet<String>();
+		merged.addAll(Arrays.asList(existing));
+		merged.addAll(Arrays.asList(packageNames));
+		return merged.toArray(new String[merged.size()]);
 	}
 
 	/**

@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.packages.two;
+package org.springframework.boot.json;
 
-import org.springframework.boot.autoconfigure.AutoConfigurationPackagesTests.TestRegistrar;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+/**
+ * Tests for {@link BasicJsonParser}.
+ *
+ * @author Dave Syer
+ */
+public class BasicJsonParserTests extends AbstractJsonParserTests {
 
-@Configuration
-@Import(TestRegistrar.class)
-public class SecondConfiguration {
+	@Override
+	protected JsonParser getParser() {
+		return new BasicJsonParser();
+	}
 
 }

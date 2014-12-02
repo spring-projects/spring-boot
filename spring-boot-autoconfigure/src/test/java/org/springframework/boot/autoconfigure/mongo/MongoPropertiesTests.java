@@ -78,24 +78,20 @@ public class MongoPropertiesTests {
 		MongoProperties properties = new MongoProperties();
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-
 		MongoClient client = properties.createMongoClient(null);
-
 		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret");
 	}
 
 	@Test
 	public void uriCanBeCustomized() throws UnknownHostException {
 		MongoProperties properties = new MongoProperties();
-		properties
-				.setUri("mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test");
+		properties.setUri("mongodb://user:secret@mongo1.example.com:12345,"
+				+ "mongo2.example.com:23456/test");
 		MongoClient client = properties.createMongoClient(null);
-
 		List<ServerAddress> allAddresses = client.getAllAddress();
 		assertEquals(2, allAddresses.size());
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
-
 		List<MongoCredential> credentialsList = client.getCredentialsList();
 		assertEquals(1, credentialsList.size());
 		assertMongoCredential(credentialsList.get(0), "user", "secret");

@@ -32,6 +32,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link EndpointWebMvcAutoConfiguration} of the {@link HealthMvcEndpoint}.
+ *
  * @author Dave Syer
  */
 public class HealthMvcEndpointAutoConfigurationTests {

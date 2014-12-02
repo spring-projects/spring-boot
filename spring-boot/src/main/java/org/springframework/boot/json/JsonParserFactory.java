@@ -24,7 +24,9 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @see JacksonJsonParser
  * @see YamlJsonParser
- * @see SimpleJsonParser
+ * @see JsonSimpleJsonParser
+ * @see JsonJsonParser
+ * @see BasicJsonParser
  */
 public abstract class JsonParserFactory {
 
@@ -39,19 +41,19 @@ public abstract class JsonParserFactory {
 		if (ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", null)) {
 			return new JacksonJsonParser();
 		}
-		if (ClassUtils.isPresent("org.json.JSONObject", null)) {
-			return new JsonJsonParser();
-		}
-		if (ClassUtils.isPresent("org.json.simple.JSONObject", null)) {
-			return new SimpleJsonJsonParser();
-		}
 		if (ClassUtils.isPresent("com.google.gson.Gson", null)) {
 			return new GsonJsonParser();
 		}
 		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
 			return new YamlJsonParser();
 		}
-		return new SimpleJsonParser();
+		if (ClassUtils.isPresent("org.json.simple.JSONObject", null)) {
+			return new JsonSimpleJsonParser();
+		}
+		if (ClassUtils.isPresent("org.json.JSONObject", null)) {
+			return new JsonJsonParser();
+		}
+		return new BasicJsonParser();
 	}
 
 }

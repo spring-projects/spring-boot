@@ -224,7 +224,6 @@ public class ManagementSecurityAutoConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-
 			// secure endpoints
 			String[] paths = getEndpointPaths(this.endpointHandlerMapping);
 			if (paths.length > 0 && this.management.getSecurity().isEnabled()) {
@@ -237,27 +236,15 @@ public class ManagementSecurityAutoConfiguration {
 				http.requestMatchers().antMatchers(paths);
 				String[] endpointPaths = this.server.getPathsArray(getEndpointPaths(
 						this.endpointHandlerMapping, false));
-				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests = http
-						.authorizeRequests();
-				authorizeRequests.antMatchers(endpointPaths).permitAll();
-				if (this.endpointHandlerMapping != null) {
-					authorizeRequests.requestMatchers(
-							new PrincipalHandlerRequestMatcher()).permitAll();
-				}
-				authorizeRequests.anyRequest().hasRole(
-						this.management.getSecurity().getRole());
+				configureAuthorizeRequests(endpointPaths, http.authorizeRequests());
 				http.httpBasic();
-
 				// No cookies for management endpoints by default
 				http.csrf().disable();
 				http.sessionManagement().sessionCreationPolicy(
 						this.management.getSecurity().getSessions());
-
 				SpringBootWebSecurityConfiguration.configureHeaders(http.headers(),
 						this.security.getHeaders());
-
 			}
-
 		}
 
 		private AuthenticationEntryPoint entryPoint() {
@@ -266,12 +253,25 @@ public class ManagementSecurityAutoConfiguration {
 			return entryPoint;
 		}
 
+		private void configureAuthorizeRequests(
+				String[] endpointPaths,
+				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
+			requests.antMatchers(endpointPaths).permitAll();
+			if (this.endpointHandlerMapping != null) {
+				requests.requestMatchers(new PrincipalHandlerRequestMatcher())
+						.permitAll();
+			}
+			requests.anyRequest().hasRole(this.management.getSecurity().getRole());
+		}
+
 		private final class PrincipalHandlerRequestMatcher implements RequestMatcher {
+
 			@Override
 			public boolean matches(HttpServletRequest request) {
 				return ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping
 						.isPrincipalHandler(request);
 			}
+
 		}
 
 	}
@@ -287,7 +287,6 @@ public class ManagementSecurityAutoConfiguration {
 		if (endpointHandlerMapping == null) {
 			return NO_PATHS;
 		}
-
 		Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
 		List<String> paths = new ArrayList<String>(endpoints.size());
 		for (MvcEndpoint endpoint : endpoints) {

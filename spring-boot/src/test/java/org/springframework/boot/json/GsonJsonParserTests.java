@@ -21,10 +21,11 @@ package org.springframework.boot.json;
  *
  * @author Dave Syer
  */
-public class GsonJsonParserTests extends SimpleJsonParserTests {
+public class GsonJsonParserTests extends AbstractJsonParserTests {
 
 	@Override
 	protected JsonParser getParser() {
 		return new GsonJsonParser();
 	}
+
 }

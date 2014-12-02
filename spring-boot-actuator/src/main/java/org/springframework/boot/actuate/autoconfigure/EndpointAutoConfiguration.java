@@ -105,14 +105,20 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthEndpoint healthEndpoint() {
-		// The default sensitivity depends on whether all the endpoints by default are
-		// secure or not. User can always override with endpoints.health.sensitive.
-		boolean secure = this.management != null && this.management.getSecurity() != null
-				&& this.management.getSecurity().isEnabled();
 		HealthEndpoint endpoint = new HealthEndpoint(this.healthAggregator,
 				this.healthIndicators);
-		endpoint.setSensitive(secure);
+		endpoint.setSensitive(isHealthEndpointSensitive());
 		return endpoint;
+	}
+
+	/**
+	 * The default health endpoint sensitivity depends on whether all the endpoints by
+	 * default are secure or not. User can always override with
+	 * {@literal endpoints.health.sensitive}.
+	 */
+	private boolean isHealthEndpointSensitive() {
+		return (this.management != null) && (this.management.getSecurity() != null)
+				&& this.management.getSecurity().isEnabled();
 	}
 
 	@Bean
