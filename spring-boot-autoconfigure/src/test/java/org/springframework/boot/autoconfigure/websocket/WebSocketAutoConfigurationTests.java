@@ -90,7 +90,9 @@ public class WebSocketAutoConfigurationTests {
 
 		@Bean
 		public EmbeddedServletContainerFactory servletContainerFactory() {
-			return new TomcatEmbeddedServletContainerFactory();
+			TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory = new TomcatEmbeddedServletContainerFactory();
+			tomcatEmbeddedServletContainerFactory.setPort(0);
+			return tomcatEmbeddedServletContainerFactory;
 		}
 
 	}
@@ -100,7 +102,9 @@ public class WebSocketAutoConfigurationTests {
 
 		@Bean
 		public EmbeddedServletContainerFactory servletContainerFactory() {
-			return new JettyEmbeddedServletContainerFactory();
+			JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory = new JettyEmbeddedServletContainerFactory();
+			jettyEmbeddedServletContainerFactory.setPort(0);
+			return jettyEmbeddedServletContainerFactory;
 		}
 
 	}
