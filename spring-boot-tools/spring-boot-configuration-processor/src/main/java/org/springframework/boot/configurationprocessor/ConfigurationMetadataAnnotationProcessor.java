@@ -75,6 +75,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private FieldValuesParser fieldValuesParser;
 
+	private ElementExcludeFilter elementExcludeFilter = new ElementExcludeFilter();
+
 	protected String configurationPropertiesAnnotation() {
 		return CONFIGURATION_PROPERTIES_ANNOTATION;
 	}
@@ -177,10 +179,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			VariableElement field = members.getFields().get(name);
 			Element returnType = this.processingEnv.getTypeUtils().asElement(
 					getter.getReturnType());
+			boolean isExcluded = this.elementExcludeFilter.isExcluded(returnType);
 			boolean isNested = isNested(returnType, field, element);
 			boolean isCollection = this.typeUtils.isCollectionOrMap(getter
 					.getReturnType());
-			if (!isNested && (setter != null || isCollection)) {
+			if (!isExcluded && !isNested && (setter != null || isCollection)) {
 				String dataType = this.typeUtils.getType(getter.getReturnType());
 				String sourceType = this.typeUtils.getType(element);
 				String description = this.typeUtils.getJavaDoc(field);

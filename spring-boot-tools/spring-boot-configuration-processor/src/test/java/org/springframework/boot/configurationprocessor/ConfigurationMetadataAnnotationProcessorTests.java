@@ -30,7 +30,6 @@ import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
 import org.springframework.boot.configurationsample.method.SimpleMethodConfig;
-import org.springframework.boot.configurationsample.simple.DeprecatedProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
 import org.springframework.boot.configurationsample.simple.SimpleCollectionProperties;
@@ -38,6 +37,7 @@ import org.springframework.boot.configurationsample.simple.SimplePrefixValueProp
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
 import org.springframework.boot.configurationsample.simple.SimpleTypeProperties;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
+import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
@@ -145,21 +145,16 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(HierarchicalProperties.class));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
+	@SuppressWarnings("deprecation")
 	public void deprecatedProperties() throws Exception {
-		ConfigurationMetadata metadata = compile(DeprecatedProperties.class);
-		assertThat(metadata, containsGroup("deprecated").fromSource(DeprecatedProperties.class));
-		assertThat(
-				metadata,
-				containsProperty("deprecated.name", String.class)
-						.fromSource(DeprecatedProperties.class)
-						.withDeprecated());
-		assertThat(
-				metadata,
-				containsProperty("deprecated.description", String.class)
-						.fromSource(DeprecatedProperties.class)
-						.withDeprecated());
+		Class<?> type = org.springframework.boot.configurationsample.simple.DeprecatedProperties.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata, containsGroup("deprecated").fromSource(type));
+		assertThat(metadata, containsProperty("deprecated.name", String.class)
+				.fromSource(type).withDeprecated());
+		assertThat(metadata, containsProperty("deprecated.description", String.class)
+				.fromSource(type).withDeprecated());
 	}
 
 	@Test
@@ -277,6 +272,16 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void builderPojo() throws IOException {
 		ConfigurationMetadata metadata = compile(BuilderPojo.class);
 		assertThat(metadata, containsProperty("builder.name"));
+	}
+
+	@Test
+	public void excludedTypesPojo() throws IOException {
+		ConfigurationMetadata metadata = compile(ExcludedTypesPojo.class);
+		assertThat(metadata, containsProperty("excluded.name"));
+		assertThat(metadata, not(containsProperty("excluded.class-loader")));
+		assertThat(metadata, not(containsProperty("excluded.data-source")));
+		assertThat(metadata, not(containsProperty("excluded.print-writer")));
+		assertThat(metadata, not(containsProperty("excluded.writer")));
 	}
 
 	private ConfigurationMetadata compile(Class<?>... types) throws IOException {
