@@ -22,21 +22,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A launcher for {@code SpringApplication}. Uses reflection to allow the launching code
- * to exist in a separate ClassLoader from the application code.
+ * A launcher for {@code SpringApplication} or a {@code SpringApplication} subclass. The
+ * class that is used can be configured using the System property
+ * {@code spring.application.class.name} or the {@code SPRING_APPLICATION_CLASS_NAME}
+ * environment variable. Uses reflection to allow the launching code to exist in a
+ * separate ClassLoader from the application code.
  *
  * @author Andy Wilkinson
  * @since 1.2.0
+ * @see System#getProperty(String)
+ * @see System#getenv(String)
  */
 public class SpringApplicationLauncher {
 
-	private static final String SPRING_APPLICATION_CLASS = "org.springframework.boot.SpringApplication";
+	private static final String DEFAULT_SPRING_APPLICATION_CLASS = "org.springframework.boot.SpringApplication";
 
 	private final ClassLoader classLoader;
 
 	/**
-	 * Creates a new launcher that will use the given {@code classLoader} to load
-	 * {@code SpringApplication}.
+	 * Creates a new launcher that will use the given {@code classLoader} to load the
+	 * configured {@code SpringApplication} class.
 	 * @param classLoader the {@code ClassLoader} to use
 	 */
 	public SpringApplicationLauncher(ClassLoader classLoader) {
@@ -54,13 +59,29 @@ public class SpringApplicationLauncher {
 	public Object launch(Object[] sources, String[] args) throws Exception {
 		Map<String, Object> defaultProperties = new HashMap<String, Object>();
 		defaultProperties.put("spring.groovy.template.check-template-location", "false");
-		Class<?> applicationClass = this.classLoader.loadClass(SPRING_APPLICATION_CLASS);
+		Class<?> applicationClass = this.classLoader
+				.loadClass(getSpringApplicationClassName());
 		Constructor<?> constructor = applicationClass.getConstructor(Object[].class);
 		Object application = constructor.newInstance((Object) sources);
 		applicationClass.getMethod("setDefaultProperties", Map.class).invoke(application,
 				defaultProperties);
 		Method method = applicationClass.getMethod("run", String[].class);
 		return method.invoke(application, (Object) args);
+	}
+
+	private String getSpringApplicationClassName() {
+		String className = System.getProperty("spring.application.class.name");
+		if (className == null) {
+			className = getEnvironmentVariable("SPRING_APPLICATION_CLASS_NAME");
+		}
+		if (className == null) {
+			className = DEFAULT_SPRING_APPLICATION_CLASS;
+		}
+		return className;
+	}
+
+	protected String getEnvironmentVariable(String name) {
+		return System.getenv(name);
 	}
 
 }
