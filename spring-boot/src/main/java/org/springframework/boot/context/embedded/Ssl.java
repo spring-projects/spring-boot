@@ -26,36 +26,63 @@ package org.springframework.boot.context.embedded;
 public class Ssl {
 
 	/**
-	 * Client authentication mode ("want", "need").
+	 * Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store.
 	 */
 	private ClientAuth clientAuth;
 
+	/**
+	 * Supported SSL ciphers.
+	 */
 	private String[] ciphers;
 
+	/**
+	 * Alias that identifies the key in the key store.
+	 */
 	private String keyAlias;
 
+	/**
+	 * Password used to access the key in the key store.
+	 */
 	private String keyPassword;
 
 	/**
-	 * Path to the key store (typically a jks file).
+	 * Path to the key store that holds the SSL certificate (typically a jks file).
 	 */
 	private String keyStore;
 
 	/**
-	 * Login password of the key store.
+	 * Password used to access the key store.
 	 */
 	private String keyStorePassword;
 
+	/**
+	 * Type of the key store.
+	 */
 	private String keyStoreType;
 
+	/**
+	 * Provider for the key store.
+	 */
 	private String keyStoreProvider;
 
+	/**
+	 * Trust store that holds SSL certificates.
+	 */
 	private String trustStore;
 
+	/**
+	 * Password used to access the trust store.
+	 */
 	private String trustStorePassword;
 
+	/**
+	 * Type of the trust store.
+	 */
 	private String trustStoreType;
 
+	/**
+	 * Provider for the trust store.
+	 */
 	private String trustStoreProvider;
 
 	/**
