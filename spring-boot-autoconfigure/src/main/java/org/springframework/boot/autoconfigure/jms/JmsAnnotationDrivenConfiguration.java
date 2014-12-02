@@ -57,7 +57,7 @@ class JmsAnnotationDrivenConfiguration {
 			ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
-		factory.setPubSubDomain(properties.isPubSubDomain());
+		factory.setPubSubDomain(this.properties.isPubSubDomain());
 		if (this.transactionManager != null) {
 			factory.setTransactionManager(this.transactionManager);
 		}

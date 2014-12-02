@@ -26,7 +26,8 @@ package org.springframework.boot.context.embedded;
 public class Ssl {
 
 	/**
-	 * Whether client authentication is wanted ("want") or needed ("need"). Requires a trust store.
+	 * Whether client authentication is wanted ("want") or needed ("need"). Requires a
+	 * trust store.
 	 */
 	private ClientAuth clientAuth;
 

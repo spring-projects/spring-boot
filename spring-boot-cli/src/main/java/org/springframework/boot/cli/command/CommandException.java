@@ -62,6 +62,16 @@ public class CommandException extends RuntimeException {
 		this.options = asEnumSet(options);
 	}
 
+	/**
+	 * Create a new {@link CommandException} with the specified options.
+	 * @param cause the underlying cause
+	 * @param options the exception options
+	 */
+	public CommandException(Throwable cause, Option... options) {
+		super(cause);
+		this.options = asEnumSet(options);
+	}
+
 	private EnumSet<Option> asEnumSet(Option[] options) {
 		if (options == null || options.length == 0) {
 			return EnumSet.noneOf(Option.class);
@@ -100,6 +110,7 @@ public class CommandException extends RuntimeException {
 		 * Re-throw the exception rather than dealing with it.
 		 */
 		RETHROW
+
 	}
 
 }
