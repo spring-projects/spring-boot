@@ -78,8 +78,12 @@ public class CliTester implements TestRule {
 
 	public String test(String... args) throws Exception {
 		Future<TestCommand> future = submitCommand(new TestCommand(), args);
-		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
-		return getOutput();
+		try {
+			this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
+			return getOutput();
+		} catch (Exception e) {
+			return getOutput();
+		}
 	}
 
 	public String grab(String... args) throws Exception {
