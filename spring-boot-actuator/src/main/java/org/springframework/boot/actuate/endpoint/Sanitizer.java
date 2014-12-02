@@ -38,8 +38,8 @@ class Sanitizer {
 	}
 
 	/**
-	 * Keys that should be sanitized. Keys can be simple strings that the property
-	 * ends with or regex expressions.
+	 * Keys that should be sanitized. Keys can be simple strings that the property ends
+	 * with or regex expressions.
 	 * @param keysToSanitize the keys to sanitize
 	 */
 	public void setKeysToSanitize(String... keysToSanitize) {

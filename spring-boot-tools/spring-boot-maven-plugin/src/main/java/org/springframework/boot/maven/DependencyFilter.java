@@ -36,7 +36,8 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 	private final List<? extends FilterableDependency> filters;
 
 	/**
-	 * Create a new instance with the list of {@link FilterableDependency} instance(s) to use.
+	 * Create a new instance with the list of {@link FilterableDependency} instance(s) to
+	 * use.
 	 */
 	public DependencyFilter(List<? extends FilterableDependency> dependencies) {
 		this.filters = dependencies;
@@ -58,8 +59,8 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 
 	/**
 	 * Check if the specified {@link org.apache.maven.artifact.Artifact} matches the
-	 * specified {@link org.springframework.boot.maven.FilterableDependency}. Returns {@code true}
-	 * if it should be excluded
+	 * specified {@link org.springframework.boot.maven.FilterableDependency}. Returns
+	 * {@code true} if it should be excluded
 	 */
 	protected final boolean equals(Artifact artifact, FilterableDependency dependency) {
 		if (!dependency.getGroupId().equals(artifact.getGroupId())) {

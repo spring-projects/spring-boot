@@ -39,7 +39,8 @@ public class ActiveMQProperties {
 	private boolean inMemory = true;
 
 	/**
-	 * Specify if a PooledConnectionFactory should be created instead of a regular ConnectionFactory.
+	 * Specify if a PooledConnectionFactory should be created instead of a regular
+	 * ConnectionFactory.
 	 */
 	private boolean pooled;
 

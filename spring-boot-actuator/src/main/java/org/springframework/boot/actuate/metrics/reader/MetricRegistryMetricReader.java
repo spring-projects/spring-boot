@@ -46,7 +46,7 @@ import com.codahale.metrics.Timer;
  * {@link MetricRegistry}. Gauges and Counters are reflected as a single value. Timers,
  * Meters and Histograms are expanded into sets of metrics containing all the properties
  * of type Number.
- * 
+ *
  * @author Dave Syer
  *
  */
@@ -121,6 +121,7 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 		remove(name);
 	}
 
+	@Override
 	public void onCounterAdded(String name, Counter counter) {
 		names.put(name, name);
 		reverse.add(name, name);
@@ -209,10 +210,11 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 			String name = iterator.next();
 			return MetricRegistryMetricReader.this.findOne(name);
 		}
-		
+
 		@Override
 		public void remove() {
-			throw new UnsupportedOperationException("You cannot remove from this iterator.");
+			throw new UnsupportedOperationException(
+					"You cannot remove from this iterator.");
 		}
 
 	}

@@ -73,8 +73,8 @@ public class LiquibaseProperties {
 	private String password;
 
 	/**
-	 * JDBC url of the database to migrate. If not set, the primary configured
-	 * data source is used.
+	 * JDBC url of the database to migrate. If not set, the primary configured data source
+	 * is used.
 	 */
 	private String url;
 

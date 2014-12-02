@@ -262,7 +262,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 				}
 			}
 		}
-		PropertyNamePatternsMatcher patterns = new DefaultPropertyNamePatternsMatcher(names);
+		PropertyNamePatternsMatcher patterns = new DefaultPropertyNamePatternsMatcher(
+				names);
 
 		PropertyValues propertyValues = (this.properties != null ? new MutablePropertyValues(
 				this.properties) : new PropertySourcesPropertyValues(

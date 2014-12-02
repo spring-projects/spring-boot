@@ -38,13 +38,15 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class JacksonProperties {
 
 	/**
-	 * Date format string (yyyy-MM-dd HH:mm:ss), or a fully-qualified date format class name.
+	 * Date format string (yyyy-MM-dd HH:mm:ss), or a fully-qualified date format class
+	 * name.
 	 */
 	private String dateFormat;
 
 	/**
-	 * One of the constants on Jackson's PropertyNamingStrategy (CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES).
-	 * Can also be a fully-qualified class name of a PropertyNamingStrategy subclass.
+	 * One of the constants on Jackson's PropertyNamingStrategy
+	 * (CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES). Can also be a fully-qualified class
+	 * name of a PropertyNamingStrategy subclass.
 	 */
 	private String propertyNamingStrategy;
 

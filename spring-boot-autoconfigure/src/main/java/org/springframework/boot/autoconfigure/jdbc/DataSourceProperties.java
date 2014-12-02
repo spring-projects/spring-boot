@@ -62,7 +62,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private ClassLoader classLoader;
 
 	/**
-	 * JNDI location of the datasource. Class, url, username & password are ignored when set.
+	 * JNDI location of the datasource. Class, url, username & password are ignored when
+	 * set.
 	 */
 	private String jndiName;
 

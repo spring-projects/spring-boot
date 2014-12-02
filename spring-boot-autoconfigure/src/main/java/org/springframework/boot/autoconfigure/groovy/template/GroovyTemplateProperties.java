@@ -41,7 +41,7 @@ public class GroovyTemplateProperties extends AbstractViewResolverProperties {
 	private String prefix = DEFAULT_PREFIX;
 
 	/**
-	 *Suffix that gets appended to view names when building a URL.
+	 * Suffix that gets appended to view names when building a URL.
 	 */
 	private String suffix = DEFAULT_SUFFIX;
 

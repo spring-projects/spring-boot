@@ -52,8 +52,8 @@ public class JpaProperties {
 	private String databasePlatform;
 
 	/**
-	 * Target database to operate on, auto-detected by default. Can be alternatively
-	 * set using the "databasePlatform" property.
+	 * Target database to operate on, auto-detected by default. Can be alternatively set
+	 * using the "databasePlatform" property.
 	 */
 	private Database database = Database.DEFAULT;
 
@@ -137,9 +137,9 @@ public class JpaProperties {
 		private Class<?> namingStrategy;
 
 		/**
-		 * DDL mode ("none", "validate", "update", "create", "create-drop"). This is actually a shortcut
-		 * for the "hibernate.hbm2ddl.auto" property. Default to "create-drop" when using an embedded database,
-		 * "none" otherwise.
+		 * DDL mode ("none", "validate", "update", "create", "create-drop"). This is
+		 * actually a shortcut for the "hibernate.hbm2ddl.auto" property. Default to
+		 * "create-drop" when using an embedded database, "none" otherwise.
 		 */
 		private String ddlAuto;
 

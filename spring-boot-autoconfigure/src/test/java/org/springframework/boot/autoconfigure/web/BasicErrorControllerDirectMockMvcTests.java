@@ -28,7 +28,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -99,7 +98,8 @@ public class BasicErrorControllerDirectMockMvcTests {
 	@Test
 	public void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(
-				WebMvcIncludedConfiguration.class).run("--server.port=0", "--error.whitelabel.enabled=false"));
+				WebMvcIncludedConfiguration.class).run("--server.port=0",
+				"--error.whitelabel.enabled=false"));
 
 		thrown.expect(ServletException.class);
 		this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML));

@@ -47,22 +47,26 @@ public abstract class AbstractTemplateViewResolverProperties extends
 	private String requestContextAttribute;
 
 	/**
-	 * Set whether all request attributes should be added to the model prior to merging with the template.
+	 * Set whether all request attributes should be added to the model prior to merging
+	 * with the template.
 	 */
 	private boolean exposeRequestAttributes = false;
 
 	/**
-	 * Set whether all HttpSession attributes should be added to the model prior to merging with the template.
+	 * Set whether all HttpSession attributes should be added to the model prior to
+	 * merging with the template.
 	 */
 	private boolean exposeSessionAttributes = false;
 
 	/**
-	 * Set whether HttpServletRequest attributes are allowed to override (hide) controller generated model attributes of the same name.
+	 * Set whether HttpServletRequest attributes are allowed to override (hide) controller
+	 * generated model attributes of the same name.
 	 */
 	private boolean allowRequestOverride = false;
 
 	/**
-	 * Set whether to expose a RequestContext for use by Spring's macro library, under the name "springMacroRequestContext".
+	 * Set whether to expose a RequestContext for use by Spring's macro library, under the
+	 * name "springMacroRequestContext".
 	 */
 	private boolean exposeSpringMacroHelpers = true;
 

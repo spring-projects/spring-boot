@@ -94,7 +94,8 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		}
 	}
 
-	private void configureJtaPlatform(Map<String, Object> vendorProperties) throws LinkageError {
+	private void configureJtaPlatform(Map<String, Object> vendorProperties)
+			throws LinkageError {
 		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
 		if (jtaTransactionManager != null) {
 			vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(

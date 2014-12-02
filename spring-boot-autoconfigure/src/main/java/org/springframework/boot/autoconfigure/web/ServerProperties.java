@@ -260,8 +260,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"; // 127/8
 
 		/**
-		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto". Configured
-		 * as a RemoteIpValve only if remoteIpHeader is also set.
+		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
+		 * Configured as a RemoteIpValve only if remoteIpHeader is also set.
 		 */
 		private String protocolHeader;
 
@@ -282,7 +282,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		private File basedir;
 
 		/**
-		 *  Delay in seconds between the invocation of backgroundProcess methods.
+		 * Delay in seconds between the invocation of backgroundProcess methods.
 		 */
 		private int backgroundProcessorDelay = 30; // seconds
 
@@ -292,7 +292,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		private int maxThreads = 0; // Number of threads in protocol handler
 
 		/**
-		 *  Maximum size in bytes of the HTTP message header.
+		 * Maximum size in bytes of the HTTP message header.
 		 */
 		private int maxHttpHeaderSize = 0; // bytes
 

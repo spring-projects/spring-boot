@@ -43,8 +43,8 @@ public class ShellProperties {
 
 	/**
 	 * Authentication type (can be "simple", "spring", "key" or "jaas"). Auto-detected
-	 * according to the environment (i.e. if Spring Security is available, "spring" is used by
-	 * default).
+	 * according to the environment (i.e. if Spring Security is available, "spring" is
+	 * used by default).
 	 */
 	private String auth = "simple";
 
@@ -75,8 +75,8 @@ public class ShellProperties {
 	private String[] disabledCommands = new String[] { "jpa*", "jdbc*", "jndi*" };
 
 	/**
-	 * Comma-separated list of plugins to disable. Certain plugins are disabled
-	 * by default based on the environment.
+	 * Comma-separated list of plugins to disable. Certain plugins are disabled by default
+	 * based on the environment.
 	 */
 	private String[] disabledPlugins = new String[0];
 
@@ -287,7 +287,8 @@ public class ShellProperties {
 	public static class Telnet extends CrshShellProperties {
 
 		/**
-		 * Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is available.
+		 * Enable CRaSH telnet support. Enabled by default if the TelnetPlugin is
+		 * available.
 		 */
 		private boolean enabled = ClassUtils.isPresent("org.crsh.telnet.TelnetPlugin",
 				ClassUtils.getDefaultClassLoader());

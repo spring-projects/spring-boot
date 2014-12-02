@@ -56,8 +56,8 @@ public class MultipartProperties {
 	private String location;
 
 	/**
-	 * Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte
-	 * or Kilobyte size.
+	 * Max file size. Values can use the suffixed "MB" or "KB" to indicate a Megabyte or
+	 * Kilobyte size.
 	 */
 	private String maxFileSize = "1Mb";
 
@@ -68,8 +68,8 @@ public class MultipartProperties {
 	private String maxRequestSize = "10Mb";
 
 	/**
-	 * Threshold after which files will be written to disk. Values can use the suffixed "MB"
-	 * or "KB" to indicate a Megabyte or Kilobyte size.
+	 * Threshold after which files will be written to disk. Values can use the suffixed
+	 * "MB" or "KB" to indicate a Megabyte or Kilobyte size.
 	 */
 	private String fileSizeThreshold = "0";
 

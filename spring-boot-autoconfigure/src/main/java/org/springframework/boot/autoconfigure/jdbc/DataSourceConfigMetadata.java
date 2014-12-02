@@ -16,15 +16,15 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.tomcat.jdbc.pool.DataSource;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.zaxxer.hikari.HikariDataSource;
+
 /**
- * Expose the metadata of the supported data sources. Only used to harvest
- * the relevant properties metadata.
+ * Expose the metadata of the supported data sources. Only used to harvest the relevant
+ * properties metadata.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
@@ -38,12 +38,14 @@ class DataSourceConfigMetadata {
 
 	@ConfigurationProperties(DataSourceProperties.PREFIX)
 	public HikariDataSource hikariDataSource() {
-		return (HikariDataSource) DataSourceBuilder.create().type(HikariDataSource.class).build();
+		return (HikariDataSource) DataSourceBuilder.create().type(HikariDataSource.class)
+				.build();
 	}
 
 	@ConfigurationProperties(DataSourceProperties.PREFIX)
 	public BasicDataSource dbcpDataSource() {
-		return (BasicDataSource)DataSourceBuilder.create().type(BasicDataSource.class).build();
+		return (BasicDataSource) DataSourceBuilder.create().type(BasicDataSource.class)
+				.build();
 	}
 
 }

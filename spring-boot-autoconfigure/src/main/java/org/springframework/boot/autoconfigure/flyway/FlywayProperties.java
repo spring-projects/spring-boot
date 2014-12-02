@@ -56,18 +56,19 @@ public class FlywayProperties {
 	private String user;
 
 	/**
-	 *Login password of the database to migrate.
+	 * Login password of the database to migrate.
 	 */
 	private String password;
 
 	/**
-	 * JDBC url of the database to migrate. If not set, the primary configured
-	 * data source is used.
+	 * JDBC url of the database to migrate. If not set, the primary configured data source
+	 * is used.
 	 */
 	private String url;
 
 	/**
-	 * SQL statements to execute to initialize a connection immediately after obtaining it.
+	 * SQL statements to execute to initialize a connection immediately after obtaining
+	 * it.
 	 */
 	private List<String> initSqls = Collections.emptyList();
 

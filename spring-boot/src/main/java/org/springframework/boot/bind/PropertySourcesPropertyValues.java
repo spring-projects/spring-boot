@@ -48,9 +48,9 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private final PropertySources propertySources;
 
-	private static final Collection<String> PATTERN_MATCHED_PROPERTY_SOURCES = Arrays.asList(
-			StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-			StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
+	private static final Collection<String> PATTERN_MATCHED_PROPERTY_SOURCES = Arrays
+			.asList(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+					StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
@@ -70,7 +70,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources,
 			Collection<String> includePatterns, Collection<String> names) {
-		this(propertySources, new SimplePropertyNamePatternsMatcher(includePatterns), names);
+		this(propertySources, new SimplePropertyNamePatternsMatcher(includePatterns),
+				names);
 	}
 
 	/**
