@@ -38,7 +38,7 @@ public class FieldValues {
 
 	private static final Integer INTEGER_OBJ_CONST = 4;
 
-	private static final String[] STRING_ARRAY_CONST = new String[] {"OK", "KO"};
+	private static final String[] STRING_ARRAY_CONST = new String[] { "OK", "KO" };
 
 	private String string = "1";
 
@@ -78,7 +78,7 @@ public class FieldValues {
 
 	private Object objectInstance = new StringBuffer();
 
-	private String[] stringArray = new String[] {"FOO", "BAR"};
+	private String[] stringArray = new String[] { "FOO", "BAR" };
 
 	private String[] stringArrayNone;
 
@@ -88,8 +88,8 @@ public class FieldValues {
 
 	private String[] stringArrayConstElements = new String[] { STRING_CONST };
 
-	private Integer[] integerArray = new Integer[] {42, 24};
+	private Integer[] integerArray = new Integer[] { 42, 24 };
 
-	private FieldValues[] unknownArray = new FieldValues[] {new FieldValues()};
+	private FieldValues[] unknownArray = new FieldValues[] { new FieldValues() };
 
 }

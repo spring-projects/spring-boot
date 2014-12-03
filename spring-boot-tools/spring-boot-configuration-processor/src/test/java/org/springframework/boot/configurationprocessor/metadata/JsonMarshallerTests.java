@@ -23,9 +23,7 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.array;
 import static org.junit.Assert.assertThat;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
@@ -49,10 +47,10 @@ public class JsonMarshallerTests {
 				false));
 		metadata.add(ItemMetadata.newProperty("d", null, null, null, null, null, true,
 				false));
-		metadata.add(ItemMetadata.newProperty("e", null, null, null, null, null, new String[]{"y", "n"},
-				false));
-		metadata.add(ItemMetadata.newProperty("f", null, null, null, null, null, new Boolean[]{true, false},
-				false));
+		metadata.add(ItemMetadata.newProperty("e", null, null, null, null, null,
+				new String[] { "y", "n" }, false));
+		metadata.add(ItemMetadata.newProperty("f", null, null, null, null, null,
+				new Boolean[] { true, false }, false));
 		metadata.add(ItemMetadata.newGroup("d", null, null, null));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
@@ -61,12 +59,15 @@ public class JsonMarshallerTests {
 				outputStream.toByteArray()));
 		assertThat(read,
 				containsProperty("a.b", StringBuffer.class).fromSource(InputStream.class)
-						.withDescription("desc").withDefaultValue(is("x")).withDeprecated());
+						.withDescription("desc").withDefaultValue(is("x"))
+						.withDeprecated());
 		assertThat(read, containsProperty("b.c.d"));
 		assertThat(read, containsProperty("c").withDefaultValue(is(123)));
 		assertThat(read, containsProperty("d").withDefaultValue(is(true)));
-		assertThat(read, containsProperty("e").withDefaultValue(is(array(equalTo("y"), equalTo("n")))));
-		assertThat(read, containsProperty("f").withDefaultValue(is(array(equalTo(true), equalTo(false)))));
+		assertThat(read,
+				containsProperty("e").withDefaultValue(is(new String[] { "y", "n" })));
+		assertThat(read,
+				containsProperty("f").withDefaultValue(is(new boolean[] { true, false })));
 		assertThat(read, containsGroup("d"));
 	}
 

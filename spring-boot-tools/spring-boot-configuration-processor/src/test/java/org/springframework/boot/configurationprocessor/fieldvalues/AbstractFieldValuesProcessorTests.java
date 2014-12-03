@@ -78,12 +78,15 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("objectNone"), nullValue());
 		assertThat(values.get("objectConst"), equalToObject("c"));
 		assertThat(values.get("objectInstance"), nullValue());
-		assertThat(values.get("stringArray"), equalToObject(new Object[] {"FOO", "BAR"}));
+		assertThat(values.get("stringArray"),
+				equalToObject(new Object[] { "FOO", "BAR" }));
 		assertThat(values.get("stringArrayNone"), nullValue());
 		assertThat(values.get("stringEmptyArray"), equalToObject(new Object[0]));
-		assertThat(values.get("stringArrayConst"), equalToObject(new Object[]{"OK", "KO"}));
-		assertThat(values.get("stringArrayConstElements"), equalToObject(new Object[] {"c"}));
-		assertThat(values.get("integerArray"), equalToObject(new Object[] {42, 24}));
+		assertThat(values.get("stringArrayConst"), equalToObject(new Object[] { "OK",
+				"KO" }));
+		assertThat(values.get("stringArrayConstElements"),
+				equalToObject(new Object[] { "c" }));
+		assertThat(values.get("integerArray"), equalToObject(new Object[] { 42, 24 }));
 		assertThat(values.get("unknownArray"), nullValue());
 	}
 
