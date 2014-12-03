@@ -62,4 +62,17 @@ public class YamlPropertySourceLoaderTests {
 		assertThat(source.getPropertyNames(), equalTo(expected.toArray(new String[] {})));
 	}
 
+	@Test
+	public void mergeItems() throws Exception {
+		StringBuilder yaml = new StringBuilder();
+		yaml.append("foo:\n  bar: spam\n");
+		yaml.append("---\n");
+		yaml.append("foo:\n  baz: wham\n");
+		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
+		PropertySource<?> source = this.loader.load("resource", resource, null);
+		assertNotNull(source);
+		assertEquals("spam", source.getProperty("foo.bar"));
+		assertEquals("wham", source.getProperty("foo.baz"));
+	}
+
 }

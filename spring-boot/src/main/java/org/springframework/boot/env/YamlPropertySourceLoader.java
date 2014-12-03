@@ -78,10 +78,10 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 			process(new MatchCallback() {
 				@Override
 				public void process(Properties properties, Map<String, Object> map) {
-					result.putAll(map);
+					result.putAll(getFlattenedMap(map));
 				}
 			});
-			return getFlattenedMap(result);
+			return result;
 		}
 
 	}
