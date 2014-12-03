@@ -84,6 +84,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("stringArrayConst"), equalToObject(new Object[]{"OK", "KO"}));
 		assertThat(values.get("stringArrayConstElements"), equalToObject(new Object[] {"c"}));
 		assertThat(values.get("integerArray"), equalToObject(new Object[] {42, 24}));
+		assertThat(values.get("unknownArray"), nullValue());
 	}
 
 	private Matcher<Object> equalToObject(Object object) {

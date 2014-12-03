@@ -144,8 +144,9 @@ The JSON object contained in the `properties` array can contain the following at
 
 |`defaultValue`
 | Object
-| The default value which will be used if the property is not specified. May be omitted
-  if the default value is not known.
+| The default value which will be used if the property is not specified. Can also be an
+  array of value(s) if the type of the property is an array. May be omitted if the default
+  value is not known.
 
 |`deprecated`
 | boolean

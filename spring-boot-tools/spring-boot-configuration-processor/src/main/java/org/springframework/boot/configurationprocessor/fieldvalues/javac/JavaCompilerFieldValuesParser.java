@@ -124,7 +124,11 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			if (arrayValues != null) {
 				Object[] result = new Object[arrayValues.size()];
 				for (int i = 0; i < arrayValues.size(); i++) {
-					result[i] = getValue(arrayValues.get(i), null);
+					Object value = getValue(arrayValues.get(i), null);
+					if (value == null) { // One of the elements could not be resolved
+						return defaultValue;
+					}
+					result[i] = value;
 				}
 				return result;
 			}

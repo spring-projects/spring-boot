@@ -90,4 +90,6 @@ public class FieldValues {
 
 	private Integer[] integerArray = new Integer[] {42, 24};
 
+	private FieldValues[] unknownArray = new FieldValues[] {new FieldValues()};
+
 }
