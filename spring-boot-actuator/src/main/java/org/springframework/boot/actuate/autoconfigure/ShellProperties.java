@@ -94,11 +94,6 @@ public class ShellProperties {
 		return this.auth;
 	}
 
-	public void setAdditionalProperties(CrshShellProperties[] additionalProperties) {
-		Assert.notNull(additionalProperties, "additionalProperties must not be null");
-		this.additionalProperties = additionalProperties;
-	}
-
 	public CrshShellProperties[] getAdditionalProperties() {
 		return this.additionalProperties;
 	}
