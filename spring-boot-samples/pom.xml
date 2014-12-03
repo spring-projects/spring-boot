@@ -73,8 +73,8 @@
 		<module>spring-boot-sample-web-jsp</module>
 		<module>spring-boot-sample-web-ui</module>
 		<module>spring-boot-sample-web-velocity</module>
-		<module>spring-boot-sample-websocket</module>
 		<module>spring-boot-sample-websocket-jetty</module>
+		<module>spring-boot-sample-websocket-tomcat</module>
 		<module>spring-boot-sample-websocket-undertow</module>
 		<module>spring-boot-sample-ws</module>
 		<module>spring-boot-sample-xml</module>

@@ -42,16 +42,16 @@ import org.springframework.util.SocketUtils;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
+import samples.websocket.SampleJettyWebSocketsApplication;
 import samples.websocket.client.GreetingService;
 import samples.websocket.client.SimpleClientWebSocketHandler;
 import samples.websocket.client.SimpleGreetingService;
-import samples.websocket.config.SampleWebSocketsApplication;
 import samples.websocket.echo.CustomContainerWebSocketsApplicationTests.CustomContainerConfiguration;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { SampleWebSocketsApplication.class,
+@SpringApplicationConfiguration(classes = { SampleJettyWebSocketsApplication.class,
 		CustomContainerConfiguration.class })
 @WebAppConfiguration
 @IntegrationTest
@@ -62,14 +62,6 @@ public class CustomContainerWebSocketsApplicationTests {
 			.getLog(CustomContainerWebSocketsApplicationTests.class);
 
 	private static int PORT = SocketUtils.findAvailableTcpPort();
-
-	@Configuration
-	protected static class CustomContainerConfiguration {
-		@Bean
-		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return new JettyEmbeddedServletContainerFactory("/ws", PORT);
-		}
-	}
 
 	@Test
 	public void echoEndpoint() throws Exception {
@@ -97,6 +89,16 @@ public class CustomContainerWebSocketsApplicationTests {
 		context.close();
 		assertEquals(0, count);
 		assertEquals("Reversed: !dlrow olleH", messagePayloadReference.get());
+	}
+
+	@Configuration
+	protected static class CustomContainerConfiguration {
+
+		@Bean
+		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
+			return new JettyEmbeddedServletContainerFactory("/ws", PORT);
+		}
+
 	}
 
 	@Configuration
@@ -145,6 +147,7 @@ public class CustomContainerWebSocketsApplicationTests {
 		public GreetingService greetingService() {
 			return new SimpleGreetingService();
 		}
+
 	}
 
 }

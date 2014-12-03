@@ -42,12 +42,11 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import samples.websocket.client.GreetingService;
 import samples.websocket.client.SimpleClientWebSocketHandler;
 import samples.websocket.client.SimpleGreetingService;
-import samples.websocket.config.SampleWebSocketsApplication;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleWebSocketsApplication.class)
+@SpringApplicationConfiguration(classes = SampleJettyWebSocketsApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 @DirtiesContext

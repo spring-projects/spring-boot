@@ -42,7 +42,6 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import samples.websocket.client.GreetingService;
 import samples.websocket.client.SimpleClientWebSocketHandler;
 import samples.websocket.client.SimpleGreetingService;
-import samples.websocket.config.SampleUndertowWebSocketsApplication;
 
 import static org.junit.Assert.assertEquals;
 
@@ -133,6 +132,7 @@ public class SampleWebSocketsApplicationTests {
 		public GreetingService greetingService() {
 			return new SimpleGreetingService();
 		}
+
 	}
 
 }

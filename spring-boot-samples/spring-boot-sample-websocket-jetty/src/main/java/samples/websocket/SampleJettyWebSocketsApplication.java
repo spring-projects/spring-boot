@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package samples.websocket.config;
+package samples.websocket;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -36,10 +37,11 @@ import samples.websocket.echo.EchoWebSocketHandler;
 import samples.websocket.reverse.ReverseWebSocketEndpoint;
 import samples.websocket.snake.SnakeWebSocketHandler;
 
-@SpringBootApplication
+@Configuration
+@EnableAutoConfiguration
 @EnableWebSocket
-public class SampleWebSocketsApplication extends SpringBootServletInitializer implements
-		WebSocketConfigurer {
+public class SampleJettyWebSocketsApplication extends SpringBootServletInitializer
+		implements WebSocketConfigurer {
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -49,11 +51,7 @@ public class SampleWebSocketsApplication extends SpringBootServletInitializer im
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SampleWebSocketsApplication.class);
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(SampleWebSocketsApplication.class, args);
+		return application.sources(SampleJettyWebSocketsApplication.class);
 	}
 
 	@Bean
@@ -84,6 +82,10 @@ public class SampleWebSocketsApplication extends SpringBootServletInitializer im
 	@Bean
 	public ServerEndpointExporter serverEndpointExporter() {
 		return new ServerEndpointExporter();
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(SampleJettyWebSocketsApplication.class, args);
 	}
 
 }

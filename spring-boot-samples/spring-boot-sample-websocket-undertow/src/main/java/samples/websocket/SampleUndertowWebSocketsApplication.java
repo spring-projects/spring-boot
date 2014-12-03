@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package samples.websocket.config;
+package samples.websocket;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -36,7 +37,8 @@ import samples.websocket.echo.EchoWebSocketHandler;
 import samples.websocket.reverse.ReverseWebSocketEndpoint;
 import samples.websocket.snake.SnakeWebSocketHandler;
 
-@SpringBootApplication
+@Configuration
+@EnableAutoConfiguration
 @EnableWebSocket
 public class SampleUndertowWebSocketsApplication extends SpringBootServletInitializer
 		implements WebSocketConfigurer {
