@@ -17,11 +17,14 @@
 package org.springframework.boot.env;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.beans.factory.config.YamlProcessor;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.yaml.SpringProfileDocumentMatcher;
-import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
@@ -43,22 +46,44 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 	public PropertySource<?> load(String name, Resource resource, String profile)
 			throws IOException {
 		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
-			YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
-			if (profile == null) {
-				factory.setMatchDefault(true);
-				factory.setDocumentMatchers(new SpringProfileDocumentMatcher());
-			}
-			else {
-				factory.setMatchDefault(false);
-				factory.setDocumentMatchers(new SpringProfileDocumentMatcher(profile));
-			}
-			factory.setResources(new Resource[] { resource });
-			Properties properties = factory.getObject();
-			if (!properties.isEmpty()) {
-				return new PropertiesPropertySource(name, properties);
+			Processor processor = new Processor(resource, profile);
+			Map<String, Object> source = processor.process();
+			if (!source.isEmpty()) {
+				return new MapPropertySource(name, source);
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * {@link YamlProcessor} to create a {@link Map} containing the property values.
+	 * Similar to {@link YamlPropertiesFactoryBean} but retains the order of entries.
+	 */
+	private static class Processor extends YamlProcessor {
+
+		public Processor(Resource resource, String profile) {
+			if (profile == null) {
+				setMatchDefault(true);
+				setDocumentMatchers(new SpringProfileDocumentMatcher());
+			}
+			else {
+				setMatchDefault(false);
+				setDocumentMatchers(new SpringProfileDocumentMatcher(profile));
+			}
+			setResources(new Resource[] { resource });
+		}
+
+		public Map<String, Object> process() {
+			final Map<String, Object> result = new LinkedHashMap<String, Object>();
+			process(new MatchCallback() {
+				@Override
+				public void process(Properties properties, Map<String, Object> map) {
+					result.putAll(map);
+				}
+			});
+			return getFlattenedMap(result);
+		}
+
 	}
 
 }

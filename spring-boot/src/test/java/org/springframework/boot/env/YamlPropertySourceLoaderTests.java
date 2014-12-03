@@ -16,17 +16,24 @@
 
 package org.springframework.boot.env;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link YamlPropertySourceLoader}.
  *
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class YamlPropertySourceLoaderTests {
 
@@ -40,4 +47,18 @@ public class YamlPropertySourceLoaderTests {
 		assertEquals("spam", source.getProperty("foo.bar"));
 	}
 
+	@Test
+	public void orderedItems() throws Exception {
+		StringBuilder yaml = new StringBuilder();
+		List<String> expected = new ArrayList<String>();
+		for (char c = 'a'; c <= 'z'; c++) {
+			yaml.append(c + ": value" + c + "\n");
+			expected.add(String.valueOf(c));
+		}
+		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
+		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader
+				.load("resource", resource, null);
+		assertNotNull(source);
+		assertThat(source.getPropertyNames(), equalTo(expected.toArray(new String[] {})));
+	}
 }
