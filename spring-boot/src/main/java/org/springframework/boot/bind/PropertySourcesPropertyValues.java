@@ -16,7 +16,6 @@
 
 package org.springframework.boot.bind;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +31,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.DataBinder;
 
 /**
@@ -142,24 +140,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	private void processCompositePropertySource(CompositePropertySource source,
 			PropertySourcesPropertyResolver resolver,
 			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
-		for (PropertySource<?> nested : extractSources(source)) {
+		for (PropertySource<?> nested : source.getPropertySources()) {
 			processPropertySource(nested, resolver, includes, exacts);
-		}
-	}
-
-	private Collection<PropertySource<?>> extractSources(CompositePropertySource composite) {
-		Field field = ReflectionUtils.findField(CompositePropertySource.class,
-				"propertySources");
-		field.setAccessible(true);
-		try {
-			@SuppressWarnings("unchecked")
-			Collection<PropertySource<?>> collection = (Collection<PropertySource<?>>) field
-					.get(composite);
-			return collection;
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Cannot extract property sources from composite", ex);
 		}
 	}
 
