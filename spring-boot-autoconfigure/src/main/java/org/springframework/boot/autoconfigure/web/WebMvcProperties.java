@@ -43,6 +43,12 @@ public class WebMvcProperties {
 	 */
 	private String dateFormat;
 
+	/**
+	 * If the the content of the "default" model should be ignored during redirect
+	 * scenarios.
+	 */
+	private boolean ignoreDefaultModelOnRedirect = true;
+
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
 	}
@@ -68,4 +74,11 @@ public class WebMvcProperties {
 		this.dateFormat = dateFormat;
 	}
 
+	public boolean isIgnoreDefaultModelOnRedirect() {
+		return this.ignoreDefaultModelOnRedirect;
+	}
+
+	public void setIgnoreDefaultModelOnRedirect(boolean ignoreDefaultModelOnRedirect) {
+		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
+	}
 }

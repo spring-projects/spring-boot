@@ -45,6 +45,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -277,6 +278,34 @@ public class WebMvcAutoConfigurationTests {
 			}
 		}
 		return mappingLocations;
+	}
+
+	@Test
+	public void ignoreDefaultModelOnRedirectIsTrue() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		RequestMappingHandlerAdapter adapter = this.context
+				.getBean(RequestMappingHandlerAdapter.class);
+		assertEquals(true,
+				ReflectionTestUtils.getField(adapter, "ignoreDefaultModelOnRedirect"));
+	}
+
+	@Test
+	public void overrideIgnoreDefaultModelOnRedirect() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.ignore-default-model-on-redirect:false");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		RequestMappingHandlerAdapter adapter = this.context
+				.getBean(RequestMappingHandlerAdapter.class);
+		assertEquals(false,
+				ReflectionTestUtils.getField(adapter, "ignoreDefaultModelOnRedirect"));
 	}
 
 	@Configuration
