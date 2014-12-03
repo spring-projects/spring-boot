@@ -17,6 +17,8 @@
 package org.springframework.boot.configurationprocessor.fieldvalues.javac;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Reflection based access to {@code com.sun.source.tree.ExpressionTree}.
@@ -30,6 +32,10 @@ class ExpressionTree extends ReflectionWrapper {
 
 	private final Method literalValueMethod = findMethod(this.literalTreeType, "getValue");
 
+	private final Class<?> newArrayTreeType = findClass("com.sun.source.tree.NewArrayTree");
+
+	private final Method arrayValueMethod = findMethod(this.newArrayTreeType, "getInitializers");
+
 	public ExpressionTree(Object instance) {
 		super(instance);
 	}
@@ -41,6 +47,21 @@ class ExpressionTree extends ReflectionWrapper {
 	public Object getLiteralValue() throws Exception {
 		if (this.literalTreeType.isAssignableFrom(getInstance().getClass())) {
 			return this.literalValueMethod.invoke(getInstance());
+		}
+		return null;
+	}
+
+	public List<? extends ExpressionTree> getArrayExpression() throws Exception {
+		if (this.newArrayTreeType.isAssignableFrom(getInstance().getClass())) {
+			List<?> elements = (List<?>) this.arrayValueMethod.invoke(getInstance());
+			List<ExpressionTree> result = new ArrayList<ExpressionTree>();
+			if (elements == null) {
+				return result;
+			}
+			for (Object element : elements) {
+				result.add(new ExpressionTree(element));
+			}
+			return result;
 		}
 		return null;
 	}

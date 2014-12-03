@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -67,7 +68,10 @@ public class JsonMarshaller {
 		putIfPresent(jsonObject, "description", item.getDescription());
 		putIfPresent(jsonObject, "sourceType", item.getSourceType());
 		putIfPresent(jsonObject, "sourceMethod", item.getSourceMethod());
-		putIfPresent(jsonObject, "defaultValue", item.getDefaultValue());
+		Object defaultValue = item.getDefaultValue();
+		if (defaultValue != null) {
+			putDefaultValue(jsonObject, defaultValue);
+		}
 		if (item.isDeprecated()) {
 			jsonObject.put("deprecated", true);
 		}
@@ -78,6 +82,20 @@ public class JsonMarshaller {
 		if (value != null) {
 			jsonObject.put(name, value);
 		}
+	}
+
+	private void putDefaultValue(JSONObject jsonObject, Object value) {
+		Object defaultValue = value;
+		if (value.getClass().isArray()) {
+			JSONArray array = new JSONArray();
+			int length = Array.getLength(value);
+			for (int i = 0; i < length; i++) {
+				array.put(Array.get(value, i));
+			}
+			defaultValue = array;
+
+		}
+		jsonObject.put("defaultValue", defaultValue);
 	}
 
 	public ConfigurationMetadata read(InputStream inputStream) throws IOException {
@@ -105,10 +123,23 @@ public class JsonMarshaller {
 		String description = object.optString("description", null);
 		String sourceType = object.optString("sourceType", null);
 		String sourceMethod = object.optString("sourceMethod", null);
-		Object defaultValue = object.opt("defaultValue");
+		Object defaultValue = readDefaultValue(object);
 		boolean deprecated = object.optBoolean("deprecated");
 		return new ItemMetadata(itemType, name, null, type, sourceType, sourceMethod,
 				description, defaultValue, deprecated);
+	}
+
+	private Object readDefaultValue(JSONObject object) {
+		Object defaultValue = object.opt("defaultValue");
+		if (defaultValue instanceof JSONArray) {
+			JSONArray array = (JSONArray) defaultValue;
+			Object[] content = new Object[array.length()];
+			for (int i = 0; i < array.length(); i++) {
+				content[i] = array.get(i);
+			}
+			return content;
+		}
+		return defaultValue;
 	}
 
 	private String toString(InputStream inputStream) throws IOException {

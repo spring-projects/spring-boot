@@ -22,6 +22,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * Sample object containing fields with initial values.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 @SuppressWarnings("unused")
 @ConfigurationProperties
@@ -36,6 +37,8 @@ public class FieldValues {
 	private static final int INTEGER_CONST = 2;
 
 	private static final Integer INTEGER_OBJ_CONST = 4;
+
+	private static final String[] STRING_ARRAY_CONST = new String[] {"OK", "KO"};
 
 	private String string = "1";
 
@@ -74,5 +77,17 @@ public class FieldValues {
 	private Object objectConst = STRING_CONST;
 
 	private Object objectInstance = new StringBuffer();
+
+	private String[] stringArray = new String[] {"FOO", "BAR"};
+
+	private String[] stringArrayNone;
+
+	private String[] stringEmptyArray = new String[0];
+
+	private String[] stringArrayConst = STRING_ARRAY_CONST;
+
+	private String[] stringArrayConstElements = new String[] { STRING_CONST };
+
+	private Integer[] integerArray = new Integer[] {42, 24};
 
 }

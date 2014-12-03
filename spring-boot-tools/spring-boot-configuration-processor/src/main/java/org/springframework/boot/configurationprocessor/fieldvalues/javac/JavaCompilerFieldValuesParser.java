@@ -18,6 +18,7 @@ package org.springframework.boot.configurationprocessor.fieldvalues.javac;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -107,18 +108,33 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		private Object getValue(VariableTree variable) throws Exception {
 			ExpressionTree initializer = variable.getInitializer();
 			Class<?> wrapperType = WRAPPER_TYPES.get(variable.getType());
+			Object defaultValue = DEFAULT_TYPE_VALUES.get(wrapperType);
 			if (initializer != null) {
-				if (initializer.getLiteralValue() != null) {
-					return initializer.getLiteralValue();
-				}
-				if (initializer.getKind().equals("IDENTIFIER")) {
-					return this.staticFinals.get(initializer.toString());
-				}
-				if (initializer.getKind().equals("MEMBER_SELECT")) {
-					return WELL_KNOWN_STATIC_FINALS.get(initializer.toString());
-				}
+				return getValue(initializer, defaultValue);
 			}
-			return DEFAULT_TYPE_VALUES.get(wrapperType);
+			return defaultValue;
+		}
+
+		private Object getValue(ExpressionTree expression, Object defaultValue) throws Exception {
+			Object literalValue = expression.getLiteralValue();
+			if (literalValue != null) {
+				return literalValue;
+			}
+			List<? extends ExpressionTree> arrayValues = expression.getArrayExpression();
+			if (arrayValues != null) {
+				Object[] result = new Object[arrayValues.size()];
+				for (int i = 0; i < arrayValues.size(); i++) {
+					result[i] = getValue(arrayValues.get(i), null);
+				}
+				return result;
+			}
+			if (expression.getKind().equals("IDENTIFIER")) {
+				return this.staticFinals.get(expression.toString());
+			}
+			if (expression.getKind().equals("MEMBER_SELECT")) {
+				return WELL_KNOWN_STATIC_FINALS.get(expression.toString());
+			}
+			return defaultValue;
 		}
 
 		public Map<String, Object> getFieldValues() {

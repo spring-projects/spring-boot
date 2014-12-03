@@ -66,7 +66,7 @@ public class ConfigurationMetadataMatchers {
 
 		private final String description;
 
-		private final Object defaultValue;
+		private final Matcher<?> defaultValue;
 
 		private final boolean deprecated;
 
@@ -75,7 +75,7 @@ public class ConfigurationMetadataMatchers {
 		}
 
 		public ContainsItemMatcher(ItemType itemType, String name, String type,
-				Class<?> sourceType, String description, Object defaultValue,
+				Class<?> sourceType, String description, Matcher<?> defaultValue,
 				boolean deprecated) {
 			this.itemType = itemType;
 			this.name = name;
@@ -101,7 +101,7 @@ public class ConfigurationMetadataMatchers {
 				return false;
 			}
 			if (this.defaultValue != null
-					&& !this.defaultValue.equals(itemMetadata.getDefaultValue())) {
+					&& !this.defaultValue.matches(itemMetadata.getDefaultValue())) {
 				return false;
 			}
 			if (this.description != null
@@ -169,7 +169,7 @@ public class ConfigurationMetadataMatchers {
 					this.sourceType, description, this.defaultValue, this.deprecated);
 		}
 
-		public ContainsItemMatcher withDefaultValue(Object defaultValue) {
+		public ContainsItemMatcher withDefaultValue(Matcher<?> defaultValue) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
 					this.sourceType, this.description, defaultValue, this.deprecated);
 		}

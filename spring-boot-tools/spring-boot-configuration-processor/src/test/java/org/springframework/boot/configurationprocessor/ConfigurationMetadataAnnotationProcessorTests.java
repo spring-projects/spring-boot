@@ -43,6 +43,7 @@ import org.springframework.boot.configurationsample.specific.InnerClassPropertie
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -77,7 +78,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("simple.the-name", String.class)
 						.fromSource(SimpleProperties.class)
 						.withDescription("The name of this simple properties.")
-						.withDefaultValue("boot").withDeprecated());
+						.withDefaultValue(is("boot")).withDeprecated());
 		assertThat(
 				metadata,
 				containsProperty("simple.flag", Boolean.class)
