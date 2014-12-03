@@ -3,7 +3,7 @@
 == Configuration meta-data
 Spring Boot jars are shipped with meta-data files that provide details of all supported
 configuration properties. The files are designed to allow IDE developers to offer
-contextual help and "`code completion`" as users are working with `application.properies`
+contextual help and "`code completion`" as users are working with `application.properties`
 or `application.yml` files.
 
 The majority of the meta-data file is generated automatically at compile time by
