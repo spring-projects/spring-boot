@@ -86,7 +86,9 @@ import org.xnio.SslClientAuthMode;
 public class UndertowEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
-	private List<UndertowBuilderCustomizer> undertowBuilderCustomizers = new ArrayList<UndertowBuilderCustomizer>();
+	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<UndertowBuilderCustomizer>();
+
+	private List<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new ArrayList<UndertowDeploymentInfoCustomizer>();
 
 	private ResourceLoader resourceLoader;
 
@@ -132,14 +134,12 @@ public class UndertowEmbeddedServletContainerFactory extends
 	/**
 	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
 	 * {@link Builder}. Calling this method will replace any existing customizers.
-	 * @param undertowBuilderCustomizers the customizers to set
+	 * @param customizers the customizers to set
 	 */
-	public void setUndertowBuilderCustomizers(
-			Collection<? extends UndertowBuilderCustomizer> undertowBuilderCustomizers) {
-		Assert.notNull(undertowBuilderCustomizers,
-				"undertowBuilderCustomizers must not be null");
-		this.undertowBuilderCustomizers = new ArrayList<UndertowBuilderCustomizer>(
-				undertowBuilderCustomizers);
+	public void setBuilderCustomizers(
+			Collection<? extends UndertowBuilderCustomizer> customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.builderCustomizers = new ArrayList<UndertowBuilderCustomizer>(customizers);
 	}
 
 	/**
@@ -147,20 +147,51 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 * applied to the Undertow {@link Builder} .
 	 * @return the customizers that will be applied
 	 */
-	public Collection<UndertowBuilderCustomizer> getUndertowBuilderCustomizers() {
-		return this.undertowBuilderCustomizers;
+	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
+		return this.builderCustomizers;
 	}
 
 	/**
 	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
 	 * Undertow {@link Builder}.
-	 * @param undertowBuilderCustomizers the customizers to add
+	 * @param customizers the customizers to add
 	 */
-	public void addUndertowBuilderCustomizers(
-			UndertowBuilderCustomizer... undertowBuilderCustomizers) {
-		Assert.notNull(undertowBuilderCustomizers,
-				"undertowBuilderCustomizers must not be null");
-		this.undertowBuilderCustomizers.addAll(Arrays.asList(undertowBuilderCustomizers));
+	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.builderCustomizers.addAll(Arrays.asList(customizers));
+	}
+
+	/**
+	 * Set {@link UndertowDeploymentInfoCustomizer}s that should be applied to the
+	 * Undertow {@link DeploymentInfo}. Calling this method will replace any existing
+	 * customizers.
+	 * @param customizers the customizers to set
+	 */
+	public void setDeploymentInfoCustomizers(
+			Collection<? extends UndertowDeploymentInfoCustomizer> customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.deploymentInfoCustomizers = new ArrayList<UndertowDeploymentInfoCustomizer>(
+				customizers);
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
+	 * will be applied to the Undertow {@link DeploymentInfo} .
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
+		return this.deploymentInfoCustomizers;
+	}
+
+	/**
+	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
+	 * Undertow {@link DeploymentInfo}.
+	 * @param customizers the customizers to add
+	 */
+	public void addDeploymentInfoCustomizers(
+			UndertowDeploymentInfoCustomizer... customizers) {
+		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
+		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 	@Override
@@ -199,7 +230,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 		else {
 			configureSsl(port, builder);
 		}
-		for (UndertowBuilderCustomizer customizer : this.undertowBuilderCustomizers) {
+		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
 		}
 		return builder;
@@ -298,6 +329,9 @@ public class UndertowEmbeddedServletContainerFactory extends
 		deployment.setServletStackTraces(ServletStackTraces.NONE);
 		deployment.setResourceManager(getDocumentRootResourceManager());
 		configureMimeMappings(deployment);
+		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
+			customizer.customize(deployment);
+		}
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();

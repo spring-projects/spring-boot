@@ -75,4 +75,16 @@ public class WebSocketAutoConfiguration {
 
 	}
 
+	@Configuration
+	@ConditionalOnClass(io.undertow.websockets.jsr.Bootstrap.class)
+	static class UndertowWebSocketConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(name = "websocketContainerCustomizer")
+		public EmbeddedServletContainerCustomizer websocketContainerCustomizer() {
+			return new UndertowWebSocketContainerCustomizer();
+		}
+
+	}
+
 }

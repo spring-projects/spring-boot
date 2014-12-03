@@ -564,6 +564,11 @@
 				<version>${undertow.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>io.undertow</groupId>
+				<artifactId>undertow-websockets-jsr</artifactId>
+				<version>${undertow.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.cache</groupId>
 				<artifactId>cache-api</artifactId>
 				<version>${javax-cache.version}</version>

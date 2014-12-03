@@ -17,6 +17,7 @@
 package org.springframework.boot.context.embedded.undertow;
 
 import io.undertow.Undertow.Builder;
+import io.undertow.servlet.api.DeploymentInfo;
 
 import java.util.Arrays;
 
@@ -62,19 +63,19 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 	}
 
 	@Test
-	public void setNullUndertowBuilderCustomizersThrows() {
+	public void setNullBuilderCustomizersThrows() {
 		UndertowEmbeddedServletContainerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("undertowBuilderCustomizers must not be null");
-		factory.setUndertowBuilderCustomizers(null);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.setBuilderCustomizers(null);
 	}
 
 	@Test
-	public void addNullContextCustomizersThrows() {
+	public void addNullAddBuilderCustomizersThrows() {
 		UndertowEmbeddedServletContainerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("undertowBuilderCustomizers must not be null");
-		factory.addUndertowBuilderCustomizers((UndertowBuilderCustomizer[]) null);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null);
 	}
 
 	@Test
@@ -84,13 +85,45 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 		for (int i = 0; i < customizers.length; i++) {
 			customizers[i] = mock(UndertowBuilderCustomizer.class);
 		}
-		factory.setUndertowBuilderCustomizers(Arrays.asList(customizers[0],
-				customizers[1]));
-		factory.addUndertowBuilderCustomizers(customizers[2], customizers[3]);
+		factory.setBuilderCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.addBuilderCustomizers(customizers[2], customizers[3]);
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (UndertowBuilderCustomizer customizer : customizers) {
 			ordered.verify(customizer).customize((Builder) anyObject());
+		}
+	}
+
+	@Test
+	public void setNullDeploymentInfoCustomizersThrows() {
+		UndertowEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.setDeploymentInfoCustomizers(null);
+	}
+
+	@Test
+	public void addNullAddDeploymentInfoCustomizersThrows() {
+		UndertowEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Customizers must not be null");
+		factory.addDeploymentInfoCustomizers((UndertowDeploymentInfoCustomizer[]) null);
+	}
+
+	@Test
+	public void deploymentInfo() throws Exception {
+		UndertowEmbeddedServletContainerFactory factory = getFactory();
+		UndertowDeploymentInfoCustomizer[] customizers = new UndertowDeploymentInfoCustomizer[4];
+		for (int i = 0; i < customizers.length; i++) {
+			customizers[i] = mock(UndertowDeploymentInfoCustomizer.class);
+		}
+		factory.setDeploymentInfoCustomizers(Arrays
+				.asList(customizers[0], customizers[1]));
+		factory.addDeploymentInfoCustomizers(customizers[2], customizers[3]);
+		this.container = factory.getEmbeddedServletContainer();
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (UndertowDeploymentInfoCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize((DeploymentInfo) anyObject());
 		}
 	}
 
