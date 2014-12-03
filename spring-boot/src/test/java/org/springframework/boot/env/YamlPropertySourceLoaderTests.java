@@ -61,4 +61,5 @@ public class YamlPropertySourceLoaderTests {
 		assertNotNull(source);
 		assertThat(source.getPropertyNames(), equalTo(expected.toArray(new String[] {})));
 	}
+
 }

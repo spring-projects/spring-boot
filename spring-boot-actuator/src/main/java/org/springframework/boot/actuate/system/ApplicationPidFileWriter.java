@@ -36,8 +36,7 @@ import org.springframework.util.Assert;
  * An {@link ApplicationListener} that saves application PID into file. This application
  * listener will be triggered exactly once per JVM, and the file name can be overridden at
  * runtime with a System property or environment variable named "PIDFILE" (or "pidfile")
- * or using a {@code spring.application.pidfile} property in the Spring
- * {@link Environment}.
+ * or using a {@code spring.pidfile} property in the Spring {@link Environment}.
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
