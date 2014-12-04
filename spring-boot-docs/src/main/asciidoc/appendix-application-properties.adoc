@@ -223,7 +223,7 @@ content into your application; rather pick only the properties that you need.
 
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
-	flyway.locations=classpath:db/migrations # locations of migrations scripts
+	flyway.locations=classpath:db/migration # locations of migrations scripts
 	flyway.schemas= # schemas to update
 	flyway.init-version= 1 # version to start migration
 	flyway.sql-migration-prefix=V
