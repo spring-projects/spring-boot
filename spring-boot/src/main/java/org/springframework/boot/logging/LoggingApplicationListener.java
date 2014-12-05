@@ -73,13 +73,34 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private static final Map<String, String> ENVIRONMENT_SYSTEM_PROPERTY_MAPPING;
 
+	/**
+	 * The name of the Spring property that contains a reference to the logging
+	 * configuration to load.
+	 */
+	public static final String CONFIG_PROPERTY = "logging.config";
+
+	/**
+	 * The name of the Spring property that contains the path where the logging
+	 * configuration can be found.
+	 */
+	public static final String PATH_PROPERTY = "logging.path";
+
+	/**
+	 * The name of the Spring property that contains the name of the logging configuration
+	 * file.
+	 */
+	public static final String FILE_PROPERTY = "logging.file";
+
+	/**
+	 * The name of the System property that contains the process ID.
+	 */
 	public static final String PID_KEY = "PID";
 
 	static {
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING = new HashMap<String, String>();
-		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.file", "LOG_FILE");
-		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.path", "LOG_PATH");
-		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put(PID_KEY, PID_KEY);
+		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put(FILE_PROPERTY, "LOG_FILE");
+		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put(PATH_PROPERTY, "LOG_PATH");
+		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("PID", PID_KEY);
 	}
 
 	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
@@ -194,8 +215,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private void initializeSystem(ConfigurableEnvironment environment,
 			LoggingSystem system) {
-		if (environment.containsProperty("logging.config")) {
-			String value = environment.getProperty("logging.config");
+		if (environment.containsProperty(CONFIG_PROPERTY)) {
+			String value = environment.getProperty(CONFIG_PROPERTY);
 			try {
 				ResourceUtils.getURL(value).openStream().close();
 				system.initialize(value);
