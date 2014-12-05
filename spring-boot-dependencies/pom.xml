@@ -91,7 +91,7 @@
 		<jolokia.version>1.2.3</jolokia.version>
 		<json-path.version>0.9.1</json-path.version>
 		<jstl.version>1.2</jstl.version>
-		<junit.version>4.11</junit.version>
+		<junit.version>4.12</junit.version>
 		<liquibase.version>3.3.0</liquibase.version>
 		<log4j.version>1.2.17</log4j.version>
 		<log4j2.version>2.1</log4j2.version>
