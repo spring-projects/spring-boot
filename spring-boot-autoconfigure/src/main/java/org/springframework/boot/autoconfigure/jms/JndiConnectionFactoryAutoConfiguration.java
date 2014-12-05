@@ -25,13 +25,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration.JndiOrPropertyCondition;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.util.StringUtils;
 
@@ -43,8 +46,10 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @AutoConfigureBefore(JmsAutoConfiguration.class)
+@ConditionalOnClass(JmsTemplate.class)
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @Conditional(JndiOrPropertyCondition.class)
+@EnableConfigurationProperties(JmsProperties.class)
 public class JndiConnectionFactoryAutoConfiguration {
 
 	// Keep these in sync with the condition below
