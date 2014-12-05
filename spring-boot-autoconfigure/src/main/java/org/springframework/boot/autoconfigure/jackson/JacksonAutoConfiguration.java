@@ -33,6 +33,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.HttpMapperProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -98,7 +100,10 @@ public class JacksonAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	@EnableConfigurationProperties({ HttpMapperProperties.class, JacksonProperties.class })
-	static class JacksonObjectMapperBuilderAutoConfiguration {
+	static class JacksonObjectMapperBuilderAutoConfiguration implements
+			ApplicationContextAware {
+
+		private ApplicationContext applicationContext;
 
 		@Autowired
 		private JacksonProperties jacksonProperties;
@@ -110,6 +115,7 @@ public class JacksonAutoConfiguration {
 		@ConditionalOnMissingBean(Jackson2ObjectMapperBuilder.class)
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder() {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+			builder.applicationContext(this.applicationContext);
 			Boolean isJsonSortKeys = this.httpMapperProperties.isJsonSortKeys();
 			if (isJsonSortKeys != null && isJsonSortKeys) {
 				builder.featuresToEnable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
@@ -194,6 +200,10 @@ public class JacksonAutoConfiguration {
 			}
 		}
 
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
 	}
 
 }
