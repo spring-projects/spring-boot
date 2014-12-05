@@ -55,8 +55,8 @@ class ProjectGenerator {
 			}
 			else {
 				Log.info("Could not extract '" + response.getContentType() + "'");
-				fileName = response.getFileName(); // Use value from the server since we
-													// can't extract it
+				// Use value from the server since we can't extract it
+				fileName = response.getFileName();
 			}
 		}
 		if (fileName == null) {
@@ -71,12 +71,14 @@ class ProjectGenerator {
 	/**
 	 * Detect if the project should be extracted.
 	 */
-	private boolean shouldExtract(ProjectGenerationRequest request, ProjectGenerationResponse response) {
+	private boolean shouldExtract(ProjectGenerationRequest request,
+			ProjectGenerationResponse response) {
 		if (request.isExtract()) {
 			return true;
 		}
-		// An explicit name has been provided for an archive and there is no extension in it
-		if (isZipArchive(response) && request.getOutput() != null && !request.getOutput().contains(".")) {
+		// explicit name hasn't been provided for an archive and there is no extension
+		if (isZipArchive(response) && request.getOutput() != null
+				&& !request.getOutput().contains(".")) {
 			return true;
 		}
 		return false;
