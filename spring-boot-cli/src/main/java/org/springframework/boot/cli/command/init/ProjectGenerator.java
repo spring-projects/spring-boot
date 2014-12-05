@@ -48,7 +48,7 @@ class ProjectGenerator {
 		ProjectGenerationResponse response = this.initializrService.generate(request);
 		String fileName = (request.getOutput() != null ? request.getOutput() : response
 				.getFileName());
-		if (request.isExtract()) {
+		if (shouldExtract(request, response)) {
 			if (isZipArchive(response)) {
 				extractProject(response, request.getOutput(), force);
 				return;
@@ -66,6 +66,20 @@ class ProjectGenerator {
 							+ "for the project.");
 		}
 		writeProject(response, fileName, force);
+	}
+
+	/**
+	 * Detect if the project should be extracted.
+	 */
+	private boolean shouldExtract(ProjectGenerationRequest request, ProjectGenerationResponse response) {
+		if (request.isExtract()) {
+			return true;
+		}
+		// An explicit name has been provided for an archive and there is no extension in it
+		if (isZipArchive(response) && request.getOutput() != null && !request.getOutput().contains(".")) {
+			return true;
+		}
+		return false;
 	}
 
 	private boolean isZipArchive(ProjectGenerationResponse entity) {

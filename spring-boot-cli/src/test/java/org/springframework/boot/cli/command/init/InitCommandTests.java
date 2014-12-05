@@ -114,7 +114,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		assertEquals(ExitStatus.OK,
 				this.command.run("--extract", folder.getAbsolutePath()));
 		File archiveFile = new File(folder, "test.txt");
-		assertTrue("Archive not extracted properly " + folder.getAbsolutePath()
+		assertTrue("Archive not extracted properly " + archiveFile.getAbsolutePath()
 				+ " not found", archiveFile.exists());
 	}
 
@@ -127,8 +127,48 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		mockSuccessfulProjectGeneration(request);
 		assertEquals(ExitStatus.OK, this.command.run(folder.getAbsolutePath() + "/"));
 		File archiveFile = new File(folder, "test.txt");
-		assertTrue("Archive not extracted properly " + folder.getAbsolutePath()
+		assertTrue("Archive not extracted properly " + archiveFile.getAbsolutePath()
 				+ " not found", archiveFile.exists());
+	}
+
+	@Test
+	public void generateProjectArchiveExtractedByDefault() throws Exception {
+		String fileName = UUID.randomUUID().toString();
+		assertFalse("No dot in filename", fileName.contains("."));
+		byte[] archive = createFakeZipArchive("test.txt", "Fake content");
+		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
+				"application/zip", "demo.zip", archive);
+		mockSuccessfulProjectGeneration(request);
+		File file = new File(fileName);
+		File archiveFile = new File(file, "test.txt");
+		try {
+			assertEquals(ExitStatus.OK, this.command.run(fileName));
+			assertTrue("Archive not extracted properly " + archiveFile.getAbsolutePath()
+					+ " not found", archiveFile.exists());
+		}
+		finally {
+			archiveFile.delete();
+			file.delete();
+		}
+	}
+
+	@Test
+	public void generateProjectFileSavedAsFileByDefault() throws Exception {
+		String fileName = UUID.randomUUID().toString();
+		String content = "Fake Content";
+		byte[] archive = content.getBytes();
+		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
+				"application/octet-stream", "pom.xml", archive);
+		mockSuccessfulProjectGeneration(request);
+		File file = new File(fileName);
+		try {
+			assertEquals(ExitStatus.OK, this.command.run(fileName));
+			assertTrue("File not saved properly", file.exists());
+			assertTrue("Should not be a directory", file.isFile());
+		}
+		finally {
+			file.delete();
+		}
 	}
 
 	@Test
