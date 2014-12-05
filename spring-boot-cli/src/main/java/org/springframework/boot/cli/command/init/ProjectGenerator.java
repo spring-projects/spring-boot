@@ -103,7 +103,7 @@ class ProjectGenerator {
 		while (entry != null) {
 			File file = new File(outputFolder, entry.getName());
 			if (file.exists() && !overwrite) {
-				throw new ReportableException(file.isDirectory() ? "Directory" : "File"
+				throw new ReportableException((file.isDirectory() ? "Directory" : "File")
 						+ " '" + file.getName()
 						+ "' already exists. Use --force if you want to overwrite or "
 						+ "specify an alternate location.");
