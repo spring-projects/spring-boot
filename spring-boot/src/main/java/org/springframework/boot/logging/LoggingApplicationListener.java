@@ -61,6 +61,29 @@ import org.springframework.util.StringUtils;
  */
 public class LoggingApplicationListener implements SmartApplicationListener {
 
+	/**
+	 * The name of the Spring property that contains a reference to the logging
+	 * configuration to load.
+	 */
+	public static final String CONFIG_PROPERTY = "logging.config";
+
+	/**
+	 * The name of the Spring property that contains the path where the logging
+	 * configuration can be found.
+	 */
+	public static final String PATH_PROPERTY = "logging.path";
+
+	/**
+	 * The name of the Spring property that contains the name of the logging configuration
+	 * file.
+	 */
+	public static final String FILE_PROPERTY = "logging.file";
+
+	/**
+	 * The name of the System property that contains the process ID.
+	 */
+	public static final String PID_KEY = "PID";
+
 	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
 	static {
 		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<LogLevel, String>();
@@ -115,8 +138,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	 * {@link Environment} and the classpath.
 	 */
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
-		if (System.getProperty("PID") == null) {
-			System.setProperty("PID", new ApplicationPid().toString());
+		if (System.getProperty(PID_KEY) == null) {
+			System.setProperty(PID_KEY, new ApplicationPid().toString());
 		}
 		initializeEarlyLoggingLevel(environment);
 		LoggingSystem system = LoggingSystem.get(classLoader);
@@ -138,7 +161,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	private void initializeSystem(ConfigurableEnvironment environment,
 			LoggingSystem system) {
 		String logFile = getLogFile(environment);
-		String logConfig = environment.getProperty("logging.config");
+		String logConfig = environment.getProperty(CONFIG_PROPERTY);
 		if (StringUtils.hasLength(logConfig)) {
 			try {
 				ResourceUtils.getURL(logConfig).openStream().close();
@@ -157,8 +180,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	}
 
 	private String getLogFile(ConfigurableEnvironment environment) {
-		String file = environment.getProperty("logging.file");
-		String path = environment.getProperty("logging.path");
+		String file = environment.getProperty(FILE_PROPERTY);
+		String path = environment.getProperty(PATH_PROPERTY);
 		if (StringUtils.hasLength(path) || StringUtils.hasLength(file)) {
 			if (!StringUtils.hasLength(file)) {
 				file = "spring.log";
