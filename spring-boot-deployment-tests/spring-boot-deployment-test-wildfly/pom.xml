@@ -52,6 +52,7 @@
 						<configuration>
 							<portNames>
 								<portName>appserver.port</portName>
+								<portName>appserver.ajp.port</portName>
 							</portNames>
 						</configuration>
 					</execution>
@@ -71,6 +72,7 @@
 					<configuration>
 						<properties>
 							<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
+							<cargo.jboss.ajp.port>${appserver.ajp.port}</cargo.jboss.ajp.port>
 							<cargo.jboss.configuration>standalone-full</cargo.jboss.configuration>
 						</properties>
 					</configuration>
