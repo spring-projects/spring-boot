@@ -17,6 +17,7 @@ org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfigura
 org.springframework.boot.autoconfigure.data.solr.SolrRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration,\
+org.springframework.boot.autoconfigure.docker.DockerAutoConfiguration,\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
