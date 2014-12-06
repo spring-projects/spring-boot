@@ -51,6 +51,7 @@
 						<configuration>
 							<portNames>
 								<portName>appserver.port</portName>
+								<portName>appserver.ajp.port</portName>
 							</portNames>
 						</configuration>
 					</execution>
@@ -70,6 +71,7 @@
 					<configuration>
 						<properties>
 							<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
+							<cargo.tomcat.ajp.port>${appserver.ajp.port}</cargo.tomcat.ajp.port>
 						</properties>
 					</configuration>
 					<deployables>
