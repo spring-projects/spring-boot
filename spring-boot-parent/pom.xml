@@ -269,6 +269,11 @@
 					<version>3.4</version>
 				</plugin>
 				<plugin>
+					<groupId>org.codehaus.cargo</groupId>
+					<artifactId>cargo-maven2-plugin</artifactId>
+					<version>1.4.11</version>
+				</plugin>
+				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
 					<artifactId>gmavenplus-plugin</artifactId>
 					<version>1.2</version>

@@ -23,7 +23,10 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.assertEquals;
 
-public class SampleWildFlyApplicationTestIT {
+/**
+ * Integration Tests for {@link SampleTomEEDeployApplication}. 
+ */
+public class SampleTomEEDeployApplicationIT {
 
 	private int port = Integer.valueOf(System.getProperty("port"));
 
