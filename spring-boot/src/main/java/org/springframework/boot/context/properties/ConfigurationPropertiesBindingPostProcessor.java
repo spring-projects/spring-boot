@@ -289,7 +289,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			String targetName = (StringUtils.hasLength(annotation.value()) ? annotation
 					.value() : annotation.prefix());
 			if (StringUtils.hasLength(targetName)) {
-				targetName = this.environment.resolvePlaceholders(targetName);
 				factory.setTargetName(targetName);
 			}
 		}
