@@ -53,16 +53,13 @@ public class EndpointMBeanExportAutoConfiguration {
 	@Bean
 	public EndpointMBeanExporter endpointMBeanExporter(MBeanServer server) {
 		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter();
-
 		String domain = this.properties.getDomain();
 		if (StringUtils.hasText(domain)) {
 			mbeanExporter.setDomain(domain);
 		}
 		mbeanExporter.setServer(server);
-
 		mbeanExporter.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
 		mbeanExporter.setObjectNameStaticProperties(this.properties.getStaticNames());
-
 		return mbeanExporter;
 	}
 

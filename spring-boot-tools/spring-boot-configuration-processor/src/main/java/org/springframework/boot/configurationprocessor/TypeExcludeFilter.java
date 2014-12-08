@@ -27,11 +27,11 @@ import javax.lang.model.type.TypeMirror;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-class ElementExcludeFilter {
+class TypeExcludeFilter {
 
 	private final Set<String> excludes = new HashSet<String>();
 
-	public ElementExcludeFilter() {
+	public TypeExcludeFilter() {
 		add("java.io.Writer");
 		add("java.io.PrintWriter");
 		add("java.lang.ClassLoader");
