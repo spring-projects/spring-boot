@@ -31,7 +31,6 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ListenerInfo;
 import io.undertow.servlet.api.MimeMapping;
-import io.undertow.servlet.api.ServletSessionConfig;
 import io.undertow.servlet.api.ServletStackTraces;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
@@ -322,7 +321,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 		deployment.addListener(new ListenerInfo(StartupListener.class,
 				new ImmediateInstanceFactory<StartupListener>(startupListener)));
 		deployment.setClassLoader(getServletClassLoader());
-		deployment.setContextPath(getContextPath());
+		String contextPath = getContextPath();
+		deployment.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
 		deployment.setDeploymentName("spring-boot");
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));
@@ -331,12 +331,6 @@ public class UndertowEmbeddedServletContainerFactory extends
 		deployment.setServletStackTraces(ServletStackTraces.NONE);
 		deployment.setResourceManager(getDocumentRootResourceManager());
 		configureMimeMappings(deployment);
-		if (StringUtils.isEmpty(getContextPath())) {
-			// Work around UNDERTOW-350
-			ServletSessionConfig servletSessionConfig = new ServletSessionConfig();
-			servletSessionConfig.setPath("/");
-			deployment.setServletSessionConfig(servletSessionConfig);
-		}
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
 		}
