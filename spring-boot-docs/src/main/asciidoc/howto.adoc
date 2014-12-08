@@ -2157,6 +2157,50 @@ Boot application, and the guidance above might help, but your mileage may vary.
 
 
 
+[[howto-weblogic]]
+===  Deploying a WAR to Weblogic
+To deploy a Spring Boot application to Weblogic you must ensure that your servlet
+initializer *directly* implements `WebApplicationInitializer` (even if you extend from a
+base class that already implements it).
+
+A typical initializer for Weblogic would be something like this:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	import org.springframework.boot.autoconfigure.SpringBootApplication;
+	import org.springframework.boot.context.web.SpringBootServletInitializer;
+	import org.springframework.web.WebApplicationInitializer;
+
+	@SpringBootApplication
+	public class MyApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
+
+	}
+----
+
+If you use logback, you will also need to tell Weblogic to prefer the packaged version
+rather than the version that pre-installed with the server. You can do this by adding a
+`WEB-INF/weblogic.xml` file with the following contents:
+
+[source,xml,indent=0]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<wls:weblogic-web-app
+	xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
+		http://xmlns.oracle.com/weblogic/weblogic-web-app
+		http://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
+	<wls:container-descriptor>
+		<wls:prefer-application-packages>
+			<wls:package-name>org.slf4j</wls:package-name>
+		</wls:prefer-application-packages>
+	</wls:container-descriptor>
+</wls:weblogic-web-app>
+----
+
+
+
 [[howto-servlet-2-5]]
 ===  Deploying a WAR in an Old (Servlet 2.5) Container
 Spring Boot uses Servet 3.0 APIs to initialize the `ServletContext` (register `Servlets`
