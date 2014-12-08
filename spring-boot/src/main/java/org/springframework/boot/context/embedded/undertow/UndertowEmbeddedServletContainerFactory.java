@@ -337,7 +337,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
-		sessionManager.setDefaultSessionTimeout(getSessionTimeout());
+		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
+		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
 	}
 
