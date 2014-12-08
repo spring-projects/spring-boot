@@ -130,26 +130,25 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		getLogger(loggerName).setLevel(LEVELS.get(level));
 	}
 
-	private LoggerContext getLoggerContext() {
-		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
-		Assert.isInstanceOf(
-				LoggerContext.class,
-				factory,
-				String.format(
-						"LoggerFactory is not a Logback LoggerContext but Logback is on "
-								+ "the classpath. Either remove Logback or the competing "
-								+ "implementation (%s loaded from %s).",
-						factory.getClass(), factory.getClass().getProtectionDomain()
-								.getCodeSource().getLocation()));
+	private ch.qos.logback.classic.Logger getLogger(String name) {
+		LoggerContext factory = getLoggerContext();
+		return factory.getLogger(StringUtils.isEmpty(name) ? Logger.ROOT_LOGGER_NAME
+				: name);
 
-		return (LoggerContext) factory;
 	}
 
-	private ch.qos.logback.classic.Logger getLogger(String name) {
+	private LoggerContext getLoggerContext() {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
-		return (ch.qos.logback.classic.Logger) factory.getLogger(StringUtils
-				.isEmpty(name) ? Logger.ROOT_LOGGER_NAME : name);
+		Assert.isInstanceOf(LoggerContext.class, factory, String.format(
+				"LoggerFactory is not a Logback LoggerContext but Logback is on "
+						+ "the classpath. Either remove Logback or the competing "
+						+ "implementation (%s loaded from %s). If you are using "
+						+ "Weblogic you will need to add 'org.slf4j' to "
+						+ "prefer-application-packages in WEB-INF/weblogic.xml",
+				factory.getClass(), factory.getClass().getProtectionDomain()
+						.getCodeSource().getLocation()));
 
+		return (LoggerContext) factory;
 	}
 
 }
