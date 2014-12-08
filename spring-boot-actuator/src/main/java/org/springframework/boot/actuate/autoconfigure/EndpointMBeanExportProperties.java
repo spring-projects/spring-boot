@@ -46,6 +46,9 @@ public class EndpointMBeanExportProperties {
 	 */
 	private boolean enabled = true;
 
+	/**
+	 * Additional static properties to append to all ObjectNames of MBeans representing Endpoints.
+	 */
 	private Properties staticNames = new Properties();
 
 	public boolean isEnabled() {
