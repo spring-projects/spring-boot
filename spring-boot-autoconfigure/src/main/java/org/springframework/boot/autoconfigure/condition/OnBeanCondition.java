@@ -111,26 +111,24 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					"Unable to use SearchStrategy.PARENTS");
 			beanFactory = (ConfigurableListableBeanFactory) parent;
 		}
-
+		if (beanFactory == null) {
+			return Collections.emptyList();
+		}
 		List<String> beanNames = new ArrayList<String>();
 		boolean considerHierarchy = beans.getStrategy() == SearchStrategy.ALL;
-
 		for (String type : beans.getTypes()) {
 			beanNames.addAll(getBeanNamesForType(beanFactory, type,
 					context.getClassLoader(), considerHierarchy));
 		}
-
 		for (String annotation : beans.getAnnotations()) {
 			beanNames.addAll(Arrays.asList(getBeanNamesForAnnotation(beanFactory,
 					annotation, context.getClassLoader(), considerHierarchy)));
 		}
-
 		for (String beanName : beans.getNames()) {
 			if (containsBean(beanFactory, beanName, considerHierarchy)) {
 				beanNames.add(beanName);
 			}
 		}
-
 		return beanNames;
 	}
 
