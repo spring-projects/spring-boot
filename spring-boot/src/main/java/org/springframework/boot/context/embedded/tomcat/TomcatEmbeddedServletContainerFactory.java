@@ -344,12 +344,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
-		long timeout = getSessionTimeout();
-		if (timeout > 0) {
+		long sessionTimeout = getSessionTimeout();
+		if (sessionTimeout > 0) {
 			// Tomcat timeouts are in minutes
-			timeout = Math.max(TimeUnit.SECONDS.toMinutes(timeout), 1L);
+			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
 		}
-		context.setSessionTimeout((int) timeout);
+		context.setSessionTimeout((int) sessionTimeout);
 		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
 			customizer.customize(context);
 		}
