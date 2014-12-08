@@ -28,9 +28,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -41,17 +39,74 @@ import static org.junit.Assert.assertThat;
 public class ResourceBannerTests {
 
 	@Test
-	public void renderWithReplacement() throws Exception {
+	public void renderVersions() throws Exception {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
-		ResourceBanner banner = new ResourceBanner(resource);
+		String banner = printBanner(resource, "10.2", "2.0");
+		assertThat(banner, equalTo("banner 1 10.2 2.0\n"));
+	}
+
+	@Test
+	public void renderWithoutVersions() throws Exception {
+		Resource resource = new ByteArrayResource(
+				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
+		String banner = printBanner(resource, null, null);
+		assertThat(banner, equalTo("banner 1  \n"));
+	}
+
+	@Test
+	public void renderFormattedVersions() throws Exception {
+		Resource resource = new ByteArrayResource(
+				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
+						.getBytes());
+		String banner = printBanner(resource, "10.2", "2.0");
+		assertThat(banner, equalTo("banner 1 (v10.2) (v2.0)\n"));
+	}
+
+	@Test
+	public void renderWithoutFormattedVersions() throws Exception {
+		Resource resource = new ByteArrayResource(
+				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}"
+						.getBytes());
+		String banner = printBanner(resource, null, null);
+		assertThat(banner, equalTo("banner 1\n"));
+	}
+
+	private String printBanner(Resource resource, String bootVersion,
+			String applicationVersion) {
+		ResourceBanner banner = new MockResourceBanner(resource, bootVersion,
+				applicationVersion);
 		ConfigurableEnvironment environment = new MockEnvironment();
 		Map<String, Object> source = Collections.<String, Object> singletonMap("a", "1");
 		environment.getPropertySources().addLast(new MapPropertySource("map", source));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		banner.printBanner(environment, getClass(), new PrintStream(out));
-		assertThat(out.toString(), startsWith("banner 1"));
-		assertThat(out.toString(), not(containsString("$")));
+		return out.toString();
+	}
+
+	private static class MockResourceBanner extends ResourceBanner {
+
+		private final String bootVersion;
+
+		private final String applicationVersion;
+
+		public MockResourceBanner(Resource resource, String bootVersion,
+				String applicationVersion) {
+			super(resource);
+			this.bootVersion = bootVersion;
+			this.applicationVersion = applicationVersion;
+		}
+
+		@Override
+		protected String getBootVersion() {
+			return this.bootVersion;
+		}
+
+		@Override
+		protected String getApplicationVersion(Class<?> sourceClass) {
+			return this.applicationVersion;
+		}
+
 	}
 
 }
