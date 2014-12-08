@@ -134,12 +134,10 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	@Ignore("Intermittent failure on CI. See #323")
 	public void jmsSample() throws Exception {
 		String output = this.cli.run("jms.groovy");
 		assertTrue("Wrong output: " + output,
-				output.contains("Received Greetings from Spring Boot via ActiveMQ"));
-		FileUtils.deleteDirectory(new File("activemq-data"));// cleanup ActiveMQ cruft
+				output.contains("Received Greetings from Spring Boot via HornetQ"));
 	}
 
 	@Test

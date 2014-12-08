@@ -28,6 +28,7 @@ import org.springframework.boot.groovy.EnableJmsMessaging;
  * {@link CompilerAutoConfiguration} for Spring JMS.
  *
  * @author Greg Turnquist
+ * @author Stephane Nicoll
  */
 public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
@@ -41,8 +42,7 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("spring-jms", "geronimo-jms_1.1_spec");
-
+		dependencies.add("spring-jms", "jms-api");
 	}
 
 	@Override
