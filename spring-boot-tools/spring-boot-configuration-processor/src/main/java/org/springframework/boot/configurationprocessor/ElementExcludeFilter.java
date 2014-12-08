@@ -19,7 +19,7 @@ package org.springframework.boot.configurationprocessor;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeMirror;
 
 /**
  * Filter to excluded elements that don't make sense to process.
@@ -34,19 +34,32 @@ class ElementExcludeFilter {
 	public ElementExcludeFilter() {
 		add("java.io.Writer");
 		add("java.io.PrintWriter");
-		add("javax.sql.DataSource");
 		add("java.lang.ClassLoader");
+		add("java.util.concurrent.ThreadFactory");
+		add("javax.sql.DataSource");
+		add("com.zaxxer.hikari.IConnectionCustomizer");
+		add("groovy.text.markup.MarkupTemplateEngine");
+		add("org.apache.tomcat.jdbc.pool.PoolConfiguration");
+		add("org.apache.tomcat.jdbc.pool.Validator");
+		add("org.flywaydb.core.api.MigrationVersion");
+		add("org.flywaydb.core.api.callback.FlywayCallback");
+		add("org.flywaydb.core.api.resolver.MigrationResolver");
+		add("org.springframework.http.MediaType");
 	}
 
 	private void add(String className) {
 		this.excludes.add(className);
 	}
 
-	public boolean isExcluded(Element element) {
-		if (element == null) {
+	public boolean isExcluded(TypeMirror type) {
+		if (type == null) {
 			return false;
 		}
-		return this.excludes.contains(element.toString());
+		String typeName = type.toString();
+		if (typeName.endsWith("[]")) {
+			typeName = typeName.substring(0, typeName.length() - 2);
+		}
+		return this.excludes.contains(typeName);
 	}
 
 }

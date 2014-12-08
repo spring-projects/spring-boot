@@ -42,6 +42,8 @@ public class ExcludedTypesPojo {
 
 	private Writer writer;
 
+	private Writer[] writerArray;
+
 	public String getName() {
 		return this.name;
 	}
@@ -80,6 +82,14 @@ public class ExcludedTypesPojo {
 
 	public void setWriter(Writer writer) {
 		this.writer = writer;
+	}
+
+	public Writer[] getWriterArray() {
+		return this.writerArray;
+	}
+
+	public void setWriterArray(Writer[] writerArray) {
+		this.writerArray = writerArray;
 	}
 
 }

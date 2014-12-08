@@ -179,7 +179,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			VariableElement field = members.getFields().get(name);
 			Element returnType = this.processingEnv.getTypeUtils().asElement(
 					getter.getReturnType());
-			boolean isExcluded = this.elementExcludeFilter.isExcluded(returnType);
+			boolean isExcluded = this.elementExcludeFilter.isExcluded(getter
+					.getReturnType());
 			boolean isNested = isNested(returnType, field, element);
 			boolean isCollection = this.typeUtils.isCollectionOrMap(getter
 					.getReturnType());

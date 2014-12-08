@@ -283,6 +283,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, not(containsProperty("excluded.data-source")));
 		assertThat(metadata, not(containsProperty("excluded.print-writer")));
 		assertThat(metadata, not(containsProperty("excluded.writer")));
+		assertThat(metadata, not(containsProperty("excluded.writer-array")));
 	}
 
 	private ConfigurationMetadata compile(Class<?>... types) throws IOException {
