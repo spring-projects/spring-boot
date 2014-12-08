@@ -149,6 +149,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
+	public void placeholderInPrefix() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "foo:spam", "spam.foo:bar");
+		this.context.register(PlaceholderPrefixConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PlaceholderPrefixConfiguration.class).getFoo(),
+				equalTo("bar"));
+	}
+
+	@Test
 	public void placeholderResolutionWithCustomLocation() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "fooValue:bar");
@@ -369,6 +379,22 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer configurer() {
 			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "${foo:bar}")
+	public static class PlaceholderPrefixConfiguration {
+
+		private String foo;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
 		}
 
 	}
