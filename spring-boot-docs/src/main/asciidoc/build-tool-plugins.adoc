@@ -154,6 +154,9 @@ need to mark the embedded container dependencies as "`provided`", e.g:
 	</project>
 ----
 
+TIP: See the "`<<howto-create-a-deployable-war-file>>`" section for more details on
+how to create a deployable war file.
+
 Advanced configuration options and examples are available in the
 {spring-boot-maven-plugin-site}/[plugin info page].
 
@@ -358,6 +361,10 @@ named "`providedRuntime`", e.g:
 		...
 	}
 ----
+
+TIP: See the "`<<howto-create-a-deployable-war-file>>`" section for more details on
+how to create a deployable war file.
+
 
 
 [[build-tool-plugins-gradle-running-applications]]

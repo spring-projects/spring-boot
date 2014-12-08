@@ -32,6 +32,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
@@ -237,13 +238,13 @@ public class JettyEmbeddedServletContainerFactory extends
 						.getClassLoader())) {
 			addJspServlet(context);
 		}
-
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		Configuration[] configurations = getWebAppContextConfigurations(context,
 				initializersToUse);
 		context.setConfigurations(configurations);
-		context.getSessionHandler().getSessionManager()
-				.setMaxInactiveInterval(getSessionTimeout());
+		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
+		SessionManager sessionManager = context.getSessionHandler().getSessionManager();
+		sessionManager.setMaxInactiveInterval(sessionTimeout);
 		postProcessWebAppContext(context);
 	}
 
