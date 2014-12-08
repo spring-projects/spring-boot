@@ -98,7 +98,7 @@ public class ResourceBanner implements Banner {
 	}
 
 	private String getVersionString(String version) {
-		return (version == null ? "" : " (v" + version + ")");
+		return (version == null ? "" : version);
 	}
 
 }
