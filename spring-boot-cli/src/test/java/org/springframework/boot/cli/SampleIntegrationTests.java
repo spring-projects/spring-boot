@@ -19,7 +19,6 @@ package org.springframework.boot.cli;
 import java.io.File;
 import java.net.URI;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
