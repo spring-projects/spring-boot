@@ -530,6 +530,11 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				equalTo("test"));
 	}
 
+	@Test
+	public void defaultSessionTimeout() throws Exception {
+		assertThat(getFactory().getSessionTimeout(), equalTo(30 * 60));
+	}
+
 	protected String getLocalUrl(String resourcePath) {
 		return getLocalUrl("http", resourcePath);
 	}
