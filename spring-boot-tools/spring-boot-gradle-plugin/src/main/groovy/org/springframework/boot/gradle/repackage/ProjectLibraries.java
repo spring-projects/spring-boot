@@ -82,17 +82,14 @@ class ProjectLibraries implements Libraries {
 		}
 		else {
 			Set<GradleLibrary> compile = getLibraries("compile", LibraryScope.COMPILE);
-
 			Set<GradleLibrary> runtime = getLibraries("runtime", LibraryScope.RUNTIME);
 			runtime = minus(runtime, compile);
-
 			Set<GradleLibrary> provided = getLibraries(this.providedConfigurationName,
 					LibraryScope.PROVIDED);
 			if (provided != null) {
 				compile = minus(compile, provided);
 				runtime = minus(runtime, provided);
 			}
-
 			libraries(compile, callback);
 			libraries(runtime, callback);
 			libraries(provided, callback);
@@ -111,7 +108,6 @@ class ProjectLibraries implements Libraries {
 			libraries.add(new ResolvedArtifactLibrary(artifact, scope));
 		}
 		libraries.addAll(getLibrariesForFileDependencies(configuration, scope));
-
 		return libraries;
 	}
 
