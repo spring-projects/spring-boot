@@ -41,7 +41,6 @@ class TypeExcludeFilter {
 		add("groovy.text.markup.MarkupTemplateEngine");
 		add("org.apache.tomcat.jdbc.pool.PoolConfiguration");
 		add("org.apache.tomcat.jdbc.pool.Validator");
-		add("org.flywaydb.core.api.MigrationVersion");
 		add("org.flywaydb.core.api.callback.FlywayCallback");
 		add("org.flywaydb.core.api.resolver.MigrationResolver");
 		add("org.springframework.http.MediaType");
