@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -124,59 +123,62 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 	}
 
 	private JobParameters getNextJobParameters(Job job, JobParameters additionalParameters) {
-
-		String jobIdentifier = job.getName();
-		JobParameters jobParameters = new JobParameters();
-		List<JobInstance> lastInstances = this.jobExplorer.getJobInstances(jobIdentifier,
-				0, 1);
-
+		String name = job.getName();
+		JobParameters parameters = new JobParameters();
+		List<JobInstance> lastInstances = this.jobExplorer.getJobInstances(name, 0, 1);
 		JobParametersIncrementer incrementer = job.getJobParametersIncrementer();
-
 		Map<String, JobParameter> additionals = additionalParameters.getParameters();
 		if (lastInstances.isEmpty()) {
 			// Start from a completely clean sheet
 			if (incrementer != null) {
-				jobParameters = incrementer.getNext(new JobParameters());
+				parameters = incrementer.getNext(new JobParameters());
 			}
 		}
 		else {
-			List<JobExecution> lastExecutions = this.jobExplorer
+			List<JobExecution> previousExecutions = this.jobExplorer
 					.getJobExecutions(lastInstances.get(0));
-			JobExecution previousExecution = lastExecutions.get(0);
+			JobExecution previousExecution = previousExecutions.get(0);
 			if (previousExecution == null) {
 				// Normally this will not happen - an instance exists with no executions
 				if (incrementer != null) {
-					jobParameters = incrementer.getNext(new JobParameters());
+					parameters = incrementer.getNext(new JobParameters());
 				}
 			}
-			else if (previousExecution.getStatus() == BatchStatus.STOPPED
-					|| previousExecution.getStatus() == BatchStatus.FAILED) {
+			else if (isStoppedOrFailed(previousExecution)) {
 				// Retry a failed or stopped execution
-				jobParameters = previousExecution.getJobParameters();
-				for (Entry<String, JobParameter> parameter : new HashMap<String, JobParameter>(
-						additionals).entrySet()) {
-					// Non-identifying additional parameters can be added to a retry
-					if (!parameter.getValue().isIdentifying()) {
-						additionals.remove(parameter.getKey());
-					}
-				}
+				parameters = previousExecution.getJobParameters();
+				// Non-identifying additional parameters can be added to a retry
+				removeNonIdentifying(additionals);
 			}
 			else if (incrementer != null) {
 				// New instance so increment the parameters if we can
-				if (incrementer != null) {
-					jobParameters = incrementer.getNext(previousExecution
-							.getJobParameters());
-				}
+				parameters = incrementer.getNext(previousExecution.getJobParameters());
 			}
 		}
+		return merge(parameters, additionals);
+	}
 
-		Map<String, JobParameter> map = new HashMap<String, JobParameter>(
-				jobParameters.getParameters());
-		map.putAll(additionals);
-		jobParameters = new JobParameters(map);
+	private boolean isStoppedOrFailed(JobExecution execution) {
+		BatchStatus status = execution.getStatus();
+		return (status == BatchStatus.STOPPED || status == BatchStatus.FAILED);
+	}
 
-		return jobParameters;
+	private void removeNonIdentifying(Map<String, JobParameter> parameters) {
+		HashMap<String, JobParameter> copy = new HashMap<String, JobParameter>(parameters);
+		for (Map.Entry<String, JobParameter> parameter : copy.entrySet()) {
+			if (!parameter.getValue().isIdentifying()) {
+				parameters.remove(parameter.getKey());
+			}
+		}
+	}
 
+	private JobParameters merge(JobParameters parameters,
+			Map<String, JobParameter> additionals) {
+		Map<String, JobParameter> merged = new HashMap<String, JobParameter>();
+		merged.putAll(parameters.getParameters());
+		merged.putAll(additionals);
+		parameters = new JobParameters(merged);
+		return parameters;
 	}
 
 	private void executeRegisteredJobs(JobParameters jobParameters)

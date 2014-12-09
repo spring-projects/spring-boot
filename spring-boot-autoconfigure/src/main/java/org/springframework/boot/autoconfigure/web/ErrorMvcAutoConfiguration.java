@@ -126,6 +126,9 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 	}
 
+	/**
+	 * {@link SpringBootCondition} that matches when no error template view is detected.
+	 */
 	private static class ErrorTemplateMissingCondition extends SpringBootCondition {
 
 		@Override

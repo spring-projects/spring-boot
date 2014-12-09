@@ -86,7 +86,7 @@ public class JacksonAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
-	static class JacksonObjectMapperAutoConfiguration {
+	static class JacksonObjectMapperConfiguration {
 
 		@Bean
 		@Primary
@@ -100,7 +100,7 @@ public class JacksonAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	@EnableConfigurationProperties({ HttpMapperProperties.class, JacksonProperties.class })
-	static class JacksonObjectMapperBuilderAutoConfiguration implements
+	static class JacksonObjectMapperBuilderConfiguration implements
 			ApplicationContextAware {
 
 		private ApplicationContext applicationContext;

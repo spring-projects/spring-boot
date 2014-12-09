@@ -59,8 +59,7 @@ public class FacebookAutoConfiguration {
 	@EnableSocial
 	@EnableConfigurationProperties(FacebookProperties.class)
 	@ConditionalOnWebApplication
-	protected static class FacebookAutoConfigurationAdapter extends
-			SocialAutoConfigurerAdapter {
+	protected static class FacebookConfigurerAdapter extends SocialAutoConfigurerAdapter {
 
 		@Autowired
 		private FacebookProperties properties;

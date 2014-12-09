@@ -58,8 +58,7 @@ public class LinkedInAutoConfiguration {
 	@EnableSocial
 	@EnableConfigurationProperties(LinkedInProperties.class)
 	@ConditionalOnWebApplication
-	protected static class LinkedInAutoConfigurationAdapter extends
-			SocialAutoConfigurerAdapter {
+	protected static class LinkedInConfigurerAdapter extends SocialAutoConfigurerAdapter {
 
 		@Autowired
 		private LinkedInProperties properties;

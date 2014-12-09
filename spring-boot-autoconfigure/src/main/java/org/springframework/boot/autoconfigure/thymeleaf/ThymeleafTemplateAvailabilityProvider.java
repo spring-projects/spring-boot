@@ -42,7 +42,6 @@ public class ThymeleafTemplateAvailabilityProvider implements
 					ThymeleafProperties.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(prefix + view + suffix).exists();
 		}
-
 		return false;
 	}
 

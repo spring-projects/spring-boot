@@ -236,32 +236,24 @@ public class SpringBootWebSecurityConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-
 			if (this.security.isRequireSsl()) {
 				http.requiresChannel().anyRequest().requiresSecure();
 			}
-
 			if (!this.security.isEnableCsrf()) {
 				http.csrf().disable();
 			}
 			// No cookies for application endpoints by default
 			http.sessionManagement().sessionCreationPolicy(this.security.getSessions());
-
 			SpringBootWebSecurityConfiguration.configureHeaders(http.headers(),
 					this.security.getHeaders());
-
 			String[] paths = getSecureApplicationPaths();
-
 			if (paths.length > 0) {
 				http.exceptionHandling().authenticationEntryPoint(entryPoint());
 				http.httpBasic();
 				http.requestMatchers().antMatchers(paths);
-				http.authorizeRequests()
-						.anyRequest()
-						.hasAnyRole(
-								this.security.getUser().getRole().toArray(new String[0]));
+				String[] role = this.security.getUser().getRole().toArray(new String[0]);
+				http.authorizeRequests().anyRequest().hasAnyRole(role);
 			}
-
 		}
 
 		private String[] getSecureApplicationPaths() {

@@ -24,9 +24,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.jmx.export.metadata.JmxAttributeSource;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
+import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * JMX {@link ObjectNamingStrategy} that takes into consideration the parent
+ * {@link ApplicationContext}.
+ *
  * @author Dave Syer
  * @since 1.1.1
  */
@@ -34,6 +38,7 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 		ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
+
 	private boolean ensureUniqueRuntimeObjectNames = false;
 
 	public ParentAwareNamingStrategy(JmxAttributeSource attributeSource) {

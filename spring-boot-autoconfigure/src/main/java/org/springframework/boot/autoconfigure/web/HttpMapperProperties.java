@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author Dave Syer
  * @author Piotr Maj
  * @author Sebastien Deleuze
- * @deprecated in favor of {@link JacksonProperties}
+ * @deprecated in 1.2.0 favor of {@link JacksonProperties}
  */
 @ConfigurationProperties(prefix = "http.mappers", ignoreUnknownFields = false)
 @Deprecated

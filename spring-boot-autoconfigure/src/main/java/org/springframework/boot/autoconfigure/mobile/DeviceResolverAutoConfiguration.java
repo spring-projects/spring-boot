@@ -48,8 +48,7 @@ public class DeviceResolverAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication
-	protected static class DeviceResolverAutoConfigurationAdapter extends
-			WebMvcConfigurerAdapter {
+	protected static class DeviceResolverMvcConfiguration extends WebMvcConfigurerAdapter {
 
 		@Autowired
 		private DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor;

@@ -14,43 +14,44 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.solr;
+package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import java.lang.annotation.Annotation;
 
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.data.elasticsearch.repository.config.ElasticsearchRepositoryConfigExtension;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
-import org.springframework.data.solr.repository.config.EnableSolrRepositories;
-import org.springframework.data.solr.repository.config.SolrRepositoryConfigExtension;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Solr
- * repositories.
+ * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Elasticsearch
+ * Repositories.
  *
- * @author Christoph Strobl
+ * @author Artur Konczak
+ * @author Mohsin Husen
  * @since 1.1.0
  */
-class SolrRepositoriesAutoConfigureRegistrar extends
+class ElasticsearchRepositoriesRegistrar extends
 		AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
-		return EnableSolrRepositories.class;
+		return EnableElasticsearchRepositories.class;
 	}
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return EnableSolrRepositoriesConfiguration.class;
+		return EnableElasticsearchRepositoriesConfiguration.class;
 	}
 
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new SolrRepositoryConfigExtension();
+		return new ElasticsearchRepositoryConfigExtension();
 	}
 
-	@EnableSolrRepositories(multicoreSupport = true)
-	private static class EnableSolrRepositoriesConfiguration {
+	@EnableElasticsearchRepositories
+	private static class EnableElasticsearchRepositoriesConfiguration {
 
 	}
 

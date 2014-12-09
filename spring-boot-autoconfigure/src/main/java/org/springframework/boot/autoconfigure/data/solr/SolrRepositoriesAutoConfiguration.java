@@ -48,7 +48,7 @@ import org.springframework.data.solr.repository.support.SolrRepositoryFactoryBea
 @ConditionalOnMissingBean({ SolrRepositoryFactoryBean.class,
 		SolrRepositoryConfigExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.solr.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import(SolrRepositoriesAutoConfigureRegistrar.class)
+@Import(SolrRepositoriesRegistrar.class)
 public class SolrRepositoriesAutoConfiguration {
 
 }

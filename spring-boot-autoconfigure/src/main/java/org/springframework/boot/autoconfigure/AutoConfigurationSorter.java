@@ -96,13 +96,10 @@ class AutoConfigurationSorter {
 	private void doSortByAfterAnnotation(AutoConfigurationClasses classes,
 			List<String> tosort, Set<String> sorted, Set<String> processing,
 			String current) {
-
 		if (current == null) {
 			current = tosort.remove(0);
 		}
-
 		processing.add(current);
-
 		for (String after : classes.getClassesRequestedAfter(current)) {
 			Assert.state(!processing.contains(after),
 					"AutoConfigure cycle detected between " + current + " and " + after);
@@ -110,7 +107,6 @@ class AutoConfigurationSorter {
 				doSortByAfterAnnotation(classes, tosort, sorted, processing, after);
 			}
 		}
-
 		processing.remove(current);
 		sorted.add(current);
 	}

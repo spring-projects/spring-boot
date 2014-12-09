@@ -140,7 +140,6 @@ public class AuthenticationManagerConfiguration extends
 	 * We must add {@link BootDefaultingAuthenticationConfigurerAdapter} in the init phase
 	 * of the last {@link GlobalAuthenticationConfigurerAdapter}. The reason is that the
 	 * typical flow is something like:
-	 *
 	 * <ul>
 	 * <li>A
 	 * {@link GlobalAuthenticationConfigurerAdapter#init(AuthenticationManagerBuilder)}
@@ -179,33 +178,29 @@ public class AuthenticationManagerConfiguration extends
 				this.defaultAuth = auth;
 				return;
 			}
-
 			User user = AuthenticationManagerConfiguration.this.security.getUser();
 			if (user.isDefaultPassword()) {
 				logger.info("\n\nUsing default security password: " + user.getPassword()
 						+ "\n\n");
 			}
-
 			this.defaultAuth = new AuthenticationManagerBuilder(
 					AuthenticationManagerConfiguration.this.objectPostProcessor);
-
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
-
 			this.parent = this.defaultAuth.inMemoryAuthentication()
 					.withUser(user.getName()).password(user.getPassword())
 					.roles(roles.toArray(new String[roles.size()])).and().and().build();
-
 			// Defer actually setting the parent on the AuthenticationManagerBuilder
 			// because it makes it "configured" and we are only in the init() phase
 			// here.
-
 		}
 	}
 
 	private static class LazyAuthenticationManager implements AuthenticationManager {
 
 		private AuthenticationManagerBuilder builder;
+
 		private AuthenticationManager authenticationManager;
+
 		private AuthenticationEventPublisher authenticationEventPublisher;
 
 		public LazyAuthenticationManager(AuthenticationManagerBuilder builder) {

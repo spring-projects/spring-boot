@@ -59,8 +59,7 @@ public class TwitterAutoConfiguration {
 	@EnableSocial
 	@EnableConfigurationProperties(TwitterProperties.class)
 	@ConditionalOnWebApplication
-	protected static class TwitterAutoConfigurationAdapter extends
-			SocialAutoConfigurerAdapter {
+	protected static class TwitterConfigurerAdapter extends SocialAutoConfigurerAdapter {
 
 		@Autowired
 		private TwitterProperties properties;

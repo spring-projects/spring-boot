@@ -14,44 +14,42 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch;
+package org.springframework.boot.autoconfigure.data.solr;
 
 import java.lang.annotation.Annotation;
 
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.data.elasticsearch.repository.config.ElasticsearchRepositoryConfigExtension;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
+import org.springframework.data.solr.repository.config.SolrRepositoryConfigExtension;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Elasticsearch
- * Repositories.
+ * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Solr
+ * repositories.
  *
- * @author Artur Konczak
- * @author Mohsin Husen
+ * @author Christoph Strobl
  * @since 1.1.0
  */
-class ElasticsearchRepositoriesAutoConfigureRegistrar extends
-		AbstractRepositoryConfigurationSourceSupport {
+class SolrRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
-		return EnableElasticsearchRepositories.class;
+		return EnableSolrRepositories.class;
 	}
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return EnableElasticsearchRepositoriesConfiguration.class;
+		return EnableSolrRepositoriesConfiguration.class;
 	}
 
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new ElasticsearchRepositoryConfigExtension();
+		return new SolrRepositoryConfigExtension();
 	}
 
-	@EnableElasticsearchRepositories
-	private static class EnableElasticsearchRepositoriesConfiguration {
+	@EnableSolrRepositories(multicoreSupport = true)
+	private static class EnableSolrRepositoriesConfiguration {
 
 	}
 
