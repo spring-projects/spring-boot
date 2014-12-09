@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +53,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Configuration
 @ConditionalOnClass({ Resource.class, RequestMapping.class, Plugin.class })
 @ConditionalOnWebApplication
-@AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class })
+@AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class })
 public class HypermediaAutoConfiguration {
 
 	@Configuration
