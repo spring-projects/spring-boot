@@ -20,7 +20,6 @@ import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
@@ -63,7 +62,20 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
-		servletContext.addListener(new Listener());
+		WebApplicationContext rootAppContext = createRootApplicationContext(servletContext);
+		if (rootAppContext != null) {
+			servletContext.addListener(new ContextLoaderListener(rootAppContext) {
+				@Override
+				public void contextInitialized(ServletContextEvent event) {
+					// no-op because the application context is already initialized
+				}
+			});
+		}
+		else {
+			this.logger.debug("No ContextLoaderListener registered, as "
+					+ "createRootApplicationContext() did not "
+					+ "return an application context");
+		}
 	}
 
 	protected WebApplicationContext createRootApplicationContext(
@@ -122,38 +134,6 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	 */
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application;
-	}
-
-	/**
-	 * {@link ServletContextListener} used to load the context
-	 */
-	private class Listener implements ServletContextListener {
-
-		private ContextLoaderListener contextLoaderListener;
-
-		@Override
-		public void contextInitialized(ServletContextEvent event) {
-			ServletContext servletContext = event.getServletContext();
-			WebApplicationContext applicationContext = createRootApplicationContext(servletContext);
-			if (applicationContext == null) {
-				SpringBootServletInitializer.this.logger
-						.debug("No ContextLoaderListener registered, as "
-								+ "createRootApplicationContext() did not "
-								+ "return an application context");
-			}
-			else {
-				this.contextLoaderListener = new ContextLoaderListener(applicationContext);
-				// Don't delegate contextInitialized event as we're already setup
-			}
-		}
-
-		@Override
-		public void contextDestroyed(ServletContextEvent event) {
-			if (this.contextLoaderListener != null) {
-				this.contextLoaderListener.contextDestroyed(event);
-			}
-		}
-
 	}
 
 }
