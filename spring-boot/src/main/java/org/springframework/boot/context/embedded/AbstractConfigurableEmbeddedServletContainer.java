@@ -37,8 +37,8 @@ import org.springframework.util.Assert;
 public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		ConfigurableEmbeddedServletContainer {
 
-	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.SECONDS
-			.toMinutes(30);
+	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
+			.toSeconds(30);
 
 	private String contextPath = "";
 
