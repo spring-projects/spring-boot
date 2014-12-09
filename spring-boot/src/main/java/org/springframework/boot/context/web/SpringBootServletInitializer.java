@@ -46,7 +46,10 @@ import org.springframework.web.context.WebApplicationContext;
  * To configure the application either override the
  * {@link #configure(SpringApplicationBuilder)} method (calling
  * {@link SpringApplicationBuilder#sources(Object...)}) or make the initializer itself a
- * {@code @Configuration}.
+ * {@code @Configuration}. If you are using {@link SpringBootServletInitializer} in
+ * combination with other {@link WebApplicationInitializer WebApplicationInitializers} you
+ * might also want to add an {@code @Ordered} annotation to configure a specific startup
+ * order.
  * <p>
  * Note that a WebApplicationInitializer is only needed if you are building a war file and
  * deploying it. If you prefer to run an embedded container then you won't need this at
