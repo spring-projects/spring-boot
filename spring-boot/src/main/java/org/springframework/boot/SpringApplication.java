@@ -468,7 +468,7 @@ public class SpringApplication {
 	/**
 	 * Print a custom banner message to the console, optionally extracting its location or
 	 * content from the Environment (banner.location and banner.charset). The defaults are
-	 * banner.location=classpath:banner.txt, banner.charest=UTF-8. If the banner file does
+	 * banner.location=classpath:banner.txt, banner.charset=UTF-8. If the banner file does
 	 * not exist or cannot be printed, a simple default is created.
 	 * @see #setShowBanner(boolean)
 	 * @see #printBanner()

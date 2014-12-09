@@ -5,6 +5,18 @@
   }
 ],"properties": [
   {
+    "name": "banner.charset",
+    "type": "java.nio.charset.Charset",
+    "description": "Banner file encoding.",
+    "defaultValue": "UTF-8"
+  },
+  {
+    "name": "banner.location",
+    "type": "java.lang.String",
+    "description": "Banner file location.",
+    "defaultValue": "classpath:banner.txt"
+  },
+  {
     "name": "debug",
     "type": "java.lang.Boolean",
     "description": "Enable debug logs.",
