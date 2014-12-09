@@ -74,6 +74,8 @@ public class JarCommand extends OptionParsingCommand {
 
 	private static final Layout LAYOUT = new Layouts.Jar();
 
+	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
+
 	public JarCommand() {
 		super("jar", "Create a self-contained "
 				+ "executable jar file from a Spring Groovy script",
@@ -252,10 +254,34 @@ public class JarCommand extends OptionParsingCommand {
 
 		private void addDependency(JarWriter writer, File dependency)
 				throws FileNotFoundException, IOException {
-			if (dependency.isFile()) {
+			if (dependency.isFile() && isZip(dependency)) {
 				writer.writeNestedLibrary("lib/", new Library(dependency,
 						LibraryScope.COMPILE));
 			}
+		}
+
+		private boolean isZip(File file) {
+			try {
+				FileInputStream fileInputStream = new FileInputStream(file);
+				try {
+					return isZip(fileInputStream);
+				}
+				finally {
+					fileInputStream.close();
+				}
+			}
+			catch (IOException ex) {
+				return false;
+			}
+		}
+
+		private boolean isZip(InputStream inputStream) throws IOException {
+			for (int i = 0; i < ZIP_FILE_HEADER.length; i++) {
+				if (inputStream.read() != ZIP_FILE_HEADER[i]) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 	}
