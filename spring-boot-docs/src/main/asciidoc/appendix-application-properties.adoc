@@ -33,6 +33,7 @@ content into your application; rather pick only the properties that you need.
 
 	# PROFILES
 	spring.profiles.active= # comma list of <<howto-set-active-spring-profiles,active profiles>>
+	spring.profiles.include= # unconditionally activate the specified comma separated profiles
 
 	# APPLICATION SETTINGS ({sc-spring-boot}/SpringApplication.{sc-ext}[SpringApplication])
 	spring.main.sources=
@@ -59,6 +60,7 @@ content into your application; rather pick only the properties that you need.
 	server.servlet-path= # the servlet path, defaults to '/'
 	server.ssl.client-auth= # want or need
 	server.ssl.key-alias=
+	server.ssl.ciphers= # supported SSL ciphers
 	server.ssl.key-password=
 	server.ssl.key-store=
 	server.ssl.key-store-password=
@@ -80,6 +82,7 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.remote-ip-header=x-forwarded-for
 	server.tomcat.basedir=/tmp # base dir (usually not needed, defaults to tmp)
 	server.tomcat.background-processor-delay=30; # in seconds
+	server.tomcat.max-http-header-size= # maximum size in bytes of the HTTP message header
 	server.tomcat.max-threads = 0 # number of threads in protocol handler
 	server.tomcat.uri-encoding = UTF-8 # character encoding to use for URL decoding
 
@@ -94,8 +97,9 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.add-mappings=true # if default mappings should be added
 
 	# HTTP encoding ({sc-spring-boot-autoconfigure}/web/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
-	spring.http.encoding=UTF-8 # the encoding of HTTP requests/responses
-	spring.http.force=true # force the configured encoding
+	spring.http.encoding.charset=UTF-8 # the encoding of HTTP requests/responses
+	spring.http.encoding.enabled=true # enable http encoding support
+	spring.http.encoding.force=true # force the configured encoding
 
 	# JACKSON ({sc-spring-boot-autoconfigure}}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
 	spring.jackson.date-format= # Date format string (e.g. yyyy-MM-dd HH:mm:ss), or a fully-qualified date format class name (e.g. com.fasterxml.jackson.databind.util.ISO8601DateFormat)
@@ -109,6 +113,8 @@ content into your application; rather pick only the properties that you need.
 	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
 	spring.thymeleaf.check-template-location=true
 	spring.thymeleaf.prefix=classpath:/templates/
+	spring.thymeleaf.excluded-view-names= # comma-separated list of view names that should be excluded from resolution
+    spring.thymeleaf.view-names= # comma-separated list of view names that can be resolved
 	spring.thymeleaf.suffix=.html
 	spring.thymeleaf.mode=HTML5
 	spring.thymeleaf.encoding=UTF-8
@@ -151,11 +157,13 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.expose-session-attributes=false
 	spring.velocity.expose-spring-macro-helpers=false
 	spring.velocity.number-tool-attribute=
+	spring.velocity.prefer-file-system-access=true # prefer file system access for template loading
 	spring.velocity.prefix=
 	spring.velocity.properties.*=
 	spring.velocity.request-context-attribute=
 	spring.velocity.resource-loader-path=classpath:/templates/
 	spring.velocity.suffix=.vm
+	spring.velocity.toolbox-config-location= # velocity Toolbox config location, for example "/WEB-INF/toolbox.xml"
 	spring.velocity.view-names= # whitelist of view names that can be resolved
 
 	# JERSEY ({sc-spring-boot-autoconfigure}}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
@@ -257,9 +265,11 @@ content into your application; rather pick only the properties that you need.
 	spring.data.rest.base-uri= # base URI against which the exporter should calculate its links
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
+	flyway.check-location=false # check that migration scripts location exists
 	flyway.locations=classpath:db/migration # locations of migrations scripts
 	flyway.schemas= # schemas to update
 	flyway.init-version= 1 # version to start migration
+	flyway.init-sqls= # SQL statements to execute to initialize a connection immediately after obtaining it
 	flyway.sql-migration-prefix=V
 	flyway.sql-migration-suffix=.sql
 	flyway.enabled=true
@@ -269,6 +279,7 @@ content into your application; rather pick only the properties that you need.
 
 	# LIQUIBASE ({sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[LiquibaseProperties])
 	liquibase.change-log=classpath:/db/changelog/db.changelog-master.yaml
+	liquibase.check-change-log-location=true # check the change log location exists
 	liquibase.contexts= # runtime contexts to use
 	liquibase.default-schema= # default database schema to use
 	liquibase.drop-first=false
@@ -290,6 +301,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.dynamic=
 
 	# REDIS ({sc-spring-boot-autoconfigure}/redis/RedisProperties.{sc-ext}[RedisProperties])
+	spring.redis.database= # database name
 	spring.redis.host=localhost # server host
 	spring.redis.password= # server password
 	spring.redis.port=6379 # connection port
@@ -380,6 +392,9 @@ content into your application; rather pick only the properties that you need.
 	management.address= # bind to a specific NIC
 	management.context-path= # default to '/'
 	management.add-application-context-header= # default to true
+	management.security.enabled=true # enable security
+    management.security.role=ADMIN # role required to access the management endpoint
+    management.security.sessions=stateless # session creating policy to use (always, never, if_required, stateless)
 
 	# PID FILE ({sc-spring-boot-actuator}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
 	spring.pidfile= # Location of the PID file to write
@@ -405,10 +420,14 @@ content into your application; rather pick only the properties that you need.
 	endpoints.health.id=health
 	endpoints.health.sensitive=true
 	endpoints.health.enabled=true
+	endpoints.health.mapping.*= # mapping of health statuses to HttpStatus codes
 	endpoints.health.time-to-live=1000
 	endpoints.info.id=info
 	endpoints.info.sensitive=false
 	endpoints.info.enabled=true
+	endpoints.mappings.enabled=true
+	endpoints.mappings.id=mappings
+	endpoints.mappings.sensitive=true
 	endpoints.metrics.id=metrics
 	endpoints.metrics.sensitive=true
 	endpoints.metrics.enabled=true
@@ -449,6 +468,7 @@ content into your application; rather pick only the properties that you need.
 	shell.command-refresh-interval=-1
 	shell.command-path-patterns= # classpath*:/commands/**, classpath*:/crash/commands/**
 	shell.config-path-patterns= # classpath*:/crash/*
+	shell.disabled-commands=jpa*,jdbc*,jndi* # comma-separated list of commands to disable
 	shell.disabled-plugins=false # don't expose plugins
 	shell.ssh.enabled= # ssh settings ...
 	shell.ssh.key-path=
