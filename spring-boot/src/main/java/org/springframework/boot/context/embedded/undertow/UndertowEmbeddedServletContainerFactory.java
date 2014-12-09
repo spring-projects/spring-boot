@@ -226,7 +226,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 			builder.setDirectBuffers(this.directBuffers);
 		}
 		if (getSsl() == null) {
-			builder.addHttpListener(port, "0.0.0.0");
+			builder.addHttpListener(port, getListenAddress());
 		}
 		else {
 			configureSsl(port, builder);
@@ -242,7 +242,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 			Ssl ssl = getSsl();
 			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
 			sslContext.init(getKeyManagers(), getTrustManagers(), null);
-			builder.addHttpsListener(port, "0.0.0.0", sslContext);
+			builder.addHttpsListener(port, getListenAddress(), sslContext);
 			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
 					getSslClientAuthMode(ssl));
 		}
@@ -252,6 +252,13 @@ public class UndertowEmbeddedServletContainerFactory extends
 		catch (KeyManagementException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private String getListenAddress() {
+		if (getAddress() == null) {
+			return "0.0.0.0";
+		}
+		return getAddress().getHostAddress();
 	}
 
 	private SslClientAuthMode getSslClientAuthMode(Ssl ssl) {
