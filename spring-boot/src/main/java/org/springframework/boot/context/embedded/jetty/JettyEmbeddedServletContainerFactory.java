@@ -118,7 +118,6 @@ public class JettyEmbeddedServletContainerFactory extends
 		configureWebAppContext(context, initializers);
 		server.setHandler(context);
 		this.logger.info("Server initialized with port: " + port);
-
 		if (getSsl() != null) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			configureSsl(sslContextFactory, getSsl());
@@ -126,11 +125,9 @@ public class JettyEmbeddedServletContainerFactory extends
 					server, sslContextFactory, port);
 			server.setConnectors(new Connector[] { connector });
 		}
-
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
 		}
-
 		return getJettyEmbeddedServletContainer(server);
 	}
 
@@ -224,6 +221,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	protected final void configureWebAppContext(WebAppContext context,
 			ServletContextInitializer... initializers) {
 		Assert.notNull(context, "Context must not be null");
+		setExtendedListenerTypes(context);
 		if (this.resourceLoader != null) {
 			context.setClassLoader(this.resourceLoader.getClassLoader());
 		}
@@ -246,6 +244,15 @@ public class JettyEmbeddedServletContainerFactory extends
 		SessionManager sessionManager = context.getSessionHandler().getSessionManager();
 		sessionManager.setMaxInactiveInterval(sessionTimeout);
 		postProcessWebAppContext(context);
+	}
+
+	private void setExtendedListenerTypes(WebAppContext context) {
+		try {
+			context.getServletContext().setExtendedListenerTypes(true);
+		}
+		catch (NoSuchMethodError ex) {
+			// Not available on Jetty 8
+		}
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
