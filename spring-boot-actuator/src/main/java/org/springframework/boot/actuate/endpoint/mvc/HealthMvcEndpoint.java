@@ -130,7 +130,8 @@ public class HealthMvcEndpoint implements MvcEndpoint {
 	}
 
 	private boolean secure(Principal principal) {
-		return principal != null && !principal.getClass().getName().contains("Anonymous");
+		return (principal != null && !principal.getClass().getName()
+				.contains("Anonymous"));
 	}
 
 	private boolean useCachedValue(Principal principal) {

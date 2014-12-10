@@ -93,8 +93,8 @@ public class ResourceBanner implements Banner {
 		Map<String, Object> versions = new HashMap<String, Object>();
 		versions.put("application.version", getVersionString(appVersion, false));
 		versions.put("spring-boot.version", getVersionString(bootVersion, false));
-		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true));
 		versions.put("application.formatted-version", getVersionString(appVersion, true));
+		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true));
 		return versions;
 	}
 
