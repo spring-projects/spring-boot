@@ -110,16 +110,21 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 					.getBeansOfType(AbstractUrlHandlerMapping.class);
 			for (String name : mappings.keySet()) {
 				AbstractUrlHandlerMapping mapping = mappings.get(name);
-				if (AopUtils.isCglibProxy(mapping)) {
-					// The getHandlerMap() method is final so it cannot be cglibbed
-					continue;
-				}
-				Map<String, Object> handlers = mapping.getHandlerMap();
+				Map<String, Object> handlers = getHandlerMap(mapping);
 				for (String key : handlers.keySet()) {
 					result.put(key, Collections.singletonMap("bean", name));
 				}
 			}
 		}
+	}
+
+	private Map<String, Object> getHandlerMap(AbstractUrlHandlerMapping mapping) {
+		if (AopUtils.isCglibProxy(mapping)) {
+			// If the AbstractUrlHandlerMapping is a cglib proxy we can't call
+			// the final getHandlerMap() method.
+			return Collections.emptyMap();
+		}
+		return mapping.getHandlerMap();
 	}
 
 	protected void extractHandlerMappings(

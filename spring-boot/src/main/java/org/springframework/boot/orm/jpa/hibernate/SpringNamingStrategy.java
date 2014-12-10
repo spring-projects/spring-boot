@@ -17,15 +17,15 @@
 package org.springframework.boot.orm.jpa.hibernate;
 
 import org.hibernate.cfg.ImprovedNamingStrategy;
-import org.hibernate.cfg.NamingStrategy;
 import org.hibernate.internal.util.StringHelper;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Hibernate {@link NamingStrategy} that follows Spring recommended naming conventions.
- * Naming conventions implemented here are identical to {@link ImprovedNamingStrategy}
- * with the exception that foreign key columns include the referenced column name.
+ * Hibernate {@link org.hibernate.cfg.NamingStrategy} that follows Spring recommended
+ * naming conventions. Naming conventions implemented here are identical to
+ * {@link ImprovedNamingStrategy} with the exception that foreign key columns include the
+ * referenced column name.
  *
  * @author Phillip Webb
  * @see "http://stackoverflow.com/questions/7689206/ejb3namingstrategy-vs-improvednamingstrategy-foreign-key-naming"

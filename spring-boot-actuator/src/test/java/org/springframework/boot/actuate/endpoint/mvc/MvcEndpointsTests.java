@@ -23,11 +23,14 @@ import org.springframework.context.support.StaticApplicationContext;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link MvcEndpoints}.
+ *
  * @author Dave Syer
  */
 public class MvcEndpointsTests {
 
 	private MvcEndpoints endpoints = new MvcEndpoints();
+
 	private StaticApplicationContext context = new StaticApplicationContext();
 
 	@Test

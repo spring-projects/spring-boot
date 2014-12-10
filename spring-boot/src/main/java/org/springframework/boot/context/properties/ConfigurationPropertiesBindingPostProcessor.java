@@ -324,7 +324,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 				}
 				loader.load(resource);
 			}
-
 			MutablePropertySources loaded = loader.getPropertySources();
 			if (mergeDefaultSources) {
 				for (PropertySource<?> propertySource : this.propertySources) {

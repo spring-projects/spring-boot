@@ -143,11 +143,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 		tomcat.setConnector(connector);
 		tomcat.getHost().setAutoDeploy(false);
 		tomcat.getEngine().setBackgroundProcessorDelay(-1);
-
 		for (Connector additionalConnector : this.additionalTomcatConnectors) {
 			tomcat.getService().addConnector(additionalConnector);
 		}
-
 		prepareContext(tomcat.getHost(), initializers);
 		return getTomcatEmbeddedServletContainer(tomcat);
 	}

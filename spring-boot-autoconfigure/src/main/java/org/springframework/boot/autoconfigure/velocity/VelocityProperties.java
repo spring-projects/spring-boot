@@ -71,21 +71,8 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 	 */
 	private boolean preferFileSystemAccess = true;
 
-	/**
-	 * Switches off MVC view resolution if set to false (default true).
-	 */
-	private boolean enabled = true;
-
 	public VelocityProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	public String getDateToolAttribute() {

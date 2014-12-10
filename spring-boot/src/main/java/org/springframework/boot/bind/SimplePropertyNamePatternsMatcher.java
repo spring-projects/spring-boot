@@ -40,4 +40,5 @@ class SimplePropertyNamePatternsMatcher implements PropertyNamePatternsMatcher {
 	public boolean matches(String propertyName) {
 		return PatternMatchUtils.simpleMatch(this.patterns, propertyName);
 	}
+
 }

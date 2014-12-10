@@ -46,7 +46,6 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 	@Override
 	public synchronized Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-
 		Class<?> resultClass = null;
 
 		// Check local class caches

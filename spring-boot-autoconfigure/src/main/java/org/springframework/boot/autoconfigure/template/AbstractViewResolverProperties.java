@@ -30,6 +30,11 @@ import org.springframework.web.servlet.ViewResolver;
 public abstract class AbstractViewResolverProperties {
 
 	/**
+	 * Enable MVC view resolution for this technology.
+	 */
+	private boolean enabled = true;
+
+	/**
 	 * Enable template caching.
 	 */
 	private boolean cache;
@@ -53,6 +58,14 @@ public abstract class AbstractViewResolverProperties {
 	 * Check that the templates location exists.
 	 */
 	private boolean checkTemplateLocation = true;
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
 
 	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
 		this.checkTemplateLocation = checkTemplateLocation;

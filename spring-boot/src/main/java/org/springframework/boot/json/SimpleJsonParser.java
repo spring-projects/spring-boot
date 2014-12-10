@@ -28,4 +28,5 @@ package org.springframework.boot.json;
  */
 @Deprecated
 public class SimpleJsonParser extends BasicJsonParser {
+
 }

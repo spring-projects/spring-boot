@@ -77,7 +77,7 @@ public class ThymeleafProperties {
 	private String[] excludedViewNames;
 
 	/**
-	 * Switches off MVC view resolution if set to false (default true).
+	 * Enable MVC Thymeleaf view resolution.
 	 */
 	private boolean enabled = true;
 

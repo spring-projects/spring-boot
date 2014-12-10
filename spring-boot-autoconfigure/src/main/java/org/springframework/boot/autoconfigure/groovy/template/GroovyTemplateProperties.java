@@ -50,19 +50,6 @@ public class GroovyTemplateProperties extends AbstractViewResolverProperties {
 	 */
 	private Map<String, Object> configuration = new HashMap<String, Object>();
 
-	/**
-	 * Switches off MVC view resolution if set to false (default true).
-	 */
-	private boolean enabled = true;
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
 	public String getPrefix() {
 		return this.prefix;
 	}

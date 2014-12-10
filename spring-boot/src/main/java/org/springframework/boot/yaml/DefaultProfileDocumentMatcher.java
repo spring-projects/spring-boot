@@ -34,9 +34,7 @@ public class DefaultProfileDocumentMatcher implements DocumentMatcher {
 		if (!properties.containsKey("spring.profiles")) {
 			return MatchStatus.FOUND;
 		}
-		else {
-			return MatchStatus.NOT_FOUND;
-		}
+		return MatchStatus.NOT_FOUND;
 	}
 
 }

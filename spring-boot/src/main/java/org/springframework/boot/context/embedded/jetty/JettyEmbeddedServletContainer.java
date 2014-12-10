@@ -96,7 +96,6 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	@Override
 	public void start() throws EmbeddedServletContainerException {
 		this.server.setConnectors(this.connectors);
-
 		if (!this.autoStart) {
 			return;
 		}
