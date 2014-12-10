@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -103,6 +104,7 @@ public class GroovyTemplateAutoConfiguration {
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class,
 			UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication
+	@ConditionalOnProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
 	public static class GroovyWebConfiguration {
 
 		@Autowired

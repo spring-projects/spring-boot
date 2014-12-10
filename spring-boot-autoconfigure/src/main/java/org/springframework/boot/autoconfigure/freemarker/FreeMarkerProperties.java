@@ -48,8 +48,21 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 	 */
 	private String[] templateLoaderPath = new String[] { DEFAULT_TEMPLATE_LOADER_PATH };
 
+	/**
+	 * Switches off MVC view resolution if set to false (default true).
+	 */
+	private boolean enabled = true;
+
 	public FreeMarkerProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public Map<String, String> getSettings() {
