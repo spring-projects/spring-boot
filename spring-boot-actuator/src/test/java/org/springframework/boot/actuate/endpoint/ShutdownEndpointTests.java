@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +42,12 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 	public ShutdownEndpointTests() {
 		super(Config.class, ShutdownEndpoint.class, "shutdown", true,
 				"endpoints.shutdown");
+	}
+
+	@Override
+	public void isEnabledByDefault() throws Exception {
+		// Shutdown is dangerous so is disabled by default
+		assertThat(getEndpointBean().isEnabled(), equalTo(false));
 	}
 
 	@Test
@@ -61,7 +68,6 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 		@Bean
 		public ShutdownEndpoint endpoint() {
 			ShutdownEndpoint endpoint = new ShutdownEndpoint();
-			endpoint.setEnabled(true);
 			return endpoint;
 		}
 

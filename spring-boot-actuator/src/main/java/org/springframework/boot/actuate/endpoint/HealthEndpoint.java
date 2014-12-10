@@ -47,7 +47,7 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 	 */
 	public HealthEndpoint(HealthAggregator healthAggregator,
 			Map<String, HealthIndicator> healthIndicators) {
-		super("health", false, true);
+		super("health", false);
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
 		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(

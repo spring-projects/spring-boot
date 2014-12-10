@@ -18,11 +18,13 @@ package org.springframework.boot.actuate.endpoint;
 
 /**
  * An endpoint that can be used to expose useful information to operations. Usually
- * exposed via Spring MVC but could also be exposed using some other technique.
+ * exposed via Spring MVC but could also be exposed using some other technique. Consider
+ * extending {@link AbstractEndpoint} if you are developing your own endpoint.
  *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Christian Dupuis
+ * @see AbstractEndpoint
  */
 public interface Endpoint<T> {
 

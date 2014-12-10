@@ -1,5 +1,11 @@
 {"properties": [
   {
+    "name": "endpoints.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable endpoints.",
+    "defaultValue": true
+  },
+  {
     "name": "endpoints.configprops.keys-to-sanitize",
     "type": "java.lang.String",
     "sourceType": "org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint",

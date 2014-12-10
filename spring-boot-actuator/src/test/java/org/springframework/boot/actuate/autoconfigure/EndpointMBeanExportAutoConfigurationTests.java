@@ -202,7 +202,7 @@ public class EndpointMBeanExportAutoConfigurationTests {
 	protected static class ManagedEndpoint extends AbstractEndpoint<Boolean> {
 
 		public ManagedEndpoint() {
-			super("managed", true, true);
+			super("managed", true);
 		}
 
 		@Override
@@ -224,7 +224,7 @@ public class EndpointMBeanExportAutoConfigurationTests {
 		class Nested extends AbstractEndpoint<Boolean> {
 
 			public Nested() {
-				super("managed", true, true);
+				super("managed", true);
 			}
 
 			@Override

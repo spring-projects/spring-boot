@@ -135,6 +135,16 @@ of the `beans` endpoint and also enables `shutdown`.
 NOTE: The prefix ‟`endpoints` + `.` + `name`” is used to uniquely identify the endpoint
 that is being configured.
 
+By default, all endpoints except for `shutdown` are enabled. If you prefer to
+specifically "`opt-in`" endpoint enablement you can use the `endpoints.enabled` property.
+For example, the following will disable _all_ endpoints except for `info`:
+
+[source,properties,indent=0]
+----
+	endpoints.enabled=false
+	endpoints.info.enabled=true
+----
+
 
 
 [[production-ready-health]]
@@ -394,6 +404,10 @@ in your `application.properties`:
 	management.security.role=SUPERUSER
 ----
 
+TIP: If you don't use Spring Security and your HTTP endpoints are exposed publicly,
+you should carefully consider which endpoints you enable. See
+<<production-ready-customizing-endpoints>> for details of how you can set
+`endpoints.enabled` to `false` then "`opt-in`" only specific endpoints.
 
 
 [[production-ready-customizing-management-server-context-path]]

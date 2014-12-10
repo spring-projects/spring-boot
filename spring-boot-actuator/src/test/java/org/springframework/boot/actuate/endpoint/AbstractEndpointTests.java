@@ -102,6 +102,37 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		assertThat(getEndpointBean().isSensitive(), equalTo(!this.sensitive));
 	}
 
+	@Test
+	public void isEnabledByDefault() throws Exception {
+		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+	}
+
+	@Test
+	public void isEnabledFallbackToEnvironment() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		PropertySource<?> propertySource = new MapPropertySource("test",
+				Collections.<String, Object> singletonMap(this.property + ".enabled",
+						false));
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
+		assertThat(getEndpointBean().isEnabled(), equalTo(false));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void isExplicitlyEnabled() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		PropertySource<?> propertySource = new MapPropertySource("test",
+				Collections.<String, Object> singletonMap(this.property + ".enabled",
+						false));
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
+		((AbstractEndpoint) getEndpointBean()).setEnabled(true);
+		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+	}
+
 	@SuppressWarnings("unchecked")
 	protected T getEndpointBean() {
 		return (T) this.context.getBean(this.type);
