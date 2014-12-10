@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -81,6 +82,11 @@ public class MongoProperties {
 	 * Login password of the mongo server.
 	 */
 	private char[] password;
+	
+	/**
+	 * The packages to scan for {@code @Document} and {@code Persistent} annotated types.
+	 */
+	private List<String> mappingBasePackages = Collections.emptyList();
 
 	public String getHost() {
 		return this.host;
@@ -153,6 +159,14 @@ public class MongoProperties {
 
 	public void setGridFsDatabase(String gridFsDatabase) {
 		this.gridFsDatabase = gridFsDatabase;
+	}
+	
+	public List<String> getMappingBasePackages() {
+		return mappingBasePackages;
+	}
+	
+	public void setMappingBasePackages(List<String> mappingBasePackages) {
+		this.mappingBasePackages = mappingBasePackages;
 	}
 
 	public String getMongoClientDatabase() {
