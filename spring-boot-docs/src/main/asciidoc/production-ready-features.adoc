@@ -86,8 +86,9 @@ The following endpoints are available:
 |true
 
 |`health`
-|Shows application health information (defaulting to a simple '`OK`' message).
-|false
+|Shows full application health information when accessed securely or a simple '`status`'
+message when accessed over an insecure HTTP connection.
+|true
 
 |`info`
 |Displays arbitrary application info.
@@ -137,13 +138,67 @@ that is being configured.
 
 
 [[production-ready-health]]
-=== Custom health information
-The default information exposed by the `health` endpoint is a simple '`OK`' message. It
-is often useful to perform some additional health checks, for example you might check
-that a database connection works, or that a remote REST endpoint is functioning.
+=== Health information
+Health information can be used to check the status of your running application. It is
+often used by monitoring software to alert someone if a production system goes down.
+The default information exposed by the `health` endpoint depends on how it is accessed.
+For an insecure unauthenticated connection a simple '`status`' message is returned, for a
+secure or authenticated connection additional details are also displayed (see
+<<production-ready-health-access-restrictions>> for HTTP details).
 
-To provide custom health information you can register a Spring bean that implements the
+Heath information is collected from all
+{sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] beans defined
+in your `ApplicationContext`. Spring Boot includes a number of auto-configured
+`HealthIndicators` and you can also write your own.
+
+
+
+=== Security with HealthIndicators
+Information returned by `HealthIndicators` is often somewhat sensitive in nature. For
+example and you probably don't want to publish details of your database server to the
+world. For this reason, by default, only the health status is exposed on an insecure HTTP
+connection. If you are happy for complete heath information to always be exposed you can
+set `endpoints.health.sensitive` to `false`.
+
+Heath responses are also cached to prevent "`denial of service`" attacks. Use the
+`endpoints.health.time-to-live` property if you want to change the default cache period
+of 1000 milliseconds.
+
+
+
+==== Auto-configured HealthIndicators
+The following `HealthIndicators` are auto-configured by Spring Boot when appropriate:
+
+|===
+|Name |Description
+
+|{sc-spring-boot-actuator}/health/DiskSpaceHealthIndicator.{sc-ext}[`DiskSpaceHealthIndicator`]
+|Checks for low disk space.
+
+|{sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
+|Checks that a connection to `DataSource` can be obtained.
+
+|{sc-spring-boot-actuator}/health/MongoHealthIndicator.{sc-ext}[`MongoHealthIndicator`]
+|Checks that a Mongo database is up.
+
+|{sc-spring-boot-actuator}/health/RabbitHealthIndicator.{sc-ext}[`RabbitHealthIndicator`]
+|Checks that a Rabbit server is up.
+
+|{sc-spring-boot-actuator}/health/SolrHealthIndicator.{sc-ext}[`RedisHealthIndicator`]
+|Checks that a Redis server is up.
+
+|{sc-spring-boot-actuator}/health/SolrHealthIndicator.{sc-ext}[`SolrHealthIndicator`]
+|Checks that a Solr server is up.
+|===
+
+
+
+==== Writing custom HealthIndicators
+To provide custom health information you can register Spring beans that implement the
 {sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] interface.
+You need to provide an implementation of the `health()` method and return a `Health`
+response. The `Health` response should include a status and can optionally include
+additional details to be displayed.
 
 [source,java,indent=0]
 ----
@@ -155,30 +210,35 @@ To provide custom health information you can register a Spring bean that impleme
 
 		@Override
 		public Health health() {
-			// perform some specific health check
-			return ...
+			int errorCode = check(); // perform some specific health check
+			if (errorCode != 0) {
+				return Health.down().withDetail("Error Code", errorCode);
+			}
+			return Health.up();
 		}
 
 	}
 ----
 
-Spring Boot provides a
-{sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
-implementation that attempts a simple database test (reusing the validation query set on the data
-source, if any) as well as implementations for Redis, MongoDB and RabbitMQ. Spring Boot adds the
-`HealthIndicator` instances automatically if beans of type `DataSource`, `MongoTemplate`,
-`RedisConnectionFactory`, and `RabbitTemplate` respectively are present in the
-`ApplicationContext`. A health indicator that checks free disk space is also provided.
+In addition to Spring Boot's default {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
+types, it is also possible to introduce custom `Status` types to represent more
+complex system states. In such cases a custom implementation of the
+{sc-spring-boot-actuator}/health/HealthAggregator.{sc-ext}[`HealthAggregator`]
+interface also needs to be provided, or the default implementation has to be configured
+using the `management.health.status.order` configuration property.
 
-Besides implementing custom a `HealthIndicator` type and using out-of-box {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
-types, it is also possible to introduce custom `Status` types for different or more complex system
-states. In that case a custom implementation of the {sc-spring-boot-actuator}/health/HealthAggregator.{sc-ext}[`HealthAggregator`]
-interface needs to be provided or the default implementation has to be configured using the
-`management.health.status.order` configuration property.
+For example, assuming a new `Status` with code `FATAL` is being used in one of your
+`HealthIndicator` implementations. To configure the severity order add the following
+to your application properties:
 
-Assuming a new `Status` with code `FATAL` is being used in one of your `HealthIndicator`
-implementations. To configure the severity or order add the following to your application properties:
-`management.health.status.order: DOWN, OUT_OF_SERVICE, UNKNOWN, UP`.
+[source,properties,indent=0]
+----
+	management.health.status.order: DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+----
+
+You might also want to register custom status mappings with the `HealthMvcEndpoint`
+if you access the health endpoint over HTTP. For example you could map `FATAL` to
+`HttpStatus.SERVICE_UNAVAILABLE`.
 
 
 
@@ -411,7 +471,7 @@ If you don't want to expose endpoints over HTTP you can set the management port 
 
 
 [[production-ready-health-access-restrictions]]
-=== Health endpoint anonymous access restrictions
+=== HTTP Health endpoint access restrictions
 The information exposed by the health endpoint varies depending on whether or not it's
 accessed anonymously. By default, when accessed anonymously, any details about the
 server's health are hidden and the endpoint will simply indicate whether or not the server
