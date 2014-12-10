@@ -697,9 +697,9 @@ Spring Boot uses http://commons.apache.org/logging[Commons Logging] for all inte
 logging, but leaves the underlying log implementation open. Default configurations are
 provided for
 http://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html[Java Util Logging],
-http://logging.apache.org/log4j/[Log4J] and
-http://logback.qos.ch/[Logback].
-In each case there is console output and file output (rotating, 10 Mb file size).
+http://logging.apache.org/log4j/[Log4J], http://logging.apache.org/log4j/2.x/[Log4J2] and
+http://logback.qos.ch/[Logback]. In each case loggers are pre-configured to use console
+output with optional file output also available.
 
 By default, If you use the '`Starter POMs`', Logback will be used for logging. Appropriate
 Logback routing is also included to ensure that dependent libraries that use
@@ -755,12 +755,42 @@ detection.
 
 [[boot-features-logging-file-output]]
 === File output
-By default, log files are written to `spring.log` in your `temp` directory and rotate at
-10 Mb. You can easily customize the output folder by setting the `logging.path` property
-(for example in your `application.properties`). It is also possible to change the filename
-using a `logging.file` property. Note that if `logging.file` is used, then setting `logging.path` has no effect.
+By default, Spring Boot will only log to the console and will not write log files. If you
+want to write log files in addition to the console output you need to set the
+`logging.file` and/or `logging.path` properties (for example in your
+`application.properties`). Log files will rotate when they reach 10 Mb.
 
 As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by default.
+
+The following table shows how the `logging.*` properties can be used together:
+
+.Logging properties
+[cols="1,1,1,4"]
+|===
+|logging.path |logging.file |Example |Description
+
+|_(none)_
+|Exact location
+|`./my.log`
+|Writes to the specified file.
+
+|_(none)_
+|Simple name
+|`my.log`
+|Writes the given file in the `temp` folder.
+
+|Specific folder
+|Simple name
+|`/logs` & `my.log`
+|Writes the given file in the specified folder.
+
+|Specific folder
+|_(none)_
+|`/logs`
+|Writes the `spring.log` in the specified folder.
+|===
+
+
 
 [[boot-features-custom-log-levels]]
 === Log Levels
@@ -799,6 +829,9 @@ Depending on your logging system, the following files will be loaded:
 
 |Log4j
 |`log4j.properties` or `log4j.xml`
+
+|Log4j2
+|`log4j2.xml`
 
 |JDK (Java Util Logging)
 |`logging.properties`
