@@ -86,9 +86,9 @@ The following endpoints are available:
 |true
 
 |`health`
-|Shows full application health information when accessed securely or a simple '`status`'
-message when accessed over an insecure HTTP connection.
-|true
+|Shows application health information (a simple '`status`' when accessed over an
+unauthenticated connection or full message details when authenticated).
+|false
 
 |`info`
 |Displays arbitrary application info.
