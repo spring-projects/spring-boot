@@ -51,7 +51,33 @@ such as the user that launched the application.
 === Customizing the Banner
 The banner that is printed on start up can be changed by adding a `banner.txt` file
 to your classpath, or by setting `banner.location` to the location of such a file.
-If the file has an unusual encoding you can set `banner.encoding` (default is UTF-8).
+If the file has an unusual encoding you can set `banner.encoding` (default is `UTF-8`).
+
+You can use the following variables inside your `banner.txt` file:
+
+.Banner variables
+|===
+| Variable | Description
+
+|`${application.version}`
+|The version number of your application as declared in `MANIFEST.MF`. For example `1.0`.
+
+|`${application.formatted-version}`
+|The version number of your application as declared in `MANIFEST.MF` formatted for
+display (surrounded with brackets and prefixed with `v`). For example `(v1.0)`.
+
+|`${spring-boot.version}`
+|The Spring Boot version that you are using. For example `{spring-boot-version}`.
+
+|`${spring-boot.formatted-version}`
+|The Spring Boot version that you are using formatted for display (surrounded with
+brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
+|===
+
+TIP: The `SpringBootApplication.setBanner(...)` method can be used if you want to generate
+a banner programmatically. Use the `org.springframework.boot.Banner` interface and
+implement your own `printBanner()` method.
+
 
 
 [[boot-features-customizing-spring-application]]
