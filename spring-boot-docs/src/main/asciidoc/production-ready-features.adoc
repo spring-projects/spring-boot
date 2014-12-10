@@ -156,7 +156,7 @@ For an insecure unauthenticated connection a simple '`status`' message is return
 secure or authenticated connection additional details are also displayed (see
 <<production-ready-health-access-restrictions>> for HTTP details).
 
-Heath information is collected from all
+Health information is collected from all
 {sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] beans defined
 in your `ApplicationContext`. Spring Boot includes a number of auto-configured
 `HealthIndicators` and you can also write your own.
@@ -167,10 +167,10 @@ in your `ApplicationContext`. Spring Boot includes a number of auto-configured
 Information returned by `HealthIndicators` is often somewhat sensitive in nature. For
 example, you probably don't want to publish details of your database server to the
 world. For this reason, by default, only the health status is exposed over an
-unauthenticated HTTP connection. If you are happy for complete heath information to always
+unauthenticated HTTP connection. If you are happy for complete health information to always
 be exposed you can set `endpoints.health.sensitive` to `false`.
 
-Heath responses are also cached to prevent "`denial of service`" attacks. Use the
+Health responses are also cached to prevent "`denial of service`" attacks. Use the
 `endpoints.health.time-to-live` property if you want to change the default cache period
 of 1000 milliseconds.
 
