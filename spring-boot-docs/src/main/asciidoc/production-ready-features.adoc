@@ -375,7 +375,7 @@ all enabled endpoints to be exposed over HTTP. The default convention is to use 
 
 [[production-ready-sensitive-endpoints]]
 === Securing sensitive endpoints
-If you add '`Spring Security`' to you project, all sensitive endpoints exposed over HTTP
+If you add '`Spring Security`' to your project, all sensitive endpoints exposed over HTTP
 will be protected. By default '`basic`' authentication will be used with the username
 `user` and a generated password (which is printed on the console when the application
 starts).
