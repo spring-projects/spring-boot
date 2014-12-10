@@ -17,10 +17,14 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.Arrays;
+import java.util.Set;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.city.City;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -28,17 +32,22 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.mongodb.Mongo;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MongoDataAutoConfiguration}.
  *
  * @author Josh Long
+ * @author Oliver Gierke
  */
 public class MongoDataAutoConfigurationTests {
 
@@ -82,6 +91,27 @@ public class MongoDataAutoConfigurationTests {
 				.canConvert(Mongo.class, Boolean.class));
 	}
 
+	@Test
+	public void usesAutoConfigurationPackageToPickUpDocumentTypes() {
+		this.context = new AnnotationConfigApplicationContext();
+		String cityPackage = City.class.getPackage().getName();
+		AutoConfigurationPackages.register(this.context, cityPackage);
+		this.context.register(MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		assertDomainTypesDiscovered(this.context.getBean(MongoMappingContext.class),
+				City.class);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext,
+			Class<?>... types) {
+		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils.getField(
+				mappingContext, "initialEntitySet");
+		assertThat(initialEntitySet, hasSize(types.length));
+		assertThat(initialEntitySet, Matchers.<Class> hasItems(types));
+	}
+
 	@Configuration
 	static class CustomConversionsConfig {
 
@@ -89,7 +119,6 @@ public class MongoDataAutoConfigurationTests {
 		public CustomConversions customConversions() {
 			return new CustomConversions(Arrays.asList(new MyConverter()));
 		}
-
 	}
 
 	private static class MyConverter implements Converter<Mongo, Boolean> {
@@ -100,4 +129,5 @@ public class MongoDataAutoConfigurationTests {
 		}
 
 	}
+
 }

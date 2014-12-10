@@ -17,19 +17,30 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
+import org.springframework.data.annotation.Persistent;
 import org.springframework.data.authentication.UserCredentials;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -39,9 +50,11 @@ import org.springframework.data.mongodb.core.convert.DbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import com.mongodb.DB;
@@ -70,6 +83,12 @@ public class MongoDataAutoConfiguration {
 
 	@Autowired
 	private MongoProperties properties;
+
+	@Autowired
+	private Environment environment;
+
+	@Autowired
+	private ResourceLoader resourceLoader;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -111,8 +130,42 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoMappingContext mongoMappingContext() {
-		return new MongoMappingContext();
+	public MongoMappingContext mongoMappingContext(BeanFactory beanFactory)
+			throws ClassNotFoundException {
+		MongoMappingContext context = new MongoMappingContext();
+		context.setInitialEntitySet(getInitialEntitySet(beanFactory));
+		return context;
+	}
+
+	private Set<Class<?>> getInitialEntitySet(BeanFactory beanFactory)
+			throws ClassNotFoundException {
+		Set<Class<?>> entitySet = new HashSet<Class<?>>();
+		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(
+				false);
+		scanner.setEnvironment(this.environment);
+		scanner.setResourceLoader(this.resourceLoader);
+		scanner.addIncludeFilter(new AnnotationTypeFilter(Document.class));
+		scanner.addIncludeFilter(new AnnotationTypeFilter(Persistent.class));
+		for (String basePackage : getMappingBasePackages(beanFactory)) {
+			if (StringUtils.hasText(basePackage)) {
+				for (BeanDefinition candidate : scanner
+						.findCandidateComponents(basePackage)) {
+					entitySet.add(ClassUtils.forName(candidate.getBeanClassName(),
+							MongoDataAutoConfiguration.class.getClassLoader()));
+				}
+			}
+		}
+		return entitySet;
+	}
+
+	private static Collection<String> getMappingBasePackages(BeanFactory beanFactory) {
+		try {
+			return AutoConfigurationPackages.get(beanFactory);
+		}
+		catch (IllegalStateException ex) {
+			// no auto-configuration package registered yet
+			return Collections.emptyList();
+		}
 	}
 
 	@Bean
