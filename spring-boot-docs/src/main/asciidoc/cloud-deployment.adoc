@@ -224,18 +224,6 @@ Your application should now be up and running on Heroku.
 
 
 
-[[cloud-deployment-cloudbees]]
-== CloudBees
-CloudBees provides cloud-based "`continuous integration`" and "`continuous delivery`"
-services as well as Java PaaS hosting. https://github.com/msgilligan[Sean Gilligan]
-has contributed an excellent
-https://github.com/CloudBees-community/springboot-gradle-cloudbees-sample[Spring Boot
-sample application] to the CloudBees community GitHub repository. The project includes
-an extensive  https://github.com/CloudBees-community/springboot-gradle-cloudbees-sample/blob/master/README.asciidoc[README]
-that covers the steps that you need to follow when deploying to CloudBees.
-
-
-
 [[cloud-deployment-openshift]]
 == Openshift
 https://www.openshift.com/[Openshift] is the RedHat public (and enterprise) PaaS solution.
@@ -311,7 +299,7 @@ of this guide.
 [[cloud-deployment-whats-next]]
 == What to read next
 Check out the http://www.cloudfoundry.com/[Cloud Foundry], https://www.heroku.com/[Heroku]
-and http://www.cloudbees.com[CloudBees] web sites for more information about the kinds of
+and https://www.openshift.com[Openshift] web sites for more information about the kinds of
 features that a PaaS can offer. These are just three of the most popular Java PaaS
 providers, since Spring Boot is so amenable to cloud-based deployment you're free to
 consider other providers as well.
