@@ -155,10 +155,10 @@ in your `ApplicationContext`. Spring Boot includes a number of auto-configured
 
 === Security with HealthIndicators
 Information returned by `HealthIndicators` is often somewhat sensitive in nature. For
-example and you probably don't want to publish details of your database server to the
-world. For this reason, by default, only the health status is exposed on an insecure HTTP
-connection. If you are happy for complete heath information to always be exposed you can
-set `endpoints.health.sensitive` to `false`.
+example, you probably don't want to publish details of your database server to the
+world. For this reason, by default, only the health status is exposed over an
+unauthenticated HTTP connection. If you are happy for complete heath information to always
+be exposed you can set `endpoints.health.sensitive` to `false`.
 
 Heath responses are also cached to prevent "`denial of service`" attacks. Use the
 `endpoints.health.time-to-live` property if you want to change the default cache period
@@ -169,6 +169,7 @@ of 1000 milliseconds.
 ==== Auto-configured HealthIndicators
 The following `HealthIndicators` are auto-configured by Spring Boot when appropriate:
 
+[cols="1,4"]
 |===
 |Name |Description
 
@@ -220,9 +221,9 @@ additional details to be displayed.
 	}
 ----
 
-In addition to Spring Boot's default {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
-types, it is also possible to introduce custom `Status` types to represent more
-complex system states. In such cases a custom implementation of the
+In addition to Spring Boot's predefined {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
+types, it is also possible for `Health` to return a custom `Status` that represents a
+new system state. In such cases a custom implementation of the
 {sc-spring-boot-actuator}/health/HealthAggregator.{sc-ext}[`HealthAggregator`]
 interface also needs to be provided, or the default implementation has to be configured
 using the `management.health.status.order` configuration property.
@@ -277,7 +278,7 @@ Maven '`project properties`' via `@..@` placeholders, e.g.
 	project.name=Demo
 	project.version=X.X.X.X
 	project.description=Demo project for info endpoint
-	info.build.artifact=${project.artifactId}
+	info.build.artifact=@project.artifactId@
 	info.build.name=@project.name@
 	info.build.description=@project.description@
 	info.build.version=@project.version@
@@ -367,16 +368,17 @@ for Gradle users, although a little more work is required to generate the proper
 [[production-ready-monitoring]]
 == Monitoring and management over HTTP
 If you are developing a Spring MVC application, Spring Boot Actuator will auto-configure
-all non-sensitive endpoints to be exposed over HTTP. The default convention is to use the
+all enabled endpoints to be exposed over HTTP. The default convention is to use the
 `id` of the endpoint as the URL path. For example, `health` is exposed as `/health`.
 
 
 
 [[production-ready-sensitive-endpoints]]
-=== Exposing sensitive endpoints
-If you use '`Spring Security`' sensitive endpoints will be exposed over HTTP, but also
-protected. By default '`basic`' authentication will be used with the username `user`
-and a generated password (which is printed on the console when the application starts).
+=== Securing sensitive endpoints
+If you add '`Spring Security`' to you project, all sensitive endpoints exposed over HTTP
+will be protected. By default '`basic`' authentication will be used with the username
+`user` and a generated password (which is printed on the console when the application
+starts).
 
 TIP: Generated passwords are logged as the application starts. Search for '`Using default
 security password`'.
@@ -760,6 +762,23 @@ NOTE: In this example we are actually accessing the endpoint over HTTP using the
 
 
 
+[[production-ready-system-metrics]]
+=== System metrics
+The following system metrics are exposed by Spring Boot:
+
+* The total system memory in Kb (`mem`)
+* The amount of free memory in Kb (`mem.free`)
+* The number of processors (`processors`)
+* The system uptime in milliseconds (`uptime`)
+* The application context uptime in milliseconds (`instance.uptime`)
+* The average system load (`systemload.average`)
+* Heap information in Kb (`heap`, `heap.committed`, `heap.init`, `heap.used`)
+* Thread information (`threads`, `thread.peak`, `thead.daemon`)
+* Class load information (`classes`, `classes.loaded`, `classes.unloaded`)
+* Garbage collection information (`gc.xxx.count`, `gc.xxx.time`)
+
+
+
 [[production-ready-datasource-metrics]]
 === DataSource metrics
 The following metrics are exposed for each supported `DataSource` defined in your
@@ -785,6 +804,14 @@ customized version of `DataSourcePublicMetrics`. By default, Spring Boot provide
 for all  supported datasources; you can add additional `DataSourcePoolMetadataProvider`
 beans if your favorite data source isn't supported out of the box. See
 `DataSourcePoolMetadataProvidersConfiguration` for examples.
+
+
+
+[[production-ready-session-metrics]]
+=== Tomcat session metrics
+If you are using Tomcat as your embedded servlet container, session metrics will
+automatically be exposed. The `httpsessions.active` and `httpsessions.max` keys provide
+the number of active and maximum sessions.
 
 
 
@@ -857,14 +884,16 @@ an `Exporter` interface and a few basic implementations for you to get started w
 
 
 [[production-ready-code-hale-metrics]]
-=== Coda Hale Metrics
-User of the http://metrics.codahale.com/[Coda Hale '`Metrics`' library] will automatically
-find that Spring Boot metrics are published to `com.codahale.metrics.MetricRegistry`. A
-default `com.codahale.metrics.MetricRegistry` Spring bean will be created when you declare
-a dependency to the `com.codahale.metrics:metrics-core` library; you can also register you
-own `@Bean` instance if you need customizations.
+=== Dropwizard Metrics
+User of the https://dropwizard.github.io/metrics/[Dropwizard '`Metrics`' library] will
+automatically find that Spring Boot metrics are published to
+`com.codahale.metrics.MetricRegistry`. A default `com.codahale.metrics.MetricRegistry`
+Spring bean will be created when you declare a dependency to the
+`io.dropwizard.metrics:metrics-core` library; you can also register you own `@Bean`
+instance if you need customizations. Metrics from the `MetricRegistry` are also
+automatically exposed via the `/metrics` endpoint
 
-Users can create Coda Hale metrics by prefixing their metric names with the appropriate
+Users can create Dropwizard metrics by prefixing their metric names with the appropriate
 type (e.g. `+histogram.*+`, `+meter.*+`).
 
 

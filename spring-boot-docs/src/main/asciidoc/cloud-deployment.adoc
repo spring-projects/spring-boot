@@ -135,9 +135,9 @@ access application information (such as the public URL of the application) and s
 information (such as database credentials). See `VcapApplicationListener` Javdoc for
 complete details.
 
-TIP: The https://github.com/spring-projects/spring-cloud[Spring Cloud] project is a better
-fit for tasks such as configuring a DataSource; it also lets you use Spring Cloud with
-Heroku.
+TIP: The http://cloud.spring.io/spring-cloud-connectors/[Spring Cloud Connectors] project
+is a better fit for tasks such as configuring a DataSource. Spring Boot includes
+auto-configuration support and a `spring-boot-starter-cloud-connectors` starter POM.
 
 
 
@@ -187,7 +187,7 @@ This should be everything you need. The most common workflow for Heroku deployme
 
 	-----> Java app detected
 	-----> Installing OpenJDK 1.7... *done*
-	-----> Installing Maven 3.0.3... *done*
+	-----> Installing Maven 3.2.3... *done*
 	-----> Installing settings.xml... *done*
 	-----> executing /app/tmp/cache/.maven/bin/mvn -B
 	       -Duser.home=/tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229

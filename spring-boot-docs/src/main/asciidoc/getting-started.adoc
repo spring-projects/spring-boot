@@ -109,7 +109,7 @@ build tool that supports dependency management (such as Maven or Gradle).
 
 [[getting-started-maven-installation]]
 ==== Maven installation
-Spring Boot is compatible with Apache Maven 3.0 or above. If you don't already have Maven
+Spring Boot is compatible with Apache Maven 3.2 or above. If you don't already have Maven
 installed you can follow the instructions at http://maven.apache.org.
 
 TIP: On many operating systems Maven can be installed via a package manager. If you're an
@@ -199,7 +199,7 @@ scope.
 
 [[getting-started-gradle-installation]]
 ==== Gradle installation
-Spring Boot is compatible with Gradle 1.6 or above. If you don't already have Gradle
+Spring Boot is compatible with Gradle 1.12 or above. If you don't already have Gradle
 installed you can follow the instructions at http://www.gradle.org/.
 
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
@@ -449,7 +449,7 @@ installed.
 [indent=0]
 ----
 	$ mvn -v
-	Apache Maven 3.1.1 (0728685237757ffbf44136acec0402957f723d9a; 2013-09-17 08:22:22-0700)
+	Apache Maven 3.2.3 (33f8c3e1027c3ddde99d3cdebad2656a31e8fdf4; 2014-08-11T13:58:10-07:00)
 	Maven home: /Users/user/tools/apache-maven-3.1.1
 	Java version: 1.7.0_51, vendor: Oracle Corporation
 ----
@@ -511,7 +511,7 @@ endif::[]
 ----
 
 This should give you a working build, you can test it out by running `mvn package` (you
-can ignore the '"`jar will be empty - no content was marked for inclusion!'`"' warning for
+can ignore the "`jar will be empty - no content was marked for inclusion!'`" warning for
 now).
 
 NOTE: At this point you could import the project into an IDE (most modern Java IDE's
@@ -768,7 +768,7 @@ To run that application, use the `java -jar` command:
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
-	........ Started Example in 3.236 seconds (JVM running for 3.764)
+	........ Started Example in 2.536 seconds (JVM running for 2.864)
 ----
 
 As before, to gracefully exit the application hit `ctrl-c`.

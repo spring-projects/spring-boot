@@ -2135,7 +2135,7 @@ Once the war is working we make it executable by adding a `main` method to our
 
 Applications can fall into more than one category:
 
-* Servlet 3.0 applications with no `web.xml`.
+* Servlet 3.0+ applications with no `web.xml`.
 * Applications with a `web.xml`.
 * Applications with a context hierarchy.
 * Applications without a context hierarchy.
@@ -2143,8 +2143,8 @@ Applications can fall into more than one category:
 All of these should be amenable to translation, but each might require slightly different
 tricks.
 
-Servlet 3.0 applications might translate pretty easily if they already use the Spring
-Servlet 3.0 initializer support classes. Normally all the code from an existing
+Servlet 3.0+ applications might translate pretty easily if they already use the Spring
+Servlet 3.0+ initializer support classes. Normally all the code from an existing
 `WebApplicationInitializer` can be moved into a `SpringBootServletInitializer`. If your
 existing application has more than one `ApplicationContext` (e.g. if it uses
 `AbstractDispatcherServletInitializer`) then you might be able to squash all your context

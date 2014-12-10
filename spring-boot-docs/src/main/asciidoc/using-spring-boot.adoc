@@ -234,6 +234,10 @@ The following application starters are provided by Spring Boot under the
 |`spring-boot-starter-batch`
 |Support for "`Spring Batch`" including HSQLDB database.
 
+|`spring-boot-starter-cloud-connectors`
+|Support for "`Spring Cloud Connectors`" which simplifies connecting to services in cloud
+platforms like Cloud Foundry and Heroku.
+
 |`spring-boot-starter-data-elasticsearch`
 |Support for the Elasticsearch search and analytics engine including
 `spring-data-elasticsearch`.
@@ -269,20 +273,23 @@ and Hibernate.
 |`spring-boot-starter-jdbc`
 |Support for JDBC databases.
 
+|`spring-boot-starter-jersey`
+|Support for the Jersey RESTful Web Services framework.
+
 |`spring-boot-starter-jta-atomikos`
 |Support for JTA distributed transactions via Atomikos.
 
 |`spring-boot-starter-jta-bitronix`
 |Support for JTA distributed transactions via Bitronix.
 
+|`spring-boot-starter-mail`
+|Support for `javax.mail`.
+
 |`spring-boot-starter-mobile`
 |Support for `spring-mobile`
 
 |`spring-boot-starter-redis`
 |Support for the REDIS key-value data store, including `spring-redis`.
-
-|`spring-boot-starter-remote-shell`
-|Support for `CRaSH`.
 
 |`spring-boot-starter-security`
 |Support for `spring-security`.
@@ -371,8 +378,8 @@ best practices that help.
 When a class doesn't include a `package` declaration it is considered to be in the
 "`default package`". The use of the "`default package`" is generally discouraged, and
 should be avoided. It can cause particular problems for Spring Boot applications that
-use `@ComponentScan` or `@EntityScan` annotations, since every class from every jar,
-will be read.
+use `@ComponentScan`, `@EntityScan` or `@SpringBootApplication` annotations, since every
+class from every jar, will be read.
 
 TIP: We recommend that you follow Java's recommended package naming conventions
 and use a reversed domain name (for example, `com.example.project`).
@@ -388,7 +395,8 @@ example, if you are writing a JPA application, the package of the
 `@EnableAutoConfiguration` annotated class will be used to search for `@Entity` items.
 
 Using a root package also allows the `@ComponentScan` annotation to be used without
-needing to specify a `basePackage` attribute.
+needing to specify a `basePackage` attribute. You can also use the
+`@SpringBootApplication` annotation if your main class is in the root package.
 
 Here is a typical layout:
 
@@ -473,8 +481,8 @@ application based on the jar dependencies that you have added. For example, If
 `HSQLDB` is on your classpath, and you have not manually configured any database
 connection beans, then we will auto-configure an in-memory database.
 
-You need to opt-in to auto-configuration by adding the `@EnableAutoConfiguration`
-annotation to one of your `@Configuration` classes.
+You need to opt-in to auto-configuration by adding the `@EnableAutoConfiguration` or
+`@SpringBootApplication` annotations to one of your `@Configuration` classes.
 
 TIP: You should only ever add one `@EnableAutoConfiguration` annotation. We generally
 recommend that you add it to your primary `@Configuration` class.
@@ -645,7 +653,7 @@ resources for instant "`hot`" reload.
 	$ mvn spring-boot:run
 ----
 
-Useful operating system environment variable:
+You might also want to use the useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----
@@ -668,7 +676,7 @@ the `spring-boot-plugin`
 	$ gradle bootRun
 ----
 
-Useful operating system environment variable:
+You might also want to use this useful operating system environment variable:
 
 [indent=0,subs="attributes"]
 ----

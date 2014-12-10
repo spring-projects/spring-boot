@@ -386,9 +386,9 @@ NOTE: If you use '`starter POMs`' SnakeYAML will be automatically provided via
 
 [[boot-features-external-config-loading-yaml]]
 ==== Loading YAML
-Spring Boot provides two convenient classes that can be used to load YAML documents. The
-`YamlPropertiesFactoryBean` will load YAML as `Properties` and the `YamlMapFactoryBean`
-will load YAML as a `Map`.
+Spring Framework provides two convenient classes that can be used to load YAML documents.
+The `YamlPropertiesFactoryBean` will load YAML as `Properties` and the
+`YamlMapFactoryBean` will load YAML as a `Map`.
 
 For example, the following YAML document:
 
@@ -441,6 +441,7 @@ with a mutable value, e.g. this will bind to the properties above
 ----
 	@ConfigurationProperties(prefix="my")
 	public class Config {
+
 		private List<String> servers = new ArrayList<String>();
 
 		public List<String> getServers() {
@@ -565,6 +566,9 @@ definitions by simply listing the properties classes directly in the
 	public class MyConfiguration {
 	}
 ----
+
+TIP: Using `@ConfigurationProperties` also allows you to generate meta-data files that can
+be used by IDEs. See the <<configuration-metadata>> appendix for details.
 
 
 
@@ -1103,7 +1107,7 @@ If you prefer the JAX-RS programming model for REST endpoints you can use one of
 available implementations instead of Spring MVC. Jersey 1.x and Apache Celtix work
 quite well out of the box if you just register their `Servlet` or `Filter` as a
 `@Bean` in your application context. Jersey 2.x has some native Spring support so
-we also provide autoconfiguration support for it in Spring Boot together with a
+we also provide auto-configuration support for it in Spring Boot together with a
 starter.
 
 To get started with Jersey 2.x just include the `spring-boot-starter-jersey` as a
@@ -1114,9 +1118,11 @@ all the endpoints:
 ----
 	@Component
 	public class JerseyConfig extends ResourceConfig {
+
 		public JerseyConfig() {
 			register(Endpoint.class);
 		}
+
 	}
 ----
 
@@ -1139,14 +1145,14 @@ All the registered endpoints should be `@Components` with HTTP resource annotati
 
 Since the `Endpoint` is a Spring `@Component` its lifecycle is managed by Spring and you
 can `@Autowired` dependencies and inject external configuration with `@Value`. The Jersey
-servlet will be registered and mapped to '`+/*+`' by default. You can change the mapping
+servlet will be registered and mapped to `/*` by default. You can change the mapping
 by adding `@ApplicationPath` to your `ResourceConfig`.
 
 By default Jersey will be set up as a Servlet in a `@Bean` of type
-`ServletRegistrationBean` named "jerseyServletRegistration". You can disable or override
+`ServletRegistrationBean` named `jerseyServletRegistration`. You can disable or override
 that bean by creating one of your own with the same name. You can also use a Filter
 instead of a Servlet by setting `spring.jersey.type=filter` (in which case the `@Bean` to
-replace or override is "jerseyFilterRegistration"). The servlet has an `@Order` which you
+replace or override is `jerseyFilterRegistration`). The servlet has an `@Order` which you
 can set with `spring.jersey.filter.order`. Both the Servlet and the Filter registrations
 can be given init parameters using `spring.jersey.init.*` to specify a map of properties.
 
@@ -1277,7 +1283,7 @@ packaged as an executable archive), there are some limitations in the JSP suppor
 
 * Jetty does not currently work as an embedded container with JSPs.
 
-* Undertow does not support JSPs
+* Undertow does not support JSPs.
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so
 you can see how to set things up.
@@ -1710,25 +1716,31 @@ several conveniences for working with MongoDB, including the The
 
 [[boot-features-connecting-to-mongodb]]
 ==== Connecting to a MongoDB database
-You can inject an auto-configured `com.mongodb.Mongo` instance as you would any other
-Spring Bean. By default the instance will attempt to connect to a MongoDB server using
-the URL `mongodb://localhost/test`:
+You can inject an auto-configured `org.springframework.data.mongodb.MongoDbFactory` to
+access Mono databases. By default the instance will attempt to connect to a MongoDB server
+using the URL `mongodb://localhost/test`:
 
 [source,java,indent=0]
 ----
-	import com.mongodb.Mongo;
+	import org.springframework.data.mongodb.MongoDbFactory;
+	import import com.mongodb.DB;
 
 	@Component
 	public class MyBean {
 
-		private final Mongo mongo;
+		private final MongoDbFactory mongo;
 
 		@Autowired
-		public MyBean(Mongo mongo) {
+		public MyBean(MongoDbFactory mongo) {
 			this.mongo = mongo;
 		}
 
 		// ...
+
+		public void example() {
+			DB db = mongo.getDb();
+			// ...
+		}
 
 	}
 ----
@@ -1746,8 +1758,11 @@ specify a `host`/`port`. For example, you might declare the following in your
 TIP: If `spring.data.mongodb.port` is not specified the default of `27017` is used. You
 could simply delete this line from the sample above.
 
-You can also declare your own `Mongo` `@Bean` if you want to take complete control of
-establishing the MongoDB connection.
+TIP: If you aren't using Spring Data Mongo you can inject `com.mongodb.Mongo` beans
+instead of using `MongoDbFactory`.
+
+You can also declare your own `MongoDbFactory` or `Mongo` `@Beans` if you want to take
+complete control of establishing the MongoDB connection.
 
 
 
@@ -1943,7 +1958,7 @@ receive messages asynchronously. Spring AMQP provides a similar feature set for 
 '`Advanced Message Queuing Protocol`' and Boot also provides auto-configuration options
 for `RabbitTemplate` and RabbitMQ. There is also support for STOMP messaging natively
 in Spring Websocket and Spring Boot has support for that through starters and a small
-amount of auto configuration.
+amount of auto-configuration.
 
 
 
@@ -2088,7 +2103,9 @@ The following component creates a listener endpoint on the `someQueue` destinati
 	public class MyBean {
 
 		@JmsListener(destination = "someQueue")
-		public void processMessage(String content) { ... }
+		public void processMessage(String content) {
+			// ...
+		}
 
 	}
 ----
@@ -2598,6 +2615,16 @@ care must be taken not to refer to bean definitions that have not yet been creat
 
 
 
+[[boot-features-property-conditions]]
+==== Property conditions
+The `@ConditionalOnProperty` annotation allows configuration to be included based on a
+Spring Environment property. Use the `prefix` and `name` attributes to specify the
+property that should be checked. By default any property that exists and is not equal to
+`false` will be matched. You can also create more advanced checks using the `havingValue`
+and `matchIfMissing` attributes.
+
+
+
 [[boot-features-resource-conditions]]
 ==== Resource conditions
 The `@ConditionalOnResource` annotation allows configuration to be included only when a
@@ -2624,8 +2651,8 @@ result of a {spring-reference}/#expressions[SpEL expression].
 
 [[boot-features-websockets]]
 == WebSockets
-Spring Boot provides WebSockets auto-configuration for embedded Tomcat (7 and 8) and
-embedded Jetty 9. If you're deploying a war file to a standalone container, Spring Boot
+Spring Boot provides WebSockets auto-configuration for embedded Tomcat (8 and 7), Jetty 9
+and Undertow. If you're deploying a war file to a standalone container, Spring Boot
 assumes that the container will be responsible for the configuration of its WebSocket
 support.
 

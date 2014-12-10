@@ -17,7 +17,7 @@ unsupported build system. If you are just getting started, you might want to rea
 == Spring Boot Maven plugin
 The {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin] provides Spring Boot
 support in Maven, allowing you to package executable jar or war archives and run an
-application "`in-place`". To use it you must be using Maven 3 (or better).
+application "`in-place`". To use it you must be using Maven 3.2 (or better).
 
 NOTE: Refer to the {spring-boot-maven-plugin-site}/[Spring Boot Maven Plugin Site]
 for complete plugin documentation.
