@@ -133,7 +133,7 @@ public class MongoDataAutoConfiguration {
 	@ConditionalOnMissingBean
 	public MongoMappingContext mongoMappingContext(BeanFactory beanFactory) throws ClassNotFoundException {
 
-		Collection<String> basePackages = getMappingBasePackages(this.properties, beanFactory);
+		Collection<String> basePackages = getMappingBasePackages(beanFactory);
 		
 		MongoMappingContext context = new MongoMappingContext();
 		context.setInitialEntitySet(getInitialEntitySet(basePackages));
@@ -152,17 +152,10 @@ public class MongoDataAutoConfiguration {
 	/**
 	 * Returns the base packages to be used for domain type scanning.
 	 * 
-	 * @param properties the {@link MongoProperties} to inspect for manually configured packages.
-	 * @param beanFactory the {@link BeanFactory} to lookup auto-configuration packages from as fallback.
+	 * @param beanFactory the {@link BeanFactory} to lookup auto-configuration packages from.
 	 * @return
 	 */
-	private static Collection<String> getMappingBasePackages(MongoProperties properties, BeanFactory beanFactory) {
-
-		List<String> explicitPackages = properties.getMappingBasePackages();
-
-		if (!explicitPackages.isEmpty()) {
-			return explicitPackages;
-		}
+	private static Collection<String> getMappingBasePackages(BeanFactory beanFactory) {
 
 		try {
 			return AutoConfigurationPackages.get(beanFactory);

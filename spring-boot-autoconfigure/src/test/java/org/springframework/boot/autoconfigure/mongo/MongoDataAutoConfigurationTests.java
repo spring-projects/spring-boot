@@ -101,17 +101,6 @@ public class MongoDataAutoConfigurationTests {
 		assertDomainTypesDiscovered(this.context.getBean(MongoMappingContext.class), City.class);
 	}
 	
-	@Test
-	public void prefersMappingBasePackageConfiguredInEnvironment() {
-		
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.mappingBasePackages = " + Country.class.getPackage().getName());
-		this.context.register(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
-		this.context.refresh();
-		
-		assertDomainTypesDiscovered(this.context.getBean(MongoMappingContext.class), Country.class);
-	}
-	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext, Class<?>... types) {
 		
