@@ -19,6 +19,8 @@ package org.springframework.boot.configurationprocessor.metadata;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Configuration meta-data.
@@ -29,6 +31,8 @@ import java.util.List;
  * @see ItemMetadata
  */
 public class ConfigurationMetadata {
+
+	private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([^A-Z-])([A-Z])");
 
 	private final List<ItemMetadata> items;
 
@@ -73,15 +77,22 @@ public class ConfigurationMetadata {
 	}
 
 	static String toDashedCase(String name) {
-		StringBuilder dashed = new StringBuilder();
-		for (int i = 0; i < name.length(); i++) {
-			char c = name.charAt(i);
-			if (Character.isUpperCase(c) && dashed.length() > 0) {
-				dashed.append("-");
+		Matcher matcher = CAMEL_CASE_PATTERN.matcher(name);
+		StringBuffer result = new StringBuffer();
+		while (matcher.find()) {
+			String first = matcher.group(1);
+			String second = matcher.group(2);
+			String target;
+			if (first.equals("_")) { // not a word for the binder
+				target = first + second;
+			} else {
+				target = first + "-" + second;
 			}
-			dashed.append(Character.toLowerCase(c));
+			matcher.appendReplacement(result,target);
 		}
-		return dashed.toString();
+		matcher.appendTail(result);
+		String value = result.toString();
+		return value.toLowerCase();
 	}
 
 }
