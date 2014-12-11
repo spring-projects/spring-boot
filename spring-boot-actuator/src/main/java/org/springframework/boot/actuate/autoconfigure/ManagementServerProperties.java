@@ -33,7 +33,7 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @see ServerProperties
  */
-@ConfigurationProperties(prefix = "management", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
 public class ManagementServerProperties implements SecurityPrequisite {
 
 	private static final String SECURITY_CHECK_CLASS = "org.springframework.security.config.http.SessionCreationPolicy";
