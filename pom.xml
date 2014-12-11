@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-build</artifactId>
-	<version>1.2.0.BUILD-SNAPSHOT</version>
+	<version>1.2.1.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
@@ -275,7 +275,7 @@
 										<regexFlag>DOTALL</regexFlag>
 									</regexFlags>
 									<token>\n\t&lt;profiles&gt;.*&lt;/profiles&gt;</token>
-									<value></value>
+									<value />
 								</configuration>
 							</execution>
 						</executions>
