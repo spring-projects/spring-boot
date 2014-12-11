@@ -40,6 +40,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
@@ -68,6 +69,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.NestedConfigurationProperty";
+
+	static final String LOMBOK_DATA_ANNOTATION = "lombok.Data";
+
+	static final String LOMBOK_GETTER_ANNOTATION = "lombok.Getter";
+
+	static final String LOMBOK_SETTER_ANNOTATION = "lombok.Setter";
 
 	private ConfigurationMetadata metadata;
 
@@ -157,6 +164,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		TypeElementMembers members = new TypeElementMembers(this.processingEnv, element);
 		Map<String, Object> fieldValues = getFieldValues(element);
 		processSimpleTypes(prefix, element, members, fieldValues);
+		processLombokTypes(prefix, element, members, fieldValues);
 		processNestedTypes(prefix, element, members);
 	}
 
@@ -177,15 +185,14 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			ExecutableElement getter = entry.getValue();
 			ExecutableElement setter = members.getPublicSetters().get(name);
 			VariableElement field = members.getFields().get(name);
-			Element returnType = this.processingEnv.getTypeUtils().asElement(
-					getter.getReturnType());
-			boolean isExcluded = this.typeExcludeFilter.isExcluded(getter
-					.getReturnType());
-			boolean isNested = isNested(returnType, field, element);
-			boolean isCollection = this.typeUtils.isCollectionOrMap(getter
-					.getReturnType());
+			TypeMirror returnType = getter.getReturnType();
+			Element returnTypeElement = this.processingEnv.getTypeUtils().asElement(
+					returnType);
+			boolean isExcluded = this.typeExcludeFilter.isExcluded(returnType);
+			boolean isNested = isNested(returnTypeElement, field, element);
+			boolean isCollection = this.typeUtils.isCollectionOrMap(returnType);
 			if (!isExcluded && !isNested && (setter != null || isCollection)) {
-				String dataType = this.typeUtils.getType(getter.getReturnType());
+				String dataType = this.typeUtils.getType(returnType);
 				String sourceType = this.typeUtils.getType(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
@@ -196,6 +203,48 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 						sourceType, null, description, defaultValue, deprecated));
 			}
 		}
+	}
+
+	private void processLombokTypes(String prefix, TypeElement element,
+			TypeElementMembers members, Map<String, Object> fieldValues) {
+		for (Map.Entry<String, VariableElement> entry : members.getFields()
+				.entrySet()) {
+			String name = entry.getKey();
+			VariableElement field = entry.getValue();
+			if (!isLombokField(field, element)) {
+				continue;
+			}
+			TypeMirror returnType = field.asType();
+			Element returnTypeElement = this.processingEnv.getTypeUtils().asElement(
+					returnType);
+			boolean isExcluded = this.typeExcludeFilter.isExcluded(returnType);
+			boolean isNested = isNested(returnTypeElement, field, element);
+			boolean isCollection = this.typeUtils.isCollectionOrMap(returnType);
+			boolean hasSetter = hasLombokSetter(field, element);
+			if (!isExcluded && !isNested && (hasSetter || isCollection)) {
+				String dataType = this.typeUtils.getType(returnType);
+				String sourceType = this.typeUtils.getType(element);
+				String description = this.typeUtils.getJavaDoc(field);
+				Object defaultValue = fieldValues.get(name);
+				boolean deprecated = hasDeprecateAnnotation(field)
+						|| hasDeprecateAnnotation(element);
+				this.metadata.add(ItemMetadata.newProperty(prefix, name, dataType,
+						sourceType, null, description, defaultValue, deprecated));
+			}
+		}
+	}
+
+	private boolean isLombokField(VariableElement field, TypeElement element) {
+		return hasAnnotation(field, LOMBOK_GETTER_ANNOTATION)
+				|| hasAnnotation(element, LOMBOK_GETTER_ANNOTATION)
+				|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION);
+	}
+
+	private boolean hasLombokSetter(VariableElement field, TypeElement element) {
+		return !field.getModifiers().contains(Modifier.FINAL) && (
+				hasAnnotation(field, LOMBOK_SETTER_ANNOTATION)
+						|| hasAnnotation(element, LOMBOK_SETTER_ANNOTATION)
+						|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION));
 	}
 
 	private void processNestedTypes(String prefix, TypeElement element,
@@ -223,7 +272,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private boolean isNested(Element returnType, VariableElement field,
 			TypeElement element) {
-		if (getAnnotation(field, nestedConfigurationPropertyAnnotation()) != null) {
+		if (hasAnnotation(field, nestedConfigurationPropertyAnnotation())) {
 			return true;
 		}
 		return this.typeUtils.isEnclosedIn(returnType, element)
@@ -231,7 +280,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private boolean hasDeprecateAnnotation(Element element) {
-		return getAnnotation(element, "java.lang.Deprecated") != null;
+		return hasAnnotation(element, "java.lang.Deprecated");
+	}
+
+	private boolean hasAnnotation(Element element, String type) {
+		return getAnnotation(element, type) != null;
 	}
 
 	private AnnotationMirror getAnnotation(Element element, String type) {

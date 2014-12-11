@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.io.IOException;
-
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
@@ -25,7 +24,11 @@ import javax.lang.model.SourceVersion;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
+import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
+import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
 import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig;
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
@@ -286,13 +289,49 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, not(containsProperty("excluded.writer-array")));
 	}
 
+	@Test
+	public void lombokDataProperties() throws Exception {
+		ConfigurationMetadata metadata = compile(LombokSimpleDataProperties.class);
+		assertSimpleLombokProperties(metadata, LombokSimpleDataProperties.class, "data");
+	}
+
+	@Test
+	public void lombokSimpleProperties() throws Exception {
+		ConfigurationMetadata metadata = compile(LombokSimpleProperties.class);
+		assertSimpleLombokProperties(metadata, LombokSimpleProperties.class, "simple");
+	}
+
+	@Test
+	public void lombokExplicitProperties() throws Exception {
+		ConfigurationMetadata metadata = compile(LombokExplicitProperties.class);
+		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class, "explicit");
+	}
+
+	private void assertSimpleLombokProperties(ConfigurationMetadata metadata, Class<?> source, String prefix) {
+		assertThat(metadata, containsGroup(prefix).fromSource(source));
+		assertThat(metadata, not(containsProperty(prefix + ".id")));
+		assertThat(
+				metadata,
+				containsProperty(prefix + ".name", String.class)
+						.fromSource(source)
+						.withDescription("Name description."));
+		assertThat(metadata, containsProperty(prefix + ".description"));
+		assertThat(metadata, containsProperty(prefix + ".counter"));
+		assertThat(metadata,
+				containsProperty(prefix + ".number").fromSource(source)
+						.withDefaultValue(is(0))
+						.withDeprecated());
+		assertThat(metadata, containsProperty(prefix + ".items"));
+		assertThat(metadata, not(containsProperty(prefix + ".ignored")));
+	}
+
 	private ConfigurationMetadata compile(Class<?>... types) throws IOException {
 		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor();
 		new TestCompiler(this.temporaryFolder).getTask(types).call(processor);
 		return processor.getMetadata();
 	}
 
-	@SupportedAnnotationTypes({ "*" })
+	@SupportedAnnotationTypes({"*"})
 	@SupportedSourceVersion(SourceVersion.RELEASE_6)
 	private static class TestConfigurationMetadataAnnotationProcessor extends
 			ConfigurationMetadataAnnotationProcessor {
