@@ -5,7 +5,7 @@
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-samples</artifactId>
-		<version>1.1.10.BUILD-SNAPSHOT</version>
+		<version>1.1.11.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-amqp</artifactId>
 	<name>Spring Boot AMQP Sample</name>
