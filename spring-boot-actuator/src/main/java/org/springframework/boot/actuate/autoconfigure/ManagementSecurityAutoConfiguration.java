@@ -79,6 +79,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  */
 @Configuration
+@ConditionalOnWebApplication
 @ConditionalOnClass({ EnableWebSecurity.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 @AutoConfigureBefore(FallbackWebSecurityAutoConfiguration.class)
@@ -172,7 +173,6 @@ public class ManagementSecurityAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(WebSecurityConfiguration.class)
-	@ConditionalOnWebApplication
 	@Conditional(WebSecurityEnablerCondition.class)
 	@EnableWebSecurity
 	protected static class WebSecurityEnabler extends AuthenticationManagerConfiguration {
@@ -200,7 +200,6 @@ public class ManagementSecurityAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
-	@ConditionalOnWebApplication
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
 	protected static class ManagementWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
