@@ -371,10 +371,10 @@ content into your application; rather pick only the properties that you need.
 
 	# HEALTH INDICATORS
 	health.db.enabled=true
-    health.mongo.enabled=true
-    health.rabbit.enabled=true
-    health.redis.enabled=true
-    health.solr.enabled=true
+	health.mongo.enabled=true
+	health.rabbit.enabled=true
+	health.redis.enabled=true
+	health.solr.enabled=true
 	health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 
 	# MVC ONLY ENDPOINTS
