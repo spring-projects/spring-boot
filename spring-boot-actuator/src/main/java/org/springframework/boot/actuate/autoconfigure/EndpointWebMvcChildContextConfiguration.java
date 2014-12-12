@@ -62,6 +62,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * {@link EmbeddedServletContainer} running on a different port is required.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @see EndpointWebMvcAutoConfiguration
  */
 @Configuration
@@ -145,9 +146,14 @@ public class EndpointWebMvcChildContextConfiguration {
 		return new ManagementErrorEndpoint(this.errorPath, errorAttributes);
 	}
 
+	/**
+	 * Configuration to add {@link HandlerMapping} for {@link MvcEndpoint}s. See
+	 * {@link SecureEndpointHandlerMappingConfiguration} for an extended version that also
+	 * configures the security filter.
+	 */
 	@Configuration
 	@ConditionalOnMissingClass(WebSecurityConfigurerAdapter.class)
-	static class EndpointHandlerMappingSimpleConfiguration {
+	protected static class EndpointHandlerMappingConfiguration {
 
 		@Autowired(required = false)
 		private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
@@ -155,8 +161,12 @@ public class EndpointWebMvcChildContextConfiguration {
 		@Bean
 		public HandlerMapping handlerMapping(MvcEndpoints endpoints,
 				ListableBeanFactory beanFactory) {
-
-			EndpointHandlerMapping mapping = doCreateEndpointHandlerMapping(endpoints, beanFactory);
+			Set<MvcEndpoint> set = new HashSet<MvcEndpoint>(endpoints.getEndpoints());
+			set.addAll(beanFactory.getBeansOfType(MvcEndpoint.class).values());
+			EndpointHandlerMapping mapping = new EndpointHandlerMapping(set);
+			// In a child context we definitely want to see the parent endpoints
+			mapping.setDetectHandlerMethodsInAncestorContexts(true);
+			postProcessMapping(beanFactory, mapping);
 			if (this.mappingCustomizers != null) {
 				for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
 					customizer.customize(mapping);
@@ -165,36 +175,31 @@ public class EndpointWebMvcChildContextConfiguration {
 			return mapping;
 		}
 
-		protected EndpointHandlerMapping doCreateEndpointHandlerMapping(MvcEndpoints endpoints,
-				ListableBeanFactory beanFactory) {
-			Set<MvcEndpoint> set = new HashSet<MvcEndpoint>(endpoints.getEndpoints());
-			set.addAll(beanFactory.getBeansOfType(MvcEndpoint.class).values());
-			EndpointHandlerMapping mapping = new EndpointHandlerMapping(set);
-			// In a child context we definitely want to see the parent endpoints
-			mapping.setDetectHandlerMethodsInAncestorContexts(true);
-			return mapping;
+		/**
+		 * Hook to allow additional post processing of {@link EndpointHandlerMapping}.
+		 * @param beanFactory the source bean factory
+		 * @param mapping the mapping to customize
+		 */
+		protected void postProcessMapping(ListableBeanFactory beanFactory,
+				EndpointHandlerMapping mapping) {
 		}
 
 	}
 
+	/**
+	 * Extension of {@link EndpointHandlerMappingConfiguration} that also configures the
+	 * security filter.
+	 */
 	@Configuration
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
-	static class EndpointHandlerMappingSecurityConfiguration
-			extends EndpointHandlerMappingSimpleConfiguration {
+	protected static class SecureEndpointHandlerMappingConfiguration extends
+			EndpointHandlerMappingConfiguration {
 
 		@Override
-		protected EndpointHandlerMapping doCreateEndpointHandlerMapping(MvcEndpoints endpoints,
-				ListableBeanFactory beanFactory) {
-
-			EndpointHandlerMapping mapping = super.doCreateEndpointHandlerMapping(endpoints, beanFactory);
-			injectIntoSecurityFilter(beanFactory, mapping);
-			return mapping;
-		}
-
-		private void injectIntoSecurityFilter(ListableBeanFactory beanFactory,
+		protected void postProcessMapping(ListableBeanFactory beanFactory,
 				EndpointHandlerMapping mapping) {
-			// The parent context has the security filter, so we need to get it injected with
-			// our EndpointHandlerMapping if we can.
+			// The parent context has the security filter, so we need to get it injected
+			// with our EndpointHandlerMapping if we can.
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory,
 					ManagementWebSecurityConfigurerAdapter.class).length == 1) {
 				ManagementWebSecurityConfigurerAdapter bean = beanFactory

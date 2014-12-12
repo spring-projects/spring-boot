@@ -92,8 +92,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void redisHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(RedisAutoConfiguration.class,
-				ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
 		this.context.refresh();
@@ -108,8 +107,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notRedisHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(RedisAutoConfiguration.class,
-				ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.redis.enabled:false",
 				"management.health.diskspace.enabled:false");
@@ -125,8 +123,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void mongoHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MongoAutoConfiguration.class,
-				ManagementServerProperties.class,
-				MongoDataAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, MongoDataAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
 		this.context.refresh();
@@ -141,8 +139,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notMongoHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MongoAutoConfiguration.class,
-				ManagementServerProperties.class,
-				MongoDataAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, MongoDataAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.mongo.enabled:false",
 				"management.health.diskspace.enabled:false");
@@ -170,8 +168,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void dataSourceHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EmbeddedDataSourceConfiguration.class,
-				ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
 		this.context.refresh();
@@ -186,8 +183,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void dataSourceHealthIndicatorWithCustomValidationQuery() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerProperties.class,
-				DataSourceProperties.class, DataSourceConfig.class,
+				ManagementServerProperties.class, DataSourceProperties.class,
+				DataSourceConfig.class,
 				DataSourcePoolMetadataProvidersConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -207,8 +204,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notDataSourceHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EmbeddedDataSourceConfiguration.class,
-				ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.db.enabled:false",
 				"management.health.diskspace.enabled:false");
@@ -224,8 +220,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void rabbitHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(RabbitAutoConfiguration.class,
-				ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
 		this.context.refresh();
@@ -240,8 +235,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notRabbitHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(RabbitAutoConfiguration.class,
-				ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.rabbit.enabled:false",
 				"management.health.diskspace.enabled:false");
@@ -257,8 +251,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void solrHeathIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(SolrAutoConfiguration.class,
-				ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.diskspace.enabled:false");
 		this.context.refresh();
@@ -273,8 +266,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void notSolrHeathIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(SolrAutoConfiguration.class,
-				ManagementServerProperties.class,
-				HealthIndicatorAutoConfiguration.class);
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.solr.enabled:false",
 				"management.health.diskspace.enabled:false");

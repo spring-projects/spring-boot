@@ -80,19 +80,20 @@ public class ConfigurationMetadata {
 		Matcher matcher = CAMEL_CASE_PATTERN.matcher(name);
 		StringBuffer result = new StringBuffer();
 		while (matcher.find()) {
-			String first = matcher.group(1);
-			String second = matcher.group(2);
-			String target;
-			if (first.equals("_")) { // not a word for the binder
-				target = first + second;
-			} else {
-				target = first + "-" + second;
-			}
-			matcher.appendReplacement(result,target);
+			matcher.appendReplacement(result, getDashed(matcher));
 		}
 		matcher.appendTail(result);
-		String value = result.toString();
-		return value.toLowerCase();
+		return result.toString().toLowerCase();
+	}
+
+	private static String getDashed(Matcher matcher) {
+		String first = matcher.group(1);
+		String second = matcher.group(2);
+		if (first.equals("_")) {
+			// not a word for the binder
+			return first + second;
+		}
+		return first + "-" + second;
 	}
 
 }

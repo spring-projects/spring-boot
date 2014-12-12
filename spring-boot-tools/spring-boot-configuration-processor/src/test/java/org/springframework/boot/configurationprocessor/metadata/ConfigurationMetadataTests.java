@@ -30,42 +30,46 @@ public class ConfigurationMetadataTests {
 
 	@Test
 	public void toDashedCaseCamelCase() {
-		assertThat(ConfigurationMetadata.toDashedCase("simpleCamelCase"), is("simple-camel-case"));
+		assertThat(toDashedCase("simpleCamelCase"), is("simple-camel-case"));
 	}
 
 	@Test
 	public void toDashedCaseWordsUnderScore() {
-		assertThat(ConfigurationMetadata.toDashedCase("Word_With_underscore"), is("word_with_underscore"));
+		assertThat(toDashedCase("Word_With_underscore"), is("word_with_underscore"));
 	}
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderScores() {
-		assertThat(ConfigurationMetadata.toDashedCase("Word___With__underscore"), is("word___with__underscore"));
+		assertThat(toDashedCase("Word___With__underscore"), is("word___with__underscore"));
 	}
 
 	@Test
 	public void toDashedCaseLowerCaseUnderscore() {
-		assertThat(ConfigurationMetadata.toDashedCase("lower_underscore"), is("lower_underscore"));
+		assertThat(toDashedCase("lower_underscore"), is("lower_underscore"));
 	}
 
 	@Test
 	public void toDashedCaseUpperUnderscore() {
-		assertThat(ConfigurationMetadata.toDashedCase("UPPER_UNDERSCORE"), is("upper_underscore"));
+		assertThat(toDashedCase("UPPER_UNDERSCORE"), is("upper_underscore"));
 	}
 
 	@Test
 	public void toDashedCaseMultipleUnderscores() {
-		assertThat(ConfigurationMetadata.toDashedCase("super___crazy"), is("super___crazy"));
+		assertThat(toDashedCase("super___crazy"), is("super___crazy"));
 	}
 
 	@Test
 	public void toDashedCaseUppercase() {
-		assertThat(ConfigurationMetadata.toDashedCase("UPPERCASE"), is("uppercase"));
+		assertThat(toDashedCase("UPPERCASE"), is("uppercase"));
 	}
 
 	@Test
 	public void toDashedCaseLowercase() {
-		assertThat(ConfigurationMetadata.toDashedCase("lowercase"), is("lowercase"));
+		assertThat(toDashedCase("lowercase"), is("lowercase"));
+	}
+
+	private String toDashedCase(String name) {
+		return ConfigurationMetadata.toDashedCase(name);
 	}
 
 }
