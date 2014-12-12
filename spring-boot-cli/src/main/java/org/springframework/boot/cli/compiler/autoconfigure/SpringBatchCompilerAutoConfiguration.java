@@ -30,9 +30,11 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  */
 public class SpringBatchCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
+	private final static String MODULE = "batch";
+
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableBatchProcessing");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, getPropertyMapper().getAnnotations(MODULE));
 	}
 
 	@Override

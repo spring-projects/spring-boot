@@ -31,22 +31,22 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  */
 public class CachingCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
+	public static final String MODULE = "cache";
+
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableCaching");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, getPropertyMapper().getAnnotations(MODULE));
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("spring-context-support");
+		dependencies.add(getPropertyMapper().getDependencies(MODULE));
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("org.springframework.cache",
-				"org.springframework.cache.annotation",
-				"org.springframework.cache.concurrent");
+		imports.addStarImports(getPropertyMapper().getStarImports(MODULE));
 	}
 
 }

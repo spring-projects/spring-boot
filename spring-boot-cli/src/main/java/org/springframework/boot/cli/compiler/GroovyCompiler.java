@@ -16,10 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyClassLoader.ClassCollector;
-import groovy.lang.GroovyCodeSource;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -29,6 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyClassLoader.ClassCollector;
+import groovy.lang.GroovyCodeSource;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
@@ -46,6 +45,7 @@ import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngineFactory;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
+import org.springframework.boot.cli.util.SpringBootCliPropertyMapper;
 import org.springframework.boot.cli.util.ResourceUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
@@ -67,6 +67,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Greg Turnquist
  */
 public class GroovyCompiler {
 
@@ -77,6 +78,8 @@ public class GroovyCompiler {
 	private final Iterable<CompilerAutoConfiguration> compilerAutoConfigurations;
 
 	private final List<ASTTransformation> transformations;
+
+	private final SpringBootCliPropertyMapper propertyMapper = new SpringBootCliPropertyMapper();
 
 	/**
 	 * Create a new {@link GroovyCompiler} instance.
@@ -102,6 +105,10 @@ public class GroovyCompiler {
 		}
 		else {
 			this.compilerAutoConfigurations = Collections.emptySet();
+		}
+
+		for (CompilerAutoConfiguration compilerAutoConfiguration : this.compilerAutoConfigurations) {
+			compilerAutoConfiguration.setPropertyMapper(propertyMapper);
 		}
 
 		this.transformations = new ArrayList<ASTTransformation>();

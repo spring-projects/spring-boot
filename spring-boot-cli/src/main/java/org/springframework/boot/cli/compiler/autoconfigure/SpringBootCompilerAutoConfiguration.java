@@ -37,10 +37,12 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
  */
 public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
+	private final static String MODULE = "spring-boot";
+
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("org.springframework.boot.SpringApplication")
-				.add("spring-boot-starter");
+				.add(getPropertyMapper().getDependencies(MODULE));
 	}
 
 	@Override
@@ -72,8 +74,7 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 				"org.springframework.boot.context.properties.ConfigurationProperties",
 				"org.springframework.boot.context.properties.EnableConfigurationProperties",
 				"org.springframework.boot.groovy.GrabMetadata");
-		imports.addStarImports("org.springframework.stereotype",
-				"org.springframework.scheduling.annotation");
+		imports.addStarImports(getPropertyMapper().getStarImports(MODULE));
 	}
 
 	@Override

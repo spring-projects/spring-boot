@@ -17,21 +17,27 @@
 package org.springframework.boot.cli.compiler;
 
 import groovy.lang.GroovyClassLoader;
-
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.springframework.boot.cli.util.SpringBootCliPropertyMapper;
 
 /**
  * Strategy that can be used to apply some auto-configuration during the
  * {@link CompilePhase#CONVERSION} Groovy compile phase.
  *
  * @author Phillip Webb
+ * @author Greg Turnquist
  */
 public abstract class CompilerAutoConfiguration {
+
+	/**
+	 * Utility that parses all mappings files for CLI properties.
+	 */
+	private SpringBootCliPropertyMapper propertyMapper;
 
 	/**
 	 * Strategy method used to determine when compiler auto-configuration should be
@@ -79,5 +85,19 @@ public abstract class CompilerAutoConfiguration {
 	public void apply(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
 			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
+	}
+
+	/**
+	 * Inject a {@link org.springframework.boot.cli.util.SpringBootCliPropertyMapper}.
+	 */
+	public void setPropertyMapper(SpringBootCliPropertyMapper propertyMapper) {
+		this.propertyMapper = propertyMapper;
+	}
+
+	/**
+	 * Classic getter to retrieve {@link org.springframework.boot.cli.util.SpringBootCliPropertyMapper}
+	 */
+	public SpringBootCliPropertyMapper getPropertyMapper() {
+		return propertyMapper;
 	}
 }
