@@ -41,10 +41,20 @@ public class DefaultCounterService implements CounterService {
 	}
 
 	@Override
+	public void increment(String metricName, Long value) {
+		this.writer.increment(new Delta<Long>(wrap(metricName), value));
+	}
+	
+	@Override
 	public void decrement(String metricName) {
 		this.writer.increment(new Delta<Long>(wrap(metricName), -1L));
 	}
-
+	
+	@Override
+	public void decrement(String metricName, Long value) {
+		this.writer.increment(new Delta<Long>(wrap(metricName), -value));
+	}
+	
 	@Override
 	public void reset(String metricName) {
 		this.writer.reset(wrap(metricName));
