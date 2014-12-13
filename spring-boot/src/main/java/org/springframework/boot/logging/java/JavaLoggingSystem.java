@@ -26,6 +26,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.springframework.boot.logging.AbstractLoggingSystem;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.util.Assert;
@@ -70,8 +71,8 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(String logFile) {
-		if (StringUtils.hasLength(logFile)) {
+	protected void loadDefaults(LogFile logFile) {
+		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("logging-file.properties"), logFile);
 		}
 		else {
@@ -80,14 +81,14 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	protected void loadConfiguration(String location, String logFile) {
+	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		try {
 			String configuration = FileCopyUtils.copyToString(new InputStreamReader(
 					ResourceUtils.getURL(location).openStream()));
-			if (StringUtils.hasLength(logFile)) {
+			if (logFile != null) {
 				configuration = configuration.replace("${LOG_FILE}",
-						StringUtils.cleanPath(logFile));
+						StringUtils.cleanPath(logFile.toString()));
 			}
 			LogManager.getLogManager().readConfiguration(
 					new ByteArrayInputStream(configuration.getBytes()));

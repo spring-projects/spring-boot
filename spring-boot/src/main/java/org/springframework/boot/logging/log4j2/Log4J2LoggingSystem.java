@@ -26,12 +26,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link LoggingSystem} for <a href="http://logging.apache.org/log4j/2.x/">Log4j 2</a>.
@@ -71,8 +71,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(String logFile) {
-		if (StringUtils.hasLength(logFile)) {
+	protected void loadDefaults(LogFile logFile) {
+		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("log4j2-file.xml"), logFile);
 		}
 		else {
@@ -81,10 +81,10 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadConfiguration(String location, String logFile) {
+	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
-		if (StringUtils.hasLength(logFile)) {
-			System.setProperty("LOG_FILE", logFile);
+		if (logFile != null) {
+			logFile.applyToSystemProperties();
 		}
 		try {
 			LoggerContext ctx = (LoggerContext) LogManager.getContext(false);

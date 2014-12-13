@@ -18,7 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.nio.charset.Charset;
 
-import org.springframework.util.StringUtils;
+import org.springframework.boot.logging.LogFile;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -50,9 +50,9 @@ class DefaultLogbackConfiguration {
 
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
-	private final String logFile;
+	private final LogFile logFile;
 
-	public DefaultLogbackConfiguration(String logFile) {
+	public DefaultLogbackConfiguration(LogFile logFile) {
 		this.logFile = logFile;
 	}
 
@@ -61,8 +61,9 @@ class DefaultLogbackConfiguration {
 		synchronized (config.getConfigurationLock()) {
 			base(config);
 			Appender<ILoggingEvent> consoleAppender = consoleAppender(config);
-			if (StringUtils.hasLength(this.logFile)) {
-				Appender<ILoggingEvent> fileAppender = fileAppender(config, this.logFile);
+			if (this.logFile != null) {
+				Appender<ILoggingEvent> fileAppender = fileAppender(config,
+						this.logFile.toString());
 				config.root(Level.INFO, consoleAppender, fileAppender);
 			}
 			else {

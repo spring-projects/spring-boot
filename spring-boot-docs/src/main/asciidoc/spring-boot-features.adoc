@@ -760,40 +760,35 @@ detection.
 [[boot-features-logging-file-output]]
 === File output
 By default, Spring Boot will only log to the console and will not write log files. If you
-want to write log files in addition to the console output you need to set the
-`logging.file` and/or `logging.path` properties (for example in your
-`application.properties`). Log files will rotate when they reach 10 Mb.
-
-As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by default.
+want to write log files in addition to the console output you need to set a
+`logging.file` or `logging.path` property (for example in your `application.properties`).
 
 The following table shows how the `logging.*` properties can be used together:
 
 .Logging properties
 [cols="1,1,1,4"]
 |===
-|logging.path |logging.file |Example |Description
-
+|`logging.file` |`logging.path` |Example |Description
 |_(none)_
-|Exact location
-|`./my.log`
-|Writes to the specified file.
-
 |_(none)_
-|Simple name
+|
+|Console only logging.
+
+|Specific file
+|_(none)_
 |`my.log`
-|Writes the given file in the `temp` folder.
+|Writes to the specified log file. Names can be an exact location or relative to the
+current directory.
 
-|Specific folder
-|Simple name
-|`/logs` & `my.log`
-|Writes the given file in the specified folder.
-
-|Specific folder
 |_(none)_
-|`/logs`
-|Writes the `spring.log` in the specified folder.
+|Specific folder
+|`/var/log`
+|Writes `spring.log` the specified folder. Names can be an exact location or relative to the
+current directory.
 |===
 
+Log files will rotate when they reach 10 Mb and as with console output, `ERROR`, `WARN`
+and `INFO` level messages are logged by default.
 
 
 [[boot-features-custom-log-levels]]

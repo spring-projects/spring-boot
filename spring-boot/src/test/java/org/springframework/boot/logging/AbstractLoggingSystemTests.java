@@ -60,6 +60,10 @@ public abstract class AbstractLoggingSystemTests {
 		System.clearProperty("PID");
 	}
 
+	protected final LogFile getLogFile(String file, String path) {
+		return new LogFile(file, path);
+	}
+
 	protected final String tmpDir() {
 		String path = StringUtils.cleanPath(System.getProperty(JAVA_IO_TMPDIR));
 		if (path.endsWith("/")) {

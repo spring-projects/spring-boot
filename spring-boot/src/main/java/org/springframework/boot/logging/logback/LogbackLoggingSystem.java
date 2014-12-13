@@ -25,6 +25,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.impl.StaticLoggerBinder;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
@@ -88,13 +89,13 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation, String logFile) {
+	public void initialize(String configLocation, LogFile logFile) {
 		getLogger(null).getLoggerContext().getTurboFilterList().remove(FILTER);
 		super.initialize(configLocation, logFile);
 	}
 
 	@Override
-	protected void loadDefaults(String logFile) {
+	protected void loadDefaults(LogFile logFile) {
 		LoggerContext context = getLoggerContext();
 		context.stop();
 		context.reset();
@@ -103,10 +104,10 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadConfiguration(String location, String logFile) {
+	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
-		if (StringUtils.hasLength(logFile)) {
-			System.setProperty("LOG_FILE", logFile);
+		if (logFile != null) {
+			logFile.applyToSystemProperties();
 		}
 		LoggerContext context = getLoggerContext();
 		context.stop();

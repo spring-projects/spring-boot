@@ -71,13 +71,13 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	 * The name of the Spring property that contains the path where the logging
 	 * configuration can be found.
 	 */
-	public static final String PATH_PROPERTY = "logging.path";
+	public static final String PATH_PROPERTY = LogFile.PATH_PROPERTY;
 
 	/**
 	 * The name of the Spring property that contains the name of the logging configuration
 	 * file.
 	 */
-	public static final String FILE_PROPERTY = "logging.file";
+	public static final String FILE_PROPERTY = LogFile.FILE_PROPERTY;
 
 	/**
 	 * The name of the System property that contains the process ID.
@@ -160,7 +160,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private void initializeSystem(ConfigurableEnvironment environment,
 			LoggingSystem system) {
-		String logFile = getLogFile(environment);
+		LogFile logFile = LogFile.get(environment);
 		String logConfig = environment.getProperty(CONFIG_PROPERTY);
 		if (StringUtils.hasLength(logConfig)) {
 			try {
@@ -177,24 +177,6 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		else {
 			system.initialize(null, logFile);
 		}
-	}
-
-	private String getLogFile(ConfigurableEnvironment environment) {
-		String file = environment.getProperty(FILE_PROPERTY);
-		String path = environment.getProperty(PATH_PROPERTY);
-		if (StringUtils.hasLength(path) || StringUtils.hasLength(file)) {
-			if (!StringUtils.hasLength(file)) {
-				file = "spring.log";
-			}
-			if (!StringUtils.hasLength(path) && !file.contains("/")) {
-				path = StringUtils.cleanPath(System.getProperty("java.io.tmpdir"));
-			}
-			if (StringUtils.hasLength(path)) {
-				return StringUtils.applyRelativePath(path, file);
-			}
-			return file;
-		}
-		return null;
 	}
 
 	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,

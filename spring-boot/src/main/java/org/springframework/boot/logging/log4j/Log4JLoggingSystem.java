@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
@@ -67,8 +68,8 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(String logFile) {
-		if (StringUtils.hasLength(logFile)) {
+	protected void loadDefaults(LogFile logFile) {
+		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("log4j-file.properties"), logFile);
 		}
 		else {
@@ -77,10 +78,10 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadConfiguration(String location, String logFile) {
+	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
-		if (StringUtils.hasLength(logFile)) {
-			System.setProperty("LOG_FILE", logFile);
+		if (logFile != null) {
+			logFile.applyToSystemProperties();
 		}
 		try {
 			Log4jConfigurer.initLogging(location);

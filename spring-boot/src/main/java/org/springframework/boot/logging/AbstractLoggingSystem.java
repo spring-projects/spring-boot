@@ -40,7 +40,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation, String logFile) {
+	public void initialize(String configLocation, LogFile logFile) {
 		if (StringUtils.hasLength(configLocation)) {
 			// Load a specific configuration
 			configLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
@@ -52,7 +52,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 				// No self initialization has occurred, use defaults
 				loadDefaults(logFile);
 			}
-			else if (StringUtils.hasLength(logFile)) {
+			else if (logFile != null) {
 				// Self initialization has occurred but the file has changed, reload
 				loadConfiguration(selfInitializationConfig, logFile);
 			}
@@ -84,14 +84,14 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * Load sensible defaults for the logging system.
 	 * @param logFile the file to load or {@code null} if no log file is to be written
 	 */
-	protected abstract void loadDefaults(String logFile);
+	protected abstract void loadDefaults(LogFile logFile);
 
 	/**
 	 * Load a specific configuration.
 	 * @param location the location of the configuration to load (never {@code null})
 	 * @param logFile the file to load or {@code null} if no log file is to be written
 	 */
-	protected abstract void loadConfiguration(String location, String logFile);
+	protected abstract void loadConfiguration(String location, LogFile logFile);
 
 	protected final ClassLoader getClassLoader() {
 		return this.classLoader;

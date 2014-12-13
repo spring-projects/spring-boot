@@ -98,7 +98,7 @@ public class JavaLoggerSystemTests extends AbstractLoggingSystemTests {
 		}
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, tmpDir() + "/spring.log");
+		this.loggingSystem.initialize(null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));

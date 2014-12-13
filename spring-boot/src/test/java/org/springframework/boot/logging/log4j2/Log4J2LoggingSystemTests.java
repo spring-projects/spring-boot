@@ -71,7 +71,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	public void withFile() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, tmpDir() + "/spring.log");
+		this.loggingSystem.initialize(null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -82,8 +82,8 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testNonDefaultConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:log4j2-nondefault.xml", tmpDir()
-				+ "/tmp.log");
+		this.loggingSystem.initialize("classpath:log4j2-nondefault.xml",
+				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
