@@ -46,7 +46,7 @@ class DefaultLogbackConfiguration {
 			+ "%clr(:){faint} %m%n%wex";
 
 	private static final String FILE_LOG_PATTERN = "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p "
-			+ "${PID:- } [%t] --- %-40.40logger{39} : %m%n%wex";
+			+ "${PID:- } --- [%t] %-40.40logger{39} : %m%n%wex";
 
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 

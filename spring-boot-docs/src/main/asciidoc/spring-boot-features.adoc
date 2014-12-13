@@ -734,6 +734,7 @@ The following items are output:
 * Log Level -- `ERROR`, `WARN`, `INFO`, `DEBUG` or `TRACE`.
 * Process ID.
 * A `---` separator to distinguish the start of actual log messages.
+* Thread name -- Enclosed in square brackets (may be truncated for console output).
 * Logger name -- This is usually the source class name (often abbreviated).
 * The log message.
 
