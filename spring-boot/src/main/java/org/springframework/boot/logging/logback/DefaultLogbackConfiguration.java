@@ -112,7 +112,7 @@ class DefaultLogbackConfiguration {
 			String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<ILoggingEvent>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(FILE_LOG_PATTERN);
+		encoder.setPattern(OptionHelper.substVars(FILE_LOG_PATTERN, config.getContext()));
 		appender.setEncoder(encoder);
 		config.start(encoder);
 
