@@ -99,8 +99,8 @@ public class ResourceBanner implements Banner {
 	}
 
 	protected String getApplicationVersion(Class<?> sourceClass) {
-		return (sourceClass == null ? null : sourceClass.getPackage()
-				.getImplementationVersion());
+		Package sourcePackage = (sourceClass == null ? null : sourceClass.getPackage());
+		return (sourcePackage == null ? null : sourcePackage.getImplementationVersion());
 	}
 
 	protected String getBootVersion() {
