@@ -98,6 +98,12 @@
     "description": "Run the application in a web environment (auto-detected by default)."
   },
   {
+    "name": "spring.output.ansi.enabled",
+    "type": "org.springframework.boot.ansi.AnsiOutput$Enabled",
+    "description": "Configure the ANSI output (can be \"detect\", \"always\", \"never\").",
+    "defaultValue": "detect"
+  },
+  {
     "name": "spring.profiles.active",
     "type": "java.lang.String",
     "description": "Comma-separated list of active profiles. Can be overridden by a command line switch."
