@@ -17,11 +17,13 @@
 package org.springframework.boot;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.concurrent.Callable;
 
@@ -162,15 +164,13 @@ class StartupInfoLogger {
 		try {
 			ProtectionDomain protectionDomain = (this.sourceClass == null ? getClass()
 					: this.sourceClass).getProtectionDomain();
+			CodeSource codeSource = protectionDomain.getCodeSource();
+			if (codeSource == null) {
+				return null;
+			}
 			URL location = protectionDomain.getCodeSource().getLocation();
-			File file;
 			URLConnection connection = location.openConnection();
-			if (connection instanceof JarURLConnection) {
-				file = new File(((JarURLConnection) connection).getJarFile().getName());
-			}
-			else {
-				file = new File(location.getPath());
-			}
+			File file = getFile(location, connection);
 			if (file.exists()) {
 				return file;
 			}
@@ -178,6 +178,13 @@ class StartupInfoLogger {
 		catch (Exception ex) {
 		}
 		return null;
+	}
+
+	private File getFile(URL location, URLConnection connection) throws IOException {
+		if (connection instanceof JarURLConnection) {
+			return new File(((JarURLConnection) connection).getJarFile().getName());
+		}
+		return new File(location.getPath());
 	}
 
 	private String getValue(String prefix, Callable<Object> call) {
