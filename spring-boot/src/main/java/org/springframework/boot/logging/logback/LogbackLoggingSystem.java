@@ -17,6 +17,8 @@
 package org.springframework.boot.logging.logback;
 
 import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,8 +109,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "
 								+ "the classpath. Either remove Logback or the competing "
 								+ "implementation (%s loaded from %s).",
-						factory.getClass(), factory.getClass().getProtectionDomain()
-								.getCodeSource().getLocation()));
+						factory.getClass(), getLocation(factory)));
 
 		LoggerContext context = (LoggerContext) factory;
 		context.stop();
@@ -121,6 +122,20 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 			throw new IllegalStateException("Could not initialize logging from "
 					+ configLocation, ex);
 		}
+	}
+
+	private Object getLocation(ILoggerFactory factory) {
+		try {
+			ProtectionDomain protectionDomain = factory.getClass().getProtectionDomain();
+			CodeSource codeSource = protectionDomain.getCodeSource();
+			if (codeSource != null) {
+				return codeSource.getLocation();
+			}
+		}
+		catch (SecurityException ex) {
+			// Unable to determine location
+		}
+		return "unknown location";
 	}
 
 	@Override
