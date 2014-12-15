@@ -22,10 +22,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.web.OrderedCharacterEncodingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 /**
@@ -45,10 +44,9 @@ public class HttpEncodingAutoConfiguration {
 	private HttpEncodingProperties httpEncodingProperties;
 
 	@Bean
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(CharacterEncodingFilter.class)
 	public CharacterEncodingFilter characterEncodingFilter() {
-		CharacterEncodingFilter filter = new CharacterEncodingFilter();
+		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
 		filter.setEncoding(this.httpEncodingProperties.getCharset().name());
 		filter.setForceEncoding(this.httpEncodingProperties.isForce());
 		return filter;

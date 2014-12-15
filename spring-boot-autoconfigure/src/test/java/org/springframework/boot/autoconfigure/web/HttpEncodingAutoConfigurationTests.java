@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.Filter;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,9 +31,13 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HttpEncodingAutoConfiguration}
@@ -82,6 +91,16 @@ public class HttpEncodingAutoConfigurationTests {
 		assertCharacterEncodingFilter(filter, "US-ASCII", false);
 	}
 
+	@Test
+	public void filterIsOrderedHighest() throws Exception {
+		load(OrderedConfiguration.class);
+		List<Filter> beans = new ArrayList<Filter>(this.context.getBeansOfType(
+				Filter.class).values());
+		AnnotationAwareOrderComparator.sort(beans);
+		assertThat(beans.get(0), instanceOf(CharacterEncodingFilter.class));
+		assertThat(beans.get(1), instanceOf(HiddenHttpMethodFilter.class));
+	}
+
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
 			String encoding, boolean forceEncoding) {
 		DirectFieldAccessor accessor = new DirectFieldAccessor(actual);
@@ -118,6 +137,16 @@ public class HttpEncodingAutoConfigurationTests {
 			filter.setEncoding("US-ASCII");
 			filter.setForceEncoding(false);
 			return filter;
+		}
+
+	}
+
+	@Configuration
+	static class OrderedConfiguration {
+
+		@Bean
+		public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+			return new HiddenHttpMethodFilter();
 		}
 
 	}
