@@ -35,6 +35,7 @@
 		<module>spring-boot-sample-data-rest</module>
 		<module>spring-boot-sample-data-solr</module>
 		<module>spring-boot-sample-flyway</module>
+		<module>spring-boot-sample-hateoas</module>
 		<module>spring-boot-sample-hornetq</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jetty</module>
