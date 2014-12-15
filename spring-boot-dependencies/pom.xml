@@ -87,7 +87,7 @@
 		<jersey.version>2.13</jersey.version>
 		<jetty.version>9.2.4.v20141103</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
-		<joda-time.version>2.5</joda-time.version>
+		<joda-time.version>2.6</joda-time.version>
 		<jolokia.version>1.2.3</jolokia.version>
 		<json-path.version>0.9.1</json-path.version>
 		<jstl.version>1.2</jstl.version>
