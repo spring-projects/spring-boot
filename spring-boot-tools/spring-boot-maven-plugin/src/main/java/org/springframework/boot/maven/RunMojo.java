@@ -168,8 +168,10 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void run(String startClassName) throws MojoExecutionException {
-		if (this.fork || (this.agent != null && this.agent.length > 0)
-				|| (this.jvmArguments != null && this.jvmArguments.length() > 0)) {
+		findAgent();
+		boolean hasAgent = (this.agent != null && this.agent.length > 0);
+		boolean hasJvmArgs = (this.jvmArguments != null && this.jvmArguments.length() > 0);
+		if (this.fork || hasAgent || hasJvmArgs) {
 			runWithForkedJvm(startClassName);
 		}
 		else {
@@ -204,7 +206,6 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addAgents(List<String> args) {
-		findAgent();
 		if (this.agent != null) {
 			getLog().info("Attaching agents: " + Arrays.asList(this.agent));
 			for (File agent : this.agent) {
