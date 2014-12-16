@@ -221,6 +221,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	protected final void configureWebAppContext(WebAppContext context,
 			ServletContextInitializer... initializers) {
 		Assert.notNull(context, "Context must not be null");
+		context.setTempDirectory(getTempDirectory());
 		setExtendedListenerTypes(context);
 		if (this.resourceLoader != null) {
 			context.setClassLoader(this.resourceLoader.getClassLoader());
@@ -244,6 +245,11 @@ public class JettyEmbeddedServletContainerFactory extends
 		SessionManager sessionManager = context.getSessionHandler().getSessionManager();
 		sessionManager.setMaxInactiveInterval(sessionTimeout);
 		postProcessWebAppContext(context);
+	}
+
+	private File getTempDirectory() {
+		String temp = System.getProperty("java.io.tmpdir");
+		return (temp == null ? null : new File(temp));
 	}
 
 	private void setExtendedListenerTypes(WebAppContext context) {
