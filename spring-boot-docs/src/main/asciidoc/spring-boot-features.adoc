@@ -1713,7 +1713,7 @@ several conveniences for working with MongoDB, including the The
 [[boot-features-connecting-to-mongodb]]
 ==== Connecting to a MongoDB database
 You can inject an auto-configured `org.springframework.data.mongodb.MongoDbFactory` to
-access Mono databases. By default the instance will attempt to connect to a MongoDB server
+access Mongo databases. By default the instance will attempt to connect to a MongoDB server
 using the URL `mongodb://localhost/test`:
 
 [source,java,indent=0]
