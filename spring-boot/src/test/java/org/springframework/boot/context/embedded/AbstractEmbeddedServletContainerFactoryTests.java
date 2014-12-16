@@ -312,10 +312,10 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void basicSsl() throws Exception {
-		testBasicSllWithKeystore("src/test/resources/test.jks");
+		testBasicSslWithKeyStore("src/test/resources/test.jks");
 	}
 
-	protected final void testBasicSllWithKeystore(String keyStore) throws Exception {
+	protected final void testBasicSslWithKeyStore(String keyStore) throws Exception {
 		FileCopyUtils.copy("test",
 				new FileWriter(this.temporaryFolder.newFile("test.txt")));
 
