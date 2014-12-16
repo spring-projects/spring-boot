@@ -27,7 +27,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -39,6 +41,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -92,6 +95,14 @@ public class DispatcherServletAutoConfiguration {
 				registration.setMultipartConfig(this.multipartConfig);
 			}
 			return registration;
+		}
+
+		@Bean
+		@ConditionalOnBean(MultipartResolver.class)
+		@ConditionalOnMissingBean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
+		public MultipartResolver multipartResolver(MultipartResolver resolver) {
+			// Detect if the user has created a MultipartResolver but named it incorrectly
+			return resolver;
 		}
 
 	}

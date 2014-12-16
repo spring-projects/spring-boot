@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for multi-part uploads. Adds a
@@ -55,12 +56,13 @@ public class MultipartAutoConfiguration {
 	private MultipartProperties multipartProperties = new MultipartProperties();
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(value = { MultipartConfigElement.class,
+			MultipartResolver.class })
 	public MultipartConfigElement multipartConfigElement() {
 		return this.multipartProperties.createMultipartConfig();
 	}
 
-	@Bean
+	@Bean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
 	@ConditionalOnMissingBean(value = MultipartResolver.class)
 	public StandardServletMultipartResolver multipartResolver() {
 		return new StandardServletMultipartResolver();
