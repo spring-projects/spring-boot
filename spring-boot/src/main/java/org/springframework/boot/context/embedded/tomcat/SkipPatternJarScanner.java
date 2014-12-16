@@ -178,7 +178,6 @@ class SkipPatternJarScanner extends StandardJarScanner {
 			add("jboss-transaction-api_*.jar");
 			add("jcl-over-slf4j-*.jar");
 			add("jdom-*.jar");
-			add("joda-time-*.jar");
 			add("jul-to-slf4j-*.jar");
 			add("log4j-over-slf4j-*.jar");
 			add("logback-classic-*.jar");
