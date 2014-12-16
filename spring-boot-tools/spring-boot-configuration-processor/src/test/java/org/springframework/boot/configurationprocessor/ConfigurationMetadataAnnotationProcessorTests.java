@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.io.IOException;
+
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
@@ -24,10 +25,9 @@ import javax.lang.model.SourceVersion;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
-import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
+import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
 import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig;
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
@@ -307,20 +307,17 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class, "explicit");
 	}
 
-	private void assertSimpleLombokProperties(ConfigurationMetadata metadata, Class<?> source, String prefix) {
+	private void assertSimpleLombokProperties(ConfigurationMetadata metadata,
+			Class<?> source, String prefix) {
 		assertThat(metadata, containsGroup(prefix).fromSource(source));
 		assertThat(metadata, not(containsProperty(prefix + ".id")));
-		assertThat(
-				metadata,
-				containsProperty(prefix + ".name", String.class)
-						.fromSource(source)
+		assertThat(metadata,
+				containsProperty(prefix + ".name", String.class).fromSource(source)
 						.withDescription("Name description."));
 		assertThat(metadata, containsProperty(prefix + ".description"));
 		assertThat(metadata, containsProperty(prefix + ".counter"));
-		assertThat(metadata,
-				containsProperty(prefix + ".number").fromSource(source)
-						.withDefaultValue(is(0))
-						.withDeprecated());
+		assertThat(metadata, containsProperty(prefix + ".number").fromSource(source)
+				.withDefaultValue(is(0)).withDeprecated());
 		assertThat(metadata, containsProperty(prefix + ".items"));
 		assertThat(metadata, not(containsProperty(prefix + ".ignored")));
 	}
@@ -331,7 +328,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		return processor.getMetadata();
 	}
 
-	@SupportedAnnotationTypes({"*"})
+	@SupportedAnnotationTypes({ "*" })
 	@SupportedSourceVersion(SourceVersion.RELEASE_6)
 	private static class TestConfigurationMetadataAnnotationProcessor extends
 			ConfigurationMetadataAnnotationProcessor {

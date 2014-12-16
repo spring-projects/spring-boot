@@ -18,12 +18,12 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
- 		<!-- Runs in the compiler so dependencies should stick to the bare minimum -->
+ 		<!-- Compile (should stick to the bare minimum) -->
  		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
-
+		<!-- Test -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

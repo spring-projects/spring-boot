@@ -38,22 +38,28 @@ public class LombokExplicitProperties {
 	/**
 	 * Name description.
 	 */
-	@Getter @Setter
+	@Getter
+	@Setter
 	private String name;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private String description;
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private Integer counter;
 
-	@Deprecated @Getter @Setter
+	@Deprecated
+	@Getter
+	@Setter
 	private Integer number = 0;
 
 	@Getter
 	private final List<String> items = new ArrayList<String>();
 
 	// Should be ignored if no annotation is set
+	@SuppressWarnings("unused")
 	private String ignored;
 
 }

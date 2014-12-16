@@ -207,8 +207,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private void processLombokTypes(String prefix, TypeElement element,
 			TypeElementMembers members, Map<String, Object> fieldValues) {
-		for (Map.Entry<String, VariableElement> entry : members.getFields()
-				.entrySet()) {
+		for (Map.Entry<String, VariableElement> entry : members.getFields().entrySet()) {
 			String name = entry.getKey();
 			VariableElement field = entry.getValue();
 			if (!isLombokField(field, element)) {
@@ -241,10 +240,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private boolean hasLombokSetter(VariableElement field, TypeElement element) {
-		return !field.getModifiers().contains(Modifier.FINAL) && (
-				hasAnnotation(field, LOMBOK_SETTER_ANNOTATION)
-						|| hasAnnotation(element, LOMBOK_SETTER_ANNOTATION)
-						|| hasAnnotation(element, LOMBOK_DATA_ANNOTATION));
+		return !field.getModifiers().contains(Modifier.FINAL)
+				&& (hasAnnotation(field, LOMBOK_SETTER_ANNOTATION)
+						|| hasAnnotation(element, LOMBOK_SETTER_ANNOTATION) || hasAnnotation(
+							element, LOMBOK_DATA_ANNOTATION));
 	}
 
 	private void processNestedTypes(String prefix, TypeElement element,
