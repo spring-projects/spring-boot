@@ -156,7 +156,7 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 
 	@Test
 	public void basicSslClasspathKeyStore() throws Exception {
-		testBasicSllWithKeystore("classpath:test.jks");
+		testBasicSslWithKeyStore("classpath:test.jks");
 	}
 
 }
