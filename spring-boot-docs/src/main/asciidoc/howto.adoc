@@ -406,7 +406,17 @@ See {sc-spring-boot}/context/embedded/Ssl.{sc-ext}[`Ssl`] for details of all of 
 supported properties.
 
 NOTE: Tomcat requires the key store (and trust store if you're using one) to be directly
-accessible on the filesystem, i.e. it cannot be read from within a jar file.
+accessible on the filesystem, i.e. it cannot be read from within a jar file. This
+limitation doesn't apply to Jetty and Undertow.
+
+Using configuration like the example above means the application will no longer support
+plain HTTP connector at port 8080. Spring Boot doesn't support the configuration of both
+an HTTP connector and an HTTPS connector via `application.properties`. If you want to
+have both then you'll need to configure one of them programmatically. It's recommended
+to use `application.properties` to configure HTTPS as the HTTP connector is the easier of
+the two to configure programmatically. See the
+{github-code}/spring-boot-samples/spring-boot-sample-tomcat-multi-connectors[`spring-boot-sample-tomcat-multi-connectors`]
+sample project for an example.
 
 
 
