@@ -1103,7 +1103,8 @@ samples for more detail and to see it in action.
 To override the default settings just define a `@Bean` of your own of type `DataSource`.
 Spring Boot provides a utility builder class `DataSourceBuilder` that can be used
 to create one of the standard ones (if it is on the classpath), or you can just create
-your own, and bind it to a set of `Environment` properties e.g.
+your own, and bind it to a set of `Environment` properties as explained in
+<<spring-boot-features.adoc#boot-features-external-config-3rd-party-configuration>>, e.g.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
