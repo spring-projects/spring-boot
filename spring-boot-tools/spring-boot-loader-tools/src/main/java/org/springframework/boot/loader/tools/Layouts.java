@@ -119,6 +119,7 @@ public class Layouts {
 		static {
 			Map<LibraryScope, String> map = new HashMap<LibraryScope, String>();
 			map.put(LibraryScope.COMPILE, "WEB-INF/lib/");
+			map.put(LibraryScope.CUSTOM, "WEB-INF/lib/");
 			map.put(LibraryScope.RUNTIME, "WEB-INF/lib/");
 			map.put(LibraryScope.PROVIDED, "WEB-INF/lib-provided/");
 			SCOPE_DESTINATIONS = Collections.unmodifiableMap(map);
