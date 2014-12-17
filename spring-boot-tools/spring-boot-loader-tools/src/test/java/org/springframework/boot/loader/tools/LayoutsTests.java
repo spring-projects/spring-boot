@@ -30,6 +30,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link Layouts}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class LayoutsTests {
 
@@ -64,6 +65,8 @@ public class LayoutsTests {
 		Layout layout = new Layouts.Jar();
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE),
 				equalTo("lib/"));
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM),
+				equalTo("lib/"));
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED),
 				equalTo("lib/"));
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME),
@@ -74,6 +77,8 @@ public class LayoutsTests {
 	public void warLayout() throws Exception {
 		Layout layout = new Layouts.War();
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE),
+				equalTo("WEB-INF/lib/"));
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM),
 				equalTo("WEB-INF/lib/"));
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED),
 				equalTo("WEB-INF/lib-provided/"));
