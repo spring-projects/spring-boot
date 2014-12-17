@@ -91,6 +91,8 @@ public class LayoutsTests {
 				nullValue());
 		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME),
 				equalTo("lib/"));
+		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM),
+				equalTo("lib/"));
 	}
 
 }

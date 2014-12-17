@@ -17,15 +17,19 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Common {@link Layout}s.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class Layouts {
 
@@ -147,6 +151,10 @@ public class Layouts {
 	 */
 	public static class Module implements Layout {
 
+		private static final Set<LibraryScope> LIB_DESTINATION_SCOPES = new HashSet<LibraryScope>(
+				Arrays.asList(LibraryScope.COMPILE, LibraryScope.RUNTIME,
+						LibraryScope.CUSTOM));
+
 		@Override
 		public String getLauncherClassName() {
 			return null;
@@ -154,7 +162,7 @@ public class Layouts {
 
 		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			if (LibraryScope.COMPILE.equals(scope) || LibraryScope.RUNTIME.equals(scope)) {
+			if (LIB_DESTINATION_SCOPES.contains(scope)) {
 				return "lib/";
 			}
 			return null;
