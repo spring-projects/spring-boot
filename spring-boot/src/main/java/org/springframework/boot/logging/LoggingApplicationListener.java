@@ -33,7 +33,6 @@ import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
@@ -98,6 +97,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
+	private LoggingSystem loggingSystem;
+
 	private int order = Ordered.HIGHEST_PRECEDENCE + 11;
 
 	private boolean parseArgs = true;
@@ -126,10 +127,16 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	}
 
 	private void onApplicationStartedEvent(ApplicationStartedEvent event) {
-		LoggingSystem.get(ClassUtils.getDefaultClassLoader()).beforeInitialize();
+		this.loggingSystem = LoggingSystem.get(event.getSpringApplication()
+				.getClassLoader());
+		this.loggingSystem.beforeInitialize();
 	}
 
 	private void onApplicationPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
+		if (this.loggingSystem == null) {
+			this.loggingSystem = LoggingSystem.get(event.getSpringApplication()
+					.getClassLoader());
+		}
 		initialize(event.getEnvironment(), event.getSpringApplication().getClassLoader());
 	}
 
@@ -142,9 +149,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			System.setProperty(PID_KEY, new ApplicationPid().toString());
 		}
 		initializeEarlyLoggingLevel(environment);
-		LoggingSystem system = LoggingSystem.get(classLoader);
-		initializeSystem(environment, system);
-		initializeFinalLoggingLevels(environment, system);
+		initializeSystem(environment, this.loggingSystem);
+		initializeFinalLoggingLevels(environment, this.loggingSystem);
 	}
 
 	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {

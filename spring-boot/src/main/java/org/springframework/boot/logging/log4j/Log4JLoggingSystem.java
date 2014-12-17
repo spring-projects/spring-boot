@@ -93,6 +93,11 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
+	protected void reinitialize() {
+		loadConfiguration(getSelfInitializationConfig(), null);
+	}
+
+	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
 		Logger logger = (StringUtils.hasLength(loggerName) ? LogManager
 				.getLogger(loggerName) : LogManager.getRootLogger());

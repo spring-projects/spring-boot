@@ -56,6 +56,9 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 				// Self initialization has occurred but the file has changed, reload
 				loadConfiguration(selfInitializationConfig, logFile);
 			}
+			else {
+				reinitialize();
+			}
 		}
 	}
 
@@ -92,6 +95,15 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * @param logFile the file to load or {@code null} if no log file is to be written
 	 */
 	protected abstract void loadConfiguration(String location, LogFile logFile);
+
+	/**
+	 * Reinitialize the logging system if required. Called when
+	 * {@link #getSelfInitializationConfig()} is used and the log file hasn't changed. May
+	 * be used to reload configuration (for example to pickup additional System
+	 * properties).
+	 */
+	protected void reinitialize() {
+	}
 
 	protected final ClassLoader getClassLoader() {
 		return this.classLoader;

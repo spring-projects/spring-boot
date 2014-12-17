@@ -46,8 +46,8 @@ public abstract class LoggingSystem {
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
-	 * {@link #initialize(String, LogFile)} to reduce logging noise until the
-	 * systems has been fully Initialized.
+	 * {@link #initialize(String, LogFile)} to reduce logging noise until the system has
+	 * been fully Initialized.
 	 */
 	public abstract void beforeInitialize();
 

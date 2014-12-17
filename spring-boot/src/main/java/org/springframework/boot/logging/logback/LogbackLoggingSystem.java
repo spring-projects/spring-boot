@@ -124,6 +124,12 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		}
 	}
 
+	@Override
+	protected void reinitialize() {
+		getLoggerContext().reset();
+		loadConfiguration(getSelfInitializationConfig(), null);
+	}
+
 	private void configureJBossLoggingToUseSlf4j() {
 		System.setProperty("org.jboss.logging.provider", "slf4j");
 	}

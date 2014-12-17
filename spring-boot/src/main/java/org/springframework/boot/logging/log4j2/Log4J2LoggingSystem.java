@@ -23,9 +23,16 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.message.Message;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
@@ -55,6 +62,33 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
+	private static final Filter FILTER = new AbstractFilter() {
+
+		@Override
+		public Result filter(LogEvent event) {
+			return Result.DENY;
+		};
+
+		@Override
+		public Result filter(Logger logger, Level level, Marker marker, Message msg,
+				Throwable t) {
+			return Result.DENY;
+		};
+
+		@Override
+		public Result filter(Logger logger, Level level, Marker marker, Object msg,
+				Throwable t) {
+			return Result.DENY;
+		};
+
+		@Override
+		public Result filter(Logger logger, Level level, Marker marker, String msg,
+				Object... params) {
+			return Result.DENY;
+		};
+
+	};
+
 	public Log4J2LoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
 	}
@@ -67,7 +101,13 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	public void beforeInitialize() {
 		super.beforeInitialize();
-		setLogLevel("", LogLevel.FATAL);
+		getLoggerConfig(null).addFilter(FILTER);
+	}
+
+	@Override
+	public void initialize(String configLocation, LogFile logFile) {
+		getLoggerConfig(null).removeFilter(FILTER);
+		super.initialize(configLocation, logFile);
 	}
 
 	@Override
@@ -87,7 +127,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			logFile.applyToSystemProperties();
 		}
 		try {
-			LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+			LoggerContext ctx = getLoggerContext();
 			URL url = ResourceUtils.getURL(location);
 			ConfigurationSource source = new ConfigurationSource(url.openStream(), url);
 			ctx.start(ConfigurationFactory.getInstance().getConfiguration(source));
@@ -99,11 +139,24 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
+	protected void reinitialize() {
+		getLoggerContext().reconfigure();
+	}
+
+	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
-		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-		ctx.getConfiguration().getLoggerConfig(loggerName == null ? "" : loggerName)
-				.setLevel(LEVELS.get(level));
-		ctx.updateLoggers();
+		getLoggerConfig(loggerName).setLevel(LEVELS.get(level));
+		getLoggerContext().updateLoggers();
+	}
+
+	private LoggerConfig getLoggerConfig(String loggerName) {
+		LoggerConfig loggerConfig = getLoggerContext().getConfiguration()
+				.getLoggerConfig(loggerName == null ? "" : loggerName);
+		return loggerConfig;
+	}
+
+	private LoggerContext getLoggerContext() {
+		return (LoggerContext) LogManager.getContext(false);
 	}
 
 }
