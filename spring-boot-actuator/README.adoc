@@ -41,7 +41,7 @@ For Gradle, use the declaration:
 * **Metrics** Spring Boot Actuator includes a metrics service with ``gauge'' and
   ``counter'' support.  A ``gauge'' records a single value; and a ``counter'' records a
   delta (an increment or decrement). Metrics for all HTTP requests are automatically
-  recorded, so if you hit the `metrics` endpoint should should see a sensible response.
+  recorded, so if you hit the `metrics` endpoint should see a sensible response.
 * **Audit** Spring Boot Actuator has a flexible audit framework that will publish events
   to an `AuditService`. Once Spring Security is in play it automatically publishes
   authentication events by default. This can be very useful for reporting, and also to
