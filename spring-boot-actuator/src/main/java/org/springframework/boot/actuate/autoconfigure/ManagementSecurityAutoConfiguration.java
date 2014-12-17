@@ -40,7 +40,7 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.AuthenticationManagerConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
+import org.springframework.boot.autoconfigure.security.SecurityPrerequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorController;
@@ -96,7 +96,7 @@ public class ManagementSecurityAutoConfiguration {
 
 	@Configuration
 	protected static class ManagementSecurityPropertiesConfiguration implements
-			SecurityPrequisite {
+			SecurityPrerequisite {
 
 		@Autowired(required = false)
 		private SecurityProperties security;
