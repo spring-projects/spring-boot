@@ -22,6 +22,6 @@ package org.springframework.boot.autoconfigure.security;
  *
  * @author Dave Syer
  */
-public interface SecurityPrequisite {
+public interface SecurityPrerequisite {
 
 }
