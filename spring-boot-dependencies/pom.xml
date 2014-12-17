@@ -81,6 +81,7 @@
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
 		<javax-mail.version>1.5.2</javax-mail.version>
+		<javax-transaction.version>1.2</javax-transaction.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<jdom2.version>2.0.5</jdom2.version>
 		<jedis.version>2.5.2</jedis.version>
@@ -594,6 +595,11 @@
 				<version>${jstl.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>javax.transaction</groupId>
+				<artifactId>javax.transaction-api</artifactId>
+				<version>${javax-transaction.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>jaxen</groupId>
 				<artifactId>jaxen</artifactId>
 				<version>${jaxen.version}</version>
@@ -1037,6 +1043,12 @@
 				<groupId>org.hornetq</groupId>
 				<artifactId>hornetq-jms-server</artifactId>
 				<version>${hornetq.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.jboss.spec.javax.transaction</groupId>
+						<artifactId>jboss-transaction-api_1.1_spec</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.hsqldb</groupId>
