@@ -34,7 +34,7 @@ import reactor.spring.context.config.EnableReactor;
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass(EnableReactor.class)
+@ConditionalOnClass({ EnableReactor.class, Environment.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ReactorAutoConfiguration {
 
