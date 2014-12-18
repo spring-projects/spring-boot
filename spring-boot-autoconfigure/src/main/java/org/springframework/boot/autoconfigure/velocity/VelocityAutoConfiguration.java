@@ -32,13 +32,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.ui.velocity.VelocityEngineFactory;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 import org.springframework.util.Assert;
@@ -59,7 +58,7 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 public class VelocityAutoConfiguration {
 
 	@Autowired
-	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private ApplicationContext applicationContext;
 
 	@Autowired
 	private VelocityProperties properties;
@@ -67,11 +66,13 @@ public class VelocityAutoConfiguration {
 	@PostConstruct
 	public void checkTemplateLocationExists() {
 		if (this.properties.isCheckTemplateLocation()) {
-			Resource resource = this.resourceLoader.getResource(this.properties
-					.getResourceLoaderPath());
-			Assert.state(resource.exists(), "Cannot find template location: " + resource
-					+ " (please add some templates, check your Velocity configuration, "
-					+ "or set spring.velocity.checkTemplateLocation=false)");
+			TemplateLocation location = new TemplateLocation(
+					this.properties.getResourceLoaderPath());
+			Assert.state(location.exists(this.applicationContext),
+					"Cannot find template location: " + location
+							+ " (please add some templates, check your Velocity "
+							+ "configuration, or set spring.velocity."
+							+ "checkTemplateLocation=false)");
 		}
 	}
 

@@ -30,16 +30,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.Ordered;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
@@ -68,7 +67,7 @@ public class GroovyTemplateAutoConfiguration {
 	public static class GroovyMarkupConfiguration {
 
 		@Autowired
-		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+		private ApplicationContext applicationContext;
 
 		@Autowired
 		private GroovyTemplateProperties properties;
@@ -79,12 +78,13 @@ public class GroovyTemplateAutoConfiguration {
 		@PostConstruct
 		public void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
-				Resource resource = this.resourceLoader.getResource(this.properties
-						.getPrefix());
-				Assert.state(resource.exists(), "Cannot find template location: "
-						+ resource + " (please add some templates, "
-						+ "check your Groovy configuration, or set "
-						+ "spring.groovy.template.check-template-location=false)");
+				TemplateLocation location = new TemplateLocation(
+						this.properties.getPrefix());
+				Assert.state(location.exists(this.applicationContext),
+						"Cannot find template location: " + location
+								+ " (please add some templates, check your Groovy "
+								+ "configuration, or set spring.groovy.template."
+								+ "check-template-location=false)");
 			}
 		}
 

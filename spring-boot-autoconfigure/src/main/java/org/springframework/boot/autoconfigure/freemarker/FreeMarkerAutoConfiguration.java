@@ -31,13 +31,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.util.Assert;
@@ -60,7 +59,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 public class FreeMarkerAutoConfiguration {
 
 	@Autowired
-	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private ApplicationContext applicationContext;
 
 	@Autowired
 	private FreeMarkerProperties properties;
@@ -68,18 +67,18 @@ public class FreeMarkerAutoConfiguration {
 	@PostConstruct
 	public void checkTemplateLocationExists() {
 		if (this.properties.isCheckTemplateLocation()) {
-			Resource templatePathResource = null;
-			List<Resource> resources = new ArrayList<Resource>();
+			TemplateLocation templatePathLocation = null;
+			List<TemplateLocation> locations = new ArrayList<TemplateLocation>();
 			for (String templateLoaderPath : this.properties.getTemplateLoaderPath()) {
-				Resource resource = this.resourceLoader.getResource(templateLoaderPath);
-				resources.add(resource);
-				if (resource.exists()) {
-					templatePathResource = resource;
+				TemplateLocation location = new TemplateLocation(templateLoaderPath);
+				locations.add(location);
+				if (location.exists(this.applicationContext)) {
+					templatePathLocation = location;
 					break;
 				}
 			}
-			Assert.notNull(templatePathResource, "Cannot find template location(s): "
-					+ resources + " (please add some templates, "
+			Assert.notNull(templatePathLocation, "Cannot find template location(s): "
+					+ locations + " (please add some templates, "
 					+ "check your FreeMarker configuration, or set "
 					+ "spring.freemarker.checkTemplateLocation=false)");
 		}
