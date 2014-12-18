@@ -91,7 +91,7 @@ public class GroovyTemplateAutoConfiguration {
 		/**
 		 * MarkupTemplateEngine could be loaded from groovy-templates or groovy-all.
 		 * Unfortunately it's quite common for people to use groovy-all and not actually
-		 * need templating support. This method checks attempts to check the source jar so
+		 * need templating support. This method check attempts to check the source jar so
 		 * that we can skip the {@code /template} folder check for such cases.
 		 * @return true if the groovy-all jar is used
 		 */
