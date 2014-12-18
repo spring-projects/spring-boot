@@ -74,7 +74,7 @@ public class AuthenticationManagerConfiguration extends
 			.getLog(AuthenticationManagerConfiguration.class);
 
 	@Autowired
-	private List<SecurityPrequisite> dependencies;
+	private List<SecurityPrerequisite> dependencies;
 
 	@Autowired
 	private SecurityProperties security;

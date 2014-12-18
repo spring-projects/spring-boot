@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "security", ignoreUnknownFields = false)
-public class SecurityProperties implements SecurityPrequisite {
+public class SecurityProperties implements SecurityPrerequisite {
 
 	/**
 	 * Order before the basic authentication access control provided by Boot. This is a
