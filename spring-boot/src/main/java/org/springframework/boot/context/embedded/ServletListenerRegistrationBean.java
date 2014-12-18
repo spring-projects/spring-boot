@@ -105,7 +105,13 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends
 			logger.info("Listener " + this.listener + " was not registered (disabled)");
 			return;
 		}
-		servletContext.addListener(this.listener);
+		try {
+			servletContext.addListener(this.listener);
+		}
+		catch (RuntimeException ex) {
+			throw new IllegalStateException("Failed to add listener '" + this.listener
+					+ "' to servlet context", ex);
+		}
 	}
 
 	public T getListener() {
