@@ -41,6 +41,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect;
 import org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.resourceresolver.SpringResourceResourceResolver;
@@ -162,6 +163,19 @@ public class ThymeleafAutoConfiguration {
 		}
 
 	}
+
+	@Configuration
+	@ConditionalOnClass(ConditionalCommentsDialect.class)
+	protected static class ThymeleafConditionalCommentsDialectConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ConditionalCommentsDialect conditionalCommentsDialect() {
+			return new ConditionalCommentsDialect();
+		}
+
+	}
+
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class })
