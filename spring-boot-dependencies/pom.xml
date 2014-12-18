@@ -78,7 +78,7 @@
 		<jaxen.version>1.1.6</jaxen.version>
 		<jdom2.version>2.0.5</jdom2.version>
 		<jedis.version>2.4.2</jedis.version>
-		<jetty.version>8.1.15.v20140411</jetty.version>
+		<jetty.version>8.1.16.v20140903</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<joda-time.version>2.3</joda-time.version>
 		<jolokia.version>1.2.3</jolokia.version>
