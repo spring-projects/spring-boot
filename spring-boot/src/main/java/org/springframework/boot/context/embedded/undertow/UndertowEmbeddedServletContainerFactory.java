@@ -29,8 +29,8 @@ import io.undertow.server.session.SessionManager;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.servlet.api.ListenerInfo;
 import io.undertow.servlet.api.MimeMapping;
+import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.api.ServletStackTraces;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
@@ -44,15 +44,17 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
@@ -86,6 +88,8 @@ import org.xnio.SslClientAuthMode;
  */
 public class UndertowEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+
+	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
 	private List<UndertowBuilderCustomizer> builderCustomizers = new ArrayList<UndertowBuilderCustomizer>();
 
@@ -323,10 +327,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 	private DeploymentManager createDeploymentManager(
 			ServletContextInitializer... initializers) {
 		DeploymentInfo deployment = Servlets.deployment();
-		ServletContextInitializer[] mergeInitializers = mergeInitializers(initializers);
-		StartupListener startupListener = new StartupListener(mergeInitializers);
-		deployment.addListener(new ListenerInfo(StartupListener.class,
-				new ImmediateInstanceFactory<StartupListener>(startupListener)));
+		registerServletContainerInitializerToDriveServletContextInitializers(deployment,
+				initializers);
 		deployment.setClassLoader(getServletClassLoader());
 		String contextPath = getContextPath();
 		deployment.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
@@ -347,6 +349,16 @@ public class UndertowEmbeddedServletContainerFactory extends
 		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
+	}
+
+	private void registerServletContainerInitializerToDriveServletContextInitializers(
+			DeploymentInfo deployment, ServletContextInitializer... initializers) {
+		ServletContextInitializer[] mergedInitializers = mergeInitializers(initializers);
+		Initializer initializer = new Initializer(mergedInitializers);
+		deployment.addServletContainerInitalizer(new ServletContainerInitializerInfo(
+				Initializer.class,
+				new ImmediateInstanceFactory<ServletContainerInitializer>(initializer),
+				NO_CLASSES));
 	}
 
 	private ClassLoader getServletClassLoader() {
@@ -490,31 +502,23 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * {@link ServletContextListener} to trigger
-	 * {@link ServletContextInitializer#onStartup(javax.servlet.ServletContext)}.
+	 * {@link ServletContainerInitializer} to initialize {@link ServletContextInitializer
+	 * ServletContextInitializers}.
 	 */
-	private static class StartupListener implements ServletContextListener {
+	private static class Initializer implements ServletContainerInitializer {
 
 		private final ServletContextInitializer[] initializers;
 
-		public StartupListener(ServletContextInitializer... initializers) {
+		public Initializer(ServletContextInitializer[] initializers) {
 			this.initializers = initializers;
 		}
 
 		@Override
-		public void contextInitialized(ServletContextEvent event) {
-			try {
-				for (ServletContextInitializer initializer : this.initializers) {
-					initializer.onStartup(event.getServletContext());
-				}
+		public void onStartup(Set<Class<?>> classes, ServletContext servletContext)
+				throws ServletException {
+			for (ServletContextInitializer initializer : this.initializers) {
+				initializer.onStartup(servletContext);
 			}
-			catch (ServletException ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-
-		@Override
-		public void contextDestroyed(ServletContextEvent sce) {
 		}
 
 	}

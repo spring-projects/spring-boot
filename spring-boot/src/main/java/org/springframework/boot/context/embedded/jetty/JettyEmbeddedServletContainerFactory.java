@@ -70,6 +70,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andrey Hihlovskiy
+ * @author Andy Wilkinson
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -222,7 +223,6 @@ public class JettyEmbeddedServletContainerFactory extends
 			ServletContextInitializer... initializers) {
 		Assert.notNull(context, "Context must not be null");
 		context.setTempDirectory(getTempDirectory());
-		setExtendedListenerTypes(context);
 		if (this.resourceLoader != null) {
 			context.setClassLoader(this.resourceLoader.getClassLoader());
 		}
@@ -250,15 +250,6 @@ public class JettyEmbeddedServletContainerFactory extends
 	private File getTempDirectory() {
 		String temp = System.getProperty("java.io.tmpdir");
 		return (temp == null ? null : new File(temp));
-	}
-
-	private void setExtendedListenerTypes(WebAppContext context) {
-		try {
-			context.getServletContext().setExtendedListenerTypes(true);
-		}
-		catch (NoSuchMethodError ex) {
-			// Not available on Jetty 8
-		}
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
@@ -370,7 +361,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	 */
 	protected Configuration getServletContextInitializerConfiguration(
 			WebAppContext webAppContext, ServletContextInitializer... initializers) {
-		return new ServletContextInitializerConfiguration(webAppContext, initializers);
+		return new ServletContextInitializerConfiguration(initializers);
 	}
 
 	/**
