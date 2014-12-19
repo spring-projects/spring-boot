@@ -2246,7 +2246,7 @@ but the rest of it is normal for a Spring application in Servlet 2.5. Example:
 		<filter>
 			<filter-name>metricFilter</filter-name>
 			<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-		</filte>r
+		</filter>
 
 		<filter-mapping>
 			<filter-name>metricFilter</filter-name>
