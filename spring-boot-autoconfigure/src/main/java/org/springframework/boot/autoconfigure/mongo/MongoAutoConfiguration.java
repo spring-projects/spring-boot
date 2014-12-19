@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoDbFactory;
 
 import com.mongodb.Mongo;
 import com.mongodb.MongoClientOptions;
@@ -42,7 +41,7 @@ import com.mongodb.MongoClientOptions;
 @Configuration
 @ConditionalOnClass(Mongo.class)
 @EnableConfigurationProperties(MongoProperties.class)
-@ConditionalOnMissingBean(MongoDbFactory.class)
+@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
 public class MongoAutoConfiguration {
 
 	@Autowired
