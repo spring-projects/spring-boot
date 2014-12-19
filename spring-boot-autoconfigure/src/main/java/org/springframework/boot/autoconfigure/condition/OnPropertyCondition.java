@@ -87,7 +87,7 @@ class OnPropertyCondition extends SpringBootCondition {
 					+ expandNames(prefix, missingProperties) + " ");
 		}
 		if (!nonMatchingProperties.isEmpty()) {
-			String expected = havingValue == null ? "!false" : havingValue;
+			String expected = StringUtils.hasLength(havingValue) ? havingValue : "!false";
 			message.append("expected '").append(expected).append("' for properties ")
 					.append(expandNames(prefix, nonMatchingProperties));
 		}
