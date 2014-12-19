@@ -22,10 +22,16 @@ import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
 import io.undertow.servlet.api.DeploymentManager;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 import javax.servlet.ServletException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -39,6 +45,9 @@ import org.springframework.util.StringUtils;
  * @see UndertowEmbeddedServletContainer
  */
 public class UndertowEmbeddedServletContainer implements EmbeddedServletContainer {
+
+	private static final Log logger = LogFactory
+			.getLog(UndertowEmbeddedServletContainer.class);
 
 	private final DeploymentManager manager;
 
@@ -73,6 +82,33 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		}
 		this.undertow.start();
 		this.started = true;
+		UndertowEmbeddedServletContainer.logger.info("Undertow started on port(s) "
+				+ getPortsDescription());
+	}
+
+	@SuppressWarnings("rawtypes")
+	private String getPortsDescription() {
+		try {
+			// Use reflection if possible to get the actual listener configuration
+			Field listenersField = ReflectionUtils.findField(Undertow.class, "listeners");
+			listenersField.setAccessible(true);
+			List listeners = (List) listenersField.get(this.undertow);
+			StringBuilder ports = new StringBuilder();
+			for (Object listener : listeners) {
+				Field portField = ReflectionUtils.findField(listener.getClass(), "port");
+				portField.setAccessible(true);
+				Field typeField = ReflectionUtils.findField(listener.getClass(), "type");
+				typeField.setAccessible(true);
+				ports.append(ports.length() == 0 ? "" : ", ");
+				ports.append(portField.get(listener) + " ("
+						+ typeField.get(listener).toString().toLowerCase() + ")");
+			}
+			return ports.toString();
+		}
+		catch (Exception ex) {
+		}
+		// We at least know our port
+		return String.valueOf(this.port);
 	}
 
 	private Undertow createUndertowServer() {
@@ -92,7 +128,6 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 			return servletHandler;
 		}
 		return Handlers.path().addPrefixPath(this.contextPath, servletHandler);
-
 	}
 
 	@Override
