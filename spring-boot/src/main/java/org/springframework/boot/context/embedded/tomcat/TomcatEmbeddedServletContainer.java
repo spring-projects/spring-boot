@@ -44,7 +44,8 @@ import org.springframework.util.Assert;
  */
 public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer {
 
-	private final Log logger = LogFactory.getLog(TomcatEmbeddedServletContainer.class);
+	private static final Log logger = LogFactory
+			.getLog(TomcatEmbeddedServletContainer.class);
 
 	private static AtomicInteger containerCounter = new AtomicInteger(-1);
 
@@ -75,8 +76,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	}
 
 	private synchronized void initialize() throws EmbeddedServletContainerException {
-		this.logger.info("Tomcat initialized with port(s): "
-				+ getConfiguredPortsDescription());
+		TomcatEmbeddedServletContainer.logger.info("Tomcat initialized with port(s): "
+				+ getPortsDescription(false));
 		try {
 			addInstanceIdToEngineName();
 
@@ -97,15 +98,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Tomcat", ex);
 		}
-	}
-
-	private String getConfiguredPortsDescription() {
-		StringBuilder ports = new StringBuilder();
-		for (Connector connector : this.tomcat.getService().findConnectors()) {
-			ports.append(ports.length() == 0 ? "" : " ");
-			ports.append(connector.getPort() + "/" + connector.getScheme());
-		}
-		return ports.toString();
 	}
 
 	private void addInstanceIdToEngineName() {
@@ -157,15 +149,13 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		if (connector != null && this.autoStart) {
 			startConnector(connector);
 		}
-
 		// Ensure process isn't left running if it actually failed to start
-
 		if (connectorsHaveFailedToStart()) {
 			stopSilently();
 			throw new IllegalStateException("Tomcat connector in failed state");
 		}
-
-		this.logger.info("Tomcat started on port(s): " + getActualPortsDescription());
+		TomcatEmbeddedServletContainer.logger.info("Tomcat started on port(s): "
+				+ getPortsDescription(true));
 	}
 
 	private boolean connectorsHaveFailedToStart() {
@@ -206,7 +196,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			connector.getProtocolHandler().stop();
 		}
 		catch (Exception ex) {
-			this.logger.error("Cannot pause connector: ", ex);
+			TomcatEmbeddedServletContainer.logger.error("Cannot pause connector: ", ex);
 		}
 	}
 
@@ -219,7 +209,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			}
 		}
 		catch (Exception ex) {
-			this.logger.error("Cannot start connector: ", ex);
+			TomcatEmbeddedServletContainer.logger.error("Cannot start connector: ", ex);
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Tomcat connectors", ex);
 		}
@@ -227,15 +217,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	Map<Service, Connector[]> getServiceConnectors() {
 		return this.serviceConnectors;
-	}
-
-	private String getActualPortsDescription() {
-		StringBuilder ports = new StringBuilder();
-		for (Connector connector : this.tomcat.getService().findConnectors()) {
-			ports.append(ports.length() == 0 ? "" : " ");
-			ports.append(connector.getLocalPort() + "/" + connector.getScheme());
-		}
-		return ports.toString();
 	}
 
 	@Override
@@ -256,6 +237,16 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		finally {
 			containerCounter.decrementAndGet();
 		}
+	}
+
+	private String getPortsDescription(boolean localPort) {
+		StringBuilder ports = new StringBuilder();
+		for (Connector connector : this.tomcat.getService().findConnectors()) {
+			ports.append(ports.length() == 0 ? "" : " ");
+			int port = (localPort ? connector.getLocalPort() : connector.getPort());
+			ports.append(port + " (" + connector.getScheme() + ")");
+		}
+		return ports.toString();
 	}
 
 	@Override
