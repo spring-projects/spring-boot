@@ -8,7 +8,7 @@
 		<version>1.2.1.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-velocity</artifactId>
-	<name>spring-boot-sample-velocity</name>
+	<name>Spring Boot Web Velocity Sample</name>
 	<description>Spring Boot Web Velocity Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
