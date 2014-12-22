@@ -43,6 +43,7 @@ import org.springframework.data.cassandra.mapping.CassandraMappingContext;
  * <p/>
  *
  * @author Julien Dubois
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({Cluster.class, CassandraAdminOperations.class})

@@ -21,7 +21,6 @@
 		<dependency>
 			<groupId>net.jpountz.lz4</groupId>
 			<artifactId>lz4</artifactId>
-			<version>${lz4.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -48,7 +47,6 @@
 		<dependency>
 			<groupId>org.xerial.snappy</groupId>
 			<artifactId>snappy-java</artifactId>
-			<version>${snappy.version}</version>
 		</dependency>
 	</dependencies>
 </project>

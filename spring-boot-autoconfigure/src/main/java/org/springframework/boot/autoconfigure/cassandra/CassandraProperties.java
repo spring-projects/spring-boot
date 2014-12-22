@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  * Configuration properties for Cassandra.
  *
  * @author Julien Dubois
+ * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.data.cassandra")
 public class CassandraProperties {
@@ -49,7 +50,7 @@ public class CassandraProperties {
     private String contactPoints = "localhost";
 
     /**
-     * Compression supported by the Cassandra binary protocol: can be NONE (default), SNAPPY, LZ4.
+     * Compression supported by the Cassandra binary protocol: can be NONE, SNAPPY, LZ4.
      */
     private String compression = ProtocolOptions.Compression.NONE.name();
 
@@ -94,12 +95,12 @@ public class CassandraProperties {
     private int readTimeoutMillis = SocketOptions.DEFAULT_READ_TIMEOUT_MILLIS;
 
     /**
-     * If SSL is enabled.
+     * Enable SSL support.
      */
     private boolean ssl = false;
 
     /**
-     * The keyspaceName to use.
+     * Keyspace name to use.
      */
     private String keyspaceName;
 

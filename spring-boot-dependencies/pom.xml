@@ -628,6 +628,11 @@
 				<version>${mysql.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>net.jpountz.lz4</groupId>
+				<artifactId>lz4</artifactId>
+				<version>${lz4.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>nz.net.ultraq.thymeleaf</groupId>
 				<artifactId>thymeleaf-layout-dialect</artifactId>
 				<version>${thymeleaf-layout-dialect.version}</version>
@@ -1416,6 +1421,11 @@
 				<groupId>org.thymeleaf.extras</groupId>
 				<artifactId>thymeleaf-extras-springsecurity3</artifactId>
 				<version>${thymeleaf-extras-springsecurity3.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xerial.snappy</groupId>
+				<artifactId>snappy-java</artifactId>
+				<version>${snappy.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>

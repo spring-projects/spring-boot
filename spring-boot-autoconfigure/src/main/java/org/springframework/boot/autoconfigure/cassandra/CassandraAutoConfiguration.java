@@ -30,6 +30,7 @@ import javax.annotation.PreDestroy;
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration Auto-configuration} for Cassandra.
  *
  * @author Julien Dubois
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({Cluster.class})
