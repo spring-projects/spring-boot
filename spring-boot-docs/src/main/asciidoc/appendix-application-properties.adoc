@@ -340,6 +340,22 @@ content into your application; rather pick only the properties that you need.
 	# DAO ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration])
 	spring.dao.exceptiontranslation.enabled=true
 
+	# CASSANDRA ({sc-spring-boot-autoconfigure}/cassandra/CassandraProperties.{sc-ext}[CassandraProperties])
+	spring.data.cassandra.cluster-name= # the cluster name
+	spring.data.cassandra.contact-points=localhost # comma-list of cluster node addresses
+	spring.data.cassandra.keyspace-name= # the keyspace name
+	spring.data.cassandra.port= # the connection port
+	spring.data.cassandra.compression= # compression method (none/snappy/lz4)
+	spring.data.cassandra.loadbalancing-policy= # class name for a LoadBalancingPolicy
+	spring.data.cassandra.consistency-level= # consistency level (any/one/two/three/quorum/all...)
+	spring.data.cassandra.serial-consistency-level= # serial consistency level (any/one/two/three/quorum/all...)
+	spring.data.cassandra.fetch-size=
+	spring.data.cassandra.reconnection-policy= # class name for a ReconnectionPolicy
+	spring.data.cassandra.retry-policy= # class name for a RetryPolicy
+	spring.data.cassandra.connect-timeout-millis= # connect timeout (ms)
+	spring.data.cassandra.read-timeout-millis= # read timeout (ms)
+	spring.data.cassandra.ssl=false
+
 	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
 	spring.data.mongodb.host= # the db host
 	spring.data.mongodb.port=27017 # the connection port (defaults to 27107)

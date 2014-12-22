@@ -2460,9 +2460,9 @@ http://projects.spring.io/spring-data-redis/[Redis],
 http://projects.spring.io/spring-data-gemfire/[Gemfire],
 http://projects.spring.io/spring-data-couchbase/[Couchbase] and
 http://projects.spring.io/spring-data-cassandra/[Cassandra].
-Spring Boot provides auto-configuration for Redis, MongoDB, Elasticsearch, and Solr; you
-can make use of the other projects, but you will need to configure them yourself. Refer to
-the appropriate reference documentation at
+Spring Boot provides auto-configuration for Redis, MongoDB, Elasticsearch, Solr and
+Cassandra; you can make use of the other projects, but you will need to configure them
+yourself. Refer to the appropriate reference documentation at
 http://projects.spring.io/spring-data[projects.spring.io/spring-data].
 
 
@@ -2778,6 +2778,63 @@ work in the same way.
 
 TIP: For complete details of Spring Data Elasticsearch, refer to their
 http://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
+
+
+
+[[boot-features-cassandra]]
+=== Cassandra
+http://cassandra.apache.org/[Cassandra] is an open source, distributed database management
+system designed to handle large amounts of data across many commodity servers. Spring Boot
+offers auto-configuration for Cassandra and abstractions on top of it provided by
+https://github.com/spring-projects/spring-data-cassandra[Spring Data Cassandra].
+There is a `spring-boot-starter-data-cassandra` '`Starter POM`' for collecting the
+dependencies in a convenient way.
+
+
+
+[[boot-features-connecting-to-cassandra]]
+==== Connecting to Cassandra
+You can inject an auto-configured `CassandraTemplate` or a Cassandra `Session`
+instance as you would any other Spring Bean. The `spring.data.cassandra.*` properties
+can be used to customize the connection. Generally you will to provide `keyspace-name`
+and `contact-points` properties:
+
+[source,properties,indent=0]
+----
+	spring.data.cassandra.keyspace-name=mykeyspace
+	spring.data.cassandra.contact-points=cassandrahost1,cassandrahost2
+----
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		private CassandraTemplate template;
+
+		@Autowired
+		public MyBean(CassandraTemplate template) {
+			this.template = template;
+		}
+
+		// ...
+
+	}
+----
+
+If you add a `@Bean` of your own of type `CassandraTemplate` it will replace the
+default.
+
+
+
+[[boot-features-spring-data-cassandra-repositories]]
+==== Spring Data Cassandra repositories
+Spring Data includes basic repository support for Cassandra. Currently this is more
+limited than the JPA repositories discussed earlier, and will need to annotate finder
+methods with `@Query`.
+
+TIP: For complete details of Spring Data Cassandra, refer to their
+http://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
 
 
