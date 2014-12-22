@@ -97,6 +97,7 @@
 		<log4j.version>1.2.17</log4j.version>
 		<log4j2.version>2.1</log4j2.version>
 		<logback.version>1.1.2</logback.version>
+		<lz4.version>1.3.0</lz4.version>
 		<mockito.version>1.10.8</mockito.version>
 		<mongodb.version>2.12.4</mongodb.version>
 		<mysql.version>5.1.34</mysql.version>
@@ -106,6 +107,7 @@
 		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.8</slf4j.version>
 		<snakeyaml.version>1.14</snakeyaml.version>
+		<snappy.version>1.1.1.6</snappy.version>
 		<solr.version>4.7.2</solr.version>
 		<spock.version>0.7-groovy-2.0</spock.version>
 		<spring.version>4.1.3.RELEASE</spring.version>
