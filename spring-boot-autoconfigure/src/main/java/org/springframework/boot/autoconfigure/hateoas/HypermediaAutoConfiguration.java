@@ -16,8 +16,14 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -27,14 +33,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.LinkDiscoverers;
+import org.springframework.hateoas.RelProvider;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
+import org.springframework.hateoas.hal.CurieProvider;
+import org.springframework.hateoas.hal.Jackson2HalModule;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.plugin.core.Plugin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +65,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
 		HttpMessageConvertersAutoConfiguration.class })
+@EnableConfigurationProperties(HateoasProperties.class)
 public class HypermediaAutoConfiguration {
 
 	@Configuration
@@ -65,40 +76,90 @@ public class HypermediaAutoConfiguration {
 		@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, ObjectMapper.class })
 		protected static class HalObjectMapperConfiguration {
 
+			@Autowired
+			private HateoasProperties hateoasProperties;
+
 			@Autowired(required = false)
-			private Jackson2ObjectMapperBuilder objectMapperBuilder;
+			private CurieProvider curieProvider;
+
+			@Autowired
+			@Qualifier("_relProvider")
+			private RelProvider relProvider;
+
+			@Autowired(required = false)
+			private ObjectMapper primaryObjectMapper;
+
+			@PostConstruct
+			public void configurePrimaryObjectMapper() {
+				if (this.primaryObjectMapper != null
+						&& this.hateoasProperties.isApplyToPrimaryObjectMapper()) {
+					registerHalModule(this.primaryObjectMapper);
+				}
+			}
+
+			private void registerHalModule(ObjectMapper objectMapper) {
+				objectMapper.registerModule(new Jackson2HalModule());
+				Jackson2HalModule.HalHandlerInstantiator instantiator = new Jackson2HalModule.HalHandlerInstantiator(
+						HalObjectMapperConfiguration.this.relProvider,
+						HalObjectMapperConfiguration.this.curieProvider);
+				objectMapper.setHandlerInstantiator(instantiator);
+			}
 
 			@Bean
-			public BeanPostProcessor halObjectMapperConfigurer() {
-				return new BeanPostProcessor() {
-
-					@Override
-					public Object postProcessAfterInitialization(Object bean,
-							String beanName) throws BeansException {
-						if (HalObjectMapperConfiguration.this.objectMapperBuilder != null
-								&& bean instanceof ObjectMapper
-								&& "_halObjectMapper".equals(beanName)) {
-							HalObjectMapperConfiguration.this.objectMapperBuilder
-									.configure((ObjectMapper) bean);
-						}
-						return bean;
-					}
-
-					@Override
-					public Object postProcessBeforeInitialization(Object bean,
-							String beanName) throws BeansException {
-						return bean;
-					}
-
-				};
+			public static HalObjectMapperConfigurer halObjectMapperConfigurer() {
+				return new HalObjectMapperConfigurer();
 			}
+
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnMissingBean(EntityLinks.class)
 	@EnableEntityLinks
 	protected static class EntityLinksConfiguration {
+
 	}
 
+	/**
+	 * {@link BeanPostProcessor} to apply any {@link Jackson2ObjectMapperBuilder}
+	 * configuration to the HAL {@link ObjectMapper}.
+	 */
+	private static class HalObjectMapperConfigurer implements BeanPostProcessor,
+			BeanFactoryAware {
+
+		private BeanFactory beanFactory;
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean, String beanName)
+				throws BeansException {
+			if (bean instanceof ObjectMapper && "_halObjectMapper".equals(beanName)) {
+				postProcessHalObjectMapper((ObjectMapper) bean);
+			}
+			return bean;
+		}
+
+		private void postProcessHalObjectMapper(ObjectMapper objectMapper) {
+			try {
+				Jackson2ObjectMapperBuilder builder = this.beanFactory
+						.getBean(Jackson2ObjectMapperBuilder.class);
+				builder.configure(objectMapper);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				// No Jackson configuration required
+			}
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName)
+				throws BeansException {
+			return bean;
+		}
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			this.beanFactory = beanFactory;
+		}
+
+	}
 }

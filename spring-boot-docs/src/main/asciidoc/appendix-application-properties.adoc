@@ -96,6 +96,9 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.cache-period= # cache timeouts in headers sent to browser
 	spring.resources.add-mappings=true # if default mappings should be added
 
+	# SPRING HATEOS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
+	spring.hateoas.apply-to-primary-object-mapper=true # if the primary mapper should also be configured
+
 	# HTTP encoding ({sc-spring-boot-autoconfigure}/web/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
 	spring.http.encoding.charset=UTF-8 # the encoding of HTTP requests/responses
 	spring.http.encoding.enabled=true # enable http encoding support
