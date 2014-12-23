@@ -195,7 +195,7 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |{sc-spring-boot-actuator}/health/RabbitHealthIndicator.{sc-ext}[`RabbitHealthIndicator`]
 |Checks that a Rabbit server is up.
 
-|{sc-spring-boot-actuator}/health/SolrHealthIndicator.{sc-ext}[`RedisHealthIndicator`]
+|{sc-spring-boot-actuator}/health/RedisHealthIndicator.{sc-ext}[`RedisHealthIndicator`]
 |Checks that a Redis server is up.
 
 |{sc-spring-boot-actuator}/health/SolrHealthIndicator.{sc-ext}[`SolrHealthIndicator`]
