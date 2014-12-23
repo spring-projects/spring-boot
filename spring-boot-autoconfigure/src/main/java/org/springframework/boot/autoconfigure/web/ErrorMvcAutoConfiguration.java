@@ -70,13 +70,19 @@ import org.springframework.web.util.HtmlUtils;
 // available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
 @Configuration
-public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustomizer {
+public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustomizer,
+		Ordered {
 
 	@Value("${error.path:/error}")
 	private String errorPath = "/error";
 
 	@Autowired
 	private ServerProperties properties;
+
+	@Override
+	public int getOrder() {
+		return 0;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)

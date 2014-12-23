@@ -50,6 +50,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -79,7 +80,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	@Configuration
 	protected static class ServerCustomization implements
-			EmbeddedServletContainerCustomizer {
+			EmbeddedServletContainerCustomizer, Ordered {
 
 		@Value("${error.path:/error}")
 		private String errorPath = "/error";
@@ -92,6 +93,11 @@ public class EndpointWebMvcChildContextConfiguration {
 		private ManagementServerProperties managementServerProperties;
 
 		private ServerProperties server;
+
+		@Override
+		public int getOrder() {
+			return 0;
+		}
 
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer container) {

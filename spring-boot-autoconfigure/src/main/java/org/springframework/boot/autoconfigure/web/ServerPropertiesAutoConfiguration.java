@@ -28,6 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -41,9 +42,14 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties
 @ConditionalOnWebApplication
 public class ServerPropertiesAutoConfiguration implements ApplicationContextAware,
-		EmbeddedServletContainerCustomizer {
+		EmbeddedServletContainerCustomizer, Ordered {
 
 	private ApplicationContext applicationContext;
+
+	@Override
+	public int getOrder() {
+		return 0;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
