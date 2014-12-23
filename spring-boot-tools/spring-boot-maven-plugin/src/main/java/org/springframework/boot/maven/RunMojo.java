@@ -135,8 +135,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	 * is only used if an agent or jvmArguments are specified.
 	 * @since 1.2
 	 */
-	@Parameter(property = "fork", defaultValue = "false")
-	private boolean fork;
+	@Parameter(property = "fork")
+	private Boolean fork;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -171,10 +171,17 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		findAgent();
 		boolean hasAgent = (this.agent != null && this.agent.length > 0);
 		boolean hasJvmArgs = (this.jvmArguments != null && this.jvmArguments.length() > 0);
-		if (this.fork || hasAgent || hasJvmArgs) {
+		boolean hasFork = this.fork != null ? this.fork : (hasAgent || hasJvmArgs);
+		if (hasFork) {
 			runWithForkedJvm(startClassName);
 		}
 		else {
+			if (hasAgent) {
+				getLog().warn("Fork mode disabled, ignoring agent");
+			}
+			if (hasJvmArgs) {
+				getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["+this.jvmArguments+"]");
+			}
 			runWithMavenJvm(startClassName);
 		}
 	}
