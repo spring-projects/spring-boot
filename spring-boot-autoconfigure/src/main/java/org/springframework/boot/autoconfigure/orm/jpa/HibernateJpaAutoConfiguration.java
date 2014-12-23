@@ -22,6 +22,8 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,6 +40,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -58,6 +61,9 @@ import org.springframework.util.ClassUtils;
 @Conditional(HibernateEntityManagerCondition.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, JtaAutoConfiguration.class })
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
+
+	private static final Log logger = LogFactory
+			.getLog(HibernateJpaAutoConfiguration.class);
 
 	private static final String JTA_PLATFORM = "hibernate.transaction.jta.platform";
 
@@ -98,11 +104,38 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 			throws LinkageError {
 		JtaTransactionManager jtaTransactionManager = getJtaTransactionManager();
 		if (jtaTransactionManager != null) {
-			vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(
-					jtaTransactionManager));
+			try {
+				vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(
+						jtaTransactionManager));
+			}
+			catch (NoClassDefFoundError ex) {
+				// Can happen if Hibernate 4.2 is used (for example on WAS)
+				if (isUsingJndi()) {
+					// Assume that we are not using a stand-alone transaction manager
+					// and Hibernate will use JNDI
+					if (logger.isDebugEnabled()) {
+						logger.debug("Unable to set Hibernate JTA platform : "
+								+ ex.getMessage());
+					}
+				}
+				else {
+					throw new IllegalStateException("Unable to set Hibernate JTA "
+							+ "platform, are you using the correct "
+							+ "version of hibernate?", ex);
+				}
+			}
 		}
 		else {
 			vendorProperties.put(JTA_PLATFORM, getNoJtaPlatformManager());
+		}
+	}
+
+	private boolean isUsingJndi() {
+		try {
+			return JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable();
+		}
+		catch (Error ex) {
+			return false;
 		}
 	}
 
