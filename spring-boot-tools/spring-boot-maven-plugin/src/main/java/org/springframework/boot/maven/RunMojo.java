@@ -171,8 +171,7 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		findAgent();
 		boolean hasAgent = (this.agent != null && this.agent.length > 0);
 		boolean hasJvmArgs = (this.jvmArguments != null && this.jvmArguments.length() > 0);
-		boolean hasFork = this.fork != null ? this.fork : (hasAgent || hasJvmArgs);
-		if (hasFork) {
+		if (Boolean.TRUE.equals(this.fork) || hasAgent || hasJvmArgs) {
 			runWithForkedJvm(startClassName);
 		}
 		else {
@@ -180,7 +179,9 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 				getLog().warn("Fork mode disabled, ignoring agent");
 			}
 			if (hasJvmArgs) {
-				getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["+this.jvmArguments+"]");
+				getLog().warn(
+						"Fork mode disabled, ignoring JVM argument(s) ["
+								+ this.jvmArguments + "]");
 			}
 			runWithMavenJvm(startClassName);
 		}
