@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -62,7 +61,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
 /**
@@ -256,21 +254,7 @@ public class ManagementSecurityAutoConfiguration {
 				String[] endpointPaths,
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
 			requests.antMatchers(endpointPaths).permitAll();
-			if (this.endpointHandlerMapping != null) {
-				requests.requestMatchers(new PrincipalHandlerRequestMatcher())
-						.permitAll();
-			}
 			requests.anyRequest().hasRole(this.management.getSecurity().getRole());
-		}
-
-		private final class PrincipalHandlerRequestMatcher implements RequestMatcher {
-
-			@Override
-			public boolean matches(HttpServletRequest request) {
-				return ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping
-						.isPrincipalHandler(request);
-			}
-
 		}
 
 	}

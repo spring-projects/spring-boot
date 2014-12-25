@@ -79,9 +79,6 @@ public class EndpointAutoConfiguration {
 	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
-	private ManagementServerProperties management;
-
-	@Autowired(required = false)
 	private HealthAggregator healthAggregator = new OrderedHealthAggregator();
 
 	@Autowired(required = false)
@@ -105,20 +102,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthEndpoint healthEndpoint() {
-		HealthEndpoint endpoint = new HealthEndpoint(this.healthAggregator,
-				this.healthIndicators);
-		endpoint.setSensitive(isHealthEndpointSensitive());
-		return endpoint;
-	}
-
-	/**
-	 * The default health endpoint sensitivity depends on whether all the endpoints by
-	 * default are secure or not. User can always override with
-	 * {@literal endpoints.health.sensitive}.
-	 */
-	private boolean isHealthEndpointSensitive() {
-		return (this.management != null) && (this.management.getSecurity() != null)
-				&& this.management.getSecurity().isEnabled();
+		return new HealthEndpoint(this.healthAggregator, this.healthIndicators);
 	}
 
 	@Bean

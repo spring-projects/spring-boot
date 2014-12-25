@@ -33,6 +33,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties.Security;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
@@ -163,7 +164,9 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnBean(HealthEndpoint.class)
 	@ConditionalOnProperty(prefix = "endpoints.health", name = "enabled", matchIfMissing = true)
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
-		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
+		Security security = this.managementServerProperties.getSecurity();
+		boolean secure = (security == null || security.isEnabled());
+		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate, secure);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
 			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
 					.getMapping());

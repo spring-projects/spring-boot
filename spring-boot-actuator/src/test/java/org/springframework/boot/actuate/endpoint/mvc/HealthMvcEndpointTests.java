@@ -23,8 +23,11 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 
@@ -44,9 +47,15 @@ import static org.mockito.Mockito.mock;
  */
 public class HealthMvcEndpointTests {
 
+	private static final PropertySource<?> NON_SENSITIVE = new MapPropertySource("test",
+			Collections.<String, Object> singletonMap("endpoints.health.sensitive",
+					"false"));;
+
 	private HealthEndpoint endpoint = null;
 
 	private HealthMvcEndpoint mvc = null;
+
+	private MockEnvironment environment;
 
 	private UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
 			"user", "password",
@@ -57,6 +66,8 @@ public class HealthMvcEndpointTests {
 		this.endpoint = mock(HealthEndpoint.class);
 		given(this.endpoint.isEnabled()).willReturn(true);
 		this.mvc = new HealthMvcEndpoint(this.endpoint);
+		this.environment = new MockEnvironment();
+		this.mvc.setEnvironment(this.environment);
 	}
 
 	@Test
@@ -143,9 +154,9 @@ public class HealthMvcEndpointTests {
 
 	@Test
 	public void unsecureAnonymousAccessUnrestricted() {
+		this.environment.getPropertySources().addLast(NON_SENSITIVE);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
-		given(this.endpoint.isSensitive()).willReturn(false);
 		Object result = this.mvc.invoke(null);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -154,8 +165,8 @@ public class HealthMvcEndpointTests {
 
 	@Test
 	public void unsecureIsNotCachedWhenAnonymousAccessIsUnrestricted() {
+		this.environment.getPropertySources().addLast(NON_SENSITIVE);
 		given(this.endpoint.getTimeToLive()).willReturn(10000L);
-		given(this.endpoint.isSensitive()).willReturn(false);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
