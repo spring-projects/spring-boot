@@ -171,7 +171,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		findAgent();
 		boolean hasAgent = (this.agent != null && this.agent.length > 0);
 		boolean hasJvmArgs = (this.jvmArguments != null && this.jvmArguments.length() > 0);
-		if (Boolean.TRUE.equals(this.fork) || hasAgent || hasJvmArgs) {
+		if (Boolean.TRUE.equals(this.fork)
+				|| (this.fork == null && (hasAgent || hasJvmArgs))) {
 			runWithForkedJvm(startClassName);
 		}
 		else {
