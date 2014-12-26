@@ -49,7 +49,7 @@ public class HealthMvcEndpointTests {
 
 	private static final PropertySource<?> NON_SENSITIVE = new MapPropertySource("test",
 			Collections.<String, Object> singletonMap("endpoints.health.sensitive",
-					"false"));;
+					"false"));
 
 	private HealthEndpoint endpoint = null;
 
