@@ -29,7 +29,9 @@ import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SessionManager;
@@ -492,9 +494,15 @@ public class JettyEmbeddedServletContainerFactory extends
 		@Override
 		public ServerConnector getConnector(Server server,
 				SslContextFactory sslContextFactory, int port) {
+			HttpConfiguration config = new HttpConfiguration();
+			config.setSecureScheme("https");
+			config.setSecurePort(port);
+			config.addCustomizer(new SecureRequestCustomizer());
+			HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
+			SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
+					sslContextFactory, HttpVersion.HTTP_1_1.asString());
 			ServerConnector serverConnector = new ServerConnector(server,
-					new SslConnectionFactory(sslContextFactory,
-							HttpVersion.HTTP_1_1.asString()), new HttpConnectionFactory());
+					sslConnectionFactory, connectionFactory);
 			serverConnector.setPort(port);
 			return serverConnector;
 		}
