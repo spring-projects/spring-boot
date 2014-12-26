@@ -63,8 +63,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
@@ -241,6 +243,16 @@ public class EndpointWebMvcAutoConfigurationTests {
 				equalTo(2));
 		this.applicationContext.close();
 		assertAllClosed();
+	}
+
+	@Test
+	public void singleRequestMappingInfoHandlerMappingBean() throws Exception {
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
+				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		RequestMappingInfoHandlerMapping mapping = this.applicationContext
+				.getBean(RequestMappingInfoHandlerMapping.class);
+		assertThat(mapping, not(instanceOf(EndpointHandlerMapping.class)));
 	}
 
 	private void assertAllClosed() throws Exception {

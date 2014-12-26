@@ -43,6 +43,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
@@ -73,6 +74,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
@@ -326,8 +328,7 @@ public class WebMvcAutoConfiguration {
 	}
 
 	/**
-	 * Configuration equivalent to {@code @EnableWebMvc} but with extra
-	 * {@link WebMvcProperties} support.
+	 * Configuration equivalent to {@code @EnableWebMvc}.
 	 */
 	@Configuration
 	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration {
@@ -344,5 +345,14 @@ public class WebMvcAutoConfiguration {
 			return adapter;
 		}
 
+		@Bean
+		@Primary
+		@Override
+		public RequestMappingHandlerMapping requestMappingHandlerMapping() {
+			// Must be @Primary for MvcUriComponentsBuilder to work
+			return super.requestMappingHandlerMapping();
+		}
+
 	}
+
 }
