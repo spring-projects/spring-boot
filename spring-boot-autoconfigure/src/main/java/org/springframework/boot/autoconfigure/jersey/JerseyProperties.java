@@ -67,7 +67,7 @@ public class JerseyProperties {
 	}
 
 	public enum Type {
-		SERVLET, FILTER;
+		SERVLET, FILTER
 	}
 
 	public static class Filter {

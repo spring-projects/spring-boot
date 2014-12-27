@@ -133,10 +133,12 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	private void startDaemonAwaitThread() {
 		Thread awaitThread = new Thread("container-" + (containerCounter.get())) {
+
 			@Override
 			public void run() {
 				TomcatEmbeddedServletContainer.this.tomcat.getServer().await();
-			};
+			}
+
 		};
 		awaitThread.setDaemon(false);
 		awaitThread.start();

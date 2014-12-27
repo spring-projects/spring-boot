@@ -97,7 +97,7 @@ public class VcapApplicationListener implements
 	private static final String VCAP_SERVICES = "VCAP_SERVICES";
 
 	// Before ConfigFileApplicationListener so values there can use these ones
-	private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;;
+	private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;
 
 	private final JsonParser parser = JsonParserFactory.getJsonParser();
 

@@ -128,7 +128,7 @@ public class ConfigFileApplicationListener implements
 		if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
 		}
-	};
+	}
 
 	private void onApplicationEnvironmentPreparedEvent(
 			ApplicationEnvironmentPreparedEvent event) {

@@ -154,7 +154,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 			}
 
 			return ConditionOutcome.match("No error template view detected");
-		};
+		}
 
 	}
 

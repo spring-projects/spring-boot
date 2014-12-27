@@ -128,6 +128,7 @@ public class RunProcess {
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(
 				process.getInputStream()));
 		new Thread() {
+
 			@Override
 			public void run() {
 				try {
@@ -141,7 +142,8 @@ public class RunProcess {
 				}
 				catch (Exception ex) {
 				}
-			};
+			}
+
 		}.start();
 	}
 

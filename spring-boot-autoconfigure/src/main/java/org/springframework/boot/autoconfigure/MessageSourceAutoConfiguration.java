@@ -197,7 +197,7 @@ public class MessageSourceAutoConfiguration {
 			if (classLoader != ROOT_CLASSLOADER) {
 				super.addAllClassLoaderJarRoots(classLoader, result);
 			}
-		};
+		}
 
 		@Override
 		protected Set<Resource> doFindAllClassPathResources(String path)

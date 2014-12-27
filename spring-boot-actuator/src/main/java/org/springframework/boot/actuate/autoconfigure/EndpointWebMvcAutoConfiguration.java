@@ -229,7 +229,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				throw ex;
 			}
 		}
-	};
+	}
 
 	/**
 	 * Add an alias for 'local.management.port' that actually resolves using
@@ -298,7 +298,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		DISABLE, SAME, DIFFERENT;
 
 		public static ManagementServerPort get(BeanFactory beanFactory) {
-
 			ServerProperties serverProperties;
 			try {
 				serverProperties = beanFactory.getBean(ServerProperties.class);
@@ -306,7 +305,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			catch (NoSuchBeanDefinitionException ex) {
 				serverProperties = new ServerProperties();
 			}
-
 			ManagementServerProperties managementServerProperties;
 			try {
 				managementServerProperties = beanFactory
@@ -315,7 +313,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			catch (NoSuchBeanDefinitionException ex) {
 				managementServerProperties = new ManagementServerProperties();
 			}
-
 			Integer port = managementServerProperties.getPort();
 			if (port != null && port < 0) {
 				return DISABLE;
@@ -329,5 +326,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 					|| (port != 0 && port.equals(serverProperties.getPort())) ? SAME
 					: DIFFERENT);
 		}
-	};
+
+	}
+
 }
