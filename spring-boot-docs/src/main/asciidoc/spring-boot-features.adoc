@@ -543,16 +543,16 @@ definitions by simply listing the properties classes directly in the
 
 
 [[boot-features-external-config-relaxed-binding]]
-==== Relaxed binding (Properties format)
+==== Relaxed binding
 Spring Boot uses some relaxed rules for binding `Environment` properties to
 `@ConfigurationProperties` beans, so there doesn't need to be an exact match between
 the `Environment` property name and the bean property name.  Common examples where this
 is useful include underscore separated (e.g. `context_path` binds to `contextPath`), and
 capitalized (e.g. `PORT` binds to `port`) environment properties.
 
-NOTE: Environment variables are usually underscore-separated and upper case so you can
-just use that and Spring Boot will bind it to your bean property names accordingly. For
-instance `MY_PROPERTY` will  match just the same as `myProperty`, `my_property` or
+NOTE: Environment variables are usually underscore-separated and upper case. You can
+use that format and Spring Boot will bind them to your bean property names accordingly.
+For instance `MY_PROPERTY` will  match just the same as `myProperty`, `my_property` or
 `my-property`.
 
 Spring will attempt to coerce the external application properties to the right type when
