@@ -353,6 +353,18 @@ Just execute `brew update` and try again.
 
 
 
+[[getting-started-macports-cli-installation]]
+==== MacPorts installation
+If you are on a Mac and using http://www.macports.org/[MacPorts], all you need to do to
+install the Spring Boot CLI is:
+
+[indent=0]
+----
+	$ sudo port install spring-boot-cli
+----
+
+
+
 [[getting-started-cli-command-line-completion]]
 ==== Command-line completion
 Spring Boot CLI ships with scripts that provide command completion for
@@ -370,8 +382,8 @@ manually, e.g. if you have installed using `GVM`
 	  grab  help  jar  run  test  version
 ----
 
-NOTE: If you install Spring Boot CLI using Homebrew, the command-line completion scripts
-are automatically registered with your shell.
+NOTE: If you install Spring Boot CLI using Homebrew or MacPorts, the command-line
+completion scripts are automatically registered with your shell.
 
 
 

@@ -14,7 +14,7 @@ a new project or write your own command for it.
 [[cli-installation]]
 == Installing the CLI
 The Spring Boot CLI can be installed manually; using GVM (the Groovy Environment
-Manually) or using Homebrew if you are an OSX user. See
+Manually) or using Homebrew or MacPorts if you are an OSX user. See
 _<<getting-started.adoc#getting-started-installing-the-cli>>_
 in the "`Getting started`" section for comprehensive installation instructions.
 
