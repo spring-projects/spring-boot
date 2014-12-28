@@ -65,8 +65,8 @@ public class TemplateLocation {
 			searchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
 					+ searchPath.substring(ResourceLoader.CLASSPATH_URL_PREFIX.length());
 		}
-		if (this.path.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX)) {
-			Resource[] resources = resolver.getResources(this.path);
+		if (searchPath.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX)) {
+			Resource[] resources = resolver.getResources(searchPath);
 			for (Resource resource : resources) {
 				if (resource.exists()) {
 					return true;
