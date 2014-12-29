@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.data.cassandra.core.CassandraAdminOperations;
@@ -43,7 +44,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
     protected void doHealthCheck(Health.Builder builder) throws Exception {
         logger.debug("Initializing Cassandra health indicator");
         try {
-            cassandraTemplate.query("SELECT cluster_name FROM system.local;");
+            QueryBuilder.select("release_version").from("system", "local");
             builder.up();
         } catch (Exception e) {
             logger.debug("Cannot connect to Cassandra cluster. Error: {}", e);

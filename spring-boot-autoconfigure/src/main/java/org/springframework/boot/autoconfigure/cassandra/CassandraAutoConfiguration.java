@@ -24,8 +24,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PreDestroy;
-
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration Auto-configuration} for Cassandra.
  *
@@ -41,13 +39,6 @@ public class CassandraAutoConfiguration {
     private CassandraProperties properties;
 
     private Cluster cluster;
-
-    @PreDestroy
-    public void close() {
-        if (this.cluster != null) {
-            this.cluster.close();
-        }
-    }
 
     @Bean
     @ConditionalOnMissingBean
