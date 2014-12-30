@@ -196,7 +196,7 @@ public class Ssl {
 	}
 
 	public enum ClientAuth {
-		WANT, NEED;
+		WANT, NEED
 	}
 
 }

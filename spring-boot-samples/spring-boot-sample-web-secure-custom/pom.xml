@@ -8,8 +8,8 @@
 		<version>1.2.1.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-web-secure-custom</artifactId>
-	<name>spring-boot-sample-web-secure-custom</name>
-	<description>Spring Boot Web Secure Sample</description>
+	<name>Spring Boot Web Secure Custom Sample</name>
+	<description>Spring Boot Web Secure Custom Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

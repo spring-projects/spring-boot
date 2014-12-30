@@ -83,8 +83,8 @@ public class HttpMessageConvertersAutoConfiguration {
 		@ConditionalOnMissingBean
 		public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
 				ObjectMapper objectMapper) {
-			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-			converter.setObjectMapper(objectMapper);
+			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(
+					objectMapper);
 			if (this.properties.isJsonPrettyPrint() != null) {
 				converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
 			}

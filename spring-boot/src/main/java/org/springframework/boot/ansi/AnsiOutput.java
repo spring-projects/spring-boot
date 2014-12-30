@@ -147,6 +147,6 @@ public abstract class AnsiOutput {
 		 */
 		NEVER
 
-	};
+	}
 
 }

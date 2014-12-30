@@ -20,7 +20,9 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
@@ -47,6 +49,9 @@ import static org.junit.Assert.assertTrue;
 @ActiveProfiles("endpoints")
 public class EndpointsPropertiesSampleActuatorApplicationTests {
 
+	@Autowired
+	private SecurityProperties security;
+
 	@Value("${local.server.port}")
 	private int port;
 
@@ -64,8 +69,9 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 
 	@Test
 	public void testCustomContextPath() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/admin/health", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/admin/health",
+						String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body: " + entity.getBody(),
 				entity.getBody().contains("\"status\":\"UP\""));
@@ -73,4 +79,9 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 		assertTrue("Wrong body: " + entity.getBody(),
 				entity.getBody().contains("\"hello\":\"world\""));
 	}
+
+	private String getPassword() {
+		return this.security.getUser().getPassword();
+	}
+
 }

@@ -603,6 +603,11 @@ the `Environment` property name and the bean property name.  Common examples whe
 is useful include underscore separated (e.g. `context_path` binds to `contextPath`), and
 capitalized (e.g. `PORT` binds to `port`) environment properties.
 
+NOTE: Environment variables are usually underscore-separated and upper case. You can
+use that format and Spring Boot will bind them to your bean property names accordingly.
+For instance `MY_PROPERTY` will  match just the same as `myProperty`, `my_property` or
+`my-property`.
+
 Spring will attempt to coerce the external application properties to the right type when
 it binds to the `@ConfigurationProperties` beans. If you need custom type conversion you
 can provide a `ConversionService` bean (with bean id `conversionService`) or custom

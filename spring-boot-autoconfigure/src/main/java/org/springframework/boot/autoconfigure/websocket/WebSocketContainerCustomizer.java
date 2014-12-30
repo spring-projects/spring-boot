@@ -22,6 +22,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.web.NonEmbeddedServletContainerFactory;
+import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -34,9 +35,14 @@ import org.springframework.core.ResolvableType;
  * @since 1.2.0
  */
 public abstract class WebSocketContainerCustomizer<T extends EmbeddedServletContainerFactory>
-		implements EmbeddedServletContainerCustomizer {
+		implements EmbeddedServletContainerCustomizer, Ordered {
 
 	private Log logger = LogFactory.getLog(getClass());
+
+	@Override
+	public int getOrder() {
+		return 0;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

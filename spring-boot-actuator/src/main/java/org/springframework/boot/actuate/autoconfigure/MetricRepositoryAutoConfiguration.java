@@ -115,7 +115,7 @@ public class MetricRepositoryAutoConfiguration {
 	static class MetricRepositoryConfiguration {
 
 		@Bean
-		public InMemoryMetricRepository metricRepository() {
+		public InMemoryMetricRepository actuatorMetricRepository() {
 			return new InMemoryMetricRepository();
 		}
 

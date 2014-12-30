@@ -8,7 +8,7 @@
 		<version>1.2.1.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-parent-context</artifactId>
-	<name>spring-boot-sample-parent-context</name>
+	<name>Spring Boot Parent Context Sample</name>
 	<description>Spring Boot Parent Context Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>

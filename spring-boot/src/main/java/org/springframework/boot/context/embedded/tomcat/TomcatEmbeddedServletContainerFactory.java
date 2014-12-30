@@ -25,7 +25,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContainerInitializer;
@@ -75,12 +77,15 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Brock Mills
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
  */
 public class TomcatEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+
+	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
 	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 
@@ -322,13 +327,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	protected void configureContext(Context context,
 			ServletContextInitializer[] initializers) {
-		ServletContextInitializerLifecycleListener starter = new ServletContextInitializerLifecycleListener(
-				initializers);
+		TomcatStarter starter = new TomcatStarter(initializers);
 		if (context instanceof TomcatEmbeddedContext) {
 			// Should be true
 			((TomcatEmbeddedContext) context).setStarter(starter);
 		}
-		context.addLifecycleListener(starter);
+		context.addServletContainerInitializer(starter, NO_CLASSES);
 		for (LifecycleListener lifecycleListener : this.contextLifecycleListeners) {
 			context.addLifecycleListener(lifecycleListener);
 		}

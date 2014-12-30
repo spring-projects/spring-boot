@@ -95,7 +95,7 @@ class BitronixJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public static BitronixDependentBeanFactoryPostProcessor atomikosDependsOnBeanFactoryPostProcessor() {
+	public static BitronixDependentBeanFactoryPostProcessor bitronixDependentBeanFactoryPostProcessor() {
 		return new BitronixDependentBeanFactoryPostProcessor();
 	}
 

@@ -29,40 +29,48 @@ public interface LibraryScope {
 	 * The library is used at compile time and runtime.
 	 */
 	public static final LibraryScope COMPILE = new LibraryScope() {
+
 		@Override
 		public String toString() {
 			return "compile";
-		};
+		}
+
 	};
 
 	/**
 	 * The library is used at runtime but not needed for compile.
 	 */
 	public static final LibraryScope RUNTIME = new LibraryScope() {
+
 		@Override
 		public String toString() {
 			return "runtime";
-		};
+		}
+
 	};
 
 	/**
 	 * The library is needed for compile but is usually provided when running.
 	 */
 	public static final LibraryScope PROVIDED = new LibraryScope() {
+
 		@Override
 		public String toString() {
 			return "provided";
-		};
+		}
+
 	};
 
 	/**
 	 * Marker for custom scope when custom configuration is used.
 	 */
 	public static final LibraryScope CUSTOM = new LibraryScope() {
+
 		@Override
 		public String toString() {
 			return "custom";
-		};
+		}
+
 	};
 
 }

@@ -26,10 +26,11 @@ import org.springframework.util.ReflectionUtils;
  * support deferred initialization.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class TomcatEmbeddedContext extends StandardContext {
 
-	private ServletContextInitializerLifecycleListener starter;
+	private TomcatStarter starter;
 
 	private final boolean overrideLoadOnStart;
 
@@ -69,11 +70,11 @@ class TomcatEmbeddedContext extends StandardContext {
 		}
 	}
 
-	public void setStarter(ServletContextInitializerLifecycleListener starter) {
+	public void setStarter(TomcatStarter starter) {
 		this.starter = starter;
 	}
 
-	public ServletContextInitializerLifecycleListener getStarter() {
+	public TomcatStarter getStarter() {
 		return this.starter;
 	}
 

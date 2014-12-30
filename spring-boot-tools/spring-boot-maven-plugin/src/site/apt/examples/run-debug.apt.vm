@@ -6,9 +6,11 @@
  2014-05-14
  -----
 
-  The <<<run>>> goal forks a process for the boot application. It is possible to specify jvm arguments
-  to that forked process. The following configuration suspend the process until a debugger has joined
-  on port 5005
+  By default, the <<<run>>> goal runs in the same process unless jvm arguments or an agent have been specified. You
+  can enable or disable forking explicitly using the <<<fork>>> attribute.
+
+  If you need to fork the process and debug it you can add the necessary JVM arguments to enable remote debugging. The
+  following configuration suspend the process until a debugger has joined on port 5005:
 
 ---
 <project>
@@ -36,8 +38,8 @@
 </project>
 ---
 
-  These arguments can be specified on the command line as well, make sure to wrap that properly,
-  that is:
+  Note that since you specified some JVM arguments, the process is forked automatically. These arguments can be
+  specified on the command line as well, make sure to wrap that properly, that is:
 
 ---
 mvn spring-boot:run -Drun.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"

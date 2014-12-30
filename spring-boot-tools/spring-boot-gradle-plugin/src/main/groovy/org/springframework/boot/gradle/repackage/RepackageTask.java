@@ -227,7 +227,7 @@ public class RepackageTask extends DefaultTask {
 									+ "'springBoot.mainClass'");
 				}
 			}
-		};
+		}
 	}
 
 	void setOutputFile(File file) {

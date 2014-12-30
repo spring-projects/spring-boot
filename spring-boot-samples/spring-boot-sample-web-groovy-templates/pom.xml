@@ -8,7 +8,7 @@
 		<version>1.2.1.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-web-groovy-templates</artifactId>
-	<name>spring-boot-sample-web-groovy-templates</name>
+	<name>Spring Boot Web Groovy Templates Sample</name>
 	<description>Spring Boot Web Groovy Templates Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>

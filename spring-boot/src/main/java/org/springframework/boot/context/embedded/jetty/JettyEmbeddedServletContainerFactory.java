@@ -29,7 +29,9 @@ import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SessionManager;
@@ -70,6 +72,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andrey Hihlovskiy
+ * @author Andy Wilkinson
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -222,7 +225,6 @@ public class JettyEmbeddedServletContainerFactory extends
 			ServletContextInitializer... initializers) {
 		Assert.notNull(context, "Context must not be null");
 		context.setTempDirectory(getTempDirectory());
-		setExtendedListenerTypes(context);
 		if (this.resourceLoader != null) {
 			context.setClassLoader(this.resourceLoader.getClassLoader());
 		}
@@ -250,15 +252,6 @@ public class JettyEmbeddedServletContainerFactory extends
 	private File getTempDirectory() {
 		String temp = System.getProperty("java.io.tmpdir");
 		return (temp == null ? null : new File(temp));
-	}
-
-	private void setExtendedListenerTypes(WebAppContext context) {
-		try {
-			context.getServletContext().setExtendedListenerTypes(true);
-		}
-		catch (NoSuchMethodError ex) {
-			// Not available on Jetty 8
-		}
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
@@ -370,7 +363,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	 */
 	protected Configuration getServletContextInitializerConfiguration(
 			WebAppContext webAppContext, ServletContextInitializer... initializers) {
-		return new ServletContextInitializerConfiguration(webAppContext, initializers);
+		return new ServletContextInitializerConfiguration(initializers);
 	}
 
 	/**
@@ -501,9 +494,15 @@ public class JettyEmbeddedServletContainerFactory extends
 		@Override
 		public ServerConnector getConnector(Server server,
 				SslContextFactory sslContextFactory, int port) {
+			HttpConfiguration config = new HttpConfiguration();
+			config.setSecureScheme("https");
+			config.setSecurePort(port);
+			config.addCustomizer(new SecureRequestCustomizer());
+			HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
+			SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
+					sslContextFactory, HttpVersion.HTTP_1_1.asString());
 			ServerConnector serverConnector = new ServerConnector(server,
-					new SslConnectionFactory(sslContextFactory,
-							HttpVersion.HTTP_1_1.asString()), new HttpConnectionFactory());
+					sslConnectionFactory, connectionFactory);
 			serverConnector.setPort(port);
 			return serverConnector;
 		}

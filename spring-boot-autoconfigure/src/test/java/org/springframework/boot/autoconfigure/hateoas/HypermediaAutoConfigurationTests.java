@@ -75,19 +75,17 @@ public class HypermediaAutoConfigurationTests {
 
 	@Test
 	public void doesBackOffIfEnableHypermediaSupportIsDeclaredManually() {
-
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SampleConfig.class, HypermediaAutoConfiguration.class);
 		this.context.refresh();
-
 		this.context.getBean(LinkDiscoverers.class);
 	}
 
 	@Test
 	public void jacksonConfigurationIsAppliedToTheHalObjectMapper() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(HypermediaAutoConfiguration.class,
-				JacksonAutoConfiguration.class);
+		this.context.register(JacksonAutoConfiguration.class,
+				HypermediaAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jackson.serialization.INDENT_OUTPUT:true");
 		this.context.refresh();

@@ -43,6 +43,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,7 +57,7 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
-public class ServerProperties implements EmbeddedServletContainerCustomizer {
+public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
 
 	/**
 	 * Server HTTP port.
@@ -95,6 +96,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	 * ServletContext parameters.
 	 */
 	private final Map<String, String> contextParameters = new HashMap<String, String>();
+
+	@Override
+	public int getOrder() {
+		return 0;
+	}
 
 	public Tomcat getTomcat() {
 		return this.tomcat;

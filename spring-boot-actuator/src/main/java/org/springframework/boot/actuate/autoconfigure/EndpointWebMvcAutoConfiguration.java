@@ -33,6 +33,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties.Security;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
@@ -163,7 +164,9 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnBean(HealthEndpoint.class)
 	@ConditionalOnProperty(prefix = "endpoints.health", name = "enabled", matchIfMissing = true)
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
-		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
+		Security security = this.managementServerProperties.getSecurity();
+		boolean secure = (security == null || security.isEnabled());
+		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate, secure);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
 			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
 					.getMapping());
@@ -226,7 +229,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				throw ex;
 			}
 		}
-	};
+	}
 
 	/**
 	 * Add an alias for 'local.management.port' that actually resolves using
@@ -295,7 +298,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		DISABLE, SAME, DIFFERENT;
 
 		public static ManagementServerPort get(BeanFactory beanFactory) {
-
 			ServerProperties serverProperties;
 			try {
 				serverProperties = beanFactory.getBean(ServerProperties.class);
@@ -303,7 +305,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			catch (NoSuchBeanDefinitionException ex) {
 				serverProperties = new ServerProperties();
 			}
-
 			ManagementServerProperties managementServerProperties;
 			try {
 				managementServerProperties = beanFactory
@@ -312,7 +313,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			catch (NoSuchBeanDefinitionException ex) {
 				managementServerProperties = new ManagementServerProperties();
 			}
-
 			Integer port = managementServerProperties.getPort();
 			if (port != null && port < 0) {
 				return DISABLE;
@@ -326,5 +326,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 					|| (port != 0 && port.equals(serverProperties.getPort())) ? SAME
 					: DIFFERENT);
 		}
-	};
+
+	}
+
 }

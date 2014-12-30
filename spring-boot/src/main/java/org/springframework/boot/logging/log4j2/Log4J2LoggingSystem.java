@@ -67,25 +67,25 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		@Override
 		public Result filter(LogEvent event) {
 			return Result.DENY;
-		};
+		}
 
 		@Override
 		public Result filter(Logger logger, Level level, Marker marker, Message msg,
 				Throwable t) {
 			return Result.DENY;
-		};
+		}
 
 		@Override
 		public Result filter(Logger logger, Level level, Marker marker, Object msg,
 				Throwable t) {
 			return Result.DENY;
-		};
+		}
 
 		@Override
 		public Result filter(Logger logger, Level level, Marker marker, String msg,
 				Object... params) {
 			return Result.DENY;
-		};
+		}
 
 	};
 
