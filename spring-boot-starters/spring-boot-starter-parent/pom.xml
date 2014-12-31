@@ -68,6 +68,7 @@
 						<archive>
 							<manifest>
 								<mainClass>${start-class}</mainClass>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							</manifest>
 						</archive>
 					</configuration>
@@ -93,6 +94,7 @@
 						<archive>
 							<manifest>
 								<mainClass>${start-class}</mainClass>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							</manifest>
 						</archive>
 					</configuration>
