@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -130,6 +132,30 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.register(this.configClass);
 		this.context.refresh();
 		((AbstractEndpoint) getEndpointBean()).setEnabled(true);
+		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+	}
+
+	@Test
+	public void isAllEndpointsDisabled() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		PropertySource<?> propertySource = new MapPropertySource("test",
+				Collections.<String, Object> singletonMap("endpoints.enabled", false));
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
+		assertThat(getEndpointBean().isEnabled(), equalTo(false));
+	}
+
+	@Test
+	public void isOptIn() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		Map<String, Object> source = new HashMap<String, Object>();
+		source.put("endpoints.enabled", false);
+		source.put(this.property + ".enabled", true);
+		PropertySource<?> propertySource = new MapPropertySource("test", source);
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
 		assertThat(getEndpointBean().isEnabled(), equalTo(true));
 	}
 

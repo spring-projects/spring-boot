@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -38,10 +37,7 @@ import org.springframework.core.env.StandardEnvironment;
  * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.env", ignoreUnknownFields = false)
-public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> implements
-		EnvironmentAware {
-
-	private Environment environment;
+public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final Sanitizer sanitizer = new Sanitizer();
 
@@ -59,7 +55,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	@Override
 	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		result.put("profiles", this.environment.getActiveProfiles());
+		result.put("profiles", getEnvironment().getActiveProfiles());
 		for (Entry<String, PropertySource<?>> entry : getPropertySources().entrySet()) {
 			PropertySource<?> source = entry.getValue();
 			String sourceName = entry.getKey();
@@ -78,9 +74,9 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	private Map<String, PropertySource<?>> getPropertySources() {
 		Map<String, PropertySource<?>> map = new LinkedHashMap<String, PropertySource<?>>();
 		MutablePropertySources sources = null;
-		if (this.environment != null
-				&& this.environment instanceof ConfigurableEnvironment) {
-			sources = ((ConfigurableEnvironment) this.environment).getPropertySources();
+		Environment environment = getEnvironment();
+		if (environment != null && environment instanceof ConfigurableEnvironment) {
+			sources = ((ConfigurableEnvironment) environment).getPropertySources();
 		}
 		else {
 			sources = new StandardEnvironment().getPropertySources();
@@ -106,11 +102,6 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 
 	public Object sanitize(String name, Object object) {
 		return this.sanitizer.sanitize(name, object);
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
 	}
 
 }
