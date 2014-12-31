@@ -110,6 +110,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 
 	@Override
 	public void setEnvironment(Environment environment) {
+		super.setEnvironment(environment);
 		this.environment = environment;
 	}
 
