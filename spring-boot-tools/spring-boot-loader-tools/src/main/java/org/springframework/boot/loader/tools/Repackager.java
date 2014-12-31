@@ -41,7 +41,17 @@ public class Repackager {
 
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
+	private static final String AGENT_CLASS_ATTRIBUTE = "Premain-Class";
+
+	private static final String REDEFINE_ATTRIBUTE = "Can-Redefine-Classes";
+
+	private static final String RETRANSFORM_ATTRIBUTE = "Can-Retransform-Classes";
+
+	private static final String VALUE_TRUE = "true";
+
 	private String mainClass;
+
+	private String agentClass;
 
 	private boolean backupSource = true;
 
@@ -65,6 +75,14 @@ public class Repackager {
 	 */
 	public void setMainClass(String mainClass) {
 		this.mainClass = mainClass;
+	}
+
+	/**
+	 * Sets the premain class that should be added to manifest.
+	 * @param agentClass the premain class name
+	 */
+	public void setAgentClass(String agentClass) {
+		this.agentClass = agentClass;
 	}
 
 	/**
@@ -240,6 +258,11 @@ public class Repackager {
 		}
 		else if (startClass != null) {
 			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE, startClass);
+		}
+		if (agentClass != null) {
+			manifest.getMainAttributes().putValue(AGENT_CLASS_ATTRIBUTE, agentClass);
+			manifest.getMainAttributes().putValue(REDEFINE_ATTRIBUTE, VALUE_TRUE);
+			manifest.getMainAttributes().putValue(RETRANSFORM_ATTRIBUTE, VALUE_TRUE);
 		}
 		String bootVersion = getClass().getPackage().getImplementationVersion();
 		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
