@@ -223,9 +223,9 @@ additional details to be displayed.
 		public Health health() {
 			int errorCode = check(); // perform some specific health check
 			if (errorCode != 0) {
-				return Health.down().withDetail("Error Code", errorCode);
+				return Health.down().withDetail("Error Code", errorCode).build();
 			}
-			return Health.up();
+			return Health.up().build();
 		}
 
 	}
