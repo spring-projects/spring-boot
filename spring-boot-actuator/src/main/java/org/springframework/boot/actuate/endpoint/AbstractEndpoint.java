@@ -84,6 +84,10 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 		this.enabled = enabled;
 	}
 
+	protected final Environment getEnvironment() {
+		return this.environment;
+	}
+
 	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
@@ -104,7 +108,8 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 			return this.enabled;
 		}
 		if (this.environment != null) {
-			this.environment.getProperty(ENDPOINTS_ENABLED_PROPERTY, Boolean.class, true);
+			return this.environment.getProperty(ENDPOINTS_ENABLED_PROPERTY,
+					Boolean.class, true);
 		}
 		return true;
 	}
