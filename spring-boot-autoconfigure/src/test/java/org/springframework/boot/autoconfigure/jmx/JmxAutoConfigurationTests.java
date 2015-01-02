@@ -74,7 +74,6 @@ public class JmxAutoConfigurationTests {
 		this.context.setEnvironment(env);
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
-
 		assertNotNull(this.context.getBean(MBeanExporter.class));
 	}
 
@@ -86,7 +85,6 @@ public class JmxAutoConfigurationTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
 		this.context.refresh();
-
 		this.context.getBean(MBeanExporter.class);
 	}
 
@@ -99,17 +97,16 @@ public class JmxAutoConfigurationTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
 		this.context.refresh();
-
 		MBeanExporter mBeanExporter = this.context.getBean(MBeanExporter.class);
 		assertNotNull(mBeanExporter);
 		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
-				.getField(mBeanExporter, "metadataNamingStrategy");
+				.getField(mBeanExporter, "namingStrategy");
 		assertEquals("my-test-domain",
 				ReflectionTestUtils.getField(naming, "defaultDomain"));
 	}
 
 	@Test
-	public void testParentContext() {
+	public void testBasicParentContext() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
@@ -117,6 +114,18 @@ public class JmxAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setParent(parent);
 		this.context.register(JmxAutoConfiguration.class);
+		this.context.refresh();
+	}
+
+	@Test
+	public void testParentContext() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(JmxAutoConfiguration.class, TestConfiguration.class);
+		this.context.refresh();
+		AnnotationConfigApplicationContext parent = this.context;
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		this.context.register(JmxAutoConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
 	}
 
