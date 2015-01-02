@@ -31,8 +31,9 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
- * Test class annotation signifying that the tests are integration tests (and therefore
- * require an application to startup "fully leaded" and listening on its normal ports).
+ * Test class annotation signifying that the tests are "integration tests" and therefore
+ * require full startup in the same way as a production application (listening on normal
+ * ports).
  *
  * @author Dave Syer
  */
