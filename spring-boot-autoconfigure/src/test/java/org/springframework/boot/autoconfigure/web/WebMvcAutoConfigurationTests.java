@@ -52,6 +52,7 @@ import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
@@ -59,6 +60,7 @@ import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.AbstractView;
+import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -308,6 +310,31 @@ public class WebMvcAutoConfigurationTests {
 				ReflectionTestUtils.getField(adapter, "ignoreDefaultModelOnRedirect"));
 	}
 
+	@Test
+	public void customViewResolver() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(Config.class, CustomViewResolver.class,
+				WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean("viewResolver"), instanceOf(MyViewResolver.class));
+	}
+
+	@Test
+	public void customContentNegotiatingViewResolver() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(Config.class, CustomContentNegotiatingViewResolver.class,
+				WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, ContentNegotiatingViewResolver> beans = this.context
+				.getBeansOfType(ContentNegotiatingViewResolver.class);
+		assertThat(beans.size(), equalTo(1));
+		assertThat(beans.keySet().iterator().next(), equalTo("myViewResolver"));
+	}
+
 	@Configuration
 	protected static class ViewConfig {
 
@@ -358,6 +385,35 @@ public class WebMvcAutoConfigurationTests {
 		@Bean
 		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
 			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		}
+
+	}
+
+	@Configuration
+	public static class CustomViewResolver {
+
+		@Bean
+		public ViewResolver viewResolver() {
+			return new MyViewResolver();
+		}
+
+	}
+
+	@Configuration
+	public static class CustomContentNegotiatingViewResolver {
+
+		@Bean
+		public ContentNegotiatingViewResolver myViewResolver() {
+			return new ContentNegotiatingViewResolver();
+		}
+
+	}
+
+	private static class MyViewResolver implements ViewResolver {
+
+		@Override
+		public View resolveViewName(String viewName, Locale locale) throws Exception {
+			return null;
 		}
 
 	}
