@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Common abstraction over logging systems.
@@ -30,15 +31,20 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class LoggingSystem {
 
+	/**
+	 * A System property that can be used to indicate the {@link LoggingSystem} to use.
+	 */
+	public static final String SYSTEM_PROPERTY = LoggingSystem.class.getName();
+
 	private static final Map<String, String> SYSTEMS;
 	static {
 		Map<String, String> systems = new LinkedHashMap<String, String>();
 		systems.put("ch.qos.logback.core.Appender",
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
-		systems.put("org.apache.log4j.PropertyConfigurator",
-				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
 		systems.put("org.apache.logging.log4j.LogManager",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
+		systems.put("org.apache.log4j.PropertyConfigurator",
+				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
 		systems.put("java.util.logging.LogManager",
 				"org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
@@ -73,20 +79,27 @@ public abstract class LoggingSystem {
 	 * @return The logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {
+		String loggingSystem = System.getProperty(SYSTEM_PROPERTY);
+		if (StringUtils.hasLength(loggingSystem)) {
+			return get(classLoader, loggingSystem);
+		}
 		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
 			if (ClassUtils.isPresent(entry.getKey(), classLoader)) {
-				try {
-					Class<?> systemClass = ClassUtils.forName(entry.getValue(),
-							classLoader);
-					return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
-							.newInstance(classLoader);
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
-				}
+				return get(classLoader, entry.getValue());
 			}
 		}
 		throw new IllegalStateException("No suitable logging system located");
+	}
+
+	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
+		try {
+			Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
+			return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
+					.newInstance(classLoader);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 }
