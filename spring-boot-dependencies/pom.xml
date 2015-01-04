@@ -128,6 +128,7 @@
 		<spring-social-linkedin.version>1.0.1.RELEASE</spring-social-linkedin.version>
 		<spring-social-twitter.version>1.1.0.RELEASE</spring-social-twitter.version>
 		<spring-ws.version>2.2.0.RELEASE</spring-ws.version>
+		<sendgrid.version>2.1.0</sendgrid.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
@@ -511,6 +512,11 @@
 				<groupId>com.samskivert</groupId>
 				<artifactId>jmustache</artifactId>
 				<version>${jmustache.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sendgrid</groupId>
+				<artifactId>sendgrid-java</artifactId>
+				<version>${sendgrid.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>

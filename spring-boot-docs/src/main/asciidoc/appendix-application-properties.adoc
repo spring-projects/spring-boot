@@ -573,6 +573,12 @@ content into your application; rather pick only the properties that you need.
 	shell.auth.simple.user.password=
 	shell.auth.spring.roles=
 
+	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
+	spring.sendgrid.username= # SendGrid account username
+	spring.sendgrid.password= # SendGrid account password
+	spring.sendgrid.proxy.host= # SendGrid proxy host
+	spring.sendgrid.proxy.port= # SendGrid proxy port
+
 	# GIT INFO
 	spring.git.properties= # resource ref to generated git info properties file
 ----
