@@ -19,6 +19,7 @@ package org.springframework.boot.loader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -92,9 +93,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 				}
 			}
 		}
-		for (URL url : urls) {
-			copy.add(url);
-		}
+		Collections.addAll(copy, urls);
 		return super.createClassLoader(copy.toArray(new URL[copy.size()]));
 	}
 

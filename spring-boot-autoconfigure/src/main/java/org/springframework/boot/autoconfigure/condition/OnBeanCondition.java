@@ -241,9 +241,7 @@ public class OnBeanCondition extends SpringBootCondition implements
 				List<String> destination) {
 			List<String[]> valueList = (List) attributes.get(key);
 			for (String[] valueArray : valueList) {
-				for (String value : valueArray) {
-					destination.add(value);
-				}
+				Collections.addAll(destination, valueArray);
 			}
 		}
 
