@@ -11,7 +11,8 @@ https://support.springsource.com/spring_committer_signup[contributor's agreement
 Signing the contributor's agreement does not grant anyone commit rights to the main
 repository, but it does mean that we can accept your contributions, and you will get an
 author credit if we do.  Active contributors might be asked to join the core team, and
-given the ability to merge pull requests.
+given the ability to merge pull requests. Use ``Phillip Webb'' or ``Dave Syer'' in the
+project lead field when you complete the form.
 
 
 
