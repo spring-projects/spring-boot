@@ -1128,7 +1128,7 @@ yourself.
 		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
 		factory.setPort(9000);
 		factory.setSessionTimeout(10, TimeUnit.MINUTES);
-		factory.addErrorPages(new ErrorPage(HttpStatus.404, "/notfound.html");
+		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html");
 		return factory;
 	}
 ----
