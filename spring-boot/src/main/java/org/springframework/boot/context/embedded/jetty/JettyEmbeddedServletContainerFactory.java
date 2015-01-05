@@ -495,8 +495,6 @@ public class JettyEmbeddedServletContainerFactory extends
 		public ServerConnector getConnector(Server server,
 				SslContextFactory sslContextFactory, int port) {
 			HttpConfiguration config = new HttpConfiguration();
-			config.setSecureScheme("https");
-			config.setSecurePort(port);
 			config.addCustomizer(new SecureRequestCustomizer());
 			HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
 			SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(
