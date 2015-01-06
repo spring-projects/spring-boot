@@ -45,6 +45,7 @@ import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.LogFileMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
@@ -90,6 +91,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Andy Wilkinson
+ * @author Johannes Stelzer
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -217,6 +219,12 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnEnabledEndpoint("metrics")
 	public MetricsMvcEndpoint metricsMvcEndpoint(MetricsEndpoint delegate) {
 		return new MetricsMvcEndpoint(delegate);
+	}
+
+	@Bean
+	@ConditionalOnEnabledEndpoint("logfile")
+	public LogFileMvcEndpoint logfileMvcEndpoint() {
+		return new LogFileMvcEndpoint();
 	}
 
 	@Bean

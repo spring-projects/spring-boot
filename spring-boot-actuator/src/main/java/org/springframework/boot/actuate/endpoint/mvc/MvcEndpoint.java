@@ -16,7 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  * A strategy for the MVC layer on top of an {@link Endpoint}. Implementations are allowed
@@ -28,6 +33,10 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
  * @author Dave Syer
  */
 public interface MvcEndpoint {
+
+	public static final ResponseEntity<Map<String, String>> DISABLED_RESPONSE = new ResponseEntity<Map<String, String>>(
+			Collections.singletonMap("message", "This endpoint is disabled"),
+			HttpStatus.NOT_FOUND);
 
 	/**
 	 * Return the MVC path of the endpoint.

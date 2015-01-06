@@ -294,7 +294,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.refresh();
 		// /health, /metrics, /env (/shutdown is disabled by default)
 		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class).size(),
-				is(equalTo(3)));
+				is(equalTo(4)));
 	}
 
 	@Test
