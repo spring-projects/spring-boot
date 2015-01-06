@@ -57,6 +57,7 @@ import org.springframework.util.SocketUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
@@ -311,6 +312,24 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void basicSsl() throws Exception {
 		testBasicSslWithKeyStore("src/test/resources/test.jks");
+	}
+
+	@Test
+	public void sslGetScheme() throws Exception { // gh-2232
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(getSsl(null, "password", "src/test/resources/test.jks"));
+		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
+				new ExampleServlet(true), "/hello"));
+		this.container.start();
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null,
+						new TrustSelfSignedStrategy()).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory),
+				containsString("scheme=https"));
 	}
 
 	protected final void testBasicSslWithKeyStore(String keyStore) throws Exception {
