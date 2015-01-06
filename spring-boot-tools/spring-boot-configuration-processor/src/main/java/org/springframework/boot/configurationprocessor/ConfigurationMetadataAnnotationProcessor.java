@@ -343,14 +343,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private ConfigurationMetadata mergeManualMetadata(ConfigurationMetadata metadata) {
 		try {
-			FileObject manualMetadata = this.processingEnv.getFiler().getResource(
-					StandardLocation.CLASS_PATH, "",
+			FileObject manualMetadata = this.processingEnv.getFiler().createResource(
+					StandardLocation.CLASS_OUTPUT, "",
 					"META-INF/additional-spring-configuration-metadata.json");
-			if (!"file".equals(manualMetadata.toUri().getScheme())) {
-				// We only want local files, not any classpath jars
-				return metadata;
-			}
-			InputStream inputStream = manualMetadata.openInputStream();
+			InputStream inputStream = manualMetadata.toUri().toURL().openStream();
 			try {
 				ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
 				try {
