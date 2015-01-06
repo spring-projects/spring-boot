@@ -91,24 +91,24 @@ import org.springframework.validation.BindException;
 public class ConfigFileApplicationListener implements
 		ApplicationListener<ApplicationEvent>, Ordered {
 
+	private static Log logger = LogFactory.getLog(ConfigFileApplicationListener.class);
+
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
-
-	private static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
-
-	private static final String INCLUDE_PROFILES_PROPERTY = "spring.profiles.include";
-
-	private static final String CONFIG_NAME_PROPERTY = "spring.config.name";
-
-	private static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
 
 	// Note the order is from least to most specific (last one wins)
 	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/";
 
 	private static final String DEFAULT_NAMES = "application";
 
-	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+	public static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
 
-	private static Log logger = LogFactory.getLog(ConfigFileApplicationListener.class);
+	public static final String INCLUDE_PROFILES_PROPERTY = "spring.profiles.include";
+
+	public static final String CONFIG_NAME_PROPERTY = "spring.config.name";
+
+	public static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
+
+	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 	private String searchLocations;
 
