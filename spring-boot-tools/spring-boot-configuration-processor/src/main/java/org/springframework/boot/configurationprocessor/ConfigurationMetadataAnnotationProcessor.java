@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -105,10 +104,6 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			logWarning("Field value processing of @ConfigurationProperty meta-data is "
 					+ "not supported");
 		}
-	}
-
-	private void logWarning(String msg) {
-		this.processingEnv.getMessager().printMessage(Kind.WARNING, msg);
 	}
 
 	@Override
@@ -361,9 +356,14 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				inputStream.close();
 			}
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
+			logWarning("Unable to merge additional-spring-configuration-metadata.json");
 			return metadata;
 		}
+	}
+
+	private void logWarning(String msg) {
+		this.processingEnv.getMessager().printMessage(Kind.WARNING, msg);
 	}
 
 }
