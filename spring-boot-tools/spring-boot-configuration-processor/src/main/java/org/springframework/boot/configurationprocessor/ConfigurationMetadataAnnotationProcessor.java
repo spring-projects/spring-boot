@@ -16,9 +16,10 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -105,6 +106,16 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			logWarning("Field value processing of @ConfigurationProperty meta-data is "
 					+ "not supported");
 		}
+	}
+	
+	private void logError(Throwable e) {
+		this.processingEnv.getMessager().printMessage(Kind.ERROR, stackTrace(e));
+	}
+	
+	private CharSequence stackTrace(Throwable e) {
+		StringWriter trace = new StringWriter();
+		e.printStackTrace(new PrintWriter(trace, true));
+		return trace.toString();
 	}
 
 	private void logWarning(String msg) {
@@ -365,7 +376,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				inputStream.close();
 			}
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
+			logError(ex);
 			return metadata;
 		}
 	}
