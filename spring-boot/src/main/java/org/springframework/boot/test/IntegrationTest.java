@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,13 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 /**
  * Test class annotation signifying that the tests are "integration tests" and therefore
  * require full startup in the same way as a production application (listening on normal
- * ports).
+ * ports). Normally used in conjunction with {@code @SpringApplicationConfiguration}.
+ * <p>
+ * If your test also uses {@code @WebAppConfiguration} consider using the
+ * {@link WebIntegrationTest} instead.
  *
  * @author Dave Syer
+ * @see WebIntegrationTest
  */
 @Documented
 @Inherited

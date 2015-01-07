@@ -365,15 +365,14 @@ that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.
 
-A useful practice for use with `@IntegrationTests` is to set `server.port=0`
+A useful practice for use with `@WebIntegrationTests` is to set `server.port=0`
 and then inject the actual ('`local`') port as a `@Value`. For example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
-	@WebAppConfiguration
-	@IntegrationTest("server.port:0")
+	@WebIntegrationTest("server.port:0")
 	public class CityRepositoryIntegrationTests {
 
 		@Autowired

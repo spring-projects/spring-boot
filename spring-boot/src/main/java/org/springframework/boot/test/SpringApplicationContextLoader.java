@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  *
  * @author Dave Syer
  * @see IntegrationTest
+ * @see WebIntegrationTest
  */
 public class SpringApplicationContextLoader extends AbstractContextLoader {
 
@@ -158,7 +159,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		disableJmx(properties);
 		properties.putAll(extractEnvironmentProperties(config
 				.getPropertySourceProperties()));
-		if (AnnotationUtils.findAnnotation(config.getTestClass(), IntegrationTest.class) == null) {
+		if (!isAnnotated(config.getTestClass(), IntegrationTest.class,
+				WebIntegrationTest.class)) {
 			properties.putAll(getDefaultEnvironmentProperties());
 		}
 		return properties;
@@ -226,8 +228,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				SpringApplication application,
 				List<ApplicationContextInitializer<?>> initializers) {
 			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
-			if (AnnotationUtils.findAnnotation(webConfiguration.getTestClass(),
-					IntegrationTest.class) == null) {
+			if (!isAnnotated(webConfiguration.getTestClass(), IntegrationTest.class,
+					WebIntegrationTest.class)) {
 				MockServletContext servletContext = new MockServletContext(
 						webConfiguration.getResourceBasePath());
 				initializers.add(0, new ServletContextApplicationContextInitializer(
@@ -237,6 +239,16 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			}
 		}
 
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static boolean isAnnotated(Class<?> testClass, Class<?>... annotations) {
+		for (Class<?> annotation : annotations) {
+			if (AnnotationUtils.findAnnotation(testClass, (Class) annotation) != null) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

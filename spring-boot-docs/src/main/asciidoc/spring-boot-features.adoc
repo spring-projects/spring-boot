@@ -2381,12 +2381,12 @@ For example:
 ----
 
 TIP: The context loader guesses whether you want to test a web application or not (e.g.
-with `MockMVC`) by looking for the `@WebAppConfiguration` annotation.  (`MockMVC` and
-`@WebAppConfiguration` are part of `spring-test`).
+with `MockMVC`) by looking for the `@WebIntegrationTest` or `@WebAppConfiguration`
+annotations.  (`MockMVC` and `@WebAppConfiguration` are part of `spring-test`).
 
 If you want a web application to start up and listen on its normal port, so you can test
 it with HTTP (e.g. using `RestTemplate`), annotate your test class (or one of its
-superclasses) with `@IntegrationTest`. This can be very useful because it means you can
+superclasses) with `@WebIntegrationTest`. This can be very useful because it means you can
 test the full stack of your application, but also inject its components into the test
 class and use them to assert the internal state of the application after an HTTP
 interaction. For example:
@@ -2395,8 +2395,7 @@ interaction. For example:
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
-	@WebAppConfiguration
-	@IntegrationTest
+	@WebIntegrationTest
 	public class CityRepositoryIntegrationTests {
 
 		@Autowired
@@ -2414,8 +2413,8 @@ as long as your tests share the same configuration, the time consuming process o
 and stopping the server will only happen once, regardless of the number of tests that
 actually run.
 
-To change the port you can add environment properties to `@IntegrationTest` as colon- or
-equals-separated name-value pairs, e.g. `@IntegrationTest("server.port:9000")`.
+To change the port you can add environment properties to `@WebIntegrationTest` as colon-
+or equals-separated name-value pairs, e.g. `@WebIntegrationTest("server.port:9000")`.
 Additionally you can set the `server.port` and `management.port` properties to `0`
 in order to run your integration tests using random ports. For example:
 
@@ -2423,8 +2422,7 @@ in order to run your integration tests using random ports. For example:
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringApplicationConfiguration(classes = MyApplication.class)
-	@WebAppConfiguration
-	@IntegrationTest({"server.port=0", "management.port=0"})
+	@WebIntegrationTest({"server.port=0", "management.port=0"})
 	public class SomeIntegrationTests {
 
 		// ...
@@ -2462,7 +2460,7 @@ Boot specific context loader:
 
 NOTE: The annotations <<boot-features-testing-spring-boot-applications,described above>>
 can be used with Spock, i.e. you can annotate your `Specification` with
-`@IntegrationTest` and `@WebAppConfiguration` to suit the needs of your tests.
+`@WebIntegrationTest` to suit the needs of your tests.
 
 
 
