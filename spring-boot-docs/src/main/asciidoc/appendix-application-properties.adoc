@@ -58,6 +58,7 @@ content into your application; rather pick only the properties that you need.
 	server.context-parameters.*= # Servlet context init parameters, e.g. server.context-parameters.a=alpha
 	server.context-path= # the context path, defaults to '/'
 	server.servlet-path= # the servlet path, defaults to '/'
+	server.ssl.enabled=true # if SSL support is enabled
 	server.ssl.client-auth= # want or need
 	server.ssl.key-alias=
 	server.ssl.ciphers= # supported SSL ciphers

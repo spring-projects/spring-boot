@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLException;
 import javax.servlet.GenericServlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -312,6 +313,26 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void basicSsl() throws Exception {
 		testBasicSslWithKeyStore("src/test/resources/test.jks");
+	}
+
+	@Test
+	public void sslDisabled() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		Ssl ssl = getSsl(null, "password", "src/test/resources/test.jks");
+		ssl.setEnabled(false);
+		factory.setSsl(ssl);
+		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
+				new ExampleServlet(true), "/hello"));
+		this.container.start();
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null,
+						new TrustSelfSignedStrategy()).build());
+		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+				.build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
+				httpClient);
+		this.thrown.expect(SSLException.class);
+		getResponse(getLocalUrl("https", "/hello"), requestFactory);
 	}
 
 	@Test
