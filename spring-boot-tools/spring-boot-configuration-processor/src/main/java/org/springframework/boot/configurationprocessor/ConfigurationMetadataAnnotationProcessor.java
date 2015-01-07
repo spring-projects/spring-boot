@@ -34,7 +34,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -66,7 +65,6 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ "*" })
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot."
@@ -99,6 +97,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	protected String nestedConfigurationPropertyAnnotation() {
 		return NESTED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	@Override
+	public SourceVersion getSupportedSourceVersion() {
+		return SourceVersion.latestSupported();
 	}
 
 	@Override
