@@ -611,6 +611,7 @@ Example in Gradle:
 ----
 
 
+
 [[howto-configure-undertow]]
 === Configure Undertow
 Generally you can follow the advice from
@@ -624,7 +625,30 @@ own `UndertowEmbeddedServletContainerFactory`.
 
 
 
-[[howto-use-tomcat-8]]
+[[howto-enable-multiple-listeners-in-undertow]]
+=== Enable Multiple Listeners with Undertow
+Add an `UndertowBuilderCustomizer` to the `UndertowEmbeddedServletContainerFactory` and
+add a listener to the `Builder`:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public UndertowEmbeddedServletContainerFactory embeddedServletContainerFactory() {
+		UndertowEmbeddedServletContainerFactory factory = new UndertowEmbeddedServletContainerFactory();
+		factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
+
+			@Override
+			public void customize(Builder builder) {
+				builder.addHttpListener(8080, "0.0.0.0");
+			}
+
+		});
+		return factory;
+	}
+----
+
+
+
 [[howto-use-tomcat-7]]
 === Use Tomcat 7
 Tomcat 7 works with Spring Boot, but the default is to use Tomcat 8. If you cannot use
