@@ -16,16 +16,11 @@
 
 package org.springframework.boot.test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
-import org.springframework.test.context.web.ServletTestExecutionListener;
 import org.springframework.test.context.web.WebDelegatingSmartContextLoader;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 
@@ -55,24 +50,14 @@ class WebAppIntegrationTestContextBootstrapper extends DefaultTestContextBootstr
 			mergedConfig = new WebMergedContextConfiguration(mergedConfig, null);
 			MergedContextConfigurationProperties properties = new MergedContextConfigurationProperties(
 					mergedConfig);
-			properties.add(annotation.value());
+			if (annotation.randomPort()) {
+				properties.add(annotation.value(), "server.port:0");
+			}
+			else {
+				properties.add(annotation.value());
+			}
 		}
 		return mergedConfig;
-	}
-
-	@Override
-	protected List<String> getDefaultTestExecutionListenerClassNames() {
-		WebIntegrationTest annotation = AnnotationUtils.findAnnotation(
-				getBootstrapContext().getTestClass(), WebIntegrationTest.class);
-		List<String> listeners = super.getDefaultTestExecutionListenerClassNames();
-		if (annotation != null) {
-			// Leave out the ServletTestExecutionListener because it only deals with
-			// Mock* servlet stuff. A real embedded application will not need the mocks.
-			listeners = new ArrayList<String>(listeners);
-			listeners.remove(ServletTestExecutionListener.class.getName());
-			listeners.add(IntegrationTestPropertiesListener.class.getName());
-		}
-		return Collections.unmodifiableList(listeners);
 	}
 
 }

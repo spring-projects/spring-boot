@@ -37,6 +37,7 @@ import org.springframework.test.context.BootstrapWith;
  *
  * @author Phillip Webb
  * @since 1.2.1
+ * @see IntegrationTest
  */
 @Documented
 @Inherited
@@ -50,5 +51,13 @@ public @interface WebIntegrationTest {
 	 * {@link Environment} before the test runs.
 	 */
 	String[] value() default {};
+
+	/**
+	 * Convenience attribute that can be used to set a {@code server.port=0}
+	 * {@link Environment} property which usually triggers listening on a random port.
+	 * Often used in conjunction with a {@code @Value("server.local.port")} injected field
+	 * on the test.
+	 */
+	boolean randomPort() default false;
 
 }

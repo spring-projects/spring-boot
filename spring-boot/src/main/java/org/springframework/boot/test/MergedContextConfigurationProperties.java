@@ -37,10 +37,11 @@ class MergedContextConfigurationProperties {
 		this.configuration = configuration;
 	}
 
-	public void add(String[] properties) {
+	public void add(String[] properties, String... additional) {
 		Set<String> merged = new LinkedHashSet<String>((Arrays.asList(this.configuration
 				.getPropertySourceProperties())));
 		merged.addAll(Arrays.asList(properties));
+		merged.addAll(Arrays.asList(additional));
 		addIntegrationTestProperty(merged);
 		ReflectionTestUtils.setField(this.configuration, "propertySourceProperties",
 				merged.toArray(new String[merged.size()]));
