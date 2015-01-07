@@ -64,7 +64,7 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ "*" })
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot."
