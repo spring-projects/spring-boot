@@ -20,7 +20,9 @@ import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
@@ -54,6 +56,9 @@ import static org.junit.Assert.fail;
  * @author Phillip Webb
  */
 public class ConfigurationPropertiesBindingPostProcessorTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -198,6 +203,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				equalTo("word".toCharArray()));
 	}
 
+	@Test
+	public void notWritablePropertyException() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.madeup:word");
+		this.context.register(PropertyWithCharArray.class);
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("test");
+		this.context.refresh();
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class TestConfigurationWithValidatingSetter {
@@ -314,7 +329,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Configuration
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties(prefix = "test", ignoreUnknownFields = false)
 	public static class PropertyWithCharArray {
 
 		private char[] chars;
