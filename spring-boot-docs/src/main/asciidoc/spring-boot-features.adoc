@@ -1330,6 +1330,10 @@ password, printed at INFO level when the application starts up)
 	Using default security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
 ----
 
+NOTE: If you fine tune your logging configuration, ensure that the
+`org.springframework.boot.autoconfigure.security` category is set to log `INFO` messages,
+otherwise the default password will not be printed.
+
 You can change the password by providing a `security.user.password`. This and other
 useful properties are externalized via
 {sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
