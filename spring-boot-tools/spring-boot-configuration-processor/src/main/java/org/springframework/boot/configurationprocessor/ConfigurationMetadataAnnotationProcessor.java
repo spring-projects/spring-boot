@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -367,8 +369,15 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 		catch (Exception ex) {
 			logWarning("Unable to merge additional-spring-configuration-metadata.json");
+			logWarning(getStackTrace(ex));
 			return metadata;
 		}
+	}
+
+	private String getStackTrace(Exception ex) {
+		StringWriter writer = new StringWriter();
+		ex.printStackTrace(new PrintWriter(writer, true));
+		return writer.toString();
 	}
 
 	private InputStream getAdditionalMetadata() throws IOException {
