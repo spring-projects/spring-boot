@@ -40,6 +40,7 @@ import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
+import org.eclipse.jetty.util.resource.JarResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
@@ -259,7 +260,8 @@ public class JettyEmbeddedServletContainerFactory extends
 		if (root != null) {
 			try {
 				if (!root.isDirectory()) {
-					Resource resource = Resource.newResource("jar:" + root.toURI() + "!");
+					Resource resource = JarResource.newJarResource(Resource
+							.newResource(root));
 					handler.setBaseResource(resource);
 				}
 				else {
