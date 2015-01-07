@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test;
 
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -30,7 +31,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  * @author Phillip Webb
  * @since 1.2.0
  */
-class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {
+public class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
@@ -55,6 +56,11 @@ class IntegrationTestPropertiesListener extends AbstractTestExecutionListener {
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 }
