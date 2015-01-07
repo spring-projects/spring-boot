@@ -26,7 +26,7 @@ package org.springframework.boot.context.embedded;
 public class Ssl {
 
 	/**
-	 * If SSL support is enabled.
+	 * Enable SSL support.
 	 */
 	private boolean enabled = true;
 
