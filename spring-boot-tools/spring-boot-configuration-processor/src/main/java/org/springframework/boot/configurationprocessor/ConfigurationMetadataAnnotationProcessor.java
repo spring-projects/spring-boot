@@ -16,6 +16,10 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -74,6 +78,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String LOMBOK_GETTER_ANNOTATION = "lombok.Getter";
 
 	static final String LOMBOK_SETTER_ANNOTATION = "lombok.Setter";
+
+	private static final String RESOURCES_FOLDER = "resources";
+
+	private static final String CLASSES_FOLDER = "classes";
 
 	private ConfigurationMetadata metadata;
 
@@ -316,7 +324,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	protected void writeMetaData(ConfigurationMetadata metadata) {
-		metadata = mergeManualMetadata(metadata);
+		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
 			try {
 				FileObject resource = this.processingEnv.getFiler().createResource(
@@ -336,12 +344,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private ConfigurationMetadata mergeManualMetadata(ConfigurationMetadata metadata) {
+	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
 		try {
-			FileObject manualMetadata = this.processingEnv.getFiler().createResource(
-					StandardLocation.CLASS_OUTPUT, "",
-					"META-INF/additional-spring-configuration-metadata.json");
-			InputStream inputStream = manualMetadata.toUri().toURL().openStream();
+			InputStream inputStream = getAdditionalMetadata();
 			try {
 				ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
 				try {
@@ -356,10 +361,32 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				inputStream.close();
 			}
 		}
+		catch (FileNotFoundException ex) {
+			// No additional metadata
+			return metadata;
+		}
 		catch (Exception ex) {
 			logWarning("Unable to merge additional-spring-configuration-metadata.json");
 			return metadata;
 		}
+	}
+
+	private InputStream getAdditionalMetadata() throws IOException {
+		// Most build systems will have copied the file to the class output location
+		FileObject fileObject = this.processingEnv.getFiler().createResource(
+				StandardLocation.CLASS_OUTPUT, "",
+				"META-INF/additional-spring-configuration-metadata.json");
+		File file = new File(fileObject.toUri());
+		if (!file.exists()) {
+			// Gradle keeps things separate
+			String path = file.getPath();
+			int index = path.lastIndexOf(CLASSES_FOLDER);
+			path = path.substring(0, index) + RESOURCES_FOLDER
+					+ path.substring(index + CLASSES_FOLDER.length());
+			file = new File(path);
+		}
+		return (file.exists() ? new FileInputStream(file) : fileObject.toUri().toURL()
+				.openStream());
 	}
 
 	private void logWarning(String msg) {
