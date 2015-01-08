@@ -600,13 +600,38 @@ in a similar manner as the `ConnectionSettings` example above.
 Spring Boot uses some relaxed rules for binding `Environment` properties to
 `@ConfigurationProperties` beans, so there doesn't need to be an exact match between
 the `Environment` property name and the bean property name.  Common examples where this
-is useful include underscore separated (e.g. `context_path` binds to `contextPath`), and
+is useful include dashed separated (e.g. `context-path` binds to `contextPath`), and
 capitalized (e.g. `PORT` binds to `port`) environment properties.
 
-NOTE: Environment variables are usually underscore-separated and upper case. You can
-use that format and Spring Boot will bind them to your bean property names accordingly.
-For instance `MY_PROPERTY` will  match just the same as `myProperty`, `my_property` or
-`my-property`.
+For example, given the following `@ConfigurationProperties` class:
+
+[source,java,indent=0]
+----
+	@Component
+	@ConfigurationProperties(prefix="person")
+	public class ConnectionSettings {
+
+		private String firstName;
+
+	}
+----
+
+The following properties names can all be used:
+
+.relaxed binding
+[cols="1,4"]
+|===
+| Property | Note
+
+|`person.firstName`
+|Standard camel case syntax.
+
+|`person.first-name`
+|Dashed notation, recommended for use in `.properties` and `.yml` files.
+
+|`PERSON_FIRST_NAME`
+|Upper case format. Recommended when using a system environment variables.
+|===
 
 Spring will attempt to coerce the external application properties to the right type when
 it binds to the `@ConfigurationProperties` beans. If you need custom type conversion you
