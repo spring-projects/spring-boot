@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,10 +136,20 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@Test
 	public void testPropertyWithEnum() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "test.value:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "test.the-value:foo");
 		this.context.register(PropertyWithEnum.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithEnum.class).getValue(),
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue(),
+				equalTo(FooEnum.FOO));
+	}
+
+	@Test
+	public void testRelaxedPropertyWithEnum() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "TEST_THE_VALUE:FoO");
+		this.context.register(PropertyWithEnum.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue(),
 				equalTo(FooEnum.FOO));
 	}
 
@@ -349,14 +359,14 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@ConfigurationProperties(prefix = "test")
 	public static class PropertyWithEnum {
 
-		private FooEnum value;
+		private FooEnum theValue;
 
-		public void setValue(FooEnum value) {
-			this.value = value;
+		public void setTheValue(FooEnum value) {
+			this.theValue = value;
 		}
 
-		public FooEnum getValue() {
-			return this.value;
+		public FooEnum getTheValue() {
+			return this.theValue;
 		}
 
 	}
