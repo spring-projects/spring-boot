@@ -135,22 +135,25 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Test
 	public void testPropertyWithEnum() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "test.the-value:foo");
-		this.context.register(PropertyWithEnum.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue(),
-				equalTo(FooEnum.FOO));
+		doEnumTest("test.theValue:foo");
 	}
 
 	@Test
 	public void testRelaxedPropertyWithEnum() throws Exception {
+		doEnumTest("test.the-value:FoO");
+		doEnumTest("TEST_THE_VALUE:FoO");
+		doEnumTest("test.THE_VALUE:FoO");
+		doEnumTest("test_the_value:FoO");
+	}
+
+	private void doEnumTest(String property) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "TEST_THE_VALUE:FoO");
+		EnvironmentTestUtils.addEnvironment(this.context, property);
 		this.context.register(PropertyWithEnum.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue(),
 				equalTo(FooEnum.FOO));
+		this.context.close();
 	}
 
 	@Test
