@@ -24,7 +24,13 @@
 			<artifactId>json</artifactId>
 		</dependency>
 		<!-- Test -->
-		<dependency>
+	<dependency>
+		<groupId>commons-io</groupId>
+		<artifactId>commons-io</artifactId>
+		<version>2.4</version>
+		<scope>test</scope>
+	</dependency>		
+	<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>test</scope>
