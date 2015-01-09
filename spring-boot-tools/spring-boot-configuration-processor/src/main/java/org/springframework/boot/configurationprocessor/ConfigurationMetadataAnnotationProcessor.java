@@ -25,7 +25,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,10 +64,13 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Kris De Volder
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ "*" })
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
+
+	public static final String METADATA_PATH = "META-INF/spring-configuration-metadata.json";
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.ConfigurationProperties";
@@ -84,6 +89,17 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private static final String CLASSES_FOLDER = "classes";
 
 	private ConfigurationMetadata metadata;
+
+	/**
+	 * On incremental builds, holds the 'old' metadata (created by the previous build).
+	 */
+	private ConfigurationMetadata oldmetadata;
+
+	/**
+	 * On incremental builds, keeps track of the types that where presented to the
+	 * processor. This includes types that are not annotated.
+	 */
+	protected Set<String> processedSourceTypes;
 
 	private TypeUtils typeUtils;
 
@@ -109,6 +125,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		super.init(env);
 		this.metadata = new ConfigurationMetadata();
 		this.typeUtils = new TypeUtils(env);
+		this.oldmetadata = readMetadata();
+		if (isIncremental()) {
+			this.processedSourceTypes = new HashSet<String>();
+		}
 		try {
 			this.fieldValuesParser = new JavaCompilerFieldValuesParser(env);
 		}
@@ -119,10 +139,37 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
+	protected boolean isIncremental() {
+		return this.oldmetadata != null;
+	}
+
+	protected boolean isDeleted(String sourceType) {
+		return this.processingEnv.getElementUtils().getTypeElement(sourceType) == null;
+	}
+
+	protected boolean isProcessed(String sourceType) {
+		return this.processedSourceTypes.contains(sourceType);
+	}
+
+	/**
+	 * Called during incremental build on all the 'root elements' that are being presented
+	 * to the processor.
+	 */
+	protected void markAsProcessed(Element element) {
+		if (element instanceof TypeElement) {
+			this.processedSourceTypes.add(this.typeUtils.getType(element));
+		}
+	}
+
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations,
 			RoundEnvironment roundEnv) {
 		Elements elementUtils = this.processingEnv.getElementUtils();
+		if (isIncremental()) {
+			for (Element element : roundEnv.getRootElements()) {
+				markAsProcessed(element);
+			}
+		}
 		for (Element element : roundEnv.getElementsAnnotatedWith(elementUtils
 				.getTypeElement(configurationPropertiesAnnotation()))) {
 			processElement(element);
@@ -328,16 +375,19 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return values;
 	}
 
-	protected void writeMetaData(ConfigurationMetadata metadata) {
+	protected ConfigurationMetadata writeMetaData(ConfigurationMetadata metadata) {
 		metadata = mergeAdditionalMetadata(metadata);
+		if (isIncremental()) {
+			mergeOldMetadata(metadata);
+		}
 		if (!metadata.getItems().isEmpty()) {
 			try {
 				FileObject resource = this.processingEnv.getFiler().createResource(
-						StandardLocation.CLASS_OUTPUT, "",
-						"META-INF/spring-configuration-metadata.json");
+						StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
 				OutputStream outputStream = resource.openOutputStream();
 				try {
 					new JsonMarshaller().write(metadata, outputStream);
+					return metadata;
 				}
 				finally {
 					outputStream.close();
@@ -345,6 +395,42 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);
+			}
+		}
+		return null;
+	}
+
+	protected ConfigurationMetadata readMetadata() {
+		try {
+			FileObject resource = this.processingEnv.getFiler().getResource(
+					StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
+			InputStream in = resource.openInputStream();
+			try {
+				ConfigurationMetadata data = new ConfigurationMetadata();
+				data.addAll(new JsonMarshaller().read(in));
+				if (!data.getItems().isEmpty()) {
+					return data;
+				}
+			}
+			finally {
+				in.close();
+			}
+		}
+		catch (IOException e) {
+			// no 'old' metadata
+		}
+		return null;
+	}
+
+	private void mergeOldMetadata(ConfigurationMetadata metadata) {
+		List<ItemMetadata> items = this.oldmetadata.getItems();
+		for (ItemMetadata oldItem : items) {
+			String sourceType = oldItem.getSourceType();
+			if (sourceType == null || isProcessed(sourceType) || isDeleted(sourceType)) {
+				// skip
+			}
+			else {
+				metadata.add(oldItem);
 			}
 		}
 	}

@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 
 import javax.annotation.processing.Processor;
 import javax.tools.JavaCompiler;
@@ -38,6 +39,8 @@ import org.junit.rules.TemporaryFolder;
  * @author Andy Wilkinson
  */
 public class TestCompiler {
+
+	public static final File ORIGINAL_SOURCE_FOLDER = new File("src/test/java");
 
 	private final JavaCompiler compiler;
 
@@ -59,8 +62,18 @@ public class TestCompiler {
 		this.fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, temp);
 	}
 
+	public TestCompilationTask getTask(Collection<File> sourceFiles) {
+		Iterable<? extends JavaFileObject> javaFileObjects = this.fileManager
+				.getJavaFileObjectsFromFiles(sourceFiles);
+		return getTask(javaFileObjects);
+	}
+
 	public TestCompilationTask getTask(Class<?>... types) {
 		Iterable<? extends JavaFileObject> javaFileObjects = getJavaFileObjects(types);
+		return getTask(javaFileObjects);
+	}
+
+	private TestCompilationTask getTask(Iterable<? extends JavaFileObject> javaFileObjects) {
 		return new TestCompilationTask(this.compiler.getTask(null, this.fileManager,
 				null, null, null, javaFileObjects));
 	}
@@ -77,8 +90,16 @@ public class TestCompiler {
 		return this.fileManager.getJavaFileObjects(files);
 	}
 
-	private File getFile(Class<?> type) {
-		return new File("src/test/java/" + type.getName().replace(".", "/") + ".java");
+	protected File getFile(Class<?> type) {
+		return new File(getSourceFolder(), sourcePathFor(type));
+	}
+
+	public static String sourcePathFor(Class<?> type) {
+		return type.getName().replace(".", "/") + ".java";
+	}
+
+	protected File getSourceFolder() {
+		return ORIGINAL_SOURCE_FOLDER;
 	}
 
 	/**

@@ -17,13 +17,8 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,7 +27,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
-import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
+import org.springframework.boot.configurationsample.incremental.BarProperties;
+import org.springframework.boot.configurationsample.incremental.FooProperties;
+import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
@@ -57,7 +54,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor.METADATA_PATH;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
 
@@ -67,6 +67,7 @@ import static org.springframework.boot.configurationprocessor.ConfigurationMetad
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Kris De Volder
  */
 public class ConfigurationMetadataAnnotationProcessorTests {
 
@@ -78,6 +79,92 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Before
 	public void createCompiler() throws IOException {
 		this.compiler = new TestCompiler(this.temporaryFolder);
+	}
+
+	@Test
+	public void incrementalBuild() throws Exception {
+		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
+				BarProperties.class);
+		assertFalse(project.getOutputFile(METADATA_PATH).exists());
+
+		BuildResult r = project.fullBuild();
+		assertFalse(r.isIncremental);
+		assertTrue(project.getOutputFile(METADATA_PATH).exists());
+
+		assertThat(r.metadata,
+				containsProperty("foo.counter").fromSource(FooProperties.class));
+		assertThat(r.metadata,
+				containsProperty("bar.counter").fromSource(BarProperties.class));
+
+		r = project.incrementalBuild(BarProperties.class);
+		assertTrue(r.isIncremental);
+		assertTrue(r.processedTypes.contains(BarProperties.class.getName()));
+		assertFalse(r.processedTypes.contains(FooProperties.class.getName()));
+
+		assertThat(r.metadata,
+				containsProperty("foo.counter").fromSource(FooProperties.class));
+		assertThat(r.metadata,
+				containsProperty("bar.counter").fromSource(BarProperties.class));
+
+		assertTrue(r.processedTypes.contains(BarProperties.class.getName()));
+		assertFalse(r.processedTypes.contains(FooProperties.class.getName()));
+
+		project.addSourceCode(BarProperties.class, "	private String extra;\n" + "	\n"
+				+ "	public String getExtra() {\n" + "		return extra;\n" + "	}\n" + "\n"
+				+ "	public void setExtra(String extra) {\n" + "		this.extra = extra;\n"
+				+ "	}\n");
+		r = project.incrementalBuild(BarProperties.class);
+		assertTrue(r.isIncremental);
+		assertThat(r.metadata, containsProperty("bar.extra"));
+		assertThat(r.metadata, containsProperty("foo.counter"));
+		assertThat(r.metadata, containsProperty("bar.counter"));
+
+		project.revert(BarProperties.class);
+		r = project.incrementalBuild(BarProperties.class);
+		assertTrue(r.isIncremental);
+		assertThat(r.metadata, not(containsProperty("bar.extra")));
+		assertThat(r.metadata, containsProperty("foo.counter"));
+		assertThat(r.metadata, containsProperty("bar.counter"));
+	}
+
+	@Test
+	public void incremenalBuildAnnotationRemoved() throws Exception {
+		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
+				BarProperties.class);
+		BuildResult r = project.fullBuild();
+		assertThat(r.metadata, containsProperty("foo.counter"));
+		assertThat(r.metadata, containsProperty("bar.counter"));
+
+		project.replaceText(BarProperties.class, "@ConfigurationProperties",
+				"//@ConfigurationProperties");
+		r = project.incrementalBuild(BarProperties.class);
+		assertThat(r.metadata, containsProperty("foo.counter"));
+		assertThat(r.metadata, not(containsProperty("bar.counter")));
+	}
+
+	@Test
+	public void incremenalBuildTypeRenamed() throws Exception {
+		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
+				BarProperties.class);
+		BuildResult r = project.fullBuild();
+		assertThat(r.metadata,
+				containsProperty("foo.counter").fromSource(FooProperties.class));
+		assertThat(r.metadata,
+				containsProperty("bar.counter").fromSource(BarProperties.class));
+		assertThat(r.metadata,
+				not(containsProperty("bar.counter")
+						.fromSource(RenamedBarProperties.class)));
+
+		project.delete(BarProperties.class);
+		project.add(RenamedBarProperties.class);
+		r = project.incrementalBuild(RenamedBarProperties.class);
+		assertThat(r.metadata,
+				containsProperty("foo.counter").fromSource(FooProperties.class));
+		assertThat(r.metadata,
+				not(containsProperty("bar.counter").fromSource(BarProperties.class)));
+		assertThat(r.metadata,
+				containsProperty("bar.counter").fromSource(RenamedBarProperties.class));
+
 	}
 
 	@Test
@@ -368,57 +455,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	private ConfigurationMetadata compile(Class<?>... types) throws IOException {
-		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor();
+		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor(
+				this.compiler.getOutputLocation());
 		this.compiler.getTask(types).call(processor);
 		return processor.getMetadata();
-	}
-
-	@SupportedAnnotationTypes({ "*" })
-	@SupportedSourceVersion(SourceVersion.RELEASE_6)
-	private class TestConfigurationMetadataAnnotationProcessor extends
-			ConfigurationMetadataAnnotationProcessor {
-
-		static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
-
-		static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.NestedConfigurationProperty";
-
-		private ConfigurationMetadata metadata;
-
-		@Override
-		protected String configurationPropertiesAnnotation() {
-			return CONFIGURATION_PROPERTIES_ANNOTATION;
-		}
-
-		@Override
-		protected String nestedConfigurationPropertyAnnotation() {
-			return NESTED_CONFIGURATION_PROPERTY_ANNOTATION;
-		}
-
-		@Override
-		protected void writeMetaData(ConfigurationMetadata metadata) {
-			super.writeMetaData(metadata);
-			try {
-				File metadataFile = new File(
-						ConfigurationMetadataAnnotationProcessorTests.this.compiler
-								.getOutputLocation(),
-						"META-INF/spring-configuration-metadata.json");
-				if (metadataFile.isFile()) {
-					this.metadata = new JsonMarshaller().read(new FileInputStream(
-							metadataFile));
-				}
-				else {
-					this.metadata = metadata;
-				}
-			}
-			catch (IOException e) {
-				throw new RuntimeException("Failed to read metadata from disk", e);
-			}
-		}
-
-		public ConfigurationMetadata getMetadata() {
-			return this.metadata;
-		}
-
 	}
 
 	private static class AdditionalMetadata {
