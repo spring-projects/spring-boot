@@ -61,6 +61,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.samskivert</groupId>
+			<artifactId>jmustache</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 			<optional>true</optional>

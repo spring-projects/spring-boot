@@ -68,6 +68,7 @@
 		<module>spring-boot-sample-web-freemarker</module>
 		<module>spring-boot-sample-web-groovy-templates</module>
 		<module>spring-boot-sample-web-method-security</module>
+		<module>spring-boot-sample-web-mustache</module>
 		<module>spring-boot-sample-web-secure</module>
 		<module>spring-boot-sample-web-secure-custom</module>
 		<module>spring-boot-sample-web-secure-jdbc</module>

@@ -44,6 +44,7 @@ org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoCo
 org.springframework.boot.autoconfigure.mobile.SitePreferenceAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration,\
@@ -69,6 +70,7 @@ org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration
 # Template availability providers
 org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider,\
+org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.velocity.VelocityTemplateAvailabilityProvider,\

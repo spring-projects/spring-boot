@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-dependencies</artifactId>
@@ -88,6 +90,7 @@
 		<jersey.version>2.14</jersey.version>
 		<jetty.version>9.2.4.v20141103</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
+		<jmustache.version>1.9</jmustache.version>
 		<joda-time.version>2.5</joda-time.version>
 		<jolokia.version>1.2.3</jolokia.version>
 		<json-path.version>0.9.1</json-path.version>
@@ -326,6 +329,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-mustache</artifactId>
+				<version>1.2.2.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-redis</artifactId>
 				<version>1.2.2.BUILD-SNAPSHOT</version>
 			</dependency>
@@ -482,6 +490,11 @@
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path</artifactId>
 				<version>${json-path.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.samskivert</groupId>
+				<artifactId>jmustache</artifactId>
+				<version>${jmustache.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>
@@ -1613,7 +1626,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<repositories>
-				<!-- Repositories to allow snapshot and milestone BOM imports during
+				<!-- Repositories to allow snapshot and milestone BOM imports during 
 					development. This section is stripped out when a full release is prepared. -->
 				<repository>
 					<id>spring-milestones</id>
