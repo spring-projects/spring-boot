@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>spring-boot-starter-mustache</artifactId>
 	<name>spring-boot-starter-mustache</name>
-	<description>Spring Boot FreeMarker Starter</description>
+	<description>Spring Boot Mustache Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
