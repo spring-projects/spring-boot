@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>spring-boot-sample-web-mustache</artifactId>
 	<name>spring-boot-sample-web-mustache</name>
-	<description>Spring Boot Web FreeMarker Sample</description>
+	<description>Spring Boot Web Mustache Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
