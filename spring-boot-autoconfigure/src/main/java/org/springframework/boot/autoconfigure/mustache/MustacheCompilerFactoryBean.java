@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,23 +26,26 @@ import com.samskivert.mustache.Mustache.Formatter;
 import com.samskivert.mustache.Mustache.TemplateLoader;
 
 /**
- * Factory for a Mustache compiler with custom strategies. For building a
- * <code>@Bean</code> definition in Java it probably doesn't help to use this factory
- * since the underlying fluent API is actually richer.
- *
- * @see MustacheResourceTemplateLoader
+ * Factory for a Mustache compiler with custom strategies. For building a {@code @Bean}
+ * definition in Java it probably doesn't help to use this factory since the underlying
+ * fluent API is actually richer.
  *
  * @author Dave Syer
  * @since 1.2.2
- *
+ * @see MustacheResourceTemplateLoader
  */
 public class MustacheCompilerFactoryBean implements FactoryBean<Mustache.Compiler> {
 
 	private String delims;
+
 	private TemplateLoader templateLoader;
+
 	private Formatter formatter;
+
 	private Escaper escaper;
+
 	private Collector collector;
+
 	private Compiler compiler;
 
 	public void setDelims(String delims) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,24 +32,23 @@ import com.samskivert.mustache.Mustache.TemplateLoader;
  * Resource abstraction to load a template from a file, classpath, URL etc. A
  * TemplateLoader is needed in the Compiler when you want to render partials (i.e.
  * tiles-like fetaures).
- * 
- * @see Mustache
- * @see Resource
- * 
+ *
  * @author Dave Syer
  * @since 1.2.2
- *
+ * @see Mustache
+ * @see Resource
  */
-public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceLoaderAware {
+public class MustacheResourceTemplateLoader implements TemplateLoader,
+		ResourceLoaderAware {
 
 	private String prefix = "";
 
 	private String suffix = "";
-	
+
 	private String charSet = "UTF-8";
 
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
-	
+
 	public MustacheResourceTemplateLoader() {
 	}
 
@@ -58,7 +57,7 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 		this.prefix = prefix;
 		this.suffix = suffix;
 	}
-	
+
 	/**
 	 * @param charSet the charSet to set
 	 */
@@ -76,8 +75,8 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 
 	@Override
 	public Reader getTemplate(String name) throws Exception {
-		return new InputStreamReader(resourceLoader.getResource(prefix + name + suffix)
-				.getInputStream(), charSet);
+		return new InputStreamReader(this.resourceLoader.getResource(
+				this.prefix + name + this.suffix).getInputStream(), this.charSet);
 	}
 
 }

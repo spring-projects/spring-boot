@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Locale;
 import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 import com.samskivert.mustache.Mustache;
@@ -30,8 +31,10 @@ import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Template;
 
 /**
- * @author Dave Syer
+ * Spring MVC {@link ViewResolver} for Mustache.
  *
+ * @author Dave Syer
+ * @since 1.2.2
  */
 public class MustacheViewResolver extends UrlBasedViewResolver {
 
@@ -61,17 +64,20 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	private Template createTemplate(Resource resource) throws IOException {
-		return compiler.compile(new InputStreamReader(resource.getInputStream()));
+		return this.compiler.compile(new InputStreamReader(resource.getInputStream()));
 	}
 
 	private Resource resolveResource(String viewName, Locale locale) {
-		String l10n = "";
-		if (locale != null) {
-			LocaleEditor localeEditor = new LocaleEditor();
-			localeEditor.setValue(locale);
-			l10n = "_" + localeEditor.getAsText();
+		return resolveFromLocale(viewName, getLocale(locale));
+	}
+
+	private String getLocale(Locale locale) {
+		if (locale == null) {
+			return "";
 		}
-		return resolveFromLocale(viewName, l10n);
+		LocaleEditor localeEditor = new LocaleEditor();
+		localeEditor.setValue(locale);
+		return "_" + localeEditor.getAsText();
 	}
 
 	private Resource resolveFromLocale(String viewName, String locale) {
