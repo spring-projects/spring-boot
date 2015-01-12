@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Basic integration tests for FreeMarker application.
+ * Basic integration tests for Mustache application.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
