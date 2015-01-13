@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JPA Repositories.
@@ -64,6 +65,7 @@ public class JpaRepositoriesAutoConfiguration {
 
 	@Configuration
 	@EnableSpringDataWebSupport
+	@ConditionalOnClass(WebMvcConfigurerAdapter.class)
 	@ConditionalOnWebApplication
 	@ConditionalOnMissingBean(PageableHandlerMethodArgumentResolver.class)
 	protected static class JpaWebConfiguration {
