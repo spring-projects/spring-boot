@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.websocket;
 
 import javax.servlet.Servlet;
+import javax.websocket.server.ServerContainer;
 
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
@@ -27,27 +28,29 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.WebSocketHandler;
 
 /**
- * Auto configuration for websocket server in embedded Tomcat or Jetty. Requires
- * <code>spring-websocket</code> and either Tomcat or Jetty with their WebSocket modules
- * to be on the classpath.
+ * Auto configuration for websocket server in embedded Tomcat, Jetty or Undertow. Requires
+ * the appropriate WebSocket modules to be on the classpath.
  * <p>
- * If Tomcat's WebSocket support is detected on the classpath we add a listener that
+ * If Tomcat's WebSocket support is detected on the classpath we add a customizer that
  * installs the Tomcat Websocket initializer. In a non-embedded container it should
  * already be there.
  * <p>
  * If Jetty's WebSocket support is detected on the classpath we add a configuration that
  * configures the context with WebSocket support. In a non-embedded container it should
  * already be there.
+ * <p>
+ * If Undertow's WebSocket support is detected on the classpath we add a customizer that
+ * installs the Undertow Websocket DeploymentInfo Customizer. In a non-embedded container
+ * it should already be there.
  *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class, WebSocketHandler.class })
+@ConditionalOnClass({ Servlet.class, ServerContainer.class })
 @AutoConfigureBefore(EmbeddedServletContainerAutoConfiguration.class)
 public class WebSocketAutoConfiguration {
 
