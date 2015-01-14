@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -280,18 +280,19 @@ public class JarCommand extends OptionParsingCommand {
 				// We only need to do it at most once
 				break;
 			}
-			// Remove GrabReolvers because all the dependencies are local now
-			removeGrabResolver(module.getClasses());
-			removeGrabResolver(module.getImports());
+			// Disable the addition of a static initializer that calls Grape.addResolver
+			// because all the dependencies are local now
+			disableGrabResolvers(module.getClasses());
+			disableGrabResolvers(module.getImports());
 		}
 
-		private void removeGrabResolver(List<? extends AnnotatedNode> nodes) {
+		private void disableGrabResolvers(List<? extends AnnotatedNode> nodes) {
 			for (AnnotatedNode classNode : nodes) {
 				List<AnnotationNode> annotations = classNode.getAnnotations();
 				for (AnnotationNode node : new ArrayList<AnnotationNode>(annotations)) {
 					if (node.getClassNode().getNameWithoutPackage()
 							.equals("GrabResolver")) {
-						annotations.remove(node);
+						node.setMember("initClass", new ConstantExpression(false));
 					}
 				}
 			}
