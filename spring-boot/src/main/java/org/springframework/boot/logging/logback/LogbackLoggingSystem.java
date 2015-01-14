@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 
 /**
- * {@link LoggingSystem} for for <a href="http://logback.qos.ch">logback</a>.
+ * {@link LoggingSystem} for <a href="http://logback.qos.ch">logback</a>.
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -74,17 +74,15 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		configureJBossLoggingToUseSlf4j();
 	}
 
+	@Override
+	public void cleanUp() {
+		removeJdkLoggingBridgeHandler();
+	}
+
 	private void configureJdkLoggingBridgeHandler() {
 		try {
-			if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler",
-					getClassLoader())) {
-				try {
-					SLF4JBridgeHandler.removeHandlersForRootLogger();
-				}
-				catch (NoSuchMethodError ex) {
-					// Method missing in older versions of SLF4J like in JBoss AS 7.1
-					SLF4JBridgeHandler.uninstall();
-				}
+			if (bridgeHandlerIsAvailable()) {
+				removeJdkLoggingBridgeHandler();
 				SLF4JBridgeHandler.install();
 			}
 		}
@@ -93,8 +91,30 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
+	private boolean bridgeHandlerIsAvailable() {
+		return ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler",
+				getClassLoader());
+	}
+
 	private void configureJBossLoggingToUseSlf4j() {
 		System.setProperty("org.jboss.logging.provider", "slf4j");
+	}
+
+	private void removeJdkLoggingBridgeHandler() {
+		try {
+			if (bridgeHandlerIsAvailable()) {
+				try {
+					SLF4JBridgeHandler.removeHandlersForRootLogger();
+				}
+				catch (NoSuchMethodError ex) {
+					// Method missing in older versions of SLF4J like in JBoss AS 7.1
+					SLF4JBridgeHandler.uninstall();
+				}
+			}
+		}
+		catch (Throwable ex) {
+			// Ignore and continue
+		}
 	}
 
 	@Override

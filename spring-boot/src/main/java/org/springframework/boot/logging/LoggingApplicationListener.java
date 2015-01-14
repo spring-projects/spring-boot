@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -68,6 +70,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class LoggingApplicationListener implements SmartApplicationListener {
 
@@ -115,7 +118,10 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	}
 
 	private static Class<?>[] EVENT_TYPES = { ApplicationStartedEvent.class,
-			ApplicationEnvironmentPreparedEvent.class };
+			ApplicationEnvironmentPreparedEvent.class, ContextClosedEvent.class };
+
+	private static Class<?>[] SOURCE_TYPES = { SpringApplication.class,
+			ApplicationContext.class };
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -127,17 +133,21 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	@Override
 	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-		for (Class<?> type : EVENT_TYPES) {
-			if (type.isAssignableFrom(eventType)) {
-				return true;
-			}
-		}
-		return false;
+		return isAssignableFrom(eventType, EVENT_TYPES);
 	}
 
 	@Override
 	public boolean supportsSourceType(Class<?> sourceType) {
-		return SpringApplication.class.isAssignableFrom(sourceType);
+		return isAssignableFrom(sourceType, SOURCE_TYPES);
+	}
+
+	private boolean isAssignableFrom(Class<?> type, Class<?>[] supportedTypes) {
+		for (Class<?> supportedType : supportedTypes) {
+			if (supportedType.isAssignableFrom(type)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -147,13 +157,18 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			initialize(available.getEnvironment(), available.getSpringApplication()
 					.getClassLoader());
 		}
-		else {
+		else if (event instanceof ApplicationStartedEvent) {
 			if (System.getProperty(PID_KEY) == null) {
 				System.setProperty(PID_KEY, new ApplicationPid().toString());
 			}
 			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
 					.getDefaultClassLoader());
 			loggingSystem.beforeInitialize();
+		}
+		else {
+			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
+					.getDefaultClassLoader());
+			loggingSystem.cleanUp();
 		}
 	}
 

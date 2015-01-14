@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package org.springframework.boot.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Handler;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,11 +30,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.GenericApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
@@ -46,6 +50,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class LoggingApplicationListenerTests {
 
@@ -260,5 +265,23 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+	}
+
+	@Test
+	public void bridgeHandlerLifecycle() throws Exception {
+		assertTrue(bridgeHandlerInstalled());
+		this.initializer.onApplicationEvent(new ContextClosedEvent(this.context));
+		assertFalse(bridgeHandlerInstalled());
+	}
+
+	private boolean bridgeHandlerInstalled() {
+		Logger rootLogger = LogManager.getLogManager().getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		for (Handler handler : handlers) {
+			if (handler instanceof SLF4JBridgeHandler) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
