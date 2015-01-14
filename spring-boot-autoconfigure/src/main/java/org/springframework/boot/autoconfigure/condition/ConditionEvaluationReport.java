@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -27,6 +28,8 @@ import java.util.TreeMap;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -36,12 +39,17 @@ import org.springframework.util.ObjectUtils;
  * @author Greg Turnquist
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ConditionEvaluationReport {
 
 	private static final String BEAN_NAME = "autoConfigurationReport";
 
+	private static final AncestorsMatchedCondition ANCESTOR_CONDITION = new AncestorsMatchedCondition();
+
 	private final SortedMap<String, ConditionAndOutcomes> outcomes = new TreeMap<String, ConditionAndOutcomes>();
+
+	private boolean addedAncestorOutcomes;
 
 	private ConditionEvaluationReport parent;
 
@@ -67,6 +75,7 @@ public class ConditionEvaluationReport {
 			this.outcomes.put(source, new ConditionAndOutcomes());
 		}
 		this.outcomes.get(source).add(condition, outcome);
+		this.addedAncestorOutcomes = false;
 	}
 
 	/**
@@ -74,7 +83,26 @@ public class ConditionEvaluationReport {
 	 * @return the condition outcomes
 	 */
 	public Map<String, ConditionAndOutcomes> getConditionAndOutcomesBySource() {
+		if (!this.addedAncestorOutcomes) {
+			for (Map.Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
+				if (!entry.getValue().isFullMatch()) {
+					addNoMatchOutcomeToAncestors(entry.getKey());
+				}
+			}
+			this.addedAncestorOutcomes = true;
+		}
 		return Collections.unmodifiableMap(this.outcomes);
+	}
+
+	private void addNoMatchOutcomeToAncestors(String source) {
+		String prefix = source + "$";
+		for (Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
+			if (entry.getKey().startsWith(prefix)) {
+				ConditionOutcome outcome = new ConditionOutcome(false, "Ancestor '"
+						+ source + "' did not match");
+				entry.getValue().add(ANCESTOR_CONDITION, outcome);
+			}
+		}
 	}
 
 	/**
@@ -186,6 +214,20 @@ public class ConditionEvaluationReport {
 		public int hashCode() {
 			return this.condition.getClass().hashCode() * 31 + this.outcome.hashCode();
 		}
+
+		@Override
+		public String toString() {
+			return this.condition.getClass() + " " + this.outcome;
+		}
+	}
+
+	private static class AncestorsMatchedCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			throw new UnsupportedOperationException();
+		}
+
 	}
 
 }
