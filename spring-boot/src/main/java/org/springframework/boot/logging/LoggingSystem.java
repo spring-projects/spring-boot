@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public abstract class LoggingSystem {
 
@@ -65,6 +66,14 @@ public abstract class LoggingSystem {
 	 * console only output
 	 */
 	public abstract void initialize(String configLocation, LogFile logFile);
+
+	/**
+	 * Clean up the logging system. The default implementation does nothing. Subclasses
+	 * should override this method to perform any logging system-specific cleanup.
+	 */
+	public void cleanUp() {
+
+	}
 
 	/**
 	 * Sets the logging level for a given logger.
