@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,7 +168,7 @@ public class JpaProperties {
 
 		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
 				DataSource dataSource) {
-			Map<String, String> result = new HashMap<String, String>();
+			Map<String, String> result = new HashMap<String, String>(existing);
 			if (!isAlreadyProvided(existing, "ejb.naming_strategy")
 					&& this.namingStrategy != null) {
 				result.put("hibernate.ejb.naming_strategy", this.namingStrategy.getName());
