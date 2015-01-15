@@ -393,9 +393,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			// Gradle keeps things separate
 			String path = file.getPath();
 			int index = path.lastIndexOf(CLASSES_FOLDER);
-			path = path.substring(0, index) + RESOURCES_FOLDER
-					+ path.substring(index + CLASSES_FOLDER.length());
-			file = new File(path);
+			if (index>=0) {
+				path = path.substring(0, index) + RESOURCES_FOLDER
+						+ path.substring(index + CLASSES_FOLDER.length());
+				file = new File(path);
+			}
 		}
 		return (file.exists() ? new FileInputStream(file) : fileObject.toUri().toURL()
 				.openStream());
