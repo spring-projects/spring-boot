@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -307,6 +307,19 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		 */
 		private String uriEncoding;
 
+		/**
+		 * Controls response compression. Acceptable values are "off" to disable
+		 * compression, "on" to enable compression of responses over 2048 bytes, "force"
+		 * to force response compression, or an integer value to enable compression of
+		 * responses with content length that is at least that value.
+		 */
+		private String compression = "off";
+
+		/**
+		 * A comma-separated list of MIME types for which compression is used.
+		 */
+		private String compressableMimeTypes = "text/html,text/xml,text/plain";
+
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -353,6 +366,22 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		public void setAccessLogPattern(String accessLogPattern) {
 			this.accessLogPattern = accessLogPattern;
+		}
+
+		public String getCompressableMimeTypes() {
+			return this.compressableMimeTypes;
+		}
+
+		public void setCompressableMimeTypes(String compressableMimeTypes) {
+			this.compressableMimeTypes = compressableMimeTypes;
+		}
+
+		public String getCompression() {
+			return this.compression;
+		}
+
+		public void setCompression(String compression) {
+			this.compression = compression;
 		}
 
 		public String getInternalProxies() {
@@ -446,6 +475,19 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 					}
 				});
 			}
+
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+				@Override
+				public void customize(Connector connector) {
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractHttp11Protocol) {
+						@SuppressWarnings("rawtypes")
+						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+						protocol.setCompression(Tomcat.this.compression);
+						protocol.setCompressableMimeTypes(Tomcat.this.compressableMimeTypes);
+					}
+				}
+			});
 
 			if (this.accessLogEnabled) {
 				AccessLogValve valve = new AccessLogValve();
