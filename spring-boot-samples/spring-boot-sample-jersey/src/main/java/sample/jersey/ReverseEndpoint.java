@@ -16,15 +16,20 @@
 
 package sample.jersey;
 
-import org.glassfish.jersey.server.ResourceConfig;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+
 import org.springframework.stereotype.Component;
 
 @Component
-public class JerseyConfig extends ResourceConfig {
+@Path("/reverse")
+public class ReverseEndpoint {
 
-	public JerseyConfig() {
-		register(Endpoint.class);
-		register(ReverseEndpoint.class);
+	@GET
+	public String reverse(@QueryParam("input") @NotNull String input) {
+		return new StringBuilder(input).reverse().toString();
 	}
 
 }

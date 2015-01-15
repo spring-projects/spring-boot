@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,21 @@ public class SampleJerseyApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(
 				"http://localhost:" + this.port + "/hello", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
+	}
+
+	@Test
+	public void reverse() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity(
+				"http://localhost:" + this.port + "/reverse?input=olleh", String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertEquals("hello", entity.getBody());
+	}
+
+	@Test
+	public void validation() {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity(
+				"http://localhost:" + this.port + "/reverse", String.class);
+		assertEquals(HttpStatus.BAD_REQUEST, entity.getStatusCode());
 	}
 
 }
