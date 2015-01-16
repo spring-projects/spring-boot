@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -39,6 +38,7 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -63,18 +63,20 @@ import org.springframework.web.util.HtmlUtils;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 // Ensure this loads before the main WebMvcAutoConfiguration so that the error View is
 // available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
+@EnableConfigurationProperties(ErrorProperties.class)
 @Configuration
 public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustomizer,
 		Ordered {
 
-	@Value("${error.path:/error}")
-	private String errorPath = "/error";
+	@Autowired
+	private ErrorProperties errorProperties;
 
 	@Autowired
 	private ServerProperties properties;
@@ -93,13 +95,13 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
 	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes) {
-		return new BasicErrorController(errorAttributes);
+		return new BasicErrorController(errorAttributes, this.errorProperties);
 	}
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer container) {
 		container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
-				+ this.errorPath));
+				+ this.errorProperties.getPath()));
 	}
 
 	@Configuration
