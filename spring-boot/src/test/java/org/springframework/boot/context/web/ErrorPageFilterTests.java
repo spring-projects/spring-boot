@@ -78,6 +78,26 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
+	public void notAnErrorButNotOK() throws Exception {
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				((HttpServletResponse) response).setStatus(201);
+				super.doFilter(request, response);
+				response.flushBuffer();
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(((HttpServletResponse) this.chain.getResponse()).getStatus(),
+				equalTo(201));
+		assertThat(
+				((HttpServletResponse) ((HttpServletResponseWrapper) this.chain.getResponse())
+						.getResponse()).getStatus(), equalTo(201));
+		assertTrue(this.response.isCommitted());
+	}
+
+	@Test
 	public void unauthorizedWithErrorPath() throws Exception {
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.chain = new MockFilterChain() {
