@@ -57,14 +57,15 @@ org.springframework.boot.autoconfigure.social.TwitterAutoConfiguration,\
 org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
 org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.GzipFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpEncodingAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration
 
 # Template availability providers
