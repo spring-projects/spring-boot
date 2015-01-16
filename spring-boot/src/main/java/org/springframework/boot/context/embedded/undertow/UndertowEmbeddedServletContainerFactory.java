@@ -70,7 +70,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.SocketUtils;
-import org.springframework.util.StringUtils;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 
@@ -329,8 +328,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 		registerServletContainerInitializerToDriveServletContextInitializers(deployment,
 				initializers);
 		deployment.setClassLoader(getServletClassLoader());
-		String contextPath = getContextPath();
-		deployment.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
+		deployment.setContextPath(getContextPath());
 		deployment.setDeploymentName("spring-boot");
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));
