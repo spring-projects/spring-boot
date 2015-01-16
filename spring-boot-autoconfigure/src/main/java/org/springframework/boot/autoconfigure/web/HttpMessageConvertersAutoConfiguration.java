@@ -144,7 +144,9 @@ public class HttpMessageConvertersAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public StringHttpMessageConverter stringHttpMessageConverter() {
-			return new StringHttpMessageConverter(this.encodingProperties.getCharset());
+			StringHttpMessageConverter converter = new StringHttpMessageConverter(this.encodingProperties.getCharset());
+			converter.setWriteAcceptCharset(false);
+			return converter;
 		}
 
 	}
