@@ -740,6 +740,58 @@ not required.
 
 
 
+[[how-to-enable-http-response-compression]]
+=== Enable HTTP response compression
+Spring Boot provides two mechanisms for enabling compression of HTTP compression; one
+that is Tomcat-specific and another that uses a filter and works with Jetty, Tomcat,
+and Undertow.
+
+
+
+[[how-to-enable-http-response-compression-tomcat]]
+==== Enable Tomcat's HTTP response compression
+Tomcat provides built-in support for HTTP response compression. It is disabled by
+default, but can easily be enabled via `application.properties`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.tomcat.compression: on
+----
+
+When set to `on` Tomcat will compress responses with a length that is at least 2048
+bytes. This limit can be configured by specifying an integer value rather than `on`,
+e.g.:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.tomcat.compression: 4096
+----
+
+By default Tomcat will only compress responses with certain MIME types
+(`text/html`, `text/xml`, and `text/plain`). You can customize this using the
+`server.tomcat.compressableMimeTypes` property, e.g.:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.tomcat.compressableMimeTypes=application/json,application/xml
+----
+
+
+
+[[how-to-enable-http-compression-gzip-filter]]
+==== Enable HTTP response compression using GzipFilter
+If you're using Jetty or Undertow, or you want more sophisticated control over
+HTTP response compression, Spring Boot provides auto-configuration for Jetty's
+`GzipFilter`. While this filter is part of Jetty, it's compatible with Tomcat
+and Undertow as well. To enable the filter, simply add a dependency on
+`org.eclipse.jetty:jetty-servlets` to your application.
+
+`GzipFilter` can be configured using the `spring.http.gzip.*` properties. See
+{sc-spring-boot-autoconfigure}/web/GzipFilterProperties.{sc-ext}[`GzipFilterProperties`]
+for more details.
+
+
+
 [[howto-spring-mvc]]
 == Spring MVC
 

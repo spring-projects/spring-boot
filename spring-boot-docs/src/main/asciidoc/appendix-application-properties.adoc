@@ -74,6 +74,8 @@ content into your application; rather pick only the properties that you need.
 	server.ssl.trust-store-type=
 	server.tomcat.access-log-pattern= # log pattern of the access log
 	server.tomcat.access-log-enabled=false # is access logging enabled
+	server.tomcat.compression=off # is compression enabled (off, on, or an integer content length limit)
+	server.tomcat.compressableMimeTypes=text/html,text/xml,text/plain # comma-separated list of mime types that Tomcat will compress
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
 			169\\.254\\.\\d{1,3}\\.\\d{1,3}|\\
@@ -104,6 +106,19 @@ content into your application; rather pick only the properties that you need.
 	spring.http.encoding.charset=UTF-8 # the encoding of HTTP requests/responses
 	spring.http.encoding.enabled=true # enable http encoding support
 	spring.http.encoding.force=true # force the configured encoding
+
+	# HTTP response compression ({sc-spring-boot-autoconfigure/web/GzipFilterProperties.{sc-ext}[GzipFilterProperties])
+	spring.http.gzip.bufferSize= # size of the output buffer in bytes
+	spring.http.gzip.minGzipSize= # minimum content length required for compression to occur
+	spring.http.gzip.deflateCompressionLevel= # the level used for deflate compression (0-9)
+	spring.http.gzip.deflateNoWrap= # noWrap setting for deflate compression (true or false)
+	spring.http.gzip.methods= # comma-separated list of HTTP methods for which compression is enabled
+	spring.http.gzip.mimeTypes= # comma-separated list of MIME types which should be compressed
+	spring.http.gzip.excludedAgents= # comma-separated list of user agents to exclude from compression
+	spring.http.gzip.excludedAgentPatterns= # comma-separated list of regular expression patterns to control user agents excluded from compression
+	spring.http.gzip.excludedPaths= # comma-separated list of paths to exclude from compression
+	spring.http.gzip.excludedPathPatterns= # comma-separated list of regular expression patterns to control the paths that are excluded from compression
+	spring.http.gzip.vary= # Vary header to be sent on responses that may be compressed
 
 	# JACKSON ({sc-spring-boot-autoconfigure}}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
 	spring.jackson.date-format= # Date format string (e.g. yyyy-MM-dd HH:mm:ss), or a fully-qualified date format class name (e.g. com.fasterxml.jackson.databind.util.ISO8601DateFormat)
