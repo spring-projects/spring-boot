@@ -145,14 +145,14 @@ public class WebMvcAutoConfiguration {
 		@Value("${spring.view.suffix:}")
 		private String suffix = "";
 
-		@Value("${server.servlet-path:}")
-		private String servletPath = "";
-
 		@Autowired
 		private ResourceProperties resourceProperties = new ResourceProperties();
 
 		@Autowired
 		private WebMvcProperties mvcProperties = new WebMvcProperties();
+
+		@Autowired
+		private ServerProperties serverProperties = new ServerProperties();
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -284,32 +284,13 @@ public class WebMvcAutoConfiguration {
 						// Ignore
 					}
 					// Use forward: prefix so that no view resolution is done
-					String viewName;
-
-					if (StringUtils.isEmpty(servletPath)) {
-						viewName = "forward:/index.html";
-					}
-					else {
-						servletPath = stripServletPath(servletPath);
-						logger.debug("Use servlet path for welcome path: " + servletPath);
-						viewName = "forward:" + servletPath + "/index.html";
-						registry.addViewController("").setViewName(viewName);
-					}
+					String viewName = "forward:" + serverProperties.getServletPrefix()
+							+ "/index.html";
 
 					registry.addViewController("/").setViewName(viewName);
 					return;
 				}
 			}
-		}
-
-		private String stripServletPath(String servletPath) {
-
-			int end = servletPath.length();
-
-			while (end != 0 && "/*".indexOf(servletPath.charAt(end - 1)) != -1) {
-				end--;
-			}
-			return servletPath.substring(0, end);
 		}
 
 		@Configuration
