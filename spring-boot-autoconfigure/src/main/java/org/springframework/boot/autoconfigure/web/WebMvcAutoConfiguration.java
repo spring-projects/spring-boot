@@ -151,7 +151,7 @@ public class WebMvcAutoConfiguration {
 		@Autowired
 		private WebMvcProperties mvcProperties = new WebMvcProperties();
 
-		@Autowired
+		@Autowired(required = false)
 		private ServerProperties serverProperties = new ServerProperties();
 
 		@Autowired
