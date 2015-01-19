@@ -604,8 +604,8 @@ Example in Gradle:
 	}
 
 	dependencies {
-		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
-		compile("org.springframework.boot:spring-boot-starter-undertow:{spring-boot-version}")
+		compile 'org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
+		compile 'org.springframework.boot:spring-boot-starter-undertow:{spring-boot-version}")
 		// ...
 	}
 ----
@@ -653,16 +653,20 @@ add a listener to the `Builder`:
 === Use Tomcat 7
 Tomcat 7 works with Spring Boot, but the default is to use Tomcat 8. If you cannot use
 Tomcat 8 (for example, because you are using Java 1.6) you will need to change your
-classpath to reference Tomcat 7 and Servlet API 3.0.
+classpath to reference Tomcat 7 .
 
-If you are using the starter poms and parent you can just change the version properties,
-e.g. for a simple webapp or service:
+
+
+==== Use Tomcat 7 with Maven
+[[howto-use-tomcat-7-maven]]
+
+If you are using the starter poms and parent you can just change the Tomcat version
+property, e.g. for a simple webapp or service:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<properties>
 		<tomcat.version>7.0.56</tomcat.version>
-		<servlet-api.version>3.0.1</servlet-api.version>
 	</properties>
 	<dependencies>
 		...
@@ -676,12 +680,42 @@ e.g. for a simple webapp or service:
 
 
 
+==== Use Tomcat 7 with Gradle
+[[howto-use-tomcat-7-gradle]]
+
+You can use a resolution strategy to change the versions of the Tomcat dependencies,
+e.g. for a simple webapp or service:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	configurations.all {
+		resolutionStrategy {
+			eachDependency {
+				if (it.requested.group == 'org.apache.tomcat.embed') {
+					it.useVersion '7.0.56'
+				}
+			}
+		}
+	}
+
+	dependencies {
+		compile 'org.springframework.boot:spring-boot-starter-web'
+	}
+----
+
+
+
 [[howto-use-jetty-8]]
 === Use Jetty 8
 Jetty 8 works with Spring Boot, but the default is to use Jetty 9. If you cannot use
 Jetty 9 (for example, because you are using Java 1.6) you will need to change your
-classpath to reference Jetty 8 and Servlet API 3.0. You will also need to exclude
-Jetty's WebSocket-related dependencies.
+classpath to reference Jetty 8. You will also need to exclude Jetty's WebSocket-related
+dependencies.
+
+
+
+[[howto-use-jetty-8-maven]]
+==== Use Jetty 8 with Maven
 
 If you are using the starter poms and parent you can just add the Jetty starter with
 the required WebSocket exclusion and change the version properties, e.g. for a simple
@@ -692,7 +726,6 @@ webapp or service:
 	<properties>
 		<jetty.version>8.1.15.v20140411</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
-		<servlet-api.version>3.0.1</servlet-api.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -716,6 +749,36 @@ webapp or service:
 			</exclusions>
 		</dependency>
 	</dependencies>
+----
+
+
+
+[[howto-use-jetty-8-gradle]]
+==== Use Jetty 8 with Gradle
+
+You can use a resolution strategy to change the version of the Jetty dependencies, e.g.
+for a simple webapp or service:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	configurations.all {
+		resolutionStrategy {
+			eachDependency {
+				if (it.requested.group == 'org.eclipse.jetty') {
+					it.useVersion '8.1.15.v20140411'
+				}
+			}
+		}
+	}
+
+	dependencies {
+		compile ('org.springframework.boot:spring-boot-starter-web') {
+			exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+		}
+		compile ('org.springframework.boot:spring-boot-starter-jetty') {
+			exclude group: 'org.eclipse.jetty.websocket'
+		}
+	}
 ----
 
 
