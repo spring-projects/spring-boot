@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,9 +102,7 @@ class OnClassCondition extends SpringBootCondition {
 	private void addAll(List<String> list, List<Object> itemsToAdd) {
 		if (itemsToAdd != null) {
 			for (Object item : itemsToAdd) {
-				for (String arrayItem : (String[]) item) {
-					list.add(arrayItem.toString());
-				}
+				Collections.addAll(list, (String[]) item);
 			}
 		}
 	}

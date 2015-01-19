@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.web;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -73,9 +74,7 @@ public class SpringBootServletInitializerTests {
 
 	private Matcher<? super Set<Object>> equalToSet(Object... items) {
 		Set<Object> set = new LinkedHashSet<Object>();
-		for (Object item : items) {
-			set.add(item);
-		}
+		Collections.addAll(set, items);
 		return equalTo(set);
 	}
 
