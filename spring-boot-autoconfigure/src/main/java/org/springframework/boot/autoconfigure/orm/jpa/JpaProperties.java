@@ -169,6 +169,7 @@ public class JpaProperties {
 		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
 				DataSource dataSource) {
 			Map<String, String> result = new HashMap<String, String>();
+            result.putAll(existing);
 			if (!isAlreadyProvided(existing, "ejb.naming_strategy")
 					&& this.namingStrategy != null) {
 				result.put("hibernate.ejb.naming_strategy", this.namingStrategy.getName());
