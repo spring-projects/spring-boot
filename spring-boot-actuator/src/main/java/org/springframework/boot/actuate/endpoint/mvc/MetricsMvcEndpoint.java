@@ -16,18 +16,22 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import org.springframework.boot.actuate.endpoint.KeyUtils;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Adapter to expose {@link MetricsEndpoint} as an {@link MvcEndpoint}.
  *
  * @author Dave Syer
+ * @author Sergei Egorov
  */
 public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
@@ -38,23 +42,19 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 		this.delegate = delegate;
 	}
 
-	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{regexp:.*}", method = RequestMethod.GET)
 	@ResponseBody
-	public Object value(@PathVariable String name) {
-		Object value = this.delegate.invoke().get(name);
-		if (value == null) {
-			throw new NoSuchMetricException("No such metric: " + name);
-		}
-		return value;
-	}
+	public Object value(@PathVariable String regexp) {
+		Map<String, Object> metrics = this.delegate.invoke();
+		Map<String, Object> result = new HashMap<String, Object>();
 
-	@SuppressWarnings("serial")
-	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such metric")
-	public static class NoSuchMetricException extends RuntimeException {
-
-		public NoSuchMetricException(String string) {
-			super(string);
+		Pattern keyPattern = KeyUtils.getPattern(regexp);
+		for (Map.Entry<String, Object> metricEntry : metrics.entrySet()) {
+			if(keyPattern.matcher(metricEntry.getKey()).matches()) {
+				result.put(metricEntry.getKey(), metricEntry.getValue());
+			}
 		}
 
+		return result;
 	}
 }

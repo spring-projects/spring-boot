@@ -29,8 +29,6 @@ import org.springframework.util.Assert;
  */
 class Sanitizer {
 
-	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
-
 	private Pattern[] keysToSanitize;
 
 	public Sanitizer() {
@@ -46,24 +44,8 @@ class Sanitizer {
 		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
 		this.keysToSanitize = new Pattern[keysToSanitize.length];
 		for (int i = 0; i < keysToSanitize.length; i++) {
-			this.keysToSanitize[i] = getPattern(keysToSanitize[i]);
+			this.keysToSanitize[i] = KeyUtils.getPattern(keysToSanitize[i], ".*");
 		}
-	}
-
-	private Pattern getPattern(String value) {
-		if (isRegex(value)) {
-			return Pattern.compile(value, Pattern.CASE_INSENSITIVE);
-		}
-		return Pattern.compile(".*" + value + "$", Pattern.CASE_INSENSITIVE);
-	}
-
-	private boolean isRegex(String value) {
-		for (String part : REGEX_PARTS) {
-			if (value.contains(part)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
