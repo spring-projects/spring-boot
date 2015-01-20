@@ -33,7 +33,10 @@ import javax.servlet.Filter;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -57,6 +60,8 @@ class ServletContextInitializerBeans extends
 
 	static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
 
+	private final Log log = LogFactory.getLog(getClass());
+
 	private final Set<Object> seen = new HashSet<Object>();
 
 	private final MultiValueMap<Class<?>, ServletContextInitializer> initializers;
@@ -79,36 +84,55 @@ class ServletContextInitializerBeans extends
 	private void addServletContextInitializerBeans(ListableBeanFactory beanFactory) {
 		for (Entry<String, ServletContextInitializer> initializerBean : getOrderedBeansOfType(
 				beanFactory, ServletContextInitializer.class)) {
-			addServletContextInitializerBean(initializerBean.getValue());
+			addServletContextInitializerBean(initializerBean.getKey(),
+					initializerBean.getValue(), beanFactory);
 		}
 	}
 
-	private void addServletContextInitializerBean(ServletContextInitializer initializer) {
+	private void addServletContextInitializerBean(String beanName,
+			ServletContextInitializer initializer, ListableBeanFactory beanFactory) {
 		if (initializer instanceof ServletRegistrationBean) {
-			addServletContextInitializerBean(Servlet.class, initializer,
-					((ServletRegistrationBean) initializer).getServlet());
+			addServletContextInitializerBean(Servlet.class, beanName, initializer,
+					beanFactory, ((ServletRegistrationBean) initializer).getServlet());
 		}
 		else if (initializer instanceof FilterRegistrationBean) {
-			addServletContextInitializerBean(Filter.class, initializer,
-					((FilterRegistrationBean) initializer).getFilter());
+			addServletContextInitializerBean(Filter.class, beanName, initializer,
+					beanFactory, ((FilterRegistrationBean) initializer).getFilter());
 		}
 		else if (initializer instanceof ServletListenerRegistrationBean) {
-			addServletContextInitializerBean(EventListener.class, initializer,
+			addServletContextInitializerBean(EventListener.class, beanName, initializer,
+					beanFactory,
 					((ServletListenerRegistrationBean<?>) initializer).getListener());
 		}
 		else {
-			addServletContextInitializerBean(ServletContextInitializer.class,
-					initializer, null);
+			addServletContextInitializerBean(ServletContextInitializer.class, beanName,
+					initializer, beanFactory, null);
 		}
 	}
 
-	private void addServletContextInitializerBean(Class<?> type,
-			ServletContextInitializer initializer, Object source) {
+	private void addServletContextInitializerBean(Class<?> type, String beanName,
+			ServletContextInitializer initializer, ListableBeanFactory beanFactory,
+			Object source) {
 		this.initializers.add(type, initializer);
 		if (source != null) {
 			// Mark the underlying source as seen in case it wraps an existing bean
 			this.seen.add(source);
 		}
+		if (this.log.isDebugEnabled()) {
+			String resourceDescription = getResourceDescription(beanName, beanFactory);
+			int order = getOrder(initializer);
+			this.log.debug("Added existing " + type.getSimpleName()
+					+ " initializer bean '" + beanName + "'; order=" + order
+					+ ", resource=" + resourceDescription);
+		}
+	}
+
+	private String getResourceDescription(String beanName, ListableBeanFactory beanFactory) {
+		if (beanFactory instanceof BeanDefinitionRegistry) {
+			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			return registry.getBeanDefinition(beanName).getResourceDescription();
+		}
+		return "unknown";
 	}
 
 	@SuppressWarnings("unchecked")
@@ -141,12 +165,21 @@ class ServletContextInitializerBeans extends
 		List<Map.Entry<String, B>> beans = getOrderedBeansOfType(beanFactory, beanType);
 		for (Entry<String, B> bean : beans) {
 			if (this.seen.add(bean.getValue())) {
+				int order = getOrder(bean.getValue());
+				String beanName = bean.getKey();
 				// One that we haven't already seen
-				RegistrationBean registration = adapter.createRegistrationBean(
-						bean.getKey(), bean.getValue(), beans.size());
-				registration.setName(bean.getKey());
-				registration.setOrder(getOrder(bean.getValue()));
+				RegistrationBean registration = adapter.createRegistrationBean(beanName,
+						bean.getValue(), beans.size());
+				registration.setName(beanName);
+				registration.setOrder(order);
 				this.initializers.add(type, registration);
+
+				if (this.log.isDebugEnabled()) {
+					this.log.debug("Created " + type.getSimpleName()
+							+ " initializer for bean '" + beanName + "'; order=" + order
+							+ ", resource="
+							+ getResourceDescription(beanName, beanFactory));
+				}
 			}
 		}
 	}
