@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,21 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import javax.sql.DataSource;
+import java.util.Map;
 
+import javax.sql.DataSource;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
+
+import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jta.JtaAutoConfiguration;
+import org.springframework.boot.autoconfigure.jta.JtaProperties;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -136,6 +146,54 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 		setupTestConfiguration();
 		this.context.register(LiquibaseAutoConfiguration.class);
 		this.context.refresh();
+	}
+
+	@Test
+	public void testCustomJtaPlatform() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jpa.properties.hibernate.transaction.jta.platform:"
+						+ TestJtaPlatform.class.getName());
+		this.context.register(JtaProperties.class, JtaAutoConfiguration.class);
+		setupTestConfiguration();
+		this.context.refresh();
+		Map<String, Object> jpaPropertyMap = this.context.getBean(
+				LocalContainerEntityManagerFactoryBean.class).getJpaPropertyMap();
+		assertThat((String) jpaPropertyMap.get("hibernate.transaction.jta.platform"),
+				equalTo(TestJtaPlatform.class.getName()));
+	}
+
+	public static class TestJtaPlatform implements JtaPlatform {
+
+		@Override
+		public TransactionManager retrieveTransactionManager() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public UserTransaction retrieveUserTransaction() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Object getTransactionIdentifier(Transaction transaction) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean canRegisterSynchronization() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void registerSynchronization(Synchronization synchronization) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int getCurrentStatus() throws SystemException {
+			throw new UnsupportedOperationException();
+		}
+
 	}
 
 }
