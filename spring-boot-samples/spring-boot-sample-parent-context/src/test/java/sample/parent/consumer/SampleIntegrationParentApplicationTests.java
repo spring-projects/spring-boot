@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 
 package sample.parent.consumer;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,12 +31,13 @@ import org.springframework.util.StreamUtils;
 import sample.parent.SampleParentContextApplication;
 import sample.parent.producer.ProducerApplication;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Basic integration tests for service demo application.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class SampleIntegrationParentApplicationTests {
 
@@ -60,30 +58,44 @@ public class SampleIntegrationParentApplicationTests {
 	@Test
 	public void testVanillaExchange() throws Exception {
 		SpringApplication.run(ProducerApplication.class, "World");
-		String output = getOutput();
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		awaitOutputContaining("Hello World");
 	}
 
-	private String getOutput() throws Exception {
-		Future<String> future = Executors.newSingleThreadExecutor().submit(
-				new Callable<String>() {
-					@Override
-					public String call() throws Exception {
-						Resource[] resources = new Resource[0];
-						while (resources.length == 0) {
-							Thread.sleep(200);
-							resources = ResourcePatternUtils.getResourcePatternResolver(
-									new DefaultResourceLoader()).getResources(
-									"file:target/output/**");
-						}
-						StringBuilder builder = new StringBuilder();
-						for (Resource resource : resources) {
-							builder.append(new String(StreamUtils
-									.copyToByteArray(resource.getInputStream())));
-						}
-						return builder.toString();
-					}
-				});
-		return future.get(30, TimeUnit.SECONDS);
+	private void awaitOutputContaining(final String requiredContents) throws Exception {
+		long endTime = System.currentTimeMillis() + 30000;
+		String output = null;
+		while (System.currentTimeMillis() < endTime) {
+			Resource[] resources = findResources();
+			if (resources.length == 0) {
+				Thread.sleep(200);
+				resources = findResources();
+			}
+			else {
+				output = readResources(resources);
+				if (output != null && output.contains(requiredContents)) {
+					return;
+				}
+				else {
+					Thread.sleep(200);
+					output = readResources(resources);
+				}
+			}
+		}
+		fail("Timed out awaiting output containing '" + requiredContents
+				+ "'. Output was '" + output + "'");
+	}
+
+	private Resource[] findResources() throws IOException {
+		return ResourcePatternUtils.getResourcePatternResolver(
+				new DefaultResourceLoader()).getResources("file:target/output/**");
+	}
+
+	private String readResources(Resource[] resources) throws IOException {
+		StringBuilder builder = new StringBuilder();
+		for (Resource resource : resources) {
+			builder.append(new String(StreamUtils.copyToByteArray(resource
+					.getInputStream())));
+		}
+		return builder.toString();
 	}
 }
