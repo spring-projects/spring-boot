@@ -30,6 +30,11 @@
 			<artifactId>logback-classic</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<!-- Used to provide a signed jar -->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -57,6 +62,7 @@
 							<addTestClassPath>true</addTestClassPath>
 							<skipInvocation>${skipTests}</skipInvocation>
 							<streamLogs>true</streamLogs>
+							<parallelThreads>4</parallelThreads>
 						</configuration>
 						<executions>
 							<execution>
