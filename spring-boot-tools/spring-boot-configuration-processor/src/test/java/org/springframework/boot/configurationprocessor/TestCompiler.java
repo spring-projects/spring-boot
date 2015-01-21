@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +35,15 @@ import org.junit.rules.TemporaryFolder;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class TestCompiler {
 
 	private final JavaCompiler compiler;
 
 	private final StandardJavaFileManager fileManager;
+
+	private final File outputLocation;
 
 	public TestCompiler(TemporaryFolder temporaryFolder) throws IOException {
 		this(ToolProvider.getSystemJavaCompiler(), temporaryFolder);
@@ -50,7 +53,8 @@ public class TestCompiler {
 			throws IOException {
 		this.compiler = compiler;
 		this.fileManager = compiler.getStandardFileManager(null, null, null);
-		Iterable<? extends File> temp = Arrays.asList(temporaryFolder.newFolder());
+		this.outputLocation = temporaryFolder.newFolder();
+		Iterable<? extends File> temp = Arrays.asList(this.outputLocation);
 		this.fileManager.setLocation(StandardLocation.CLASS_OUTPUT, temp);
 		this.fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, temp);
 	}
@@ -59,6 +63,10 @@ public class TestCompiler {
 		Iterable<? extends JavaFileObject> javaFileObjects = getJavaFileObjects(types);
 		return new TestCompilationTask(this.compiler.getTask(null, this.fileManager,
 				null, null, null, javaFileObjects));
+	}
+
+	public File getOutputLocation() {
+		return this.outputLocation;
 	}
 
 	private Iterable<? extends JavaFileObject> getJavaFileObjects(Class<?>... types) {

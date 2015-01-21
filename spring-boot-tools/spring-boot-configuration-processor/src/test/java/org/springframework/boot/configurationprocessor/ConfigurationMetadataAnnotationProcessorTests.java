@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,23 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
@@ -59,11 +66,19 @@ import static org.springframework.boot.configurationprocessor.ConfigurationMetad
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	private TestCompiler compiler;
+
+	@Before
+	public void createCompiler() throws IOException {
+		this.compiler = new TestCompiler(this.temporaryFolder);
+	}
 
 	@Test
 	public void notAnnotated() throws Exception {
@@ -307,6 +322,36 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class, "explicit");
 	}
 
+	@Test
+	public void mergingOfAdditionalMetadata() throws Exception {
+		File metaInfFolder = new File(this.compiler.getOutputLocation(), "META-INF");
+		metaInfFolder.mkdirs();
+		File additionalMetadataFile = new File(metaInfFolder,
+				"additional-spring-configuration-metadata.json");
+		additionalMetadataFile.createNewFile();
+
+		JSONObject property = new JSONObject();
+		property.put("name", "foo");
+		property.put("type", "java.lang.String");
+		property.put("sourceType", AdditionalMetadata.class.getName());
+		JSONArray properties = new JSONArray();
+		properties.put(property);
+		JSONObject additionalMetadata = new JSONObject();
+		additionalMetadata.put("properties", properties);
+		FileWriter writer = new FileWriter(additionalMetadataFile);
+		additionalMetadata.write(writer);
+		writer.flush();
+
+		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+
+		assertThat(metadata, containsProperty("simple.comparator"));
+
+		assertThat(metadata,
+				containsProperty("foo", String.class)
+						.fromSource(AdditionalMetadata.class));
+
+	}
+
 	private void assertSimpleLombokProperties(ConfigurationMetadata metadata,
 			Class<?> source, String prefix) {
 		assertThat(metadata, containsGroup(prefix).fromSource(source));
@@ -324,13 +369,13 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	private ConfigurationMetadata compile(Class<?>... types) throws IOException {
 		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor();
-		new TestCompiler(this.temporaryFolder).getTask(types).call(processor);
+		this.compiler.getTask(types).call(processor);
 		return processor.getMetadata();
 	}
 
 	@SupportedAnnotationTypes({ "*" })
 	@SupportedSourceVersion(SourceVersion.RELEASE_6)
-	private static class TestConfigurationMetadataAnnotationProcessor extends
+	private class TestConfigurationMetadataAnnotationProcessor extends
 			ConfigurationMetadataAnnotationProcessor {
 
 		static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
@@ -351,12 +396,32 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 		@Override
 		protected void writeMetaData(ConfigurationMetadata metadata) {
-			this.metadata = metadata;
+			super.writeMetaData(metadata);
+			try {
+				File metadataFile = new File(
+						ConfigurationMetadataAnnotationProcessorTests.this.compiler
+								.getOutputLocation(),
+						"META-INF/spring-configuration-metadata.json");
+				if (metadataFile.isFile()) {
+					this.metadata = new JsonMarshaller().read(new FileInputStream(
+							metadataFile));
+				}
+				else {
+					this.metadata = metadata;
+				}
+			}
+			catch (IOException e) {
+				throw new RuntimeException("Failed to read metadata from disk", e);
+			}
 		}
 
 		public ConfigurationMetadata getMetadata() {
 			return this.metadata;
 		}
+
+	}
+
+	private static class AdditionalMetadata {
 
 	}
 
