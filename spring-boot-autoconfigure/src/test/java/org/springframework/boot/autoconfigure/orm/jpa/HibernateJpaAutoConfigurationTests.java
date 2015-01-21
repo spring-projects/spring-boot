@@ -32,11 +32,13 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jta.JtaAutoConfiguration;
 import org.springframework.boot.autoconfigure.jta.JtaProperties;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -146,6 +148,17 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 		setupTestConfiguration();
 		this.context.register(LiquibaseAutoConfiguration.class);
 		this.context.refresh();
+	}
+
+	@Test
+	public void defaultJtaPlatform() throws Exception {
+		this.context.register(JtaProperties.class, JtaAutoConfiguration.class);
+		setupTestConfiguration();
+		this.context.refresh();
+		Map<String, Object> jpaPropertyMap = this.context.getBean(
+				LocalContainerEntityManagerFactoryBean.class).getJpaPropertyMap();
+		assertThat(jpaPropertyMap.get("hibernate.transaction.jta.platform"),
+				instanceOf(SpringJtaPlatform.class));
 	}
 
 	@Test
