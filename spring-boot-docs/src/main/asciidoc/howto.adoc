@@ -666,7 +666,7 @@ property, e.g. for a simple webapp or service:
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<properties>
-		<tomcat.version>7.0.56</tomcat.version>
+		<tomcat.version>7.0.57</tomcat.version>
 	</properties>
 	<dependencies>
 		...
@@ -692,7 +692,7 @@ e.g. for a simple webapp or service:
 		resolutionStrategy {
 			eachDependency {
 				if (it.requested.group == 'org.apache.tomcat.embed') {
-					it.useVersion '7.0.56'
+					it.useVersion '7.0.57'
 				}
 			}
 		}
