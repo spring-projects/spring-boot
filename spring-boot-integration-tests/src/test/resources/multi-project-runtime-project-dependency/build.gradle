@@ -1,0 +1,22 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}"
+	}
+}
+
+project(':projectA') {
+	apply plugin: 'spring-boot'
+	dependencies {
+		runtime project(':projectB')
+	}
+	bootRepackage {
+		mainClass 'com.foo.Bar'
+	}
+}
+
+project(':projectB') {
+	apply plugin: 'java'
+}
