@@ -16,12 +16,14 @@ public abstract class AllNestedConditions extends AbstractNestedCondition {
 		for (ConditionOutcome outcome : outcomes) {
 			if (outcome.isMatch()) {
 				match.add(outcome);
-			} else {
+			}
+			else {
 				nonMatch.add(outcome);
 			}
 		}
-		return new ConditionOutcome(match.size() == outcomes.size(), "all match resulted in " + match + " matches and "
-				+ nonMatch + " non matches");
+		return new ConditionOutcome(match.size() == outcomes.size(),
+				"all match resulted in " + match + " matches and " + nonMatch
+						+ " non matches");
 	}
 
 }
