@@ -2201,6 +2201,35 @@ after which you can run the application with
 
 
 
+[[howto-use-java-6]]
+=== How to use Java 6
+If you want to use Spring Boot with Java 6 there are a small number of configuration
+changes that you will have to make. The exact changes depend on your application's
+functionality.
+
+
+
+[[howto-use-java-6-embedded-container]]
+==== Embedded servlet container compatibility
+
+If you are using one of Boot's embedded Servlet containers you will have to use a
+Java 6-compatible container. Both Tomcat 7 and Jetty 8 are Java 6 compatible. See
+<<howto-use-tomcat-7>> and <<howto-use-jetty-8>> for details.
+
+
+
+[[how-to-use-java-6-jta-api]]
+==== JTA API compatibility
+
+While the Java Transaction API itself doesn't require Java 7 the official API jar
+contains classes that have been built to require Java 7. If you are using JTA then
+you will need to replace the official JTA 1.2 API jar with one that has been built
+to work on Java 6. To do so, exclude any transitive dependencies on
+`javax.transaction:javax.transaction-api` and replace them with a dependency on
+`org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:1.0.0.Final`
+
+
+
 [[howto-traditional-deployment]]
 == Traditional deployment
 
