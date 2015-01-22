@@ -29,7 +29,6 @@
 		<dependency>
 			<groupId>org.springframework.plugin</groupId>
 			<artifactId>spring-plugin-core</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 </project>
