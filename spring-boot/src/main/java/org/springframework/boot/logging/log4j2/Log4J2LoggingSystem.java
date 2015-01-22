@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Level;
@@ -38,6 +40,7 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -95,7 +98,24 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	protected String[] getStandardConfigLocations() {
-		return new String[] { "log4j2.json", "log4j2.jsn", "log4j2.xml" };
+		return getCurrentlySupportedConfigLocations();
+	}
+
+	private String[] getCurrentlySupportedConfigLocations() {
+		List<String> supportedConfigLocations = new ArrayList<String>();
+		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
+			Collections.addAll(supportedConfigLocations, "log4j2.yaml", "log4j2.yml");
+		}
+		if (isClassAvailable("com.fasterxml.jackson.databind.ObjectMapper")) {
+			Collections.addAll(supportedConfigLocations, "log4j2.json", "log4j2.jsn");
+		}
+		supportedConfigLocations.add("log4j2.xml");
+		return supportedConfigLocations.toArray(new String[supportedConfigLocations
+				.size()]);
+	}
+
+	protected boolean isClassAvailable(String className) {
+		return ClassUtils.isPresent(className, getClassLoader());
 	}
 
 	@Override

@@ -1241,6 +1241,18 @@ samples for more detail and to see it in action.
 
 
 
+[[howto-configure-log4j-for-logging-yaml-or-json-config]]
+==== Use YAML or JSON to configure Log4j 2
+In addition to its default XML configuration format, Log4j 2 also supports YAML and JSON
+configuration files. To configure Log4j 2 to use an alternative configuration file format
+all you need to do is add an appropriate dependency to the classpath. To use YAML, add a
+dependency on `com.fasterxml.jackson.dataformat:jackson-dataformat-yaml` and Log4j 2 will
+look for configuration files names `log4j2.yaml` or `log4j2.yml`. To use JSON, add a
+dependency on `com.fasterxml.jackson.core:jackson-databind` and Log4j 2 will look for
+configuration files named `log4j2.json` or `log4j2.jsn`
+
+
+
 [[howto-data-access]]
 == Data Access
 

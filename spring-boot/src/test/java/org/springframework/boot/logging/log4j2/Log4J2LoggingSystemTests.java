@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +32,11 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -39,14 +46,14 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Daniel Fullarton
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private final Log4J2LoggingSystem loggingSystem = new Log4J2LoggingSystem(getClass()
-			.getClassLoader());
+	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();
 
 	private Logger logger;
 
@@ -118,6 +125,57 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		julLogger.severe("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+	}
+
+	@Test
+	public void configLocationsWithNoExtraDependencies() {
+		assertThat(this.loggingSystem.getStandardConfigLocations(),
+				is(arrayContaining("log4j2.xml")));
+	}
+
+	@Test
+	public void configLocationsWithJacksonDatabind() {
+		this.loggingSystem.availableClasses(ObjectMapper.class.getName());
+		assertThat(this.loggingSystem.getStandardConfigLocations(),
+				is(arrayContaining("log4j2.json", "log4j2.jsn", "log4j2.xml")));
+	}
+
+	@Test
+	public void configLocationsWithJacksonDataformatYaml() {
+		this.loggingSystem
+				.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLParser");
+		assertThat(this.loggingSystem.getStandardConfigLocations(),
+				is(arrayContaining("log4j2.yaml", "log4j2.yml", "log4j2.xml")));
+	}
+
+	@Test
+	public void configLocationsWithJacksonDatabindAndDataformatYaml() {
+		this.loggingSystem.availableClasses(
+				"com.fasterxml.jackson.dataformat.yaml.YAMLParser",
+				ObjectMapper.class.getName());
+		assertThat(
+				this.loggingSystem.getStandardConfigLocations(),
+				is(arrayContaining("log4j2.yaml", "log4j2.yml", "log4j2.json",
+						"log4j2.jsn", "log4j2.xml")));
+	}
+
+	private static class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
+
+		private List<String> availableClasses = new ArrayList<String>();
+
+		public TestLog4J2LoggingSystem() {
+			super(TestLog4J2LoggingSystem.class.getClassLoader());
+		}
+
+		@Override
+		protected boolean isClassAvailable(String className) {
+			return this.availableClasses.contains(className);
+		}
+
+		private void availableClasses(String... classNames) {
+			Collections.addAll(this.availableClasses, classNames);
+		}
+
 	}
 
 }
