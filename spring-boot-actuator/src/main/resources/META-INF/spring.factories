@@ -12,4 +12,5 @@ org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.PublicMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceRepositoryAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.ElasticsearchHealthIndicatorConfiguration
