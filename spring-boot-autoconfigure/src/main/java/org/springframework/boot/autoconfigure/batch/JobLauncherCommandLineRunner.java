@@ -223,8 +223,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 					logger.debug("Skipped job: " + job.getName());
 					continue;
 				}
+				execute(job, jobParameters);
 			}
-			execute(job, jobParameters);
 		}
 	}
 
