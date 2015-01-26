@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import javax.sql.XADataSource;
 
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 import bitronix.tm.resource.common.ResourceBean;
@@ -40,9 +41,11 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
  *
  * @author Phillip Webb
  * @author Josh Long
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
 @SuppressWarnings("serial")
+@ConfigurationProperties(prefix = "spring.jta.bitronix.datasource")
 public class PoolingDataSourceBean extends PoolingDataSource implements BeanNameAware,
 		InitializingBean {
 

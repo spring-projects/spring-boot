@@ -270,6 +270,72 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.log-dir= # transaction log dir
 	spring.jta.*= # technology specific configuration
 
+	# ATOMIKOS
+	spring.jta.atomikos.connectionfactory.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool
+	spring.jta.atomikos.connectionfactory.ignore-session-transacted-flag=true # Whether or not to ignore the transacted flag when creating session
+	spring.jta.atomikos.connectionfactory.local-transaction-mode=false # Whether or not local transactions are desired
+	spring.jta.atomikos.connectionfactory.maintenance-interval=60 # The time, in seconds, between runs of the pool's maintenance thread
+	spring.jta.atomikos.connectionfactory.max-idle-time=60 # The time, in seconds, after which connections are cleaned up from the pool
+	spring.jta.atomikos.connectionfactory.max-lifetime=0 # The time, in seconds, that a connection can be pooled for before being destroyed. 0 denotes no limit.
+	spring.jta.atomikos.connectionfactory.max-pool-size=1 # The maximum size of the pool
+	spring.jta.atomikos.connectionfactory.min-pool-size=1 # The minimum size of the pool
+	spring.jta.atomikos.connectionfactory.reap-timeout=0 # The reap timeout, in seconds, for borrowed connections. 0 denotes no limit.
+	spring.jta.atomikos.connectionfactory.unique-resource-name=jmsConnectionFactory # The unique name used to identify the resource during recovery
+	spring.jta.atomikos.datasource.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool
+	spring.jta.atomikos.datasource.default-isolation-level= # Default isolation level of connections provided by the pool
+	spring.jta.atomikos.datasource.login-timeout= # Timeout, in seconds, for establishing a database connection
+	spring.jta.atomikos.datasource.maintenance-interval=60 # The time, in seconds, between runs of the pool's maintenance thread
+	spring.jta.atomikos.datasource.max-idle-time=60 # The time, in seconds, after which connections are cleaned up from the pool
+	spring.jta.atomikos.datasource.max-lifetime=0 # The time, in seconds, that a connection can be pooled for before being destroyed. 0 denotes no limit.
+	spring.jta.atomikos.datasource.max-pool-size=1 # The maximum size of the pool
+	spring.jta.atomikos.datasource.min-pool-size=1 # The minimum size of the pool
+	spring.jta.atomikos.datasource.reap-timeout=0 # The reap timeout, in seconds, for borrowed connections. 0 denotes no limit.
+	spring.jta.atomikos.datasource.test-query= # SQL query or statement used to validate a connection before returning it
+	spring.jta.atomikos.datasource.unique-resource-name=dataSource # The unique name used to identify the resource during recovery
+
+	# BITRONIX
+	spring.jta.bitronix.connectionfactory.acquire-increment=1 # Number of connections to create when growing the pool
+	spring.jta.bitronix.connectionfactory.acquisition-interval=1 # Time, in seconds, to wait before trying to acquire a connection again after an invalid connection was acquired
+	spring.jta.bitronix.connectionfactory.acquisition-timeout=30 # Timeout, in seconds, for acquiring connections from the pool
+	spring.jta.bitronix.connectionfactory.allow-local-transactions=true # Whether or not the transaction manager should allow mixing XA and non-XA transactions
+	spring.jta.bitronix.connectionfactory.apply-transaction-timeout=false # Whether or not the transaction timeout should be set on the XAResource when it is enlisted
+	spring.jta.bitronix.connectionfactory.automatic-enlisting-enabled=true # Whether or not resources should be enlisted and delisted automatically
+	spring.jta.bitronix.connectionfactory.cache-producers-consumers=true # Whether or not produces and consumers should be cached
+	spring.jta.bitronix.connectionfactory.defer-connection-release=true # Whether or not the provider can run many transactions on the same connection and supports transaction interleaving
+	spring.jta.bitronix.connectionfactory.ignore-recovery-failures=false # Whether or not recovery failures should be ignored
+	spring.jta.bitronix.connectionfactory.max-idle-time=60 # The time, in seconds, after which connections are cleaned up from the pool
+	spring.jta.bitronix.connectionfactory.max-pool-size=10 # The maximum size of the pool. 0 denotes no limit
+	spring.jta.bitronix.connectionfactory.min-pool-size=0 # The minimum size of the pool
+	spring.jta.bitronix.connectionfactory.password= # The password to use to connect to the JMS provider
+	spring.jta.bitronix.connectionfactory.share-transaction-connections=false #  Whether or not connections in the ACCESSIBLE state can be shared within the context of a transaction
+	spring.jta.bitronix.connectionfactory.test-connections=true # Whether or not connections should be tested when acquired from the pool
+	spring.jta.bitronix.connectionfactory.two-pc-ordering-position=1 # The postion that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE)
+	spring.jta.bitronix.connectionfactory.unique-name=jmsConnectionFactory # The unique name used to identify the resource during recovery
+	spring.jta.bitronix.connectionfactory.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources
+	spring.jta.bitronix.connectionfactory.user= # The user to use to connect to the JMS provider
+	spring.jta.bitronix.datasource.acquire-increment=1 # Number of connections to create when growing the pool
+	spring.jta.bitronix.datasource.acquisition-interval=1 # Time, in seconds, to wait before trying to acquire a connection again after an invalid connection was acquired
+	spring.jta.bitronix.datasource.acquisition-timeout=30 # Timeout, in seconds, for acquiring connections from the pool
+	spring.jta.bitronix.datasource.allow-local-transactions=true # Whether or not the transaction manager should allow mixing XA and non-XA transactions
+	spring.jta.bitronix.datasource.apply-transaction-timeout=false # Whether or not the transaction timeout should be set on the XAResource when it is enlisted
+	spring.jta.bitronix.datasource.automatic-enlisting-enabled=true # Whether or not resources should be enlisted and delisted automatically
+	spring.jta.bitronix.datasource.cursor-holdability= # The default cursor holdability for connections
+	spring.jta.bitronix.datasource.defer-connection-release=true # Whether or not the database can run many transactions on the same connection and supports transaction interleaving
+	spring.jta.bitronix.datasource.enable-jdbc4-connection-test # Whether or not Connection.isValid() is called when acquiring a connection from the pool
+	spring.jta.bitronix.datasource.ignore-recovery-failures=false # Whether or not recovery failures should be ignored
+	spring.jta.bitronix.datasource.isolation-level= # The default isolation level for connections
+	spring.jta.bitronix.datasource.local-auto-commit # The default auto-commit mode for local transactions
+	spring.jta.bitronix.datasource.login-timeout= # Timeout, in seconds, for establishing a database connection
+	spring.jta.bitronix.datasource.max-idle-time=60 # The time, in seconds, after which connections are cleaned up from the pool
+	spring.jta.bitronix.datasource.max-pool-size=10 # The maximum size of the pool. 0 denotes no limit
+	spring.jta.bitronix.datasource.min-pool-size=0 # The minimum size of the pool
+	spring.jta.bitronix.datasource.prepared-statement-cache-size=0 # The target size of the prepared statement cache. 0 disables the cache
+	spring.jta.bitronix.datasource.share-transaction-connections=false #  Whether or not connections in the ACCESSIBLE state can be shared within the context of a transaction
+	spring.jta.bitronix.datasource.test-query # SQL query or statement used to validate a connection before returning it
+	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The postion that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE)
+	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery
+	spring.jta.bitronix.datasource.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources
+
 	# SOLR ({sc-spring-boot-autoconfigure}/solr/SolrProperties.{sc-ext}[SolrProperties}])
 	spring.data.solr.host=http://127.0.0.1:8983/solr
 	spring.data.solr.zk-host=
