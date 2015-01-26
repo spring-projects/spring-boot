@@ -242,7 +242,7 @@ public class HealthIndicatorAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "solrHealthIndicator")
-		public HealthIndicator rabbitHealthIndicator() {
+		public HealthIndicator solrHealthIndicator() {
 			if (this.solrServers.size() == 1) {
 				return new SolrHealthIndicator(this.solrServers.entrySet().iterator()
 						.next().getValue());
