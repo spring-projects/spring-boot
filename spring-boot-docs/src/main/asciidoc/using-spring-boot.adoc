@@ -265,7 +265,7 @@ and Hibernate.
 |Support for the Groovy templating engine
 
 |`spring-boot-starter-hateoas`
-|Supported for HATEOAS-based RESTful services via `spring-hateoas`.
+|Support for HATEOAS-based RESTful services via `spring-hateoas`.
 
 |`spring-boot-starter-hornetq`
 |Support for "`Java Message Service API`" via HornetQ.
