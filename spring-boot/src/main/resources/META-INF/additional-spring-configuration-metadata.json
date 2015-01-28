@@ -37,7 +37,7 @@
   },
   {
     "name": "logging.level",
-    "type": "java.util.Map<java.lang.String,java.lang.Object>",
+    "type": "java.util.Map<java.lang.String,java.lang.String>",
     "description": "Log levels severity mapping. Use 'root' for the root logger.",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
