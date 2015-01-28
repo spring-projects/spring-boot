@@ -29,6 +29,10 @@
 			<artifactId>lombok</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -36,7 +40,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<!-- Ensure own  annotation processor doens't kick in -->
+					<!-- Ensure own annotation processor doesn't kick in -->
 					<proc>none</proc>
 				</configuration>
 			</plugin>
