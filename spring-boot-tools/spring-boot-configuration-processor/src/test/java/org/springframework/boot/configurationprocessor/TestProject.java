@@ -20,6 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -30,9 +32,9 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.TestCompiler.TestCompilationTask;
+import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
-import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -94,21 +96,21 @@ public class TestProject {
 		return new File(this.sourceFolder, sourcePathFor(klass));
 	}
 
-	public BuildResult fullBuild() {
+	public ConfigurationMetadata fullBuild() {
 		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor(
 				this.compiler.getOutputLocation());
 		TestCompilationTask task = this.compiler.getTask(this.sourceFiles);
 		deleteFolderContents(this.compiler.getOutputLocation());
 		task.call(processor);
-		return new BuildResult(processor);
+		return processor.getMetadata();
 	}
 
-	public BuildResult incrementalBuild(Class<?>... toRecompile) {
+	public ConfigurationMetadata incrementalBuild(Class<?>... toRecompile) {
 		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor(
 				this.compiler.getOutputLocation());
 		TestCompilationTask task = this.compiler.getTask(toRecompile);
 		task.call(processor);
-		return new BuildResult(processor);
+		return processor.getMetadata();
 	}
 
 	private void deleteFolderContents(File outputFolder) {
@@ -127,11 +129,15 @@ public class TestProject {
 	/**
 	 * Add source code at the end of file, just before last '}'
 	 */
-	public void addSourceCode(Class<BarProperties> target, String text) throws Exception {
+	public void addSourceCode(Class<?> target, InputStream snippetStream)
+			throws Exception {
 		File targetFile = getSourceFile(target);
 		String contents = getContents(targetFile);
 		int insertAt = contents.lastIndexOf('}');
-		contents = contents.substring(0, insertAt) + text + contents.substring(insertAt);
+		String additionalSource = FileCopyUtils.copyToString(new InputStreamReader(
+				snippetStream));
+		contents = contents.substring(0, insertAt) + additionalSource
+				+ contents.substring(insertAt);
 		putContents(targetFile, contents);
 	}
 

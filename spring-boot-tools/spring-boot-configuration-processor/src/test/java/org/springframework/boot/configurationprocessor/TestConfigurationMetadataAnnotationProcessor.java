@@ -18,7 +18,6 @@ package org.springframework.boot.configurationprocessor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Set;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -61,8 +60,8 @@ public class TestConfigurationMetadataAnnotationProcessor extends
 	}
 
 	@Override
-	protected ConfigurationMetadata writeMetaData(ConfigurationMetadata metadata) {
-		super.writeMetaData(metadata);
+	protected ConfigurationMetadata writeMetaData() {
+		super.writeMetaData();
 		try {
 			File metadataFile = new File(this.outputLocation,
 					"META-INF/spring-configuration-metadata.json");
@@ -71,7 +70,7 @@ public class TestConfigurationMetadataAnnotationProcessor extends
 						metadataFile));
 			}
 			else {
-				this.metadata = metadata;
+				this.metadata = new ConfigurationMetadata();
 			}
 			return this.metadata;
 		}
@@ -84,12 +83,4 @@ public class TestConfigurationMetadataAnnotationProcessor extends
 		return this.metadata;
 	}
 
-	public Set<String> getProcessedTypes() {
-		return this.processedSourceTypes;
-	}
-
-	@Override
-	public boolean isIncremental() {
-		return super.isIncremental();
-	}
 }

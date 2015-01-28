@@ -57,9 +57,9 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor.METADATA_PATH;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
+import static org.springframework.boot.configurationprocessor.MetadataStore.METADATA_PATH;
 
 /**
  * Tests for {@link ConfigurationMetadataAnnotationProcessor}.
@@ -79,92 +79,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Before
 	public void createCompiler() throws IOException {
 		this.compiler = new TestCompiler(this.temporaryFolder);
-	}
-
-	@Test
-	public void incrementalBuild() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
-				BarProperties.class);
-		assertFalse(project.getOutputFile(METADATA_PATH).exists());
-
-		BuildResult r = project.fullBuild();
-		assertFalse(r.isIncremental);
-		assertTrue(project.getOutputFile(METADATA_PATH).exists());
-
-		assertThat(r.metadata,
-				containsProperty("foo.counter").fromSource(FooProperties.class));
-		assertThat(r.metadata,
-				containsProperty("bar.counter").fromSource(BarProperties.class));
-
-		r = project.incrementalBuild(BarProperties.class);
-		assertTrue(r.isIncremental);
-		assertTrue(r.processedTypes.contains(BarProperties.class.getName()));
-		assertFalse(r.processedTypes.contains(FooProperties.class.getName()));
-
-		assertThat(r.metadata,
-				containsProperty("foo.counter").fromSource(FooProperties.class));
-		assertThat(r.metadata,
-				containsProperty("bar.counter").fromSource(BarProperties.class));
-
-		assertTrue(r.processedTypes.contains(BarProperties.class.getName()));
-		assertFalse(r.processedTypes.contains(FooProperties.class.getName()));
-
-		project.addSourceCode(BarProperties.class, "	private String extra;\n" + "	\n"
-				+ "	public String getExtra() {\n" + "		return extra;\n" + "	}\n" + "\n"
-				+ "	public void setExtra(String extra) {\n" + "		this.extra = extra;\n"
-				+ "	}\n");
-		r = project.incrementalBuild(BarProperties.class);
-		assertTrue(r.isIncremental);
-		assertThat(r.metadata, containsProperty("bar.extra"));
-		assertThat(r.metadata, containsProperty("foo.counter"));
-		assertThat(r.metadata, containsProperty("bar.counter"));
-
-		project.revert(BarProperties.class);
-		r = project.incrementalBuild(BarProperties.class);
-		assertTrue(r.isIncremental);
-		assertThat(r.metadata, not(containsProperty("bar.extra")));
-		assertThat(r.metadata, containsProperty("foo.counter"));
-		assertThat(r.metadata, containsProperty("bar.counter"));
-	}
-
-	@Test
-	public void incremenalBuildAnnotationRemoved() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
-				BarProperties.class);
-		BuildResult r = project.fullBuild();
-		assertThat(r.metadata, containsProperty("foo.counter"));
-		assertThat(r.metadata, containsProperty("bar.counter"));
-
-		project.replaceText(BarProperties.class, "@ConfigurationProperties",
-				"//@ConfigurationProperties");
-		r = project.incrementalBuild(BarProperties.class);
-		assertThat(r.metadata, containsProperty("foo.counter"));
-		assertThat(r.metadata, not(containsProperty("bar.counter")));
-	}
-
-	@Test
-	public void incremenalBuildTypeRenamed() throws Exception {
-		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
-				BarProperties.class);
-		BuildResult r = project.fullBuild();
-		assertThat(r.metadata,
-				containsProperty("foo.counter").fromSource(FooProperties.class));
-		assertThat(r.metadata,
-				containsProperty("bar.counter").fromSource(BarProperties.class));
-		assertThat(r.metadata,
-				not(containsProperty("bar.counter")
-						.fromSource(RenamedBarProperties.class)));
-
-		project.delete(BarProperties.class);
-		project.add(RenamedBarProperties.class);
-		r = project.incrementalBuild(RenamedBarProperties.class);
-		assertThat(r.metadata,
-				containsProperty("foo.counter").fromSource(FooProperties.class));
-		assertThat(r.metadata,
-				not(containsProperty("bar.counter").fromSource(BarProperties.class)));
-		assertThat(r.metadata,
-				containsProperty("bar.counter").fromSource(RenamedBarProperties.class));
-
 	}
 
 	@Test
@@ -436,7 +350,80 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata,
 				containsProperty("foo", String.class)
 						.fromSource(AdditionalMetadata.class));
+	}
 
+	@Test
+	public void incrementalBuild() throws Exception {
+		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
+				BarProperties.class);
+		assertFalse(project.getOutputFile(METADATA_PATH).exists());
+
+		ConfigurationMetadata metadata = project.fullBuild();
+		assertTrue(project.getOutputFile(METADATA_PATH).exists());
+
+		assertThat(metadata,
+				containsProperty("foo.counter").fromSource(FooProperties.class));
+		assertThat(metadata,
+				containsProperty("bar.counter").fromSource(BarProperties.class));
+
+		metadata = project.incrementalBuild(BarProperties.class);
+
+		assertThat(metadata,
+				containsProperty("foo.counter").fromSource(FooProperties.class));
+		assertThat(metadata,
+				containsProperty("bar.counter").fromSource(BarProperties.class));
+
+		project.addSourceCode(BarProperties.class,
+				BarProperties.class.getResourceAsStream("BarProperties.snippet"));
+		metadata = project.incrementalBuild(BarProperties.class);
+		assertThat(metadata, containsProperty("bar.extra"));
+		assertThat(metadata, containsProperty("foo.counter"));
+		assertThat(metadata, containsProperty("bar.counter"));
+
+		project.revert(BarProperties.class);
+		metadata = project.incrementalBuild(BarProperties.class);
+		assertThat(metadata, not(containsProperty("bar.extra")));
+		assertThat(metadata, containsProperty("foo.counter"));
+		assertThat(metadata, containsProperty("bar.counter"));
+	}
+
+	@Test
+	public void incremenalBuildAnnotationRemoved() throws Exception {
+		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
+				BarProperties.class);
+		ConfigurationMetadata metadata = project.fullBuild();
+		assertThat(metadata, containsProperty("foo.counter"));
+		assertThat(metadata, containsProperty("bar.counter"));
+
+		project.replaceText(BarProperties.class, "@ConfigurationProperties",
+				"//@ConfigurationProperties");
+		metadata = project.incrementalBuild(BarProperties.class);
+		assertThat(metadata, containsProperty("foo.counter"));
+		assertThat(metadata, not(containsProperty("bar.counter")));
+	}
+
+	@Test
+	public void incremenalBuildTypeRenamed() throws Exception {
+		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
+				BarProperties.class);
+		ConfigurationMetadata metadata = project.fullBuild();
+		assertThat(metadata,
+				containsProperty("foo.counter").fromSource(FooProperties.class));
+		assertThat(metadata,
+				containsProperty("bar.counter").fromSource(BarProperties.class));
+		assertThat(metadata,
+				not(containsProperty("bar.counter")
+						.fromSource(RenamedBarProperties.class)));
+
+		project.delete(BarProperties.class);
+		project.add(RenamedBarProperties.class);
+		metadata = project.incrementalBuild(RenamedBarProperties.class);
+		assertThat(metadata,
+				containsProperty("foo.counter").fromSource(FooProperties.class));
+		assertThat(metadata,
+				not(containsProperty("bar.counter").fromSource(BarProperties.class)));
+		assertThat(metadata,
+				containsProperty("bar.counter").fromSource(RenamedBarProperties.class));
 	}
 
 	private void assertSimpleLombokProperties(ConfigurationMetadata metadata,

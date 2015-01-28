@@ -13,35 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.configurationprocessor;
 
-import java.util.Set;
+import javax.annotation.processing.RoundEnvironment;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 
 /**
- * Data object containing information about a finished build.
+ * A {@code BuildTracker} tracks a build in which configuration processing has been
+ * performed and is responsible for managing the associated state including the resulting
+ * metadata.
  *
- * @author Kris De Volder
+ * @author Andy Wilkinson
  */
-public class BuildResult {
+public interface BuildHandler {
 
-	public final ConfigurationMetadata metadata;
+	void addGroup(String name, String type, String sourceType, String sourceMethod);
 
-	public final Set<String> processedTypes;
+	void addProperty(String prefix, String name, String type, String sourceType,
+			String sourceMethod, String description, Object defaultValue,
+			boolean deprecated);
 
-	public final boolean isIncremental;
+	void processing(RoundEnvironment environment);
 
-	public BuildResult(boolean isIncremental, ConfigurationMetadata metadata,
-			Set<String> processedTypes) {
-		this.isIncremental = isIncremental;
-		this.metadata = metadata;
-		this.processedTypes = processedTypes;
-	}
-
-	public BuildResult(TestConfigurationMetadataAnnotationProcessor processor) {
-		this(processor.isIncremental(), processor.getMetadata(),
-				processor.processedSourceTypes);
-	}
+	ConfigurationMetadata produceMetadata();
 
 }
