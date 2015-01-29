@@ -1889,17 +1889,89 @@ after which you can run the application with
 
 [[howto-create-a-deployable-war-file]]
 === Create a deployable war file
-Use the `SpringBootServletInitializer` base class, which is picked up by Spring's
-Servlet 3.0 support on deployment. Add an extension of that to your project and build a
-war file as normal. For more detail, see the
-http://spring.io/guides/gs/convert-jar-to-war['`Converting a jar Project to a war`'] guide
-on the spring.io website and the sample below.
 
-The war file can also be executable if you use the Spring Boot build tools. In that case
-the embedded container classes (to launch Tomcat for instance) have to be added to the
-war in a `lib-provided` directory. The tools will take care of that as long as the
-dependencies are marked as '`provided`' in Maven or Gradle. Here's a Maven example
-{github-code}/spring-boot-samples/spring-boot-sample-traditional/pom.xml[in the Boot Samples].
+The first step in producing a deployable war file is to provide a
+`SpringBootServletInitializer` subclass and override its `configure` method. This makes
+use of Spring Framework's Servlet 3.0 support and allows you to configure your
+application when it's launched by the servlet container. Typically, you update your
+application's main class to extend `SpringBootServletInitializer`:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Configuration
+	@EnableAutoConfiguration
+	@ComponentScan
+	public class Application extends SpringBootServletInitializer {
+
+		@Override
+		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+			return application.sources(Application.class);
+		}
+
+		public static void main(String[] args) throws Exception {
+			SpringApplication.run(Application.class, args);
+		}
+
+	}
+----
+
+The next step is to update your build configuration so that your project produces a war file
+rather than a jar file. If you're using Maven and using `spring-boot-starter-parent` (which
+configures Maven's war plugin for you) all you need to do is modify `pom.xml` to change the
+packaging to war:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<packaging>war</packaging>
+----
+
+If you're using Gradle, you need to modify `build.gradle` to apply the war plugin to the
+project:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	apply plugin: 'war'
+----
+
+The final step in the process is to ensure that the embedded servlet container doesn't
+interfere with the servlet container to which the war file will be deployed. To do so, you
+need to mark the embedded servlet container dependency as provided.
+
+If you're using Maven:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependencies>
+		<!-- … -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- … -->
+	</dependencies>
+----
+
+And if you're using Gradle:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	dependencies {
+		// …
+		providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+		// …
+	}
+----
+
+If you're using the <<build-tool-plugins.adoc#build-tool-plugins, Spring Boot build tools>>,
+marking the embedded servlet container dependency as provided will produce an executable war
+file with the provided dependencies packaged in a `lib-provided` directory. This means
+that, in addition to being deployable to a servlet container, you can also run your
+application using `java -jar` on the command line.
+
+TIP: Take a look at Spring Boot's sample applications for a
+{github-code}/spring-boot-samples/spring-boot-sample-traditional/pom.xml[Maven-based example]
+of the above-described configuration.
 
 
 
