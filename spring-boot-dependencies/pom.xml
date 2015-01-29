@@ -101,7 +101,7 @@
 		<spring.version>4.0.9.RELEASE</spring.version>
 		<spring-amqp.version>1.3.8.RELEASE</spring-amqp.version>
 		<spring-batch.version>3.0.2.RELEASE</spring-batch.version>
-		<spring-data-releasetrain.version>Dijkstra-SR4</spring-data-releasetrain.version>
+		<spring-data-releasetrain.version>Dijkstra-SR5</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.16.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.0.6.RELEASE</spring-integration.version>
 		<spring-loaded.version>1.2.1.RELEASE</spring-loaded.version>
