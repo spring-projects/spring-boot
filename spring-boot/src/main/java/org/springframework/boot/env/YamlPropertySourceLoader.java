@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.config.YamlProcessor;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
@@ -28,12 +29,18 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
+import org.yaml.snakeyaml.resolver.Resolver;
 
 /**
  * Strategy to load '.yml' (or '.yaml') files into a {@link PropertySource}.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class YamlPropertySourceLoader implements PropertySourceLoader {
 
@@ -71,6 +78,21 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 				setDocumentMatchers(new SpringProfileDocumentMatcher(profile));
 			}
 			setResources(new Resource[] { resource });
+		}
+
+		@Override
+		protected Yaml createYaml() {
+			return new Yaml(new StrictMapAppenderConstructor(), new Representer(),
+					new DumperOptions(), new Resolver() {
+						@Override
+						public void addImplicitResolver(Tag tag, Pattern regexp,
+								String first) {
+							if (tag == Tag.TIMESTAMP) {
+								return;
+							}
+							super.addImplicitResolver(tag, regexp, first);
+						}
+					});
 		}
 
 		public Map<String, Object> process() {
