@@ -52,7 +52,7 @@ public class IntegrationAutoConfiguration {
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
 	@ConditionalOnExpression("${spring.jmx.enabled:true}")
-	@EnableIntegrationMBeanExport(defaultDomain = "${spring.jmx.default_domain:}", server = "${spring.jmx.server:mbeanServer}")
+	@EnableIntegrationMBeanExport(defaultDomain = "${spring.jmx.default-domain:}", server = "${spring.jmx.server:mbeanServer}")
 	protected static class IntegrationJmxConfiguration {
 	}
 

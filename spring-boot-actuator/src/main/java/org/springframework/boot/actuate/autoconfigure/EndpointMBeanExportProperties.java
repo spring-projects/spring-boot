@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "endpoints.jmx")
 public class EndpointMBeanExportProperties {
 
-	@Value("${spring.jmx.default_domain:}")
+	@Value("${spring.jmx.default-domain:}")
 	private String domain;
 
 	private boolean uniqueNames = false;
