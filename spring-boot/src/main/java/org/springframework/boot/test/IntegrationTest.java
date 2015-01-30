@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,15 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 /**
- * Test class annotation signifying that the tests are integration tests (and therefore
- * require an application to startup "fully leaded" and listening on its normal ports).
+ * Test class annotation signifying that the tests are "integration tests" and therefore
+ * require full startup in the same way as a production application. Normally used in
+ * conjunction with {@code @SpringApplicationConfiguration}.
+ * <p>
+ * If your test also uses {@code @WebAppConfiguration} consider using the
+ * {@link WebIntegrationTest} instead.
  *
  * @author Dave Syer
+ * @see WebIntegrationTest
  */
 @Documented
 @Inherited

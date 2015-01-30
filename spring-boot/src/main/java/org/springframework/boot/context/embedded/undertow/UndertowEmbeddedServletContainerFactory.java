@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.SocketUtils;
-import org.springframework.util.StringUtils;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 
@@ -229,11 +228,11 @@ public class UndertowEmbeddedServletContainerFactory extends
 		if (this.directBuffers != null) {
 			builder.setDirectBuffers(this.directBuffers);
 		}
-		if (getSsl() == null) {
-			builder.addHttpListener(port, getListenAddress());
+		if (getSsl() != null && getSsl().isEnabled()) {
+			configureSsl(getSsl(), port, builder);
 		}
 		else {
-			configureSsl(port, builder);
+			builder.addHttpListener(port, getListenAddress());
 		}
 		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
@@ -241,9 +240,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 		return builder;
 	}
 
-	private void configureSsl(int port, Builder builder) {
+	private void configureSsl(Ssl ssl, int port, Builder builder) {
 		try {
-			Ssl ssl = getSsl();
 			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
 			sslContext.init(getKeyManagers(), getTrustManagers(), null);
 			builder.addHttpsListener(port, getListenAddress(), sslContext);
@@ -330,8 +328,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 		registerServletContainerInitializerToDriveServletContextInitializers(deployment,
 				initializers);
 		deployment.setClassLoader(getServletClassLoader());
-		String contextPath = getContextPath();
-		deployment.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
+		deployment.setContextPath(getContextPath());
 		deployment.setDeploymentName("spring-boot");
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));

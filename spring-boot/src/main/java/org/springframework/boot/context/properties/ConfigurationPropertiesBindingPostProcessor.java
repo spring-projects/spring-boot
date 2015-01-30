@@ -296,8 +296,28 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			factory.bindPropertiesToTarget();
 		}
 		catch (Exception ex) {
-			throw new BeanCreationException(beanName, "Could not bind properties", ex);
+			String targetClass = "[unknown]";
+			if (target != null) {
+				ClassUtils.getShortName(target.getClass());
+			}
+			throw new BeanCreationException(beanName, "Could not bind properties to "
+					+ targetClass + " (" + getAnnotationDetails(annotation) + ")", ex);
 		}
+	}
+
+	private String getAnnotationDetails(ConfigurationProperties annotation) {
+		if (annotation == null) {
+			return "";
+		}
+		StringBuilder details = new StringBuilder();
+		details.append("target=").append(
+				(StringUtils.hasLength(annotation.value()) ? annotation.value()
+						: annotation.prefix()));
+		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
+		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
+		details.append(", ignoreNestedProperties=").append(
+				annotation.ignoreNestedProperties());
+		return details.toString();
 	}
 
 	private Validator determineValidator(Object bean) {

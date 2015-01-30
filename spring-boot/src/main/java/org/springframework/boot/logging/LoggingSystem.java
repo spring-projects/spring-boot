@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,24 +21,31 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Common abstraction over logging systems.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public abstract class LoggingSystem {
+
+	/**
+	 * A System property that can be used to indicate the {@link LoggingSystem} to use.
+	 */
+	public static final String SYSTEM_PROPERTY = LoggingSystem.class.getName();
 
 	private static final Map<String, String> SYSTEMS;
 	static {
 		Map<String, String> systems = new LinkedHashMap<String, String>();
 		systems.put("ch.qos.logback.core.Appender",
 				"org.springframework.boot.logging.logback.LogbackLoggingSystem");
-		systems.put("org.apache.log4j.PropertyConfigurator",
-				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
 		systems.put("org.apache.logging.log4j.LogManager",
 				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
+		systems.put("org.apache.log4j.PropertyConfigurator",
+				"org.springframework.boot.logging.log4j.Log4JLoggingSystem");
 		systems.put("java.util.logging.LogManager",
 				"org.springframework.boot.logging.java.JavaLoggingSystem");
 		SYSTEMS = Collections.unmodifiableMap(systems);
@@ -61,6 +68,14 @@ public abstract class LoggingSystem {
 	public abstract void initialize(String configLocation, LogFile logFile);
 
 	/**
+	 * Clean up the logging system. The default implementation does nothing. Subclasses
+	 * should override this method to perform any logging system-specific cleanup.
+	 */
+	public void cleanUp() {
+
+	}
+
+	/**
 	 * Sets the logging level for a given logger.
 	 * @param loggerName the name of the logger to set
 	 * @param level the log level
@@ -73,20 +88,27 @@ public abstract class LoggingSystem {
 	 * @return The logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {
+		String loggingSystem = System.getProperty(SYSTEM_PROPERTY);
+		if (StringUtils.hasLength(loggingSystem)) {
+			return get(classLoader, loggingSystem);
+		}
 		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
 			if (ClassUtils.isPresent(entry.getKey(), classLoader)) {
-				try {
-					Class<?> systemClass = ClassUtils.forName(entry.getValue(),
-							classLoader);
-					return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
-							.newInstance(classLoader);
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
-				}
+				return get(classLoader, entry.getValue());
 			}
 		}
 		throw new IllegalStateException("No suitable logging system located");
+	}
+
+	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
+		try {
+			Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
+			return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
+					.newInstance(classLoader);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 }

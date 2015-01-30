@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import static org.junit.Assert.assertEquals;
  * Basic integration tests for demo application.
  *
  * @author Ivan Sopov
+ * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleUndertowApplication.class)
@@ -47,10 +48,19 @@ public class SampleUndertowApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
+		assertOkResponse("/", "Hello World");
+	}
+
+	@Test
+	public void testAsync() throws Exception {
+		assertOkResponse("/async", "async: Hello World");
+	}
+
+	private void assertOkResponse(String path, String body) {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+				"http://localhost:" + this.port + path, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello World", entity.getBody());
+		assertEquals(body, entity.getBody());
 	}
 
 }

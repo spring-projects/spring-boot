@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import javax.lang.model.type.TypeMirror;
  * Filter to excluded elements that don't make sense to process.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
 class TypeExcludeFilter {
@@ -32,13 +33,15 @@ class TypeExcludeFilter {
 	private final Set<String> excludes = new HashSet<String>();
 
 	public TypeExcludeFilter() {
+		add("com.zaxxer.hikari.IConnectionCustomizer");
+		add("groovy.text.markup.MarkupTemplateEngine");
 		add("java.io.Writer");
 		add("java.io.PrintWriter");
 		add("java.lang.ClassLoader");
 		add("java.util.concurrent.ThreadFactory");
+		add("javax.jms.XAConnectionFactory");
 		add("javax.sql.DataSource");
-		add("com.zaxxer.hikari.IConnectionCustomizer");
-		add("groovy.text.markup.MarkupTemplateEngine");
+		add("javax.sql.XADataSource");
 		add("org.apache.tomcat.jdbc.pool.PoolConfiguration");
 		add("org.apache.tomcat.jdbc.pool.Validator");
 		add("org.flywaydb.core.api.callback.FlywayCallback");

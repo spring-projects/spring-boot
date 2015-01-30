@@ -64,7 +64,7 @@ public class InitCommand extends OptionParsingCommand {
 		examples.add(new HelpExample("To create a web my-app.zip",
 				"spring init -d=web my-app.zip"));
 		examples.add(new HelpExample("To create a web/data-jpa gradle project unpacked",
-				"spring init -d=web,jpa --build=gradle my-dir/"));
+				"spring init -d=web,jpa --build=gradle my-dir"));
 		return examples;
 	}
 
@@ -144,7 +144,7 @@ public class InitCommand extends OptionParsingCommand {
 
 		private void otherOptions() {
 			this.extract = option(Arrays.asList("extract", "x"),
-					"Extract the project archive. Inferred if a location is specified and ends with /");
+					"Extract the project archive. Inferred if a location is specified without an extension");
 			this.force = option(Arrays.asList("force", "f"),
 					"Force overwrite of existing files");
 		}

@@ -63,4 +63,17 @@ public class MultiProjectRepackagingTests {
 		assertThat(jarFile.getEntry("lib/foo.jar"), notNullValue());
 		jarFile.close();
 	}
+
+	@Test
+	public void repackageWithRuntimeProjectDependency() throws Exception {
+		ProjectConnection project = new ProjectCreator()
+				.createProject("multi-project-runtime-project-dependency");
+		project.newBuild().forTasks("clean", "build")
+				.withArguments("-PbootVersion=" + BOOT_VERSION).run();
+		File buildLibs = new File(
+				"target/multi-project-runtime-project-dependency/projectA/build/libs");
+		JarFile jarFile = new JarFile(new File(buildLibs, "projectA.jar"));
+		assertThat(jarFile.getEntry("lib/projectB.jar"), notNullValue());
+		jarFile.close();
+	}
 }

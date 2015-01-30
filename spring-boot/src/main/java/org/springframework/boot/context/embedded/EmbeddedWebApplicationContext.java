@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,12 @@
 package org.springframework.boot.context.embedded;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EventListener;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -29,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.Scope;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.core.io.Resource;
@@ -76,6 +82,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @see EmbeddedServletContainerFactory
  */
 public class EmbeddedWebApplicationContext extends GenericWebApplicationContext {
+
+	private static final Log logger = LogFactory
+			.getLog(EmbeddedWebApplicationContext.class);
 
 	/**
 	 * Constant value for the DispatcherServlet bean name. A Servlet bean with this name
@@ -194,16 +203,24 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		return new ServletContextInitializer() {
 			@Override
 			public void onStartup(ServletContext servletContext) throws ServletException {
-				prepareEmbeddedWebApplicationContext(servletContext);
-				WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
-						getServletContext());
-				WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(),
-						getServletContext());
-				for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
-					beans.onStartup(servletContext);
-				}
+				selfInitialize(servletContext);
 			}
 		};
+	}
+
+	private void selfInitialize(ServletContext servletContext) throws ServletException {
+		prepareEmbeddedWebApplicationContext(servletContext);
+		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(
+				beanFactory);
+		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory,
+				getServletContext());
+		existingScopes.restore();
+		WebApplicationContextUtils.registerEnvironmentBeans(beanFactory,
+				getServletContext());
+		for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
+			beans.onStartup(servletContext);
+		}
 	}
 
 	/**
@@ -317,6 +334,47 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 */
 	public EmbeddedServletContainer getEmbeddedServletContainer() {
 		return this.embeddedServletContainer;
+	}
+
+	/**
+	 * Utility class to store and restore any user defined scopes. This allow scopes to be
+	 * registered in an ApplicationContextInitializer in the same way as they would in a
+	 * classic non-embedded web application context.
+	 */
+	public static class ExistingWebApplicationScopes {
+
+		private static final Set<String> SCOPES;
+		static {
+			Set<String> scopes = new LinkedHashSet<String>();
+			scopes.add(WebApplicationContext.SCOPE_REQUEST);
+			scopes.add(WebApplicationContext.SCOPE_SESSION);
+			scopes.add(WebApplicationContext.SCOPE_GLOBAL_SESSION);
+			SCOPES = Collections.unmodifiableSet(scopes);
+		}
+
+		private final ConfigurableListableBeanFactory beanFactory;
+
+		private final Map<String, Scope> scopes = new HashMap<String, Scope>();
+
+		public ExistingWebApplicationScopes(ConfigurableListableBeanFactory beanFactory) {
+			this.beanFactory = beanFactory;
+			for (String scopeName : SCOPES) {
+				Scope scope = beanFactory.getRegisteredScope(scopeName);
+				if (scope != null) {
+					this.scopes.put(scopeName, scope);
+				}
+			}
+		}
+
+		public void restore() {
+			for (Map.Entry<String, Scope> entry : this.scopes.entrySet()) {
+				if (logger.isInfoEnabled()) {
+					logger.info("Restoring user defined scope " + entry.getKey());
+				}
+				this.beanFactory.registerScope(entry.getKey(), entry.getValue());
+			}
+		}
+
 	}
 
 }

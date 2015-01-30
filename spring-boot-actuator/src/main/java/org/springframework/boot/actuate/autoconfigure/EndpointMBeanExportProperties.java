@@ -33,7 +33,7 @@ public class EndpointMBeanExportProperties {
 	/**
 	 * JMX domain name. Initialized with the value of 'spring.jmx.default-domain' if set.
 	 */
-	@Value("${spring.jmx.default_domain:}")
+	@Value("${spring.jmx.default-domain:}")
 	private String domain;
 
 	/**

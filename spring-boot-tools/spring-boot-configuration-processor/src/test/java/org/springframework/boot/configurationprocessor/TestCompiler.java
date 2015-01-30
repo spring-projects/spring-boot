@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 
 import javax.annotation.processing.Processor;
 import javax.tools.JavaCompiler;
@@ -35,12 +36,17 @@ import org.junit.rules.TemporaryFolder;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class TestCompiler {
+
+	public static final File ORIGINAL_SOURCE_FOLDER = new File("src/test/java");
 
 	private final JavaCompiler compiler;
 
 	private final StandardJavaFileManager fileManager;
+
+	private final File outputLocation;
 
 	public TestCompiler(TemporaryFolder temporaryFolder) throws IOException {
 		this(ToolProvider.getSystemJavaCompiler(), temporaryFolder);
@@ -50,15 +56,30 @@ public class TestCompiler {
 			throws IOException {
 		this.compiler = compiler;
 		this.fileManager = compiler.getStandardFileManager(null, null, null);
-		Iterable<? extends File> temp = Arrays.asList(temporaryFolder.newFolder());
+		this.outputLocation = temporaryFolder.newFolder();
+		Iterable<? extends File> temp = Arrays.asList(this.outputLocation);
 		this.fileManager.setLocation(StandardLocation.CLASS_OUTPUT, temp);
 		this.fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, temp);
 	}
 
+	public TestCompilationTask getTask(Collection<File> sourceFiles) {
+		Iterable<? extends JavaFileObject> javaFileObjects = this.fileManager
+				.getJavaFileObjectsFromFiles(sourceFiles);
+		return getTask(javaFileObjects);
+	}
+
 	public TestCompilationTask getTask(Class<?>... types) {
 		Iterable<? extends JavaFileObject> javaFileObjects = getJavaFileObjects(types);
+		return getTask(javaFileObjects);
+	}
+
+	private TestCompilationTask getTask(Iterable<? extends JavaFileObject> javaFileObjects) {
 		return new TestCompilationTask(this.compiler.getTask(null, this.fileManager,
 				null, null, null, javaFileObjects));
+	}
+
+	public File getOutputLocation() {
+		return this.outputLocation;
 	}
 
 	private Iterable<? extends JavaFileObject> getJavaFileObjects(Class<?>... types) {
@@ -69,8 +90,16 @@ public class TestCompiler {
 		return this.fileManager.getJavaFileObjects(files);
 	}
 
-	private File getFile(Class<?> type) {
-		return new File("src/test/java/" + type.getName().replace(".", "/") + ".java");
+	protected File getFile(Class<?> type) {
+		return new File(getSourceFolder(), sourcePathFor(type));
+	}
+
+	public static String sourcePathFor(Class<?> type) {
+		return type.getName().replace(".", "/") + ".java";
+	}
+
+	protected File getSourceFolder() {
+		return ORIGINAL_SOURCE_FOLDER;
 	}
 
 	/**

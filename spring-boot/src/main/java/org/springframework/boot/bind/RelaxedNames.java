@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,22 +158,34 @@ public final class RelaxedNames implements Iterable<String> {
 		SEPARATED_TO_CAMELCASE {
 			@Override
 			public String apply(String value) {
-				StringBuilder builder = new StringBuilder();
-				for (String field : value.split("[_\\-.]")) {
-					builder.append(builder.length() == 0 ? field : StringUtils
-							.capitalize(field));
-				}
-				for (String suffix : new String[] { "_", "-", "." }) {
-					if (value.endsWith(suffix)) {
-						builder.append(suffix);
-					}
-				}
-				return builder.toString();
+				return separatedToCamelCase(value, false);
+			}
+		},
+
+		CASE_INSENSITIVE_SEPARATED_TO_CAMELCASE {
+			@Override
+			public String apply(String value) {
+				return separatedToCamelCase(value, true);
 			}
 		};
 
 		public abstract String apply(String value);
 
+		private static String separatedToCamelCase(String value, boolean caseInsensitive) {
+			StringBuilder builder = new StringBuilder();
+			for (String field : value.split("[_\\-.]")) {
+				field = (caseInsensitive ? field.toLowerCase() : field);
+				builder.append(builder.length() == 0 ? field : StringUtils
+						.capitalize(field));
+			}
+			for (String suffix : new String[] { "_", "-", "." }) {
+				if (value.endsWith(suffix)) {
+					builder.append(suffix);
+				}
+			}
+			return builder.toString();
+
+		}
 	}
 
 }

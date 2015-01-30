@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
+import org.eclipse.jetty.util.resource.JarResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
@@ -121,7 +122,7 @@ public class JettyEmbeddedServletContainerFactory extends
 		configureWebAppContext(context, initializers);
 		server.setHandler(context);
 		this.logger.info("Server initialized with port: " + port);
-		if (getSsl() != null) {
+		if (getSsl() != null && getSsl().isEnabled()) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			configureSsl(sslContextFactory, getSsl());
 			AbstractConnector connector = getSslServerConnectorFactory().getConnector(
@@ -259,7 +260,8 @@ public class JettyEmbeddedServletContainerFactory extends
 		if (root != null) {
 			try {
 				if (!root.isDirectory()) {
-					Resource resource = Resource.newResource("jar:" + root.toURI() + "!");
+					Resource resource = JarResource.newJarResource(Resource
+							.newResource(root));
 					handler.setBaseResource(resource);
 				}
 				else {
@@ -495,8 +497,6 @@ public class JettyEmbeddedServletContainerFactory extends
 		public ServerConnector getConnector(Server server,
 				SslContextFactory sslContextFactory, int port) {
 			HttpConfiguration config = new HttpConfiguration();
-			config.setSecureScheme("https");
-			config.setSecurePort(port);
 			config.addCustomizer(new SecureRequestCustomizer());
 			HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
 			SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(

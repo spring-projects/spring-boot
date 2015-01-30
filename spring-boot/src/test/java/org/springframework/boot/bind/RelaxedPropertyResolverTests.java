@@ -18,16 +18,20 @@ package org.springframework.boot.bind;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -172,6 +176,31 @@ public class RelaxedPropertyResolverTests {
 		assertThat(subProperties.get("a.b"), equalTo((Object) "1"));
 		assertThat(subProperties.get("a.c"), equalTo((Object) "2"));
 		assertThat(subProperties.get("a.d"), equalTo((Object) "3"));
+	}
+
+	@Test
+	public void testPropertySource() throws Exception {
+		Properties properties;
+		PropertiesPropertySource propertySource;
+		String propertyPrefix = "spring.datasource.";
+		String propertyName = "password";
+		String fullPropertyName = propertyPrefix + propertyName;
+		StandardEnvironment environment = new StandardEnvironment();
+		MutablePropertySources sources = environment.getPropertySources();
+		properties = new Properties();
+		properties.put(fullPropertyName, "systemPassword");
+		propertySource = new PropertiesPropertySource("system", properties);
+		sources.addLast(propertySource);
+		properties = new Properties();
+		properties.put(fullPropertyName, "propertiesPassword");
+		propertySource = new PropertiesPropertySource("properties", properties);
+		sources.addLast(propertySource);
+		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(
+				environment, propertyPrefix);
+		String directProperty = propertyResolver.getProperty(propertyName);
+		Map<String, Object> subProperties = propertyResolver.getSubProperties("");
+		String subProperty = (String) subProperties.get(propertyName);
+		assertEquals(directProperty, subProperty);
 	}
 
 }

@@ -17,6 +17,7 @@
 package org.springframework.boot.yaml;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
@@ -47,9 +48,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	public void addActiveProfiles(String... profiles) {
 		LinkedHashSet<String> set = new LinkedHashSet<String>(
 				Arrays.asList(this.activeProfiles));
-		for (String profile : profiles) {
-			set.add(profile);
-		}
+		Collections.addAll(set, profiles);
 		this.activeProfiles = set.toArray(new String[set.size()]);
 	}
 

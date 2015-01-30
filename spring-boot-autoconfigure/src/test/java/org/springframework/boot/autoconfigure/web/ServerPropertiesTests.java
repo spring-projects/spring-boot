@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,12 @@ import java.util.Map;
 
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -191,6 +193,52 @@ public class ServerPropertiesTests {
 		assertEquals("x-my-remote-ip-header", remoteIpValve.getRemoteIpHeader());
 		assertEquals("x-my-forward-port", remoteIpValve.getPortHeader());
 		assertEquals("192.168.0.1", remoteIpValve.getInternalProxies());
+	}
+
+	@Test
+	public void customTomcatCompression() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.port", "0");
+		map.put("server.tomcat.compression", "on");
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(factory);
+
+		TomcatEmbeddedServletContainer container = (TomcatEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+
+		try {
+			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) container
+					.getTomcat().getConnector().getProtocolHandler();
+			assertEquals("on", protocol.getCompression());
+		}
+		finally {
+			container.stop();
+		}
+	}
+
+	@Test
+	public void customTomcatCompressableMimeTypes() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.port", "0");
+		map.put("server.tomcat.compressableMimeTypes", "application/foo");
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(factory);
+
+		TomcatEmbeddedServletContainer container = (TomcatEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+
+		try {
+			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) container
+					.getTomcat().getConnector().getProtocolHandler();
+			assertEquals("application/foo", protocol.getCompressableMimeTypes());
+		}
+		finally {
+			container.stop();
+		}
 	}
 
 	private void bindProperties(Map<String, String> map) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
@@ -54,6 +56,9 @@ import static org.junit.Assert.fail;
  * @author Phillip Webb
  */
 public class ConfigurationPropertiesBindingPostProcessorTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -130,12 +135,25 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Test
 	public void testPropertyWithEnum() throws Exception {
+		doEnumTest("test.theValue:foo");
+	}
+
+	@Test
+	public void testRelaxedPropertyWithEnum() throws Exception {
+		doEnumTest("test.the-value:FoO");
+		doEnumTest("TEST_THE_VALUE:FoO");
+		doEnumTest("test.THE_VALUE:FoO");
+		doEnumTest("test_the_value:FoO");
+	}
+
+	private void doEnumTest(String property) {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "test.value:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, property);
 		this.context.register(PropertyWithEnum.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithEnum.class).getValue(),
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue(),
 				equalTo(FooEnum.FOO));
+		this.context.close();
 	}
 
 	@Test
@@ -196,6 +214,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithCharArray.class).getChars(),
 				equalTo("word".toCharArray()));
+	}
+
+	@Test
+	public void notWritablePropertyException() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.madeup:word");
+		this.context.register(PropertyWithCharArray.class);
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("test");
+		this.context.refresh();
 	}
 
 	@Configuration
@@ -314,7 +342,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Configuration
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties(prefix = "test", ignoreUnknownFields = false)
 	public static class PropertyWithCharArray {
 
 		private char[] chars;
@@ -334,14 +362,14 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@ConfigurationProperties(prefix = "test")
 	public static class PropertyWithEnum {
 
-		private FooEnum value;
+		private FooEnum theValue;
 
-		public void setValue(FooEnum value) {
-			this.value = value;
+		public void setTheValue(FooEnum value) {
+			this.theValue = value;
 		}
 
-		public FooEnum getValue() {
-			return this.value;
+		public FooEnum getTheValue() {
+			return this.theValue;
 		}
 
 	}

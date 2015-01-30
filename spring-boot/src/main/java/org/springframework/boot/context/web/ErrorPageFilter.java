@@ -266,11 +266,10 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 		private String message;
 
-		private boolean errorToSend;
+		private boolean errorToSend = false;
 
 		public ErrorWrapperResponse(HttpServletResponse response) {
 			super(response);
-			this.status = response.getStatus();
 		}
 
 		@Override
@@ -283,11 +282,19 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 			this.status = status;
 			this.message = message;
 			this.errorToSend = true;
+			// Do not call super because the container may prevent us from handling the
+			// error ourselves
 		}
 
 		@Override
 		public int getStatus() {
-			return this.status;
+			if (this.errorToSend) {
+				return this.status;
+			}
+			else {
+				// If there was no error we need to trust the wrapped response
+				return super.getStatus();
+			}
 		}
 
 		@Override

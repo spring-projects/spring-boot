@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.2.1.BUILD-SNAPSHOT</version>
+		<version>1.2.2.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-starters</artifactId>
@@ -34,6 +34,7 @@
 		<module>spring-boot-starter-data-solr</module>
 		<module>spring-boot-starter-freemarker</module>
 		<module>spring-boot-starter-groovy-templates</module>
+		<module>spring-boot-starter-hateoas</module>
 		<module>spring-boot-starter-hornetq</module>
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jdbc</module>
@@ -46,6 +47,7 @@
 		<module>spring-boot-starter-log4j2</module>
 		<module>spring-boot-starter-mail</module>
 		<module>spring-boot-starter-mobile</module>
+		<module>spring-boot-starter-mustache</module>
 		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-parent</module>
 		<module>spring-boot-starter-redis</module>

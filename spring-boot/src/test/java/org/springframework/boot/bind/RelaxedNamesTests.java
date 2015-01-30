@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ public class RelaxedNamesTests {
 		assertThat(iterator.next(), equalTo("my-RELAXED-property"));
 		assertThat(iterator.next(), equalTo("my_RELAXED_property"));
 		assertThat(iterator.next(), equalTo("myRELAXEDProperty"));
+		assertThat(iterator.next(), equalTo("myRelaxedProperty"));
 		assertThat(iterator.next(), equalTo("my-relaxed-property"));
 		assertThat(iterator.next(), equalTo("my_relaxed_property"));
 		assertThat(iterator.next(), equalTo("myrelaxedproperty"));

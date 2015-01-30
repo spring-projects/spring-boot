@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,7 +30,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -43,14 +43,10 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic.Kind;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
 import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCompilerFieldValuesParser;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
-import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
-import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
  * Annotation {@link Processor} that writes meta-data file for
@@ -58,10 +54,10 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Kris De Volder
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ "*" })
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot."
@@ -76,7 +72,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String LOMBOK_SETTER_ANNOTATION = "lombok.Setter";
 
-	private ConfigurationMetadata metadata;
+	private MetadataStore metadataStore;
+
+	private BuildHandler buildHandler;
 
 	private TypeUtils typeUtils;
 
@@ -93,10 +91,16 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	@Override
+	public SourceVersion getSupportedSourceVersion() {
+		return SourceVersion.latestSupported();
+	}
+
+	@Override
 	public synchronized void init(ProcessingEnvironment env) {
 		super.init(env);
-		this.metadata = new ConfigurationMetadata();
 		this.typeUtils = new TypeUtils(env);
+		this.metadataStore = new MetadataStore(env);
+		this.buildHandler = createBuildHandler(env, this.metadataStore);
 		try {
 			this.fieldValuesParser = new JavaCompilerFieldValuesParser(env);
 		}
@@ -107,20 +111,28 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private void logWarning(String msg) {
-		this.processingEnv.getMessager().printMessage(Kind.WARNING, msg);
+	private BuildHandler createBuildHandler(ProcessingEnvironment env,
+			MetadataStore metadataStore) {
+		ConfigurationMetadata existingMetadata = metadataStore.readMetadata();
+		if (existingMetadata != null) {
+			return new IncrementalBuildHandler(env, existingMetadata);
+		}
+		else {
+			return new StandardBuildHandler();
+		}
 	}
 
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations,
 			RoundEnvironment roundEnv) {
+		this.buildHandler.processing(roundEnv);
 		Elements elementUtils = this.processingEnv.getElementUtils();
 		for (Element element : roundEnv.getElementsAnnotatedWith(elementUtils
 				.getTypeElement(configurationPropertiesAnnotation()))) {
 			processElement(element);
 		}
 		if (roundEnv.processingOver()) {
-			writeMetaData(this.metadata);
+			writeMetaData();
 		}
 		return false;
 	}
@@ -141,7 +153,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private void processAnnotatedTypeElement(String prefix, TypeElement element) {
 		String type = this.typeUtils.getType(element);
-		this.metadata.add(ItemMetadata.newGroup(prefix, type, type, null));
+		this.buildHandler.addGroup(prefix, type, type, null);
 		processTypeElement(prefix, element);
 	}
 
@@ -151,10 +163,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			Element returns = this.processingEnv.getTypeUtils().asElement(
 					element.getReturnType());
 			if (returns instanceof TypeElement) {
-				this.metadata.add(ItemMetadata.newGroup(prefix,
-						this.typeUtils.getType(returns),
+				this.buildHandler.addGroup(prefix, this.typeUtils.getType(returns),
 						this.typeUtils.getType(element.getEnclosingElement()),
-						element.toString()));
+						element.toString());
 				processTypeElement(prefix, (TypeElement) returns);
 			}
 		}
@@ -199,8 +210,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				boolean deprecated = hasDeprecateAnnotation(getter)
 						|| hasDeprecateAnnotation(setter)
 						|| hasDeprecateAnnotation(element);
-				this.metadata.add(ItemMetadata.newProperty(prefix, name, dataType,
-						sourceType, null, description, defaultValue, deprecated));
+				this.buildHandler.addProperty(prefix, name, dataType, sourceType, null,
+						description, defaultValue, deprecated);
 			}
 		}
 	}
@@ -227,8 +238,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				Object defaultValue = fieldValues.get(name);
 				boolean deprecated = hasDeprecateAnnotation(field)
 						|| hasDeprecateAnnotation(element);
-				this.metadata.add(ItemMetadata.newProperty(prefix, name, dataType,
-						sourceType, null, description, defaultValue, deprecated));
+				this.buildHandler.addProperty(prefix, name, dataType, sourceType, null,
+						description, defaultValue, deprecated);
 			}
 		}
 	}
@@ -261,9 +272,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			if (returnType != null && returnType instanceof TypeElement
 					&& annotation == null && isNested) {
 				String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
-				this.metadata.add(ItemMetadata.newGroup(nestedPrefix,
+				this.buildHandler.addGroup(nestedPrefix,
 						this.typeUtils.getType(returnType),
-						this.typeUtils.getType(element), getter.toString()));
+						this.typeUtils.getType(element), getter.toString());
 				processTypeElement(nestedPrefix, (TypeElement) returnType);
 			}
 		}
@@ -320,54 +331,46 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return values;
 	}
 
-	protected void writeMetaData(ConfigurationMetadata metadata) {
-		metadata = mergeManualMetadata(metadata);
+	protected ConfigurationMetadata writeMetaData() {
+		ConfigurationMetadata metadata = this.buildHandler.produceMetadata();
+		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
 			try {
-				FileObject resource = this.processingEnv.getFiler().createResource(
-						StandardLocation.CLASS_OUTPUT, "",
-						"META-INF/spring-configuration-metadata.json");
-				OutputStream outputStream = resource.openOutputStream();
-				try {
-					new JsonMarshaller().write(metadata, outputStream);
-				}
-				finally {
-					outputStream.close();
-				}
+				this.metadataStore.writeMetadata(metadata);
 			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
+			catch (IOException ex) {
+				throw new IllegalStateException("Failed to write metadata", ex);
 			}
+			return metadata;
+		}
+		return null;
+	}
+
+	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
+		try {
+			ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
+			merged.addAll(this.metadataStore.readAdditionalMetadata());
+			return merged;
+		}
+		catch (FileNotFoundException ex) {
+			// No additional metadata
+			return metadata;
+		}
+		catch (Exception ex) {
+			logWarning("Unable to merge additional metadata");
+			logWarning(getStackTrace(ex));
+			return metadata;
 		}
 	}
 
-	private ConfigurationMetadata mergeManualMetadata(ConfigurationMetadata metadata) {
-		try {
-			FileObject manualMetadata = this.processingEnv.getFiler().getResource(
-					StandardLocation.CLASS_PATH, "",
-					"META-INF/additional-spring-configuration-metadata.json");
-			if (!"file".equals(manualMetadata.toUri().getScheme())) {
-				// We only want local files, not any classpath jars
-				return metadata;
-			}
-			InputStream inputStream = manualMetadata.openInputStream();
-			try {
-				ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
-				try {
-					merged.addAll(new JsonMarshaller().read(inputStream));
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
-				}
-				return merged;
-			}
-			finally {
-				inputStream.close();
-			}
-		}
-		catch (IOException ex) {
-			return metadata;
-		}
+	private String getStackTrace(Exception ex) {
+		StringWriter writer = new StringWriter();
+		ex.printStackTrace(new PrintWriter(writer, true));
+		return writer.toString();
+	}
+
+	private void logWarning(String msg) {
+		this.processingEnv.getMessager().printMessage(Kind.WARNING, msg);
 	}
 
 }

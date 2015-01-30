@@ -20,6 +20,7 @@ import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -31,6 +32,7 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
@@ -130,6 +132,21 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 	@Test
 	public void basicSslClasspathKeyStore() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
+	}
+
+	@Test
+	public void defaultContextPath() throws Exception {
+		UndertowEmbeddedServletContainerFactory factory = getFactory();
+		final AtomicReference<String> contextPath = new AtomicReference<String>();
+		factory.addDeploymentInfoCustomizers(new UndertowDeploymentInfoCustomizer() {
+
+			@Override
+			public void customize(DeploymentInfo deploymentInfo) {
+				contextPath.set(deploymentInfo.getContextPath());
+			}
+		});
+		this.container = factory.getEmbeddedServletContainer();
+		assertEquals("", contextPath.get());
 	}
 
 }

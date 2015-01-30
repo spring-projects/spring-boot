@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,17 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.File;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.ILoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
@@ -60,6 +64,12 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Before
 	public void setup() {
 		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
+	}
+
+	@Override
+	@After
+	public void clear() {
+		this.loggingSystem.cleanUp();
 	}
 
 	@Test
@@ -140,6 +150,26 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void jbossLoggingIsConfiguredToUseSlf4j() {
 		this.loggingSystem.beforeInitialize();
 		assertEquals("slf4j", System.getProperty("org.jboss.logging.provider"));
+	}
+
+	@Test
+	public void bridgeHandlerLifecycle() {
+		assertFalse(bridgeHandlerInstalled());
+		this.loggingSystem.beforeInitialize();
+		assertTrue(bridgeHandlerInstalled());
+		this.loggingSystem.cleanUp();
+		assertFalse(bridgeHandlerInstalled());
+	}
+
+	private boolean bridgeHandlerInstalled() {
+		java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		for (Handler handler : handlers) {
+			if (handler instanceof SLF4JBridgeHandler) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

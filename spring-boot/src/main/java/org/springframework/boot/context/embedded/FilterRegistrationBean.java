@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -91,9 +92,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 		Assert.notNull(servletRegistrationBeans,
 				"ServletRegistrationBeans must not be null");
 		this.filter = filter;
-		for (ServletRegistrationBean servletRegistrationBean : servletRegistrationBeans) {
-			this.servletRegistrationBeans.add(servletRegistrationBean);
-		}
+		Collections.addAll(this.servletRegistrationBeans, servletRegistrationBeans);
 	}
 
 	/**
@@ -143,9 +142,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 			ServletRegistrationBean... servletRegistrationBeans) {
 		Assert.notNull(servletRegistrationBeans,
 				"ServletRegistrationBeans must not be null");
-		for (ServletRegistrationBean servletRegistrationBean : servletRegistrationBeans) {
-			this.servletRegistrationBeans.add(servletRegistrationBean);
-		}
+		Collections.addAll(this.servletRegistrationBeans, servletRegistrationBeans);
 	}
 
 	/**
@@ -205,9 +202,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 	 */
 	public void addUrlPatterns(String... urlPatterns) {
 		Assert.notNull(urlPatterns, "UrlPatterns must not be null");
-		for (String urlPattern : urlPatterns) {
-			this.urlPatterns.add(urlPattern);
-		}
+		Collections.addAll(this.urlPatterns, urlPatterns);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,18 @@ package org.springframework.boot.jta.atomikos;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 /**
  * Spring friendly version of {@link com.atomikos.jdbc.AtomikosDataSourceBean}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
 @SuppressWarnings("serial")
+@ConfigurationProperties(prefix = "spring.jta.atomikos.datasource")
 public class AtomikosDataSourceBean extends com.atomikos.jdbc.AtomikosDataSourceBean
 		implements BeanNameAware, InitializingBean, DisposableBean {
 

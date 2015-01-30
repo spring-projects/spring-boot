@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -158,19 +159,27 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	@Configuration
 	@ConditionalOnWebApplication
+	@ConditionalOnClass(WebMvcConfigurerAdapter.class)
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
 			OpenEntityManagerInViewFilter.class })
 	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view", havingValue = "true", matchIfMissing = true)
-	protected static class JpaWebConfiguration extends WebMvcConfigurerAdapter {
+	protected static class JpaWebConfiguration {
 
-		@Override
-		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addWebRequestInterceptor(openEntityManagerInViewInterceptor());
-		}
+		// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when
+		// not on the classpath
+		@Configuration
+		protected static class JpaWebMvcConfiguration extends WebMvcConfigurerAdapter {
 
-		@Bean
-		public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
-			return new OpenEntityManagerInViewInterceptor();
+			@Bean
+			public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+				return new OpenEntityManagerInViewInterceptor();
+			}
+
+			@Override
+			public void addInterceptors(InterceptorRegistry registry) {
+				registry.addWebRequestInterceptor(openEntityManagerInViewInterceptor());
+			}
+
 		}
 
 	}
