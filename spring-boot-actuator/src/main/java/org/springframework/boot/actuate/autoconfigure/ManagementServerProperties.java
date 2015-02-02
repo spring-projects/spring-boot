@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Returns the management port or {@code null} if the
 	 * {@link ServerProperties#getPort() server port} should be used.
+	 * @return the port
 	 * @see #setPort(Integer)
 	 */
 	public Integer getPort() {
@@ -88,6 +89,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	/**
 	 * Sets the port of the management server, use {@code null} if the
 	 * {@link ServerProperties#getPort() server port} should be used. To disable use 0.
+	 * @param port the port
 	 */
 	public void setPort(Integer port) {
 		this.port = port;

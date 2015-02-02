@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ public class ConditionOutcome {
 
 	/**
 	 * Create a new {@link ConditionOutcome} instance for a 'match'.
+	 * @return the {@link ConditionOutcome}
 	 */
 	public static ConditionOutcome match() {
 		return match(null);
@@ -44,6 +45,7 @@ public class ConditionOutcome {
 	/**
 	 * Create a new {@link ConditionOutcome} instance for 'match'.
 	 * @param message the message
+	 * @return the {@link ConditionOutcome}
 	 */
 	public static ConditionOutcome match(String message) {
 		return new ConditionOutcome(true, message);
@@ -52,6 +54,7 @@ public class ConditionOutcome {
 	/**
 	 * Create a new {@link ConditionOutcome} instance for 'no match'.
 	 * @param message the message
+	 * @return the {@link ConditionOutcome}
 	 */
 	public static ConditionOutcome noMatch(String message) {
 		return new ConditionOutcome(false, message);
@@ -59,6 +62,7 @@ public class ConditionOutcome {
 
 	/**
 	 * Return {@code true} if the outcome was a match.
+	 * @return {@code true} if the outcome matches
 	 */
 	public boolean isMatch() {
 		return this.match;
@@ -66,6 +70,7 @@ public class ConditionOutcome {
 
 	/**
 	 * Return an outcome message or {@code null}.
+	 * @return the message or {@code null}
 	 */
 	public String getMessage() {
 		return this.message;

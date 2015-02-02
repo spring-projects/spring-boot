@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2015 the original author or authors.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,6 +38,7 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 	/**
 	 * Create a new instance with the list of {@link FilterableDependency} instance(s) to
 	 * use.
+	 * @param dependencies the source dependencies
 	 */
 	public DependencyFilter(List<? extends FilterableDependency> dependencies) {
 		this.filters = dependencies;
@@ -61,6 +62,9 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 	 * Check if the specified {@link org.apache.maven.artifact.Artifact} matches the
 	 * specified {@link org.springframework.boot.maven.FilterableDependency}. Returns
 	 * {@code true} if it should be excluded
+	 * @param artifact the Maven {@link Artifact}
+	 * @param dependency the {@link FilterableDependency}
+	 * @return {@code true} if the artifact matches the dependency
 	 */
 	protected final boolean equals(Artifact artifact, FilterableDependency dependency) {
 		if (!dependency.getGroupId().equals(artifact.getGroupId())) {

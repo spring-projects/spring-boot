@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.gradle;
 
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 /**
- * A specific set of {@link Plugin} features applied via the {@link SpringBootPlugin}.
+ * A specific set of {@code org.gradle.api.Plugin} features applied via the
+ * {@code SpringBootPlugin}.
  *
  * @author Phillip Webb
  */

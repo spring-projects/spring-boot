@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.springframework.boot.actuate.endpoint;
  * exposed via Spring MVC but could also be exposed using some other technique. Consider
  * extending {@link AbstractEndpoint} if you are developing your own endpoint.
  *
+ * @param <T> the endpoint data type
  * @author Phillip Webb
  * @author Dave Syer
  * @author Christian Dupuis
@@ -31,17 +32,20 @@ public interface Endpoint<T> {
 	/**
 	 * The logical ID of the endpoint. Must only contain simple letters, numbers and '_'
 	 * characters (ie a {@literal "\w"} regex).
+	 * @return the endpoint ID
 	 */
 	String getId();
 
 	/**
 	 * Return if the endpoint is enabled.
+	 * @return if the endpoint is enabled
 	 */
 	boolean isEnabled();
 
 	/**
 	 * Return if the endpoint is sensitive, i.e. may return data that the average user
 	 * should not see. Mappings can use this as a security hint.
+	 * @return if the endpoint is sensitive
 	 */
 	boolean isSensitive();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ import com.codahale.metrics.MetricRegistry;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for metrics services. Creates
  * user-facing {@link GaugeService} and {@link CounterService} instances, and also back
- * end repositories to catch the data pumped into them. </p>
+ * end repositories to catch the data pumped into them.
  * <p>
  * An {@link InMemoryMetricRepository} is always created unless another
  * {@link MetricRepository} is already provided by the user. In general, even if metric
@@ -61,27 +61,23 @@ import com.codahale.metrics.MetricRegistry;
  * repository to buffer metric updates locally. The values can be exported (e.g. on a
  * periodic basis) using an {@link Exporter}, most implementations of which have
  * optimizations for sending data to remote repositories.
- * </p>
  * <p>
  * If Spring Messaging is on the classpath a {@link MessageChannel} called
  * "metricsChannel" is also created (unless one already exists) and all metric update
  * events are published additionally as messages on that channel. Additional analysis or
  * actions can be taken by clients subscribing to that channel.
- * </p>
  * <p>
  * In addition if Codahale's metrics library is on the classpath a {@link MetricRegistry}
  * will be created and wired up to the counter and gauge services in addition to the basic
  * repository. Users can create Codahale metrics by prefixing their metric names with the
  * appropriate type (e.g. "histogram.*", "meter.*") and sending them to the standard
  * <code>GaugeService</code> or <code>CounterService</code>.
- * </p>
  * <p>
  * By default all metric updates go to all {@link MetricWriter} instances in the
  * application context. To change this behaviour define your own metric writer bean called
  * "primaryMetricWriter", mark it <code>@Primary</code>, and this one will receive all
  * updates from the default counter and gauge services. Alternatively you can provide your
  * own counter and gauge services and wire them to whichever writer you choose.
- * </p>
  *
  * @see GaugeService
  * @see CounterService

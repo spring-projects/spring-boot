@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,13 @@ public interface MvcEndpoint {
 
 	/**
 	 * Return the MVC path of the endpoint.
+	 * @return the endpoint path
 	 */
 	String getPath();
 
 	/**
 	 * Return if the endpoint exposes sensitive information.
+	 * @return if the endpoint is sensitive
 	 */
 	boolean isSensitive();
 
@@ -43,6 +45,7 @@ public interface MvcEndpoint {
 	 * Return the type of {@link Endpoint} exposed, or {@code null} if this
 	 * {@link MvcEndpoint} exposes information that cannot be represented as a traditional
 	 * {@link Endpoint}.
+	 * @return the endpoint type
 	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends Endpoint> getEndpointType();

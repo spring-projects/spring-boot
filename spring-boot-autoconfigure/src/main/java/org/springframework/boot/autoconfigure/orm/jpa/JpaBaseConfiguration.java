@@ -147,6 +147,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	/**
 	 * Returns if a JTA {@link PlatformTransactionManager} is being used.
+	 * @return if a JTA transaction manager is being used
 	 */
 	protected final boolean isJta() {
 		return (this.jtaTransactionManager != null);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.util.ObjectUtils;
  * named numeric value with a timestamp). For example a metric might record the number of
  * active connections to a server, or the temperature of a meeting room.
  *
+ * @param <T> the value type
  * @author Dave Syer
  */
 public class Metric<T extends Number> {
@@ -60,6 +61,7 @@ public class Metric<T extends Number> {
 
 	/**
 	 * Returns the name of the metric.
+	 * @return the name
 	 */
 	public String getName() {
 		return this.name;
@@ -67,6 +69,7 @@ public class Metric<T extends Number> {
 
 	/**
 	 * Returns the value of the metric.
+	 * @return the value
 	 */
 	public T getValue() {
 		return this.value;
@@ -94,6 +97,7 @@ public class Metric<T extends Number> {
 
 	/**
 	 * Create a new {@link Metric} with a different value.
+	 * @param <S> the metric value type
 	 * @param value the value of the new metric
 	 * @return a new {@link Metric} instance
 	 */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,6 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	/**
 	 * Location path for JSON metadata about config properties.
-	 *
 	 * @param metadataLocations the metadataLocations to set
 	 */
 	public void setMetadataLocations(String metadataLocations) {
@@ -117,6 +116,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 	/**
 	 * Extract beans annotated {@link ConfigurationProperties} and serialize into
 	 * {@link Map}.
+	 * @param context the application context
+	 * @return the beans
 	 */
 	protected Map<String, Object> extract(ApplicationContext context) {
 		// Serialize beans into map structure and sanitize values
@@ -191,6 +192,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	/**
 	 * Configure Jackson's {@link ObjectMapper} to be used to serialize the
 	 * {@link ConfigurationProperties} objects into a {@link Map} structure.
+	 * @param mapper the object mapper
 	 */
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);

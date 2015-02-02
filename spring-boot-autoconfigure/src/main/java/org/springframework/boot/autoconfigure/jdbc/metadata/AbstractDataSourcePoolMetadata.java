@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 /**
  * A base {@link DataSourcePoolMetadata} implementation.
  *
+ * @param <T> The datasource type
  * @author Stephane Nicoll
  * @since 1.2.0
  */
@@ -31,6 +32,7 @@ public abstract class AbstractDataSourcePoolMetadata<T extends DataSource> imple
 
 	/**
 	 * Create an instance with the data source to use.
+	 * @param dataSource the data source
 	 */
 	protected AbstractDataSourcePoolMetadata(T dataSource) {
 		this.dataSource = dataSource;

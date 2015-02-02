@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	/**
 	 * Create a new {@link EndpointHandlerMapping} instance. All {@link Endpoint}s will be
 	 * detected from the {@link ApplicationContext}.
-	 * @param endpoints
+	 * @param endpoints the endpoints
 	 */
 	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
 		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
@@ -148,6 +148,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	/**
+	 * @param endpoint the endpoint
 	 * @return the path used in mappings
 	 */
 	public String getPath(String endpoint) {
@@ -156,6 +157,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 
 	/**
 	 * Sets if this mapping is disabled.
+	 * @param disabled if the mapping is disabled
 	 */
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
@@ -163,6 +165,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 
 	/**
 	 * Returns if this mapping is disabled.
+	 * @return if the mapping is disabled
 	 */
 	public boolean isDisabled() {
 		return this.disabled;
@@ -170,6 +173,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 
 	/**
 	 * Return the endpoints
+	 * @return the endpoints
 	 */
 	public Set<? extends MvcEndpoint> getEndpoints() {
 		return new HashSet<MvcEndpoint>(this.endpoints);

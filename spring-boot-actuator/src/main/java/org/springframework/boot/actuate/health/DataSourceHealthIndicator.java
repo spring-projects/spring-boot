@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,6 +153,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 
 	/**
 	 * Set the {@link DataSource} to use.
+	 * @param dataSource the data source
 	 */
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
@@ -162,6 +163,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	/**
 	 * Set a specific validation query to use to validate a connection. If none is set, a
 	 * default validation query is used.
+	 * @param query the query
 	 */
 	public void setQuery(String query) {
 		this.query = query;
@@ -169,6 +171,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 
 	/**
 	 * Return the validation query or {@code null}.
+	 * @return the query
 	 */
 	public String getQuery() {
 		return this.query;

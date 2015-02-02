@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,7 @@ import org.springframework.core.env.Environment;
  * should have. The table below shows when a condition matches according to the property
  * value and the {@link #havingValue()} attribute:
  *
- * <p>
- * <table border="1">
+ * <table summary="having values" border="1">
  * <tr>
  * <th>Property Value</th>
  * <th>{@code havingValue=""}</th>
@@ -84,12 +83,14 @@ public @interface ConditionalOnProperty {
 
 	/**
 	 * Alias for {@link #name()}.
+	 * @return the names
 	 */
 	String[] value() default {};
 
 	/**
 	 * A prefix that should be applied to each property. The prefix automatically ends
 	 * with a dot if not specified.
+	 * @return the prefix
 	 */
 	String prefix() default "";
 
@@ -101,23 +102,27 @@ public @interface ConditionalOnProperty {
 	 * <p>
 	 * Use the dashed notation to specify each property, that is all lower case with a "-"
 	 * to separate words (e.g. {@code my-long-property}).
+	 * @return the names
 	 */
 	String[] name() default {};
 
 	/**
 	 * The string representation of the expected value for the properties. If not
-	 * specified, the property must <strong>not</strong> be equals to {@code false}
+	 * specified, the property must <strong>not</strong> be equals to {@code false}.
+	 * @return the expected value
 	 */
 	String havingValue() default "";
 
 	/**
 	 * Specify if the condition should match if the property is not set. Defaults to
-	 * {@code false}
+	 * {@code false}.
+	 * @return if should match if the property is missing
 	 */
 	boolean matchIfMissing() default false;
 
 	/**
 	 * If relaxed names should be checked. Defaults to {@code true}.
+	 * @return if relaxed names are used
 	 */
 	boolean relaxedNames() default true;
 

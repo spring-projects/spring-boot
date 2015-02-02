@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 the original author or authors.
+ * Copyright 2010-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,7 @@ public class ApplicationPidFileWriter implements
 	 * Defaults to {@link ApplicationPreparedEvent}. NOTE: If you use the
 	 * {@link ApplicationPreparedEvent} to trigger the write, you will not be able to
 	 * specify the PID filename in the Spring {@link Environment}.
+	 * @param triggerEventType the event trigger type
 	 */
 	public void setTriggerEventType(
 			Class<? extends SpringApplicationEvent> triggerEventType) {

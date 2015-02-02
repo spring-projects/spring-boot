@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ public interface DataSourcePoolMetadataProvider {
 	/**
 	 * Return the {@link DataSourcePoolMetadata} instance able to manage the specified
 	 * {@link DataSource} or {@code null} if the given data source could not be handled.
+	 * @param dataSource the data source
+	 * @return the data source pool metadata
 	 */
 	DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource);
 

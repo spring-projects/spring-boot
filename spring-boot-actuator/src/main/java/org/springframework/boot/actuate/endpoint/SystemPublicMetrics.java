@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +64,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	/**
 	 * Add basic system metrics.
+	 * @param result the result
 	 */
 	protected void addBasicMetrics(Collection<Metric<?>> result) {
 		result.add(new Metric<Long>("mem", Runtime.getRuntime().totalMemory() / 1024));
@@ -81,6 +82,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	/**
 	 * Add JVM heap metrics.
+	 * @param result the result
 	 */
 	protected void addHeapMetrics(Collection<Metric<?>> result) {
 		MemoryUsage memoryUsage = ManagementFactory.getMemoryMXBean()
@@ -93,6 +95,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	/**
 	 * Add thread metrics.
+	 * @param result the result
 	 */
 	protected void addThreadMetrics(Collection<Metric<?>> result) {
 		ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
@@ -105,6 +108,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	/**
 	 * Add class loading metrics.
+	 * @param result the result
 	 */
 	protected void addClassLoadingMetrics(Collection<Metric<?>> result) {
 		ClassLoadingMXBean classLoadingMxBean = ManagementFactory.getClassLoadingMXBean();
@@ -118,6 +122,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	/**
 	 * Add garbage collection metrics.
+	 * @param result the result
 	 */
 	protected void addGarbageCollectionMetrics(Collection<Metric<?>> result) {
 		List<GarbageCollectorMXBean> garbageCollectorMxBeans = ManagementFactory
