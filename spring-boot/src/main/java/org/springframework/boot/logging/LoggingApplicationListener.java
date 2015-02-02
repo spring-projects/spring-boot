@@ -141,7 +141,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		return isAssignableFrom(sourceType, SOURCE_TYPES);
 	}
 
-	private boolean isAssignableFrom(Class<?> type, Class<?>[] supportedTypes) {
+	private boolean isAssignableFrom(Class<?> type, Class<?>... supportedTypes) {
 		for (Class<?> supportedType : supportedTypes) {
 			if (supportedType.isAssignableFrom(type)) {
 				return true;
@@ -153,23 +153,30 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			ApplicationEnvironmentPreparedEvent available = (ApplicationEnvironmentPreparedEvent) event;
-			initialize(available.getEnvironment(), available.getSpringApplication()
-					.getClassLoader());
+			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
 		}
 		else if (event instanceof ApplicationStartedEvent) {
-			if (System.getProperty(PID_KEY) == null) {
-				System.setProperty(PID_KEY, new ApplicationPid().toString());
-			}
-			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
-					.getDefaultClassLoader());
-			loggingSystem.beforeInitialize();
+			onApplicationStartedEvent((ApplicationStartedEvent) event);
 		}
-		else {
-			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
-					.getDefaultClassLoader());
-			loggingSystem.cleanUp();
+		else if (event instanceof ContextClosedEvent) {
+			onContextClosedEvent((ContextClosedEvent) event);
 		}
+	}
+
+	private void onApplicationEnvironmentPreparedEvent(
+			ApplicationEnvironmentPreparedEvent event) {
+		initialize(event.getEnvironment(), event.getSpringApplication().getClassLoader());
+	}
+
+	private void onApplicationStartedEvent(ApplicationStartedEvent event) {
+		if (System.getProperty(PID_KEY) == null) {
+			System.setProperty(PID_KEY, new ApplicationPid().toString());
+		}
+		LoggingSystem.get(ClassUtils.getDefaultClassLoader()).beforeInitialize();
+	}
+
+	private void onContextClosedEvent(ContextClosedEvent event) {
+		LoggingSystem.get(ClassUtils.getDefaultClassLoader()).cleanUp();
 	}
 
 	/**

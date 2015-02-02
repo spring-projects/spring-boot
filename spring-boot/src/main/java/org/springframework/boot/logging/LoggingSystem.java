@@ -67,7 +67,6 @@ public abstract class LoggingSystem {
 	 * should override this method to perform any logging system-specific cleanup.
 	 */
 	public void cleanUp() {
-
 	}
 
 	/**
