@@ -124,7 +124,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		return isAssignableFrom(sourceType, SOURCE_TYPES);
 	}
 
-	private boolean isAssignableFrom(Class<?> type, Class<?>[] supportedTypes) {
+	private boolean isAssignableFrom(Class<?> type, Class<?>... supportedTypes) {
 		for (Class<?> supportedType : supportedTypes) {
 			if (supportedType.isAssignableFrom(type)) {
 				return true;
@@ -139,7 +139,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			onApplicationStartedEvent((ApplicationStartedEvent) event);
 		}
 		else if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			onApplicationPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
+			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
 		}
 		else if (event instanceof ContextClosedEvent) {
 			onContextClosedEvent();
@@ -152,7 +152,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		this.loggingSystem.beforeInitialize();
 	}
 
-	private void onApplicationPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
+	private void onApplicationEnvironmentPreparedEvent(
+			ApplicationEnvironmentPreparedEvent event) {
 		if (this.loggingSystem == null) {
 			this.loggingSystem = LoggingSystem.get(event.getSpringApplication()
 					.getClassLoader());
