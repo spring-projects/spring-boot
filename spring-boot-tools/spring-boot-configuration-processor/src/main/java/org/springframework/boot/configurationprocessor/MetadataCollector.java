@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,49 +30,41 @@ import org.springframework.boot.configurationprocessor.metadata.ConfigurationMet
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 
 /**
- * {@code BuildHandler} that provides incremental build support by merging the metadata
- * from the current incremental build with any existing metadata.
+ * Used by {@link ConfigurationMetadataAnnotationProcessor} to collect
+ * {@link ConfigurationMetadata}.
  *
  * @author Andy Wilkinson
  * @author Kris De Volder
  * @since 1.2.2
  */
-public class IncrementalBuildHandler extends StandardBuildHandler {
+public class MetadataCollector {
 
-	private final Set<String> processedSourceTypes = new HashSet<String>();
+	private final List<ItemMetadata> metadataItems = new ArrayList<ItemMetadata>();
 
 	private final ProcessingEnvironment processingEnvironment;
 
-	private final ConfigurationMetadata existingMetadata;
+	private final ConfigurationMetadata previousMetadata;
 
 	private final TypeUtils typeUtils;
 
+	private final Set<String> processedSourceTypes = new HashSet<String>();
+
 	/**
-	 * Creates a new {@code IncrementalBuildTracker} that will merge the metadata produced
-	 * by an incremental build with the given {@code existingMetadata}.
-	 *
+	 * Creates a new {@code MetadataProcessor} instance.
 	 * @param processingEnvironment The processing environment of the build
-	 * @param existingMetadata The existing metadata
+	 * @param previousMetadata Any previous metadata or {@code null}
 	 */
-	public IncrementalBuildHandler(ProcessingEnvironment processingEnvironment,
-			ConfigurationMetadata existingMetadata) {
-		this.existingMetadata = existingMetadata;
+	public MetadataCollector(ProcessingEnvironment processingEnvironment,
+			ConfigurationMetadata previousMetadata) {
 		this.processingEnvironment = processingEnvironment;
+		this.previousMetadata = previousMetadata;
 		this.typeUtils = new TypeUtils(processingEnvironment);
 	}
 
-	@Override
-	public void processing(RoundEnvironment environment) {
-		for (Element element : environment.getRootElements()) {
+	public void processing(RoundEnvironment roundEnv) {
+		for (Element element : roundEnv.getRootElements()) {
 			markAsProcessed(element);
 		}
-	}
-
-	@Override
-	public ConfigurationMetadata produceMetadata() {
-		ConfigurationMetadata metadata = super.produceMetadata();
-		mergeExistingMetadata(metadata);
-		return metadata;
 	}
 
 	private void markAsProcessed(Element element) {
@@ -80,22 +73,29 @@ public class IncrementalBuildHandler extends StandardBuildHandler {
 		}
 	}
 
-	private void mergeExistingMetadata(ConfigurationMetadata metadata) {
-		List<ItemMetadata> items = this.existingMetadata.getItems();
-		for (ItemMetadata oldItem : items) {
-			if (shouldBeMerged(oldItem)) {
-				metadata.add(oldItem);
+	public void add(ItemMetadata metadata) {
+		this.metadataItems.add(metadata);
+	}
+
+	public ConfigurationMetadata getMetadata() {
+		ConfigurationMetadata metadata = new ConfigurationMetadata();
+		for (ItemMetadata item : this.metadataItems) {
+			metadata.add(item);
+		}
+		if (this.previousMetadata != null) {
+			List<ItemMetadata> items = this.previousMetadata.getItems();
+			for (ItemMetadata item : items) {
+				if (shouldBeMerged(item)) {
+					metadata.add(item);
+				}
 			}
 		}
+		return metadata;
 	}
 
 	private boolean shouldBeMerged(ItemMetadata itemMetadata) {
 		String sourceType = itemMetadata.getSourceType();
-		if (sourceType == null || deletedInCurrentBuild(sourceType)
-				|| processedInCurrentBuild(sourceType)) {
-			return false;
-		}
-		return true;
+		return (sourceType != null && !deletedInCurrentBuild(sourceType) && !processedInCurrentBuild(sourceType));
 	}
 
 	private boolean deletedInCurrentBuild(String sourceType) {

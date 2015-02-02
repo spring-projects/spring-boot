@@ -47,6 +47,7 @@ import javax.tools.Diagnostic.Kind;
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
 import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCompilerFieldValuesParser;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 
 /**
  * Annotation {@link Processor} that writes meta-data file for
@@ -74,7 +75,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private MetadataStore metadataStore;
 
-	private BuildHandler buildHandler;
+	private MetadataCollector metadataCollector;
 
 	private TypeUtils typeUtils;
 
@@ -100,7 +101,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		super.init(env);
 		this.typeUtils = new TypeUtils(env);
 		this.metadataStore = new MetadataStore(env);
-		this.buildHandler = createBuildHandler(env, this.metadataStore);
+		this.metadataCollector = new MetadataCollector(env, this.metadataStore.readMetadata());
 		try {
 			this.fieldValuesParser = new JavaCompilerFieldValuesParser(env);
 		}
@@ -111,21 +112,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private BuildHandler createBuildHandler(ProcessingEnvironment env,
-			MetadataStore metadataStore) {
-		ConfigurationMetadata existingMetadata = metadataStore.readMetadata();
-		if (existingMetadata != null) {
-			return new IncrementalBuildHandler(env, existingMetadata);
-		}
-		else {
-			return new StandardBuildHandler();
-		}
-	}
-
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations,
 			RoundEnvironment roundEnv) {
-		this.buildHandler.processing(roundEnv);
+		this.metadataCollector.processing(roundEnv);
 		Elements elementUtils = this.processingEnv.getElementUtils();
 		for (Element element : roundEnv.getElementsAnnotatedWith(elementUtils
 				.getTypeElement(configurationPropertiesAnnotation()))) {
@@ -153,7 +143,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private void processAnnotatedTypeElement(String prefix, TypeElement element) {
 		String type = this.typeUtils.getType(element);
-		this.buildHandler.addGroup(prefix, type, type, null);
+		this.metadataCollector.add(ItemMetadata.newGroup(prefix, type, type, null));
 		processTypeElement(prefix, element);
 	}
 
@@ -163,9 +153,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			Element returns = this.processingEnv.getTypeUtils().asElement(
 					element.getReturnType());
 			if (returns instanceof TypeElement) {
-				this.buildHandler.addGroup(prefix, this.typeUtils.getType(returns),
+				this.metadataCollector.add(ItemMetadata.newGroup(prefix,
+						this.typeUtils.getType(returns),
 						this.typeUtils.getType(element.getEnclosingElement()),
-						element.toString());
+						element.toString()));
 				processTypeElement(prefix, (TypeElement) returns);
 			}
 		}
@@ -210,8 +201,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				boolean deprecated = hasDeprecateAnnotation(getter)
 						|| hasDeprecateAnnotation(setter)
 						|| hasDeprecateAnnotation(element);
-				this.buildHandler.addProperty(prefix, name, dataType, sourceType, null,
-						description, defaultValue, deprecated);
+				this.metadataCollector.add(ItemMetadata
+						.newProperty(prefix, name, dataType, sourceType, null,
+								description, defaultValue, deprecated));
 			}
 		}
 	}
@@ -238,8 +230,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				Object defaultValue = fieldValues.get(name);
 				boolean deprecated = hasDeprecateAnnotation(field)
 						|| hasDeprecateAnnotation(element);
-				this.buildHandler.addProperty(prefix, name, dataType, sourceType, null,
-						description, defaultValue, deprecated);
+				this.metadataCollector.add(ItemMetadata
+						.newProperty(prefix, name, dataType, sourceType, null,
+								description, defaultValue, deprecated));
 			}
 		}
 	}
@@ -272,9 +265,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			if (returnType != null && returnType instanceof TypeElement
 					&& annotation == null && isNested) {
 				String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
-				this.buildHandler.addGroup(nestedPrefix,
+				this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
 						this.typeUtils.getType(returnType),
-						this.typeUtils.getType(element), getter.toString());
+						this.typeUtils.getType(element), getter.toString()));
 				processTypeElement(nestedPrefix, (TypeElement) returnType);
 			}
 		}
@@ -332,7 +325,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	protected ConfigurationMetadata writeMetaData() {
-		ConfigurationMetadata metadata = this.buildHandler.produceMetadata();
+		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
 		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
 			try {

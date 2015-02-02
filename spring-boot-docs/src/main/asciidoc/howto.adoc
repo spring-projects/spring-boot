@@ -2211,7 +2211,6 @@ functionality.
 
 [[howto-use-java-6-embedded-container]]
 ==== Embedded servlet container compatibility
-
 If you are using one of Boot's embedded Servlet containers you will have to use a
 Java 6-compatible container. Both Tomcat 7 and Jetty 8 are Java 6 compatible. See
 <<howto-use-tomcat-7>> and <<howto-use-jetty-8>> for details.
@@ -2220,7 +2219,6 @@ Java 6-compatible container. Both Tomcat 7 and Jetty 8 are Java 6 compatible. Se
 
 [[how-to-use-java-6-jta-api]]
 ==== JTA API compatibility
-
 While the Java Transaction API itself doesn't require Java 7 the official API jar
 contains classes that have been built to require Java 7. If you are using JTA then
 you will need to replace the official JTA 1.2 API jar with one that has been built

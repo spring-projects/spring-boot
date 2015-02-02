@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,9 +128,8 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	}
 
 	private boolean runningOnWebSphere() {
-		return ClassUtils.isPresent(
-				"com.ibm.websphere.jtaextensions.ExtendedJTATransaction", getClass()
-						.getClassLoader());
+		return ClassUtils.isPresent("com.ibm.websphere.jtaextensions."
+				+ "ExtendedJTATransaction", getClass().getClassLoader());
 	}
 
 	private void configureWebSphereTransactionPlatform(
@@ -142,18 +141,6 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		return getJtaPlatformManager(WEBSHERE_JTA_PLATFORM_CLASSES);
 	}
 
-	private Object getJtaPlatformManager(String[] candidates) {
-		for (String candidate : candidates) {
-			try {
-				return Class.forName(candidate).newInstance();
-			}
-			catch (Exception ex) {
-				// Continue searching
-			}
-		}
-		throw new IllegalStateException("Could not configure JTA platform");
-	}
-
 	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
 			JtaTransactionManager jtaTransactionManager) {
 		try {
@@ -162,17 +149,14 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		}
 		catch (NoClassDefFoundError ex) {
 			// Can happen if Hibernate 4.2 is used
-			if (isUsingJndi()) {
-				// Assume that Hibernate will use JNDI
-				if (logger.isDebugEnabled()) {
-					logger.debug("Unable to set Hibernate JTA platform : "
-							+ ex.getMessage());
-				}
-			}
-			else {
+			if (!isUsingJndi()) {
 				throw new IllegalStateException("Unable to set Hibernate JTA "
 						+ "platform, are you using the correct "
 						+ "version of Hibernate?", ex);
+			}
+			// Assume that Hibernate will use JNDI
+			if (logger.isDebugEnabled()) {
+				logger.debug("Unable to set Hibernate JTA platform : " + ex.getMessage());
 			}
 		}
 	}
@@ -188,6 +172,18 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	private Object getNoJtaPlatformManager() {
 		return getJtaPlatformManager(NO_JTA_PLATFORM_CLASSES);
+	}
+
+	private Object getJtaPlatformManager(String[] candidates) {
+		for (String candidate : candidates) {
+			try {
+				return Class.forName(candidate).newInstance();
+			}
+			catch (Exception ex) {
+				// Continue searching
+			}
+		}
+		throw new IllegalStateException("Could not configure JTA platform");
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE + 20)
