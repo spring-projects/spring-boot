@@ -572,9 +572,6 @@
 									<goal>jar</goal>
 								</goals>
 								<inherited>true</inherited>
-								<configuration>
-									<additionalparam>${javadoc.opts}</additionalparam>
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>
@@ -590,15 +587,6 @@
 					</snapshots>
 				</pluginRepository>
 			</pluginRepositories>
-		</profile>
-		<profile>
-			<id>disable-java8-doclint</id>
-			<activation>
-				<jdk>[1.8,)</jdk>
-			</activation>
-			<properties>
-				<javadoc.opts>-Xdoclint:none</javadoc.opts>
-			</properties>
 		</profile>
 		<profile>
 			<id>snapshot</id>
