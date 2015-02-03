@@ -29,10 +29,10 @@ import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.reader.MetricRegistryMetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
-import org.springframework.boot.actuate.metrics.writer.CodahaleMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.CompositeMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
 import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
+import org.springframework.boot.actuate.metrics.writer.DropwizardMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MessageChannelMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriterMessageHandler;
@@ -83,7 +83,7 @@ import com.codahale.metrics.MetricRegistry;
  * @see CounterService
  * @see MetricWriter
  * @see InMemoryMetricRepository
- * @see CodahaleMetricWriter
+ * @see DropwizardMetricWriter
  * @see Exporter
  *
  * @author Dave Syer
@@ -153,7 +153,7 @@ public class MetricRepositoryAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(MetricRegistry.class)
-	static class CodahaleMetricRegistryConfiguration {
+	static class DropwizardMetricRegistryConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -162,8 +162,8 @@ public class MetricRepositoryAutoConfiguration {
 		}
 
 		@Bean
-		public CodahaleMetricWriter codahaleMetricWriter(MetricRegistry metricRegistry) {
-			return new CodahaleMetricWriter(metricRegistry);
+		public DropwizardMetricWriter dropwizardMetricWriter(MetricRegistry metricRegistry) {
+			return new DropwizardMetricWriter(metricRegistry);
 		}
 
 		@Bean
@@ -175,7 +175,7 @@ public class MetricRepositoryAutoConfiguration {
 		}
 
 		@Bean
-		public PublicMetrics codahalePublicMetrics(MetricRegistry metricRegistry) {
+		public PublicMetrics dropwizardPublicMetrics(MetricRegistry metricRegistry) {
 			MetricRegistryMetricReader reader = new MetricRegistryMetricReader(
 					metricRegistry);
 			return new MetricReaderPublicMetrics(reader);

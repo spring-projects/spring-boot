@@ -29,12 +29,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
+ * Tests for {@link DropwizardMetricWriter}.
+ * 
  * @author Dave Syer
  */
-public class CodahaleMetricWriterTests {
+public class DropwizardMetricWriterTests {
 
 	private final MetricRegistry registry = new MetricRegistry();
-	private final CodahaleMetricWriter writer = new CodahaleMetricWriter(this.registry);
+	private final DropwizardMetricWriter writer = new DropwizardMetricWriter(this.registry);
 
 	@Test
 	public void incrementCounter() {
@@ -110,9 +112,9 @@ public class CodahaleMetricWriterTests {
 	public static class WriterThread extends Thread {
 		private int index;
 		private boolean failed;
-		private CodahaleMetricWriter writer;
+		private DropwizardMetricWriter writer;
 
-		public WriterThread(ThreadGroup group, int index, CodahaleMetricWriter writer) {
+		public WriterThread(ThreadGroup group, int index, DropwizardMetricWriter writer) {
 			super(group, "Writer-" + index);
 
 			this.index = index;
