@@ -1,0 +1,15 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'spring-boot'
+
+bootRun {
+	addResources = Boolean.valueOf(project.addResources)
+}

@@ -35,25 +35,49 @@ import org.springframework.boot.loader.tools.FileUtils;
  */
 public class BootRunTask extends JavaExec {
 
+	/**
+	 * Whether or not resources (typically in {@code src/main/resources} are added
+	 * directly to the classpath. When enabled (the default), this allows live in-place
+	 * editing of resources. Duplicate resources are removed from the resource output
+	 * directory to prevent them from appearing twice if
+	 * {@code ClassLoader.getResources()} is called.
+	 */
+	private boolean addResources = true;
+
+	public boolean getAddResources() {
+		return this.addResources;
+	}
+
+	public void setAddResources(boolean addResources) {
+		this.addResources = addResources;
+	}
+
 	@Override
 	public void exec() {
-		SourceSet mainSourceSet = SourceSets.findMainSourceSet(getProject());
-		final File outputDir = (mainSourceSet == null ? null : mainSourceSet.getOutput()
-				.getResourcesDir());
-		final Set<File> resources = new LinkedHashSet<File>();
-		if (mainSourceSet != null) {
-			resources.addAll(mainSourceSet.getResources().getSrcDirs());
-		}
-		List<File> classPath = new ArrayList<File>(getClasspath().getFiles());
-		classPath.addAll(0, resources);
-		getLogger().info("Adding classpath: " + resources);
-		setClasspath(new SimpleFileCollection(classPath));
-		if (outputDir != null) {
-			for (File directory : resources) {
-				FileUtils.removeDuplicatesFromOutputDirectory(outputDir, directory);
+		addResourcesIfNecessary();
+		super.exec();
+	}
+
+	private void addResourcesIfNecessary() {
+		System.out.println(this.addResources);
+		if (this.addResources) {
+			SourceSet mainSourceSet = SourceSets.findMainSourceSet(getProject());
+			final File outputDir = (mainSourceSet == null ? null : mainSourceSet
+					.getOutput().getResourcesDir());
+			final Set<File> resources = new LinkedHashSet<File>();
+			if (mainSourceSet != null) {
+				resources.addAll(mainSourceSet.getResources().getSrcDirs());
+			}
+			List<File> classPath = new ArrayList<File>(getClasspath().getFiles());
+			classPath.addAll(0, resources);
+			getLogger().info("Adding classpath: " + resources);
+			setClasspath(new SimpleFileCollection(classPath));
+			if (outputDir != null) {
+				for (File directory : resources) {
+					FileUtils.removeDuplicatesFromOutputDirectory(outputDir, directory);
+				}
 			}
 		}
-		super.exec();
 	}
 
 }

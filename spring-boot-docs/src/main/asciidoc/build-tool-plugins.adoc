@@ -376,12 +376,22 @@ To run a project in place without building a jar first you can use the "`bootRun
 	$ gradle bootRun
 ----
 
-Running this way makes your static classpath resources (i.e. in `src/main/resources` by
-default) reloadable in the live application, which can be helpful at development time.
+By default, running this way makes your static classpath resources (i.e. in
+`src/main/resources` by default) reloadable in the live application, which can be helpful
+at development time. Making static classpath resources reloadable means that `bootRun`
+does not use the output of the `processResources` task, i.e., when invoked using
+`bootRun`, your application will use the resources in their unprocessed form.
 
-NOTE: Making static classpath resources reloadable means that `bootRun` does not use the
-output of the `processResources` task. When invoked using `bootRun` your application will
-use the resources in their unprocessed form.
+You can disable the direct use of your static classpath resources. This will mean that
+the resources are no longer reloadable but the output of the `processResources` task will
+be used. To do so, set `addResources` on the `bootRun` task to `false`:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	bootRun {
+		addResources = false
+	}
+----
 
 
 
