@@ -26,6 +26,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -55,6 +57,8 @@ import org.springframework.util.StringUtils;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class OnBeanCondition extends SpringBootCondition implements
 		ConfigurationCondition {
+
+	private static final Log logger = LogFactory.getLog(OnBeanCondition.class);
 
 	private static final String[] NO_BEANS = {};
 
@@ -249,25 +253,36 @@ public class OnBeanCondition extends SpringBootCondition implements
 				AnnotatedTypeMetadata metadata, final List<String> beanTypes) {
 			if (metadata instanceof MethodMetadata
 					&& metadata.isAnnotated(Bean.class.getName())) {
-				try {
-					final MethodMetadata methodMetadata = (MethodMetadata) metadata;
-					// We should be safe to load at this point since we are in the
-					// REGISTER_BEAN phase
-					Class<?> configClass = ClassUtils.forName(
-							methodMetadata.getDeclaringClassName(),
-							context.getClassLoader());
-					ReflectionUtils.doWithMethods(configClass, new MethodCallback() {
-						@Override
-						public void doWith(Method method)
-								throws IllegalArgumentException, IllegalAccessException {
-							if (methodMetadata.getMethodName().equals(method.getName())) {
-								beanTypes.add(method.getReturnType().getName());
-							}
+				addDeducedBeanTypeForBeanMethod(context, metadata, beanTypes,
+						(MethodMetadata) metadata);
+			}
+		}
+
+		private void addDeducedBeanTypeForBeanMethod(ConditionContext context,
+				AnnotatedTypeMetadata metadata, final List<String> beanTypes,
+				final MethodMetadata methodMetadata) {
+			try {
+				// We should be safe to load at this point since we are in the
+				// REGISTER_BEAN phase
+				Class<?> configClass = ClassUtils.forName(
+						methodMetadata.getDeclaringClassName(), context.getClassLoader());
+				ReflectionUtils.doWithMethods(configClass, new MethodCallback() {
+					@Override
+					public void doWith(Method method) throws IllegalArgumentException,
+							IllegalAccessException {
+						if (methodMetadata.getMethodName().equals(method.getName())) {
+							beanTypes.add(method.getReturnType().getName());
 						}
-					});
-				}
-				catch (Throwable ex) {
-					// swallow exception and continue
+					}
+				});
+			}
+			catch (Throwable ex) {
+				// swallow exception and continue
+				if (logger.isDebugEnabled()) {
+					logger.debug(
+							"Unable to deduce bean type for "
+									+ methodMetadata.getDeclaringClassName() + "."
+									+ methodMetadata.getMethodName(), ex);
 				}
 			}
 		}
