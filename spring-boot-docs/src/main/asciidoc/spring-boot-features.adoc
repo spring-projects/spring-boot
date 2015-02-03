@@ -233,10 +233,16 @@ sensible overriding of values, properties are considered in the the following or
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
 . A `RandomValuePropertySource` that only has properties in `+random.*+`.
-. Application properties outside of your packaged jar (`application.properties`
-  including YAML and profile variants).
-. Application properties packaged inside your jar (`application.properties`
-  including YAML and profile variants).
+. <<boot-features-external-config-profile-specific-properties,Profile-specific
+  application properties>> outside of your packaged jar
+  (`application-{profile}.properties` and YAML variants)
+. <<boot-features-external-config-profile-specific-properties,Profile-specific
+  application properties>> packaged inside your jar (`application-{profile}.properties`
+  and YAML variants)
+. Application properties outside of your packaged jar (`application.properties` and YAML
+  variants).
+. Application properties packaged inside your jar (`application.properties` and YAML
+  variants).
 . `@PropertySource` annotations on your `@Configuration` classes.
 . Default properties (specified using `SpringApplication.setDefaultProperties`).
 
@@ -263,6 +269,11 @@ You can bundle an `application.properties` inside your jar that provides a sensi
 default `name`. When running in production, an `application.properties` can be provided
 outside of your jar that overrides `name`; and for one-off testing, you can launch with
 a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
+
+
+
+[[boot-features-external-config-random-values]]
+=== Configuring random values
 
 The `RandomValuePropertySource` is useful for injecting random values (e.g. into secrets
 or test cases). It can produce integers, longs or strings, e.g.
@@ -345,12 +356,14 @@ environment variables or system properties.
 
 
 [[boot-features-external-config-profile-specific-properties]]
-=== Profile specific properties
-In addition to `application.properties` files, profile specific properties can also be
+=== Profile-specific properties
+In addition to `application.properties` files, profile-specific properties can also be
 defined using the naming convention `application-{profile}.properties`.
 
 Profile specific properties are loaded from the same locations as standard
-`application.properties`, with profile specific files overriding the default ones.
+`application.properties`, with profile-specific files always overriding the default
+ones irrespective of whether the profile-specific files are inside or outside your
+packaged jar.
 
 
 
