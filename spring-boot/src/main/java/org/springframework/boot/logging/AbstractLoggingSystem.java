@@ -66,6 +66,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * Return any self initialization config that has been applied. By default this method
 	 * checks {@link #getStandardConfigLocations()} and assumes that any file that exists
 	 * will have been applied.
+	 * @return the self initialization config
 	 */
 	protected String getSelfInitializationConfig() {
 		for (String location : getStandardConfigLocations()) {
@@ -79,6 +80,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	/**
 	 * Return the standard config locations for this system.
+	 * @return the standard config locations
 	 * @see #getSelfInitializationConfig()
 	 */
 	protected abstract String[] getStandardConfigLocations();

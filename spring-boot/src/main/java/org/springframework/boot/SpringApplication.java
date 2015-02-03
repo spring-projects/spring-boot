@@ -467,6 +467,7 @@ public class SpringApplication {
 	 * content from the Environment (banner.location and banner.charset). The defaults are
 	 * banner.location=classpath:banner.txt, banner.charset=UTF-8. If the banner file does
 	 * not exist or cannot be printed, a simple default is created.
+	 * @param environment the environment
 	 * @see #setShowBanner(boolean)
 	 * @see #printBanner()
 	 */
@@ -741,6 +742,7 @@ public class SpringApplication {
 	 * Sets if the created {@link ApplicationContext} should have a shutdown hook
 	 * registered. Defaults to {@code true} to ensure that JVM shutdowns are handled
 	 * gracefully.
+	 * @param registerShutdownHook if the shutdown hook should be registered
 	 */
 	public void setRegisterShutdownHook(boolean registerShutdownHook) {
 		this.registerShutdownHook = registerShutdownHook;
@@ -966,6 +968,7 @@ public class SpringApplication {
 	 * Most developers will want to define their own main method can call the
 	 * {@link #run(Object, String...) run} method instead.
 	 * @param args command line arguments
+	 * @throws Exception if the application cannot be started
 	 * @see SpringApplication#run(Object[], String[])
 	 * @see SpringApplication#run(Object, String...)
 	 */

@@ -72,6 +72,8 @@ public class ParentContextCloserApplicationListener implements
 	/**
 	 * Subclasses may override to create their own subclass of ContextCloserListener. This
 	 * still enforces the use of a weak reference.
+	 * @param child the child context
+	 * @return the {@link ContextCloserListener} to use
 	 */
 	protected ContextCloserListener createContextCloserListener(
 			ConfigurableApplicationContext child) {

@@ -57,6 +57,7 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 	/**
 	 * Returns the absolute document root when it points to a valid folder, logging a
 	 * warning and returning {@code null} otherwise.
+	 * @return the valid document root
 	 */
 	protected final File getValidDocumentRoot() {
 		File file = getDocumentRoot();

@@ -133,6 +133,8 @@ public class RedisServer implements TestRule {
 	 * Try to obtain and validate a resource. Implementors should either set the
 	 * {@link #resource} field with a valid resource and return normally, or throw an
 	 * exception.
+	 * @return the jedis connection factory
+	 * @throws Exception if the factory cannot be obtained
 	 */
 	protected JedisConnectionFactory obtainResource() throws Exception {
 		JedisConnectionFactory resource = new JedisConnectionFactory();

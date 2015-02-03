@@ -44,6 +44,7 @@ public class JarEntry extends java.util.jar.JarEntry {
 
 	/**
 	 * Return the source {@link JarEntryData} that was used to create this entry.
+	 * @return the source of the entry
 	 */
 	public JarEntryData getSource() {
 		return this.source;
@@ -51,6 +52,8 @@ public class JarEntry extends java.util.jar.JarEntry {
 
 	/**
 	 * Return a {@link URL} for this {@link JarEntry}.
+	 * @return the URL for the entry
+	 * @throws MalformedURLException if the URL is not valid
 	 */
 	public URL getUrl() throws MalformedURLException {
 		return new URL(this.source.getSource().getUrl(), getName());

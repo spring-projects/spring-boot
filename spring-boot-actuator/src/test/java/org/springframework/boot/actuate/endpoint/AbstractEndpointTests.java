@@ -34,6 +34,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Abstract base class for endpoint tests.
  *
+ * @param <T> the endpoint type
  * @author Phillip Webb
  */
 public abstract class AbstractEndpointTests<T extends Endpoint<?>> {

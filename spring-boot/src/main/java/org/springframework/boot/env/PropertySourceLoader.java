@@ -33,6 +33,7 @@ public interface PropertySourceLoader {
 
 	/**
 	 * Returns the file extensions that the loader supports (excluding the '.').
+	 * @return the file extensions
 	 */
 	String[] getFileExtensions();
 

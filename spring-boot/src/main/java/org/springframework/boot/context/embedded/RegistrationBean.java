@@ -47,6 +47,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 
 	/**
 	 * Set the name of this registration. If not specified the bean name will be used.
+	 * @param name the name of the registration
 	 */
 	public void setName(String name) {
 		Assert.hasLength(name, "Name must not be empty");
@@ -56,6 +57,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	/**
 	 * Sets if asynchronous operations are support for this registration. If not specified
 	 * defaults to {@code true}.
+	 * @param asyncSupported if async is supported
 	 */
 	public void setAsyncSupported(boolean asyncSupported) {
 		this.asyncSupported = asyncSupported;
@@ -63,6 +65,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 
 	/**
 	 * Returns if asynchronous operations are support for this registration.
+	 * @return if async is supported
 	 */
 	public boolean isAsyncSupported() {
 		return this.asyncSupported;
@@ -86,6 +89,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	/**
 	 * Set init-parameters for this registration. Calling this method will replace any
 	 * existing init-parameters.
+	 * @param initParameters the init parameters
 	 * @see #getInitParameters
 	 * @see #addInitParameter
 	 */
@@ -96,6 +100,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 
 	/**
 	 * Returns a mutable Map of the registration init-parameters.
+	 * @return the init parameters
 	 */
 	public Map<String, String> getInitParameters() {
 		return this.initParameters;
@@ -115,6 +120,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	 * Deduces the name for this registration. Will return user specified name or fallback
 	 * to convention based naming.
 	 * @param value the object used for convention based names
+	 * @return the deduced name
 	 */
 	protected final String getOrDeduceName(Object value) {
 		return (this.name != null ? this.name : Conventions.getVariableName(value));
@@ -122,6 +128,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 
 	/**
 	 * Configure registration base settings.
+	 * @param registration the registration
 	 */
 	protected void configure(Registration.Dynamic registration) {
 		Assert.state(registration != null,

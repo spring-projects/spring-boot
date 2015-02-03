@@ -84,6 +84,7 @@ public abstract class LoggingSystem {
 	/**
 	 * Detect and return the logging system in use. Supports Logback, Log4J, Log4J2 and
 	 * Java Logging.
+	 * @param classLoader the classloader
 	 * @return The logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {

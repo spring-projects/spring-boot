@@ -115,6 +115,7 @@ class CentralDirectoryEndRecord {
 
 	/**
 	 * Return the number of ZIP entries in the file.
+	 * @return the number of records in the zip
 	 */
 	public int getNumberOfRecords() {
 		return (int) Bytes.littleEndianValue(this.block, this.offset + 10, 2);

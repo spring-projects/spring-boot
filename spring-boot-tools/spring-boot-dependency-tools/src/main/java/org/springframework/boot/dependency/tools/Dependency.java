@@ -66,6 +66,7 @@ public final class Dependency {
 
 	/**
 	 * Return the dependency group id.
+	 * @return the group ID
 	 */
 	public String getGroupId() {
 		return this.groupId;
@@ -73,6 +74,7 @@ public final class Dependency {
 
 	/**
 	 * Return the dependency artifact id.
+	 * @return the artifact ID
 	 */
 	public String getArtifactId() {
 		return this.artifactId;
@@ -80,6 +82,7 @@ public final class Dependency {
 
 	/**
 	 * Return the dependency version.
+	 * @return the version
 	 */
 	public String getVersion() {
 		return this.version;
@@ -87,6 +90,7 @@ public final class Dependency {
 
 	/**
 	 * Return the dependency exclusions.
+	 * @return the exclusions
 	 */
 	public List<Exclusion> getExclusions() {
 		return this.exclusions;
@@ -145,14 +149,16 @@ public final class Dependency {
 		}
 
 		/**
-		 * Return the exclusion artifact id.
+		 * Return the exclusion artifact ID.
+		 * @return the exclusion artifact ID
 		 */
 		public String getArtifactId() {
 			return this.artifactId;
 		}
 
 		/**
-		 * Return the exclusion group id.
+		 * Return the exclusion group ID.
+		 * @return the exclusion group ID
 		 */
 		public String getGroupId() {
 			return this.groupId;

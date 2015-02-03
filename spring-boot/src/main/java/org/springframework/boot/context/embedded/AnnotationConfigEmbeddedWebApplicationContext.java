@@ -115,6 +115,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * <p>
 	 * Any call to this method must occur prior to calls to {@link #register(Class...)}
 	 * and/or {@link #scan(String...)}.
+	 * @param beanNameGenerator the bean name generator
 	 * @see AnnotatedBeanDefinitionReader#setBeanNameGenerator
 	 * @see ClassPathBeanDefinitionScanner#setBeanNameGenerator
 	 */
@@ -133,6 +134,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * <p>
 	 * Any call to this method must occur prior to calls to {@link #register(Class...)}
 	 * and/or {@link #scan(String...)}.
+	 * @param scopeMetadataResolver the scope metadata resolver
 	 */
 	public void setScopeMetadataResolver(ScopeMetadataResolver scopeMetadataResolver) {
 		this.reader.setScopeMetadataResolver(scopeMetadataResolver);

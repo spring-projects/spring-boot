@@ -164,6 +164,7 @@ public class ConfigFileApplicationListener implements
 	/**
 	 * Add config file property sources to the specified environment.
 	 * @param environment the environment to add source to
+	 * @param resourceLoader the resource loader
 	 * @see #addPostProcessors(ConfigurableApplicationContext)
 	 */
 	protected void addPropertySources(ConfigurableEnvironment environment,
@@ -222,6 +223,7 @@ public class ConfigFileApplicationListener implements
 	 * profiles (if any) plus file extensions supported by the properties loaders.
 	 * Locations are considered in the order specified, with later items taking precedence
 	 * (like a map merge).
+	 * @param locations the search locations
 	 */
 	public void setSearchLocations(String locations) {
 		Assert.hasLength(locations, "Locations must not be empty");
@@ -231,6 +233,7 @@ public class ConfigFileApplicationListener implements
 	/**
 	 * Sets the names of the files that should be loaded (excluding file extension) as a
 	 * comma-separated list.
+	 * @param names the names to load
 	 */
 	public void setSearchNames(String names) {
 		Assert.hasLength(names, "Names must not be empty");

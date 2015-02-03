@@ -170,6 +170,7 @@ public abstract class SystemPropertyUtils {
 	 * provided key. Environment variables in <code>UPPER_CASE</code> style are allowed
 	 * where System properties would normally be <code>lower.case</code>.
 	 * @param key the key to resolve
+	 * @param defaultValue the default value
 	 * @param text optional extra context for an error message if the key resolution fails
 	 * (e.g. if System properties are not accessible)
 	 * @return a static property value or null of not found

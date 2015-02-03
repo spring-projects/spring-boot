@@ -31,11 +31,13 @@ import static org.junit.Assert.assertEquals;
  * Abstract base class for {@link DataSourcePoolMetadata} tests.
  *
  * @author Stephane Nicoll
+ * @param <D> the data source pool metadata type
  */
 public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourcePoolMetadata<?>> {
 
 	/**
 	 * Return a data source metadata instance with a min size of 0 and max size of 2.
+	 * @return the data source metadata
 	 */
 	protected abstract D getDataSourceMetadata();
 

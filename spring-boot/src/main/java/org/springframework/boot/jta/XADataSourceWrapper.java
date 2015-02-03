@@ -34,6 +34,7 @@ public interface XADataSourceWrapper {
 	 * {@link TransactionManager}.
 	 * @param dataSource the data source to wrap
 	 * @return the wrapped data source
+	 * @throws Exception if the data source cannot be wrapped
 	 */
 	DataSource wrapDataSource(XADataSource dataSource) throws Exception;
 

@@ -114,6 +114,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	/**
 	 * Returns the context path for the embedded servlet container. The path will start
 	 * with "/" and not end with "/". The root context is represented by an empty string.
+	 * @return the context path
 	 */
 	public String getContextPath() {
 		return this.contextPath;
@@ -182,6 +183,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	/**
 	 * Returns the document root which will be used by the web context to serve static
 	 * files.
+	 * @return the document root
 	 */
 	public File getDocumentRoot() {
 		return this.documentRoot;
@@ -200,8 +202,9 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * Returns a mutable set of {@link ErrorPage}s that will be used when handling
-	 * exceptions.
+	 * Returns a mutable set of {@link ErrorPage ErrorPages} that will be used when
+	 * handling exceptions.
+	 * @return the error pages
 	 */
 	public Set<ErrorPage> getErrorPages() {
 		return this.errorPages;

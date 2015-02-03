@@ -41,6 +41,7 @@ public abstract class ManagedDependencies implements Dependencies {
 
 	/**
 	 * Return the 'spring-boot-dependencies' POM version.
+	 * @return the version
 	 * @deprecated since 1.1.0 in favor of {@link #getSpringBootVersion()}
 	 */
 	@Deprecated
@@ -50,6 +51,7 @@ public abstract class ManagedDependencies implements Dependencies {
 
 	/**
 	 * Return the 'spring-boot-dependencies' POM version.
+	 * @return the spring boot version
 	 */
 	public String getSpringBootVersion() {
 		Dependency dependency = find("org.springframework.boot", "spring-boot");

@@ -83,6 +83,7 @@ public class XmlEmbeddedWebApplicationContext extends EmbeddedWebApplicationCont
 
 	/**
 	 * Set whether to use XML validation. Default is {@code true}.
+	 * @param validating if validating the XML
 	 */
 	public void setValidating(boolean validating) {
 		this.reader.setValidating(validating);

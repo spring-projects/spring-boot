@@ -81,6 +81,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Returns the servlet being registered.
+	 * @return the sevlet
 	 */
 	protected Servlet getServlet() {
 		return this.servlet;
@@ -88,6 +89,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Sets the servlet to be registered.
+	 * @param servlet the servlet
 	 */
 	public void setServlet(Servlet servlet) {
 		Assert.notNull(servlet, "Servlet must not be null");
@@ -124,8 +126,9 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Sets the <code>loadOnStartup</code> priority. See
+	 * Sets the {@code loadOnStartup} priority. See
 	 * {@link ServletRegistration.Dynamic#setLoadOnStartup} for details.
+	 * @param loadOnStartup if load on startup is enabled
 	 */
 	public void setLoadOnStartup(int loadOnStartup) {
 		this.loadOnStartup = loadOnStartup;
@@ -142,6 +145,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	/**
 	 * Returns the {@link MultipartConfigElement multi-part configuration} to be applied
 	 * or {@code null}.
+	 * @return the multipart config
 	 */
 	public MultipartConfigElement getMultipartConfig() {
 		return this.multipartConfig;
@@ -149,6 +153,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Returns the servlet name that will be registered.
+	 * @return the servlet name
 	 */
 	public String getServletName() {
 		return getOrDeduceName(this.servlet);
@@ -175,6 +180,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	/**
 	 * Configure registration settings. Subclasses can override this method to perform
 	 * additional configuration if required.
+	 * @param registration the registration
 	 */
 	protected void configure(ServletRegistration.Dynamic registration) {
 		super.configure(registration);

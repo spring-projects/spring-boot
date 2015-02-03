@@ -80,6 +80,7 @@ public class LogFile {
 
 	/**
 	 * Apply log file details to {@code LOG_PATH} and {@code LOG_FILE} map entries.
+	 * @param properties the properties to apply to
 	 */
 	public void applyTo(Properties properties) {
 		put(properties, "LOG_PATH", this.path);

@@ -417,6 +417,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * The Tomcat protocol to use when create the {@link Connector}.
+	 * @param protocol the protocol
 	 * @see Connector#Connector(String)
 	 */
 	public void setProtocol(String protocol) {
@@ -581,6 +582,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * Returns the character encoding to use for URL decoding.
+	 * @return the URI encoding
 	 */
 	public String getUriEncoding() {
 		return this.uriEncoding;

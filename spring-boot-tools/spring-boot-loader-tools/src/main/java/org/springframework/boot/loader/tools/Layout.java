@@ -41,11 +41,13 @@ public interface Layout {
 
 	/**
 	 * Returns the location of classes within the archive.
+	 * @return the classes location
 	 */
 	String getClassesLocation();
 
 	/**
 	 * Returns if loader classes should be included to make the archive executable.
+	 * @return if the layout is executable
 	 */
 	boolean isExecutable();
 

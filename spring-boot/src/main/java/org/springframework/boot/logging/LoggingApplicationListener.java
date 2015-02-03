@@ -170,6 +170,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	/**
 	 * Initialize the logging system according to preferences expressed through the
 	 * {@link Environment} and the classpath.
+	 * @param environment the environment
+	 * @param classLoader the classloader
 	 */
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
 		if (System.getProperty(PID_KEY) == null) {

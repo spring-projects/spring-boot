@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.configurationprocessor;
 
 import java.io.File;
@@ -79,21 +80,21 @@ public class TestProject {
 	}
 
 	private void copySources(Set<Class<?>> contents) throws IOException {
-		for (Class<?> klass : contents) {
-			copySources(klass);
+		for (Class<?> type : contents) {
+			copySources(type);
 		}
 	}
 
-	private void copySources(Class<?> klass) throws IOException {
-		File original = getOriginalSourceFile(klass);
-		File target = getSourceFile(klass);
+	private void copySources(Class<?> type) throws IOException {
+		File original = getOriginalSourceFile(type);
+		File target = getSourceFile(type);
 		target.getParentFile().mkdirs();
 		FileCopyUtils.copy(original, target);
 		this.sourceFiles.add(target);
 	}
 
-	public File getSourceFile(Class<?> klass) {
-		return new File(this.sourceFolder, sourcePathFor(klass));
+	public File getSourceFile(Class<?> type) {
+		return new File(this.sourceFolder, sourcePathFor(type));
 	}
 
 	public ConfigurationMetadata fullBuild() {
@@ -120,6 +121,8 @@ public class TestProject {
 
 	/**
 	 * Retrieve File relative to project's output folder.
+	 * @param relativePath the relative path
+	 * @return the output file
 	 */
 	public File getOutputFile(String relativePath) {
 		Assert.assertFalse(new File(relativePath).isAbsolute());
@@ -128,6 +131,9 @@ public class TestProject {
 
 	/**
 	 * Add source code at the end of file, just before last '}'
+	 * @param target the target
+	 * @param snippetStream the snippet stream
+	 * @throws Exception if the source cannot be added
 	 */
 	public void addSourceCode(Class<?> target, InputStream snippetStream)
 			throws Exception {
@@ -143,31 +149,36 @@ public class TestProject {
 
 	/**
 	 * Delete source file for given class from project.
+	 * @param type the class to delete
 	 */
-	public void delete(Class<?> klass) {
-		File target = getSourceFile(klass);
+	public void delete(Class<?> type) {
+		File target = getSourceFile(type);
 		target.delete();
 		this.sourceFiles.remove(target);
 	}
 
 	/**
 	 * Restore source code of given class to its original contents.
+	 * @param type the class to revert
+	 * @throws IOException
 	 */
-	public void revert(Class<?> klass) throws IOException {
-		Assert.assertTrue(getSourceFile(klass).exists());
-		copySources(klass);
+	public void revert(Class<?> type) throws IOException {
+		Assert.assertTrue(getSourceFile(type).exists());
+		copySources(type);
 	}
 
 	/**
 	 * Add source code of given class to this project.
+	 * @param type the class to add
+	 * @throws IOException
 	 */
-	public void add(Class<?> klass) throws IOException {
-		Assert.assertFalse(getSourceFile(klass).exists());
-		copySources(klass);
+	public void add(Class<?> type) throws IOException {
+		Assert.assertFalse(getSourceFile(type).exists());
+		copySources(type);
 	}
 
-	public void replaceText(Class<?> klass, String find, String replace) throws Exception {
-		File target = getSourceFile(klass);
+	public void replaceText(Class<?> type, String find, String replace) throws Exception {
+		File target = getSourceFile(type);
 		String contents = getContents(target);
 		contents = contents.replace(find, replace);
 		putContents(target, contents);
@@ -178,8 +189,8 @@ public class TestProject {
 	 * have no need to know about these. They should work only with the copied source
 	 * code.
 	 */
-	private File getOriginalSourceFile(Class<?> klass) {
-		return new File(ORIGINAL_SOURCE_FOLDER, sourcePathFor(klass));
+	private File getOriginalSourceFile(Class<?> type) {
+		return new File(ORIGINAL_SOURCE_FOLDER, sourcePathFor(type));
 	}
 
 	private static void putContents(File targetFile, String contents)

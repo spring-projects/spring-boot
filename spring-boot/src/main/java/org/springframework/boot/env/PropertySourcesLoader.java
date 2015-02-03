@@ -190,6 +190,7 @@ public class PropertySourcesLoader {
 
 	/**
 	 * Return the {@link MutablePropertySources} being loaded.
+	 * @return the property sources
 	 */
 	public MutablePropertySources getPropertySources() {
 		return this.propertySources;
@@ -197,6 +198,7 @@ public class PropertySourcesLoader {
 
 	/**
 	 * Returns all file extensions that could be loaded.
+	 * @return the file extensions
 	 */
 	public Set<String> getAllFileExtensions() {
 		Set<String> fileExtensions = new HashSet<String>();

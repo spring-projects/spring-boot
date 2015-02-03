@@ -45,6 +45,7 @@ import org.springframework.validation.Validator;
  * them to an object of a specified type and then optionally running a {@link Validator}
  * over it.
  *
+ * @param <T> The target type
  * @author Dave Syer
  */
 public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
@@ -87,6 +88,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 
 	/**
 	 * Create a new factory for an object of the given type.
+	 * @param type the target type
 	 * @see #PropertiesConfigurationFactory(Class)
 	 */
 	@SuppressWarnings("unchecked")

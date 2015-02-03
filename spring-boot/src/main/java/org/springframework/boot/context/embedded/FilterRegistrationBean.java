@@ -97,6 +97,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Returns the filter being registered.
+	 * @return the filter
 	 */
 	protected Filter getFilter() {
 		return this.filter;
@@ -104,6 +105,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Set the filter to be registered.
+	 * @param filter the filter
 	 */
 	public void setFilter(Filter filter) {
 		Assert.notNull(filter, "Filter must not be null");
@@ -208,6 +210,8 @@ public class FilterRegistrationBean extends RegistrationBean {
 	/**
 	 * Convenience method to {@link #setDispatcherTypes(EnumSet) set dispatcher types}
 	 * using the specified elements.
+	 * @param first the first dispatcher type
+	 * @param rest additional dispatcher types
 	 */
 	public void setDispatcherTypes(DispatcherType first, DispatcherType... rest) {
 		this.dispatcherTypes = EnumSet.of(first, rest);
@@ -217,6 +221,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 	 * Sets the dispatcher types that should be used with the registration. If not
 	 * specified the types will be deduced based on the value of
 	 * {@link #isAsyncSupported()}.
+	 * @param dispatcherTypes the dispatcher types
 	 */
 	public void setDispatcherTypes(EnumSet<DispatcherType> dispatcherTypes) {
 		this.dispatcherTypes = dispatcherTypes;
@@ -226,6 +231,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 	 * Set if the filter mappings should be matched after any declared filter mappings of
 	 * the ServletContext. Defaults to {@code false} indicating the filters are supposed
 	 * to be matched before any declared filter mappings of the ServletContext.
+	 * @param matchAfter if filter mappings are matched after
 	 */
 	public void setMatchAfter(boolean matchAfter) {
 		this.matchAfter = matchAfter;
@@ -234,6 +240,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 	/**
 	 * Return if filter mappings should be matched after any declared Filter mappings of
 	 * the ServletContext.
+	 * @return if filter mappings are matched after
 	 */
 	public boolean isMatchAfter() {
 		return this.matchAfter;
@@ -259,6 +266,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 	/**
 	 * Configure registration settings. Subclasses can override this method to perform
 	 * additional configuration if required.
+	 * @param registration the registration
 	 */
 	protected void configure(FilterRegistration.Dynamic registration) {
 		super.configure(registration);

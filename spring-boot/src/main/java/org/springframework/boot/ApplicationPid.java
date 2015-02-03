@@ -74,6 +74,7 @@ public class ApplicationPid {
 
 	/**
 	 * Write the PID to the specified file.
+	 * @param file the PID file
 	 * @throws IllegalStateException if no PID is available.
 	 * @throws IOException if the file cannot be written
 	 */

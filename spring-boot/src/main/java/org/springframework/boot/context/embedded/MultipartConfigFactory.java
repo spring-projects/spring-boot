@@ -44,6 +44,7 @@ public class MultipartConfigFactory {
 
 	/**
 	 * Sets the directory location where files will be stored.
+	 * @param location the location
 	 */
 	public void setLocation(String location) {
 		this.location = location;
@@ -51,6 +52,7 @@ public class MultipartConfigFactory {
 
 	/**
 	 * Sets the maximum size allowed for uploaded files.
+	 * @param maxFileSize the maximum file size
 	 * @see #setMaxFileSize(String)
 	 */
 	public void setMaxFileSize(long maxFileSize) {
@@ -60,6 +62,7 @@ public class MultipartConfigFactory {
 	/**
 	 * Sets the maximum size allowed for uploaded files. Values can use the suffixed "MB"
 	 * or "KB" to indicate a Megabyte or Kilobyte size.
+	 * @param maxFileSize the maximum file size
 	 * @see #setMaxFileSize(long)
 	 */
 	public void setMaxFileSize(String maxFileSize) {
@@ -68,6 +71,7 @@ public class MultipartConfigFactory {
 
 	/**
 	 * Sets the maximum size allowed for multipart/form-data requests.
+	 * @param maxRequestSize the maximum request size
 	 * @see #setMaxRequestSize(String)
 	 */
 	public void setMaxRequestSize(long maxRequestSize) {
@@ -77,6 +81,7 @@ public class MultipartConfigFactory {
 	/**
 	 * Sets the maximum size allowed for multipart/form-data requests. Values can use the
 	 * suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	 * @param maxRequestSize the maximum request size
 	 * @see #setMaxRequestSize(long)
 	 */
 	public void setMaxRequestSize(String maxRequestSize) {
@@ -85,6 +90,7 @@ public class MultipartConfigFactory {
 
 	/**
 	 * Sets the size threshold after which files will be written to disk.
+	 * @param fileSizeThreshold the file size threshold
 	 * @see #setFileSizeThreshold(String)
 	 */
 	public void setFileSizeThreshold(int fileSizeThreshold) {
@@ -94,6 +100,7 @@ public class MultipartConfigFactory {
 	/**
 	 * Sets the size threshold after which files will be written to disk. Values can use
 	 * the suffixed "MB" or "KB" to indicate a Megabyte or Kilobyte size.
+	 * @param fileSizeThreshold the file size threshold
 	 * @see #setFileSizeThreshold(int)
 	 */
 	public void setFileSizeThreshold(String fileSizeThreshold) {
@@ -114,6 +121,7 @@ public class MultipartConfigFactory {
 
 	/**
 	 * Create a new {@link MultipartConfigElement} instance.
+	 * @return the multipart config element
 	 */
 	public MultipartConfigElement createMultipartConfig() {
 		return new MultipartConfigElement(this.location, this.maxFileSize,

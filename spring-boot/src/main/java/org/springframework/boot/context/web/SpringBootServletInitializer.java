@@ -132,11 +132,12 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	 * config classes) because other settings have sensible defaults. You might choose
 	 * (for instance) to add default command line arguments, or set an active Spring
 	 * profile.
-	 * @param application a builder for the application context
+	 * @param builder a builder for the application context
+	 * @return the application builder
 	 * @see SpringApplicationBuilder
 	 */
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application;
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+		return builder;
 	}
 
 }

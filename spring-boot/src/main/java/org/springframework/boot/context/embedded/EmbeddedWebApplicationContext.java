@@ -228,6 +228,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 * Servlet context. By default this method will first attempt to find
 	 * {@link ServletContextInitializer}, {@link Servlet}, {@link Filter} and certain
 	 * {@link EventListener} beans.
+	 * @return the servlet initializer beans
 	 */
 	protected Collection<ServletContextInitializer> getServletContextInitializerBeans() {
 		return new ServletContextInitializerBeans(getBeanFactory());
@@ -331,6 +332,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	/**
 	 * Returns the {@link EmbeddedServletContainer} that was created by the context or
 	 * {@code null} if the container has not yet been created.
+	 * @return the embedded servlet container
 	 */
 	public EmbeddedServletContainer getEmbeddedServletContainer() {
 		return this.embeddedServletContainer;

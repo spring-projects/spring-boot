@@ -262,6 +262,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	/**
 	 * Returns access to the underlying Tomcat server.
+	 * @return the Tomcat server
 	 */
 	public Tomcat getTomcat() {
 		return this.tomcat;

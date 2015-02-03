@@ -299,6 +299,7 @@ public class SpringApplicationBuilder {
 	 * Sets the {@link Banner} instance which will be used to print the banner when no
 	 * static banner file is provided.
 	 * @param banner The banner to use
+	 * @return the current builder
 	 */
 	public SpringApplicationBuilder banner(Banner banner) {
 		this.application.setBanner(banner);
@@ -329,6 +330,8 @@ public class SpringApplicationBuilder {
 	/**
 	 * Sets if the created {@link ApplicationContext} should have a shutdown hook
 	 * registered.
+	 * @param registerShutdownHook if the shutdown hook should be registered
+	 * @return the current builder
 	 */
 	public SpringApplicationBuilder registerShutdownHook(boolean registerShutdownHook) {
 		this.registerShutdownHookApplied = true;

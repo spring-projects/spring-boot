@@ -63,6 +63,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainer} instance.
 	 * @param server the underlying Jetty server
+	 * @param autoStart if auto-starting the container
 	 */
 	public JettyEmbeddedServletContainer(Server server, boolean autoStart) {
 		this.autoStart = autoStart;
@@ -196,6 +197,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	/**
 	 * Returns access to the underlying Jetty Server.
+	 * @return the Jetty server
 	 */
 	public Server getServer() {
 		return this.server;

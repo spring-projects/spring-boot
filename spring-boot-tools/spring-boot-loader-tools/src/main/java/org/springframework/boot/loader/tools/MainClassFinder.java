@@ -192,6 +192,7 @@ public abstract class MainClassFinder {
 	 * Perform the given callback operation on all main classes from the given jar.
 	 * @param jarFile the jar file to search
 	 * @param classesLocation the location within the jar containing classes
+	 * @param callback the callback
 	 * @return the first callback result or {@code null}
 	 * @throws IOException
 	 */
@@ -310,6 +311,7 @@ public abstract class MainClassFinder {
 
 	/**
 	 * Callback interface used to receive class names.
+	 * @param <T> the result type
 	 */
 	public static interface ClassNameCallback<T> {
 
