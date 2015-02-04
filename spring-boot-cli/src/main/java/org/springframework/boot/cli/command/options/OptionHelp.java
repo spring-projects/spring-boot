@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,13 @@ public interface OptionHelp {
 
 	/**
 	 * Returns the set of options that are mutually synonymous.
+	 * @return the options
 	 */
 	Set<String> getOptions();
 
 	/**
 	 * Returns usage help for the option.
+	 * @return the usage help
 	 */
 	String getUsageHelp();
 

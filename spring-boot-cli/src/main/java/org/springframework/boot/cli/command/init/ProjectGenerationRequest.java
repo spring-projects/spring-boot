@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,9 @@ class ProjectGenerationRequest {
 	private String type;
 
 	/**
-	 * The url of the service to use.
+	 * The URL of the service to use.
 	 * @see #DEFAULT_SERVICE_URL
+	 * @return the service URL
 	 */
 	public String getServiceUrl() {
 		return this.serviceUrl;
@@ -73,6 +74,7 @@ class ProjectGenerationRequest {
 
 	/**
 	 * The location of the generated project.
+	 * @return the location of the generated project
 	 */
 	public String getOutput() {
 		return this.output;
@@ -89,8 +91,10 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Specify if the project archive should be extract in the output location. If the
-	 * {@link #getOutput() output} ends with "/", the project is extracted automatically.
+	 * Whether or not the project archive should be extracted in the output location. If
+	 * the {@link #getOutput() output} ends with "/", the project is extracted
+	 * automatically.
+	 * @return {@code true} if the archive should be extracted, otherwise {@code false}
 	 */
 	public boolean isExtract() {
 		return this.extract;
@@ -102,6 +106,7 @@ class ProjectGenerationRequest {
 
 	/**
 	 * The Spring Boot version to use or {@code null} if it should not be customized.
+	 * @return the Spring Boot version of {@code null}
 	 */
 	public String getBootVersion() {
 		return this.bootVersion;
@@ -113,6 +118,7 @@ class ProjectGenerationRequest {
 
 	/**
 	 * The identifiers of the dependencies to include in the project.
+	 * @return the dependency identifiers
 	 */
 	public List<String> getDependencies() {
 		return this.dependencies;
@@ -120,6 +126,7 @@ class ProjectGenerationRequest {
 
 	/**
 	 * The Java version to use or {@code null} if it should not be customized.
+	 * @return the Java version or {@code null}
 	 */
 	public String getJavaVersion() {
 		return this.javaVersion;
@@ -131,6 +138,7 @@ class ProjectGenerationRequest {
 
 	/**
 	 * The packaging type or {@code null} if it should not be customized.
+	 * @return the packaging type or {@code null}
 	 */
 	public String getPackaging() {
 		return this.packaging;
@@ -143,6 +151,7 @@ class ProjectGenerationRequest {
 	/**
 	 * The build type to use. Ignored if a type is set. Can be used alongside the
 	 * {@link #getFormat() format} to identify the type to use.
+	 * @return the build type
 	 */
 	public String getBuild() {
 		return this.build;
@@ -155,6 +164,7 @@ class ProjectGenerationRequest {
 	/**
 	 * The project format to use. Ignored if a type is set. Can be used alongside the
 	 * {@link #getBuild() build} to identify the type to use.
+	 * @return the project format
 	 */
 	public String getFormat() {
 		return this.format;
@@ -165,7 +175,8 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Specify if the type should be detected based on the build and format value.
+	 * Whether or not the type should be detected based on the build and format value.
+	 * @return {@code true} if type detection will be performed, otherwise {@code false}
 	 */
 	public boolean isDetectType() {
 		return this.detectType;
@@ -178,6 +189,7 @@ class ProjectGenerationRequest {
 	/**
 	 * The type of project to generate. Should match one of the advertized type that the
 	 * service supports. If not set, the default is retrieved from the service metadata.
+	 * @return the project type
 	 */
 	public String getType() {
 		return this.type;
@@ -188,7 +200,9 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Generates the URL to use to generate a project represented by this request
+	 * Generates the URI to use to generate a project represented by this request
+	 * @param metadata the metadata that describes the service
+	 * @return the project generation URI
 	 */
 	URI generateUrl(InitializrServiceMetadata metadata) {
 		try {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,32 +35,39 @@ public interface GroovyCompilerConfiguration {
 
 	/**
 	 * Returns the scope in which the compiler operates.
+	 * @return the scope of the compiler
 	 */
 	GroovyCompilerScope getScope();
 
 	/**
 	 * Returns if import declarations should be guessed.
+	 * @return {@code true} if imports should be guessed, otherwise {@code false}
 	 */
 	boolean isGuessImports();
 
 	/**
 	 * Returns if jar dependencies should be guessed.
+	 * @return {@code true} if dependencies should be guessed, otherwise {@code false}
 	 */
 	boolean isGuessDependencies();
 
 	/**
-	 * Returns true if autoconfiguration transformations should be applied.
+	 * Returns true if auto-configuration transformations should be applied.
+	 * @return {@code true} if auto-configuration transformations should be applied,
+	 * otherwise {@code false}
 	 */
 	boolean isAutoconfigure();
 
 	/**
+	 * Returns the classpath for local resources
 	 * @return a path for local resources
 	 */
 	String[] getClasspath();
 
 	/**
-	 * @return the configuration for the repositories that will be used by the compiler to
+	 * Returns the configuration for the repositories that will be used by the compiler to
 	 * resolve dependencies.
+	 * @return the repository configurations
 	 */
 	List<RepositoryConfiguration> getRepositoryConfiguration();
 

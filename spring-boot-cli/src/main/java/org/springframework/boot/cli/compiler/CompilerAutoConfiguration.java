@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public abstract class CompilerAutoConfiguration {
 	 * Apply any dependency customizations. This method will only be called if
 	 * {@link #matches} returns {@code true}.
 	 * @param dependencies dependency customizer
-	 * @throws CompilationFailedException
+	 * @throws CompilationFailedException if the dependencies cannot be applied
 	 */
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
@@ -58,7 +58,7 @@ public abstract class CompilerAutoConfiguration {
 	 * Apply any import customizations. This method will only be called if
 	 * {@link #matches} returns {@code true}.
 	 * @param imports import customizer
-	 * @throws CompilationFailedException
+	 * @throws CompilationFailedException if the imports cannot be applied
 	 */
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 	}
@@ -67,6 +67,12 @@ public abstract class CompilerAutoConfiguration {
 	 * Apply any customizations to the main class. This method will only be called if
 	 * {@link #matches} returns {@code true}. This method is useful when a groovy file
 	 * defines more than one class but customization only applies to the first class.
+	 * @param loader the class loader being used during compilation
+	 * @param configuration the compiler configuration
+	 * @param generatorContext the current context
+	 * @param source the source unit
+	 * @param classNode the main class
+	 * @throws CompilationFailedException if the customizations cannot be applied
 	 */
 	public void applyToMainClass(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
@@ -75,6 +81,13 @@ public abstract class CompilerAutoConfiguration {
 
 	/**
 	 * Apply any additional configuration.
+	 *
+	 * @param loader the class loader being used during compilation
+	 * @param configuration the compiler configuration
+	 * @param generatorContext the current context
+	 * @param source the source unit
+	 * @param classNode the class
+	 * @throws CompilationFailedException if the configuration cannot be applied
 	 */
 	public void apply(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,

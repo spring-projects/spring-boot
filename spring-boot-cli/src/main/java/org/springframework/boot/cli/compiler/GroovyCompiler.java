@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,6 +123,7 @@ public class GroovyCompiler {
 	/**
 	 * Return a mutable list of the {@link ASTTransformation}s to be applied during
 	 * {@link #compile(String...)}.
+	 * @return the AST transformations to apply
 	 */
 	public List<ASTTransformation> getAstTransformations() {
 		return this.transformations;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,9 @@ class InitializrService {
 
 	/**
 	 * Generate a project based on the specified {@link ProjectGenerationRequest}
+	 * @param request the generation request
 	 * @return an entity defining the project
+	 * @throws IOException if generation fails
 	 */
 	public ProjectGenerationResponse generate(ProjectGenerationRequest request)
 			throws IOException {
@@ -89,6 +91,9 @@ class InitializrService {
 
 	/**
 	 * Load the {@link InitializrServiceMetadata} at the specified url.
+	 * @param serviceUrl to url of the initializer service
+	 * @return the metadata describing the service
+	 * @throws IOException if the service's metadata cannot be loaded
 	 */
 	public InitializrServiceMetadata loadMetadata(String serviceUrl) throws IOException {
 		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(serviceUrl);

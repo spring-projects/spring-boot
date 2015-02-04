@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ public class ManagedDependenciesFactory {
 
 	/**
 	 * Return a list of the managed dependencies.
+	 * @return the managed dependencies
 	 */
 	public List<Dependency> getManagedDependencies() {
 		List<Dependency> result = new ArrayList<Dependency>();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ public class CommandRunner implements Iterable<Command> {
 	/**
 	 * Return the name of the runner or an empty string. Non-empty names will include a
 	 * trailing space character so that they can be used as a prefix.
+	 * @return the name of the runner
 	 */
 	public String getName() {
 		return this.name;
@@ -179,7 +180,7 @@ public class CommandRunner implements Iterable<Command> {
 			showUsage();
 			return 1;
 		}
-		catch(TestFailedException e) {
+		catch (TestFailedException e) {
 			return 1;
 		}
 		catch (Exception ex) {
@@ -204,7 +205,8 @@ public class CommandRunner implements Iterable<Command> {
 	/**
 	 * Parse the arguments and run a suitable command.
 	 * @param args the arguments
-	 * @throws Exception
+	 * @throws Exception if the command fails
+	 * @return the outcome of the command
 	 */
 	protected ExitStatus run(String... args) throws Exception {
 		if (args.length == 0) {

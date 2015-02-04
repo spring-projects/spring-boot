@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ class InitializrServiceMetadata {
 
 	/**
 	 * Creates a new instance using the specified root {@link JSONObject}.
+	 * @param root the root JSONObject
 	 */
 	public InitializrServiceMetadata(JSONObject root) {
 		this.dependencies = parseDependencies(root);
@@ -75,6 +76,7 @@ class InitializrServiceMetadata {
 
 	/**
 	 * Return the dependencies supported by the service.
+	 * @return the supported dependencies
 	 */
 	public Collection<Dependency> getDependencies() {
 		return this.dependencies.values();
@@ -83,6 +85,8 @@ class InitializrServiceMetadata {
 	/**
 	 * Return the dependency with the specified id or {@code null} if no such dependency
 	 * exists.
+	 * @param id the id
+	 * @return the dependency or {@code null}
 	 */
 	public Dependency getDependency(String id) {
 		return this.dependencies.get(id);
@@ -90,14 +94,16 @@ class InitializrServiceMetadata {
 
 	/**
 	 * Return the project types supported by the service.
+	 * @return the supported project types
 	 */
 	public Map<String, ProjectType> getProjectTypes() {
 		return this.projectTypes.getContent();
 	}
 
 	/**
-	 * Return the default type to use or {@code null} or the metadata does not define any
+	 * Return the default type to use or {@code null} if the metadata does not define any
 	 * default.
+	 * @return the default project type or {@code null}
 	 */
 	public ProjectType getDefaultType() {
 		if (this.projectTypes.getDefaultItem() != null) {
@@ -112,6 +118,7 @@ class InitializrServiceMetadata {
 
 	/**
 	 * Returns the defaults applicable to the service.
+	 * @return the defaults of the service
 	 */
 	public Map<String, String> getDefaults() {
 		return this.defaults;

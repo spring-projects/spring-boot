@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,10 @@ public abstract class AstUtils {
 	 * Determine if a {@link ClassNode} has one or more of the specified annotations on
 	 * the class or any of its methods. N.B. the type names are not normally fully
 	 * qualified.
+	 * @param node the class to examine
+	 * @param annotations the annotations to look for
+	 * @return {@code true} if at least one of the annotations is found, otherwise
+	 * {@code false}
 	 */
 	public static boolean hasAtLeastOneAnnotation(ClassNode node, String... annotations) {
 		if (hasAtLeastOneAnnotation((AnnotatedNode) node, annotations)) {
@@ -65,6 +69,10 @@ public abstract class AstUtils {
 	/**
 	 * Determine if an {@link AnnotatedNode} has one or more of the specified annotations.
 	 * N.B. the annotation type names are not normally fully qualified.
+	 * @param node the node to examine
+	 * @param annotations the annotations to look for
+	 * @return {@code true} if at least one of the annotations is found, otherwise
+	 * {@code false}
 	 */
 	public static boolean hasAtLeastOneAnnotation(AnnotatedNode node,
 			String... annotations) {
@@ -83,6 +91,9 @@ public abstract class AstUtils {
 	 * Determine if a {@link ClassNode} has one or more fields of the specified types or
 	 * method returning one or more of the specified types. N.B. the type names are not
 	 * normally fully qualified.
+	 * @param node the class to examine
+	 * @param types the types to look for
+	 * @return {@code true} if at least one of the types is found, otherwise {@code false}
 	 */
 	public static boolean hasAtLeastOneFieldOrMethod(ClassNode node, String... types) {
 		Set<String> typesSet = new HashSet<String>(Arrays.asList(types));
@@ -102,6 +113,10 @@ public abstract class AstUtils {
 	/**
 	 * Determine if a {@link ClassNode} subclasses any of the specified types N.B. the
 	 * type names are not normally fully qualified.
+	 * @param node the class to examine
+	 * @param types the types that may have been sub-classed
+	 * @return {@code true} if the class subclasses any of the specified types, otherwise
+	 * {@code false}
 	 */
 	public static boolean subclasses(ClassNode node, String... types) {
 		for (String type : types) {
@@ -124,8 +139,10 @@ public abstract class AstUtils {
 
 	/**
 	 * Extract a top-level <code>name</code> closure from inside this block if there is
-	 * one. Removes it from the block at the same time.
+	 * one, optionally removing it from the block at the same time.
 	 * @param block a block statement (class definition)
+	 * @param name the name to look for
+	 * @param remove whether or not the extracted closure should be removed
 	 * @return a beans Closure if one can be found, null otherwise
 	 */
 	public static ClosureExpression getClosure(BlockStatement block, String name,
