@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -55,7 +55,7 @@ import com.google.gson.Gson;
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)
-@AutoConfigureAfter(JacksonAutoConfiguration.class)
+@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class })
 public class HttpMessageConvertersAutoConfiguration {
 
 	@Autowired(required = false)
@@ -70,6 +70,7 @@ public class HttpMessageConvertersAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(ObjectMapper.class)
 	@ConditionalOnBean(ObjectMapper.class)
+	@ConditionalOnMissingBean(GsonHttpMessageConverter.class)
 	@EnableConfigurationProperties(HttpMapperProperties.class)
 	@SuppressWarnings("deprecation")
 	protected static class MappingJackson2HttpMessageConverterConfiguration {
@@ -119,7 +120,6 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(Gson.class)
-	@ConditionalOnMissingClass(name = "com.fasterxml.jackson.core.JsonGenerator")
 	@ConditionalOnBean(Gson.class)
 	protected static class GsonHttpMessageConverterConfiguration {
 

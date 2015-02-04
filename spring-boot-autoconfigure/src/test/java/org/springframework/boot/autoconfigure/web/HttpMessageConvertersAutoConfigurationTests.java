@@ -22,6 +22,8 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -118,17 +120,32 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	public void defaultGsonConverter() throws Exception {
-		this.context.register(GsonConfig.class,
+		this.context.register(GsonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-		// Shouldn't be registered because we have Jackson
-		assertEquals(0, this.context.getBeansOfType(GsonHttpMessageConverter.class)
-				.size());
+		assertConverterBeanExists(GsonHttpMessageConverter.class,
+				"gsonHttpMessageConverter");
+
+		assertConverterBeanRegisteredWithHttpMessageConverters(GsonHttpMessageConverter.class);
+	}
+
+	@Test
+	public void gsonIsPreferredWhenBothGsonAndJacksonAreAvailable() {
+		this.context.register(GsonAutoConfiguration.class,
+				JacksonAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class);
+		this.context.refresh();
+		assertConverterBeanExists(GsonHttpMessageConverter.class,
+				"gsonHttpMessageConverter");
+		assertConverterBeanRegisteredWithHttpMessageConverters(GsonHttpMessageConverter.class);
+		assertEquals(0,
+				this.context.getBeansOfType(MappingJackson2HttpMessageConverter.class)
+						.size());
 	}
 
 	@Test
 	public void customGsonConverter() throws Exception {
-		this.context.register(GsonConfig.class, GsonConverterConfig.class,
+		this.context.register(GsonAutoConfiguration.class, GsonConverterConfig.class,
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
 		assertConverterBeanExists(GsonHttpMessageConverter.class,
@@ -224,15 +241,6 @@ public class HttpMessageConvertersAutoConfigurationTests {
 			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 			converter.setObjectMapper(objectMapper);
 			return converter;
-		}
-	}
-
-	@Configuration
-	protected static class GsonConfig {
-
-		@Bean
-		public Gson gson() {
-			return new Gson();
 		}
 	}
 
