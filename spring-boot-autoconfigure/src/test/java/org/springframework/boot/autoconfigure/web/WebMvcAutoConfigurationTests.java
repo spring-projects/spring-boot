@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +64,9 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -75,6 +78,7 @@ import static org.junit.Assert.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -124,7 +128,7 @@ public class WebMvcAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		Map<String, List<Resource>> mappingLocations = getMappingLocations();
+		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.get("/**").size(), equalTo(5));
 		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
 		assertThat(mappingLocations.get("/webjars/**").get(0),
@@ -138,7 +142,7 @@ public class WebMvcAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		Map<String, List<Resource>> mappingLocations = getMappingLocations();
+		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
 		assertThat(mappingLocations.get("/webjars/**").get(0),
 				equalTo((Resource) new ClassPathResource("/foo/")));
@@ -152,7 +156,7 @@ public class WebMvcAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		Map<String, List<Resource>> mappingLocations = getMappingLocations();
+		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.get("/**").size(), equalTo(1));
 		assertThat(mappingLocations.get("/**").get(0),
 				equalTo((Resource) new ClassPathResource("/foo/")));
@@ -167,7 +171,7 @@ public class WebMvcAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		Map<String, List<Resource>> mappingLocations = getMappingLocations();
+		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.size(), equalTo(0));
 	}
 
@@ -261,11 +265,23 @@ public class WebMvcAutoConfigurationTests {
 				.getMessageCodesResolver());
 	}
 
-	@SuppressWarnings("unchecked")
-	protected Map<String, List<Resource>> getMappingLocations()
+	protected Map<String, List<Resource>> getFaviconMappingLocations()
+			throws IllegalAccessException {
+		HandlerMapping mapping = (HandlerMapping) this.context
+				.getBean("faviconHandlerMapping");
+		return getMappingLocations(mapping);
+	}
+
+	protected Map<String, List<Resource>> getResourceMappingLocations()
 			throws IllegalAccessException {
 		HandlerMapping mapping = (HandlerMapping) this.context
 				.getBean("resourceHandlerMapping");
+		return getMappingLocations(mapping);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Map<String, List<Resource>> getMappingLocations(HandlerMapping mapping)
+			throws IllegalAccessException {
 		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<String, List<Resource>>();
 		if (mapping instanceof SimpleUrlHandlerMapping) {
 			Field locationsField = ReflectionUtils.findField(
@@ -333,6 +349,39 @@ public class WebMvcAutoConfigurationTests {
 				.getBeansOfType(ContentNegotiatingViewResolver.class);
 		assertThat(beans.size(), equalTo(1));
 		assertThat(beans.keySet().iterator().next(), equalTo("myViewResolver"));
+	}
+
+	@Test
+	public void faviconMapping() throws IllegalAccessException {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(
+				this.context.getBeansOfType(ResourceHttpRequestHandler.class).get(
+						"faviconRequestHandler"), is(notNullValue()));
+		assertThat(
+				this.context.getBeansOfType(SimpleUrlHandlerMapping.class).get(
+						"faviconHandlerMapping"), is(notNullValue()));
+		Map<String, List<Resource>> mappingLocations = getFaviconMappingLocations();
+		assertThat(mappingLocations.get("/**/favicon.ico").size(), equalTo(5));
+	}
+
+	@Test
+	public void faviconMappingDisabled() throws IllegalAccessException {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.favicon.enabled:false");
+		this.context.refresh();
+		assertThat(
+				this.context.getBeansOfType(ResourceHttpRequestHandler.class).get(
+						"faviconRequestHandler"), is(nullValue()));
+		assertThat(
+				this.context.getBeansOfType(SimpleUrlHandlerMapping.class).get(
+						"faviconHandlerMapping"), is(nullValue()));
 	}
 
 	@Configuration
