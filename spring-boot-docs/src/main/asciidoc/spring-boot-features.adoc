@@ -1087,12 +1087,20 @@ Spring Boot includes auto-configuration support for the following templating eng
  * http://www.thymeleaf.org[Thymeleaf]
  * http://velocity.apache.org[Velocity]
 
-When you're using one of these templating engines with the default configuration, your
-templates will be picked up automatically from `src/main/resources/templates`.
-
 TIP: JSPs should be avoided if possible, there are several
 <<boot-features-jsp-limitations, known limitations>> when using them with embedded
 servlet containers.
+
+When you're using one of these templating engines with the default configuration, your
+templates will be picked up automatically from `src/main/resources/templates`.
+
+TIP: IntelliJ IDEA orders the classpath differently depending on how you run your
+application. Running your application in the IDE via its main method will result in a
+different ordering to when you run your application using Maven or Gradle or from its
+pacakaged jar. This can cause Spring Boot to fail to find the templates on the classpath.
+If you're affected by this problem you can reorder the classpath in the IDE to place
+the module's classes and resources first. Alternatively, you can configure the template
+prefix to search every templates directory on the classpath: `classpath*:/templates/`.
 
 
 
