@@ -52,7 +52,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 		GsonHttpMessageConvertersConfiguration.class })
 public class HttpMessageConvertersAutoConfiguration {
 
-	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-mapper";
+	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
 	@Autowired(required = false)
 	private final List<HttpMessageConverter<?>> converters = Collections.emptyList();

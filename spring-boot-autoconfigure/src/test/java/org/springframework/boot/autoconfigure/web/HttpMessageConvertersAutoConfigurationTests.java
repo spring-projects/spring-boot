@@ -148,7 +148,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.http.converters.preferred-mapper:gson");
+				"spring.http.converters.preferred-json-mapper:gson");
 		this.context.refresh();
 		assertConverterBeanExists(GsonHttpMessageConverter.class,
 				"gsonHttpMessageConverter");
