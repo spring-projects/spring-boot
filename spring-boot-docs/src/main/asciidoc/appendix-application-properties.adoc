@@ -107,6 +107,9 @@ content into your application; rather pick only the properties that you need.
 	spring.http.encoding.enabled=true # enable http encoding support
 	spring.http.encoding.force=true # force the configured encoding
 
+	# HTTP message conversion
+	spring.http.converters.preferred-json-mapper= # the preferred JSON mapper to use for HTTP message conversion. Set to "gson" to force the use of Gson when both it and Jackson are on the classpath.
+
 	# HTTP response compression ({sc-spring-boot-autoconfigure/web/GzipFilterProperties.{sc-ext}[GzipFilterProperties])
 	spring.http.gzip.bufferSize= # size of the output buffer in bytes
 	spring.http.gzip.minGzipSize= # minimum content length required for compression to occur
