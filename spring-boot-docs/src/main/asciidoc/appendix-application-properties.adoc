@@ -96,10 +96,12 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.ignore-default-model-on-redirect=true # If the the content of the "default" model should be ignored redirects
 	spring.view.prefix= # MVC view prefix
 	spring.view.suffix= # ... and suffix
+
+	# SPRING RESOURCES HANDLING ({sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[ResourceProperties])
 	spring.resources.cache-period= # cache timeouts in headers sent to browser
 	spring.resources.add-mappings=true # if default mappings should be added
 
-	# SPRING HATEOS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
+	# SPRING HATEOAS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
 	spring.hateoas.apply-to-primary-object-mapper=true # if the primary mapper should also be configured
 
 	# HTTP encoding ({sc-spring-boot-autoconfigure}/web/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
@@ -215,7 +217,7 @@ content into your application; rather pick only the properties that you need.
 	security.headers.content-type=false
 	security.headers.hsts=all # none / domain / all
 	security.sessions=stateless # always / never / if_required / stateless
-	security.ignored=false
+	security.ignored= # Comma-separated list of paths to exclude from the default secured paths
 
 	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[DataSourceProperties])
 	spring.datasource.name= # name of the data source
@@ -244,7 +246,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.max-wait=
 	spring.datasource.jmx-enabled=false # Export JMX MBeans (if supported)
 
-	# DATASOURCE ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration]
+	# DAO ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration])
 	spring.dao.exceptiontranslation.enabled=true
 
 	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
@@ -339,17 +341,17 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery
 	spring.jta.bitronix.datasource.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources
 
-	# SOLR ({sc-spring-boot-autoconfigure}/solr/SolrProperties.{sc-ext}[SolrProperties}])
+	# SOLR ({sc-spring-boot-autoconfigure}/solr/SolrProperties.{sc-ext}[SolrProperties])
 	spring.data.solr.host=http://127.0.0.1:8983/solr
 	spring.data.solr.zk-host=
 	spring.data.solr.repositories.enabled=true # if spring data repository support is enabled
 
-	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties}])
+	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name= # The cluster name (defaults to elasticsearch)
 	spring.data.elasticsearch.cluster-nodes= # The address(es) of the server node (comma-separated; if not specified starts a client node)
 	spring.data.elasticsearch.repositories.enabled=true # if spring data repository support is enabled
 
-	# DATA RESET ({spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[RepositoryRestConfiguration}])
+	# DATA REST ({spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[RepositoryRestConfiguration])
 	spring.data.rest.base-uri= # base URI against which the exporter should calculate its links
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
