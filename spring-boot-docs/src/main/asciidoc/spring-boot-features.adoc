@@ -274,7 +274,6 @@ a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
 
 [[boot-features-external-config-random-values]]
 === Configuring random values
-
 The `RandomValuePropertySource` is useful for injecting random values (e.g. into secrets
 or test cases). It can produce integers, longs or strings, e.g.
 

@@ -38,9 +38,7 @@ public class JndiPropertiesHidingClassLoader extends ClassLoader {
 		if ("jndi.properties".equals(name)) {
 			return Collections.enumeration(Collections.<URL> emptyList());
 		}
-		else {
-			return super.getResources(name);
-		}
+		return super.getResources(name);
 	}
 
 }

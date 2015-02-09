@@ -32,7 +32,7 @@ import com.google.gson.Gson;
 /**
  * Configuration for HTTP Message converters that use Gson
  *
- * @author awilkinson
+ * @author Andy Wilkinson
  * @since 1.2.2
  */
 @Configuration

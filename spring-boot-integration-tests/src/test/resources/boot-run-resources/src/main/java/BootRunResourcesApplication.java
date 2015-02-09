@@ -15,9 +15,9 @@
  */
 
 public class BootRunResourcesApplication {
-	
+
 	public static void main(String[] args) {
-		ClassLoader classLoader = BootRunResourcesApplication.class.getClassLoader(); 
+		ClassLoader classLoader = BootRunResourcesApplication.class.getClassLoader();
 		System.out.println(classLoader.getResource("test.txt"));
 	}
 
