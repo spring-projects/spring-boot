@@ -18,18 +18,21 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import java.util.Set;
 
+import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
+import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jmx.export.MBeanExporter;
-import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
@@ -43,25 +46,47 @@ import static org.junit.Assert.assertThat;
  */
 public class JndiDataSourceAutoConfigurationTests {
 
+	private ClassLoader threadContextClassLoader;
+
+	private String initialContextFactory;
+
 	private AnnotationConfigApplicationContext context;
 
-	private SimpleNamingContextBuilder jndi;
+	@Before
+	public void setupJndi() {
+		this.initialContextFactory = System.getProperty(Context.INITIAL_CONTEXT_FACTORY);
+		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+				TestableInitialContextFactory.class.getName());
+	}
+
+	@Before
+	public void setupThreadContextClassLoader() {
+		this.threadContextClassLoader = Thread.currentThread().getContextClassLoader();
+		Thread.currentThread().setContextClassLoader(
+				new JndiPropertiesHidingClassLoader(getClass().getClassLoader()));
+	}
 
 	@After
-	public void cleanup() {
-		if (this.jndi != null) {
-			this.jndi.clear();
+	public void close() {
+		TestableInitialContextFactory.clearAll();
+		if (this.initialContextFactory != null) {
+			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+					this.initialContextFactory);
+		}
+		else {
+			System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
 		}
 		if (this.context != null) {
 			this.context.close();
 		}
+		Thread.currentThread().setContextClassLoader(this.threadContextClassLoader);
 	}
 
 	@Test
 	public void dataSourceIsAvailableFromJndi() throws IllegalStateException,
 			NamingException {
 		DataSource dataSource = new BasicDataSource();
-		this.jndi = configureJndi("foo", dataSource);
+		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -77,7 +102,7 @@ public class JndiDataSourceAutoConfigurationTests {
 	public void mbeanDataSourceIsExcludedFromExport() throws IllegalStateException,
 			NamingException {
 		DataSource dataSource = new BasicDataSource();
-		this.jndi = configureJndi("foo", dataSource);
+		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -98,7 +123,7 @@ public class JndiDataSourceAutoConfigurationTests {
 	public void standardDataSourceIsNotExcludedFromExport() throws IllegalStateException,
 			NamingException {
 		DataSource dataSource = new org.apache.commons.dbcp.BasicDataSource();
-		this.jndi = configureJndi("foo", dataSource);
+		configureJndi("foo", dataSource);
 
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -114,12 +139,9 @@ public class JndiDataSourceAutoConfigurationTests {
 		assertThat(excludedBeans, hasSize(0));
 	}
 
-	private SimpleNamingContextBuilder configureJndi(String name, DataSource dataSource)
+	private void configureJndi(String name, DataSource dataSource)
 			throws IllegalStateException, NamingException {
-		SimpleNamingContextBuilder builder = SimpleNamingContextBuilder
-				.emptyActivatedContextBuilder();
-		builder.bind(name, dataSource);
-		return builder;
+		TestableInitialContextFactory.bind(name, dataSource);
 	}
 
 	private static class MBeanExporterConfiguration {
