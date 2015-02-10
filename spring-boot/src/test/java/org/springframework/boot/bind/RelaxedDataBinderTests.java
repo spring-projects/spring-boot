@@ -202,10 +202,14 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
-	public void testBindNestedWithEnviromentStyle() throws Exception {
+	public void testBindRelaxedNestedValue() throws Exception {
 		TargetWithNestedObject target = new TargetWithNestedObject();
-		bind(target, "nested_foo: bar\n" + "nested_value: 123");
-		assertEquals(123, target.getNested().getValue());
+
+		//fooBaz
+		bind(target, "nested_foo_Baz: bar\n" + "nested_value: 123");
+		assertEquals("bar", target.getNested().getFooBaz());
+
+
 	}
 
 	@Test
@@ -221,6 +225,13 @@ public class RelaxedDataBinderTests {
 		this.conversionService = new DefaultConversionService();
 		bind(target, "nested: bar,foo");
 		assertEquals("[bar, foo]", target.getNested().toString());
+	}
+
+	@Test
+	public void testBindNestedWithEnviromentStyle() throws Exception {
+		TargetWithNestedObject target = new TargetWithNestedObject();
+		bind(target, "nested_foo: bar\n" + "nested_value: 123");
+		assertEquals(123, target.getNested().getValue());
 	}
 
 	@Test

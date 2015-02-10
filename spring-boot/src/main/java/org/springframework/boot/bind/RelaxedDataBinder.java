@@ -287,6 +287,42 @@ public class RelaxedDataBinder extends DataBinder {
 
 	private String getActualPropertyName(BeanWrapper target, String prefix, String name) {
 		prefix = StringUtils.hasText(prefix) ? prefix + "." : "";
+
+		String candidate = getViableCandidate(target, prefix, name);
+
+		if(candidate != null) {
+			return candidate;
+		}
+
+		//searching for a nested property
+		String[] fields = name.split("[_\\-.]");
+		StringBuilder nestedBuilder = new StringBuilder();
+		for(String field : fields) {
+			if(nestedBuilder.length() > 0) {
+				nestedBuilder.append(".");
+			}
+			nestedBuilder.append(field);
+
+			candidate = getViableCandidate(target, prefix, nestedBuilder.toString());
+
+			//found a potential nested object, try to match the variable as well
+			if(candidate != null) {
+				String property = getViableCandidate(target,
+				  StringUtils.hasText(prefix) ? prefix + "." : ""+candidate+".",
+				  name.substring(nestedBuilder.length() + 1));
+				if(property != null) {
+					return candidate+"."+property;
+				}
+			}
+
+		}
+
+
+
+		return name;
+	}
+
+	private String getViableCandidate(BeanWrapper target, String prefix, String name) {
 		Iterable<String> names = getNameAndAliases(name);
 		for (String nameOrAlias : names) {
 			for (String candidate : new RelaxedNames(nameOrAlias)) {
@@ -300,7 +336,7 @@ public class RelaxedDataBinder extends DataBinder {
 				}
 			}
 		}
-		return name;
+		return null;
 	}
 
 	private Iterable<String> getNameAndAliases(String name) {
