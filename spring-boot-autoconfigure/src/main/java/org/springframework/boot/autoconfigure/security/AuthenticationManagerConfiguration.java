@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,9 +40,8 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -59,16 +59,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean({ AuthenticationManager.class })
 @Order(0)
-public class AuthenticationManagerConfiguration extends
-		GlobalAuthenticationConfigurerAdapter {
-
-	/*
-	 * Yes, this class is a GlobalAuthenticationConfigurerAdapter, even though none of
-	 * those methods are overridden: we want Spring Security to instantiate us early, so
-	 * we can in turn force the SecurityPrequisites to be instantiated. This will prevent
-	 * ordering issues between Spring Boot modules when they need to influence the default
-	 * security configuration.
-	 */
+public class AuthenticationManagerConfiguration {
 
 	private static Log logger = LogFactory
 			.getLog(AuthenticationManagerConfiguration.class);
@@ -76,35 +67,16 @@ public class AuthenticationManagerConfiguration extends
 	@Autowired
 	private List<SecurityPrerequisite> dependencies;
 
-	@Autowired
-	private SecurityProperties security;
-
-	@Autowired
-	private ObjectPostProcessor<Object> objectPostProcessor;
-
 	@Bean
 	@Primary
-	public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth,
-			ApplicationContext context) throws Exception {
-
-		if (isAuthenticationManagerAlreadyConfigured(context)) {
-			return new LazyAuthenticationManager(auth);
-		}
-
-		/*
-		 * This AuthenticationManagerBuilder is for the global AuthenticationManager
-		 */
-		BootDefaultingAuthenticationConfigurerAdapter configurer = new BootDefaultingAuthenticationConfigurerAdapter();
-		configurer.configure(auth);
-		AuthenticationManager manager = configurer.getAuthenticationManagerBuilder()
-				.getOrBuild();
-		configurer.configureParent(auth);
-		return manager;
-
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration auth) throws Exception {
+		return auth.getAuthenticationManager();
 	}
 
-	private boolean isAuthenticationManagerAlreadyConfigured(ApplicationContext context) {
-		return context.getBeanNamesForType(GlobalAuthenticationConfigurerAdapter.class).length > 2;
+	@Bean
+	public static BootDefaultingAuthenticationConfigurerAdapter bootDefaultingAuthenticationConfigurerAdapter(SecurityProperties security,
+			List<SecurityPrerequisite> dependencies) {
+		return new BootDefaultingAuthenticationConfigurerAdapter(security);
 	}
 
 	@Component
@@ -126,10 +98,6 @@ public class AuthenticationManagerConfiguration extends
 					.getBean(AuthenticationManager.class);
 			if (manager instanceof ProviderManager) {
 				((ProviderManager) manager)
-						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
-			}
-			else if (manager instanceof LazyAuthenticationManager) {
-				((LazyAuthenticationManager) manager)
 						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
 			}
 		}
@@ -157,74 +125,31 @@ public class AuthenticationManagerConfiguration extends
 	 * methods are invoked before configure, which cannot be guaranteed at this point.</li>
 	 * </ul>
 	 */
-	private class BootDefaultingAuthenticationConfigurerAdapter {
+	@Order(Ordered.LOWEST_PRECEDENCE - 100)
+	private static class BootDefaultingAuthenticationConfigurerAdapter extends GlobalAuthenticationConfigurerAdapter {
+		private final SecurityProperties security;
 
-		private AuthenticationManagerBuilder defaultAuth;
-
-		private AuthenticationManager parent;
-
-		public void configureParent(AuthenticationManagerBuilder auth) {
-			if (!auth.isConfigured() && this.parent != null) {
-				auth.parentAuthenticationManager(this.parent);
-			}
+		@Autowired
+		public BootDefaultingAuthenticationConfigurerAdapter(SecurityProperties security) {
+			this.security = security;
 		}
 
-		public AuthenticationManagerBuilder getAuthenticationManagerBuilder() {
-			return this.defaultAuth;
-		}
-
-		public void configure(AuthenticationManagerBuilder auth) throws Exception {
+		public void init(AuthenticationManagerBuilder auth) throws Exception {
 			if (auth.isConfigured()) {
-				this.defaultAuth = auth;
 				return;
 			}
-			User user = AuthenticationManagerConfiguration.this.security.getUser();
+
+			User user = this.security.getUser();
 			if (user.isDefaultPassword()) {
 				logger.info("\n\nUsing default security password: " + user.getPassword()
 						+ "\n");
 			}
-			this.defaultAuth = new AuthenticationManagerBuilder(
-					AuthenticationManagerConfiguration.this.objectPostProcessor);
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
-			this.parent = this.defaultAuth.inMemoryAuthentication()
-					.withUser(user.getName()).password(user.getPassword())
-					.roles(roles.toArray(new String[roles.size()])).and().and().build();
-			// Defer actually setting the parent on the AuthenticationManagerBuilder
-			// because it makes it "configured" and we are only in the init() phase
-			// here.
+			auth
+				.inMemoryAuthentication()
+					.withUser(user.getName())
+						.password(user.getPassword())
+						.roles(roles.toArray(new String[roles.size()]));
 		}
 	}
-
-	private static class LazyAuthenticationManager implements AuthenticationManager {
-
-		private AuthenticationManagerBuilder builder;
-
-		private AuthenticationManager authenticationManager;
-
-		private AuthenticationEventPublisher authenticationEventPublisher;
-
-		public LazyAuthenticationManager(AuthenticationManagerBuilder builder) {
-			this.builder = builder;
-		}
-
-		public void setAuthenticationEventPublisher(
-				AuthenticationEventPublisher authenticationEventPublisher) {
-			this.authenticationEventPublisher = authenticationEventPublisher;
-		}
-
-		@Override
-		public Authentication authenticate(Authentication authentication)
-				throws AuthenticationException {
-			if (this.authenticationManager == null) {
-				this.authenticationManager = this.builder.getOrBuild();
-				if (this.authenticationManager instanceof ProviderManager) {
-					((ProviderManager) this.authenticationManager)
-							.setAuthenticationEventPublisher(this.authenticationEventPublisher);
-				}
-			}
-			return this.authenticationManager.authenticate(authentication);
-		}
-
-	}
-
 }
