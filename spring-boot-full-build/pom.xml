@@ -57,6 +57,7 @@
 		<module>../spring-boot-samples</module>
 		<module>../spring-boot-deployment-tests</module>
 		<module>../spring-boot-integration-tests</module>
+		<module>../spring-boot-security-tests</module>
 		<module>../spring-boot-docs</module>
 	</modules>
 	<profiles>
