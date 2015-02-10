@@ -22,6 +22,9 @@ import javax.persistence.PersistenceException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -99,6 +102,13 @@ public class EntityScanTests {
 		this.context = new AnnotationConfigApplicationContext(MissingEntityManager.class);
 	}
 
+	@Test
+	public void userDeclaredBeanPostProcessorWithEntityManagerDependencyDoesNotPreventConfigurationOfPackagesToScan() {
+		this.context = new AnnotationConfigApplicationContext(
+				BeanPostProcessorConfiguration.class, BaseConfig.class);
+		assertSetPackagesToScan("com.mycorp.entity");
+	}
+
 	private void assertSetPackagesToScan(String... expected) {
 		String[] actual = this.context.getBean(
 				TestLocalContainerEntityManagerFactoryBean.class).getPackagesToScan();
@@ -146,6 +156,33 @@ public class EntityScanTests {
 	@Configuration
 	@EntityScan("com.mycorp.entity")
 	static class MissingEntityManager {
+	}
+
+	@Configuration
+	@EntityScan("com.mycorp.entity")
+	static class BeanPostProcessorConfiguration {
+
+		@Autowired
+		private EntityManagerFactory entityManagerFactory;
+
+		@Bean
+		public BeanPostProcessor beanPostProcessor() {
+			return new BeanPostProcessor() {
+
+				@Override
+				public Object postProcessBeforeInitialization(Object bean, String beanName)
+						throws BeansException {
+					return bean;
+				}
+
+				@Override
+				public Object postProcessAfterInitialization(Object bean, String beanName)
+						throws BeansException {
+					return bean;
+				}
+			};
+
+		}
 	}
 
 	private static class TestLocalContainerEntityManagerFactoryBean extends

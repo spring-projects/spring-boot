@@ -28,6 +28,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -91,7 +92,7 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 	 * on an {@link EntityScan} annotation.
 	 */
 	static class EntityScanBeanPostProcessor implements BeanPostProcessor,
-			SmartInitializingSingleton {
+			SmartInitializingSingleton, Ordered {
 
 		private final String[] packagesToScan;
 
@@ -123,6 +124,11 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 			Assert.state(this.processed, "Unable to configure "
 					+ "LocalContainerEntityManagerFactoryBean from @EntityScan, "
 					+ "ensure an appropriate bean is registered.");
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
 		}
 
 	}
