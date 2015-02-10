@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -199,6 +199,22 @@ public class RelaxedDataBinderTests {
 		TargetWithNestedObject target = new TargetWithNestedObject();
 		bind(target, "nested.foo: bar\n" + "nested.value: 123");
 		assertEquals(123, target.getNested().getValue());
+	}
+
+	@Test
+	public void testBindRelaxedNestedValue() throws Exception {
+		TargetWithNestedObject target = new TargetWithNestedObject();
+		bind(target, "nested_foo_Baz: bar\n" + "nested_value: 123");
+		assertEquals("bar", target.getNested().getFooBaz());
+		assertEquals(123, target.getNested().getValue());
+	}
+
+	@Test
+	public void testBindRelaxedNestedCamelValue() throws Exception {
+		TargetWithNestedObject target = new TargetWithNestedObject();
+		bind(target, "another_nested_foo_Baz: bar\n" + "another-nested_value: 123");
+		assertEquals("bar", target.getAnotherNested().getFooBaz());
+		assertEquals(123, target.getAnotherNested().getValue());
 	}
 
 	@Test
@@ -736,7 +752,10 @@ public class RelaxedDataBinderTests {
 	}
 
 	public static class TargetWithNestedObject {
+
 		private VanillaTarget nested;
+
+		private VanillaTarget anotherNested;
 
 		public VanillaTarget getNested() {
 			return this.nested;
@@ -745,6 +764,15 @@ public class RelaxedDataBinderTests {
 		public void setNested(VanillaTarget nested) {
 			this.nested = nested;
 		}
+
+		public VanillaTarget getAnotherNested() {
+			return this.anotherNested;
+		}
+
+		public void setAnotherNested(VanillaTarget anotherNested) {
+			this.anotherNested = anotherNested;
+		}
+
 	}
 
 	public static class VanillaTarget {
