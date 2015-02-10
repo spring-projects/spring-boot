@@ -89,7 +89,16 @@ public class RepositoryRestMvcAutoConfigurationTests {
 				.getBean(RepositoryRestConfiguration.class);
 		assertEquals("Custom base URI should not have been set", URI.create(""),
 				bean.getBaseUri());
+	}
 
+	@Test
+	public void propertiesStillAppliedWithCustomBootConfig() {
+		load(TestConfigurationWithRestMvcBootConfig.class, "spring.data.rest.baseUri:foo");
+		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
+		RepositoryRestConfiguration bean = this.context
+				.getBean(RepositoryRestConfiguration.class);
+		assertEquals("Custom base URI should have been set", URI.create("foo"),
+				bean.getBaseUri());
 	}
 
 	@Test
@@ -131,6 +140,11 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	@Import({ TestConfiguration.class, RepositoryRestMvcConfiguration.class })
 	protected static class TestConfigurationWithRestMvcConfig {
+
+	}
+
+	@Import({ TestConfiguration.class, RepositoryRestMvcBootConfiguration.class })
+	protected static class TestConfigurationWithRestMvcBootConfig {
 
 	}
 
