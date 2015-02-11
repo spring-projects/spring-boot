@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,12 @@ import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 import javax.ws.rs.ApplicationPath;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
@@ -49,8 +53,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.filter.RequestContextFilter;
 
 /**
@@ -68,7 +74,9 @@ import org.springframework.web.filter.RequestContextFilter;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @AutoConfigureBefore(DispatcherServletAutoConfiguration.class)
 @EnableConfigurationProperties(JerseyProperties.class)
-public class JerseyAutoConfiguration {
+public class JerseyAutoConfiguration implements ServletContextAware {
+
+	private static final Log logger = LogFactory.getLog(JerseyAutoConfiguration.class);
 
 	@Autowired
 	private JerseyProperties jersey;
@@ -129,8 +137,12 @@ public class JerseyAutoConfiguration {
 		ServletRegistrationBean registration = new ServletRegistrationBean(
 				new ServletContainer(this.config), this.path);
 		addInitParameters(registration);
-		registration.setName("jerseyServlet");
+		registration.setName(getServletRegistrationName());
 		return registration;
+	}
+
+	private String getServletRegistrationName() {
+		return ClassUtils.getUserClass(this.config.getClass()).getName();
 	}
 
 	private void addInitParameters(RegistrationBean registration) {
@@ -152,6 +164,23 @@ public class JerseyAutoConfiguration {
 			applicationPath = "/" + applicationPath;
 		}
 		return applicationPath.equals("/") ? "/*" : applicationPath + "/*";
+	}
+
+	@Override
+	public void setServletContext(ServletContext servletContext) {
+		String servletRegistrationName = getServletRegistrationName();
+		ServletRegistration registration = servletContext
+				.getServletRegistration(servletRegistrationName);
+		if (registration != null) {
+			if (logger.isInfoEnabled()) {
+				logger.info("Configuring existing registration for Jersey servlet '"
+						+ servletRegistrationName + "'");
+			}
+			registration.setInitParameters(this.jersey.getInit());
+			registration.setInitParameter(
+					CommonProperties.METAINF_SERVICES_LOOKUP_DISABLE,
+					Boolean.TRUE.toString());
+		}
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
