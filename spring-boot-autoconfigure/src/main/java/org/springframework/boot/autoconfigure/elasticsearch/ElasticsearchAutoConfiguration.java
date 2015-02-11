@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.lease.Releasable;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.node.Node;
+import org.elasticsearch.node.NodeBuilder;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.NodeClientFactoryBean;
 import org.springframework.data.elasticsearch.client.TransportClientFactoryBean;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -49,13 +55,12 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	@Autowired
 	private ElasticsearchProperties properties;
 
-	private Client client;
+	private Releasable releasable;
 
 	@Bean
 	public Client elasticsearchClient() {
 		try {
-			this.client = createClient();
-			return this.client;
+			return createClient();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -70,10 +75,12 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	}
 
 	private Client createNodeClient() throws Exception {
-		NodeClientFactoryBean factory = new NodeClientFactoryBean(true);
-		factory.setClusterName(this.properties.getClusterName());
-		factory.afterPropertiesSet();
-		return factory.getObject();
+		ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder().put(
+				"http.enabled", String.valueOf(false));
+		Node node = new NodeBuilder().settings(settings)
+				.clusterName(this.properties.getClusterName()).local(true).node();
+		this.releasable = node;
+		return node.client();
 	}
 
 	private Client createTransportClient() throws Exception {
@@ -81,18 +88,28 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 		factory.setClusterName(this.properties.getClusterName());
 		factory.setClusterNodes(this.properties.getClusterNodes());
 		factory.afterPropertiesSet();
-		return factory.getObject();
+		TransportClient client = factory.getObject();
+		this.releasable = client;
+		return client;
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		if (this.client != null) {
+		if (this.releasable != null) {
 			try {
 				if (logger.isInfoEnabled()) {
 					logger.info("Closing Elasticsearch client");
 				}
-				if (this.client != null) {
-					this.client.close();
+				if (this.releasable != null) {
+					try {
+						this.releasable.close();
+					}
+					catch (NoSuchMethodError ex) {
+						// Earlier versions of Elasticsearch had a different method name
+						ReflectionUtils.invokeMethod(
+								ReflectionUtils.findMethod(Releasable.class, "release"),
+								this.releasable);
+					}
 				}
 			}
 			catch (final Exception ex) {
