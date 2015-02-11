@@ -335,6 +335,25 @@ the underlying component.
 
 
 
+[[howto-disable-registration-of-a-servlet-or-filter]]
+=== Disable registration of a Servlet or Filter
+As <<howto-add-a-servlet-filter-or-servletcontextlistener,described above>> any `Servlet`
+or `Filter` beans will be registered with the servlet container automatically. To disable
+registration of a particular `Filter` or `Servlet` bean create a registration bean for it
+and mark it as disabled. For example:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	Bean
+	public FilterRegistrationBean registration(MyFilter filter) {
+		FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+		registration.setEnabled(false);
+		return registration;
+	}
+----
+
+
+
 [[howto-change-the-http-port]]
 === Change the HTTP port
 In a standalone application the main HTTP port defaults to `8080`, but can be set with
