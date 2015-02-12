@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.jackson;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
@@ -36,6 +38,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -90,7 +93,8 @@ public class JacksonAutoConfigurationTests {
 
 	@Test
 	public void customJacksonModules() throws Exception {
-		this.context.register(ModulesConfig.class, JacksonAutoConfiguration.class);
+		this.context.register(ModuleConfig.class, MockObjectMapperConfig.class,
+				JacksonAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		@SuppressWarnings({ "unchecked", "unused" })
@@ -376,13 +380,19 @@ public class JacksonAutoConfigurationTests {
 				SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS));
 	}
 
-	@Configuration
-	protected static class ModulesConfig {
+	@Test
+	public void moduleBeansAndWellKnownModulesAreRegisteredWithTheObjectMapperBuilder() {
+		this.context.register(ModuleConfig.class, JacksonAutoConfiguration.class);
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context.getBean(
+				Jackson2ObjectMapperBuilder.class).build();
+		assertThat(this.context.getBean(CustomModule.class).getOwners(),
+				hasItem((ObjectCodec) objectMapper));
+		assertThat(objectMapper.canSerialize(LocalDateTime.class), is(true));
+	}
 
-		@Bean
-		public Module jacksonModule() {
-			return new SimpleModule();
-		}
+	@Configuration
+	protected static class MockObjectMapperConfig {
 
 		@Bean
 		@Primary
@@ -390,6 +400,15 @@ public class JacksonAutoConfigurationTests {
 			return mock(ObjectMapper.class);
 		}
 
+	}
+
+	@Configuration
+	protected static class ModuleConfig {
+
+		@Bean
+		public CustomModule jacksonModule() {
+			return new CustomModule();
+		}
 	}
 
 	@Configuration
@@ -454,5 +473,20 @@ public class JacksonAutoConfigurationTests {
 		public void setPropertyName(String propertyName) {
 			this.propertyName = propertyName;
 		}
+	}
+
+	private static class CustomModule extends SimpleModule {
+
+		private Set<ObjectCodec> owners = new HashSet<ObjectCodec>();
+
+		@Override
+		public void setupModule(SetupContext context) {
+			this.owners.add(context.getOwner());
+		}
+
+		Set<ObjectCodec> getOwners() {
+			return this.owners;
+		}
+
 	}
 }

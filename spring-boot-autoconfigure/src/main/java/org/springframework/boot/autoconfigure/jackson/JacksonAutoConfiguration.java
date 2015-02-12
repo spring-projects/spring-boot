@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,15 +73,15 @@ public class JacksonAutoConfiguration {
 
 	@PostConstruct
 	private void registerModulesWithObjectMappers() {
-		Collection<Module> modules = getBeans(Module.class);
-		for (ObjectMapper objectMapper : getBeans(ObjectMapper.class)) {
+		Collection<Module> modules = getBeans(this.beanFactory, Module.class);
+		for (ObjectMapper objectMapper : getBeans(this.beanFactory, ObjectMapper.class)) {
 			objectMapper.registerModules(modules);
 		}
 	}
 
-	private <T> Collection<T> getBeans(Class<T> type) {
-		return BeanFactoryUtils.beansOfTypeIncludingAncestors(this.beanFactory, type)
-				.values();
+	private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
+			Class<T> type) {
+		return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type).values();
 	}
 
 	@Configuration
@@ -131,6 +131,7 @@ public class JacksonAutoConfiguration {
 			configureFeatures(builder, this.jacksonProperties.getGenerator());
 			configureDateFormat(builder);
 			configurePropertyNamingStrategy(builder);
+			configureModules(builder);
 			return builder;
 		}
 
@@ -198,6 +199,12 @@ public class JacksonAutoConfiguration {
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);
 			}
+		}
+
+		private void configureModules(Jackson2ObjectMapperBuilder builder) {
+			Collection<Module> moduleBeans = getBeans(this.applicationContext,
+					Module.class);
+			builder.modulesToInstall(moduleBeans.toArray(new Module[moduleBeans.size()]));
 		}
 
 		@Override
