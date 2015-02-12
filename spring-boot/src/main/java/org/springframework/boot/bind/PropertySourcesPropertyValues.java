@@ -19,8 +19,8 @@ package org.springframework.boot.bind;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
@@ -42,7 +42,7 @@ import org.springframework.validation.DataBinder;
  */
 public class PropertySourcesPropertyValues implements PropertyValues {
 
-	private final Map<String, PropertyValue> propertyValues = new ConcurrentHashMap<String, PropertyValue>();
+	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
 
 	private final PropertySources propertySources;
 
