@@ -248,8 +248,9 @@ public class SpringBootWebSecurityConfiguration {
 					this.security.getHeaders());
 			String[] paths = getSecureApplicationPaths();
 			if (paths.length > 0) {
-				http.exceptionHandling().authenticationEntryPoint(entryPoint());
-				http.httpBasic();
+				AuthenticationEntryPoint entryPoint = entryPoint();
+				http.exceptionHandling().authenticationEntryPoint(entryPoint);
+				http.httpBasic().authenticationEntryPoint(entryPoint);
 				http.requestMatchers().antMatchers(paths);
 				String[] role = this.security.getUser().getRole().toArray(new String[0]);
 				http.authorizeRequests().anyRequest().hasAnyRole(role);

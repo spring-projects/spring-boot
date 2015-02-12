@@ -22,6 +22,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.servlet.Filter;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -73,16 +81,49 @@ public class SpringBootWebSecurityConfigurationTests {
 	@Test
 	public void testWebConfigurationOverrideGlobalAuthentication() throws Exception {
 		this.context = SpringApplication.run(TestWebConfiguration.class,
-				"--server.port=0", "--debug");
+				"--server.port=0");
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
 		assertNotNull(this.context.getBean(AuthenticationManager.class).authenticate(
 				new UsernamePasswordAuthenticationToken("dave", "secret")));
 	}
 
 	@Test
+	public void testWebConfigurationFilterChainUnauthenticated() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters(
+						this.context.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(
+						MockMvcResultMatchers.header().string("www-authenticate",
+								Matchers.containsString("realm=\"Spring\"")));
+	}
+
+	@Test
+	public void testWebConfigurationFilterChainBadCredentials() throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters(
+						this.context.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/").header("authorization", "Basic xxx"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(
+						MockMvcResultMatchers.header().string("www-authenticate",
+								Matchers.containsString("realm=\"Spring\"")));
+	}
+
+	@Test
 	public void testWebConfigurationInjectGlobalAuthentication() throws Exception {
 		this.context = SpringApplication.run(TestInjectWebConfiguration.class,
-				"--server.port=0", "--debug");
+				"--server.port=0");
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
 		assertNotNull(this.context.getBean(AuthenticationManager.class).authenticate(
 				new UsernamePasswordAuthenticationToken("dave", "secret")));
@@ -113,7 +154,12 @@ public class SpringBootWebSecurityConfigurationTests {
 
 	@MinimalWebConfiguration
 	@Import(SecurityAutoConfiguration.class)
-	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+	protected static class VanillaWebConfiguration {
+	}
+
+	@MinimalWebConfiguration
+	@Import(SecurityAutoConfiguration.class)
+	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class TestWebConfiguration extends WebSecurityConfigurerAdapter {
 
 		@Autowired
