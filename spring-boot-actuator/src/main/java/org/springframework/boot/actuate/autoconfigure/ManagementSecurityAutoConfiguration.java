@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,7 @@ import org.springframework.util.StringUtils;
  * used as a security hint by the filter created here.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -276,8 +277,9 @@ public class ManagementSecurityAutoConfiguration {
 			if (endpoint.isSensitive() == secure) {
 				String path = endpointHandlerMapping.getPath(endpoint.getPath());
 				paths.add(path);
+				// Ensure that nested paths are secured
+				paths.add(path + "/**");
 				// Add Spring MVC-generated additional paths
-				paths.add(path + "/");
 				paths.add(path + ".*");
 			}
 		}
