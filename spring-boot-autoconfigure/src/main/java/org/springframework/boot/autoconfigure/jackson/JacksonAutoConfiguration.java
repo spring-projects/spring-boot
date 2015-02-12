@@ -25,6 +25,10 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -47,6 +51,9 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
+import com.fasterxml.jackson.datatype.joda.ser.JacksonJodaFormat;
 
 /**
  * Auto configuration for Jackson. The following auto-configuration will get applied:
@@ -95,6 +102,50 @@ public class JacksonAutoConfiguration {
 			return builder.createXmlMapper(false).build();
 		}
 
+	}
+
+	@Configuration
+	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class,
+			DateTimeSerializer.class })
+	static class JodaDateTimeJacksonConfiguration {
+
+		private final Log log = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
+
+		@Autowired
+		private JacksonProperties jacksonProperties;
+
+		@Bean
+		public Module jodaDateTimeSerializationModule() {
+			SimpleModule module = new SimpleModule();
+
+			JacksonJodaFormat jacksonJodaFormat = null;
+
+			if (this.jacksonProperties.getJodaDateTimeFormat() != null) {
+				jacksonJodaFormat = new JacksonJodaFormat(DateTimeFormat.forPattern(
+						this.jacksonProperties.getJodaDateTimeFormat()).withZoneUTC());
+			}
+			else if (this.jacksonProperties.getDateFormat() != null) {
+				try {
+					jacksonJodaFormat = new JacksonJodaFormat(DateTimeFormat.forPattern(
+							this.jacksonProperties.getDateFormat()).withZoneUTC());
+				}
+				catch (IllegalArgumentException ex) {
+					if (this.log.isWarnEnabled()) {
+						this.log.warn("spring.jackson.date-format could not be used to "
+								+ "configure formatting of Joda's DateTime. You may want "
+								+ "to configure spring.jackson.joda-date-time-format as "
+								+ "well.");
+					}
+				}
+			}
+
+			if (jacksonJodaFormat != null) {
+				module.addSerializer(DateTime.class, new DateTimeSerializer(
+						jacksonJodaFormat));
+			}
+
+			return module;
+		}
 	}
 
 	@Configuration

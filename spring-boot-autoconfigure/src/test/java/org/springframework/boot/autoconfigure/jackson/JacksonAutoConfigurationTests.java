@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -134,6 +135,23 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.date-format:yyyyMMddHHmmss");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
+		assertEquals("\"19880625203000\"", mapper.writeValueAsString(dateTime));
+		dateTime = new DateTime(1988, 6, 25, 20, 30);
+		Date date = dateTime.toDate();
+		assertEquals("\"19880625203000\"", mapper.writeValueAsString(date));
+	}
+
+	@Test
+	public void customJodaDateTimeFormat() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.date-format:yyyyMMddHHmmss",
+				"spring.jackson.joda-date-time-format:yyyy-MM-dd HH:mm:ss");
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
+		assertEquals("\"1988-06-25 20:30:00\"", mapper.writeValueAsString(dateTime));
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
 		assertEquals("\"19880625203000\"", mapper.writeValueAsString(date));
 	}
@@ -147,6 +165,8 @@ public class JacksonAutoConfigurationTests {
 						"spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
+		assertEquals("\"1988-06-25T20:30:00.000Z\"", mapper.writeValueAsString(dateTime));
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
 		assertEquals("\"1988-06-25 20:30:00\"", mapper.writeValueAsString(date));
 	}
