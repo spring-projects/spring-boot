@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.springframework.web.util.UrlPathHelper;
  * {@link MvcEndpoint} to expose Jolokia.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
 public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
@@ -51,7 +52,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
 	private String path;
 
-	private boolean sensitive;
+	private boolean sensitive = true;
 
 	private boolean enabled = true;
 

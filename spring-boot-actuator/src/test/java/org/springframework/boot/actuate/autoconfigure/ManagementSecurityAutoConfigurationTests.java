@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,14 +41,18 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ManagementSecurityAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class ManagementSecurityAutoConfigurationTests {
 
@@ -71,11 +75,16 @@ public class ManagementSecurityAutoConfigurationTests {
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
+		FilterChainProxy filterChainProxy = this.context.getBean(FilterChainProxy.class);
 		// 6 for static resources, one for management endpoints and one for the rest
-		assertEquals(8, this.context.getBean(FilterChainProxy.class).getFilterChains()
-				.size());
+		assertThat(filterChainProxy.getFilterChains(), hasSize(8));
+		assertThat(filterChainProxy.getFilters("/beans"), hasSize(greaterThan(0)));
+		assertThat(filterChainProxy.getFilters("/beans/"), hasSize(greaterThan(0)));
+		assertThat(filterChainProxy.getFilters("/beans.foo"), hasSize(greaterThan(0)));
+		assertThat(filterChainProxy.getFilters("/beans/foo/bar"), hasSize(greaterThan(0)));
 	}
 
 	@Test
