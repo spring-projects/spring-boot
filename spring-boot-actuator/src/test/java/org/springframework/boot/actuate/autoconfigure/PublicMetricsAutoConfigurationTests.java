@@ -169,6 +169,15 @@ public class PublicMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	public void multipleDataSourcesWithCustomPrimary() {
+		load(MultipleDataSourcesWithCustomPrimaryConfig.class);
+		PublicMetrics bean = this.context.getBean(DataSourcePublicMetrics.class);
+		Collection<Metric<?>> metrics = bean.metrics();
+		assertMetrics(metrics, "datasource.primary.active", "datasource.primary.usage",
+				"datasource.dataSource.active", "datasource.dataSource.usage");
+	}
+
+	@Test
 	public void customPrefix() {
 		load(MultipleDataSourcesWithPrimaryConfig.class,
 				CustomDataSourcePublicMetrics.class);
@@ -246,6 +255,22 @@ public class PublicMetricsAutoConfigurationTests {
 
 		@Bean
 		public DataSource commonsDbcpDataSource() {
+			return initializeBuilder().type(BasicDataSource.class).build();
+		}
+	}
+
+	@Configuration
+	static class MultipleDataSourcesWithCustomPrimaryConfig {
+
+		@Bean
+		@Primary
+		public DataSource myDataSource() {
+			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
+					.build();
+		}
+
+		@Bean
+		public DataSource dataSource() {
 			return initializeBuilder().type(BasicDataSource.class).build();
 		}
 	}

@@ -102,7 +102,8 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 		if (primary) {
 			return "datasource.primary";
 		}
-		if (name.toLowerCase().endsWith(DATASOURCE_SUFFIX.toLowerCase())) {
+		if (name.length() > DATASOURCE_SUFFIX.length()
+				&& name.toLowerCase().endsWith(DATASOURCE_SUFFIX.toLowerCase())) {
 			name = name.substring(0, name.length() - DATASOURCE_SUFFIX.length());
 		}
 		return "datasource." + name;
