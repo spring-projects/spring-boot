@@ -388,7 +388,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void incremenalBuildAnnotationRemoved() throws Exception {
+	public void incrementalBuildAnnotationRemoved() throws Exception {
 		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
 				BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
@@ -403,7 +403,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void incremenalBuildTypeRenamed() throws Exception {
+	public void incrementalBuildTypeRenamed() throws Exception {
 		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
 				BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();

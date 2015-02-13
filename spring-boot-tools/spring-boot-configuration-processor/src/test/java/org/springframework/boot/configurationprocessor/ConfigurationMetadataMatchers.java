@@ -39,7 +39,7 @@ public class ConfigurationMetadataMatchers {
 	}
 
 	public static ContainsItemMatcher containsGroup(String name, String type) {
-		return new ContainsItemMatcher(ItemType.GROUP, name).ofDataType(type);
+		return new ContainsItemMatcher(ItemType.GROUP, name).ofType(type);
 	}
 
 	public static ContainsItemMatcher containsProperty(String name) {
@@ -51,7 +51,7 @@ public class ConfigurationMetadataMatchers {
 	}
 
 	public static ContainsItemMatcher containsProperty(String name, String type) {
-		return new ContainsItemMatcher(ItemType.PROPERTY, name).ofDataType(type);
+		return new ContainsItemMatcher(ItemType.PROPERTY, name).ofType(type);
 	}
 
 	public static class ContainsItemMatcher extends BaseMatcher<ConfigurationMetadata> {
@@ -154,7 +154,7 @@ public class ConfigurationMetadataMatchers {
 					this.sourceType, this.description, this.defaultValue, this.deprecated);
 		}
 
-		public ContainsItemMatcher ofDataType(String dataType) {
+		public ContainsItemMatcher ofType(String dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType,
 					this.sourceType, this.description, this.defaultValue, this.deprecated);
 		}
