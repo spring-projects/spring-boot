@@ -529,6 +529,10 @@ the configuration of your application. For example:
 	}
 ----
 
+NOTE: The getters and setters are mandatory, since binding is via
+standard Java Beans property descriptors, just like in Spring
+MVC. Some people use Project Lombok to add them automatically.
+
 When the `@EnableConfigurationProperties` annotation is applied to your `@Configuration`,
 any beans annotated with `@ConfigurationProperties` will be automatically configured
 from the `Environment` properties. This style of configuration works particularly well
