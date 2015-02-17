@@ -48,7 +48,7 @@
 		<!-- Spring Boot -->
 		<spring-boot.version>1.2.2.BUILD-SNAPSHOT</spring-boot.version>
 		<!-- Third Party -->
-		<activemq.version>5.10.0</activemq.version>
+		<activemq.version>5.10.1</activemq.version>
 		<aspectj.version>1.8.5</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
