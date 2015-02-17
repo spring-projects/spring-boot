@@ -76,7 +76,7 @@
 		<janino.version>2.6.1</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<jaxen.version>1.1.6</jaxen.version>
-		<jdom2.version>2.0.5</jdom2.version>
+		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.4.2</jedis.version>
 		<jetty.version>8.1.16.v20140903</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
