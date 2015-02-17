@@ -529,19 +529,16 @@ the configuration of your application. For example:
 	}
 ----
 
-NOTE: The getters and setters are advisable, since binding is via
-standard Java Beans property descriptors, just like in Spring
-MVC. They are mandatory for immutable types or those that are directly
-coercable from `String`. As long as they are initialized maps and
-collections need a getter but not necessarily a setter, for instance,
-since they can be mutated by the binder. Maps and collections can also
-be created (if there is a setter) and expanded (in any case), but
-arrays can not (so normally arrays need to be bound to a
-comma-separated value, but lists can be bound to individual
-elements). Nested POJO properties can also be created (so a setter is
-not mandatory) if they have a default constructor, or a constructor
-accepting a single value that can be coerced from String. Some people
-use Project Lombok to add getters and setters automatically.
+NOTE: The getters and setters are advisable, since binding is via standard Java Beans
+property descriptors, just like in Spring MVC. They are mandatory for immutable types
+or those that are directly coercible from `String`. As long as they are initialized,
+maps, collections, and arrays need a getter but not necessarily a setter since they
+can be mutated by the binder. If there is a setter, Maps, collections, and arrays can
+be created. Maps and collections can be expanded with only a getter, whereas arrays
+require a setter. Nested POJO properties can also be created (so a setter is not
+mandatory) if they have a default constructor, or a constructor accepting a single
+value that can be coerced from String. Some people use Project Lombok to add getters
+and setters automatically.
 
 When the `@EnableConfigurationProperties` annotation is applied to your `@Configuration`,
 any beans annotated with `@ConfigurationProperties` will be automatically configured

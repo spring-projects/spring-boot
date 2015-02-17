@@ -217,6 +217,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
+	public void configurationPropertiesWithArrayExpansion() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.chars[4]:s");
+		this.context.register(PropertyWithCharArrayExpansion.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertyWithCharArrayExpansion.class).getChars(),
+				equalTo("words".toCharArray()));
+	}
+
+	@Test
 	public void notWritablePropertyException() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "test.madeup:word");
@@ -346,6 +356,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	public static class PropertyWithCharArray {
 
 		private char[] chars;
+
+		public char[] getChars() {
+			return this.chars;
+		}
+
+		public void setChars(char[] chars) {
+			this.chars = chars;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test", ignoreUnknownFields = false)
+	public static class PropertyWithCharArrayExpansion {
+
+		private char[] chars = new char[] { 'w', 'o', 'r', 'd' };
 
 		public char[] getChars() {
 			return this.chars;
