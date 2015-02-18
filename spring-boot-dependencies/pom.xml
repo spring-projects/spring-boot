@@ -66,7 +66,7 @@
 		<gemfire.version>7.0.2</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.6</gradle.version>
-		<groovy.version>2.3.9</groovy.version>
+		<groovy.version>2.3.10</groovy.version>
 		<gson.version>2.3.1</gson.version>
 		<h2.version>1.4.185</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
