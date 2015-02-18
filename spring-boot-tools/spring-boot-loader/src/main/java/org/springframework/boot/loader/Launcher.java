@@ -41,7 +41,9 @@ import org.springframework.boot.loader.jar.JarFile;
 public abstract class Launcher {
 
 	protected Logger logger = Logger.getLogger(Launcher.class.getName());
-
+	
+	protected ClassLoader classLoader;
+	
 	/**
 	 * The main runner class. This must be loaded by the created ClassLoader so cannot be
 	 * directly referenced.
@@ -67,19 +69,27 @@ public abstract class Launcher {
 	}
 
 	/**
-	 * Create a classloader for the specified archives.
+	 * Create a classloader for the specified archives.  If previously called
+	 * it will return a cached classloader.
+	 * 
 	 * @param archives the archives
 	 * @return the classloader
 	 * @throws Exception
 	 */
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
+		if (classLoader != null) {
+			return classLoader;
+		}
+		
 		List<URL> urls = new ArrayList<URL>(archives.size());
 		for (Archive archive : archives) {
 			// Add the current archive at end (it will be reversed and end up taking
 			// precedence)
 			urls.add(archive.getUrl());
 		}
-		return createClassLoader(urls.toArray(new URL[urls.size()]));
+		
+		classLoader = createClassLoader(urls.toArray(new URL[urls.size()]));
+		return classLoader;
 	}
 
 	/**
