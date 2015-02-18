@@ -28,7 +28,7 @@ can send us a {github-code}[pull request].
 The Spring Boot auto-configuration tries its best to '`do the right thing`', but
 sometimes things fail and it can be hard to tell why.
 
-There is a really useful `AutoConfigurationReport` available in any Spring Boot
+There is a really useful `ConditionEvaluationReport` available in any Spring Boot
 `ApplicationContext`. You will see it if you enable `DEBUG` logging output. If you use
 the `spring-boot-actuator` there is also an `autoconfig` endpoint that renders the report
 in JSON. Use that to debug the application and see what features have been added (and
