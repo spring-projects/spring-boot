@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.core.StringContains.containsString;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ServiceCapabilitiesReportGenerator}
@@ -33,13 +35,31 @@ public class ServiceCapabilitiesReportGeneratorTests extends AbstractHttpClientM
 			new InitializrService(this.http));
 
 	@Test
-	public void listMetadata() throws IOException {
-		mockSuccessfulMetadataGet();
+	public void listMetadataFromServer() throws IOException {
+		mockSuccessfulMetadataTextGet();
+		String expected = new String(readClasspathResource("metadata/service-metadata-2.1.0.txt"));
 		String content = this.command.generate("http://localhost");
-		assertTrue(content.contains("aop - AOP"));
-		assertTrue(content.contains("security - Security: Security description"));
-		assertTrue(content.contains("type: maven-project"));
-		assertTrue(content.contains("packaging: jar"));
+		assertThat(content, equalTo(expected));
+	}
+
+	@Test
+	public void listMetadata() throws IOException {
+		mockSuccessfulMetadataGet(true);
+		doTestGenerateCapabilitiesFromJson();
+	}
+
+	@Test
+	public void listMetadataV2() throws IOException {
+		mockSuccessfulMetadataGetV2(true);
+		doTestGenerateCapabilitiesFromJson();
+	}
+
+	private void doTestGenerateCapabilitiesFromJson() throws IOException {
+		String content = this.command.generate("http://localhost");
+		assertThat(content, containsString("aop - AOP"));
+		assertThat(content, containsString("security - Security: Security description"));
+		assertThat(content, containsString("type: maven-project"));
+		assertThat(content, containsString("packaging: jar"));
 	}
 
 }

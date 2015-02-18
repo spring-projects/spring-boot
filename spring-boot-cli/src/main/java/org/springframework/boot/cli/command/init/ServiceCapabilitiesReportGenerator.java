@@ -54,7 +54,15 @@ class ServiceCapabilitiesReportGenerator {
 	 * @throws IOException if the report cannot be generated
 	 */
 	public String generate(String url) throws IOException {
-		InitializrServiceMetadata metadata = this.initializrService.loadMetadata(url);
+		Object content = this.initializrService.loadServiceCapabilities(url);
+		if (content instanceof InitializrServiceMetadata) {
+			return generateHelp(url, (InitializrServiceMetadata) content);
+		} else {
+			return content.toString();
+		}
+	}
+
+	private String generateHelp(String url, InitializrServiceMetadata metadata) {
 		String header = "Capabilities of " + url;
 		StringBuilder report = new StringBuilder();
 		report.append(StringUtils.repeat("=", header.length()) + NEW_LINE);

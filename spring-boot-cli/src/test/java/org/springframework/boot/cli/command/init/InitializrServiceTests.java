@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 
 	@Test
 	public void loadMetadata() throws IOException {
-		mockSuccessfulMetadataGet();
+		mockSuccessfulMetadataGet(false);
 		InitializrServiceMetadata metadata = this.invoker.loadMetadata("http://foo/bar");
 		assertNotNull(metadata);
 	}
@@ -101,7 +101,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 
 	@Test
 	public void generateProjectNoContent() throws IOException {
-		mockSuccessfulMetadataGet();
+		mockSuccessfulMetadataGet(false);
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockStatus(response, 500);
 		when(this.http.execute(isA(HttpGet.class))).thenReturn(response);
