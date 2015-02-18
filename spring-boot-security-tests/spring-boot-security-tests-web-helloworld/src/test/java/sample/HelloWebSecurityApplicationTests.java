@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,43 +31,45 @@ import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = HelloWebSecurityApplication.class)
 @WebIntegrationTest(randomPort = true)
 public class HelloWebSecurityApplicationTests {
+
 	@Autowired
-	FilterChainProxy springSecurityFilterChain;
+	private FilterChainProxy springSecurityFilterChain;
 
-	MockHttpServletRequest request;
+	private MockHttpServletRequest request;
 
-	MockHttpServletResponse response;
+	private MockHttpServletResponse response;
 
-	MockFilterChain chain;
+	private MockFilterChain chain;
 
 	@Before
 	public void setup() {
-		request = new MockHttpServletRequest();
-		response = new MockHttpServletResponse();
-		chain = new MockFilterChain();
+		this.request = new MockHttpServletRequest();
+		this.response = new MockHttpServletResponse();
+		this.chain = new MockFilterChain();
 	}
 
 	@Test
 	public void requiresAuthentication() throws Exception {
-		springSecurityFilterChain.doFilter(request, response, chain);
+		this.springSecurityFilterChain.doFilter(this.request, this.response, this.chain);
 
-		assertThat(response.getStatus(), equalTo(HttpServletResponse.SC_UNAUTHORIZED));
+		assertThat(this.response.getStatus(),
+				equalTo(HttpServletResponse.SC_UNAUTHORIZED));
 	}
-
 
 	@Test
 	public void userAuthenticates() throws Exception {
-		request.addHeader("Authorization", "Basic " + new String(Base64.encode("user:password".getBytes("UTF-8"))));
+		this.request.addHeader("Authorization",
+				"Basic " + new String(Base64.encode("user:password".getBytes("UTF-8"))));
 
-		springSecurityFilterChain.doFilter(request, response, chain);
+		this.springSecurityFilterChain.doFilter(this.request, this.response, this.chain);
 
-		assertThat(response.getStatus(), equalTo(HttpServletResponse.SC_OK));
+		assertThat(this.response.getStatus(), equalTo(HttpServletResponse.SC_OK));
 	}
 }

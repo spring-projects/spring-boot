@@ -20,6 +20,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 
 /**
- * This works with the {@link AuthenticationConfiguration} to ensure that users are able to use:
+ * This works with the {@link AuthenticationConfiguration} to ensure that users are able
+ * to use:
  *
  * <pre>
  * public void configureGlobal(AuthenticationManagerBuilder auth) {
@@ -37,22 +39,27 @@ import org.springframework.security.config.annotation.authentication.configurers
  * }
  * </pre>
  *
- * within their classes annotated with {{@EnableAutoConfiguration}} or use {{@SpringBootApplication}}.
+ * within their classes annotated with {@link EnableAutoConfiguration} or
+ * {@link SpringBootApplication}.
  *
  * @author Rob Winch
+ * @since 1.2.2
  */
 @Configuration
 @ConditionalOnClass(GlobalAuthenticationConfigurerAdapter.class)
 public class BootGlobalAuthenticationConfiguration {
 
 	@Bean
-	public static BootGlobalAuthenticationConfigurationAdapter bootGlobalAuthenticationConfigurationAdapter(ApplicationContext context) {
+	public static BootGlobalAuthenticationConfigurationAdapter bootGlobalAuthenticationConfigurationAdapter(
+			ApplicationContext context) {
 		return new BootGlobalAuthenticationConfigurationAdapter(context);
 	}
 
-	private static class BootGlobalAuthenticationConfigurationAdapter extends GlobalAuthenticationConfigurerAdapter {
+	private static class BootGlobalAuthenticationConfigurationAdapter extends
+			GlobalAuthenticationConfigurerAdapter {
 		private final ApplicationContext context;
-		private static final Log logger = LogFactory.getLog(BootGlobalAuthenticationConfiguration.class);
+		private static final Log logger = LogFactory
+				.getLog(BootGlobalAuthenticationConfiguration.class);
 
 		public BootGlobalAuthenticationConfigurationAdapter(ApplicationContext context) {
 			this.context = context;
@@ -60,8 +67,9 @@ public class BootGlobalAuthenticationConfiguration {
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) {
-			Map<String, Object> beansWithAnnotation = context.getBeansWithAnnotation(EnableAutoConfiguration.class);
-			if(logger.isDebugEnabled()) {
+			Map<String, Object> beansWithAnnotation = this.context
+					.getBeansWithAnnotation(EnableAutoConfiguration.class);
+			if (logger.isDebugEnabled()) {
 				logger.debug("Eagerly initializing " + beansWithAnnotation);
 			}
 		}

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 public class HelloWebSecurityApplication {
 
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth)
-			throws Exception {
-		// @formatter:off
-		auth
-			.inMemoryAuthentication()
-				.withUser("user").password("password").roles("USER");
-		// @formatter:on
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
 	}
 
 	public static void main(String[] args) {
