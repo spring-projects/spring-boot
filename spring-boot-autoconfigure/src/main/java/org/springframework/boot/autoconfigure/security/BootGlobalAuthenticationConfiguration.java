@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security;
 
 import java.util.Map;
@@ -43,7 +44,7 @@ import org.springframework.security.config.annotation.authentication.configurers
  * {@link SpringBootApplication}.
  *
  * @author Rob Winch
- * @since 1.2.2
+ * @since 1.1.11
  */
 @Configuration
 @ConditionalOnClass(GlobalAuthenticationConfigurerAdapter.class)
@@ -57,9 +58,11 @@ public class BootGlobalAuthenticationConfiguration {
 
 	private static class BootGlobalAuthenticationConfigurationAdapter extends
 			GlobalAuthenticationConfigurerAdapter {
-		private final ApplicationContext context;
-		private static final Log logger = LogFactory
+
+		private static Log logger = LogFactory
 				.getLog(BootGlobalAuthenticationConfiguration.class);
+
+		private final ApplicationContext context;
 
 		public BootGlobalAuthenticationConfigurationAdapter(ApplicationContext context) {
 			this.context = context;

@@ -8,7 +8,7 @@
 		<relativePath>../</relativePath>
 	</parent>
 	<artifactId>spring-boot-security-tests-web-helloworld</artifactId>
-	<name>Spring Boot Security Tests - Web Basic</name>
+	<name>Spring Boot Security Tests - Web Hello World</name>
 	<description>${project.name}</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
