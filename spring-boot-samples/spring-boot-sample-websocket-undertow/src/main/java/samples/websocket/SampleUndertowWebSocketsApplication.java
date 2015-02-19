@@ -45,8 +45,10 @@ public class SampleUndertowWebSocketsApplication extends SpringBootServletInitia
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(echoWebSocketHandler(), "/echo").withSockJS();
-		registry.addHandler(snakeWebSocketHandler(), "/snake").withSockJS();
+		registry.addHandler(echoWebSocketHandler(), "/echo").setAllowedOrigins("*")
+				.withSockJS();
+		registry.addHandler(snakeWebSocketHandler(), "/snake").setAllowedOrigins("*")
+				.withSockJS();
 	}
 
 	@Override
