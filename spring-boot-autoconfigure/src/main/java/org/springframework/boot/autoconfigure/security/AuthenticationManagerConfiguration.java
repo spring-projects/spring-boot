@@ -69,13 +69,14 @@ public class AuthenticationManagerConfiguration {
 
 	@Bean
 	@Primary
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration auth) throws Exception {
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration auth)
+			throws Exception {
 		return auth.getAuthenticationManager();
 	}
 
 	@Bean
-	public static BootDefaultingAuthenticationConfigurerAdapter bootDefaultingAuthenticationConfigurerAdapter(SecurityProperties security,
-			List<SecurityPrerequisite> dependencies) {
+	public static BootDefaultingAuthenticationConfigurerAdapter bootDefaultingAuthenticationConfigurerAdapter(
+			SecurityProperties security, List<SecurityPrerequisite> dependencies) {
 		return new BootDefaultingAuthenticationConfigurerAdapter(security);
 	}
 
@@ -126,7 +127,8 @@ public class AuthenticationManagerConfiguration {
 	 * </ul>
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE - 100)
-	private static class BootDefaultingAuthenticationConfigurerAdapter extends GlobalAuthenticationConfigurerAdapter {
+	private static class BootDefaultingAuthenticationConfigurerAdapter extends
+			GlobalAuthenticationConfigurerAdapter {
 		private final SecurityProperties security;
 
 		@Autowired
@@ -134,6 +136,7 @@ public class AuthenticationManagerConfiguration {
 			this.security = security;
 		}
 
+		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
 			if (auth.isConfigured()) {
 				return;
@@ -144,12 +147,13 @@ public class AuthenticationManagerConfiguration {
 				logger.info("\n\nUsing default security password: " + user.getPassword()
 						+ "\n");
 			}
+
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
-			auth
-				.inMemoryAuthentication()
-					.withUser(user.getName())
-						.password(user.getPassword())
-						.roles(roles.toArray(new String[roles.size()]));
+			auth.inMemoryAuthentication().withUser(user.getName())
+					.password(user.getPassword())
+					.roles(roles.toArray(new String[roles.size()]));
 		}
+
 	}
+
 }
