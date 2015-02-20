@@ -297,6 +297,13 @@ Maven '`project properties`' via `@..@` placeholders, e.g.
 NOTE: In the above example we used `+project.*+` to set some values to be used as
 fallbacks if the Maven resource filtering has not been switched on for some reason.
 
+TIP: The `spring-boot:run` maven goal adds `src/main/resources` directly to 
+the classpath (for hot reloading purposes). This circumvents the resource 
+filtering and this feature. You can use the `exec:java` goal instead or 
+customize the plugin's configuration, see the 
+{spring-boot-maven-plugin-site}/usage.html[plugin usage page] for more details.
+
+
 NOTE: If you don't use the starter parent, in your `pom.xml` you need (inside the `<build/>` element):
 
 [source,xml,indent=0]
