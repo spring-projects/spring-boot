@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -181,10 +182,20 @@ public class JacksonAutoConfiguration {
 			configureFeatures(builder, this.jacksonProperties.getMapper());
 			configureFeatures(builder, this.jacksonProperties.getParser());
 			configureFeatures(builder, this.jacksonProperties.getGenerator());
+			configureIncludes(builder, this.jacksonProperties.getInclude());
 			configureDateFormat(builder);
 			configurePropertyNamingStrategy(builder);
 			configureModules(builder);
 			return builder;
+		}
+
+		private void configureIncludes(Jackson2ObjectMapperBuilder builder,
+			Map<JsonInclude.Include, Boolean> includes) {
+			for (Entry<JsonInclude.Include, Boolean> entry : includes.entrySet()) {
+				if (entry.getValue() != null && entry.getValue()) {
+					builder.serializationInclusion(entry.getKey());
+				}
+			}
 		}
 
 		private void configureFeatures(Jackson2ObjectMapperBuilder builder,

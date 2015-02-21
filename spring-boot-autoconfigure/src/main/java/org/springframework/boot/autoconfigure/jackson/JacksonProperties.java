@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jackson;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -82,6 +83,11 @@ public class JacksonProperties {
 	 */
 	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<JsonGenerator.Feature, Boolean>();
 
+	/**
+	 * Jackson on/off features for includes.
+	 */
+	private Map<JsonInclude.Include, Boolean> include = new HashMap<JsonInclude.Include, Boolean>();
+
 	public String getDateFormat() {
 		return this.dateFormat;
 	}
@@ -126,4 +132,7 @@ public class JacksonProperties {
 		return this.generator;
 	}
 
+	public Map<JsonInclude.Include, Boolean> getInclude() {
+		return this.include;
+	}
 }

@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
@@ -356,6 +357,26 @@ public class JacksonAutoConfigurationTests {
 		assertTrue(JsonGenerator.Feature.AUTO_CLOSE_TARGET.enabledByDefault());
 		assertFalse(mapper.getFactory()
 				.isEnabled(JsonGenerator.Feature.AUTO_CLOSE_TARGET));
+	}
+
+	@Test
+	public void enableInclude() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.include.non_null:true");
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertEquals(mapper.getSerializationConfig().getSerializationInclusion(),
+			JsonInclude.Include.NON_NULL);
+	}
+
+	@Test
+	public void disableInclude() throws Exception {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.include.non_null:false");
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertEquals(mapper.getSerializationConfig().getSerializationInclusion(),
+			JsonInclude.Include.ALWAYS);
 	}
 
 	@Test
