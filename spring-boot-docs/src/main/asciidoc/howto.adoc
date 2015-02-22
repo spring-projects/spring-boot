@@ -2496,7 +2496,7 @@ rather than the version that pre-installed with the server. You can do this by a
 
 [[howto-servlet-2-5]]
 ===  Deploying a WAR in an Old (Servlet 2.5) Container
-Spring Boot uses Servet 3.0 APIs to initialize the `ServletContext` (register `Servlets`
+Spring Boot uses Servlet 3.0 APIs to initialize the `ServletContext` (register `Servlets`
 etc.)  so you can't use the same application out of the box in a Servlet 2.5 container.
 It *is* however possible to run a Spring Boot application on an older container with some
 special tools. If you include `org.springframework.boot:spring-boot-legacy` as a
