@@ -60,6 +60,7 @@
 		<commons-pool.version>1.6</commons-pool.version>
 		<commons-pool2.version>2.2</commons-pool2.version>
 		<crashub.version>1.3.1</crashub.version>
+		<derby.version>10.10.2.0</derby.version>
 		<dropwizard-metrics.version>3.1.0</dropwizard-metrics.version>
 		<flyway.version>3.1</flyway.version>
 		<freemarker.version>2.3.21</freemarker.version>
@@ -683,6 +684,11 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-pool2</artifactId>
 				<version>${commons-pool2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.derby</groupId>
+				<artifactId>derby</artifactId>
+				<version>${derby.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
