@@ -29,16 +29,18 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 
 /**
- * This works with the {@link AuthenticationConfiguration} to ensure that users are able
- * to use:
+ * {@link GlobalAuthenticationConfigurerAdapter} to trigger early initialization of
+ * {@code @EnableAutoConfiguration} beans. This configuration is imported from
+ * {@link AuthenticationConfiguration} to ensure that users are able to configure the
+ * {@link AuthenticationManagerBuilder} from their {@code @EnableAutoConfiguration} or
+ * {@code @SpringBootApplication} configuration class:
  *
- * <pre>
+ * <pre class="code">
+ * &#064;Autowired
  * public void configureGlobal(AuthenticationManagerBuilder auth) {
  *     ...
  * }
  * </pre>
- *
- * within their classes annotated with {@link EnableAutoConfiguration}.
  *
  * @author Rob Winch
  * @since 1.1.11
@@ -73,5 +75,7 @@ public class BootGlobalAuthenticationConfiguration {
 				logger.debug("Eagerly initializing " + beansWithAnnotation);
 			}
 		}
+
 	}
+
 }

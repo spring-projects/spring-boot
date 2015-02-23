@@ -36,4 +36,5 @@ public class HelloWebSecurityApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(HelloWebSecurityApplication.class, args);
 	}
+
 }

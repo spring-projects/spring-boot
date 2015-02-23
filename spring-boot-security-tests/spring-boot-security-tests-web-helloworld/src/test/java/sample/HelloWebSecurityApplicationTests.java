@@ -74,4 +74,5 @@ public class HelloWebSecurityApplicationTests {
 
 		assertThat(this.response.getStatus(), equalTo(HttpServletResponse.SC_OK));
 	}
+
 }
