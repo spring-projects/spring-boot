@@ -51,6 +51,9 @@
 							<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
 							<skipInvocation>${skipTests}</skipInvocation>
 							<streamLogs>true</streamLogs>
+							<pomIncludes>
+								<pomInclude>*/pom.xml</pomInclude>
+							</pomIncludes>
 						</configuration>
 						<executions>
 							<execution>
