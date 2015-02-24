@@ -37,7 +37,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @since 1.2.2
  */
 @Configuration
-public class RepositoryRestMvcBootConfiguration extends RepositoryRestMvcConfiguration {
+public class SpringBootRepositoryRestMvcConfiguration extends
+		RepositoryRestMvcConfiguration {
 
 	@Autowired(required = false)
 	private Jackson2ObjectMapperBuilder objectMapperBuilder;

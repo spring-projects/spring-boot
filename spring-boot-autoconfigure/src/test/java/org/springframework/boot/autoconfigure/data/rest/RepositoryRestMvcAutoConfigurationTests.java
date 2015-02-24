@@ -143,7 +143,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	}
 
-	@Import({ TestConfiguration.class, RepositoryRestMvcBootConfiguration.class })
+	@Import({ TestConfiguration.class, SpringBootRepositoryRestMvcConfiguration.class })
 	protected static class TestConfigurationWithRestMvcBootConfig {
 
 	}

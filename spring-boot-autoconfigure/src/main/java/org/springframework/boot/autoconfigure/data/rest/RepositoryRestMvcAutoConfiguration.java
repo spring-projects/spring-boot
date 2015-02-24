@@ -46,7 +46,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 @ConditionalOnMissingBean(RepositoryRestMvcConfiguration.class)
 @ConditionalOnClass(RepositoryRestMvcConfiguration.class)
 @AutoConfigureAfter(HttpMessageConvertersAutoConfiguration.class)
-@Import(RepositoryRestMvcBootConfiguration.class)
+@Import(SpringBootRepositoryRestMvcConfiguration.class)
 public class RepositoryRestMvcAutoConfiguration {
 
 }
