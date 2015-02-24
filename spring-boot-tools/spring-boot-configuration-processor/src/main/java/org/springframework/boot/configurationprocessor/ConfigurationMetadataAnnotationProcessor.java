@@ -101,7 +101,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		super.init(env);
 		this.typeUtils = new TypeUtils(env);
 		this.metadataStore = new MetadataStore(env);
-		this.metadataCollector = new MetadataCollector(env, this.metadataStore.readMetadata());
+		this.metadataCollector = new MetadataCollector(env,
+				this.metadataStore.readMetadata());
 		try {
 			this.fieldValuesParser = new JavaCompilerFieldValuesParser(env);
 		}
@@ -128,16 +129,22 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processElement(Element element) {
-		AnnotationMirror annotation = getAnnotation(element,
-				configurationPropertiesAnnotation());
-		String prefix = getPrefix(annotation);
-		if (annotation != null) {
-			if (element instanceof TypeElement) {
-				processAnnotatedTypeElement(prefix, (TypeElement) element);
+		try {
+			AnnotationMirror annotation = getAnnotation(element,
+					configurationPropertiesAnnotation());
+			if (annotation != null) {
+				String prefix = getPrefix(annotation);
+				if (element instanceof TypeElement) {
+					processAnnotatedTypeElement(prefix, (TypeElement) element);
+				}
+				else if (element instanceof ExecutableElement) {
+					processExecutableElement(prefix, (ExecutableElement) element);
+				}
 			}
-			else if (element instanceof ExecutableElement) {
-				processExecutableElement(prefix, (ExecutableElement) element);
-			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Error processing configuration meta-data on " + element, ex);
 		}
 	}
 
