@@ -3,12 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:int="http://www.springframework.org/schema/integration"
 	xmlns:int-file="http://www.springframework.org/schema/integration/file"
-	xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
-		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.1.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file-4.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<int-file:inbound-channel-adapter channel="input" directory="target/input" filename-pattern="*">
-		<int:poller fixed-rate="500"/>
+		<int:poller fixed-rate="500" />
 	</int-file:inbound-channel-adapter>
 
 	<int:service-activator input-channel="input" ref="sampleEndpoint" output-channel="output"/>
