@@ -49,15 +49,18 @@ public abstract class AbstractHttpClientMockTests {
 	protected final CloseableHttpClient http = mock(CloseableHttpClient.class);
 
 	protected void mockSuccessfulMetadataTextGet() throws IOException {
-		mockSuccessfulMetadataGet("metadata/service-metadata-2.1.0.txt", "text/plain", true);
+		mockSuccessfulMetadataGet("metadata/service-metadata-2.1.0.txt", "text/plain",
+				true);
 	}
 
-	protected void mockSuccessfulMetadataGet(boolean serviceCapabilities) throws IOException {
+	protected void mockSuccessfulMetadataGet(boolean serviceCapabilities)
+			throws IOException {
 		mockSuccessfulMetadataGet("metadata/service-metadata-2.1.0.json",
 				"application/vnd.initializr.v2.1+json", serviceCapabilities);
 	}
 
-	protected void mockSuccessfulMetadataGetV2(boolean serviceCapabilities) throws IOException {
+	protected void mockSuccessfulMetadataGetV2(boolean serviceCapabilities)
+			throws IOException {
 		mockSuccessfulMetadataGet("metadata/service-metadata-2.0.0.json",
 				"application/vnd.initializr.v2+json", serviceCapabilities);
 	}
@@ -68,7 +71,8 @@ public abstract class AbstractHttpClientMockTests {
 		byte[] content = readClasspathResource(contentPath);
 		mockHttpEntity(response, content, contentType);
 		mockStatus(response, 200);
-		given(this.http.execute(argThat(getForMetadata(serviceCapabilities)))).willReturn(response);
+		given(this.http.execute(argThat(getForMetadata(serviceCapabilities))))
+				.willReturn(response);
 	}
 
 	protected byte[] readClasspathResource(String contentPath) throws IOException {
@@ -137,12 +141,10 @@ public abstract class AbstractHttpClientMockTests {
 	}
 
 	private Matcher<HttpGet> getForMetadata(boolean serviceCapabilities) {
-		if (serviceCapabilities) {
-			return new HasAcceptHeader(InitializrService.ACCEPT_SERVICE_CAPABILITIES, true);
-		}
-		else {
+		if (!serviceCapabilities) {
 			return new HasAcceptHeader(InitializrService.ACCEPT_META_DATA, true);
 		}
+		return new HasAcceptHeader(InitializrService.ACCEPT_SERVICE_CAPABILITIES, true);
 	}
 
 	private Matcher<HttpGet> getForNonMetadata() {
@@ -206,6 +208,7 @@ public abstract class AbstractHttpClientMockTests {
 			}
 			return acceptHeader == null || !this.value.equals(acceptHeader.getValue());
 		}
+
 	}
 
 }

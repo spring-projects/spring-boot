@@ -48,7 +48,7 @@ class ServiceCapabilitiesReportGenerator {
 
 	/**
 	 * Generate a report for the specified service. The report contains the available
-	 * capabilities as advertized by the root endpoint.
+	 * capabilities as advertised by the root endpoint.
 	 * @param url the url of the service
 	 * @return the report that describes the service
 	 * @throws IOException if the report cannot be generated
@@ -57,9 +57,8 @@ class ServiceCapabilitiesReportGenerator {
 		Object content = this.initializrService.loadServiceCapabilities(url);
 		if (content instanceof InitializrServiceMetadata) {
 			return generateHelp(url, (InitializrServiceMetadata) content);
-		} else {
-			return content.toString();
 		}
+		return content.toString();
 	}
 
 	private String generateHelp(String url, InitializrServiceMetadata metadata) {

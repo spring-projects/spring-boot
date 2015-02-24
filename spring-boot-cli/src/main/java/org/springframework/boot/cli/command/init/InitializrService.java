@@ -51,15 +51,15 @@ class InitializrService {
 	/**
 	 * Accept header to use to retrieve the json meta-data.
 	 */
-	public static final String ACCEPT_META_DATA =
-			"application/vnd.initializr.v2.1+json,application/vnd.initializr.v2+json";
+	public static final String ACCEPT_META_DATA = "application/vnd.initializr.v2.1+"
+			+ "json,application/vnd.initializr.v2+json";
 
 	/**
 	 * Accept header to use to retrieve the service capabilities of the service. If the
 	 * service does not offer such feature, the json meta-data are retrieved instead.
 	 */
-	public static final String ACCEPT_SERVICE_CAPABILITIES =
-			"text/plain," + ACCEPT_META_DATA;
+	public static final String ACCEPT_SERVICE_CAPABILITIES = "text/plain,"
+			+ ACCEPT_META_DATA;
 
 	/**
 	 * Late binding HTTP client.
@@ -110,27 +110,29 @@ class InitializrService {
 	}
 
 	/**
-	 * Loads the service capabilities of the service at the specified url.
-	 * <p>If the service supports generating a textual representation of the
-	 * capabilities, it is returned. Otherwhise the json meta-data as a
-	 * {@link JSONObject} is returned.
+	 * Loads the service capabilities of the service at the specified URL. If the service
+	 * supports generating a textual representation of the capabilities, it is returned,
+	 * otherwise {@link InitializrServiceMetadata} is returned.
 	 * @param serviceUrl to url of the initializer service
-	 * @return the service capabilities (as a String) or the metadata describing the service
+	 * @return the service capabilities (as a String) or the
+	 * {@link InitializrServiceMetadata} describing the service
 	 * @throws IOException if the service capabilities cannot be loaded
 	 */
-	public Object loadServiceCapabilities(String serviceUrl) throws IOException  {
-		CloseableHttpResponse httpResponse = executeServiceCapabilitiesRetrieval(serviceUrl);
+	public Object loadServiceCapabilities(String serviceUrl) throws IOException {
+		HttpGet request = new HttpGet(serviceUrl);
+		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
+		CloseableHttpResponse httpResponse = execute(request, serviceUrl, "retrieve help");
 		validateResponse(httpResponse, serviceUrl);
 		HttpEntity httpEntity = httpResponse.getEntity();
 		ContentType contentType = ContentType.getOrDefault(httpEntity);
 		if (contentType.getMimeType().equals("text/plain")) {
-			return  getContent(httpEntity);
-		} else {
-			return parseJsonMetadata(httpEntity);
+			return getContent(httpEntity);
 		}
+		return parseJsonMetadata(httpEntity);
 	}
 
-	private InitializrServiceMetadata parseJsonMetadata(HttpEntity httpEntity) throws IOException {
+	private InitializrServiceMetadata parseJsonMetadata(HttpEntity httpEntity)
+			throws IOException {
 		try {
 			return new InitializrServiceMetadata(getContentAsJson(httpEntity));
 		}
@@ -177,15 +179,6 @@ class InitializrService {
 		HttpGet request = new HttpGet(url);
 		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_META_DATA));
 		return execute(request, url, "retrieve metadata");
-	}
-
-	/**
-	 * Retrieves the service capabilities of the service at the specified URL
-	 */
-	private CloseableHttpResponse executeServiceCapabilitiesRetrieval(String url) {
-		HttpGet request = new HttpGet(url);
-		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
-		return execute(request, url, "retrieve help");
 	}
 
 	private CloseableHttpResponse execute(HttpUriRequest request, Object url,

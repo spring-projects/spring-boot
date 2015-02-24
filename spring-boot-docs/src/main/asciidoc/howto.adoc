@@ -1483,6 +1483,7 @@ repository types (Elasticsearch, Solr). Just change the names of the annotations
 respectively.
 
 
+
 [[howto-use-exposing-spring-data-repositories-rest-endpoint]]
 === Expose Spring Data repositories as REST endpoint
 
@@ -1495,6 +1496,7 @@ customize the
 If your application requires to define its own `RepositoryRestMvcConfiguration` consider
 extending from `RepositoryRestMvcBootConfiguration` instead as the latter provides namely
 the handling of `spring.data.rest` properties.
+
 
 
 [[howto-database-initialization]]

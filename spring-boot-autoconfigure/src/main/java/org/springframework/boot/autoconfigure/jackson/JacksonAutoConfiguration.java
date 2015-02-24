@@ -117,16 +117,22 @@ public class JacksonAutoConfiguration {
 		@Bean
 		public Module jodaDateTimeSerializationModule() {
 			SimpleModule module = new SimpleModule();
+			JacksonJodaFormat jacksonJodaFormat = getJacksonJodaFormat();
+			if (jacksonJodaFormat != null) {
+				module.addSerializer(DateTime.class, new DateTimeSerializer(
+						jacksonJodaFormat));
+			}
+			return module;
+		}
 
-			JacksonJodaFormat jacksonJodaFormat = null;
-
+		private JacksonJodaFormat getJacksonJodaFormat() {
 			if (this.jacksonProperties.getJodaDateTimeFormat() != null) {
-				jacksonJodaFormat = new JacksonJodaFormat(DateTimeFormat.forPattern(
+				return new JacksonJodaFormat(DateTimeFormat.forPattern(
 						this.jacksonProperties.getJodaDateTimeFormat()).withZoneUTC());
 			}
-			else if (this.jacksonProperties.getDateFormat() != null) {
+			if (this.jacksonProperties.getDateFormat() != null) {
 				try {
-					jacksonJodaFormat = new JacksonJodaFormat(DateTimeFormat.forPattern(
+					return new JacksonJodaFormat(DateTimeFormat.forPattern(
 							this.jacksonProperties.getDateFormat()).withZoneUTC());
 				}
 				catch (IllegalArgumentException ex) {
@@ -138,14 +144,9 @@ public class JacksonAutoConfiguration {
 					}
 				}
 			}
-
-			if (jacksonJodaFormat != null) {
-				module.addSerializer(DateTime.class, new DateTimeSerializer(
-						jacksonJodaFormat));
-			}
-
-			return module;
+			return null;
 		}
+
 	}
 
 	@Configuration

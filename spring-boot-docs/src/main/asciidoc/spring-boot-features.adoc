@@ -1271,7 +1271,7 @@ instance. By default the embedded server will listen for HTTP requests on port `
 
 [[boot-features-embedded-container-servlets-and-filters]]
 ==== Servlets and Filters
-When using an embedded servlet container you can register Servlets, Filters and all the 
+When using an embedded servlet container you can register Servlets, Filters and all the
 listeners from the Servlet spec (e.g. `HttpSessionListener`) directly as
 Spring beans. This can be particularly convenient if you want to refer to a value from
 your `application.properties` during configuration.
@@ -1281,10 +1281,9 @@ the case of multiple Servlet beans the bean name will be used as a path prefix. 
 will map to `+/*+`.
 
 If convention-based mapping is not flexible enough you can use the
-`ServletRegistrationBean`, `FilterRegistrationBean` and
-`ServletListenerRegistrationBean` classes for complete control. You
-can also register items directly if your bean implements the
-`ServletContextInitializer` interface.
+`ServletRegistrationBean`, `FilterRegistrationBean` and `ServletListenerRegistrationBean`
+classes for complete control. You can also register items directly if your bean implements
+the `ServletContextInitializer` interface.
 
 
 
