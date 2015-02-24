@@ -63,7 +63,7 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
  * {@link EnableAutoConfiguration Auto-configuration} for security of a web application or
  * service. By default everything is secured with HTTP Basic authentication except the
  * {@link SecurityProperties#getIgnored() explicitly ignored} paths (defaults to
- * <code>&#47;css&#47;**, &#47;js&#47;**, &#47;images&#47;**, &#47;**&#47;favicon.ico</code>
+ * <code>&#47;css&#47;**, &#47;js&#47;**, &#47;images&#47;**, &#47;**&#47;favicon.ico, &#47;webjars&#47;**</code>
  * ). Many aspects of the behavior can be controller with {@link SecurityProperties} via
  * externalized application properties (or via an bean definition of that type to set the
  * defaults). The user details for authentication are just placeholders
@@ -93,7 +93,7 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
 public class SpringBootWebSecurityConfiguration {
 
 	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
-			"/images/**", "/**/favicon.ico");
+			"/images/**", "/**/favicon.ico", "/webjars/**");
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
