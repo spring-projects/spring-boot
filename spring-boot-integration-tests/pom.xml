@@ -8,7 +8,7 @@
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-integration-tests</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 	<name>Spring Boot Integration Tests</name>
 	<description>Spring Boot Integration Tests</description>
 	<url>http://projects.spring.io/spring-boot/</url>
@@ -19,19 +19,10 @@
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-tooling-api</artifactId>
-			<version>${gradle.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-dependency-tools</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+	<modules>
+		<module>spring-boot-gradle-tests</module>
+		<module>spring-boot-security-tests</module>
+	</modules>
 	<profiles>
 		<profile>
 			<id>default</id>
@@ -45,6 +36,7 @@
 							is available -->
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-invoker-plugin</artifactId>
+						<inherited>false</inherited>
 						<configuration>
 							<settingsFile>src/it/settings.xml</settingsFile>
 							<projectsDirectory>${main.basedir}/spring-boot-samples/</projectsDirectory>
@@ -69,6 +61,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<inherited>false</inherited>
 						<executions>
 							<execution>
 								<id>clean-samples</id>
@@ -89,6 +82,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-clean-plugin</artifactId>
+						<inherited>false</inherited>
 						<executions>
 							<execution>
 								<id>clean-samples</id>
@@ -106,16 +100,4 @@
 			<id>full</id>
 		</profile>
 	</profiles>
-	<repositories>
-		<repository>
-			<id>gradle</id>
-			<url>http://repo.gradle.org/gradle/libs-releases-local</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 </project>

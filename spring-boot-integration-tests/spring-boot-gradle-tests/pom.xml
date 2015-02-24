@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-security-tests</artifactId>
+		<artifactId>spring-boot-integration-tests</artifactId>
 		<version>1.1.11.BUILD-SNAPSHOT</version>
-		<relativePath>../</relativePath>
 	</parent>
-	<artifactId>spring-boot-security-tests-web-helloworld</artifactId>
-	<name>Spring Boot Security Tests - Web Hello World</name>
-	<description>${project.name}</description>
+	<artifactId>spring-boot-gradle-tests</artifactId>
+	<packaging>jar</packaging>
+	<name>Spring Boot Gradle Integration Tests</name>
+	<description>Spring Boot Gradle Integration Tests</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
@@ -20,16 +20,27 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
+			<groupId>org.gradle</groupId>
+			<artifactId>gradle-tooling-api</artifactId>
+			<version>${gradle.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
+			<artifactId>spring-boot-dependency-tools</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>gradle</id>
+			<url>http://repo.gradle.org/gradle/libs-releases-local</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>
