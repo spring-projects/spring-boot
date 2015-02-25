@@ -151,6 +151,9 @@ public class WebMvcAutoConfiguration {
 		@Autowired
 		private WebMvcProperties mvcProperties = new WebMvcProperties();
 
+		@Autowired(required = false)
+		private ServerProperties serverProperties = new ServerProperties();
+
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
@@ -281,7 +284,10 @@ public class WebMvcAutoConfiguration {
 						// Ignore
 					}
 					// Use forward: prefix so that no view resolution is done
-					registry.addViewController("/").setViewName("forward:/index.html");
+					String viewName = "forward:" + serverProperties.getServletPrefix()
+							+ "/index.html";
+
+					registry.addViewController("/").setViewName(viewName);
 					return;
 				}
 			}
