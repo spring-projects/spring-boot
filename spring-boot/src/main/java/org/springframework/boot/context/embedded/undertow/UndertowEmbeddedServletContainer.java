@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,9 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	private static final Log logger = LogFactory
 			.getLog(UndertowEmbeddedServletContainer.class);
 
-	private final DeploymentManager manager;
-
 	private final Builder builder;
+
+	private final DeploymentManager manager;
 
 	private final String contextPath;
 
@@ -86,6 +86,25 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 				+ getPortsDescription());
 	}
 
+	private Undertow createUndertowServer() {
+		try {
+			HttpHandler servletHandler = this.manager.start();
+			this.builder.setHandler(getContextHandler(servletHandler));
+			return this.builder.build();
+		}
+		catch (ServletException ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to start embdedded Undertow", ex);
+		}
+	}
+
+	private HttpHandler getContextHandler(HttpHandler servletHandler) {
+		if (StringUtils.isEmpty(this.contextPath)) {
+			return servletHandler;
+		}
+		return Handlers.path().addPrefixPath(this.contextPath, servletHandler);
+	}
+
 	@SuppressWarnings("rawtypes")
 	private String getPortsDescription() {
 		try {
@@ -109,25 +128,6 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		}
 		// We at least know our port
 		return String.valueOf(this.port);
-	}
-
-	private Undertow createUndertowServer() {
-		try {
-			HttpHandler servletHandler = this.manager.start();
-			this.builder.setHandler(getContextHandler(servletHandler));
-			return this.builder.build();
-		}
-		catch (ServletException ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to start embdedded Undertow", ex);
-		}
-	}
-
-	private HttpHandler getContextHandler(HttpHandler servletHandler) {
-		if (StringUtils.isEmpty(this.contextPath)) {
-			return servletHandler;
-		}
-		return Handlers.path().addPrefixPath(this.contextPath, servletHandler);
 	}
 
 	@Override

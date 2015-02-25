@@ -263,7 +263,6 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
@@ -481,12 +480,10 @@ public class SpringApplication {
 					this.mainApplicationClass, System.out);
 			return;
 		}
-
 		if (this.banner != null) {
 			this.banner.printBanner(environment, this.mainApplicationClass, System.out);
 			return;
 		}
-
 		printBanner();
 	}
 
