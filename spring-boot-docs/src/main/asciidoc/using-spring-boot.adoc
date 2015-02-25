@@ -44,7 +44,7 @@ defaults. The parent project provides the following features:
   http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml`
 
-On the last point: since the default config files files accept
+On the last point: since the default config files accept
 Spring style placeholders (`${...}`) the Maven filtering is changed to
 use `@..@` placeholders (you can override that with a Maven property
 `resource.delimiter`).
@@ -259,10 +259,10 @@ and Hibernate.
 |Support for the Apache Solr search platform, including `spring-data-solr`.
 
 |`spring-boot-starter-freemarker`
-|Support for the FreeMarker templating engine
+|Support for the FreeMarker templating engine.
 
 |`spring-boot-starter-groovy-templates`
-|Support for the Groovy templating engine
+|Support for the Groovy templating engine.
 
 |`spring-boot-starter-hateoas`
 |Support for HATEOAS-based RESTful services via `spring-hateoas`.
@@ -289,7 +289,7 @@ and Hibernate.
 |Support for `javax.mail`.
 
 |`spring-boot-starter-mobile`
-|Support for `spring-mobile`
+|Support for `spring-mobile`.
 
 |`spring-boot-starter-mustache`
 |Support for the Mustache templating engine.
@@ -317,7 +317,7 @@ and Hibernate.
 |Support for the Thymeleaf templating engine, including integration with Spring.
 
 |`spring-boot-starter-velocity`
-|Support for the Velocity templating engine
+|Support for the Velocity templating engine.
 
 |`spring-boot-starter-web`
 |Support for full-stack web development, including Tomcat and `spring-webmvc`.
@@ -326,7 +326,7 @@ and Hibernate.
 |Support for WebSocket development.
 
 |`spring-boot-starter-ws`
-|Support for Spring Web Services
+|Support for Spring Web Services.
 |===
 
 In addition to the application starters, the following starters can be used to
@@ -351,10 +351,10 @@ swap specific technical facets.
 | Name | Description
 
 |`spring-boot-starter-jetty`
-|Imports the Jetty HTTP engine (to be used as an alternative to Tomcat)
+|Imports the Jetty HTTP engine (to be used as an alternative to Tomcat).
 
 |`spring-boot-starter-log4j`
-|Support the Log4J logging framework
+|Support the Log4J logging framework.
 
 |`spring-boot-starter-logging`
 |Import Spring Boot's default logging framework (Logback).
@@ -363,7 +363,7 @@ swap specific technical facets.
 |Import Spring Boot's default HTTP engine (Tomcat).
 
 |`spring-boot-starter-undertow`
-|Imports the Undertow HTTP engine (to be used as an alternative to Tomcat)
+|Imports the Undertow HTTP engine (to be used as an alternative to Tomcat).
 |===
 
 TIP: For a list of additional community contributed starter POMs, see the

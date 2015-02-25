@@ -12,7 +12,7 @@ Auditing, health and metrics gathering can be automatically applied to your appl
 
 
 [[production-ready-enabling]]
-== Enabling production-ready features.
+== Enabling production-ready features
 The {github-code}/spring-boot-actuator[`spring-boot-actuator`] module provides all of
 Spring Boot's production-ready features. The simplest way to enable the features is to add
 a dependency to the `spring-boot-starter-actuator` '`Starter POM`'.

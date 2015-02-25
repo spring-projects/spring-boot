@@ -96,6 +96,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.ignore-default-model-on-redirect=true # If the the content of the "default" model should be ignored redirects
 	spring.view.prefix= # MVC view prefix
 	spring.view.suffix= # ... and suffix
+	spring.favicon.enabled=true
 
 	# SPRING RESOURCES HANDLING ({sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[ResourceProperties])
 	spring.resources.cache-period= # cache timeouts in headers sent to browser
