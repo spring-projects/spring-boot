@@ -281,7 +281,7 @@ public class WebMvcAutoConfiguration {
 						// Ignore
 					}
 					// Use forward: prefix so that no view resolution is done
-					registry.addViewController("/").setViewName("forward:/index.html");
+					registry.addViewController("/").setViewName("forward:index.html");
 					return;
 				}
 			}
