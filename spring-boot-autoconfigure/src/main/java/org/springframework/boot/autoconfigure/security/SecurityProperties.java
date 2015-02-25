@@ -238,6 +238,11 @@ public class SecurityProperties implements SecurityPrerequisite {
 		 */
 		private String[] path = new String[] { "/**" };
 
+		/**
+		 * The security authorize mode to apply.
+		 */
+		private SecurityAuthorizeMode authorizeMode = SecurityAuthorizeMode.ROLE;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -260,6 +265,14 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 		public void setPath(String... paths) {
 			this.path = paths;
+		}
+
+		public SecurityAuthorizeMode getAuthorizeMode() {
+			return this.authorizeMode;
+		}
+
+		public void setAuthorizeMode(SecurityAuthorizeMode authorizeMode) {
+			this.authorizeMode = authorizeMode;
 		}
 
 	}
