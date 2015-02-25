@@ -291,6 +291,9 @@ and Hibernate.
 |`spring-boot-starter-mobile`
 |Support for `spring-mobile`
 
+|`spring-boot-starter-mustache`
+|Support for the Mustache templating engine.
+
 |`spring-boot-starter-redis`
 |Support for the REDIS key-value data store, including `spring-redis`.
 
