@@ -374,7 +374,8 @@ public class WebMvcAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.favicon.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.favicon.enabled:false");
 		this.context.refresh();
 		assertThat(
 				this.context.getBeansOfType(ResourceHttpRequestHandler.class).get(

@@ -288,7 +288,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Configuration
-		@ConditionalOnProperty(value = "spring.favicon.enabled", matchIfMissing = true)
+		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
 		public static class FaviconConfiguration implements ResourceLoaderAware {
 
 			private ResourceLoader resourceLoader;

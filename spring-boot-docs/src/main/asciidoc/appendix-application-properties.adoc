@@ -92,11 +92,11 @@ content into your application; rather pick only the properties that you need.
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.locale= # set fixed locale, e.g. en_UK
 	spring.mvc.date-format= # set fixed date format, e.g. dd/MM/yyyy
+	spring.mvc.favicon.enabled=true
 	spring.mvc.message-codes-resolver-format= # PREFIX_ERROR_CODE / POSTFIX_ERROR_CODE
 	spring.mvc.ignore-default-model-on-redirect=true # If the the content of the "default" model should be ignored redirects
 	spring.view.prefix= # MVC view prefix
 	spring.view.suffix= # ... and suffix
-	spring.favicon.enabled=true
 
 	# SPRING RESOURCES HANDLING ({sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[ResourceProperties])
 	spring.resources.cache-period= # cache timeouts in headers sent to browser
