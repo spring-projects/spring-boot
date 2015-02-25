@@ -868,9 +868,9 @@ Log files will rotate when they reach 10 Mb and as with console output, `ERROR`,
 and `INFO` level messages are logged by default.
 
 
+
 [[boot-features-custom-log-levels]]
 === Log Levels
-
 All the supported logging systems can have the logger levels set in the Spring
 `Environment` (so for example in `application.properties`) using '`+logging.level.*=LEVEL+`'
 where '`LEVEL`' is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF. Example
@@ -882,11 +882,15 @@ where '`LEVEL`' is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF. Example
 	logging.level.org.hibernate: ERROR
 ----
 
+NOTE: By default Spring Boot remaps Thymeleaf `INFO` messages so that they are logged at
+`DEBUG` level. This helps to reduce noise in the standard log output. See
+{sc-spring-boot}/logging/logback/LevelRemappingAppender.{sc-ext}[`LevelRemappingAppender`]
+for details of how you can apply remapping in your own configuration.
+
 
 
 [[boot-features-custom-log-configuration]]
 === Custom log configuration
-
 The various logging systems can be activated by including the appropriate libraries on
 the classpath, and further customized by providing a suitable configuration file in the
 root of the classpath, or in a location specified by the Spring `Environment` property
