@@ -901,7 +901,7 @@ Depending on your logging system, the following files will be loaded:
 |Logging System |Customization
 
 |Logback
-|`logback.xml`
+|`logback.xml` or `logback.groovy`
 
 |Log4j
 |`log4j.properties` or `log4j.xml`
@@ -936,7 +936,7 @@ To help with the customization some other properties are transferred from the Sp
 All the logging systems supported can consult System properties when parsing their
 configuration files.  See the default configurations in `spring-boot.jar` for examples.
 
-WARNING: There are know classloading issues with Java Util Logging that cause problems
+WARNING: There are known classloading issues with Java Util Logging that cause problems
 when running from an '`executable jar`'. We recommend that you avoid it if at all
 possible.
 
@@ -1004,7 +1004,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Support for serving static resources, including support for WebJars (see below).
 * Automatic registration of `Converter`, `GenericConverter`, `Formatter` beans.
 * Support for `HttpMessageConverters` (see below).
-* Automatic registration of `MessageCodeResolver` (see below)
+* Automatic registration of `MessageCodesResolver` (see below).
 * Static `index.html` support.
 * Custom `Favicon` support.
 
@@ -1358,7 +1358,7 @@ If the above customization techniques are too limited, you can register the
 		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
 		factory.setPort(9000);
 		factory.setSessionTimeout(10, TimeUnit.MINUTES);
-		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html");
+		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
 		return factory;
 	}
 ----
@@ -1516,9 +1516,9 @@ Production database connections can also be auto-configured using a pooling
 
 * We prefer the Tomcat pooling `DataSource` for its performance and concurrency, so if
   that is available we always choose it.
-* If HikariCP is available we will use it
+* If HikariCP is available we will use it.
 * If Commons DBCP is available we will use it, but we don't recommend it in production.
-* Lastly, if Commons DBCP2 is available we will use it
+* Lastly, if Commons DBCP2 is available we will use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
 '`starter POMs`' you will automatically get a dependency to `tomcat-jdbc`.
@@ -1607,7 +1607,7 @@ relational databases. The `spring-boot-starter-data-jpa` POM provides a quick wa
 started. It provides the following key dependencies:
 
 * Hibernate -- One of the most popular JPA implementations.
-* Spring Data JPA -- Makes it easy to easily implement JPA-based repositories.
+* Spring Data JPA -- Makes it easy to implement JPA-based repositories.
 * Spring ORMs -- Core ORM support from the Spring Framework.
 
 TIP: We won't go into too many details of JPA or Spring Data here. You can follow the
@@ -1812,7 +1812,7 @@ pooled connection factory by default.
 === MongoDB
 http://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a
 JSON-like schema instead of traditional table-based relational data. Spring Boot offers
-several conveniences for working with MongoDB, including the The
+several conveniences for working with MongoDB, including the
 `spring-boot-starter-data-mongodb` '`Starter POM`'.
 
 
@@ -1826,7 +1826,7 @@ using the URL `mongodb://localhost/test`:
 [source,java,indent=0]
 ----
 	import org.springframework.data.mongodb.MongoDbFactory;
-	import import com.mongodb.DB;
+	import com.mongodb.DB;
 
 	@Component
 	public class MyBean {
@@ -1864,7 +1864,7 @@ could simply delete this line from the sample above.
 TIP: If you aren't using Spring Data Mongo you can inject `com.mongodb.Mongo` beans
 instead of using `MongoDbFactory`.
 
-You can also declare your own `MongoDbFactory` or `Mongo` `@Beans` if you want to take
+You can also declare your own `MongoDbFactory` or `Mongo` bean if you want to take
 complete control of establishing the MongoDB connection.
 
 
@@ -2084,7 +2084,7 @@ available on the classpath. If the broker is present, an embedded broker is star
 configured automatically (unless the mode property has been explicitly set). The supported
 modes are: `embedded` (to make explicit that an embedded broker is required and should
 lead to an error if the broker is not available in the classpath), and `native` to
-connect to a broker using the the `netty` transport protocol. When the latter is
+connect to a broker using the `netty` transport protocol. When the latter is
 configured, Spring Boot configures a `ConnectionFactory` connecting to a broker running
 on the local machine with the default settings.
 
