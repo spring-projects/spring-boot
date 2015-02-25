@@ -52,6 +52,7 @@ org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration,\
+org.springframework.boot.autoconfigure.social.GoogleAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.LinkedInAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.TwitterAutoConfiguration,\
 org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
