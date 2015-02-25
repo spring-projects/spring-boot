@@ -33,6 +33,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.web.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -44,6 +45,7 @@ import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.test.context.support.AnnotationConfigContextLoaderUtils;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
@@ -95,7 +97,10 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			application.setWebEnvironment(false);
 		}
 		application.setInitializers(initializers);
-		return application.run();
+		ConfigurableApplicationContext applicationContext = application.run();
+		TestPropertySourceUtils.addPropertiesFilesToEnvironment(applicationContext,
+				config.getPropertySourceLocations());
+		return applicationContext;
 	}
 
 	private void assertValidAnnotations(Class<?> testClass) {
