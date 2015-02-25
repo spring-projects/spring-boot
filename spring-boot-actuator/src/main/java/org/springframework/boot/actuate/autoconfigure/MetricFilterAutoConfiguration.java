@@ -53,7 +53,7 @@ import org.springframework.web.util.UrlPathHelper;
 @Configuration
 @ConditionalOnBean({ CounterService.class, GaugeService.class })
 @ConditionalOnClass({ Servlet.class, ServletRegistration.class,
-		OncePerRequestFilter.class })
+		OncePerRequestFilter.class, HandlerMapping.class })
 @AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
 public class MetricFilterAutoConfiguration {
 

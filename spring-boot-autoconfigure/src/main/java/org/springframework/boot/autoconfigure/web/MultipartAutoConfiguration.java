@@ -56,8 +56,7 @@ public class MultipartAutoConfiguration {
 	private MultipartProperties multipartProperties = new MultipartProperties();
 
 	@Bean
-	@ConditionalOnMissingBean(value = { MultipartConfigElement.class,
-			MultipartResolver.class })
+	@ConditionalOnMissingBean
 	public MultipartConfigElement multipartConfigElement() {
 		return this.multipartProperties.createMultipartConfig();
 	}
