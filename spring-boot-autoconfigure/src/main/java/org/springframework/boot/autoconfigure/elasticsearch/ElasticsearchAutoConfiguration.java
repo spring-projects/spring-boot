@@ -100,16 +100,14 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 				if (logger.isInfoEnabled()) {
 					logger.info("Closing Elasticsearch client");
 				}
-				if (this.releasable != null) {
-					try {
-						this.releasable.close();
-					}
-					catch (NoSuchMethodError ex) {
-						// Earlier versions of Elasticsearch had a different method name
-						ReflectionUtils.invokeMethod(
-								ReflectionUtils.findMethod(Releasable.class, "release"),
-								this.releasable);
-					}
+				try {
+					this.releasable.close();
+				}
+				catch (NoSuchMethodError ex) {
+					// Earlier versions of Elasticsearch had a different method name
+					ReflectionUtils.invokeMethod(
+							ReflectionUtils.findMethod(Releasable.class, "release"),
+							this.releasable);
 				}
 			}
 			catch (final Exception ex) {
