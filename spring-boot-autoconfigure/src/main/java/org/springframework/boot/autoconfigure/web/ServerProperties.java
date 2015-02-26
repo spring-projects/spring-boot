@@ -316,7 +316,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		private String compression = "off";
 
 		/**
-		 * A comma-separated list of MIME types for which compression is used.
+		 * Comma-separated list of MIME types for which compression is used.
 		 */
 		private String compressableMimeTypes = "text/html,text/xml,text/plain";
 

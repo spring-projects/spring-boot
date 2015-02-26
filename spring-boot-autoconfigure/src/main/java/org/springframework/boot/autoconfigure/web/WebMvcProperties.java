@@ -39,7 +39,7 @@ public class WebMvcProperties {
 	private String locale;
 
 	/**
-	 * Date format to use (e.g. dd/MM/yyyy)
+	 * Date format to use (e.g. dd/MM/yyyy).
 	 */
 	private String dateFormat;
 

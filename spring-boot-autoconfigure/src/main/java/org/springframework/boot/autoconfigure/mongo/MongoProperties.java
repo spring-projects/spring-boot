@@ -53,7 +53,7 @@ public class MongoProperties {
 	private Integer port = null;
 
 	/**
-	 * Mmongo database URI. When set, host and port are ignored.
+	 * Mongo database URI. When set, host and port are ignored.
 	 */
 	private String uri = "mongodb://localhost/test";
 
