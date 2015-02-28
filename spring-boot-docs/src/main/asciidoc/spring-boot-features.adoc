@@ -128,7 +128,7 @@ For example:
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy, e.g.
 Web components *must* be contained within the child context, and the same `Environment`
 will be used for both parent and child contexts. See the
-{dc-spring-boot}/builder/SpringApplicationBuilder.{dc-ext}[`SpringApplicationBuilder` javadoc]
+{dc-spring-boot}/builder/SpringApplicationBuilder.{dc-ext}[`SpringApplicationBuilder` Javadoc]
 for full details.
 
 
@@ -858,9 +858,9 @@ The following table shows how the `logging.*` properties can be used together:
 current directory.
 
 |_(none)_
-|Specific folder
+|Specific directory
 |`/var/log`
-|Writes `spring.log` the specified folder. Names can be an exact location or relative to the
+|Writes `spring.log` the specified directory. Names can be an exact location or relative to the
 current directory.
 |===
 
@@ -1065,7 +1065,7 @@ you set the `spring.mvc.message-codes-resolver.format` property `PREFIX_ERROR_CO
 
 [[boot-features-spring-mvc-static-content]]
 ==== Static Content
-By default Spring Boot will serve static content from a folder called `/static` (or
+By default Spring Boot will serve static content from a directory called `/static` (or
 `/public` or `/resources` or `/META-INF/resources`) in the classpath or from the root
 of the `ServletContext`.  It uses the `ResourceHttpRequestHandler` from Spring MVC so you
 can modify that behavior by adding your own `WebMvcConfigurerAdapter` and overriding the
@@ -1081,8 +1081,8 @@ In addition to the '`standard`' static resource locations above, a special case 
 http://www.webjars.org/[Webjars content]. Any resources with a path in `+/webjars/**+` will
 be served from jar files if they are packaged in the Webjars format.
 
-TIP: Do not use the `src/main/webapp` folder if your application will be packaged as a
-jar. Although this folder is a common standard, it will *only* work with war packaging
+TIP: Do not use the `src/main/webapp` directory if your application will be packaged as a
+jar. Although this directory is a common standard, it will *only* work with war packaging
 and it will be silently ignored by most build tools if you generate a jar.
 
 
@@ -1942,16 +1942,16 @@ documentation].
 https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides
 convenient Spring-friendly tools for accessing the http://www.gopivotal.com/big-data/pivotal-gemfire#details[Pivotal Gemfire]
 data management platform. There is a `spring-boot-starter-data-gemfire` '`Starter POM`'
-for collecting the dependencies in a convenient way. There is currently no auto=config
+for collecting the dependencies in a convenient way. There is currently no auto-configuration
 support for Gemfire, but you can enable Spring Data Repositories with a
-https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java/org/springframework/data/gemfire/repository/config/EnableGemfireRepositories.java[single annotation].
+https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java/org/springframework/data/gemfire/repository/config/EnableGemfireRepositories.java[single annotation (`@EnableGemfireRepositories`)].
 
 
 
 [[boot-features-solr]]
 === Solr
 http://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic
-auto-configuration for the solr client library and abstractions on top of it provided by
+auto-configuration for the Solr client library and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-solr[Spring Data Solr]. There is
 a `spring-boot-starter-data-solr` '`Starter POM`' for collecting the dependencies in a
 convenient way.
@@ -2002,7 +2002,7 @@ http://projects.spring.io/spring-data-solr/[reference documentation].
 
 [[boot-features-elasticsearch]]
 === Elasticsearch
-http://www.elasticsearch.org/[Elastic Search] is an open source, distributed,
+http://www.elasticsearch.org/[Elasticsearch] is an open source, distributed,
 real-time search and analytics engine. Spring Boot offers basic auto-configuration for
 the Elasticsearch and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch].
@@ -2017,7 +2017,7 @@ You can inject an auto-configured `ElasticsearchTemplate` or Elasticsearch `Clie
 instance as you would any other Spring Bean. By default the instance will attempt to
 connect to a local in-memory server (a `NodeClient` in Elasticsearch terms), but you can
 switch to a remote server (i.e. a `TransportClient`) by setting
-`spring.data.elasticsearch.clusterNodes` to a comma-separated '`host:port`' list.
+`spring.data.elasticsearch.cluster-nodes` to a comma-separated '`host:port`' list.
 
 [source,java,indent=0]
 ----
@@ -2062,9 +2062,9 @@ http://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
 The Spring Framework provides extensive support for integrating with messaging systems:
 from simplified use of the JMS API using `JmsTemplate` to a complete infrastructure to
 receive messages asynchronously. Spring AMQP provides a similar feature set for the
-'`Advanced Message Queuing Protocol`' and Boot also provides auto-configuration options
+'`Advanced Message Queuing Protocol`' and Spring Boot also provides auto-configuration options
 for `RabbitTemplate` and RabbitMQ. There is also support for STOMP messaging natively
-in Spring Websocket and Spring Boot has support for that through starters and a small
+in Spring WebSocket and Spring Boot has support for that through starters and a small
 amount of auto-configuration.
 
 
@@ -2076,7 +2076,7 @@ The `javax.jms.ConnectionFactory` interface provides a standard method of creati
 `ConnectionFactory` to work with JMS, you generally won't need to use it directly yourself
 and you can instead rely on higher level messaging abstractions (see the
 {spring-reference}/#jms[relevant section] of the Spring Framework reference
-documentation for details). Spring Boot also auto configures the necessary infrastructure
+documentation for details). Spring Boot also auto-configures the necessary infrastructure
 to send and receive messages.
 
 
@@ -2108,7 +2108,7 @@ HornetQ configuration is controlled by external configuration properties in
 	spring.hornetq.port=9876
 ----
 
-When embedding the broker, you can chose if you want to enable persistence, and the list
+When embedding the broker, you can choose if you want to enable persistence, and the list
 of destinations that should be made available. These can be specified as a comma-separated
 list to create them with the default options; or you can define bean(s) of type
 `org.hornetq.jms.server.config.JMSQueueConfiguration` or
@@ -2217,7 +2217,7 @@ The following component creates a listener endpoint on the `someQueue` destinati
 	}
 ----
 
-Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the javadoc of `@EnableJms`]
+Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the Javadoc of `@EnableJms`]
 for more details.
 
 
@@ -2242,7 +2242,7 @@ details.
 [[boot-features-jta]]
 == Distributed Transactions with JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources using
-either an http://www.atomikos.com/[Atomkos] or
+either an http://www.atomikos.com/[Atomikos] or
 http://docs.codehaus.org/display/BTM/Home[Bitronix] embedded transaction manager. JTA
 transactions are also supported when deploying to a suitable Java EE Application Server.
 
@@ -2259,15 +2259,15 @@ disable the JTA auto-configuration.
 Atomikos is a popular open source transaction manager which can be embedded into your
 Spring Boot application. You can use the `spring-boot-starter-jta-atomikos` Starter POM to
 pull in the appropriate Atomikos libraries. Spring Boot will auto-configure Atomikos and
-ensure that appropriate `depends-on` settings are applied to your Spring Beans for correct
+ensure that appropriate `depends-on` settings are applied to your Spring beans for correct
 startup and shutdown ordering.
 
-By default Atomikos transaction logs will be written to a `transaction-logs` folder in
+By default Atomikos transaction logs will be written to a `transaction-logs` directory in
 your application home directory (the directory in which your application jar file
 resides). You can customize this directory by setting a `spring.jta.log-dir` property in
 your `application.properties` file. Properties starting `spring.jta.` can also be used to
-customize the Atomikos `UserTransactionServiceIml`. See the
-{dc-spring-boot}/jta/atomikos/AtomikosProperties.{dc-ext}[`AtomikosProperties` javadoc]
+customize the Atomikos `UserTransactionServiceImp`. See the
+{dc-spring-boot}/jta/atomikos/AtomikosProperties.{dc-ext}[`AtomikosProperties` Javadoc]
 for complete details.
 
 NOTE: To ensure that multiple transaction managers can safely coordinate the same
@@ -2286,7 +2286,7 @@ Bitronix and post-process your beans to ensure that startup and shutdown orderin
 correct.
 
 By default Bitronix transaction log files (`part1.btm` and `part2.btm`) will be written to
-a `transaction-logs` folder in your application home directory. You can customize this
+a `transaction-logs` directory in your application home directory. You can customize this
 directory by using the `spring.jta.log-dir` property. Properties starting `spring.jta.`
 are also bound to the `bitronix.tm.Configuration` bean, allowing for complete
 customization. See the http://btm.codehaus.org/api/2.0.1/bitronix/tm/Configuration.html[Bitronix
@@ -2355,7 +2355,7 @@ responsible for wrapping `XAConnectionFactory` and `XADataSource` beans and expo
 as regular `ConnectionFactory` and `DataSource` beans which will transparently enroll in
 the distributed transaction. DataSource and JMS auto-configuration will use JTA variants
 as long as you have a `JtaTransactionManager` bean and appropriate XA wrapper beans
-registered within your `ApplicationContext`
+registered within your `ApplicationContext`.
 
 The {sc-spring-boot}/jta/BitronixXAConnectionFactoryWrapper.{sc-ext}[BitronixXAConnectionFactoryWrapper]
 and {sc-spring-boot}/jta/BitronixXADataSourceWrapper.{sc-ext}[BitronixXADataSourceWrapper]
@@ -2684,7 +2684,7 @@ if you provide web-specific configuration, your class may need to be applied aft
 
 [[boot-features-condition-annotations]]
 === Condition annotations
-You almost always want to include one or more `@Condition` annotations on your
+You almost always want to include one or more `@Conditional` annotations on your
 auto-configuration class. The `@ConditionalOnMissingBean` is one common example that is
 used to allow developers to '`override`' auto-configuration if they are not happy with
 your defaults.
@@ -2697,7 +2697,7 @@ code by annotating `@Configuration` classes or individual `@Bean` methods.
 [[boot-features-class-conditions]]
 ==== Class conditions
 The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations allows configuration
-to be skipped based on the presence or absence of specific classes. Due to the fact that
+to be included based on the presence or absence of specific classes. Due to the fact that
 annotation metadata is parsed using http://asm.ow2.org/[ASM] you can actually use the
 `value` attribute to refer to the real class, even though that class might not actually
 appear on the running application classpath. You can also use the `name` attribute if you
@@ -2708,13 +2708,13 @@ prefer to specify the class name using a `String` value.
 [[boot-features-bean-conditions]]
 ==== Bean conditions
 The `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations allow configurations
-to be skipped based on the presence or absence of specific beans. You can use the `value`
+to be included based on the presence or absence of specific beans. You can use the `value`
 attribute to specify beans by type, or `name` to specify beans by name. The `search`
 attribute allows you to limit the `ApplicationContext` hierarchy that should be considered
 when searching for beans.
 
 NOTE: `@Conditional` annotations are processed when `@Configuration` classes are
-parsed. Auto-configure `@Configuration` is always parsed last (after any user defined
+parsed. Auto-configured `@Configuration` is always parsed last (after any user defined
 beans), however, if you are using these annotations on regular `@Configuration` classes,
 care must be taken not to refer to bean definitions that have not yet been created.
 
@@ -2739,9 +2739,9 @@ conventions, for example, `file:/home/user/test.dat`.
 
 
 [[boot-features-web-application-conditions]]
-==== Web Application Conditions
+==== Web application conditions
 The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotations
-allow configuration to be skipped depending on whether the application is a
+allow configuration to be included depending on whether the application is a
 'web application'. A web application is any application that is using a Spring
 `WebApplicationContext`, defines a `session` scope or has a `StandardServletEnvironment`.
 
@@ -2749,7 +2749,7 @@ allow configuration to be skipped depending on whether the application is a
 
 [[boot-features-spel-conditions]]
 ==== SpEL expression conditions
-The `@ConditionalOnExpression` annotation allows configuration to be skipped based on the
+The `@ConditionalOnExpression` annotation allows configuration to be included based on the
 result of a {spring-reference}/#expressions[SpEL expression].
 
 
