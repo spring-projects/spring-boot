@@ -42,6 +42,7 @@ import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.stereotype.Component;
 
 /**
@@ -138,22 +139,59 @@ public class AuthenticationManagerConfiguration {
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
-			if (auth.isConfigured()) {
-				return;
+			auth.apply(new DefaultingInMemoryUserDetailsManagerConfigurer(this.security));
+		}
+
+		/**
+		 * This is necessary to delay adding the default user.
+		 *
+		 * <ul>
+		 * <li>A GlobalAuthenticationConfigurerAdapter will initialize the
+		 * AuthenticationManagerBuilder with a Configurer which will be after any
+		 * GlobalAuthenticationConfigurerAdapter</li>
+		 * <li>BootDefaultingAuthenticationConfigurerAdapter will be invoked after all
+		 * GlobalAuthenticationConfigurerAdapter, but before the Configurers that were
+		 * added by other GlobalAuthenticationConfigurerAdapter instances</li>
+		 * <li>BootDefaultingAuthenticationConfigurerAdapter will add
+		 * DefaultingInMemoryUserDetailsManagerConfigurer after all Configurer instances</li>
+		 * <li>All init methods will be invoked</li>
+		 * <li>All configure methods will be invoked which is where the
+		 * AuthenticationProvider instances are setup</li>
+		 * <li>If no AuthenticationProviders were provided,
+		 * DefaultingInMemoryUserDetailsManagerConfigurer will default the value</li>
+		 * </ul>
+		 *
+		 * @author Rob Winch
+		 */
+		private static class DefaultingInMemoryUserDetailsManagerConfigurer extends
+				InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> {
+			private final SecurityProperties security;
+
+			public DefaultingInMemoryUserDetailsManagerConfigurer(
+					SecurityProperties security) {
+				this.security = security;
 			}
 
-			User user = this.security.getUser();
-			if (user.isDefaultPassword()) {
-				logger.info("\n\nUsing default security password: " + user.getPassword()
-						+ "\n");
+			@Override
+			public void configure(AuthenticationManagerBuilder auth) throws Exception {
+				if (auth.isConfigured()) {
+					return;
+				}
+
+				User user = this.security.getUser();
+				if (user.isDefaultPassword()) {
+					logger.info("\n\nUsing default security password: "
+							+ user.getPassword() + "\n");
+				}
+
+				Set<String> roles = new LinkedHashSet<String>(user.getRole());
+				withUser(user.getName()).password(user.getPassword()).roles(
+						roles.toArray(new String[roles.size()]));
+
+				super.configure(auth);
 			}
 
-			Set<String> roles = new LinkedHashSet<String>(user.getRole());
-			auth.inMemoryAuthentication().withUser(user.getName())
-					.password(user.getPassword())
-					.roles(roles.toArray(new String[roles.size()]));
 		}
 
 	}
-
 }
