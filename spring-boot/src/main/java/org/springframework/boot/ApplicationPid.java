@@ -34,14 +34,14 @@ public class ApplicationPid {
 	private final String pid;
 
 	public ApplicationPid() {
-		this.pid = getPid();
+		this.pid = findPid();
 	}
 
 	protected ApplicationPid(String pid) {
 		this.pid = pid;
 	}
 
-	private String getPid() {
+	private String findPid() {
 		try {
 			String jvmName = ManagementFactory.getRuntimeMXBean().getName();
 			return jvmName.split("@")[0];
@@ -88,6 +88,10 @@ public class ApplicationPid {
 		finally {
 			writer.close();
 		}
+	}
+
+	public String getPid() {
+		return pid;
 	}
 
 	private void createParentFolder(File file) {

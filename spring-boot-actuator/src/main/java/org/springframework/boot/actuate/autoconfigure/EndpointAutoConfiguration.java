@@ -35,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
+import org.springframework.boot.actuate.endpoint.JvmEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
@@ -163,6 +164,12 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
 		return new ConfigurationPropertiesReportEndpoint();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public JvmEndpoint jvmEndpoint() {
+		return new JvmEndpoint();
 	}
 
 	@Configuration
