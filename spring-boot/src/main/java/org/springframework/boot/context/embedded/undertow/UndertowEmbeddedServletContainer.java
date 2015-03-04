@@ -23,6 +23,8 @@ import io.undertow.server.HttpHandler;
 import io.undertow.servlet.api.DeploymentManager;
 
 import java.lang.reflect.Field;
+import java.net.ServerSocket;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -42,7 +44,7 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  * @author Andy Wilkinson
  * @since 1.2.0
- * @see UndertowEmbeddedServletContainer
+ * @see UndertowEmbeddedServletContainerFactory
  */
 public class UndertowEmbeddedServletContainer implements EmbeddedServletContainer {
 
@@ -55,8 +57,6 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private final String contextPath;
 
-	private final int port;
-
 	private final boolean autoStart;
 
 	private Undertow undertow;
@@ -68,7 +68,6 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
-		this.port = port;
 		this.autoStart = autoStart;
 	}
 
@@ -105,29 +104,64 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		return Handlers.path().addPrefixPath(this.contextPath, servletHandler);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private String getPortsDescription() {
+		List<Port> ports = getPorts();
+		if (!ports.isEmpty()) {
+			return StringUtils.collectionToDelimitedString(ports, " ");
+		}
+		return "unknown";
+	}
+
+	@SuppressWarnings("rawtypes")
+	private List<Port> getPorts() {
+		List<Port> ports = new ArrayList<Port>();
 		try {
-			// Use reflection if possible to get the actual listener configuration
-			Field listenersField = ReflectionUtils.findField(Undertow.class, "listeners");
-			listenersField.setAccessible(true);
-			List listeners = (List) listenersField.get(this.undertow);
-			StringBuilder ports = new StringBuilder();
-			for (Object listener : listeners) {
-				Field portField = ReflectionUtils.findField(listener.getClass(), "port");
-				portField.setAccessible(true);
-				Field typeField = ReflectionUtils.findField(listener.getClass(), "type");
-				typeField.setAccessible(true);
-				ports.append(ports.length() == 0 ? "" : ", ");
-				ports.append(portField.get(listener) + " ("
-						+ typeField.get(listener).toString().toLowerCase() + ")");
+			// Use reflection if possible to get the underlying XNIO channels
+			if (!this.autoStart) {
+				ports.add(new Port(-1, "unknown"));
 			}
-			return ports.toString();
+			else {
+				Field channelsField = ReflectionUtils.findField(Undertow.class,
+						"channels");
+				ReflectionUtils.makeAccessible(channelsField);
+				List channels = (List) ReflectionUtils.getField(channelsField,
+						this.undertow);
+				for (Object channel : channels) {
+					Port port = getPortFromChannel(channel);
+					if (port != null) {
+						ports.add(port);
+					}
+				}
+			}
 		}
 		catch (Exception ex) {
+			// Continue
 		}
-		// We at least know our port
-		return String.valueOf(this.port);
+		return ports;
+	}
+
+	private Port getPortFromChannel(Object channel) {
+		Object tcpServer;
+		String protocol;
+		Field sslContext = ReflectionUtils.findField(channel.getClass(), "sslContext");
+		if (sslContext != null) {
+			Field tcpServerField = ReflectionUtils.findField(channel.getClass(),
+					"tcpServer");
+			ReflectionUtils.makeAccessible(tcpServerField);
+			tcpServer = ReflectionUtils.getField(tcpServerField, channel);
+			protocol = "https";
+		}
+		else {
+			tcpServer = channel;
+			protocol = "http";
+		}
+		Field socketField = ReflectionUtils.findField(tcpServer.getClass(), "socket");
+		if (socketField != null) {
+			ReflectionUtils.makeAccessible(socketField);
+			return new Port(((ServerSocket) ReflectionUtils.getField(socketField,
+					tcpServer)).getLocalPort(), protocol);
+		}
+		return null;
 	}
 
 	@Override
@@ -140,7 +174,28 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	@Override
 	public int getPort() {
-		return this.port;
+		List<Port> ports = getPorts();
+		if (ports.isEmpty()) {
+			return 0;
+		}
+		return ports.get(0).portNumber;
+	}
+
+	private static class Port {
+
+		private final int portNumber;
+
+		private final String protocol;
+
+		private Port(int portNumber, String protocol) {
+			this.portNumber = portNumber;
+			this.protocol = protocol;
+		}
+
+		@Override
+		public String toString() {
+			return this.portNumber + " (" + this.protocol + ")";
+		}
 	}
 
 }
