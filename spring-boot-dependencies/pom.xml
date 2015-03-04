@@ -61,7 +61,7 @@
 		<derby.version>10.10.2.0</derby.version>
 		<dropwizard-metrics.version>3.1.0</dropwizard-metrics.version>
 		<flyway.version>3.1</flyway.version>
-		<freemarker.version>2.3.21</freemarker.version>
+		<freemarker.version>2.3.22</freemarker.version>
 		<gemfire.version>7.0.2</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.6</gradle.version>
