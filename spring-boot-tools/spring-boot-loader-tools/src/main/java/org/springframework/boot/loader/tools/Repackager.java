@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.jar.Manifest;
  * '{@literal java -jar}'.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class Repackager {
 
@@ -157,7 +158,6 @@ public class Repackager {
 		try {
 			final Set<String> seen = new HashSet<String>();
 			writer.writeManifest(buildManifest(sourceJar));
-			writer.writeEntries(sourceJar);
 			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
 				public void library(Library library) throws IOException {
@@ -176,7 +176,7 @@ public class Repackager {
 					}
 				}
 			});
-
+			writer.writeEntries(sourceJar);
 			if (this.layout.isExecutable()) {
 				writer.writeLoaderClasses();
 			}

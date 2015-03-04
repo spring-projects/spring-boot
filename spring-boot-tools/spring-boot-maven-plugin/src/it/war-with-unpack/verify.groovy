@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@
 import java.io.*;
 import org.springframework.boot.maven.*;
 
-File f = new File( basedir, "target/jar-with-unpack-0.0.1.BUILD-SNAPSHOT.jar");
-new Verify.JarArchiveVerification(f, Verify.SAMPLE_APP) {
+File f = new File( basedir, "target/war-0.0.1.BUILD-SNAPSHOT.war")
+new Verify.WarArchiveVerification(f) {
 	@Override
 	protected void verifyZipEntries(Verify.ArchiveVerifier verifier) throws Exception {
 		super.verifyZipEntries(verifier)
-		verifier.assertHasUnpackEntry("lib/spring-core-")
-		verifier.assertHasNonUnpackEntry("lib/spring-context-")
+		verifier.assertHasUnpackEntry("WEB-INF/lib/spring-core-")
+		verifier.assertHasNonUnpackEntry("WEB-INF/lib/spring-context-")
 	}
-}.verify();
+}.verify()
+
