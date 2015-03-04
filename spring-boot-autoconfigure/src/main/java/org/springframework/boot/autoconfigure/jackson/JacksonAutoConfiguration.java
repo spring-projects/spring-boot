@@ -106,7 +106,7 @@ public class JacksonAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class,
-			DateTimeSerializer.class })
+			DateTimeSerializer.class, JacksonJodaFormat.class })
 	static class JodaDateTimeJacksonConfiguration {
 
 		private final Log log = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
