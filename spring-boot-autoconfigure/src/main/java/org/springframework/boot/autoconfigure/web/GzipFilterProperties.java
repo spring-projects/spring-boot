@@ -48,7 +48,7 @@ public class GzipFilterProperties {
 	private Integer minGzipSize;
 
 	/**
-	 * The level used for deflate compression (0-9).
+	 * Level used for deflate compression (0-9).
 	 */
 	private Integer deflateCompressionLevel;
 

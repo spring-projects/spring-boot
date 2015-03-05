@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class MongoProperties {
 	private Integer port = null;
 
 	/**
-	 * Mmongo database URI. When set, host and port are ignored.
+	 * Mongo database URI. When set, host and port are ignored.
 	 */
 	private String uri = "mongodb://localhost/test";
 
@@ -171,8 +171,10 @@ public class MongoProperties {
 				}
 				List<MongoCredential> credentials = null;
 				if (hasCustomCredentials()) {
+					String database = this.authenticationDatabase == null ? getMongoClientDatabase()
+							: this.authenticationDatabase;
 					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
-							this.username, getMongoClientDatabase(), this.password));
+							this.username, database, this.password));
 				}
 				String host = this.host == null ? "localhost" : this.host;
 				int port = this.port == null ? DEFAULT_PORT : this.port;

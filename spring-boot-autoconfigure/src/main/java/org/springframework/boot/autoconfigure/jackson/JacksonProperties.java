@@ -45,7 +45,7 @@ public class JacksonProperties {
 
 	/**
 	 * Joda date time format string (yyyy-MM-dd HH:mm:ss). If not configured,
-	 * {@code date-format} will be used as a fallback if it is configured with a format
+	 * "date-format" will be used as a fallback if it is configured with a format
 	 * string.
 	 */
 	private String jodaDateTimeFormat;

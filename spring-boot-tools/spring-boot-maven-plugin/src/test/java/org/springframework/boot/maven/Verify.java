@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
  * Verification utility for use with maven-invoker-plugin verification scripts.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class Verify {
 
@@ -92,11 +93,21 @@ public class Verify {
 			}
 		}
 
-		public boolean hasNonUnpackEntry(String entryName) {
+		public void assertHasNonUnpackEntry(String entryName) {
+			assertTrue("Entry starting with " + entryName + " was an UNPACK entry",
+					hasNonUnpackEntry(entryName));
+		}
+
+		public void assertHasUnpackEntry(String entryName) {
+			assertTrue("Entry starting with " + entryName + " was not an UNPACK entry",
+					hasUnpackEntry(entryName));
+		}
+
+		private boolean hasNonUnpackEntry(String entryName) {
 			return !hasUnpackEntry(entryName);
 		}
 
-		public boolean hasUnpackEntry(String entryName) {
+		private boolean hasUnpackEntry(String entryName) {
 			String comment = getEntryStartingWith(entryName).getComment();
 			return comment != null && comment.startsWith("UNPACK:");
 		}

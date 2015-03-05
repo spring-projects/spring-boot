@@ -104,6 +104,37 @@ public class SpringBootWebSecurityConfigurationTests {
 	}
 
 	@Test
+	public void testWebConfigurationFilterChainUnauthenticatedWithAuthorizeModeNone()
+			throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0", "--security.basic.authorize-mode=none");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters(
+						this.context.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/")).andExpect(
+				MockMvcResultMatchers.status().isNotFound());
+	}
+
+	@Test
+	public void testWebConfigurationFilterChainUnauthenticatedWithAuthorizeModeAuthenticated()
+			throws Exception {
+		this.context = SpringApplication.run(VanillaWebConfiguration.class,
+				"--server.port=0", "--security.basic.authorize-mode=authenticated");
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters(
+						this.context.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(
+						MockMvcResultMatchers.header().string("www-authenticate",
+								Matchers.containsString("realm=\"Spring\"")));
+	}
+
+	@Test
 	public void testWebConfigurationFilterChainBadCredentials() throws Exception {
 		this.context = SpringApplication.run(VanillaWebConfiguration.class,
 				"--server.port=0");
@@ -164,10 +195,8 @@ public class SpringBootWebSecurityConfigurationTests {
 
 		@Autowired
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
-			// @formatter:off
 			auth.inMemoryAuthentication().withUser("dave").password("secret")
 					.roles("USER");
-			// @formatter:on
 		}
 
 		@Override

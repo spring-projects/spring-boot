@@ -56,7 +56,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	public static final int IGNORED_ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 	/**
-	 * The default order of Spring Security's Filter
+	 * Default order of Spring Security's Filter.
 	 */
 	public static final int DEFAULT_FILTER_ORDER = 0;
 
@@ -238,6 +238,11 @@ public class SecurityProperties implements SecurityPrerequisite {
 		 */
 		private String[] path = new String[] { "/**" };
 
+		/**
+		 * Security authorize mode to apply.
+		 */
+		private SecurityAuthorizeMode authorizeMode = SecurityAuthorizeMode.ROLE;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -260,6 +265,14 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 		public void setPath(String... paths) {
 			this.path = paths;
+		}
+
+		public SecurityAuthorizeMode getAuthorizeMode() {
+			return this.authorizeMode;
+		}
+
+		public void setAuthorizeMode(SecurityAuthorizeMode authorizeMode) {
+			this.authorizeMode = authorizeMode;
 		}
 
 	}

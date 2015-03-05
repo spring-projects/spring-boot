@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -280,6 +280,8 @@ public class RepackagerTests {
 		final File libNonJarFile = this.temporaryFolder.newFile();
 		FileCopyUtils.copy(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, libNonJarFile);
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		this.testJarFile.addFile("lib/" + libJarFileToUnpack.getName(),
+				libJarFileToUnpack);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(new Libraries() {

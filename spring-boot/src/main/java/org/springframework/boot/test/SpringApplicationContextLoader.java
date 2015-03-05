@@ -33,6 +33,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.web.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -44,6 +45,7 @@ import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.test.context.support.AnnotationConfigContextLoaderUtils;
+import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
@@ -74,7 +76,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	@Override
-	public ApplicationContext loadContext(MergedContextConfiguration config)
+	public ApplicationContext loadContext(final MergedContextConfiguration config)
 			throws Exception {
 		assertValidAnnotations(config.getTestClass());
 		SpringApplication application = getSpringApplication();
@@ -95,7 +97,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			application.setWebEnvironment(false);
 		}
 		application.setInitializers(initializers);
-		return application.run();
+		ConfigurableApplicationContext applicationContext = application.run();
+		return applicationContext;
 	}
 
 	private void assertValidAnnotations(Class<?> testClass) {
@@ -111,7 +114,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	/**
 	 * Builds new {@link org.springframework.boot.SpringApplication} instance. You can
-	 * override this method to add custom behaviour
+	 * override this method to add custom behavior
 	 * @return {@link org.springframework.boot.SpringApplication} instance
 	 */
 	protected SpringApplication getSpringApplication() {
@@ -191,6 +194,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	private List<ApplicationContextInitializer<?>> getInitializers(
 			MergedContextConfiguration mergedConfig, SpringApplication application) {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		initializers.add(new PropertySourceLocationsInitializer(mergedConfig
+				.getPropertySourceLocations()));
 		initializers.add(new ServerPortInfoApplicationContextInitializer());
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
@@ -266,6 +271,26 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	private static boolean isIntegrationTest(Class<?> testClass) {
 		return ((AnnotationUtils.findAnnotation(testClass, IntegrationTest.class) != null) || (AnnotationUtils
 				.findAnnotation(testClass, WebIntegrationTest.class) != null));
+	}
+
+	/**
+	 * {@link ApplicationContextInitializer} to setup test property source locations.
+	 */
+	private static class PropertySourceLocationsInitializer implements
+			ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+		private final String[] propertySourceLocations;
+
+		public PropertySourceLocationsInitializer(String[] propertySourceLocations) {
+			this.propertySourceLocations = propertySourceLocations;
+		}
+
+		@Override
+		public void initialize(ConfigurableApplicationContext applicationContext) {
+			TestPropertySourceUtils.addPropertiesFilesToEnvironment(applicationContext,
+					this.propertySourceLocations);
+		}
+
 	}
 
 }

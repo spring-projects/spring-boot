@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HateoasProperties {
 
 	/**
-	 * If HATEOAS support should be applied to the primary ObjectMapper.
+	 * Specify if HATEOAS support should be applied to the primary ObjectMapper.
 	 */
 	private boolean applyToPrimaryObjectMapper = true;
 

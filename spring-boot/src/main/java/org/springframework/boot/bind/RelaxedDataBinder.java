@@ -286,12 +286,38 @@ public class RelaxedDataBinder extends DataBinder {
 	}
 
 	private String getActualPropertyName(BeanWrapper target, String prefix, String name) {
-		prefix = StringUtils.hasText(prefix) ? prefix + "." : "";
+		String propertyName = resolvePropertyName(target, prefix, name);
+		if (propertyName == null) {
+			propertyName = resolveNestedPropertyName(target, prefix, name);
+		}
+		return (propertyName == null ? name : propertyName);
+	}
+
+	private String resolveNestedPropertyName(BeanWrapper target, String prefix,
+			String name) {
+		StringBuilder candidate = new StringBuilder();
+		for (String field : name.split("[_\\-\\.]")) {
+			candidate.append(candidate.length() > 0 ? "." : "");
+			candidate.append(field);
+			String nested = resolvePropertyName(target, prefix, candidate.toString());
+			if (nested != null) {
+				String propertyName = resolvePropertyName(target,
+						joinString(prefix, nested),
+						name.substring(candidate.length() + 1));
+				if (propertyName != null) {
+					return joinString(nested, propertyName);
+				}
+			}
+		}
+		return null;
+	}
+
+	private String resolvePropertyName(BeanWrapper target, String prefix, String name) {
 		Iterable<String> names = getNameAndAliases(name);
 		for (String nameOrAlias : names) {
 			for (String candidate : new RelaxedNames(nameOrAlias)) {
 				try {
-					if (target.getPropertyType(prefix + candidate) != null) {
+					if (target.getPropertyType(joinString(prefix, candidate)) != null) {
 						return candidate;
 					}
 				}
@@ -300,7 +326,11 @@ public class RelaxedDataBinder extends DataBinder {
 				}
 			}
 		}
-		return name;
+		return null;
+	}
+
+	private String joinString(String prefix, String name) {
+		return (StringUtils.hasLength(prefix) ? prefix + "." + name : name);
 	}
 
 	private Iterable<String> getNameAndAliases(String name) {

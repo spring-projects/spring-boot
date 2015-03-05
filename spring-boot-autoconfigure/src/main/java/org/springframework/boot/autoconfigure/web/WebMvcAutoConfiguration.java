@@ -281,14 +281,14 @@ public class WebMvcAutoConfiguration {
 						// Ignore
 					}
 					// Use forward: prefix so that no view resolution is done
-					registry.addViewController("/").setViewName("forward:/index.html");
+					registry.addViewController("/").setViewName("forward:index.html");
 					return;
 				}
 			}
 		}
 
 		@Configuration
-		@ConditionalOnProperty(value = "spring.favicon.enabled", matchIfMissing = true)
+		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
 		public static class FaviconConfiguration implements ResourceLoaderAware {
 
 			private ResourceLoader resourceLoader;

@@ -180,7 +180,24 @@ an optional dependency, for example with Maven you would add:
 	</dependency>
 ----
 
-The annotation will pickup both classes and methods that are annotated with
+With Gradle, you can use the https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin[propdeps-plugin]
+and specify:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	dependencies {
+		optional "org.springframework.boot:spring-boot-configuration-processor"
+	}
+
+	compileJava.dependsOn(processResources)
+}
+----
+
+NOTE: You need to add `compileJava.dependsOn(processResources)` to your build to ensure
+that resources are processed before code is compiled. Without this directive any
+`additional-spring-configuration-metadata.json` files will not be processed.
+
+The processor will pickup both classes and methods that are annotated with
 `@ConfigurationProperties`. The Javadoc for field values within configuration classes
 will be used to populate the `description` attribute.
 

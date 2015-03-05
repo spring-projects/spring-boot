@@ -252,8 +252,14 @@ public class SpringBootWebSecurityConfiguration {
 				http.exceptionHandling().authenticationEntryPoint(entryPoint);
 				http.httpBasic().authenticationEntryPoint(entryPoint);
 				http.requestMatchers().antMatchers(paths);
-				String[] role = this.security.getUser().getRole().toArray(new String[0]);
-				http.authorizeRequests().anyRequest().hasAnyRole(role);
+				String[] roles = this.security.getUser().getRole().toArray(new String[0]);
+				SecurityAuthorizeMode mode = this.security.getBasic().getAuthorizeMode();
+				if (mode == null || mode == SecurityAuthorizeMode.ROLE) {
+					http.authorizeRequests().anyRequest().hasAnyRole(roles);
+				}
+				else if (mode == SecurityAuthorizeMode.AUTHENTICATED) {
+					http.authorizeRequests().anyRequest().authenticated();
+				}
 			}
 		}
 

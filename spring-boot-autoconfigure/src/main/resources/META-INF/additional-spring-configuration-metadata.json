@@ -62,7 +62,7 @@
   {
   	"name": "spring.http.converters.preferred-json-mapper",
   	"type": "java.lang.String",
-  	"description": "The preferred JSON mapper to use for HTTP message conversion."
+  	"description": "Preferred JSON mapper to use for HTTP message conversion."
   },
   {
     "name": "spring.jmx.enabled",
