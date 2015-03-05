@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.boot.actuate.metrics.Metric;
@@ -52,6 +54,8 @@ import com.codahale.metrics.Timer;
  * @author Andy Wilkinson
  */
 public class MetricRegistryMetricReader implements MetricReader, MetricRegistryListener {
+
+	private static Log logger = LogFactory.getLog(MetricRegistryMetricReader.class);
 
 	private static final Map<Class<?>, Set<String>> NUMBER_KEYS = new ConcurrentHashMap<Class<?>, Set<String>>();
 
@@ -125,9 +129,17 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 
 	@Override
 	public void onGaugeAdded(String name, Gauge<?> gauge) {
-		this.names.put(name, name);
-		synchronized (this.monitor) {
-			this.reverse.add(name, name);
+		if (gauge.getValue() instanceof Number) {
+			this.names.put(name, name);
+			synchronized (this.monitor) {
+				this.reverse.add(name, name);
+			}
+			return;
+		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Ignoring gauge '" + name + "' (" + gauge
+					+ ") as its value is not a Number");
 		}
 	}
 
@@ -218,8 +230,10 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 			keys = this.reverse.remove(name);
 		}
 
-		for (String key : keys) {
-			this.names.remove(name + "." + key);
+		if (keys != null) {
+			for (String key : keys) {
+				this.names.remove(name + "." + key);
+			}
 		}
 	}
 
