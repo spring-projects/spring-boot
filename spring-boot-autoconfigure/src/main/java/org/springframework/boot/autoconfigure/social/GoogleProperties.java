@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Properties for Spring Social Google.
  *
  * @author Yuan Ji
- * @since 1.2.2
+ * @since 1.3.0
  */
 @ConfigurationProperties("spring.social.google")
 public class GoogleProperties extends SocialProperties {

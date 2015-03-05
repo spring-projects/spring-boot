@@ -45,7 +45,7 @@ import org.springframework.web.servlet.View;
  * Google.
  *
  * @author Yuan Ji
- * @since 1.2.2
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({ SocialConfigurerAdapter.class, GoogleConnectionFactory.class })
