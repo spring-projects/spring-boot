@@ -156,6 +156,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>com.sendgrid</groupId>
+			<artifactId>sendgrid-java</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP-java6</artifactId>
 			<optional>true</optional>
