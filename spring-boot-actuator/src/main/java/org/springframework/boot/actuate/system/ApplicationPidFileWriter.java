@@ -26,6 +26,7 @@ import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -140,6 +141,10 @@ public class ApplicationPidFileWriter implements
 		}
 		if (event instanceof ApplicationPreparedEvent) {
 			return ((ApplicationPreparedEvent) event).getApplicationContext()
+					.getEnvironment();
+		}
+		if (event instanceof ApplicationReadyEvent) {
+			return ((ApplicationReadyEvent) event).getApplicationContext()
 					.getEnvironment();
 		}
 		return null;
