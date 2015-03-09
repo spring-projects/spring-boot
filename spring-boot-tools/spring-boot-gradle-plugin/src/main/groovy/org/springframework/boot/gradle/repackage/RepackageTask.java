@@ -165,6 +165,7 @@ public class RepackageTask extends DefaultTask {
 			}
 			Repackager repackager = new LoggingRepackager(file);
 			setMainClass(repackager);
+			setLauncherClass(repackager);
 			if (this.extension.convertLayout() != null) {
 				repackager.setLayout(this.extension.convertLayout());
 			}
@@ -200,6 +201,12 @@ public class RepackageTask extends DefaultTask {
 			}
 			getLogger().info("Setting mainClass: " + mainClass);
 			repackager.setMainClass(mainClass);
+		}
+
+		private void setLauncherClass(Repackager repackager) {
+			String launcherClass = extension.getLauncherClass();
+			getLogger().info("Setting mainClass: " + launcherClass);
+			repackager.setLauncherClass(launcherClass);
 		}
 	}
 
