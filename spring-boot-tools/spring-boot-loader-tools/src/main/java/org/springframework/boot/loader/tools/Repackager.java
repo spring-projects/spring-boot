@@ -44,6 +44,8 @@ public class Repackager {
 
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
+	private String launcherClass;
+
 	private String mainClass;
 
 	private boolean backupSource = true;
@@ -58,6 +60,10 @@ public class Repackager {
 		}
 		this.source = source.getAbsoluteFile();
 		this.layout = Layouts.forFile(source);
+	}
+
+	public void setLauncherClass(String launcherClass) {
+		this.launcherClass = launcherClass;
 	}
 
 	/**
@@ -258,7 +264,9 @@ public class Repackager {
 		if (startClass == null) {
 			startClass = findMainMethod(source);
 		}
-		String launcherClassName = this.layout.getLauncherClassName();
+		String launcherClassName = (launcherClass != null)
+				? launcherClass
+				: layout.getLauncherClassName();
 		if (launcherClassName != null) {
 			manifest.getMainAttributes()
 					.putValue(MAIN_CLASS_ATTRIBUTE, launcherClassName);

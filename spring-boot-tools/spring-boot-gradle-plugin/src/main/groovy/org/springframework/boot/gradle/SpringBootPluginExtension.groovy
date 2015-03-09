@@ -41,7 +41,12 @@ import org.springframework.boot.loader.tools.Layouts
  */
 public class SpringBootPluginExtension {
 
-	/**
+    /**
+     * Launcher class, replaces the default specified by layout. Optional.
+     */
+    String launcherClass;
+
+    /**
 	 * The main class that should be run. Instead of setting this explicitly you can use the
 	 * 'mainClassName' of the project or the 'main' of the 'run' task. If not specified the
 	 * value from the MANIFEST will be used, or if no manifest entry is the archive will be

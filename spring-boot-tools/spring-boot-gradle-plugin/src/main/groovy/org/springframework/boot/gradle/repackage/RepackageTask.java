@@ -174,6 +174,7 @@ public class RepackageTask extends DefaultTask {
 			}
 			Repackager repackager = new LoggingRepackager(file);
 			setMainClass(repackager);
+			repackager.setLauncherClass(this.extension.getLauncherClass());
 			repackager.setLayout(this.extension.convertLayout());
 			repackager.setBackupSource(this.extension.isBackupSource());
 			try {
