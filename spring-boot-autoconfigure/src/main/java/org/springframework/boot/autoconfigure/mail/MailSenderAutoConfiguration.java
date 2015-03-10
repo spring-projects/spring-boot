@@ -30,7 +30,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
@@ -51,7 +50,7 @@ public class MailSenderAutoConfiguration {
 	MailProperties properties;
 
 	@Bean
-	public JavaMailSender mailSender() {
+	public JavaMailSenderImpl mailSender() {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 		sender.setHost(this.properties.getHost());
 		if (this.properties.getPort() != null) {

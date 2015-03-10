@@ -151,6 +151,11 @@
 			<artifactId>commons-dbcp</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<optional>true</optional>
+		</dependency>	
 		<!-- Annotation processing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
