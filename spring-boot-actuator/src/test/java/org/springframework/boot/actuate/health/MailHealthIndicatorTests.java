@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Johannes Stelzer
  */
-public class MailHealthIndicatorTest {
+public class MailHealthIndicatorTests {
 
 	private JavaMailSenderImpl mailSender;
 	private MailHealthIndicator indicator;
