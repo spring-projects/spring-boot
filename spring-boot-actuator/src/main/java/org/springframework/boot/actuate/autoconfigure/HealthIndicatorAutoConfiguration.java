@@ -32,6 +32,7 @@ import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicatorProperties;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.MailHealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
@@ -48,6 +49,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProviders;
+import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
@@ -57,6 +59,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
@@ -70,7 +73,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 @AutoConfigureBefore({ EndpointAutoConfiguration.class })
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
 		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
-		RabbitAutoConfiguration.class, SolrAutoConfiguration.class })
+		RabbitAutoConfiguration.class, SolrAutoConfiguration.class,
+		MailSenderAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthIndicatorAutoConfigurationProperties.class })
 public class HealthIndicatorAutoConfiguration {
 
@@ -274,6 +278,42 @@ public class HealthIndicatorAutoConfiguration {
 			return new DiskSpaceHealthIndicatorProperties();
 		}
 
+	}
+
+	@Configuration
+	@ConditionalOnBean(JavaMailSenderImpl.class)
+	@ConditionalOnProperty(prefix = "management.health.mail", name = "enabled", matchIfMissing = true)
+	public static class MailHealthIndicatorConfiguration {
+
+		@Autowired
+		private HealthAggregator healthAggregator;
+
+		@Autowired(required = false)
+		private Map<String, JavaMailSenderImpl> mailSenders;
+
+		@Bean
+		@ConditionalOnMissingBean(name = "mailSenderHealthIndicator")
+		public HealthIndicator mailHealthIndicator() {
+			if (this.mailSenders.size() == 1) {
+				JavaMailSenderImpl mailSender = this.mailSenders.values().iterator()
+						.next();
+				return createMailHealthIndicator(mailSender);
+			}
+			CompositeHealthIndicator composite = new CompositeHealthIndicator(
+					this.healthAggregator);
+			for (Map.Entry<String, JavaMailSenderImpl> entry : this.mailSenders
+					.entrySet()) {
+				String name = entry.getKey();
+				JavaMailSenderImpl mailSender = entry.getValue();
+				composite.addHealthIndicator(name, createMailHealthIndicator(mailSender));
+			}
+			return composite;
+		}
+
+		private MailHealthIndicator createMailHealthIndicator(
+				JavaMailSenderImpl mailSender) {
+			return new MailHealthIndicator(mailSender);
+		}
 	}
 
 }

@@ -59,6 +59,12 @@
     "defaultValue": true
   },
   {
+    "name": "management.health.mail.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Mail health check.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.git.properties",
     "type": "java.lang.String",
     "description": "Resource reference to a generated git info properties file."

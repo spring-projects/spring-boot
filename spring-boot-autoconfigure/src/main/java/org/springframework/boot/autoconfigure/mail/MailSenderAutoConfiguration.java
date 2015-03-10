@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
@@ -38,6 +37,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  *
  * @author Oliver Gierke
  * @author Stephane Nicoll
+ * @author Johannes Stelzer
  * @since 1.2.0
  */
 @Configuration
@@ -51,7 +51,7 @@ public class MailSenderAutoConfiguration {
 	MailProperties properties;
 
 	@Bean
-	public JavaMailSender mailSender() {
+	public JavaMailSenderImpl mailSender() {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 		sender.setHost(this.properties.getHost());
 		if (this.properties.getPort() != null) {
