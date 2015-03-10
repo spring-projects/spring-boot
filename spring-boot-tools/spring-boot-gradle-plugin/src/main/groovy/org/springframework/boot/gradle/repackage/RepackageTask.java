@@ -32,6 +32,7 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
+import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.util.FileCopyUtils;
 
@@ -173,9 +174,7 @@ public class RepackageTask extends DefaultTask {
 			}
 			Repackager repackager = new LoggingRepackager(file);
 			setMainClass(repackager);
-			if (this.extension.convertLayout() != null) {
-				repackager.setLayout(this.extension.convertLayout());
-			}
+			repackager.setLayout(this.extension.convertLayout());
 			repackager.setBackupSource(this.extension.isBackupSource());
 			try {
 				LaunchScript launchScript = getLaunchScript();

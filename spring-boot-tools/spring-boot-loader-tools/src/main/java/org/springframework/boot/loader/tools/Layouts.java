@@ -33,6 +33,36 @@ import java.util.Set;
  */
 public class Layouts {
 
+	static private Class<? extends Layout> defaultLayout = Layouts.Jar.class;
+
+	static private Map<String, Class<?>> map = new HashMap<String, Class<?>>() {{
+		for (Class<?> cls : Layouts.class.getClasses()) {
+			if (Layout.class.isAssignableFrom(cls)) {
+				put(toSimpleLayoutName(cls), (Class) cls);
+			}
+		}
+	}};
+
+	static public Layout resolve(String name) throws RuntimeException {
+		try {
+			Class<?> cls = null;
+			if (cls == null) { cls = map.get(name); };
+			if (cls == null) { cls = Class.forName(name); }
+			if (cls == null) { cls = defaultLayout; }
+			return (Layout) cls.newInstance();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(String.format(
+					"Cannot resolve layout `%s`. Provide a fully qualified class name or of the following: %s",
+					name, map.keySet()
+			), e);
+		}
+	}
+
+	static private String toSimpleLayoutName(Class<?> cls) {
+		return cls.getSimpleName().toUpperCase();
+	}
+
 	/**
 	 * Return the a layout for the given source file.
 	 * @param file the source file
@@ -90,8 +120,11 @@ public class Layouts {
 		public String getLauncherClassName() {
 			return "org.springframework.boot.loader.PropertiesLauncher";
 		}
-
 	}
+
+	public static class Zip extends Expanded {}
+
+	public static class Dir extends Expanded {}
 
 	/**
 	 * No layout.

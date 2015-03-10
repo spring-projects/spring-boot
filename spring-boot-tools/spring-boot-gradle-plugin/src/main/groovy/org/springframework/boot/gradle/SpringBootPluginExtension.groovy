@@ -41,27 +41,6 @@ import org.springframework.boot.loader.tools.Layouts
  */
 public class SpringBootPluginExtension {
 
-	enum LayoutType {
-
-		JAR(new Layouts.Jar()),
-
-		WAR(new Layouts.War()),
-
-		ZIP(new Layouts.Expanded()),
-
-		DIR(new Layouts.Expanded()),
-
-		MODULE(new Layouts.Module()),
-
-		NONE(new Layouts.None());
-
-		Layout layout;
-
-		private LayoutType(Layout layout) {
-			this.layout = layout;
-		}
-	}
-
 	/**
 	 * The main class that should be run. Instead of setting this explicitly you can use the
 	 * 'mainClassName' of the project or the 'main' of the 'run' task. If not specified the
@@ -102,14 +81,14 @@ public class SpringBootPluginExtension {
 	 * PropertiesLauncher. Gradle will coerce literal String values to the
 	 * correct type.
 	 */
-	LayoutType layout;
+	String layout;
 
 	/**
 	 * Convenience method for use in a custom task.
 	 * @return the Layout to use or null if not explicitly set
 	 */
 	Layout convertLayout() {
-		(layout == null ? null : layout.layout)
+        Layouts.resolve(layout)
 	}
 
 	/**
