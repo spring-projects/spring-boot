@@ -43,17 +43,30 @@ public class Layouts {
 		}
 	}};
 
+	/**
+	 * Resolves and instantiates named layout.
+	 * If name is undefined, default layout is returned (JAR).
+	 * If given name refers to one of the layout aliases (JAR, ZIP, etc), it is returned.
+	 * Otherwise, assume layout name is an actual class name, and try to load it.
+	 * @param name
+	 * @return
+	 * @throws RuntimeException
+	 */
 	static public Layout resolve(String name) throws RuntimeException {
 		try {
+			if (name == null) { return defaultLayout.newInstance(); }
+
 			Class<?> cls = null;
-			if (cls == null) { cls = map.get(name); };
+			if (cls == null) { cls = map.get(name); }
 			if (cls == null) { cls = Class.forName(name); }
-			if (cls == null) { cls = defaultLayout; }
+
 			return (Layout) cls.newInstance();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(String.format(
-					"Cannot resolve layout `%s`. Provide a fully qualified class name or of the following: %s",
+					"Cannot resolve layout `%s`. " +
+					"Provide a fully qualified name of the class implementing Layout interface, " +
+					"or one of the following: %s",
 					name, map.keySet()
 			), e);
 		}
