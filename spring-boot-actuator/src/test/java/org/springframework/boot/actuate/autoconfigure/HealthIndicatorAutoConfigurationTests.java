@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.JmsHealthIndicator;
 import org.springframework.boot.actuate.health.MailHealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
@@ -38,6 +39,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
+import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
@@ -56,6 +58,7 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link HealthIndicatorAutoConfiguration}.
  *
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 public class HealthIndicatorAutoConfigurationTests {
 
@@ -330,6 +333,39 @@ public class HealthIndicatorAutoConfigurationTests {
 				"spring.mail.host:smtp.acme.org", "management.health.mail.enabled:false",
 				"management.health.diskspace.enabled:false");
 		this.context.register(MailSenderAutoConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(ApplicationHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@Test
+	public void jmsHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false");
+		this.context.register(ActiveMQAutoConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(JmsHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@Test
+	public void notJmsHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.jms.enabled:false",
+				"management.health.diskspace.enabled:false");
+		this.context.register(ActiveMQAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 

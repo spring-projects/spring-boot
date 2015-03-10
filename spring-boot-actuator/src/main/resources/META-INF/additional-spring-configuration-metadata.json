@@ -35,6 +35,12 @@
     "defaultValue": true
   },
   {
+    "name": "management.health.jms.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable JMS health check.",
+    "defaultValue": true
+  },
+  {
     "name": "management.health.mongo.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable MongoDB health check.",
