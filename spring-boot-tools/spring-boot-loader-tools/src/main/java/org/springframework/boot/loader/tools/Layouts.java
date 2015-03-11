@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.tools;
 
+import org.springframework.boot.loader.tools.layout.BaseLayout;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -155,6 +157,11 @@ public class Layouts {
 		}
 
 	}
+
+	/**
+	 * This is what NONE should be.
+	 */
+	public static class Null extends BaseLayout {}
 
 	/**
 	 * Executable WAR layout.
