@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package org.springframework.boot.maven;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 
 /**
- * Parse and expose arguments specified as {@link RunMojo} parameters.
+ * Parse and expose arguments specified in a single string.
  *
  * @author Stephane Nicoll
  * @since 1.1.0
@@ -28,13 +31,25 @@ class RunArguments {
 
 	private static final String[] NO_ARGS = {};
 
-	private final String[] args;
+	private final LinkedList<String> args;
 
 	public RunArguments(String arguments) {
-		this.args = parseArgs(arguments);
+		this(parseArgs(arguments));
 	}
 
-	private String[] parseArgs(String arguments) {
+	public RunArguments(String[] args) {
+		this.args = new LinkedList<String>(Arrays.asList(args));
+	}
+
+	public LinkedList<String> getArgs() {
+		return args;
+	}
+
+	public String[] asArray() {
+		return this.args.toArray(new String[this.args.size()]);
+	}
+
+	private static String[] parseArgs(String arguments) {
 		if (arguments == null || arguments.trim().isEmpty()) {
 			return NO_ARGS;
 		}
@@ -46,10 +61,6 @@ class RunArguments {
 			throw new IllegalArgumentException("Failed to parse arguments [" + arguments
 					+ "]", ex);
 		}
-	}
-
-	public String[] asArray() {
-		return this.args;
 	}
 
 }

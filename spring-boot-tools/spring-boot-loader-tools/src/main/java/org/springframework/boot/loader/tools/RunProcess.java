@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 public class RunProcess {
@@ -50,11 +51,18 @@ public class RunProcess {
 		this.command = command;
 	}
 
-	public int run(String... args) throws IOException {
-		return run(Arrays.asList(args));
+	public int run(boolean waitForProcess, String... args) throws IOException {
+		return run(waitForProcess, Arrays.asList(args));
 	}
 
-	protected int run(Collection<String> args) throws IOException {
+	/**
+	 * Kill this process.
+	 */
+	public void kill() {
+		doKill();
+	}
+
+	protected int run(boolean waitForProcess, Collection<String> args) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
 		builder.command().addAll(args);
 		builder.redirectErrorStream(true);
@@ -71,17 +79,22 @@ public class RunProcess {
 					handleSigInt();
 				}
 			});
-			try {
-				return process.waitFor();
+			if (waitForProcess) {
+				try {
+					return process.waitFor();
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+					return 1;
+				}
 			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-				return 1;
-			}
+			return 5;
 		}
 		finally {
-			this.endTime = System.currentTimeMillis();
-			this.process = null;
+			if (waitForProcess) {
+				this.endTime = System.currentTimeMillis();
+				this.process = null;
+			}
 		}
 	}
 
@@ -163,7 +176,11 @@ public class RunProcess {
 		if (hasJustEnded()) {
 			return true;
 		}
+		return doKill();
 
+	}
+
+	private boolean doKill() {
 		// destroy the running process
 		Process process = this.process;
 		if (process != null) {

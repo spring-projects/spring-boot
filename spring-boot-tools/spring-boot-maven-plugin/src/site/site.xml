@@ -10,6 +10,7 @@
 			<item name="Custom repackage classifier" href="examples/repackage-classifier.html"/>
 			<item name="Exclude a dependency" href="examples/exclude-dependency.html"/>
 			<item name="Debug the application" href="examples/run-debug.html"/>
+			<item name="Random port for integration tests" href="examples/it-random-port.html"/>
 		</menu>
 		<menu ref="reports"/>
 	</body>
