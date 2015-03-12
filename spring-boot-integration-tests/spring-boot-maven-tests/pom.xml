@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-integration-tests</artifactId>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
+	</parent>
+	<artifactId>spring-boot-maven-tests</artifactId>
+	<packaging>pom</packaging>
+	<name>Spring Boot Maven Tests</name>
+	<properties>
+		<main.basedir>${basedir}/..</main.basedir>
+	</properties>
+	<modules>
+		<module>spring-boot-maven-tests-it</module>
+		<module>spring-boot-maven-tests-it-fork</module>
+	</modules>
+</project>
