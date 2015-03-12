@@ -151,6 +151,8 @@ Application events are sent in the following order, as your application runs:
   the context is known, but before the context is created.
 . An `ApplicationPreparedEvent` is sent just before the refresh is started, but after bean
   definitions have been loaded.
+. An `ApplicationReadyEvent` is sent after the refresh and any related callbacks have
+  been processed to indicate the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
 TIP: You often won't need to use application events, but it can be handy to know that they

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -33,7 +35,10 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextInitializer;
@@ -85,6 +90,7 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 public class SpringApplicationTests {
 
@@ -219,6 +225,22 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void applicationRunningEventListener() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		final AtomicReference<ApplicationContext> reference = new AtomicReference<ApplicationContext>();
+		class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
+			@Override
+			public void onApplicationEvent(ApplicationReadyEvent event) {
+				reference.set(event.getApplicationContext());
+			}
+		}
+		application.addListeners(new ApplicationReadyEventListener());
+		this.context = application.run("--foo=bar");
+		assertThat(this.context, sameInstance(reference.get()));
+	}
+
+	@Test
 	public void contextRefreshedEventListener() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
@@ -234,6 +256,27 @@ public class SpringApplicationTests {
 		assertThat(this.context, sameInstance(reference.get()));
 		// Custom initializers do not switch off the defaults
 		assertThat(getEnvironment().getProperty("foo"), equalTo("bar"));
+	}
+
+	@Test
+	public void eventsOrder() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		final List<ApplicationEvent> events = new ArrayList<ApplicationEvent>();
+		class ApplicationRunningEventListener implements ApplicationListener<ApplicationEvent> {
+			@Override
+			public void onApplicationEvent(ApplicationEvent event) {
+				events.add((event));
+			}
+		}
+		application.addListeners(new ApplicationRunningEventListener());
+		this.context = application.run();
+		assertThat(5, is(events.size()));
+		assertThat(events.get(0), is(instanceOf(ApplicationStartedEvent.class)));
+		assertThat(events.get(1), is(instanceOf(ApplicationEnvironmentPreparedEvent.class)));
+		assertThat(events.get(2), is(instanceOf(ApplicationPreparedEvent.class)));
+		assertThat(events.get(3), is(instanceOf(ContextRefreshedEvent.class)));
+		assertThat(events.get(4), is(instanceOf(ApplicationReadyEvent.class)));
 	}
 
 	@Test

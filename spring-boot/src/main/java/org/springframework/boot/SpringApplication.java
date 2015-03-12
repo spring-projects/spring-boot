@@ -37,6 +37,7 @@ import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -138,6 +139,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -323,6 +325,7 @@ public class SpringApplication {
 				runListener.finished(context, null);
 			}
 
+			context.publishEvent(new ApplicationReadyEvent(context, args));
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(
