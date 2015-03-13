@@ -1520,13 +1520,13 @@ database. This is controlled through two external properties:
 [[howto-initialize-a-database-using-hibernate]]
 === Initialize a database using Hibernate
 You can set `spring.jpa.hibernate.ddl-auto` explicitly and the standard Hibernate property
-values are `none`, `validate`, `update`, `create-drop`. Spring Boot chooses a default
-value for you based on whether it thinks your database is embedded (default `create-drop`)
-or not (default `none`). An embedded database is detected by looking at the `Connection`
-type: `hsqldb`, `h2` and `derby` are embedded, the rest are not. Be careful when switching
-from in-memory to a '`real`' database that you don't make assumptions about the existence of
-the tables and data in the new platform. You either have to set `ddl-auto` explicitly, or
-use one of the other mechanisms to initialize the database.
+values are `none`, `validate`, `update`, `create`, `create-drop`. Spring Boot chooses a
+default value for you based on whether it thinks your database is embedded (default
+`create-drop`) or not (default `none`). An embedded database is detected by looking at the
+`Connection` type: `hsqldb`, `h2` and `derby` are embedded, the rest are not. Be careful
+when switching from in-memory to a '`real`' database that you don't make assumptions about
+the existence of the tables and data in the new platform. You either have to set `ddl-auto`
+explicitly, or use one of the other mechanisms to initialize the database.
 
 In addition, a file named `import.sql` in the root of the classpath will be executed on
 startup. This can be useful for demos and for testing if you are careful, but probably
