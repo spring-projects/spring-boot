@@ -98,13 +98,13 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	private void processPropertySource(PropertySource<?> source,
 			PropertySourcesPropertyResolver resolver,
 			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
-		if (source instanceof EnumerablePropertySource) {
-			processEnumerablePropertySource((EnumerablePropertySource<?>) source,
-					resolver, includes, exacts);
-		}
-		else if (source instanceof CompositePropertySource) {
+		if (source instanceof CompositePropertySource) {
 			processCompositePropertySource((CompositePropertySource) source, resolver,
 					includes, exacts);
+		}
+		else if (source instanceof EnumerablePropertySource) {
+			processEnumerablePropertySource((EnumerablePropertySource<?>) source,
+					resolver, includes);
 		}
 		else {
 			// We can only do exact matches for non-enumerable property names, but
@@ -114,8 +114,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	}
 
 	private void processEnumerablePropertySource(EnumerablePropertySource<?> source,
-			PropertySourcesPropertyResolver resolver,
-			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
+			PropertySourcesPropertyResolver resolver, PropertyNamePatternsMatcher includes) {
 		if (source.getPropertyNames().length > 0) {
 			for (String propertyName : source.getPropertyNames()) {
 				if (PropertySourcesPropertyValues.PATTERN_MATCHED_PROPERTY_SOURCES
