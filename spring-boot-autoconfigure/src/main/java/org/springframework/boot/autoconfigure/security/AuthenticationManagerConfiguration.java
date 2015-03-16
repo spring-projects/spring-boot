@@ -22,11 +22,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -71,53 +71,33 @@ public class AuthenticationManagerConfiguration {
 
 	@Bean
 	@Primary
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration auth)
-			throws Exception {
-		return auth.getAuthenticationManager();
+	public AuthenticationManager authenticationManager(
+			AuthenticationConfiguration configuration) throws Exception {
+		return configuration.getAuthenticationManager();
 	}
 
 	@Bean
-	public static BootDefaultingAuthenticationConfigurerAdapter bootDefaultingAuthenticationConfigurerAdapter(
-			SecurityProperties security, List<SecurityPrequisite> dependencies) {
-		return new BootDefaultingAuthenticationConfigurerAdapter(security);
-	}
-
-	@Component
-	protected static class AuthenticationManagerConfigurationListener implements
-			ApplicationListener<ContextRefreshedEvent> {
-
-		@Autowired
-		private AuthenticationEventPublisher authenticationEventPublisher;
-
-		@Override
-		public void onApplicationEvent(ContextRefreshedEvent event) {
-			ApplicationContext context = event.getApplicationContext();
-			if (context.getBeanNamesForType(AuthenticationManager.class).length == 0) {
-				return;
-			}
-			AuthenticationManager manager = context.getBean(AuthenticationManager.class);
-			if (manager instanceof ProviderManager) {
-				((ProviderManager) manager)
-						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
-			}
-		}
-
+	public static SpringBootAuthenticationConfigurerAdapter springBootAuthenticationConfigurerAdapter(
+			SecurityProperties securityProperties, List<SecurityPrequisite> dependencies) {
+		return new SpringBootAuthenticationConfigurerAdapter(securityProperties);
 	}
 
 	/**
-	 * We must add {@link BootDefaultingAuthenticationConfigurerAdapter} in the init phase
-	 * of the last {@link GlobalAuthenticationConfigurerAdapter}. The reason is that the
-	 * typical flow is something like:
+	 * {@link GlobalAuthenticationConfigurerAdapter} to apply
+	 * {@link DefaultInMemoryUserDetailsManagerConfigurer}. We must apply
+	 * {@link DefaultInMemoryUserDetailsManagerConfigurer} in the init phase of the last
+	 * {@link GlobalAuthenticationConfigurerAdapter}. The reason is that the typical flow
+	 * is something like:
 	 *
 	 * <ul>
 	 * <li>A
 	 * {@link GlobalAuthenticationConfigurerAdapter#init(AuthenticationManagerBuilder)}
 	 * exists that adds a {@link SecurityConfigurer} to the
-	 * {@link AuthenticationManagerBuilder}</li>
+	 * {@link AuthenticationManagerBuilder}.</li>
 	 * <li>
 	 * {@link AuthenticationManagerConfiguration#init(AuthenticationManagerBuilder)} adds
-	 * BootDefaultingAuthenticationConfigurerAdapter so it is after the
-	 * {@link SecurityConfigurer} in the first step</li>
+	 * {@link SpringBootAuthenticationConfigurerAdapter} so it is after the
+	 * {@link SecurityConfigurer} in the first step.</li>
 	 * <li>We then can default an {@link AuthenticationProvider} if necessary. Note we can
 	 * only invoke the
 	 * {@link AuthenticationManagerBuilder#authenticationProvider(AuthenticationProvider)}
@@ -127,69 +107,103 @@ public class AuthenticationManagerConfiguration {
 	 * </ul>
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE - 100)
-	private static class BootDefaultingAuthenticationConfigurerAdapter extends
+	private static class SpringBootAuthenticationConfigurerAdapter extends
 			GlobalAuthenticationConfigurerAdapter {
-		private final SecurityProperties security;
+
+		private final SecurityProperties securityProperties;
 
 		@Autowired
-		public BootDefaultingAuthenticationConfigurerAdapter(SecurityProperties security) {
-			this.security = security;
+		public SpringBootAuthenticationConfigurerAdapter(
+				SecurityProperties securityProperties) {
+			this.securityProperties = securityProperties;
 		}
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
-			auth.apply(new DefaultingInMemoryUserDetailsManagerConfigurer(this.security));
+			auth.apply(new DefaultInMemoryUserDetailsManagerConfigurer(
+					this.securityProperties));
 		}
 
-		/**
-		 * This is necessary to delay adding the default user.
-		 *
-		 * <ul>
-		 * <li>A GlobalAuthenticationConfigurerAdapter will initialize the
-		 * AuthenticationManagerBuilder with a Configurer which will be after any
-		 * GlobalAuthenticationConfigurerAdapter</li>
-		 * <li>BootDefaultingAuthenticationConfigurerAdapter will be invoked after all
-		 * GlobalAuthenticationConfigurerAdapter, but before the Configurers that were
-		 * added by other GlobalAuthenticationConfigurerAdapter instances</li>
-		 * <li>BootDefaultingAuthenticationConfigurerAdapter will add
-		 * DefaultingInMemoryUserDetailsManagerConfigurer after all Configurer instances</li>
-		 * <li>All init methods will be invoked</li>
-		 * <li>All configure methods will be invoked which is where the
-		 * AuthenticationProvider instances are setup</li>
-		 * <li>If no AuthenticationProviders were provided,
-		 * DefaultingInMemoryUserDetailsManagerConfigurer will default the value</li>
-		 * </ul>
-		 *
-		 * @author Rob Winch
-		 */
-		private static class DefaultingInMemoryUserDetailsManagerConfigurer extends
-				InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> {
-			private final SecurityProperties security;
-
-			public DefaultingInMemoryUserDetailsManagerConfigurer(
-					SecurityProperties security) {
-				this.security = security;
-			}
-
-			@Override
-			public void configure(AuthenticationManagerBuilder auth) throws Exception {
-				if (auth.isConfigured()) {
-					return;
-				}
-
-				User user = this.security.getUser();
-				if (user.isDefaultPassword()) {
-					logger.info("\n\nUsing default security password: "
-							+ user.getPassword() + "\n");
-				}
-
-				Set<String> roles = new LinkedHashSet<String>(user.getRole());
-				withUser(user.getName()).password(user.getPassword()).roles(
-						roles.toArray(new String[roles.size()]));
-
-				super.configure(auth);
-			}
-
-		}
 	}
+
+	/**
+	 * {@link InMemoryUserDetailsManagerConfigurer} to add user details from
+	 * {@link SecurityProperties}. This is necessary to delay adding the default user.
+	 *
+	 * <ul>
+	 * <li>A {@link GlobalAuthenticationConfigurerAdapter} will initialize the
+	 * {@link AuthenticationManagerBuilder} with a Configurer which will be after any
+	 * {@link GlobalAuthenticationConfigurerAdapter}.</li>
+	 * <li>{@link SpringBootAuthenticationConfigurerAdapter} will be invoked after all
+	 * {@link GlobalAuthenticationConfigurerAdapter}, but before the Configurers that were
+	 * added by other {@link GlobalAuthenticationConfigurerAdapter} instances.</li>
+	 * <li>A {@link SpringBootAuthenticationConfigurerAdapter} will add
+	 * {@link DefaultInMemoryUserDetailsManagerConfigurer} after all Configurer instances.
+	 * </li>
+	 * <li>All init methods will be invoked.</li>
+	 * <li>All configure methods will be invoked which is where the
+	 * {@link AuthenticationProvider} instances are setup.</li>
+	 * <li>If no AuthenticationProviders were provided,
+	 * {@link DefaultInMemoryUserDetailsManagerConfigurer} will default the value.</li>
+	 * </ul>
+	 */
+	private static class DefaultInMemoryUserDetailsManagerConfigurer extends
+			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> {
+
+		private final SecurityProperties securityProperties;
+
+		public DefaultInMemoryUserDetailsManagerConfigurer(
+				SecurityProperties securityProperties) {
+			this.securityProperties = securityProperties;
+		}
+
+		@Override
+		public void configure(AuthenticationManagerBuilder auth) throws Exception {
+			if (auth.isConfigured()) {
+				return;
+			}
+			User user = this.securityProperties.getUser();
+			if (user.isDefaultPassword()) {
+				logger.info("\n\nUsing default security password: " + user.getPassword()
+						+ "\n");
+			}
+			Set<String> roles = new LinkedHashSet<String>(user.getRole());
+			withUser(user.getName()).password(user.getPassword()).roles(
+					roles.toArray(new String[roles.size()]));
+			super.configure(auth);
+		}
+
+	}
+
+	/**
+	 * {@link ApplicationListener} to autowire the {@link AuthenticationEventPublisher}
+	 * into the {@link AuthenticationManager}.
+	 */
+	@Component
+	protected static class AuthenticationManagerConfigurationListener implements
+			ApplicationListener<ContextRefreshedEvent> {
+
+		@Autowired
+		private AuthenticationEventPublisher eventPublisher;
+
+		@Override
+		public void onApplicationEvent(ContextRefreshedEvent event) {
+			try {
+				configureAuthenticationManager(event.getApplicationContext().getBean(
+						AuthenticationManager.class));
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				// Ignore
+			}
+		}
+
+		private void configureAuthenticationManager(AuthenticationManager manager) {
+			if (manager instanceof ProviderManager) {
+				((ProviderManager) manager)
+						.setAuthenticationEventPublisher(this.eventPublisher);
+			}
+		}
+
+	}
+
 }
