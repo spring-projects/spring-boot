@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
+import java.lang.reflect.Method;
+
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -23,6 +25,7 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Configuration for ActiveMQ {@link ConnectionFactory}.
@@ -30,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Configuration
@@ -42,10 +46,31 @@ class ActiveMQConnectionFactoryConfiguration {
 				properties).createConnectionFactory(ActiveMQConnectionFactory.class);
 		if (properties.isPooled()) {
 			PooledConnectionFactory pool = new PooledConnectionFactory();
-			pool.setConnectionFactory(connectionFactory);
+			Method connectionFactorySetter = findConnectionFactorySetter();
+			if (connectionFactorySetter != null) {
+				ReflectionUtils.invokeMethod(connectionFactorySetter, pool,
+						connectionFactory);
+			}
+			else {
+				throw new IllegalStateException(
+						"No supported setConnectionFactory method was found");
+			}
 			return pool;
 		}
 		return connectionFactory;
+	}
+
+	private Method findConnectionFactorySetter() {
+		Method setter = findConnectionFactorySetter(ConnectionFactory.class);
+		if (setter == null) {
+			setter = findConnectionFactorySetter(Object.class);
+		}
+		return setter;
+	}
+
+	private Method findConnectionFactorySetter(Class<?> param) {
+		return ReflectionUtils.findMethod(PooledConnectionFactory.class,
+				"setConnectionFactory", param);
 	}
 
 }
