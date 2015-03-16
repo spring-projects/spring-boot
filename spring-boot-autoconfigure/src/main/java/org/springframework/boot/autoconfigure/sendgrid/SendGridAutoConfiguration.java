@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.sendgrid;
 
 import org.apache.http.HttpHost;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -50,16 +49,12 @@ public class SendGridAutoConfiguration {
 	public SendGrid sendGrid() {
 		SendGrid sendGrid = new SendGrid(this.properties.getUsername(),
 				this.properties.getPassword());
-
 		if (this.properties.isProxyConfigured()) {
 			HttpHost proxy = new HttpHost(this.properties.getProxy().getHost(),
 					this.properties.getProxy().getPort());
-			CloseableHttpClient http = HttpClientBuilder.create().setProxy(proxy)
-					.setUserAgent("sendgrid/" + sendGrid.getVersion() + ";java").build();
-
-			sendGrid.setClient(http);
+			sendGrid.setClient(HttpClientBuilder.create().setProxy(proxy)
+					.setUserAgent("sendgrid/" + sendGrid.getVersion() + ";java").build());
 		}
-
 		return sendGrid;
 	}
 

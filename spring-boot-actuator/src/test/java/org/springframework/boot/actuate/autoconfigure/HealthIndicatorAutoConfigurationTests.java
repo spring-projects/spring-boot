@@ -295,20 +295,6 @@ public class HealthIndicatorAutoConfigurationTests {
 				.getClass());
 	}
 
-	@Configuration
-	@EnableConfigurationProperties
-	protected static class DataSourceConfig {
-
-		@Bean
-		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
-		public DataSource dataSource() {
-			return DataSourceBuilder.create()
-					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
-					.url("jdbc:hsqldb:mem:test").username("sa").build();
-		}
-
-	}
-
 	@Test
 	public void mailHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -374,6 +360,20 @@ public class HealthIndicatorAutoConfigurationTests {
 		assertEquals(1, beans.size());
 		assertEquals(ApplicationHealthIndicator.class, beans.values().iterator().next()
 				.getClass());
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	protected static class DataSourceConfig {
+
+		@Bean
+		@ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
+		public DataSource dataSource() {
+			return DataSourceBuilder.create()
+					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+					.url("jdbc:hsqldb:mem:test").username("sa").build();
+		}
+
 	}
 
 }

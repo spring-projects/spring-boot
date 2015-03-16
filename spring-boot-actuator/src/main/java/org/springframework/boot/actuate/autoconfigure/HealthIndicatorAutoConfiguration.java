@@ -19,11 +19,11 @@ package org.springframework.boot.actuate.autoconfigure;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+
 import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
 import org.apache.solr.client.solrj.SolrServer;
-
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
@@ -77,7 +77,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
 		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
 		RabbitAutoConfiguration.class, SolrAutoConfiguration.class,
-		MailSenderAutoConfiguration.class, JmsAutoConfiguration.class})
+		MailSenderAutoConfiguration.class, JmsAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthIndicatorAutoConfigurationProperties.class })
 public class HealthIndicatorAutoConfiguration {
 
@@ -165,7 +165,6 @@ public class HealthIndicatorAutoConfiguration {
 				return new MongoHealthIndicator(this.mongoTemplates.values().iterator()
 						.next());
 			}
-
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, MongoTemplate> entry : this.mongoTemplates.entrySet()) {
@@ -224,7 +223,6 @@ public class HealthIndicatorAutoConfiguration {
 				return new RabbitHealthIndicator(this.rabbitTemplates.values().iterator()
 						.next());
 			}
-
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, RabbitTemplate> entry : this.rabbitTemplates
@@ -254,7 +252,6 @@ public class HealthIndicatorAutoConfiguration {
 				return new SolrHealthIndicator(this.solrServers.entrySet().iterator()
 						.next().getValue());
 			}
-
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, SolrServer> entry : this.solrServers.entrySet()) {
@@ -298,24 +295,17 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "mailHealthIndicator")
 		public HealthIndicator mailHealthIndicator() {
 			if (this.mailSenders.size() == 1) {
-				JavaMailSenderImpl mailSender = this.mailSenders.values().iterator()
-						.next();
-				return createMailHealthIndicator(mailSender);
+				return new MailHealthIndicator(this.mailSenders.values().iterator()
+						.next());
 			}
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, JavaMailSenderImpl> entry : this.mailSenders
 					.entrySet()) {
-				String name = entry.getKey();
-				JavaMailSenderImpl mailSender = entry.getValue();
-				composite.addHealthIndicator(name, createMailHealthIndicator(mailSender));
+				composite.addHealthIndicator(entry.getKey(), new MailHealthIndicator(
+						entry.getValue()));
 			}
 			return composite;
-		}
-
-		private MailHealthIndicator createMailHealthIndicator(
-				JavaMailSenderImpl mailSender) {
-			return new MailHealthIndicator(mailSender);
 		}
 	}
 
@@ -334,24 +324,17 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "jmsHealthIndicator")
 		public HealthIndicator jmsHealthIndicator() {
 			if (this.connectionFactories.size() == 1) {
-				ConnectionFactory connectionFactory = this.connectionFactories.values()
-						.iterator().next();
-				return createJmsHealthIndicator(connectionFactory);
+				return new JmsHealthIndicator(this.connectionFactories.values()
+						.iterator().next());
 			}
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, ConnectionFactory> entry : this.connectionFactories
 					.entrySet()) {
-				String name = entry.getKey();
-				ConnectionFactory connectionFactory = entry.getValue();
-				composite.addHealthIndicator(name, createJmsHealthIndicator(connectionFactory));
+				composite.addHealthIndicator(entry.getKey(),
+						new JmsHealthIndicator(entry.getValue()));
 			}
 			return composite;
-		}
-
-		private JmsHealthIndicator createJmsHealthIndicator(
-				ConnectionFactory connectionFactory) {
-			return new JmsHealthIndicator(connectionFactory);
 		}
 	}
 

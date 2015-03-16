@@ -35,15 +35,13 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Connection conToClose = null;
+		Connection connection = this.connectionFactory.createConnection();
 		try {
-			conToClose = this.connectionFactory.createConnection();
 			builder.up().withDetail("provider",
-					conToClose.getMetaData().getJMSProviderName());
-		} finally {
-			if (conToClose != null) {
-				conToClose.close();
-			}
+					connection.getMetaData().getJMSProviderName());
+		}
+		finally {
+			connection.close();
 		}
 	}
 

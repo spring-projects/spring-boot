@@ -40,22 +40,17 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
-		String location = String.format("%s:%d", this.mailSender.getHost(), this.mailSender.getPort());
-		builder.withDetail("location", location);
-
-		Transport transport = null;
+		builder.withDetail("location",
+				this.mailSender.getHost() + ":" + this.mailSender.getPort());
+		Transport transport = connectTransport();
 		try {
-			transport = connectTransport();
 			builder.up();
 		}
 		finally {
-			if (transport != null) {
-				transport.close();
-			}
+			transport.close();
 		}
 	}
 
-	// Copy-paste from JavaMailSenderImpl - see SPR-12799
 	private Transport connectTransport() throws MessagingException {
 		String username = this.mailSender.getUsername();
 		String password = this.mailSender.getPassword();
@@ -65,7 +60,6 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 				password = null;
 			}
 		}
-
 		Transport transport = getTransport(this.mailSender.getSession());
 		transport.connect(this.mailSender.getHost(), this.mailSender.getPort(), username,
 				password);
@@ -76,9 +70,9 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 		String protocol = this.mailSender.getProtocol();
 		if (protocol == null) {
 			protocol = session.getProperty("mail.transport.protocol");
-			if (protocol == null) {
-				protocol = JavaMailSenderImpl.DEFAULT_PROTOCOL;
-			}
+		}
+		if (protocol == null) {
+			protocol = JavaMailSenderImpl.DEFAULT_PROTOCOL;
 		}
 		return session.getTransport(protocol);
 	}

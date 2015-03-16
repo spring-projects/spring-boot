@@ -40,6 +40,7 @@ import static org.junit.Assert.assertThat;
  * @author Maciej Walkowiak
  */
 public class SendGridAutoConfigurationTests {
+
 	private AnnotationConfigApplicationContext context;
 
 	@After
@@ -105,5 +106,7 @@ public class SendGridAutoConfigurationTests {
 		SendGrid sendGrid() {
 			return new SendGrid("manual-user", "manual-secret");
 		}
+
 	}
+
 }

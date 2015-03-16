@@ -24,10 +24,10 @@ import javax.jms.JMSException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link JmsHealthIndicator}.
@@ -39,12 +39,11 @@ public class JmsHealthIndicatorTests {
 	@Test
 	public void jmsBrokerIsUp() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
-		when(connectionMetaData.getJMSProviderName()).thenReturn("JMS test provider");
+		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
 		Connection connection = mock(Connection.class);
-		when(connection.getMetaData()).thenReturn(connectionMetaData);
+		given(connection.getMetaData()).willReturn(connectionMetaData);
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
-		when(connectionFactory.createConnection()).thenReturn(connection);
-
+		given(connectionFactory.createConnection()).willReturn(connection);
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertEquals(Status.UP, health.getStatus());
@@ -55,7 +54,8 @@ public class JmsHealthIndicatorTests {
 	@Test
 	public void jmsBrokerIsDown() throws JMSException {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
-		when(connectionFactory.createConnection()).thenThrow(new JMSException("test", "123"));
+		given(connectionFactory.createConnection()).willThrow(
+				new JMSException("test", "123"));
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertEquals(Status.DOWN, health.getStatus());
@@ -65,12 +65,12 @@ public class JmsHealthIndicatorTests {
 	@Test
 	public void jmsBrokerCouldNotRetrieveProviderMetadata() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
-		when(connectionMetaData.getJMSProviderName()).thenThrow(new JMSException("test", "123"));
+		given(connectionMetaData.getJMSProviderName()).willThrow(
+				new JMSException("test", "123"));
 		Connection connection = mock(Connection.class);
-		when(connection.getMetaData()).thenReturn(connectionMetaData);
+		given(connection.getMetaData()).willReturn(connectionMetaData);
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
-		when(connectionFactory.createConnection()).thenReturn(connection);
-
+		given(connectionFactory.createConnection()).willReturn(connection);
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertEquals(Status.DOWN, health.getStatus());

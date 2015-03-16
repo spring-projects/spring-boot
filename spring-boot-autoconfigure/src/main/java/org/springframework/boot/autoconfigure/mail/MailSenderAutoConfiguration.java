@@ -37,7 +37,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  *
  * @author Oliver Gierke
  * @author Stephane Nicoll
- * @author Johannes Stelzer
  * @since 1.2.0
  */
 @Configuration
@@ -48,7 +47,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 public class MailSenderAutoConfiguration {
 
 	@Autowired
-	MailProperties properties;
+	private MailProperties properties;
 
 	@Bean
 	public JavaMailSenderImpl mailSender() {
