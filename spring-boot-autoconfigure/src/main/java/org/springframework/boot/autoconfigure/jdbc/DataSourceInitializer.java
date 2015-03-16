@@ -50,7 +50,6 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	@Autowired
 	private ConfigurableApplicationContext applicationContext;
 
-	@Autowired(required = false)
 	private DataSource dataSource;
 
 	@Autowired
@@ -59,10 +58,13 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	private boolean initialized = false;
 
 	@PostConstruct
-	protected void initialize() {
+	public void init() {
 		if (!this.properties.isInitialize()) {
 			logger.debug("Initialization disabled (not running DDL scripts)");
 			return;
+		}
+		if (applicationContext.getBeanNamesForType(DataSource.class, false, false).length > 0) {
+			this.dataSource = applicationContext.getBean(DataSource.class);
 		}
 		if (this.dataSource == null) {
 			logger.debug("No DataSource found so not initializing");
