@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 			logger.debug("Initialization disabled (not running DDL scripts)");
 			return;
 		}
-		if (applicationContext.getBeanNamesForType(DataSource.class, false, false).length > 0) {
-			this.dataSource = applicationContext.getBean(DataSource.class);
+		if (this.applicationContext.getBeanNamesForType(DataSource.class, false, false).length > 0) {
+			this.dataSource = this.applicationContext.getBean(DataSource.class);
 		}
 		if (this.dataSource == null) {
 			logger.debug("No DataSource found so not initializing");

@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link MetricRegistryMetricReader}
+ * Tests for {@link MetricRegistryMetricReader}.
  *
  * @author Andy Wilkinson
  */
@@ -73,4 +73,5 @@ public class MetricRegistryMetricReaderTests {
 		this.metricRegistry.remove("test");
 		assertThat(this.metricReader.findOne("test"), is(nullValue()));
 	}
+
 }

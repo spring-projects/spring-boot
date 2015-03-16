@@ -141,27 +141,33 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	private Port getPortFromChannel(Object channel) {
-		Object tcpServer;
-		String protocol;
+		Object tcpServer = channel;
+		String protocol = "http";
 		Field sslContext = ReflectionUtils.findField(channel.getClass(), "sslContext");
 		if (sslContext != null) {
-			Field tcpServerField = ReflectionUtils.findField(channel.getClass(),
-					"tcpServer");
-			ReflectionUtils.makeAccessible(tcpServerField);
-			tcpServer = ReflectionUtils.getField(tcpServerField, channel);
+			tcpServer = getTcpServer(channel);
 			protocol = "https";
 		}
-		else {
-			tcpServer = channel;
-			protocol = "http";
-		}
-		Field socketField = ReflectionUtils.findField(tcpServer.getClass(), "socket");
-		if (socketField != null) {
-			ReflectionUtils.makeAccessible(socketField);
-			return new Port(((ServerSocket) ReflectionUtils.getField(socketField,
-					tcpServer)).getLocalPort(), protocol);
+		ServerSocket socket = getSocket(tcpServer);
+		if (socket != null) {
+			return new Port(socket.getLocalPort(), protocol);
 		}
 		return null;
+	}
+
+	private Object getTcpServer(Object channel) {
+		Field field = ReflectionUtils.findField(channel.getClass(), "tcpServer");
+		ReflectionUtils.makeAccessible(field);
+		return ReflectionUtils.getField(field, channel);
+	}
+
+	private ServerSocket getSocket(Object tcpServer) {
+		Field socketField = ReflectionUtils.findField(tcpServer.getClass(), "socket");
+		if (socketField == null) {
+			return null;
+		}
+		ReflectionUtils.makeAccessible(socketField);
+		return (ServerSocket) ReflectionUtils.getField(socketField, tcpServer);
 	}
 
 	@Override
@@ -178,24 +184,32 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		if (ports.isEmpty()) {
 			return 0;
 		}
-		return ports.get(0).portNumber;
+		return ports.get(0).getNumber();
 	}
 
+	/**
+	 * An active undertow port.
+	 */
 	private static class Port {
 
-		private final int portNumber;
+		private final int number;
 
 		private final String protocol;
 
-		private Port(int portNumber, String protocol) {
-			this.portNumber = portNumber;
+		private Port(int number, String protocol) {
+			this.number = number;
 			this.protocol = protocol;
+		}
+
+		public int getNumber() {
+			return this.number;
 		}
 
 		@Override
 		public String toString() {
-			return this.portNumber + " (" + this.protocol + ")";
+			return this.number + " (" + this.protocol + ")";
 		}
+
 	}
 
 }
