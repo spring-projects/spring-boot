@@ -57,7 +57,7 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 
 	private static Log logger = LogFactory.getLog(MetricRegistryMetricReader.class);
 
-	private static final Map<Class<?>, Set<String>> NUMBER_KEYS = new ConcurrentHashMap<Class<?>, Set<String>>();
+	private static final Map<Class<?>, Set<String>> numberKeys = new ConcurrentHashMap<Class<?>, Set<String>>();
 
 	private final Object monitor = new Object();
 
@@ -129,17 +129,16 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 
 	@Override
 	public void onGaugeAdded(String name, Gauge<?> gauge) {
-		if (gauge.getValue() instanceof Number) {
-			this.names.put(name, name);
-			synchronized (this.monitor) {
-				this.reverse.add(name, name);
+		if (!(gauge.getValue() instanceof Number)) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Ignoring gauge '" + name + "' (" + gauge
+						+ ") as its value is not a Number");
 			}
 			return;
 		}
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Ignoring gauge '" + name + "' (" + gauge
-					+ ") as its value is not a Number");
+		this.names.put(name, name);
+		synchronized (this.monitor) {
+			this.reverse.add(name, name);
 		}
 	}
 
@@ -225,11 +224,9 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 
 	private void remove(String name) {
 		List<String> keys;
-
 		synchronized (this.monitor) {
 			keys = this.reverse.remove(name);
 		}
-
 		if (keys != null) {
 			for (String key : keys) {
 				this.names.remove(name + "." + key);
@@ -238,7 +235,7 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 	}
 
 	private static Set<String> getNumberKeys(Object metric) {
-		Set<String> result = NUMBER_KEYS.get(metric.getClass());
+		Set<String> result = numberKeys.get(metric.getClass());
 		if (result == null) {
 			result = new HashSet<String>();
 		}
@@ -249,7 +246,7 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 					result.add(descriptor.getName());
 				}
 			}
-			NUMBER_KEYS.put(metric.getClass(), result);
+			numberKeys.put(metric.getClass(), result);
 		}
 		return result;
 	}
