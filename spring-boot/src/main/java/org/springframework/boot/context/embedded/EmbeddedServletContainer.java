@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,14 +33,14 @@ public interface EmbeddedServletContainer {
 	/**
 	 * Starts the embedded servlet container. Calling this method on an already started
 	 * container has no effect.
-	 * @throws EmbeddedServletContainerException of the container cannot be stopped
+	 * @throws EmbeddedServletContainerException if the container cannot be started
 	 */
 	void start() throws EmbeddedServletContainerException;
 
 	/**
 	 * Stops the embedded servlet container. Calling this method on an already stopped
 	 * container has no effect.
-	 * @throws EmbeddedServletContainerException of the container cannot be stopped
+	 * @throws EmbeddedServletContainerException if the container cannot be stopped
 	 */
 	void stop() throws EmbeddedServletContainerException;
 
