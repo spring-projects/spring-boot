@@ -77,6 +77,7 @@ public class ResourceBanner implements Banner {
 		List<PropertyResolver> resolvers = new ArrayList<PropertyResolver>();
 		resolvers.add(environment);
 		resolvers.add(getVersionResolver(sourceClass));
+        resolvers.add(getColorResolver());
 		return resolvers;
 	}
 
@@ -86,6 +87,22 @@ public class ResourceBanner implements Banner {
 				getVersionsMap(sourceClass)));
 		return new PropertySourcesPropertyResolver(propertySources);
 	}
+
+    private PropertyResolver getColorResolver() {
+        MutablePropertySources propertySources = new MutablePropertySources();
+        Map<String, Object> colorMap = new HashMap<String, Object>(9);
+        colorMap.put("color.reset", "\u001B[0m");
+        colorMap.put("color.black", "\u001B[30m");
+        colorMap.put("color.red", "\u001B[31m");
+        colorMap.put("color.green", "\u001B[32m");
+        colorMap.put("color.yellow", "\u001B[33m");
+        colorMap.put("color.blue", "\u001B[34m");
+        colorMap.put("color.purple", "\u001B[35m");
+        colorMap.put("color.cyan", "\u001B[36m");
+        colorMap.put("color.white", "\u001B[37m");
+        propertySources.addLast(new MapPropertySource("color", colorMap));
+        return new PropertySourcesPropertyResolver(propertySources);
+    }
 
 	private Map<String, Object> getVersionsMap(Class<?> sourceClass) {
 		String appVersion = getApplicationVersion(sourceClass);
