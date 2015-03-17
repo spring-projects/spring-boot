@@ -46,6 +46,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
@@ -110,6 +111,13 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
+			flyway.setSqlMigrationPrefix(properties.getSqlMigrationPrefix());
+			flyway.setSqlMigrationSuffix(properties.getSqlMigrationSuffix());
+			flyway.setValidateOnMigrate(properties.isValidateOnMigrate());
+			flyway.setBaselineOnMigrate(properties.isBaselineOnMigrate());
+			flyway.setIgnoreFailedFutureMigration(properties.isIgnoreFailedFutureMigration());
+			flyway.setTable(properties.getTable());
+			flyway.setBaselineDescription(properties.getBaselineDescription());
 			return flyway;
 		}
 

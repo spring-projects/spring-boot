@@ -34,15 +34,18 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link FlywayAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 public class FlywayAutoConfigurationTests {
 
@@ -146,6 +149,69 @@ public class FlywayAutoConfigurationTests {
 				"flyway.check-location:true");
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
 				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+	}
+
+	@Test
+	public void overrideSqlMigrationPrefix() {
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.sqlMigrationPrefix:R_");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+			FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertEquals("R_", flyway.getSqlMigrationPrefix());
+	}
+
+	@Test
+	public void overrideSqlMigrationSuffix() {
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.sqlMigrationSuffix:.txt");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+			FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertEquals(".txt", flyway.getSqlMigrationSuffix());
+	}
+
+	@Test
+	public void overrideTable() {
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.table:dbchangelog");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+			FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertEquals("dbchangelog", flyway.getTable());
+	}
+
+	@Test
+	public void overrideInitDescription() {
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.baselineDescription:Starting migration");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+			FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertEquals("Starting migration", flyway.getBaselineDescription());
+	}
+
+	@Test
+	public void overrideBaselineOnMigrate() {
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.baselineOnMigrate:true");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+			FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertEquals(true, flyway.isBaselineOnMigrate());
+	}
+
+	@Test
+	public void overrideValidateOnMigrate() {
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.validateOnMigrate:false");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+			FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertEquals(false, flyway.isValidateOnMigrate());
+	}
+
+	@Test
+	public void overrideIgnoreFailedFutureMigration() {
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.ignoreFailedFutureMigration:true");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+			FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertEquals(true, flyway.isIgnoreFailedFutureMigration());
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {

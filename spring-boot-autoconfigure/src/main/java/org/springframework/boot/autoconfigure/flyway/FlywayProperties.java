@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * properties into the {@link Flyway} instance.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = true)
@@ -71,6 +72,41 @@ public class FlywayProperties {
 	 * it.
 	 */
 	private List<String> initSqls = Collections.emptyList();
+
+	/**
+	 * Set filename prefix for scripts.
+	 */
+	private String sqlMigrationPrefix = "V";
+
+	/**
+	 * Set filename suffix for scripts.
+	 */
+	private String sqlMigrationSuffix = ".sql";
+
+	/**
+	 * Enable validation when running migrate.
+	 */
+	private boolean validateOnMigrate = true;
+
+	/**
+	 * @see Flyway#baselineOnMigrate
+	 */
+	private boolean baselineOnMigrate = false;
+
+	/**
+	 * Ignore failures in the migration when reading the metadata table.
+	 */
+	private boolean ignoreFailedFutureMigration = false;
+
+	/**
+	 * Name of schema metadata.
+	 */
+	private String table = "schema_version";
+
+	/**
+	 * Description to tag an existing schema.
+	 */
+	private String baselineDescription = "<< Flyway Baseline >>";
 
 	public void setLocations(List<String> locations) {
 		this.locations = locations;
@@ -130,5 +166,61 @@ public class FlywayProperties {
 
 	public boolean isCreateDataSource() {
 		return this.url != null && this.user != null;
+	}
+
+	public String getSqlMigrationPrefix() {
+		return sqlMigrationPrefix;
+	}
+
+	public void setSqlMigrationPrefix(String sqlMigrationPrefix) {
+		this.sqlMigrationPrefix = sqlMigrationPrefix;
+	}
+
+	public String getSqlMigrationSuffix() {
+		return sqlMigrationSuffix;
+	}
+
+	public void setSqlMigrationSuffix(String sqlMigrationSuffix) {
+		this.sqlMigrationSuffix = sqlMigrationSuffix;
+	}
+
+	public boolean isValidateOnMigrate() {
+		return validateOnMigrate;
+	}
+
+	public void setValidateOnMigrate(boolean validateOnMigrate) {
+		this.validateOnMigrate = validateOnMigrate;
+	}
+
+	public boolean isBaselineOnMigrate() {
+		return baselineOnMigrate;
+	}
+
+	public void setBaselineOnMigrate(boolean baselineOnMigrate) {
+		this.baselineOnMigrate = baselineOnMigrate;
+	}
+
+	public boolean isIgnoreFailedFutureMigration() {
+		return ignoreFailedFutureMigration;
+	}
+
+	public void setIgnoreFailedFutureMigration(boolean ignoreFailedFutureMigration) {
+		this.ignoreFailedFutureMigration = ignoreFailedFutureMigration;
+	}
+
+	public String getTable() {
+		return table;
+	}
+
+	public void setTable(String table) {
+		this.table = table;
+	}
+
+	public String getBaselineDescription() {
+		return baselineDescription;
+	}
+
+	public void setBaselineDescription(String baselineDescription) {
+		this.baselineDescription = baselineDescription;
 	}
 }
