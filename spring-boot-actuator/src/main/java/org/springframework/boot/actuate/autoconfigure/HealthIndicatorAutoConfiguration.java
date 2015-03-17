@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import javax.jms.ConnectionFactory;
@@ -25,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
@@ -60,6 +60,7 @@ import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ResolvableType;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -70,6 +71,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 1.1.0
  */
 @Configuration
@@ -100,60 +102,93 @@ public class HealthIndicatorAutoConfiguration {
 		return new ApplicationHealthIndicator();
 	}
 
-	@Configuration
-	@ConditionalOnBean(DataSource.class)
-	@ConditionalOnProperty(prefix = "management.health.db", name = "enabled", matchIfMissing = true)
-	public static class DataSourcesHealthIndicatorConfiguration {
+	/**
+	 * Base class for configurations that can combine source beans using a
+	 * {@link CompositeHealthIndicator}.
+	 * @param <H> The health indicator type
+	 * @param <S> The bean source type
+	 */
+	protected static abstract class CompositeHealthIndicatorConfiguration<H extends HealthIndicator, S> {
 
 		@Autowired
 		private HealthAggregator healthAggregator;
+
+		protected HealthIndicator createHealthIndicator(Map<String, S> beans) {
+			if (beans.size() == 1) {
+				return createHealthIndicator(beans.values().iterator().next());
+			}
+			CompositeHealthIndicator composite = new CompositeHealthIndicator(
+					this.healthAggregator);
+			for (Map.Entry<String, S> entry : beans.entrySet()) {
+				composite.addHealthIndicator(entry.getKey(),
+						createHealthIndicator(entry.getValue()));
+			}
+			return composite;
+		}
+
+		@SuppressWarnings("unchecked")
+		protected H createHealthIndicator(S source) {
+			Class<?>[] generics = ResolvableType.forClass(
+					CompositeHealthIndicatorConfiguration.class, getClass())
+					.resolveGenerics();
+			Class<H> indicatorClass = (Class<H>) generics[0];
+			Class<S> sourceClass = (Class<S>) generics[1];
+			try {
+				return indicatorClass.getConstructor(sourceClass).newInstance(source);
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Unable to create indicator "
+						+ indicatorClass + " for source " + sourceClass, ex);
+			}
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(DataSource.class)
+	@ConditionalOnProperty(prefix = "management.health.db", name = "enabled", matchIfMissing = true)
+	public static class DataSourcesHealthIndicatorConfiguration extends
+			CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource>
+			implements InitializingBean {
 
 		@Autowired(required = false)
 		private Map<String, DataSource> dataSources;
 
 		@Autowired(required = false)
-		private Collection<DataSourcePoolMetadataProvider> metadataProviders = Collections
-				.emptyList();
+		private Collection<DataSourcePoolMetadataProvider> metadataProviders;
+
+		private DataSourcePoolMetadataProvider poolMetadataProvider;
+
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			this.poolMetadataProvider = new DataSourcePoolMetadataProviders(
+					this.metadataProviders);
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "dbHealthIndicator")
 		public HealthIndicator dbHealthIndicator() {
-			DataSourcePoolMetadataProvider metadataProvider = new DataSourcePoolMetadataProviders(
-					this.metadataProviders);
-			if (this.dataSources.size() == 1) {
-				DataSource dataSource = this.dataSources.values().iterator().next();
-				return createDataSourceHealthIndicator(metadataProvider, dataSource);
-			}
-			CompositeHealthIndicator composite = new CompositeHealthIndicator(
-					this.healthAggregator);
-			for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
-				String name = entry.getKey();
-				DataSource dataSource = entry.getValue();
-				composite.addHealthIndicator(name,
-						createDataSourceHealthIndicator(metadataProvider, dataSource));
-			}
-			return composite;
+			return createHealthIndicator(this.dataSources);
 		}
 
-		private DataSourceHealthIndicator createDataSourceHealthIndicator(
-				DataSourcePoolMetadataProvider provider, DataSource dataSource) {
-			String validationQuery = null;
-			DataSourcePoolMetadata poolMetadata = provider
-					.getDataSourcePoolMetadata(dataSource);
-			if (poolMetadata != null) {
-				validationQuery = poolMetadata.getValidationQuery();
-			}
-			return new DataSourceHealthIndicator(dataSource, validationQuery);
+		@Override
+		protected DataSourceHealthIndicator createHealthIndicator(DataSource source) {
+			return new DataSourceHealthIndicator(source, getValidationQuery(source));
 		}
+
+		private String getValidationQuery(DataSource source) {
+			DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider
+					.getDataSourcePoolMetadata(source);
+			return (poolMetadata == null ? null : poolMetadata.getValidationQuery());
+		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(MongoTemplate.class)
 	@ConditionalOnProperty(prefix = "management.health.mongo", name = "enabled", matchIfMissing = true)
-	public static class MongoHealthIndicatorConfiguration {
-
-		@Autowired
-		private HealthAggregator healthAggregator;
+	public static class MongoHealthIndicatorConfiguration extends
+			CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
 		@Autowired
 		private Map<String, MongoTemplate> mongoTemplates;
@@ -161,27 +196,17 @@ public class HealthIndicatorAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "mongoHealthIndicator")
 		public HealthIndicator mongoHealthIndicator() {
-			if (this.mongoTemplates.size() == 1) {
-				return new MongoHealthIndicator(this.mongoTemplates.values().iterator()
-						.next());
-			}
-			CompositeHealthIndicator composite = new CompositeHealthIndicator(
-					this.healthAggregator);
-			for (Map.Entry<String, MongoTemplate> entry : this.mongoTemplates.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new MongoHealthIndicator(
-						entry.getValue()));
-			}
-			return composite;
+			return createHealthIndicator(this.mongoTemplates);
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(RedisConnectionFactory.class)
 	@ConditionalOnProperty(prefix = "management.health.redis", name = "enabled", matchIfMissing = true)
-	public static class RedisHealthIndicatorConfiguration {
-
-		@Autowired
-		private HealthAggregator healthAggregator;
+	public static class RedisHealthIndicatorConfiguration
+			extends
+			CompositeHealthIndicatorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
 
 		@Autowired
 		private Map<String, RedisConnectionFactory> redisConnectionFactories;
@@ -189,29 +214,16 @@ public class HealthIndicatorAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "redisHealthIndicator")
 		public HealthIndicator redisHealthIndicator() {
-			if (this.redisConnectionFactories.size() == 1) {
-				return new RedisHealthIndicator(this.redisConnectionFactories.values()
-						.iterator().next());
-			}
-
-			CompositeHealthIndicator composite = new CompositeHealthIndicator(
-					this.healthAggregator);
-			for (Map.Entry<String, RedisConnectionFactory> entry : this.redisConnectionFactories
-					.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new RedisHealthIndicator(
-						entry.getValue()));
-			}
-			return composite;
+			return createHealthIndicator(this.redisConnectionFactories);
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(RabbitTemplate.class)
 	@ConditionalOnProperty(prefix = "management.health.rabbit", name = "enabled", matchIfMissing = true)
-	public static class RabbitHealthIndicatorConfiguration {
-
-		@Autowired
-		private HealthAggregator healthAggregator;
+	public static class RabbitHealthIndicatorConfiguration extends
+			CompositeHealthIndicatorConfiguration<RabbitHealthIndicator, RabbitTemplate> {
 
 		@Autowired
 		private Map<String, RabbitTemplate> rabbitTemplates;
@@ -219,28 +231,16 @@ public class HealthIndicatorAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "rabbitHealthIndicator")
 		public HealthIndicator rabbitHealthIndicator() {
-			if (this.rabbitTemplates.size() == 1) {
-				return new RabbitHealthIndicator(this.rabbitTemplates.values().iterator()
-						.next());
-			}
-			CompositeHealthIndicator composite = new CompositeHealthIndicator(
-					this.healthAggregator);
-			for (Map.Entry<String, RabbitTemplate> entry : this.rabbitTemplates
-					.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new RabbitHealthIndicator(
-						entry.getValue()));
-			}
-			return composite;
+			return createHealthIndicator(this.rabbitTemplates);
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(SolrServer.class)
 	@ConditionalOnProperty(prefix = "management.health.solr", name = "enabled", matchIfMissing = true)
-	public static class SolrHealthIndicatorConfiguration {
-
-		@Autowired
-		private HealthAggregator healthAggregator;
+	public static class SolrHealthIndicatorConfiguration extends
+			CompositeHealthIndicatorConfiguration<SolrHealthIndicator, SolrServer> {
 
 		@Autowired
 		private Map<String, SolrServer> solrServers;
@@ -248,18 +248,9 @@ public class HealthIndicatorAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "solrHealthIndicator")
 		public HealthIndicator solrHealthIndicator() {
-			if (this.solrServers.size() == 1) {
-				return new SolrHealthIndicator(this.solrServers.entrySet().iterator()
-						.next().getValue());
-			}
-			CompositeHealthIndicator composite = new CompositeHealthIndicator(
-					this.healthAggregator);
-			for (Map.Entry<String, SolrServer> entry : this.solrServers.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new SolrHealthIndicator(
-						entry.getValue()));
-			}
-			return composite;
+			return createHealthIndicator(this.solrServers);
 		}
+
 	}
 
 	@Configuration
@@ -283,10 +274,9 @@ public class HealthIndicatorAutoConfiguration {
 	@Configuration
 	@ConditionalOnBean(JavaMailSenderImpl.class)
 	@ConditionalOnProperty(prefix = "management.health.mail", name = "enabled", matchIfMissing = true)
-	public static class MailHealthIndicatorConfiguration {
-
-		@Autowired
-		private HealthAggregator healthAggregator;
+	public static class MailHealthIndicatorConfiguration
+			extends
+			CompositeHealthIndicatorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
 
 		@Autowired(required = false)
 		private Map<String, JavaMailSenderImpl> mailSenders;
@@ -294,28 +284,16 @@ public class HealthIndicatorAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "mailHealthIndicator")
 		public HealthIndicator mailHealthIndicator() {
-			if (this.mailSenders.size() == 1) {
-				return new MailHealthIndicator(this.mailSenders.values().iterator()
-						.next());
-			}
-			CompositeHealthIndicator composite = new CompositeHealthIndicator(
-					this.healthAggregator);
-			for (Map.Entry<String, JavaMailSenderImpl> entry : this.mailSenders
-					.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new MailHealthIndicator(
-						entry.getValue()));
-			}
-			return composite;
+			return createHealthIndicator(this.mailSenders);
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnBean(ConnectionFactory.class)
 	@ConditionalOnProperty(prefix = "management.health.jms", name = "enabled", matchIfMissing = true)
-	public static class JmsHealthIndicatorConfiguration {
-
-		@Autowired
-		private HealthAggregator healthAggregator;
+	public static class JmsHealthIndicatorConfiguration extends
+			CompositeHealthIndicatorConfiguration<JmsHealthIndicator, ConnectionFactory> {
 
 		@Autowired(required = false)
 		private Map<String, ConnectionFactory> connectionFactories;
@@ -323,19 +301,9 @@ public class HealthIndicatorAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "jmsHealthIndicator")
 		public HealthIndicator jmsHealthIndicator() {
-			if (this.connectionFactories.size() == 1) {
-				return new JmsHealthIndicator(this.connectionFactories.values()
-						.iterator().next());
-			}
-			CompositeHealthIndicator composite = new CompositeHealthIndicator(
-					this.healthAggregator);
-			for (Map.Entry<String, ConnectionFactory> entry : this.connectionFactories
-					.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(),
-						new JmsHealthIndicator(entry.getValue()));
-			}
-			return composite;
+			return createHealthIndicator(this.connectionFactories);
 		}
+
 	}
 
 }
