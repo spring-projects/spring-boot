@@ -34,11 +34,7 @@ import com.samskivert.mustache.Template;
  */
 public class MustacheView extends AbstractTemplateView {
 
-	private final Template template;
-
-	public MustacheView(Template template) {
-		this.template = template;
-	}
+	private Template template;
 
 	@Override
 	protected void renderMergedTemplateModel(Map<String, Object> model,
@@ -46,4 +42,7 @@ public class MustacheView extends AbstractTemplateView {
 		this.template.execute(model, response.getWriter());
 	}
 
+        public void setTemplate(Template template) {
+            this.template = template;
+        }
 }
