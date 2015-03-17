@@ -1,0 +1,4 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
+	<cache name="countries" maxElementsInMemory="10" eternal="true" overflowToDisk="false"/>
+</ehcache>
