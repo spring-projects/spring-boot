@@ -87,6 +87,7 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 		TransportClientFactoryBean factory = new TransportClientFactoryBean();
 		factory.setClusterName(this.properties.getClusterName());
 		factory.setClusterNodes(this.properties.getClusterNodes());
+		factory.setClientTransportSniff(this.properties.getClientTransportSniff());
 		factory.afterPropertiesSet();
 		TransportClient client = factory.getObject();
 		this.releasable = client;

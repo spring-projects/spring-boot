@@ -39,6 +39,11 @@ public class ElasticsearchProperties {
 	 */
 	private String clusterNodes;
 
+	/**
+	 * Allow the client to sniff for other members of the cluster.
+	 */
+	private boolean clientTransportSniff = true;
+
 	public String getClusterName() {
 		return this.clusterName;
 	}
@@ -54,4 +59,13 @@ public class ElasticsearchProperties {
 	public void setClusterNodes(String clusterNodes) {
 		this.clusterNodes = clusterNodes;
 	}
+
+	public boolean getClientTransportSniff() {
+		return this.clientTransportSniff;
+	}
+
+	public void setClientTransportSniff(boolean clientTransportSniff) {
+		this.clientTransportSniff = clientTransportSniff;
+	}
+
 }

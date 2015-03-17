@@ -349,6 +349,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.solr.repositories.enabled=true # if spring data repository support is enabled
 
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
+	spring.data.elasticsearch.client-transport-sniff=true # Allow the client to sniff for other members of the cluster
 	spring.data.elasticsearch.cluster-name= # The cluster name (defaults to elasticsearch)
 	spring.data.elasticsearch.cluster-nodes= # The address(es) of the server node (comma-separated; if not specified starts a client node)
 	spring.data.elasticsearch.repositories.enabled=true # if spring data repository support is enabled
