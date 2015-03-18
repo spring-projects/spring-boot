@@ -27,6 +27,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-dependency-tools</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.spring.gradle</groupId>
+			<artifactId>dependency-management-plugin</artifactId>
+		</dependency>
 		<!-- Provided -->
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
@@ -42,12 +46,7 @@
 			<groupId>org.gradle</groupId>
 			<artifactId>gradle-base-services</artifactId>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gradle</groupId>
-			<artifactId>gradle-base-services-groovy</artifactId>
-			<scope>provided</scope>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>org.gradle</groupId>
 			<artifactId>gradle-plugins</artifactId>

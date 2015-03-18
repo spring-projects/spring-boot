@@ -64,7 +64,7 @@
 		<freemarker.version>2.3.22</freemarker.version>
 		<gemfire.version>7.0.2</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
-		<gradle.version>1.6</gradle.version>
+		<gradle.version>1.12</gradle.version>
 		<groovy.version>2.4.1</groovy.version>
 		<gson.version>2.3.1</gson.version>
 		<h2.version>1.4.185</h2.version>

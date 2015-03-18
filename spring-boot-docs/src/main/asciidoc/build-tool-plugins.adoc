@@ -165,8 +165,8 @@ Advanced configuration options and examples are available in the
 [[build-tool-plugins-gradle-plugin]]
 == Spring Boot Gradle plugin
 The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, allowing you to
-package executable jar or war archives, run Spring Boot applications and omit version
-information from your `build.gradle` file for "`blessed`" dependencies.
+package executable jar or war archives, run Spring Boot applications and use the
+dependency management provided by `spring-boot-dependencies`.
 
 
 
@@ -201,12 +201,15 @@ If you are using a milestone or snapshot release you will also need to add appro
 
 
 
-[[build-tool-plugins-gradle-dependencies-without-versions]]
-=== Declaring dependencies without versions
-The `spring-boot` plugin will register a custom Gradle `ResolutionStrategy` with your
-build that allows you to omit version numbers when declaring dependencies to "`blessed`"
-artifacts. To make use of this functionality, simply declare dependencies in the usual way,
-but leave the version number empty:
+[[build-tool-plugins-gradle-dependency-management]]
+=== Dependency management
+The `spring-boot` plugin automatically applies the
+{dependency-management-plugin}/[Dependency Management Plugin] and configures in to import
+the `spring-boot-starter-parent` bom. This provides a similar dependency management
+experience to the one that is enjoyed by Maven users. For example, it allows you to omit
+version numbers when declaring dependencies that are managed in the bom. To make use of
+this functionality, simply declare dependencies in the usual way, but leave the version
+number empty:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -218,12 +221,12 @@ but leave the version number empty:
 ----
 
 NOTE: The version of the `spring-boot` gradle plugin that you declare determines the
-actual versions of the "`blessed`" dependencies (this ensures that builds are always
-repeatable). You should always set the version of the `spring-boot` gradle plugin to the
-actual Spring Boot version that you wish to use. Details of the versions that are
-provided can be found in the <<appendix-dependency-versions, appendix>>.
+version of the `spring-boot-starter-parent` bom that is imported (this ensures that builds
+are always repeatable). You should always set the version of the `spring-boot` gradle
+plugin to the actual Spring Boot version that you wish to use. Details of the versions
+that are provided can be found in the <<appendix-dependency-versions, appendix>>.
 
-The `spring-boot` plugin will only supply a version where one is not specified. To
+The dependency management plugin will only supply a version where one is not specified. To
 use a version of an artifact that differs from the one that the plugin would provide,
 simply specify the version when you declare the dependency as you usually would. For
 example:
@@ -235,81 +238,8 @@ example:
 	}
 ----
 
-
-
-[[build-tool-plugins-gradle-custom-version-management]]
-==== Custom version management
-If is possible to customize the versions used by the `ResolutionStrategy` if you need
-to deviate from Spring Boot's "`blessed`" dependencies. Alternative version metadata
-is consulted using the `versionManagement` configuration. For example:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	dependencies {
-		versionManagement("com.mycorp:mycorp-versions:1.0.0.RELEASE@properties")
-		compile("org.springframework.data:spring-data-hadoop")
-	}
-----
-
-Version information needs to be published to a repository as a `.properties` file. For
-the above example `mycorp-versions.properties` file might contain the following:
-
-[source,properties,indent=0,subs="verbatim,attributes"]
-----
-	org.springframework.data\:spring-data-hadoop=2.0.0.RELEASE
-----
-
-The properties file takes precedence over Spring Boot's defaults, and can be used
-to override version numbers if necessary.
-
-
-
-[[build-tool-plugins-gradle-exclude-rules]]
-=== Default exclude rules
-Gradle handles "`exclude rules`" in a slightly different way to Maven which can cause
-unexpected results when using the starter POMs. Specifically, exclusions declared on
-a dependency will not be applied when the dependency can be reached through a different
-path. For example, if a starter POM declares the following:
-
-[source,xml,indent=0,subs="verbatim,attributes"]
-----
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>4.0.5.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>4.0.5.RELEASE</version>
-		</dependency>
-	</dependencies>
-----
-
-The `commons-logging` jar will *not* be excluded by Gradle because it is pulled in
-transitively via `spring-context` (`spring-context` -> `spring-core` -> `commons-logging`)
-which does not have an `exclusion` element.
-
-To ensure that correct exclusions are actually applied, the Spring Boot Gradle plugin will
-automatically add exclusion rules. All exclusions defined in the
-`spring-boot-dependencies` POM and implicit rules for the "`starter`" POMs will be added.
-
-If you don't want exclusion rules automatically applied you can use the following
-configuration:
-
-[source,groovy,indent=0,subs="verbatim,attributes"]
-----
-	springBoot {
-		applyExcludeRules=false
-	}
-----
+To learn more about the capabilities of the Dependency Management Plugin, please refer to
+its {dependency-management-plugin-documentation}[documentation].
 
 
 

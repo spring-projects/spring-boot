@@ -34,24 +34,17 @@ public class InstallTests {
 
 	@Test
 	public void cleanInstall() throws Exception {
-		project = new ProjectCreator().createProject("installer");
-		project.newBuild().forTasks("install")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
-	}
-
-	@Test
-	public void cleanInstallVersionManagement() throws Exception {
-		project = new ProjectCreator().createProject("installer-io");
-		project.newBuild().forTasks("install")
+		this.project = new ProjectCreator().createProject("installer");
+		this.project.newBuild().forTasks("install")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}
 
 	@Test
 	public void cleanInstallApp() throws Exception {
-		project = new ProjectCreator().createProject("install-app");
+		this.project = new ProjectCreator().createProject("install-app");
 		// "install" from the application plugin was renamed "installApp" in Gradle
 		// 1.0
-		project.newBuild().forTasks("installApp")
+		this.project.newBuild().forTasks("installApp")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info")
 				.run();
 	}

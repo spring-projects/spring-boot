@@ -702,21 +702,11 @@ property, e.g. for a simple webapp or service:
 ==== Use Tomcat 7 with Gradle
 [[howto-use-tomcat-7-gradle]]
 
-You can use a resolution strategy to change the versions of the Tomcat dependencies,
-e.g. for a simple webapp or service:
+You can change the Tomcat version by setting the `tomcat.version` property:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	configurations.all {
-		resolutionStrategy {
-			eachDependency {
-				if (it.requested.group == 'org.apache.tomcat.embed') {
-					it.useVersion '7.0.59'
-				}
-			}
-		}
-	}
-
+	ext['tomcat.version'] = '7.0.59'
 	dependencies {
 		compile 'org.springframework.boot:spring-boot-starter-web'
 	}
@@ -775,21 +765,12 @@ webapp or service:
 [[howto-use-jetty-8-gradle]]
 ==== Use Jetty 8 with Gradle
 
-You can use a resolution strategy to change the version of the Jetty dependencies, e.g.
-for a simple webapp or service:
+You can set the `jetty.version` property and exclude the WebSocket dependency, e.g. for a
+simple webapp or service:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	configurations.all {
-		resolutionStrategy {
-			eachDependency {
-				if (it.requested.group == 'org.eclipse.jetty') {
-					it.useVersion '8.1.15.v20140411'
-				}
-			}
-		}
-	}
-
+	ext['jetty.version'] = '8.1.15.v20140411'
 	dependencies {
 		compile ('org.springframework.boot:spring-boot-starter-web') {
 			exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
