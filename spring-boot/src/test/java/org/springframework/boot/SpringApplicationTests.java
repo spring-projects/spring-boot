@@ -228,16 +228,16 @@ public class SpringApplicationTests {
 	public void applicationRunningEventListener() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		final AtomicReference<ApplicationContext> reference = new AtomicReference<ApplicationContext>();
+		final AtomicReference<SpringApplication> reference = new AtomicReference<SpringApplication>();
 		class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
 			@Override
 			public void onApplicationEvent(ApplicationReadyEvent event) {
-				reference.set(event.getApplicationContext());
+				reference.set(event.getSpringApplication());
 			}
 		}
 		application.addListeners(new ApplicationReadyEventListener());
 		this.context = application.run("--foo=bar");
-		assertThat(this.context, sameInstance(reference.get()));
+		assertThat(application, sameInstance(reference.get()));
 	}
 
 	@Test

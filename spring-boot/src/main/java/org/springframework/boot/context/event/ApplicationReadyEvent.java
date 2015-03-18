@@ -16,37 +16,27 @@
 
 package org.springframework.boot.context.event;
 
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.SpringApplication;
 
 /**
  * Event published as late as conceivably possible to indicate that the application is
- * ready to service requests. The source of the event is the created
- * {@link ConfigurableApplicationContext}.
+ * ready to service requests.  The source of the event is the {@link SpringApplication}
+ * itself, but beware of modifying its internal state since since all initialization
+ * steps will have been completed by then.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
+ * @see ApplicationFailedEvent
  */
 @SuppressWarnings("serial")
-public class ApplicationReadyEvent extends ApplicationEvent {
-
-	private final String[] args;
+public class ApplicationReadyEvent extends SpringApplicationEvent {
 
 	/**
-	 * @param applicationContext the main application context
+	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 */
-	public ApplicationReadyEvent(ConfigurableApplicationContext applicationContext, String[] args) {
-		super(applicationContext);
-		this.args = args;
-	}
-
-	public ConfigurableApplicationContext getApplicationContext() {
-		return (ConfigurableApplicationContext) getSource();
-	}
-
-	public String[] getArgs() {
-		return args;
+	public ApplicationReadyEvent(SpringApplication application, String[] args) {
+		super(application, args);
 	}
 
 }
