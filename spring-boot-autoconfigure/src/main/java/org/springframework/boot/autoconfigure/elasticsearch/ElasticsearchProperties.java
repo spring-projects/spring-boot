@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -40,9 +43,9 @@ public class ElasticsearchProperties {
 	private String clusterNodes;
 
 	/**
-	 * Allow the client to sniff for other members of the cluster.
+	 * Additional properties used to configure the client
 	 */
-	private boolean clientTransportSniff = true;
+	private Map<String, String> properties = new HashMap<String, String>();
 
 	public String getClusterName() {
 		return this.clusterName;
@@ -60,12 +63,12 @@ public class ElasticsearchProperties {
 		this.clusterNodes = clusterNodes;
 	}
 
-	public boolean getClientTransportSniff() {
-		return this.clientTransportSniff;
+	public Map<String, String> getProperties() {
+		return this.properties;
 	}
 
-	public void setClientTransportSniff(boolean clientTransportSniff) {
-		this.clientTransportSniff = clientTransportSniff;
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
 	}
 
 }
