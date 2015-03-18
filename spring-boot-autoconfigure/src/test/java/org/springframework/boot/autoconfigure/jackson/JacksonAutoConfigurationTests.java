@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jackson;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -45,12 +46,17 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -124,8 +130,7 @@ public class JacksonAutoConfigurationTests {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
-		assertEquals(String.valueOf(date.getTime()), mapper.writeValueAsString(date));
+		assertThat(mapper.getDateFormat(), is(instanceOf(StdDateFormat.class)));
 	}
 
 	@Test
@@ -135,11 +140,10 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.date-format:yyyyMMddHHmmss");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
-		assertEquals("\"19880625203000\"", mapper.writeValueAsString(dateTime));
-		dateTime = new DateTime(1988, 6, 25, 20, 30);
-		Date date = dateTime.toDate();
-		assertEquals("\"19880625203000\"", mapper.writeValueAsString(date));
+		DateFormat dateFormat = mapper.getDateFormat();
+		assertThat(dateFormat, is(instanceOf(SimpleDateFormat.class)));
+		assertThat(((SimpleDateFormat) dateFormat).toPattern(),
+				is(equalTo("yyyyMMddHHmmss")));
 	}
 
 	@Test
@@ -165,10 +169,7 @@ public class JacksonAutoConfigurationTests {
 						"spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
-		assertEquals("\"1988-06-25T20:30:00.000Z\"", mapper.writeValueAsString(dateTime));
-		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
-		assertEquals("\"1988-06-25 20:30:00\"", mapper.writeValueAsString(date));
+		assertThat(mapper.getDateFormat(), is(instanceOf(MyDateFormat.class)));
 	}
 
 	public static class MyDateFormat extends SimpleDateFormat {
@@ -178,50 +179,24 @@ public class JacksonAutoConfigurationTests {
 		}
 	}
 
-	/*
-	 * ObjectMapper does not contain method to get the property naming strategy of the
-	 * mapper. See https://github.com/FasterXML/jackson-databind/issues/559 If such a
-	 * method will be provided below tests can be simplified.
-	 */
-
 	@Test
 	public void noCustomPropertyNamingStrategy() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"propertyName\":null}", mapper.writeValueAsString(new Bar()));
+		assertThat(mapper.getPropertyNamingStrategy(), is(nullValue()));
 	}
 
 	@Test
-	public void customPropertyNamingStrategyCamelCaseToLowerCaseWithUnderscores()
-			throws Exception {
+	public void customPropertyNamingStrategyField() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
 		EnvironmentTestUtils
 				.addEnvironment(this.context,
 						"spring.jackson.property-naming-strategy:CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"property_name\":null}", mapper.writeValueAsString(new Bar()));
-	}
-
-	@Test
-	public void customPropertyNamingStrategyPascalCaseToCamelCase() throws Exception {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.property-naming-strategy:PASCAL_CASE_TO_CAMEL_CASE");
-		this.context.refresh();
-		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"PropertyName\":null}", mapper.writeValueAsString(new Bar()));
-	}
-
-	@Test
-	public void customPropertyNamingStrategyLowerCase() throws Exception {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jackson.property-naming-strategy:LOWER_CASE");
-		this.context.refresh();
-		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"propertyname\":null}", mapper.writeValueAsString(new Bar()));
+		assertThat(mapper.getPropertyNamingStrategy(),
+				is(instanceOf(LowerCaseWithUnderscoresStrategy.class)));
 	}
 
 	@Test
@@ -233,7 +208,8 @@ public class JacksonAutoConfigurationTests {
 						"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"property_name\":null}", mapper.writeValueAsString(new Bar()));
+		assertThat(mapper.getPropertyNamingStrategy(),
+				is(instanceOf(LowerCaseWithUnderscoresStrategy.class)));
 	}
 
 	@Test

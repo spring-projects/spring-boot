@@ -52,8 +52,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.joda.cfg.JacksonJodaDateFormat;
 import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
-import com.fasterxml.jackson.datatype.joda.ser.JacksonJodaFormat;
 
 /**
  * Auto configuration for Jackson. The following auto-configuration will get applied:
@@ -106,7 +106,7 @@ public class JacksonAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class,
-			DateTimeSerializer.class, JacksonJodaFormat.class })
+			DateTimeSerializer.class, JacksonJodaDateFormat.class })
 	static class JodaDateTimeJacksonConfiguration {
 
 		private final Log log = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
@@ -117,7 +117,7 @@ public class JacksonAutoConfiguration {
 		@Bean
 		public Module jodaDateTimeSerializationModule() {
 			SimpleModule module = new SimpleModule();
-			JacksonJodaFormat jacksonJodaFormat = getJacksonJodaFormat();
+			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
 			if (jacksonJodaFormat != null) {
 				module.addSerializer(DateTime.class, new DateTimeSerializer(
 						jacksonJodaFormat));
@@ -125,14 +125,14 @@ public class JacksonAutoConfiguration {
 			return module;
 		}
 
-		private JacksonJodaFormat getJacksonJodaFormat() {
+		private JacksonJodaDateFormat getJacksonJodaDateFormat() {
 			if (this.jacksonProperties.getJodaDateTimeFormat() != null) {
-				return new JacksonJodaFormat(DateTimeFormat.forPattern(
+				return new JacksonJodaDateFormat(DateTimeFormat.forPattern(
 						this.jacksonProperties.getJodaDateTimeFormat()).withZoneUTC());
 			}
 			if (this.jacksonProperties.getDateFormat() != null) {
 				try {
-					return new JacksonJodaFormat(DateTimeFormat.forPattern(
+					return new JacksonJodaDateFormat(DateTimeFormat.forPattern(
 							this.jacksonProperties.getDateFormat()).withZoneUTC());
 				}
 				catch (IllegalArgumentException ex) {
