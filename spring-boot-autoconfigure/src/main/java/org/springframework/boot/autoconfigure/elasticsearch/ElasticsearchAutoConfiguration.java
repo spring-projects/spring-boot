@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
@@ -75,8 +77,9 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	}
 
 	private Client createNodeClient() throws Exception {
-		ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder().put(
-				"http.enabled", String.valueOf(false));
+		ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder()
+				.put("http.enabled", String.valueOf(false))
+				.put(this.properties.getProperties());
 		Node node = new NodeBuilder().settings(settings)
 				.clusterName(this.properties.getClusterName()).local(true).node();
 		this.releasable = node;
@@ -85,13 +88,19 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 
 	private Client createTransportClient() throws Exception {
 		TransportClientFactoryBean factory = new TransportClientFactoryBean();
-		factory.setClusterName(this.properties.getClusterName());
 		factory.setClusterNodes(this.properties.getClusterNodes());
-		factory.setClientTransportSniff(this.properties.getClientTransportSniff());
+		factory.setProperties(createProperties());
 		factory.afterPropertiesSet();
 		TransportClient client = factory.getObject();
 		this.releasable = client;
 		return client;
+	}
+
+	private Properties createProperties() {
+		Properties properties = new Properties();
+		properties.put("cluster.name", this.properties.getClusterName());
+		properties.putAll(this.properties.getProperties());
+		return properties;
 	}
 
 	@Override
