@@ -151,7 +151,7 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		if (this.cached == null) {
 			return true;
 		}
-		return (accessTime - this.lastAccess) > this.delegate.getTimeToLive();
+		return (accessTime - this.lastAccess) >= this.delegate.getTimeToLive();
 	}
 
 	private boolean exposeHealthDetails(Principal principal) {
