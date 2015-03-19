@@ -9,7 +9,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot.spring-boot'
 
 group = 'installer'
 version = '0.0.0'

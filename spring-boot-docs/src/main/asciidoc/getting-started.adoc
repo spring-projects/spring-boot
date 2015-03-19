@@ -235,7 +235,7 @@ endif::release[]
 	}
 
 	apply plugin: 'java'
-	apply plugin: 'spring-boot'
+	apply plugin: 'org.springframework.boot.spring-boot'
 
 	jar {
 		baseName = 'myproject'

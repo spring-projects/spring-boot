@@ -182,7 +182,7 @@ the `spring-boot` plugin:
 			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
 		}
 	}
-	apply plugin: 'spring-boot'
+	apply plugin: 'org.springframework.boot.spring-boot'
 ----
 
 If you are using a milestone or snapshot release you will also need to add appropriate

@@ -14,10 +14,10 @@ repositories {
 	mavenCentral()
 }
 
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot.spring-boot'
 apply plugin: 'war'
 
-dependencies {	
+dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-freemarker'
 	providedRuntime "org.springframework.boot:spring-boot-starter-$servletContainer"
 }

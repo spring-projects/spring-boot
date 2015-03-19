@@ -21,7 +21,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot.spring-boot'
 
 mainClassName = "sample.ui.SampleWebUiApplication"
 
