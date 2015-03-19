@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,11 +137,11 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	private Health getHealth(Principal principal) {
 		long accessTime = System.currentTimeMillis();
-		if (isCacheStale(accessTime) || isSecure(principal) || isUnrestricted()) {
+		if (isCacheStale(accessTime)) {
 			this.lastAccess = accessTime;
 			this.cached = this.delegate.invoke();
 		}
-		if (isSecure(principal) || isUnrestricted()) {
+		if (exposeHealthDetails(principal)) {
 			return this.cached;
 		}
 		return Health.status(this.cached.getStatus()).build();
@@ -154,14 +154,18 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		return (accessTime - this.lastAccess) > this.delegate.getTimeToLive();
 	}
 
-	private boolean isUnrestricted() {
-		Boolean sensitive = this.propertyResolver.getProperty("sensitive", Boolean.class);
-		return !this.secure || Boolean.FALSE.equals(sensitive);
+	private boolean exposeHealthDetails(Principal principal) {
+		return isSecure(principal) || isUnrestricted();
 	}
 
 	private boolean isSecure(Principal principal) {
 		return (principal != null && !principal.getClass().getName()
 				.contains("Anonymous"));
+	}
+
+	private boolean isUnrestricted() {
+		Boolean sensitive = this.propertyResolver.getProperty("sensitive", Boolean.class);
+		return !this.secure || Boolean.FALSE.equals(sensitive);
 	}
 
 	@Override
