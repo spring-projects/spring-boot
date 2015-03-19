@@ -392,7 +392,7 @@
 									<artifactItems>
 										<artifactItem>
 											<groupId>org.springframework.boot</groupId>
-											<artifactId>spring-boot-versions</artifactId>
+											<artifactId>spring-boot-dependencies</artifactId>
 											<version>${project.version}</version>
 											<type>effective-pom</type>
 											<overWrite>true</overWrite>

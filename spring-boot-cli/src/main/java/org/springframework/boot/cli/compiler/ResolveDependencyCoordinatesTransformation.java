@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import org.springframework.core.annotation.Order;
 public class ResolveDependencyCoordinatesTransformation extends
 		AnnotatedNodeASTTransformation {
 
-	public static final int ORDER = GrabMetadataTransformation.ORDER + 300;
+	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 300;
 
 	private static final Set<String> GRAB_ANNOTATION_NAMES = Collections
 			.unmodifiableSet(new HashSet<String>(Arrays.asList(Grab.class.getName(),
@@ -51,7 +51,7 @@ public class ResolveDependencyCoordinatesTransformation extends
 
 	public ResolveDependencyCoordinatesTransformation(
 			DependencyResolutionContext resolutionContext) {
-		super(GRAB_ANNOTATION_NAMES);
+		super(GRAB_ANNOTATION_NAMES, false);
 		this.resolutionContext = resolutionContext;
 	}
 

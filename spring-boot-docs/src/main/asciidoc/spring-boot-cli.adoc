@@ -213,40 +213,42 @@ Unlike the equivalent Java application, you do not need to include a
 
 
 
-[[cli-default-grab-deduced-coordinates-custom-metadata]]
-==== Custom "`grab`" metadata
-Spring Boot provides a new `@GrabMetadata` annotation that can be used to provide custom
-dependency metadata that overrides Spring Boot's defaults. This metadata is specified by
-using the annotation to provide coordinates of one or more properties files (deployed
-to a Maven repository with a "`type`" identifier of `properties`). Each entry in each
-properties file must be in the form `group:module=version`.
+[[cli-default-grab-deduced-coordinates-custom-dependency-management]]
+==== Custom dependency management
+By default, the CLI uses the dependency management declared in `spring-boot-dependencies`
+when resolving `@Grab` dependencies. Additional dependency management, that will override
+the default dependency management, can be configured using the `@DependencyManagementBom`
+annotation. The annotation's value should specify the coordinates
+(`groupId:artifactId:version`) of one or more Maven boms.
 
 For example, the following declaration:
 
-[source,java,indent=0]
+[source,groovy,indent=0]
 ----
-	`@GrabMetadata("com.example.custom-versions:1.0.0")`
+	`@DependencyManagementBom("com.example.custom-bom:1.0.0")`
 ----
 
-Will pick up  `custom-versions-1.0.0.properties` in a Maven repository under
+Will pick up  `custom-bom-1.0.0.pom` in a Maven repository under
 `com/example/custom-versions/1.0.0/`.
 
-Multiple properties files can be specified from the annotation, they will be applied in
-the order that they're declared. For example:
+When multiple boms are specified they are applied in the order that they're declared.
+For example:
 
 [source,java,indent=0]
 ----
-	`@GrabMetadata(["com.example.custom-versions:1.0.0",
-			"com.example.more-versions:1.0.0"])`
+	`@DependencyManagementBom(["com.example.custom-bom:1.0.0",
+			"com.example.another-bom:1.0.0"])`
 ----
 
-indicates that properties in `more-versions` will override properties in `custom-versions`.
+indicates that dependency management in `another-bom` will override the dependency
+management in `custom-bom`.
 
-You can use `@GrabMetadata` anywhere that you can use `@Grab`, however, to ensure
-consistent ordering of the metadata, you can only use `@GrabMetadata` at most once in your
-application. A useful source of dependency metadata (a superset of Spring Boot) is the
+You can use `@DependencyManagementBom` anywhere that you can use `@Grab`, however, to
+ensure consistent ordering of the dependency management, you can only use
+`@DependencyManagementBom` at most once in your application. A useful source of
+dependency management (that is a superset of Spring Boot's dependency management) is the
 http://platform.spring.io/[Spring IO Platform], e.g.
-`@GrabMetadata('io.spring.platform:platform-versions:1.0.4.RELEASE')`.
+`@DepenedencyManagementBom('io.spring.platform:platform-bom:1.1.2.RELEASE')`.
 
 
 
