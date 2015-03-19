@@ -38,6 +38,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.guava.GuavaCache;
 import org.springframework.cache.guava.GuavaCacheManager;
 import org.springframework.cache.jcache.JCacheCacheManager;
@@ -65,6 +66,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link CacheAutoConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class CacheAutoConfigurationTests {
 
@@ -234,6 +236,42 @@ public class CacheAutoConfigurationTests {
 		load(DefaultCacheConfiguration.class,
 				"spring.cache.mode=jcache",
 				"spring.cache.jcache.provider=" + wrongCachingProviderFqn);
+	}
+
+	@Test
+	public void ehCacheCacheWithCaches() {
+		load(DefaultCacheConfiguration.class,
+				"spring.cache.mode=ehcache");
+		EhCacheCacheManager cacheManager = null;
+		try {
+			cacheManager = validateCacheManager(EhCacheCacheManager.class);
+			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("cacheTest1", "cacheTest2"));
+			assertThat(cacheManager.getCacheNames(), hasSize(2));
+		}
+		finally {
+			if (cacheManager != null) {
+				cacheManager.getCacheManager().shutdown();
+			}
+		}
+	}
+
+	@Test
+	public void ehCacheCacheWithLocation() {
+		load(DefaultCacheConfiguration.class,
+				"spring.cache.mode=ehcache",
+				"spring.cache.config=cache/ehcache-override.xml");
+		EhCacheCacheManager cacheManager = null;
+		try {
+			cacheManager = validateCacheManager(EhCacheCacheManager.class);
+			assertThat(cacheManager.getCacheNames(),
+					containsInAnyOrder("cacheOverrideTest1", "cacheOverrideTest2"));
+			assertThat(cacheManager.getCacheNames(), hasSize(2));
+		}
+		finally {
+			if (cacheManager != null) {
+				cacheManager.getCacheManager().shutdown();
+			}
+		}
 	}
 
 	@Test

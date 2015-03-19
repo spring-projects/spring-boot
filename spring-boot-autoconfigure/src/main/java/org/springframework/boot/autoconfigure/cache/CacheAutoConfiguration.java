@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Import;
  * Cache store can be auto-detected or specified explicitly via configuration.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.3.0
  * @see EnableCaching
  */
@@ -46,6 +47,7 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties(CacheProperties.class)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @Import({GenericCacheConfiguration.class,
+		EhCacheCacheConfiguration.class,
 		HazelcastConfiguration.class,
 		JCacheCacheConfiguration.class,
 		RedisCacheConfiguration.class,
