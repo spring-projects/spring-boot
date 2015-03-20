@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import javax.sql.DataSource;
 
 import org.apache.catalina.startup.Tomcat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
+import org.springframework.boot.actuate.cache.CacheStatisticsProvidersConfiguration;
+import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
@@ -33,13 +36,16 @@ import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link PublicMetrics}.
@@ -50,7 +56,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.2.0
  */
 @Configuration
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, CacheAutoConfiguration.class,
 		MetricRepositoryAutoConfiguration.class })
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
 public class PublicMetricsAutoConfiguration {
@@ -75,6 +81,7 @@ public class PublicMetricsAutoConfiguration {
 		return new RichGaugeReaderPublicMetrics(richGaugeReader);
 	}
 
+	@Configuration
 	@ConditionalOnClass(DataSource.class)
 	@ConditionalOnBean(DataSource.class)
 	static class DataSourceMetricsConfiguration {
@@ -88,6 +95,7 @@ public class PublicMetricsAutoConfiguration {
 
 	}
 
+	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
 	static class TomcatMetricsConfiguration {
 
@@ -95,6 +103,21 @@ public class PublicMetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public TomcatPublicMetrics tomcatPublicMetrics() {
 			return new TomcatPublicMetrics();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(CacheManager.class)
+	@ConditionalOnBean(CacheManager.class)
+	@Import(CacheStatisticsProvidersConfiguration.class)
+	static class CacheStatisticsConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnBean(CacheStatisticsProvider.class)
+		public CachePublicMetrics cachePublicMetrics() {
+			return new CachePublicMetrics();
 		}
 
 	}

@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
@@ -41,10 +42,13 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -193,6 +197,29 @@ public class PublicMetricsAutoConfigurationTests {
 		assertEquals(1, this.context.getBeansOfType(TomcatPublicMetrics.class).size());
 	}
 
+	@Test
+	public void noCacheMetrics() {
+		load();
+		assertEquals(0, this.context.getBeansOfType(CachePublicMetrics.class).size());
+	}
+
+	@Test
+	public void autoCacheManager() {
+		load(CacheConfiguration.class);
+		CachePublicMetrics bean = this.context.getBean(CachePublicMetrics.class);
+		Collection<Metric<?>> metrics = bean.metrics();
+		assertMetrics(metrics, "cache.books.size", "cache.speakers.size");
+	}
+
+	@Test
+	public void multipleCacheManagers() {
+		load(MultipleCacheConfiguration.class);
+		CachePublicMetrics bean = this.context.getBean(CachePublicMetrics.class);
+		Collection<Metric<?>> metrics = bean.metrics();
+		assertMetrics(metrics, "cache.books.size", "cache.second_speakers.size",
+				"cache.speakers.size", "cache.users.size");
+	}
+
 	private void assertHasMetric(Collection<Metric<?>> metrics, Metric<?> metric) {
 		for (Metric<?> m : metrics) {
 			if (m.getValue().equals(metric.getValue())
@@ -315,6 +342,31 @@ public class PublicMetricsAutoConfigurationTests {
 			return factory;
 		}
 
+	}
+
+	@Configuration
+	static class CacheConfiguration {
+
+		@Bean
+		public CacheManager cacheManager() {
+			return new ConcurrentMapCacheManager("books", "speakers");
+		}
+	}
+
+	@Configuration
+	static class MultipleCacheConfiguration {
+
+		@Bean
+		@Order(1)
+		public CacheManager first() {
+			return new ConcurrentMapCacheManager("books", "speakers");
+		}
+
+		@Bean
+		@Order(2)
+		public CacheManager second() {
+			return new ConcurrentMapCacheManager("users", "speakers");
+		}
 	}
 
 }
