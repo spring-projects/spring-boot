@@ -6,6 +6,8 @@
   --  Embedded Tomcat
 * link:spring-boot-sample-jetty[spring-boot-sample-jetty]
   -- Embedded Jetty
+* link:spring-boot-sample-activemq[spring-boot-sample-activemq]
+  -- Simple JMS consumer and producer using Apache ActiveMQ
 * link:spring-boot-sample-actuator[spring-boot-sample-actuator]
   -- Simple REST service with production features
 * link:spring-boot-sample-actuator-ui[spring-boot-sample-actuator-ui]
