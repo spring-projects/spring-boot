@@ -354,6 +354,11 @@ You can then refer to your Gradle project's properties via placeholders, e.g.
 	info.build.version=${version}
 ----
 
+NOTE: Gradle's `expand` method uses Groovy's `SimpleTemplateEngine` which transforms
+`${..}` tokens. This `${..}` style conflicts with Spring's own property placeholder
+mechanism. To use Spring property placeholders together with automatic expansion
+the Spring property placeholders need to be escaped like `\${..}`.
+
 
 
 [[production-ready-git-commit-information]]
