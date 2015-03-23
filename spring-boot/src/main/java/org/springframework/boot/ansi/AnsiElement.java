@@ -33,6 +33,9 @@ public interface AnsiElement {
 
 	public static final AnsiElement UNDERLINE = new DefaultAnsiElement("4");
 
+	/*
+	Normal foreground colors
+	 */
 	public static final AnsiElement BLACK = new DefaultAnsiElement("30");
 
 	public static final AnsiElement RED = new DefaultAnsiElement("31");
@@ -50,6 +53,66 @@ public interface AnsiElement {
 	public static final AnsiElement WHITE = new DefaultAnsiElement("37");
 
 	public static final AnsiElement DEFAULT = new DefaultAnsiElement("39");
+
+	/*
+	High intensity foreground colors
+	 */
+	public static final AnsiElement BRIGHT_BLACK = new DefaultAnsiElement("90");
+
+	public static final AnsiElement BRIGHT_RED = new DefaultAnsiElement("91");
+
+	public static final AnsiElement BRIGHT_GREEN = new DefaultAnsiElement("92");
+
+	public static final AnsiElement BRIGHT_YELLOW = new DefaultAnsiElement("93");
+
+	public static final AnsiElement BRIGHT_BLUE = new DefaultAnsiElement("94");
+
+	public static final AnsiElement BRIGHT_MAGENTA = new DefaultAnsiElement("95");
+
+	public static final AnsiElement BRIGHT_CYAN = new DefaultAnsiElement("96");
+
+	public static final AnsiElement BRIGHT_WHITE = new DefaultAnsiElement("97");
+
+	/*
+	Normal background colors
+	 */
+	public static final AnsiElement BG_BLACK = new DefaultAnsiElement("40");
+
+	public static final AnsiElement BG_RED = new DefaultAnsiElement("41");
+
+	public static final AnsiElement BG_GREEN = new DefaultAnsiElement("42");
+
+	public static final AnsiElement BG_YELLOW = new DefaultAnsiElement("43");
+
+	public static final AnsiElement BG_BLUE = new DefaultAnsiElement("44");
+
+	public static final AnsiElement BG_MAGENTA = new DefaultAnsiElement("45");
+
+	public static final AnsiElement BG_CYAN = new DefaultAnsiElement("46");
+
+	public static final AnsiElement BG_WHITE = new DefaultAnsiElement("47");
+
+	public static final AnsiElement BG_DEFAULT = new DefaultAnsiElement("49");
+
+	/*
+	High intensity background colors
+	 */
+	public static final AnsiElement BG_BRIGHT_BLACK = new DefaultAnsiElement("100");
+
+	public static final AnsiElement BG_BRIGHT_RED = new DefaultAnsiElement("101");
+
+	public static final AnsiElement BG_BRIGHT_GREEN = new DefaultAnsiElement("102");
+
+	public static final AnsiElement BG_BRIGHT_YELLOW = new DefaultAnsiElement("103");
+
+	public static final AnsiElement BG_BRIGHT_BLUE = new DefaultAnsiElement("104");
+
+	public static final AnsiElement BG_BRIGHT_MAGENTA = new DefaultAnsiElement("105");
+
+	public static final AnsiElement BG_BRIGHT_CYAN = new DefaultAnsiElement("106");
+
+	public static final AnsiElement BG_BRIGHT_WHITE = new DefaultAnsiElement("107");
+
 
 	/**
 	 * @return the ANSI escape code
