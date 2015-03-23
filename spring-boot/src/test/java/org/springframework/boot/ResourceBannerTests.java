@@ -29,7 +29,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
