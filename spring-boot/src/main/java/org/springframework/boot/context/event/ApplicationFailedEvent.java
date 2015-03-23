@@ -34,8 +34,8 @@ public class ApplicationFailedEvent extends SpringApplicationEvent {
 
 	/**
 	 * @param application the current application
-	 * @param context the context that was being created (maybe null)
 	 * @param args the arguments the application was running with
+	 * @param context the context that was being created (maybe null)
 	 * @param exception the exception that caused the error
 	 */
 	public ApplicationFailedEvent(SpringApplication application, String[] args,

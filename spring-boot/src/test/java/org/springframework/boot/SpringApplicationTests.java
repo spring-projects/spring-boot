@@ -229,7 +229,8 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
 		final AtomicReference<SpringApplication> reference = new AtomicReference<SpringApplication>();
-		class ApplicationReadyEventListener implements ApplicationListener<ApplicationReadyEvent> {
+		class ApplicationReadyEventListener implements
+				ApplicationListener<ApplicationReadyEvent> {
 			@Override
 			public void onApplicationEvent(ApplicationReadyEvent event) {
 				reference.set(event.getSpringApplication());
@@ -263,7 +264,8 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
 		final List<ApplicationEvent> events = new ArrayList<ApplicationEvent>();
-		class ApplicationRunningEventListener implements ApplicationListener<ApplicationEvent> {
+		class ApplicationRunningEventListener implements
+				ApplicationListener<ApplicationEvent> {
 			@Override
 			public void onApplicationEvent(ApplicationEvent event) {
 				events.add((event));
@@ -273,7 +275,8 @@ public class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(5, is(events.size()));
 		assertThat(events.get(0), is(instanceOf(ApplicationStartedEvent.class)));
-		assertThat(events.get(1), is(instanceOf(ApplicationEnvironmentPreparedEvent.class)));
+		assertThat(events.get(1),
+				is(instanceOf(ApplicationEnvironmentPreparedEvent.class)));
 		assertThat(events.get(2), is(instanceOf(ApplicationPreparedEvent.class)));
 		assertThat(events.get(3), is(instanceOf(ContextRefreshedEvent.class)));
 		assertThat(events.get(4), is(instanceOf(ApplicationReadyEvent.class)));
