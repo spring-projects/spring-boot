@@ -16,6 +16,16 @@
 
 package org.springframework.boot;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.env.*;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePropertySource;
+import org.springframework.util.Assert;
+import org.springframework.util.StreamUtils;
+
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -77,7 +87,8 @@ public class ResourceBanner implements Banner {
 		List<PropertyResolver> resolvers = new ArrayList<PropertyResolver>();
 		resolvers.add(environment);
 		resolvers.add(getVersionResolver(sourceClass));
-		return resolvers;
+        resolvers.add(getAnsiResolver());
+        return resolvers;
 	}
 
 	private PropertyResolver getVersionResolver(Class<?> sourceClass) {
@@ -97,6 +108,18 @@ public class ResourceBanner implements Banner {
 		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true));
 		return versions;
 	}
+
+    private PropertyResolver getAnsiResolver() {
+        try {
+            final MutablePropertySources sources = new MutablePropertySources();
+            final Resource file = new ClassPathResource("org/springframework/boot/ansi.properties");
+            sources.addFirst(new ResourcePropertySource("ansi-escape-properties", file));
+            return new PropertySourcesPropertyResolver(sources);
+        } catch (IOException ex) {
+            log.warn("Could not load ANSI escape properties: ", ex);
+            return null;
+        }
+    }
 
 	protected String getApplicationVersion(Class<?> sourceClass) {
 		Package sourcePackage = (sourceClass == null ? null : sourceClass.getPackage());

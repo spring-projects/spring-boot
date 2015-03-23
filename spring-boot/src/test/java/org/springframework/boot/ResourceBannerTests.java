@@ -29,6 +29,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -70,6 +71,13 @@ public class ResourceBannerTests {
 						.getBytes());
 		String banner = printBanner(resource, null, null);
 		assertThat(banner, startsWith("banner 1"));
+	}
+
+	@Test
+	public void renderWithColors() throws Exception {
+		Resource resource = new ByteArrayResource("${fg.red}This is red.${txt.reset}".getBytes());
+		String banner = printBanner(resource, null, null);
+        assertThat(banner, startsWith("\u001B[31mThis is red.\u001B[0m"));
 	}
 
 	private String printBanner(Resource resource, String bootVersion,
