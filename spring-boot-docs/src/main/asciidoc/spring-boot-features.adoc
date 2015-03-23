@@ -72,6 +72,10 @@ display (surrounded with brackets and prefixed with `v`). For example `(v1.0)`.
 |`${spring-boot.formatted-version}`
 |The Spring Boot version that you are using formatted for display (surrounded with
 brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
+
+|`${Ansi.NAME}`,
+|Where `NAME` is the name of an ANSI escape code. See
+{sc-spring-boot}/ansi/AnsiPropertySource.{sc-ext}[`AnsiPropertySource`] for details.
 |===
 
 TIP: The `SpringBootApplication.setBanner(...)` method can be used if you want to generate
