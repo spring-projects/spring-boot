@@ -77,7 +77,7 @@ public class ResourceBannerTests {
 	public void renderWithColors() throws Exception {
 		Resource resource = new ByteArrayResource("${fg.red}This is red.${txt.reset}".getBytes());
 		String banner = printBanner(resource, null, null);
-        assertThat(banner, startsWith("\u001B[31mThis is red.\u001B[0m"));
+		assertThat(banner, startsWith("\u001B[31mThis is red.\u001B[0m"));
 	}
 
 	private String printBanner(Resource resource, String bootVersion,
