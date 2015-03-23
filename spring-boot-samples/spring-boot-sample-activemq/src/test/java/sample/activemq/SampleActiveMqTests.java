@@ -16,6 +16,8 @@
 
 package sample.activemq;
 
+import javax.jms.JMSException;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,12 +26,15 @@ import org.springframework.boot.test.OutputCapture;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.jms.JMSException;
-
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Integration tests for demo application.
+ *
+ * @author Eddú Meléndez
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {SampleActiveMQApplication.class})
+@SpringApplicationConfiguration(classes = { SampleActiveMQApplication.class })
 public class SampleActiveMqTests {
 
 	@Rule
@@ -40,9 +45,9 @@ public class SampleActiveMqTests {
 
 	@Test
 	public void sendSimpleMessage() throws InterruptedException, JMSException {
-		producer.send("Test message");
+		this.producer.send("Test message");
 		Thread.sleep(1000L);
-		assertTrue(outputCapture.toString().contains("Test message"));
+		assertTrue(this.outputCapture.toString().contains("Test message"));
 	}
 
 }
