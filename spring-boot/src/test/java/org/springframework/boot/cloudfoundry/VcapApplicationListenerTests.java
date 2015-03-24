@@ -86,6 +86,8 @@ public class VcapApplicationListenerTests {
 		this.initializer.onApplicationEvent(this.event);
 		assertEquals("mysql",
 				this.context.getEnvironment().getProperty("vcap.services.mysql.name"));
+		assertEquals("3306",
+				this.context.getEnvironment().getProperty("vcap.services.mysql.credentials.port"));
 	}
 
 	@Test
@@ -97,5 +99,7 @@ public class VcapApplicationListenerTests {
 		this.initializer.onApplicationEvent(this.event);
 		assertEquals("mysql",
 				this.context.getEnvironment().getProperty("vcap.services.mysql.name"));
+		assertEquals("3306",
+				this.context.getEnvironment().getProperty("vcap.services.mysql.credentials.port"));
 	}
 }
