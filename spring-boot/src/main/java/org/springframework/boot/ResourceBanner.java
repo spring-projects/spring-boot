@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.boot.ansi.AnsiOutput.*;
+
 /**
  * Banner implementation that prints from a source {@link Resource}.
  *
@@ -107,7 +109,7 @@ public class ResourceBanner implements Banner {
 		Map<String, Object> values = new HashMap<String, Object>(AnsiElement.values().length);
 		for (AnsiElement element : AnsiElement.values()) {
 			values.put(AnsiElement.class.getSimpleName() + "." + element.name(),
-					AnsiOutput.isEnabled() ? AnsiOutput.ENCODE_START + element + AnsiOutput.ENCODE_END : "");
+					isEnabled() ? ENCODE_START + element + ENCODE_END : "");
 		}
 		return values;
 	}
