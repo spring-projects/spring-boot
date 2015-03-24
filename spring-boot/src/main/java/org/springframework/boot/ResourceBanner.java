@@ -18,31 +18,19 @@ package org.springframework.boot;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.ansi.AnsiElement;
+import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.core.env.*;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.ResourcePropertySource;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.PropertySourcesPropertyResolver;
-import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
-import org.springframework.util.StreamUtils;
 
 /**
  * Banner implementation that prints from a source {@link Resource}.
@@ -108,17 +96,20 @@ public class ResourceBanner implements Banner {
 		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true));
 		return versions;
 	}
-	
+
 	private PropertyResolver getAnsiResolver() {
-		try {
-			final MutablePropertySources sources = new MutablePropertySources();
-			final Resource file = new ClassPathResource("org/springframework/boot/ansi.properties");
-			sources.addFirst(new ResourcePropertySource("ansi-escape-properties", file));
-			return new PropertySourcesPropertyResolver(sources);
-		} catch (IOException ex) {
-			log.warn("Could not load ANSI escape properties: ", ex);
-			return null;
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(new MapPropertySource("ansi-map", getAnsiMap()));
+		return new PropertySourcesPropertyResolver(propertySources);
+	}
+
+	private Map<String, Object> getAnsiMap() {
+		Map<String, Object> values = new HashMap<String, Object>(AnsiElement.values().length);
+		for (AnsiElement element : AnsiElement.values()) {
+			values.put(AnsiElement.class.getSimpleName() + "." + element.name(),
+					AnsiOutput.isEnabled() ? AnsiOutput.ENCODE_START + element + AnsiOutput.ENCODE_END : "");
 		}
+		return values;
 	}
 
 	protected String getApplicationVersion(Class<?> sourceClass) {
