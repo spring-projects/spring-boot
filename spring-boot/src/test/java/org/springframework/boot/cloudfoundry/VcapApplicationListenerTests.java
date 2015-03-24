@@ -34,7 +34,9 @@ import static org.junit.Assert.assertNull;
 public class VcapApplicationListenerTests {
 
 	private final VcapApplicationListener initializer = new VcapApplicationListener();
+
 	private final ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+
 	private final ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
 			new SpringApplication(), new String[0], this.context.getEnvironment());
 
@@ -43,7 +45,18 @@ public class VcapApplicationListenerTests {
 		EnvironmentTestUtils
 				.addEnvironment(
 						this.context,
-						"VCAP_APPLICATION:{\"application_users\":[],\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],\"started_at\":\"2013-05-29 02:37:59 +0000\",\"started_at_timestamp\":1369795079,\"host\":\"0.0.0.0\",\"port\":61034,\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
+						"VCAP_APPLICATION:{\"application_users\":[],"
+								+ "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\","
+								+ "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
+								+ "\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],"
+								+ "\"started_at\":\"2013-05-29 02:37:59 +0000\","
+								+ "\"started_at_timestamp\":1369795079,"
+								+ "\"host\":\"0.0.0.0\",\"port\":61034,"
+								+ "\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},"
+								+ "\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
+								+ "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],"
+								+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\","
+								+ "\"state_timestamp\":1369795079}");
 		this.initializer.onApplicationEvent(this.event);
 		assertEquals("bb7935245adf3e650dfb7c58a06e9ece", this.context.getEnvironment()
 				.getProperty("vcap.application.instance_id"));
@@ -53,7 +66,7 @@ public class VcapApplicationListenerTests {
 	public void testUnparseableApplicationProperties() {
 		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:");
 		this.initializer.onApplicationEvent(this.event);
-		assertNull(this.context.getEnvironment().getProperty("vcap"));
+		assertNull(getProperty("vcap"));
 	}
 
 	@Test
@@ -61,9 +74,20 @@ public class VcapApplicationListenerTests {
 		EnvironmentTestUtils
 				.addEnvironment(
 						this.context,
-						"VCAP_APPLICATION:{\"application_users\":null,\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],\"started_at\":\"2013-05-29 02:37:59 +0000\",\"started_at_timestamp\":1369795079,\"host\":\"0.0.0.0\",\"port\":61034,\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
+						"VCAP_APPLICATION:{\"application_users\":null,"
+								+ "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\","
+								+ "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
+								+ "\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],"
+								+ "\"started_at\":\"2013-05-29 02:37:59 +0000\","
+								+ "\"started_at_timestamp\":1369795079,"
+								+ "\"host\":\"0.0.0.0\",\"port\":61034,"
+								+ "\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},"
+								+ "\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
+								+ "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],"
+								+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\","
+								+ "\"state_timestamp\":1369795079}");
 		this.initializer.onApplicationEvent(this.event);
-		assertNull(this.context.getEnvironment().getProperty("vcap"));
+		assertNull(getProperty("vcap"));
 	}
 
 	@Test
@@ -71,14 +95,17 @@ public class VcapApplicationListenerTests {
 		EnvironmentTestUtils
 				.addEnvironment(
 						this.context,
-						"VCAP_SERVICES:{\"rds-mysql-n/a\":[{\"name\":\"mysql\",\"label\":\"rds-mysql-n/a\",\"plan\":\"10mb\",\"credentials\":{\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\",\"hostname\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\",\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\",\"port\":3306,\"user\":\"urpRuqTf8Cpe6\",\"username\":\"urpRuqTf8Cpe6\",\"password\":\"pxLsGVpsC9A5S\"}}]}");
+						"VCAP_SERVICES:{\"rds-mysql-n/a\":[{"
+								+ "\"name\":\"mysql\",\"label\":\"rds-mysql-n/a\","
+								+ "\"plan\":\"10mb\",\"credentials\":{"
+								+ "\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\","
+								+ "\"hostname\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
+								+ "\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
+								+ "\"port\":3306,\"user\":\"urpRuqTf8Cpe6\",\"username\":"
+								+ "\"urpRuqTf8Cpe6\",\"password\":\"pxLsGVpsC9A5S\"}}]}");
 		this.initializer.onApplicationEvent(this.event);
-		assertEquals("mysql",
-				this.context.getEnvironment().getProperty("vcap.services.mysql.name"));
-		assertEquals(
-				"3306",
-				this.context.getEnvironment().getProperty(
-						"vcap.services.mysql.credentials.port"));
+		assertEquals("mysql", getProperty("vcap.services.mysql.name"));
+		assertEquals("3306", getProperty("vcap.services.mysql.credentials.port"));
 	}
 
 	@Test
@@ -86,13 +113,20 @@ public class VcapApplicationListenerTests {
 		EnvironmentTestUtils
 				.addEnvironment(
 						this.context,
-						"VCAP_SERVICES:{\"rds-mysql\":[{\"name\":\"mysql\",\"label\":\"rds-mysql\",\"plan\":\"10mb\",\"credentials\":{\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\",\"hostname\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\",\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\",\"port\":3306,\"user\":\"urpRuqTf8Cpe6\",\"username\":\"urpRuqTf8Cpe6\",\"password\":\"pxLsGVpsC9A5S\"}}]}");
+						"VCAP_SERVICES:{\"rds-mysql\":[{"
+								+ "\"name\":\"mysql\",\"label\":\"rds-mysql\",\"plan\":\"10mb\","
+								+ "\"credentials\":{\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\","
+								+ "\"hostname\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
+								+ "\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
+								+ "\"port\":3306,\"user\":\"urpRuqTf8Cpe6\","
+								+ "\"username\":\"urpRuqTf8Cpe6\","
+								+ "\"password\":\"pxLsGVpsC9A5S\"}}]}");
 		this.initializer.onApplicationEvent(this.event);
-		assertEquals("mysql",
-				this.context.getEnvironment().getProperty("vcap.services.mysql.name"));
-		assertEquals(
-				"3306",
-				this.context.getEnvironment().getProperty(
-						"vcap.services.mysql.credentials.port"));
+		assertEquals("mysql", getProperty("vcap.services.mysql.name"));
+		assertEquals("3306", getProperty("vcap.services.mysql.credentials.port"));
+	}
+
+	private String getProperty(String key) {
+		return this.context.getEnvironment().getProperty(key);
 	}
 }
