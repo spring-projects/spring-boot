@@ -19,7 +19,6 @@ package org.springframework.boot;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.ansi.AnsiElement;
-import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.core.env.*;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
