@@ -30,13 +30,13 @@ import sample.data.jpa.domain.RatingCount;
 
 interface HotelRepository extends Repository<Hotel, Long> {
 
-	Hotel findByCityAndName(City city, String name);
+  Hotel findByCityAndName(City city, String name);
 
-	@Query("select new sample.data.jpa.domain.HotelSummary(h.city, h.name, avg(r.rating)) "
-			+ "from Hotel h left outer join h.reviews r where h.city = ?1 group by h")
-	Page<HotelSummary> findByCity(City city, Pageable pageable);
+  @Query("select new sample.data.jpa.domain.HotelSummary(h.city, h.name, avg(r.rating)) "
+      + "from Hotel h left outer join h.reviews r where h.city = ?1 group by h")
+  Page<HotelSummary> findByCity(City city, Pageable pageable);
 
-	@Query("select new sample.data.jpa.domain.RatingCount(r.rating, count(r)) "
-			+ "from Review r where r.hotel = ?1 group by r.rating order by r.rating DESC")
-	List<RatingCount> findRatingCounts(Hotel hotel);
+  @Query("select new sample.data.jpa.domain.RatingCount(r.rating, count(r)) "
+      + "from Review r where r.hotel = ?1 group by r.rating order by r.rating DESC")
+  List<RatingCount> findRatingCounts(Hotel hotel);
 }

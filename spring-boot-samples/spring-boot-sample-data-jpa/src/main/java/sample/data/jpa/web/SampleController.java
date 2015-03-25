@@ -27,14 +27,14 @@ import sample.data.jpa.service.CityService;
 @Controller
 public class SampleController {
 
-	@Autowired
-	private CityService cityService;
+  @Autowired
+  private CityService cityService;
 
-	@RequestMapping("/")
-	@ResponseBody
-	@Transactional(readOnly = true)
-	public String helloWorld() {
-		return this.cityService.getCity("Bath", "UK").getName();
-	}
+  @RequestMapping("/")
+  @ResponseBody
+  @Transactional(readOnly = true)
+  public String helloWorld() {
+    return this.cityService.getCity("Bath", "UK").getName();
+  }
 
 }

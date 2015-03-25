@@ -38,63 +38,63 @@ import sample.data.jpa.domain.ReviewDetails;
 @Transactional
 class HotelServiceImpl implements HotelService {
 
-	private final HotelRepository hotelRepository;
+  private final HotelRepository hotelRepository;
 
-	private final ReviewRepository reviewRepository;
+  private final ReviewRepository reviewRepository;
 
-	@Autowired
-	public HotelServiceImpl(HotelRepository hotelRepository,
-			ReviewRepository reviewRepository) {
-		this.hotelRepository = hotelRepository;
-		this.reviewRepository = reviewRepository;
-	}
+  @Autowired
+  public HotelServiceImpl(HotelRepository hotelRepository,
+                          ReviewRepository reviewRepository) {
+    this.hotelRepository = hotelRepository;
+    this.reviewRepository = reviewRepository;
+  }
 
-	@Override
-	public Hotel getHotel(City city, String name) {
-		Assert.notNull(city, "City must not be null");
-		Assert.hasLength(name, "Name must not be empty");
-		return this.hotelRepository.findByCityAndName(city, name);
-	}
+  @Override
+  public Hotel getHotel(City city, String name) {
+    Assert.notNull(city, "City must not be null");
+    Assert.hasLength(name, "Name must not be empty");
+    return this.hotelRepository.findByCityAndName(city, name);
+  }
 
-	@Override
-	public Page<Review> getReviews(Hotel hotel, Pageable pageable) {
-		Assert.notNull(hotel, "Hotel must not be null");
-		return this.reviewRepository.findByHotel(hotel, pageable);
-	}
+  @Override
+  public Page<Review> getReviews(Hotel hotel, Pageable pageable) {
+    Assert.notNull(hotel, "Hotel must not be null");
+    return this.reviewRepository.findByHotel(hotel, pageable);
+  }
 
-	@Override
-	public Review getReview(Hotel hotel, int reviewNumber) {
-		Assert.notNull(hotel, "Hotel must not be null");
-		return this.reviewRepository.findByHotelAndIndex(hotel, reviewNumber);
-	}
+  @Override
+  public Review getReview(Hotel hotel, int reviewNumber) {
+    Assert.notNull(hotel, "Hotel must not be null");
+    return this.reviewRepository.findByHotelAndIndex(hotel, reviewNumber);
+  }
 
-	@Override
-	public Review addReview(Hotel hotel, ReviewDetails details) {
-		Review review = new Review(hotel, 1, details);
-		return reviewRepository.save(review);
-	}
+  @Override
+  public Review addReview(Hotel hotel, ReviewDetails details) {
+    Review review = new Review(hotel, 1, details);
+    return reviewRepository.save(review);
+  }
 
-	@Override
-	public ReviewsSummary getReviewSummary(Hotel hotel) {
-		List<RatingCount> ratingCounts = this.hotelRepository.findRatingCounts(hotel);
-		return new ReviewsSummaryImpl(ratingCounts);
-	}
+  @Override
+  public ReviewsSummary getReviewSummary(Hotel hotel) {
+    List<RatingCount> ratingCounts = this.hotelRepository.findRatingCounts(hotel);
+    return new ReviewsSummaryImpl(ratingCounts);
+  }
 
-	private static class ReviewsSummaryImpl implements ReviewsSummary {
+  private static class ReviewsSummaryImpl implements ReviewsSummary {
 
-		private final Map<Rating, Long> ratingCount;
+    private final Map<Rating, Long> ratingCount;
 
-		public ReviewsSummaryImpl(List<RatingCount> ratingCounts) {
-			this.ratingCount = new HashMap<Rating, Long>();
-			for (RatingCount ratingCount : ratingCounts) {
-				this.ratingCount.put(ratingCount.getRating(), ratingCount.getCount());
-			}
-		}
+    public ReviewsSummaryImpl(List<RatingCount> ratingCounts) {
+      this.ratingCount = new HashMap<Rating, Long>();
+      for (RatingCount ratingCount : ratingCounts) {
+        this.ratingCount.put(ratingCount.getRating(), ratingCount.getCount());
+      }
+    }
 
-		@Override
-		public long getNumberOfReviewsWithRating(Rating rating) {
-			Long count = this.ratingCount.get(rating);
-			return count == null ? 0 : count;
-		}
-	}
+    @Override
+    public long getNumberOfReviewsWithRating(Rating rating) {
+      Long count = this.ratingCount.get(rating);
+      return count == null ? 0 : count;
+    }
+  }
 }

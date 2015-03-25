@@ -26,14 +26,14 @@ import sample.data.jpa.domain.ReviewDetails;
 
 public interface HotelService {
 
-	Hotel getHotel(City city, String name);
+  Hotel getHotel(City city, String name);
 
-	Page<Review> getReviews(Hotel hotel, Pageable pageable);
+  Page<Review> getReviews(Hotel hotel, Pageable pageable);
 
-	Review getReview(Hotel hotel, int index);
+  Review getReview(Hotel hotel, int index);
 
-	Review addReview(Hotel hotel, ReviewDetails details);
+  Review addReview(Hotel hotel, ReviewDetails details);
 
-	ReviewsSummary getReviewSummary(Hotel hotel);
+  ReviewsSummary getReviewSummary(Hotel hotel);
 
 }

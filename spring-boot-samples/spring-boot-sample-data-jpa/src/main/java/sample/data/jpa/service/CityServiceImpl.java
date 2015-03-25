@@ -31,49 +31,49 @@ import sample.data.jpa.domain.HotelSummary;
 @Transactional
 class CityServiceImpl implements CityService {
 
-	private final CityRepository cityRepository;
+  private final CityRepository cityRepository;
 
-	private final HotelRepository hotelRepository;
+  private final HotelRepository hotelRepository;
 
-	@Autowired
-	public CityServiceImpl(CityRepository cityRepository, HotelRepository hotelRepository) {
-		this.cityRepository = cityRepository;
-		this.hotelRepository = hotelRepository;
-	}
+  @Autowired
+  public CityServiceImpl(CityRepository cityRepository, HotelRepository hotelRepository) {
+    this.cityRepository = cityRepository;
+    this.hotelRepository = hotelRepository;
+  }
 
-	@Override
-	public Page<City> findCities(CitySearchCriteria criteria, Pageable pageable) {
+  @Override
+  public Page<City> findCities(CitySearchCriteria criteria, Pageable pageable) {
 
-		Assert.notNull(criteria, "Criteria must not be null");
-		String name = criteria.getName();
+    Assert.notNull(criteria, "Criteria must not be null");
+    String name = criteria.getName();
 
-		if (!StringUtils.hasLength(name)) {
-			return this.cityRepository.findAll(null);
-		}
+    if (!StringUtils.hasLength(name)) {
+      return this.cityRepository.findAll(null);
+    }
 
-		String country = "";
-		int splitPos = name.lastIndexOf(",");
+    String country = "";
+    int splitPos = name.lastIndexOf(",");
 
-		if (splitPos >= 0) {
-			country = name.substring(splitPos + 1);
-			name = name.substring(0, splitPos);
-		}
+    if (splitPos >= 0) {
+      country = name.substring(splitPos + 1);
+      name = name.substring(0, splitPos);
+    }
 
-		return this.cityRepository
-				.findByNameContainingAndCountryContainingAllIgnoringCase(name.trim(),
-						country.trim(), pageable);
-	}
+    return this.cityRepository
+        .findByNameContainingAndCountryContainingAllIgnoringCase(name.trim(),
+            country.trim(), pageable);
+  }
 
-	@Override
-	public City getCity(String name, String country) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(country, "Country must not be null");
-		return this.cityRepository.findByNameAndCountryAllIgnoringCase(name, country);
-	}
+  @Override
+  public City getCity(String name, String country) {
+    Assert.notNull(name, "Name must not be null");
+    Assert.notNull(country, "Country must not be null");
+    return this.cityRepository.findByNameAndCountryAllIgnoringCase(name, country);
+  }
 
-	@Override
-	public Page<HotelSummary> getHotels(City city, Pageable pageable) {
-		Assert.notNull(city, "City must not be null");
-		return this.hotelRepository.findByCity(city, pageable);
-	}
+  @Override
+  public Page<HotelSummary> getHotels(City city, Pageable pageable) {
+    Assert.notNull(city, "City must not be null");
+    return this.hotelRepository.findByCity(city, pageable);
+  }
 }
