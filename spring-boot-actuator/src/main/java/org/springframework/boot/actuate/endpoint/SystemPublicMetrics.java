@@ -55,10 +55,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	public Collection<Metric<?>> metrics() {
 		Collection<Metric<?>> result = new LinkedHashSet<Metric<?>>();
 		addBasicMetrics(result);
-		addHeapMetrics(result);
-		addThreadMetrics(result);
-		addClassLoadingMetrics(result);
-		addGarbageCollectionMetrics(result);
+		addManagementMetrics(result);
 		return result;
 	}
 
@@ -67,17 +64,34 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	 * @param result the result
 	 */
 	protected void addBasicMetrics(Collection<Metric<?>> result) {
+		// NOTE: ManagementFactory must not be used here since it fails on GAE
 		result.add(new Metric<Long>("mem", Runtime.getRuntime().totalMemory() / 1024));
 		result.add(new Metric<Long>("mem.free", Runtime.getRuntime().freeMemory() / 1024));
 		result.add(new Metric<Integer>("processors", Runtime.getRuntime()
 				.availableProcessors()));
-		// Add JVM up time in ms
-		result.add(new Metric<Long>("uptime", ManagementFactory.getRuntimeMXBean()
-				.getUptime()));
 		result.add(new Metric<Long>("instance.uptime", System.currentTimeMillis()
 				- this.timestamp));
-		result.add(new Metric<Double>("systemload.average", ManagementFactory
-				.getOperatingSystemMXBean().getSystemLoadAverage()));
+	}
+
+	/**
+	 * Add metrics from ManagementFactory if possible. Note that ManagementFactory is not
+	 * available on Google App Engine.
+	 */
+	private void addManagementMetrics(Collection<Metric<?>> result) {
+		try {
+			// Add JVM up time in ms
+			result.add(new Metric<Long>("uptime", ManagementFactory.getRuntimeMXBean()
+					.getUptime()));
+			result.add(new Metric<Double>("systemload.average", ManagementFactory
+					.getOperatingSystemMXBean().getSystemLoadAverage()));
+			addHeapMetrics(result);
+			addThreadMetrics(result);
+			addClassLoadingMetrics(result);
+			addGarbageCollectionMetrics(result);
+		}
+		catch (NoClassDefFoundError ex) {
+			// Expected on Google App Engine
+		}
 	}
 
 	/**
