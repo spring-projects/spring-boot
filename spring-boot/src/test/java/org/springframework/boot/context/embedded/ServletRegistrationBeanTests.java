@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
@@ -194,6 +195,13 @@ public class ServletRegistrationBeanTests {
 		bean.getInitParameters().put("a", "c");
 		bean.onStartup(this.servletContext);
 		verify(this.registration).setInitParameters(Collections.singletonMap("a", "c"));
+	}
+
+	@Test
+	public void withoutDefaultMappings() throws Exception {
+		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet, false);
+		bean.onStartup(this.servletContext);
+		verify(this.registration, never()).addMapping((String[]) any());
 	}
 
 }

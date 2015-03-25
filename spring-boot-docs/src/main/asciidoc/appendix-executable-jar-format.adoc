@@ -124,9 +124,9 @@ need to read all entry data into memory.
 ==== Compatibility with the standard Java "`JarFile`"
 Spring Boot Loader strives to remain compatible with existing code and libraries.
 `org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and
-should work as a drop-in replacement. The `RandomAccessJarFile.getURL()` method will
-return a `URL` that opens a `java.net.JarURLConnection` compatible connection.
-`RandomAccessJarFile` URLs can be used with Java's `URLClassLoader`.
+should work as a drop-in replacement. The `getURL()` method will return a `URL` that
+opens a `java.net.JarURLConnection` compatible connection and can be used with Java's
+`URLClassLoader`.
 
 
 
