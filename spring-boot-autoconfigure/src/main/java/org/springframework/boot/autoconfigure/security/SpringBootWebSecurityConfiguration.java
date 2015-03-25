@@ -87,7 +87,7 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
  */
 @Configuration
 @EnableConfigurationProperties
-@ConditionalOnClass({ EnableWebSecurity.class })
+@ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
 @ConditionalOnWebApplication
 public class SpringBootWebSecurityConfiguration {
