@@ -17,20 +17,21 @@
 package sample.data.jpa.domain;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.NaturalId;
 
 @Entity
-public class Hotel implements Serializable {
+@Inheritance
+@DiscriminatorColumn(name = "type")
+public abstract class Hotel implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -51,9 +52,6 @@ public class Hotel implements Serializable {
 
   @Column(nullable = false)
   private String zip;
-
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "hotel")
-  private Set<Review> reviews;
 
   protected Hotel() {
   }
