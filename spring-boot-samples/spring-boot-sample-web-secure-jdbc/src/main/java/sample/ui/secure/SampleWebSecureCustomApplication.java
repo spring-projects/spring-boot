@@ -31,6 +31,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -81,8 +82,12 @@ public class SampleWebSecureCustomApplication extends WebMvcConfigurerAdapter {
 		protected void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests().antMatchers("/css/**").permitAll().anyRequest()
 					.fullyAuthenticated().and().formLogin().loginPage("/login")
-					.failureUrl("/login?error").permitAll();
-		}
+					.failureUrl("/login?error").permitAll()
+                    .and().logout().permitAll()
+                    // note that this overrides CSRF for logout as it allows a GET to logout
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
+
+        }
 
 		@Override
 		public void configure(AuthenticationManagerBuilder auth) throws Exception {
