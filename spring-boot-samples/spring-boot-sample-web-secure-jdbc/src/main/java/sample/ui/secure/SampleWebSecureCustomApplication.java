@@ -83,10 +83,7 @@ public class SampleWebSecureCustomApplication extends WebMvcConfigurerAdapter {
 			http.authorizeRequests().antMatchers("/css/**").permitAll().anyRequest()
 					.fullyAuthenticated().and().formLogin().loginPage("/login")
 					.failureUrl("/login?error").permitAll()
-                    .and().logout().permitAll()
-                    // note that this overrides CSRF for logout as it allows a GET to logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
-
+                    .and().logout().permitAll();
         }
 
 		@Override

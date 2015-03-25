@@ -73,10 +73,7 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 		protected void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests().anyRequest().fullyAuthenticated().and().formLogin()
 					.loginPage("/login").failureUrl("/login?error").permitAll()
-                    .and().logout().permitAll()
-                    // note that this overrides CSRF for logout as it allows a GET to logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
-
+                    .and().logout().permitAll();
         }
 
 		@Override
