@@ -146,7 +146,7 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 			}
 		});
 		this.container = factory.getEmbeddedServletContainer();
-		assertEquals("", contextPath.get());
+		assertEquals("/", contextPath.get());
 	}
 
 }
