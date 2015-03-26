@@ -59,7 +59,6 @@ public class BootRunTask extends JavaExec {
 	}
 
 	private void addResourcesIfNecessary() {
-		System.out.println(this.addResources);
 		if (this.addResources) {
 			SourceSet mainSourceSet = SourceSets.findMainSourceSet(getProject());
 			final File outputDir = (mainSourceSet == null ? null : mainSourceSet
