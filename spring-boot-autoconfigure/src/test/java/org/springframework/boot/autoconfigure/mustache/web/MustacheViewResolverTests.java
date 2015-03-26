@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache;
+package org.springframework.boot.autoconfigure.mustache.web;
 
 import java.util.Locale;
 
