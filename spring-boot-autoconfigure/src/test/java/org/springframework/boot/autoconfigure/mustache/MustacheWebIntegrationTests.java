@@ -135,6 +135,7 @@ public class MustacheWebIntegrationTests {
 			MustacheViewResolver resolver = new MustacheViewResolver();
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");
+                        resolver.setCharset("UTF-8");
 			resolver.setCompiler(Mustache.compiler().withLoader(
 					new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
 							".html")));

@@ -56,8 +56,9 @@ public class MustacheViewTests {
 
 	@Test
 	public void viewResolvesHandlebars() throws Exception {
-		MustacheView view = new MustacheView(Mustache.compiler().compile("Hello {{msg}}"));
-		view.setApplicationContext(this.context);
+		MustacheView view = new MustacheView();
+                view.setTemplate(Mustache.compiler().compile("Hello {{msg}}"));
+                view.setApplicationContext(this.context);
 		view.render(Collections.singletonMap("msg", "World"), this.request, this.response);
 		assertEquals("Hello World", this.response.getContentAsString());
 	}

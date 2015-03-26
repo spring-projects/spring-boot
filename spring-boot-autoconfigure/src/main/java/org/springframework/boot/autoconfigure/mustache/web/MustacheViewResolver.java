@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mustache.web;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Locale;
 
 import org.springframework.beans.propertyeditors.LocaleEditor;
@@ -39,8 +40,9 @@ import com.samskivert.mustache.Template;
 public class MustacheViewResolver extends UrlBasedViewResolver {
 
 	private Compiler compiler = Mustache.compiler();
+        private String charset = "UTF-8"; // default charset ?
 
-	public MustacheViewResolver() {
+        public MustacheViewResolver() {
 		setViewClass(MustacheView.class);
 	}
 
@@ -51,20 +53,30 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 		this.compiler = compiler;
 	}
 
+        /**
+         *
+         * @param charset the charset to set. Used for reading resources files
+         */
+        public void setCharset(String charset) {
+            this.charset = charset;
+        }
+
 	@Override
 	protected View loadView(String viewName, Locale locale) throws Exception {
 		Resource resource = resolveResource(viewName, locale);
 		if (resource == null) {
 			return null;
 		}
-		MustacheView view = new MustacheView(createTemplate(resource));
+
+		MustacheView view = (MustacheView) buildView(viewName);
+                view.setTemplate(createTemplate(resource));
 		view.setApplicationContext(getApplicationContext());
 		view.setServletContext(getServletContext());
 		return view;
 	}
 
 	private Template createTemplate(Resource resource) throws IOException {
-		return this.compiler.compile(new InputStreamReader(resource.getInputStream()));
+		return this.compiler.compile(new InputStreamReader(resource.getInputStream(), Charset.forName(charset)));
 	}
 
 	private Resource resolveResource(String viewName, Locale locale) {

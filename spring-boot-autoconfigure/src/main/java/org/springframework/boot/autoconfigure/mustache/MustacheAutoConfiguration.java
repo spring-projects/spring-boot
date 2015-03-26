@@ -107,6 +107,7 @@ public class MustacheAutoConfiguration {
 			resolver.setSuffix(this.mustache.getSuffix());
 			resolver.setCache(this.mustache.isCache());
 			resolver.setViewNames(this.mustache.getViewNames());
+                        resolver.setCharset(this.mustache.getCharset());
 			resolver.setContentType(this.mustache.getContentType());
 			resolver.setCompiler(mustacheCompiler);
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);

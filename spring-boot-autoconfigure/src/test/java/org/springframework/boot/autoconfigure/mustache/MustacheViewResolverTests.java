@@ -42,6 +42,7 @@ public class MustacheViewResolverTests {
 		this.resolver.setServletContext(new MockServletContext());
 		this.resolver.setPrefix("classpath:/mustache-templates/");
 		this.resolver.setSuffix(".html");
+                this.resolver.setCharset("UTF-8");
 	}
 
 	@Test
