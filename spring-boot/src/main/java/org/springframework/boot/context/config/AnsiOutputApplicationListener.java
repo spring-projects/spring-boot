@@ -42,6 +42,14 @@ public class AnsiOutputApplicationListener implements
 			String enabled = resolver.getProperty("enabled");
 			AnsiOutput.setEnabled(Enum.valueOf(Enabled.class, enabled.toUpperCase()));
 		}
+
+		//when no user defined settings for AnsiOutput
+		//we check whether console is marked as available with
+		// "spring.output.ansi.console-available" environment variable.
+		if(AnsiOutput.getEnabled() == Enabled.DETECT && resolver.containsProperty("console-available")) {
+			final boolean consoleAvailable = resolver.getProperty("console-available", Boolean.class, Boolean.FALSE);
+			AnsiOutput.setEnabled(consoleAvailable ? Enabled.ALWAYS : Enabled.NEVER);
+		}
 	}
 
 	@Override

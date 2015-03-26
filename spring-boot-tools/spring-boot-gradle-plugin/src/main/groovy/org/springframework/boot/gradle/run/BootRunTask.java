@@ -16,16 +16,16 @@
 
 package org.springframework.boot.gradle.run;
 
+import org.gradle.api.internal.file.collections.SimpleFileCollection;
+import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.SourceSet;
+import org.springframework.boot.loader.tools.FileUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.gradle.api.internal.file.collections.SimpleFileCollection;
-import org.gradle.api.tasks.JavaExec;
-import org.gradle.api.tasks.SourceSet;
-import org.springframework.boot.loader.tools.FileUtils;
 
 /**
  * Extension of the standard 'run' task with additional Spring Boot features.
@@ -54,8 +54,38 @@ public class BootRunTask extends JavaExec {
 
 	@Override
 	public void exec() {
+
+		enableColoredOutputIfPossible();
+
 		addResourcesIfNecessary();
 		super.exec();
+	}
+
+	/**
+	 * Enables colored output if possible.
+	 */
+	private void enableColoredOutputIfPossible() {
+		//in case this task is launched from a console
+		boolean consoleAvailable = isConsoleAvailable();
+		//set the env variable accordingly
+		this.getEnvironment().put("spring.output.ansi.console-available", Boolean.valueOf(consoleAvailable));
+	}
+
+	/**
+	 * Returns <code>true</code> if a console is available, false otherwise.
+	 * @return Returns <code>true</code> if a console is available, false otherwise.
+	 * @see org.springframework.boot.ansi.AnsiOutput 
+	 */
+	private boolean isConsoleAvailable() {
+		try {
+			if (System.console() == null) {
+				return false;
+			}
+			return !(System.getProperty("os.name")
+					.toLowerCase().indexOf("win") >= 0);
+		} catch (Throwable ex) {
+			return false;
+		}
 	}
 
 	private void addResourcesIfNecessary() {

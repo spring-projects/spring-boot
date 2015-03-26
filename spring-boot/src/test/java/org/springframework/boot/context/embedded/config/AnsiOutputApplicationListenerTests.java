@@ -49,6 +49,40 @@ public class AnsiOutputApplicationListenerTests {
 	}
 
 	@Test
+	public void noAnsiSettingButConsoleIsAvailable() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		Map<String, Object> props = new HashMap<String, Object>();
+		props.put("spring.output.ansi.console-available", "true");
+		application.setDefaultProperties(props);
+		application.run();
+		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.ALWAYS));
+	}
+
+	@Test
+	public void noAnsiSettingAndConsoleIsNotAvailable() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		Map<String, Object> props = new HashMap<String, Object>();
+		props.put("spring.output.ansi.console-available", "false");
+		application.setDefaultProperties(props);
+		application.run();
+		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
+	}
+
+	@Test
+	public void disabledWhenConsoleIsAvailable() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		Map<String, Object> props = new HashMap<String, Object>();
+		props.put("spring.output.ansi.enabled", "never");
+		props.put("spring.output.ansi.console-available", "true");
+		application.setDefaultProperties(props);
+		application.run();
+		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
+	}
+
+	@Test
 	public void enabled() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
@@ -71,7 +105,7 @@ public class AnsiOutputApplicationListenerTests {
 	}
 
 	@Test
-	public void disabledViaApplcationProperties() throws Exception {
+	public void disabledViaApplicationProperties() throws Exception {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		EnvironmentTestUtils.addEnvironment(environment, "spring.config.name:ansi");
 		SpringApplication application = new SpringApplication(Config.class);

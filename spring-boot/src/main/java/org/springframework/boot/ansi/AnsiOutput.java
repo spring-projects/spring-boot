@@ -48,7 +48,11 @@ public abstract class AnsiOutput {
 		AnsiOutput.enabled = enabled;
 	}
 
-	static Enabled getEnabled() {
+	/**
+	 * Returns if ANSI output is enabled.
+	 * @return Returns if ANSI output is enabled.
+	 */
+	public static Enabled getEnabled() {
 		return AnsiOutput.enabled;
 	}
 
