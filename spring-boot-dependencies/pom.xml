@@ -127,7 +127,7 @@
 		<spring-social-facebook.version>1.1.1.RELEASE</spring-social-facebook.version>
 		<spring-social-linkedin.version>1.0.1.RELEASE</spring-social-linkedin.version>
 		<spring-social-twitter.version>1.1.0.RELEASE</spring-social-twitter.version>
-		<spring-ws.version>2.2.0.RELEASE</spring-ws.version>
+		<spring-ws.version>2.2.1.RELEASE</spring-ws.version>
 		<sendgrid.version>2.1.0</sendgrid.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
