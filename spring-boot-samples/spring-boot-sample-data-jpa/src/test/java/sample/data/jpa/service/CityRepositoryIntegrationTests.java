@@ -20,6 +20,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +42,7 @@ import sample.data.jpa.domain.SportType;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+@Transactional
 public class CityRepositoryIntegrationTests {
 
   @Autowired
