@@ -16,17 +16,17 @@
 
 package sample.data.jpa.domain;
 
-import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
-public class City implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+public class City {
 
   @Id
   @GeneratedValue
@@ -36,19 +36,15 @@ public class City implements Serializable {
   private String name;
 
   @Column(nullable = false)
-  private String state;
-
-  @Column(nullable = false)
   private String country;
 
-  @Column(nullable = false)
-  private String map;
+  @OneToMany(mappedBy = "city")
+  private List<Hotel> hotels;
 
   protected City() {
   }
 
   public City(String name, String country) {
-    super();
     this.name = name;
     this.country = country;
   }
@@ -57,20 +53,27 @@ public class City implements Serializable {
     return this.name;
   }
 
-  public String getState() {
-    return this.state;
-  }
-
   public String getCountry() {
     return this.country;
   }
 
-  public String getMap() {
-    return this.map;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof City) {
+      City that = (City) obj;
+      return Objects.equals(id, that.id);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
   }
 
   @Override
   public String toString() {
-    return getName() + "," + getState() + "," + getCountry();
+    return getName() + "," + getCountry();
   }
 }

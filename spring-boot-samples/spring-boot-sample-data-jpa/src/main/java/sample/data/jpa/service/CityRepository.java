@@ -17,9 +17,10 @@
 package sample.data.jpa.service;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
-import sample.data.jpa.domain.Hotel;
+import sample.data.jpa.domain.City;
 
-interface HotelRepository extends JpaRepository<Hotel, Long> {
+interface CityRepository extends JpaRepository<City, Long>, QueryDslPredicateExecutor, CityRepositoryCustom {
 
 }

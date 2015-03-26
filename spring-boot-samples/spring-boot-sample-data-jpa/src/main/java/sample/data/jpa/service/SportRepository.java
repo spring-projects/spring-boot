@@ -16,10 +16,10 @@
 
 package sample.data.jpa.service;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
-import sample.data.jpa.domain.Hotel;
+import sample.data.jpa.domain.Sport;
 
-interface HotelRepository extends JpaRepository<Hotel, Long> {
+interface SportRepository extends CrudRepository<Sport, Long> {
 
 }

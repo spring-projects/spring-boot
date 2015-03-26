@@ -11,4 +11,8 @@ public class SportHotel extends Hotel {
   @ManyToOne
   private Sport mainSport;
 
+  public SportHotel(City city, String name, Sport mainSport) {
+    super(city, name);
+    this.mainSport = mainSport;
+  }
 }

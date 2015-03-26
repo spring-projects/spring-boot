@@ -16,8 +16,6 @@
 
 package sample.data.jpa.domain;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -31,9 +29,8 @@ import org.hibernate.annotations.NaturalId;
 @Entity
 @Inheritance
 @DiscriminatorColumn(name = "type")
-public abstract class Hotel implements Serializable {
+public abstract class Hotel {
 
-  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue
@@ -46,12 +43,6 @@ public abstract class Hotel implements Serializable {
   @Column(nullable = false)
   @NaturalId
   private String name;
-
-  @Column(nullable = false)
-  private String address;
-
-  @Column(nullable = false)
-  private String zip;
 
   protected Hotel() {
   }
@@ -69,11 +60,4 @@ public abstract class Hotel implements Serializable {
     return this.name;
   }
 
-  public String getAddress() {
-    return this.address;
-  }
-
-  public String getZip() {
-    return this.zip;
-  }
 }

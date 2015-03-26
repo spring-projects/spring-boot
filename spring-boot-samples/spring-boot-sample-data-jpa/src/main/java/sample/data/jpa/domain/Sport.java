@@ -25,7 +25,8 @@ public class Sport {
   protected Sport() {
   }
 
-  public Sport(String name) {
+  public Sport(SportType type, String name) {
+    this.type = type;
     this.name = name;
   }
 

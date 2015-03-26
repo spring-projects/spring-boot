@@ -6,4 +6,7 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue("spa")
 public class SpaHotel extends Hotel {
+  public SpaHotel(City city, String name) {
+    super(city, name);
+  }
 }
