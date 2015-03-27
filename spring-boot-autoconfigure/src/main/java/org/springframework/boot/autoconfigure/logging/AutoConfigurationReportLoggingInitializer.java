@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,10 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.SmartApplicationListener;
+import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -178,7 +179,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 
 	}
 
-	private class AutoConfigurationReportListener implements SmartApplicationListener {
+	private class AutoConfigurationReportListener implements GenericApplicationListener {
 
 		@Override
 		public int getOrder() {
@@ -186,7 +187,8 @@ public class AutoConfigurationReportLoggingInitializer implements
 		}
 
 		@Override
-		public boolean supportsEventType(Class<? extends ApplicationEvent> type) {
+		public boolean supportsEventType(ResolvableType resolvableType) {
+			Class<?> type = resolvableType.getRawClass();
 			return ContextRefreshedEvent.class.isAssignableFrom(type)
 					|| ApplicationFailedEvent.class.isAssignableFrom(type);
 		}
