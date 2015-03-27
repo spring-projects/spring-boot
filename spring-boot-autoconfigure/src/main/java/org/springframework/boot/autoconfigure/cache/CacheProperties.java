@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  * Configuration properties for the cache abstraction.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.cache")

@@ -21,6 +21,7 @@ package org.springframework.boot.autoconfigure.cache;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.3.0
  */
 public enum CacheType {
@@ -29,6 +30,11 @@ public enum CacheType {
 	 * Generic caching using 'Cache 'beans from the context.
 	 */
 	GENERIC(GenericCacheConfiguration.class),
+
+	/**
+	 * EhCache backed caching.
+	 */
+	EHCACHE(EhCacheCacheConfiguration.class),
 
 	/**
 	 * Haezelcast backed caching
