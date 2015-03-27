@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Properties;
-
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -29,16 +28,21 @@ import javax.mail.URLName;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MailHealthIndicator}.
  *
  * @author Johannes Stelzer
+ * @author Stephane Nicoll
  */
 public class MailHealthIndicatorTests {
 
@@ -51,10 +55,6 @@ public class MailHealthIndicatorTests {
 		Session session = Session.getDefaultInstance(new Properties());
 		session.addProvider(new Provider(Type.TRANSPORT, "success",
 				SuccessTransport.class.getName(), "Test", "1.0.0"));
-		session.addProvider(new Provider(Type.TRANSPORT, "fail", FailTransport.class
-				.getName(), "Test", "1.0.0"));
-		session.addProvider(new Provider(Type.TRANSPORT, "failOnClose",
-				FailOnCloseTransport.class.getName(), "Test", "1.0.0"));
 		this.mailSender = mock(JavaMailSenderImpl.class);
 		given(this.mailSender.getHost()).willReturn("smtp.acme.org");
 		given(this.mailSender.getPort()).willReturn(25);
@@ -71,19 +71,14 @@ public class MailHealthIndicatorTests {
 	}
 
 	@Test
-	public void smtpIsDown() {
-		given(this.mailSender.getProtocol()).willReturn("fail");
+	public void smtpIsDown() throws MessagingException {
+		doThrow(new MessagingException("A test exception")).when(this.mailSender).testConnection();
 		Health health = this.indicator.health();
 		assertEquals(Status.DOWN, health.getStatus());
 		assertEquals("smtp.acme.org:25", health.getDetails().get("location"));
-	}
-
-	@Test
-	public void unexpectedExceptionOnClose() {
-		given(this.mailSender.getProtocol()).willReturn("failOnClose");
-		Health health = this.indicator.health();
-		assertEquals(Status.DOWN, health.getStatus());
-		assertEquals("smtp.acme.org:25", health.getDetails().get("location"));
+		Object errorMessage = health.getDetails().get("error");
+		assertNotNull(errorMessage);
+		assertTrue(errorMessage.toString().contains("A test exception"));
 	}
 
 	public static class SuccessTransport extends Transport {
@@ -100,33 +95,6 @@ public class MailHealthIndicatorTests {
 		@Override
 		public void sendMessage(Message msg, Address[] addresses)
 				throws MessagingException {
-		}
-
-	}
-
-	public static class FailTransport extends SuccessTransport {
-
-		public FailTransport(Session session, URLName urlname) {
-			super(session, urlname);
-		}
-
-		@Override
-		public synchronized void connect(String host, int port, String user,
-				String password) throws MessagingException {
-			throw new MessagingException("fail on connect");
-		}
-
-	}
-
-	public static class FailOnCloseTransport extends SuccessTransport {
-
-		public FailOnCloseTransport(Session session, URLName urlname) {
-			super(session, urlname);
-		}
-
-		@Override
-		public synchronized void close() throws MessagingException {
-			throw new MessagingException("fail on close");
 		}
 
 	}

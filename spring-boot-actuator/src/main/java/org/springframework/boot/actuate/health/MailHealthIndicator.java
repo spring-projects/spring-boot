@@ -16,11 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Session;
-import javax.mail.Transport;
-
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -42,39 +37,8 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Builder builder) throws Exception {
 		builder.withDetail("location",
 				this.mailSender.getHost() + ":" + this.mailSender.getPort());
-		Transport transport = connectTransport();
-		try {
-			builder.up();
-		}
-		finally {
-			transport.close();
-		}
-	}
-
-	private Transport connectTransport() throws MessagingException {
-		String username = this.mailSender.getUsername();
-		String password = this.mailSender.getPassword();
-		if ("".equals(username)) {
-			username = null;
-			if ("".equals(password)) {
-				password = null;
-			}
-		}
-		Transport transport = getTransport(this.mailSender.getSession());
-		transport.connect(this.mailSender.getHost(), this.mailSender.getPort(), username,
-				password);
-		return transport;
-	}
-
-	private Transport getTransport(Session session) throws NoSuchProviderException {
-		String protocol = this.mailSender.getProtocol();
-		if (protocol == null) {
-			protocol = session.getProperty("mail.transport.protocol");
-		}
-		if (protocol == null) {
-			protocol = JavaMailSenderImpl.DEFAULT_PROTOCOL;
-		}
-		return session.getTransport(protocol);
+		this.mailSender.testConnection();
+		builder.up();
 	}
 
 }
