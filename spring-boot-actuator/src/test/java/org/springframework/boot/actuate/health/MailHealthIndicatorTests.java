@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Properties;
+
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -28,7 +29,6 @@ import javax.mail.URLName;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import static org.junit.Assert.assertEquals;
@@ -72,7 +72,8 @@ public class MailHealthIndicatorTests {
 
 	@Test
 	public void smtpIsDown() throws MessagingException {
-		doThrow(new MessagingException("A test exception")).when(this.mailSender).testConnection();
+		doThrow(new MessagingException("A test exception")).when(this.mailSender)
+				.testConnection();
 		Health health = this.indicator.health();
 		assertEquals(Status.DOWN, health.getStatus());
 		assertEquals("smtp.acme.org:25", health.getDetails().get("location"));

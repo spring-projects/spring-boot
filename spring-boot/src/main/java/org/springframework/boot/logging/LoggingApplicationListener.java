@@ -117,8 +117,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	@Override
 	public boolean supportsEventType(ResolvableType resolvableType) {
-		Class<?> eventType = resolvableType.getRawClass();
-		return isAssignableFrom(eventType, EVENT_TYPES);
+		return isAssignableFrom(resolvableType.getRawClass(), EVENT_TYPES);
 	}
 
 	@Override
@@ -127,9 +126,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private boolean isAssignableFrom(Class<?> type, Class<?>... supportedTypes) {
-		for (Class<?> supportedType : supportedTypes) {
-			if (supportedType.isAssignableFrom(type)) {
-				return true;
+		if (type != null) {
+			for (Class<?> supportedType : supportedTypes) {
+				if (supportedType.isAssignableFrom(type)) {
+					return true;
+				}
 			}
 		}
 		return false;

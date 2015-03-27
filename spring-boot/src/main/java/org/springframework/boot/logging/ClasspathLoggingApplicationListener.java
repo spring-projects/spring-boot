@@ -68,6 +68,9 @@ public final class ClasspathLoggingApplicationListener implements
 	@Override
 	public boolean supportsEventType(ResolvableType resolvableType) {
 		Class<?> type = resolvableType.getRawClass();
+		if (type == null) {
+			return false;
+		}
 		return ApplicationStartedEvent.class.isAssignableFrom(type)
 				|| ApplicationFailedEvent.class.isAssignableFrom(type);
 	}
