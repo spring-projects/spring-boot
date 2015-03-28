@@ -41,6 +41,7 @@ public @interface AutoConfigureOrder {
 	/**
 	 * The order value. Default is {@link Ordered#LOWEST_PRECEDENCE}.
 	 * @see Ordered#getOrder()
+	 * @return the order value
 	 */
 	int value() default Ordered.LOWEST_PRECEDENCE;
 

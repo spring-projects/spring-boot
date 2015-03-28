@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import javax.cache.CacheManager;
-import javax.cache.configuration.Configuration;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the cache
@@ -25,13 +24,12 @@ import javax.cache.configuration.Configuration;
  *
  * @author Stephane Nicoll
  * @since 1.3.0
- * @see CacheManager#createCache(String, Configuration)
  */
 public interface JCacheManagerCustomizer {
 
 	/**
 	 * Customize the cache manager.
-	 * @param cacheManager the {@link CacheManager} to customize
+	 * @param cacheManager the {@code javax.cache.CacheManager} to customize
 	 */
 	void customize(CacheManager cacheManager);
 
