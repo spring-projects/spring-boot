@@ -441,7 +441,7 @@ want the other Boot features but not this one)
  to locate the archive to repackage.
 
 |`customConfiguration`
-|The name of the custom configuration whuch is used to populate the nested lib directory
+|The name of the custom configuration which is used to populate the nested lib directory
  (without specifying this you get all compile and runtime dependencies).
 |===
 
