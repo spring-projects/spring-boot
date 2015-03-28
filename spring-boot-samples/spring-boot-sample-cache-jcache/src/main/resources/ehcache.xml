@@ -1,0 +1,6 @@
+<ehcache>
+	<cache name="countries"
+	       maxBytesLocalHeap="50m"
+	       timeToLiveSeconds="100">
+	</cache>
+</ehcache>

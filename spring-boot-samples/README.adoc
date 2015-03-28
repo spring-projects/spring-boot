@@ -16,6 +16,18 @@
   -- A production features sample with no web application
 * link:spring-boot-sample-actuator-log4j[spring-boot-sample-actuator-log4j]
   -- A production features sample using log4j for logging (instead of logback)
+* link:spring-boot-sample-cache-ehcache[spring-boot-sample-cache-ehcache]
+  -- Example show how Spring Boot can enable caching provided by `ehcache` and `@EnableCaching`
+* link:spring-boot-sample-cache-guava[spring-boot-sample-cache-guava]
+  -- Example show how Spring Boot can enable caching provided by `guava` and `@EnableCaching`
+* link:spring-boot-sample-cache-hazelcast[spring-boot-sample-cache-hazelcast]
+  -- Example show how Spring Boot can enable caching provided by `hazelcast` and `@EnableCaching`
+* link:spring-boot-sample-cache-jcache[spring-boot-sample-cache-jcache]
+  -- Example show how Spring Boot can enable caching provided by `jcache` but implemented by
+  `hazelcast` and `@EnableCaching`
+* link:spring-boot-sample-cache-redis[spring-boot-sample-cache-redis]
+  -- Example show how Spring Boot can enable caching provided by `redis` and `@EnableCaching`
+  Redis instance is needed. Docker: `docker run --name redis -d redis`
 * link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
   -- A thymeleaf web application
 * link:spring-boot-sample-web-static[spring-boot-sample-web-static]

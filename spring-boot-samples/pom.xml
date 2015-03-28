@@ -30,6 +30,11 @@
 		<module>spring-boot-sample-aop</module>
 		<module>spring-boot-sample-atmosphere</module>
 		<module>spring-boot-sample-batch</module>
+		<module>spring-boot-sample-cache-ehcache</module>
+		<module>spring-boot-sample-cache-guava</module>
+		<module>spring-boot-sample-cache-hazelcast</module>
+		<module>spring-boot-sample-cache-jcache</module>
+		<module>spring-boot-sample-cache-redis</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
 		<module>spring-boot-sample-data-gemfire</module>
 		<module>spring-boot-sample-data-jpa</module>
