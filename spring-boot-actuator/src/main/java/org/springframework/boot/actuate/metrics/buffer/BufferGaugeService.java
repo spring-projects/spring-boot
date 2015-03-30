@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,55 +14,49 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.writer;
+package org.springframework.boot.actuate.metrics.buffer;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.lang.UsesJava8;
 
 /**
- * Default implementation of {@link CounterService}.
+ * Fast implementation of {@link GaugeService} using {@link GaugeBuffers}.
  *
  * @author Dave Syer
  */
-public class DefaultCounterService implements CounterService {
-
-	private final MetricWriter writer;
+@UsesJava8
+public class BufferGaugeService implements GaugeService {
 
 	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
 
+	private final GaugeBuffers writer;
+
 	/**
-	 * Create a {@link DefaultCounterService} instance.
+	 * Create a {@link BufferGaugeService} instance.
 	 * @param writer the underlying writer used to manage metrics
 	 */
-	public DefaultCounterService(MetricWriter writer) {
+	public BufferGaugeService(GaugeBuffers writer) {
 		this.writer = writer;
 	}
 
 	@Override
-	public void increment(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), 1L));
-	}
-
-	@Override
-	public void decrement(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), -1L));
-	}
-
-	@Override
-	public void reset(String metricName) {
-		this.writer.reset(wrap(metricName));
+	public void submit(String metricName, double value) {
+		this.writer.set(wrap(metricName), value);
 	}
 
 	private String wrap(String metricName) {
 		if (this.names.containsKey(metricName)) {
 			return this.names.get(metricName);
 		}
-		if (metricName.startsWith("counter") || metricName.startsWith("meter")) {
+		if (metricName.startsWith("gauge") || metricName.startsWith("histogram")
+				|| metricName.startsWith("timer")) {
 			return metricName;
 		}
-		String name = "counter." + metricName;
+		String name = "gauge." + metricName;
 		this.names.put(metricName, name);
 		return name;
 	}
+
 }

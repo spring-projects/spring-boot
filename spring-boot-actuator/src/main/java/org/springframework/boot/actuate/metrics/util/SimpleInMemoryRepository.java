@@ -48,13 +48,8 @@ public class SimpleInMemoryRepository<T> {
 		synchronized (lock) {
 			T current = this.values.get(name);
 			T value = callback.modify(current);
-			if (current != null) {
-				this.values.replace(name, current, value);
-			}
-			else {
-				this.values.putIfAbsent(name, value);
-			}
-			return this.values.get(name);
+			this.values.put(name, value);
+			return value;
 		}
 	}
 

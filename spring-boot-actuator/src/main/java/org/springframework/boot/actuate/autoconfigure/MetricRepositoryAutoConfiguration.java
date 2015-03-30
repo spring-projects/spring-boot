@@ -17,36 +17,37 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
-import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.boot.actuate.metrics.buffer.BufferCounterService;
+import org.springframework.boot.actuate.metrics.buffer.BufferGaugeService;
+import org.springframework.boot.actuate.metrics.buffer.BufferMetricReader;
+import org.springframework.boot.actuate.metrics.buffer.CounterBuffers;
+import org.springframework.boot.actuate.metrics.buffer.GaugeBuffers;
 import org.springframework.boot.actuate.metrics.export.Exporter;
-import org.springframework.boot.actuate.metrics.reader.MetricRegistryMetricReader;
+import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
+import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.boot.actuate.metrics.writer.CompositeMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
 import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
-import org.springframework.boot.actuate.metrics.writer.DropwizardMetricWriter;
-import org.springframework.boot.actuate.metrics.writer.MessageChannelMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
-import org.springframework.boot.actuate.metrics.writer.MetricWriterMessageHandler;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.SubscribableChannel;
-import org.springframework.messaging.support.ExecutorSubscribableChannel;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -83,32 +84,77 @@ import com.codahale.metrics.MetricRegistry;
  * @see CounterService
  * @see MetricWriter
  * @see InMemoryMetricRepository
- * @see DropwizardMetricWriter
  * @see Exporter
  *
  * @author Dave Syer
  */
 @Configuration
+@EnableConfigurationProperties(MetricsProperties.class)
 public class MetricRepositoryAutoConfiguration {
 
-	@Autowired
-	private MetricWriter writer;
+	@Configuration
+	@ConditionalOnJava(value = JavaVersion.EIGHT, range = Range.OLDER_THAN)
+	@ConditionalOnMissingBean(MetricRepository.class)
+	static class LegacyMetricServicesConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	public CounterService counterService() {
-		return new DefaultCounterService(this.writer);
-	}
+		@Autowired
+		private MetricWriter writer;
 
-	@Bean
-	@ConditionalOnMissingBean
-	public GaugeService gaugeService() {
-		return new DefaultGaugeService(this.writer);
+		@Bean
+		@ConditionalOnMissingBean
+		public CounterService counterService() {
+			return new DefaultCounterService(this.writer);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public GaugeService gaugeService() {
+			return new DefaultGaugeService(this.writer);
+		}
+
 	}
 
 	@Configuration
+	@ConditionalOnJava(value = JavaVersion.EIGHT)
 	@ConditionalOnMissingBean(MetricRepository.class)
-	static class MetricRepositoryConfiguration {
+	static class FastMetricServicesConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public CounterBuffers counterBuffers() {
+			return new CounterBuffers();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public GaugeBuffers gaugeBuffers() {
+			return new GaugeBuffers();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public BufferMetricReader metricReader(CounterBuffers counters,
+				GaugeBuffers gauges) {
+			return new BufferMetricReader(counters, gauges);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public CounterService counterService(CounterBuffers writer) {
+			return new BufferCounterService(writer);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public GaugeService gaugeService(GaugeBuffers writer) {
+			return new BufferGaugeService(writer);
+		}
+	}
+
+	@Configuration
+	@ConditionalOnJava(value = JavaVersion.EIGHT, range = Range.OLDER_THAN)
+	@ConditionalOnMissingBean(MetricRepository.class)
+	static class LegacyMetricRepositoryConfiguration {
 
 		@Bean
 		public InMemoryMetricRepository actuatorMetricRepository() {
@@ -118,69 +164,25 @@ public class MetricRepositoryAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(MessageChannel.class)
-	static class MetricsChannelConfiguration {
+	@EnableScheduling
+	@ConditionalOnProperty(value = "spring.metrics.export.enabled", matchIfMissing = true)
+	static class DefaultMetricsExporterConfiguration {
 
-		@Autowired
-		@Qualifier("metricsExecutor")
-		private Executor executor;
-
-		@Bean
-		@ConditionalOnMissingBean(name = "metricsChannel")
-		public SubscribableChannel metricsChannel() {
-			return new ExecutorSubscribableChannel(this.executor);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(name = "metricsExecutor")
-		public Executor metricsExecutor() {
-			ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-			return executor;
-		}
-
-		@Bean
-		@Primary
-		@ConditionalOnMissingBean(name = "primaryMetricWriter")
-		public MetricWriter primaryMetricWriter(
-				@Qualifier("metricsChannel") SubscribableChannel channel,
-				List<MetricWriter> writers) {
-			final MetricWriter observer = new CompositeMetricWriter(writers);
-			channel.subscribe(new MetricWriterMessageHandler(observer));
-			return new MessageChannelMetricWriter(channel);
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnClass(MetricRegistry.class)
-	static class DropwizardMetricRegistryConfiguration {
+		@Autowired(required = false)
+		private List<MetricWriter> writers;
 
 		@Bean
 		@ConditionalOnMissingBean
-		public MetricRegistry metricRegistry() {
-			return new MetricRegistry();
+		@ConditionalOnBean(MetricWriter.class)
+		public MetricCopyExporter messageChannelMetricExporter(MetricReader reader) {
+			return new MetricCopyExporter(reader, new CompositeMetricWriter(this.writers)) {
+				@Scheduled(fixedDelayString = "${spring.metrics.export.delayMillis:5000}")
+				@Override
+				public void export() {
+					super.export();
+				}
+			};
 		}
-
-		@Bean
-		public DropwizardMetricWriter dropwizardMetricWriter(MetricRegistry metricRegistry) {
-			return new DropwizardMetricWriter(metricRegistry);
-		}
-
-		@Bean
-		@Primary
-		@ConditionalOnMissingClass(name = "org.springframework.messaging.MessageChannel")
-		@ConditionalOnMissingBean(name = "primaryMetricWriter")
-		public MetricWriter primaryMetricWriter(List<MetricWriter> writers) {
-			return new CompositeMetricWriter(writers);
-		}
-
-		@Bean
-		public PublicMetrics dropwizardPublicMetrics(MetricRegistry metricRegistry) {
-			MetricRegistryMetricReader reader = new MetricRegistryMetricReader(
-					metricRegistry);
-			return new MetricReaderPublicMetrics(reader);
-		}
-
 	}
 
 }
