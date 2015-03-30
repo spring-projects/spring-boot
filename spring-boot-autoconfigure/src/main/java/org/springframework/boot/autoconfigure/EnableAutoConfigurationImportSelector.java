@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,12 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.Ordered;
@@ -43,7 +48,9 @@ import org.springframework.util.Assert;
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
-		BeanClassLoaderAware, ResourceLoaderAware {
+		BeanClassLoaderAware, ResourceLoaderAware, BeanFactoryAware {
+
+	private ConfigurableListableBeanFactory beanFactory;
 
 	private ClassLoader beanClassLoader;
 
@@ -66,7 +73,10 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 							this.beanClassLoader)));
 
 			// Remove those specifically disabled
-			factories.removeAll(Arrays.asList(attributes.getStringArray("exclude")));
+			List<String> excluded = new ArrayList<String>(Arrays.asList(attributes
+					.getStringArray("exclude")));
+			factories.removeAll(excluded);
+			ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
 
 			// Sort
 			factories = new AutoConfigurationSorter(this.resourceLoader)
@@ -87,6 +97,12 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		Assert.isInstanceOf(ConfigurableListableBeanFactory.class, beanFactory);
+		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 	}
 
 }

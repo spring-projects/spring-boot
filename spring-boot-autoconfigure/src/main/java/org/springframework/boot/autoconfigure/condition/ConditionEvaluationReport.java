@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -53,6 +54,8 @@ public class ConditionEvaluationReport {
 
 	private ConditionEvaluationReport parent;
 
+	private List<String> exclusions = Collections.emptyList();
+
 	/**
 	 * Private constructor.
 	 * @see #get(ConfigurableListableBeanFactory)
@@ -79,6 +82,15 @@ public class ConditionEvaluationReport {
 	}
 
 	/**
+	 * Records the name of the classes that have been excluded from condition evaluation
+	 * @param exclusions the names of the excluded classes
+	 */
+	public void recordExclusions(List<String> exclusions) {
+		Assert.notNull(exclusions, "exclusions must not be null");
+		this.exclusions = exclusions;
+	}
+
+	/**
 	 * Returns condition outcomes from this report, grouped by the source.
 	 * @return the condition outcomes
 	 */
@@ -92,6 +104,14 @@ public class ConditionEvaluationReport {
 			this.addedAncestorOutcomes = true;
 		}
 		return Collections.unmodifiableMap(this.outcomes);
+	}
+
+	/**
+	 * Returns the name of the classes that have been excluded from condition evaluation.
+	 * @return the names of the excluded classes
+	 */
+	public List<String> getExclusions() {
+		return Collections.unmodifiableList(this.exclusions);
 	}
 
 	private void addNoMatchOutcomeToAncestors(String source) {
