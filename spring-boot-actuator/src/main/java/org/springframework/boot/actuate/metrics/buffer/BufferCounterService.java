@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,41 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.writer;
+package org.springframework.boot.actuate.metrics.buffer;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.lang.UsesJava8;
 
 /**
- * Default implementation of {@link CounterService}.
+ * Fast implementation of {@link CounterService} using {@link CounterBuffers}.
  *
  * @author Dave Syer
  */
-public class DefaultCounterService implements CounterService {
-
-	private final MetricWriter writer;
+@UsesJava8
+public class BufferCounterService implements CounterService {
 
 	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
 
+	private final CounterBuffers writer;
+
 	/**
-	 * Create a {@link DefaultCounterService} instance.
+	 * Create a {@link BufferCounterService} instance.
 	 * @param writer the underlying writer used to manage metrics
 	 */
-	public DefaultCounterService(MetricWriter writer) {
+	public BufferCounterService(CounterBuffers writer) {
 		this.writer = writer;
 	}
 
 	@Override
 	public void increment(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), 1L));
+		this.writer.increment(wrap(metricName), 1L);
 	}
 
 	@Override
 	public void decrement(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), -1L));
+		this.writer.increment(wrap(metricName), -1L);
 	}
 
 	@Override
@@ -65,4 +67,5 @@ public class DefaultCounterService implements CounterService {
 		this.names.put(metricName, name);
 		return name;
 	}
+
 }

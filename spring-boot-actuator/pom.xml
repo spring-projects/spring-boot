@@ -17,6 +17,7 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
+		<java.version>1.8</java.version>
 	</properties>
 	<dependencies>
 		<!-- Compile -->
@@ -215,6 +216,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.crashub</groupId>
 			<artifactId>crash.connectors.telnet</artifactId>
 			<scope>test</scope>
@@ -232,6 +238,11 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-elasticsearch</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

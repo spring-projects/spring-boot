@@ -889,30 +889,77 @@ beans are gathered by the endpoint. You can easily change that by defining your 
 `MetricsEndpoint`.
 
 
-
 [[production-ready-metric-repositories]]
-=== Metric repositories
-Metric service implementations are usually bound to a
-{sc-spring-boot-actuator}/metrics/repository/MetricRepository.{sc-ext}[`MetricRepository`].
-A `MetricRepository` is responsible for storing and retrieving metric information. Spring
-Boot provides an `InMemoryMetricRepository` and a `RedisMetricRepository` out of the
-box (the in-memory repository is the default) but you can also write your own. The
-`MetricRepository` interface is actually composed of higher level `MetricReader` and
-`MetricWriter` interfaces. For full details refer to the
-{dc-spring-boot-actuator}/metrics/repository/MetricRepository.{dc-ext}[Javadoc].
+=== Performance
 
-There's nothing to stop you hooking a `MetricRepository` with back-end storage directly
-into your app, but we recommend using the default `InMemoryMetricRepository`
-(possibly with a custom `Map` instance if you are worried about heap usage) and
-populating a back-end repository through a scheduled export job. In that way you get
-some buffering in memory of the metric values and you can reduce the network
-chatter by exporting less frequently or in batches. Spring Boot provides
-an `Exporter` interface and a few basic implementations for you to get started with that.
+The default implementation of `GaugeService` and `CounterService` provided by Spring Boot
+depends on the version of Java that you are using. With Java 8 (or better) the
+implementation switches to a high-performance version optimized for fast writes, backed by
+atomic in-memory buffers, rather than by the immutable but relatively expensive
+`Metric<?>` type (counters are approximately 5 times faster and gauges approximately twice
+as fast as the repository-based implementations). The Dropwizard metrics services (see
+below) are also very efficient even for Java 7 (they have backports of some of the Java 8
+concurrency libraries), but they do not record timestamps for metric values. If
+performance of metric gathering is a concern then it is always advisable to use one of the
+high-performance options, and also to only read metrics infrequently, so that the writes
+are buffered locally and only read when needed.
+
+NOTE: The old `MetricRepository` and its `InMemoryMetricRepository` implementation are not
+used by default if you are on Java 8 or if you are using Dropwizard metrics.
 
 
-[[production-ready-code-hale-metrics]]
+
+[[production-ready-metric-writers]]
+=== Metric writers and aggregation
+
+Spring Boot provides a couple of implementations of a marker interface called `Exporter`
+which can be used to copy metric readings from the in-memory buffers to a place where they
+can be analysed and displayed. Indeed, if you provide a `@Bean` that implements the
+`MetricWriter` interface, then it will automatically be hooked up to an `Exporter` and fed
+metric updates every 5 seconds (configured via `spring.metrics.export.delayMillis`) via a
+`@Scheduled` annotation in `MetricRepositoryAutoConfiguration`.
+
+The default exporter is a `MetricCopyExporter` which tries to optimize itself by not
+copying values that haven't changed since it was last called. The optimization can be
+switched off using a flag (`spring.metrics.export.ignoreTimestamps`). Note also that the
+`MetricRegistry` has no support for timestamps, so the optimization is not available if
+you are using Dropwizard metrics (all metrics will be copied on every tick).
+
+
+
+[[production-ready-metric-writers-export-to-redis]]
+==== Example: Export to Redis
+
+If you provide a `@Bean` of type `RedisMetricRepository` the metrics are exported to a
+Redis cache for aggregation. The `RedisMetricRepository` has 2 important parameters to
+configure it for this purpose: `prefix` and `key` (passed into its constructor). It is
+best to use a prefix that is unique to the application instance (e.g. using a random value
+and maybe the logical name of the application to make it possible to correlate with other
+instances of the same application).  The "key" is used to keep a global index of all
+metric names, so it should be unique "globally", whatever that means for your system (e.g.
+2 instances of the same system could share a Redis cache if they have distinct keys).
+Example:
+
+[source,java,indent=0]
+----
+
+@Value("${spring.application.name:application}.${random.value:0000}")
+private String prefix = "metrics;
+
+@Value("${metrics.key:METRICSKEY}")
+private String key = "KEY;
+
+@Bean
+MetricWriter metricWriter() {
+	return new RedisMetricRepository(connectionFactory, prefix, key);
+}
+----
+
+
+
+[[production-ready-dropwizard-metrics]]
 === Dropwizard Metrics
-User of the https://dropwizard.github.io/metrics/[Dropwizard '`Metrics`' library] will
+Users of the https://dropwizard.github.io/metrics/[Dropwizard '`Metrics`' library] will
 automatically find that Spring Boot metrics are published to
 `com.codahale.metrics.MetricRegistry`. A default `com.codahale.metrics.MetricRegistry`
 Spring bean will be created when you declare a dependency to the
@@ -920,17 +967,21 @@ Spring bean will be created when you declare a dependency to the
 instance if you need customizations. Metrics from the `MetricRegistry` are also
 automatically exposed via the `/metrics` endpoint.
 
-Users can create Dropwizard metrics by prefixing their metric names with the appropriate
-type (e.g. `+histogram.*+`, `+meter.*+`).
+When Dropwizard metrics are in use, the default `CounterService` and `GaugeService` are
+replaced with a `DropwizardMetricServices`, which is a wrapper around the `MetricRegistry`
+(so you can `@Autowired` one of those services and use it as normal). You can also create
+"special" Dropwizard metrics by prefixing your metric names with the appropriate type
+(i.e. `+timer.*+`, `+histogram.*+` for gauges, and `+meter.*+` for counters).
 
 
 
 [[production-ready-metrics-message-channel-integration]]
 === Message channel integration
-If the '`Spring Messaging`' jar is on your classpath a `MessageChannel` called
-`metricsChannel` is automatically created (unless one already exists). All metric update
-events are additionally published as '`messages`' on that channel. Additional analysis or
-actions can be taken by clients subscribing to that channel.
+If a `MessageChannel` bean called `metricsChannel` exists, then a `MetricWriter` will be
+created that writes metrics to that channel. The writer is automatically hooked up to an
+exporter (as for all writers), so all metric values will appear on the channel, and
+additional analysis or actions can be taken by subscribers (it's up to you to provide the
+channel and any subscribers you need).
 
 
 
