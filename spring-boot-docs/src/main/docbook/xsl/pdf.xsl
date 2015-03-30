@@ -310,7 +310,7 @@ under the License.
 		<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format"
 				xsl:use-attribute-sets="chapter.titlepage.recto.style">
 			<xsl:call-template name="component.title">
-			<xsl:with-param name="node" select="ancestor-or-self::chapter[1]"/>
+			<xsl:with-param name="node" select="ancestor-or-self::d:chapter[1]"/>
 			</xsl:call-template>
 		</fo:block>
 	</xsl:template>
