@@ -205,13 +205,13 @@ public class ServerPropertiesTests {
 	@Test
 	public void disableTomcatCompressionWithYaml() throws Exception {
 		// YAML interprets "off" as false, check that it's mapped back to off
-		assertThat("off", is(equalTo(configureCompression("false"))));
+		assertThat("off", is(equalTo(configureCompression("faLSe"))));
 	}
 
 	@Test
 	public void enableTomcatCompressionWithYaml() throws Exception {
 		// YAML interprets "on" as true, check that it's mapped back to on
-		assertThat("on", is(equalTo(configureCompression("true"))));
+		assertThat("on", is(equalTo(configureCompression("trUE"))));
 	}
 
 	@Test

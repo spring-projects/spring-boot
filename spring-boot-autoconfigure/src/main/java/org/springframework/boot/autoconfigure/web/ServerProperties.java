@@ -477,6 +477,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			}
 
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+
 				@Override
 				public void customize(Connector connector) {
 					ProtocolHandler handler = connector.getProtocolHandler();
@@ -489,14 +490,15 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 				}
 
 				private String coerceCompression(String compression) {
-					if (Boolean.toString(true).equals(compression)) {
+					if ("true".equalsIgnoreCase(compression)) {
 						return "on";
 					}
-					else if (Boolean.toString(false).equals(compression)) {
+					if ("false".equalsIgnoreCase(compression)) {
 						return "off";
 					}
 					return compression;
 				}
+
 			});
 
 			if (this.accessLogEnabled) {
