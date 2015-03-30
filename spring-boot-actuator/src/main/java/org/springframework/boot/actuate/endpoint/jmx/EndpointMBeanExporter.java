@@ -96,12 +96,19 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 
 	private final ObjectMapper objectMapper;
 
+	/**
+	 * Create a new {@link EndpointMBeanExporter} instance.
+	 */
 	public EndpointMBeanExporter() {
 		this(null);
 	}
 
+	/**
+	 * Create a new {@link EndpointMBeanExporter} instance.
+	 * @param objectMapper the object mapper
+	 */
 	public EndpointMBeanExporter(ObjectMapper objectMapper) {
-		this.objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
+		this.objectMapper = (objectMapper == null ? new ObjectMapper() : objectMapper);
 		setAutodetect(false);
 		setNamingStrategy(this.defaultNamingStrategy);
 		setAssembler(this.assembler);

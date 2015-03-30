@@ -73,9 +73,7 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
 				TestEndpoint.class));
 		this.context.refresh();
-
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-
 		MBeanInfo mbeanInfo = mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("endpoint1", this.context));
 		assertNotNull(mbeanInfo);
@@ -93,9 +91,7 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint2", new RootBeanDefinition(
 				TestEndpoint.class));
 		this.context.refresh();
-
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-
 		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("endpoint1", this.context)));
 		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
@@ -113,9 +109,7 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
 				TestEndpoint.class));
 		this.context.refresh();
-
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-
 		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("test-domain", "endpoint1", false, this.context)));
 	}
@@ -132,9 +126,7 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
 				TestEndpoint.class));
 		this.context.refresh();
-
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-
 		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("test-domain", "endpoint1", true, this.context)));
 	}
@@ -156,9 +148,7 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
 				TestEndpoint.class));
 		this.context.refresh();
-
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-
 		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
 				ObjectNameManager.getInstance(getObjectName("test-domain", "endpoint1",
 						true, this.context).toString()
@@ -173,13 +163,10 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
 				TestEndpoint.class));
 		GenericApplicationContext parent = new GenericApplicationContext();
-
 		this.context.setParent(parent);
 		parent.refresh();
 		this.context.refresh();
-
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-
 		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("endpoint1", this.context)));
 
@@ -194,12 +181,10 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
 				JsonConversionEndpoint.class));
 		this.context.refresh();
-
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		Object response = mbeanExporter.getServer().invoke(
 				getObjectName("endpoint1", this.context), "getData", new Object[0],
 				new String[0]);
-
 		assertThat(response, is(instanceOf(Map.class)));
 		assertThat(((Map<?, ?>) response).get("date"), is(instanceOf(Long.class)));
 	}
@@ -217,12 +202,10 @@ public class EndpointMBeanExporterTests {
 		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
 				JsonConversionEndpoint.class));
 		this.context.refresh();
-
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		Object response = mbeanExporter.getServer().invoke(
 				getObjectName("endpoint1", this.context), "getData", new Object[0],
 				new String[0]);
-
 		assertThat(response, is(instanceOf(Map.class)));
 		assertThat(((Map<?, ?>) response).get("date"), is(instanceOf(String.class)));
 	}
@@ -242,10 +225,8 @@ public class EndpointMBeanExporterTests {
 									.getIdentityHexString(applicationContext
 											.getBean(beanKey))));
 		}
-		else {
-			return ObjectNameManager.getInstance(String.format(
-					"%s:type=Endpoint,name=%s", domain, beanKey));
-		}
+		return ObjectNameManager.getInstance(String.format("%s:type=Endpoint,name=%s",
+				domain, beanKey));
 	}
 
 	public static class TestEndpoint extends AbstractEndpoint<String> {
@@ -258,6 +239,7 @@ public class EndpointMBeanExporterTests {
 		public String invoke() {
 			return "hello world";
 		}
+
 	}
 
 	public static class JsonConversionEndpoint extends

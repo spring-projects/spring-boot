@@ -40,11 +40,24 @@ public class EndpointMBean {
 
 	private final ObjectMapper mapper;
 
+	/**
+	 * Create a new {@link EndpointMBean} instance.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to wrap
+	 * @deprecated since 1.3 in favor of
+	 * {@link #EndpointMBean(String, Endpoint, ObjectMapper)}
+	 */
 	@Deprecated
 	public EndpointMBean(String beanName, Endpoint<?> endpoint) {
 		this(beanName, endpoint, new ObjectMapper());
 	}
 
+	/**
+	 * Create a new {@link EndpointMBean} instance.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to wrap
+	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
+	 */
 	public EndpointMBean(String beanName, Endpoint<?> endpoint, ObjectMapper objectMapper) {
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
@@ -71,15 +84,12 @@ public class EndpointMBean {
 		if (result == null) {
 			return null;
 		}
-
 		if (result instanceof String) {
 			return result;
 		}
-
 		if (result.getClass().isArray() || result instanceof List) {
 			return this.mapper.convertValue(result, List.class);
 		}
-
 		return this.mapper.convertValue(result, Map.class);
 	}
 

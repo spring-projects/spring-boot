@@ -32,11 +32,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ManagedResource
 public class DataEndpointMBean extends EndpointMBean {
 
+	/**
+	 * Create a new {@link DataEndpointMBean} instance.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to wrap
+	 * @deprecated since 1.3 in favor of
+	 * {@link #DataEndpointMBean(String, Endpoint, ObjectMapper)}
+	 */
 	@Deprecated
 	public DataEndpointMBean(String beanName, Endpoint<?> endpoint) {
 		super(beanName, endpoint);
 	}
 
+	/**
+	 * Create a new {@link DataEndpointMBean} instance.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to wrap
+	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
+	 */
 	public DataEndpointMBean(String beanName, Endpoint<?> endpoint,
 			ObjectMapper objectMapper) {
 		super(beanName, endpoint, objectMapper);

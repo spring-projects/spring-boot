@@ -32,14 +32,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ManagedResource
 public class ShutdownEndpointMBean extends EndpointMBean {
 
+	/**
+	 * Create a new {@link ShutdownEndpointMBean} instance.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to wrap
+	 * @deprecated since 1.3 in favor of
+	 * {@link #ShutdownEndpointMBean(String, Endpoint, ObjectMapper)}
+	 */
 	@Deprecated
 	public ShutdownEndpointMBean(String beanName, Endpoint<?> endpoint) {
 		super(beanName, endpoint);
 	}
 
+	/**
+	 * Create a new {@link ShutdownEndpointMBean} instance.
+	 * @param beanName the bean name
+	 * @param endpoint the endpoint to wrap
+	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
+	 */
 	public ShutdownEndpointMBean(String beanName, Endpoint<?> endpoint,
-			ObjectMapper mapper) {
-		super(beanName, endpoint, mapper);
+			ObjectMapper objectMapper) {
+		super(beanName, endpoint, objectMapper);
 	}
 
 	@ManagedOperation(description = "Shutdown the ApplicationContext")

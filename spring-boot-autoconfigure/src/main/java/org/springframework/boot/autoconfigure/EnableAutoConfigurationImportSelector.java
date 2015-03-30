@@ -73,8 +73,7 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 							this.beanClassLoader)));
 
 			// Remove those specifically disabled
-			List<String> excluded = new ArrayList<String>(Arrays.asList(attributes
-					.getStringArray("exclude")));
+			List<String> excluded = Arrays.asList(attributes.getStringArray("exclude"));
 			factories.removeAll(excluded);
 			ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
 
