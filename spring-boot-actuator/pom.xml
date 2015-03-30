@@ -16,6 +16,7 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
+		<java.version>1.8</java.version>
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<dependencies>
@@ -200,4 +201,12 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>animal-sniffer-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 </project>
