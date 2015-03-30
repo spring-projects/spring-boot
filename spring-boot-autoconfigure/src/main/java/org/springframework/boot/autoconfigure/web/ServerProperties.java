@@ -483,9 +483,19 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 					if (handler instanceof AbstractHttp11Protocol) {
 						@SuppressWarnings("rawtypes")
 						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-						protocol.setCompression(Tomcat.this.compression);
+						protocol.setCompression(coerceCompression(Tomcat.this.compression));
 						protocol.setCompressableMimeTypes(Tomcat.this.compressableMimeTypes);
 					}
+				}
+
+				private String coerceCompression(String compression) {
+					if (Boolean.toString(true).equals(compression)) {
+						return "on";
+					}
+					else if (Boolean.toString(false).equals(compression)) {
+						return "off";
+					}
+					return compression;
 				}
 			});
 
