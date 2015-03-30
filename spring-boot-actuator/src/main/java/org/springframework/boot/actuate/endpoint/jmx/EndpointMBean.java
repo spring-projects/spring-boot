@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,18 +31,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Simple wrapper around {@link Endpoint} implementations to enable JMX export.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @ManagedResource
 public class EndpointMBean {
 
 	private final Endpoint<?> endpoint;
 
-	private final ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper;
 
+	@Deprecated
 	public EndpointMBean(String beanName, Endpoint<?> endpoint) {
+		this(beanName, endpoint, new ObjectMapper());
+	}
+
+	public EndpointMBean(String beanName, Endpoint<?> endpoint, ObjectMapper objectMapper) {
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
+		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.endpoint = endpoint;
+		this.mapper = objectMapper;
 	}
 
 	@ManagedAttribute(description = "Returns the class of the underlying endpoint")

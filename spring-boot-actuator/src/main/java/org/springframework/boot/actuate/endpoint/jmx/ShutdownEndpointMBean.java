@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,25 @@ import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Special endpoint wrapper for {@link ShutdownEndpoint}.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @ManagedResource
 public class ShutdownEndpointMBean extends EndpointMBean {
 
+	@Deprecated
 	public ShutdownEndpointMBean(String beanName, Endpoint<?> endpoint) {
 		super(beanName, endpoint);
+	}
+
+	public ShutdownEndpointMBean(String beanName, Endpoint<?> endpoint,
+			ObjectMapper mapper) {
+		super(beanName, endpoint, mapper);
 	}
 
 	@ManagedOperation(description = "Shutdown the ApplicationContext")

@@ -31,11 +31,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable JMX export for
  * {@link Endpoint}s.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnExpression("${endpoints.jmx.enabled:true} && ${spring.jmx.enabled:true}")
@@ -44,11 +47,14 @@ import org.springframework.util.StringUtils;
 public class EndpointMBeanExportAutoConfiguration {
 
 	@Autowired
-	EndpointMBeanExportProperties properties = new EndpointMBeanExportProperties();
+	private EndpointMBeanExportProperties properties = new EndpointMBeanExportProperties();
+
+	@Autowired(required = false)
+	private ObjectMapper objectMapper;
 
 	@Bean
 	public EndpointMBeanExporter endpointMBeanExporter(MBeanServer server) {
-		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter();
+		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter(this.objectMapper);
 		String domain = this.properties.getDomain();
 		if (StringUtils.hasText(domain)) {
 			mbeanExporter.setDomain(domain);

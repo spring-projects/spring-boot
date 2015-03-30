@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,15 @@ import org.springframework.jmx.export.naming.SelfNaming;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * {@link ApplicationListener} that registers all known {@link Endpoint}s with an
  * {@link MBeanServer} using the {@link MBeanExporter} located from the application
  * context.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle,
 		BeanFactoryAware, ApplicationContextAware {
@@ -91,8 +94,14 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 
 	private Properties objectNameStaticProperties = new Properties();
 
+	private final ObjectMapper objectMapper;
+
 	public EndpointMBeanExporter() {
-		super();
+		this(null);
+	}
+
+	public EndpointMBeanExporter(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper == null ? new ObjectMapper() : objectMapper;
 		setAutodetect(false);
 		setNamingStrategy(this.defaultNamingStrategy);
 		setAssembler(this.assembler);
@@ -168,9 +177,9 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 
 	protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
 		if (endpoint instanceof ShutdownEndpoint) {
-			return new ShutdownEndpointMBean(beanName, endpoint);
+			return new ShutdownEndpointMBean(beanName, endpoint, this.objectMapper);
 		}
-		return new DataEndpointMBean(beanName, endpoint);
+		return new DataEndpointMBean(beanName, endpoint, this.objectMapper);
 	}
 
 	@Override
