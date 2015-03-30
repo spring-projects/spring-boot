@@ -31,6 +31,8 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -197,25 +199,19 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void customTomcatCompression() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.port", "0");
-		map.put("server.tomcat.compression", "on");
-		bindProperties(map);
+		assertThat("on", is(equalTo(configureCompression("on"))));
+	}
 
-		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-		this.properties.customize(factory);
+	@Test
+	public void disableTomcatCompressionWithYaml() throws Exception {
+		// YAML interprets "off" as false, check that it's mapped back to off
+		assertThat("off", is(equalTo(configureCompression("false"))));
+	}
 
-		TomcatEmbeddedServletContainer container = (TomcatEmbeddedServletContainer) factory
-				.getEmbeddedServletContainer();
-
-		try {
-			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) container
-					.getTomcat().getConnector().getProtocolHandler();
-			assertEquals("on", protocol.getCompression());
-		}
-		finally {
-			container.stop();
-		}
+	@Test
+	public void enableTomcatCompressionWithYaml() throws Exception {
+		// YAML interprets "on" as true, check that it's mapped back to on
+		assertThat("on", is(equalTo(configureCompression("true"))));
 	}
 
 	@Test
@@ -244,6 +240,29 @@ public class ServerPropertiesTests {
 	private void bindProperties(Map<String, String> map) {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				map));
+	}
+
+	private String configureCompression(String compression) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.port", "0");
+		// YAML interprets "on" as true
+		map.put("server.tomcat.compression", compression);
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(factory);
+
+		TomcatEmbeddedServletContainer container = (TomcatEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+
+		try {
+			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) container
+					.getTomcat().getConnector().getProtocolHandler();
+			return protocol.getCompression();
+		}
+		finally {
+			container.stop();
+		}
 	}
 
 }
