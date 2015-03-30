@@ -111,11 +111,11 @@ public class CacheAutoConfiguration {
 		private CacheProperties cacheProperties;
 
 		@Autowired(required = false)
-		private CacheManager beanFactory;
+		private CacheManager cacheManager;
 
 		@PostConstruct
 		public void checkHasCacheManager() {
-			Assert.notNull(this.beanFactory, "No cache manager could "
+			Assert.notNull(this.cacheManager, "No cache manager could "
 					+ "be auto-configured, check your configuration (caching "
 					+ "type is '" + this.cacheProperties.getType() + "')");
 		}
