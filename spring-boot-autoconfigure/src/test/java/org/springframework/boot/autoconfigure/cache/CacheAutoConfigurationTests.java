@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -50,6 +51,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -251,6 +254,30 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
+	public void jCacheCacheWithConfig() throws IOException {
+		String cachingProviderFqn = MockCachingProvider.class.getName();
+		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
+		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
+				"spring.cache.jcache.provider=" + cachingProviderFqn,
+				"spring.cache.config=" + configLocation);
+		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+		Resource configResource = new ClassPathResource(configLocation);
+		assertThat(cacheManager.getCacheManager().getURI(), is(configResource.getURI()));
+	}
+
+	@Test
+	public void jCacheCacheWithWrongConfig() {
+		String cachingProviderFqn = MockCachingProvider.class.getName();
+		String configLocation = "org/springframework/boot/autoconfigure/cache/does-not-exist.xml";
+		thrown.expect(BeanCreationException.class);
+		thrown.expectMessage("spring.cache.config");
+		thrown.expectMessage(configLocation);
+		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
+				"spring.cache.jcache.provider=" + cachingProviderFqn,
+				"spring.cache.config=" + configLocation);
+	}
+
+	@Test
 	public void ehCacheCacheWithCaches() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=ehcache");
 		EhCacheCacheManager cacheManager = null;
@@ -268,7 +295,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void ehCacheCacheWithLocation() {
+	public void ehCacheCacheWithConfig() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=ehcache",
 				"spring.cache.config=cache/ehcache-override.xml");
 		EhCacheCacheManager cacheManager = null;
@@ -296,7 +323,7 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastCacheWithLocation() {
+	public void hazelcastCacheWithConfig() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
 				"spring.cache.config=org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml");
 		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
@@ -306,12 +333,11 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void hazelcastWithWrongLocation() {
+	public void hazelcastWithWrongConfig() {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("foo/bar/unknown.xml");
 		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
 				"spring.cache.config=foo/bar/unknown.xml");
-		System.out.println(this.context.getBean(CacheManager.class).getClass());
 	}
 
 	@Test
@@ -325,6 +351,27 @@ public class CacheAutoConfigurationTests {
 			cacheManager = validateCacheManager(JCacheCacheManager.class);
 			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
 			assertThat(cacheManager.getCacheNames(), hasSize(2));
+		}
+		finally {
+			if (cacheManager != null) {
+				cacheManager.getCacheManager().close();
+			}
+		}
+	}
+
+	@Test
+	public void hazelcastAsJCacheWithConfig() throws IOException {
+		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
+		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
+		JCacheCacheManager cacheManager = null;
+		try {
+			load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
+					"spring.cache.jcache.provider=" + cachingProviderFqn,
+					"spring.cache.config="+configLocation);
+			cacheManager = validateCacheManager(JCacheCacheManager.class);
+
+			Resource configResource = new ClassPathResource(configLocation);
+			assertThat(cacheManager.getCacheManager().getURI(), is(configResource.getURI()));
 		}
 		finally {
 			if (cacheManager != null) {
