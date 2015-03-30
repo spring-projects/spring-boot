@@ -395,6 +395,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-validation</artifactId>
+				<version>1.3.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-velocity</artifactId>
 				<version>1.3.0.BUILD-SNAPSHOT</version>
 			</dependency>
