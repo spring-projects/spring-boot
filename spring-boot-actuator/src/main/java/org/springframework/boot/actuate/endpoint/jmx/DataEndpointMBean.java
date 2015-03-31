@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.jmx;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.json.jackson.ObjectMapperProvider;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -29,8 +30,9 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 @ManagedResource
 public class DataEndpointMBean extends EndpointMBean {
 
-	public DataEndpointMBean(String beanName, Endpoint<?> endpoint) {
-		super(beanName, endpoint);
+	public DataEndpointMBean(String beanName, Endpoint<?> endpoint,
+			ObjectMapperProvider objectMapperProvider) {
+		super(beanName, endpoint, objectMapperProvider);
 	}
 
 	@ManagedAttribute(description = "Invoke the underlying endpoint")

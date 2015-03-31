@@ -34,6 +34,8 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.boot.json.jackson.ObjectMapperProvider;
+import org.springframework.boot.json.jackson.WrappedObjectMapperProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -47,6 +49,7 @@ import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.jmx.export.naming.SelfNaming;
 import org.springframework.jmx.support.ObjectNameManager;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -89,6 +92,9 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 
 	private boolean ensureUniqueRuntimeObjectNames = false;
 
+	private ObjectMapperProvider objectMapperProvider = WrappedObjectMapperProvider
+			.createBasicProvider();
+
 	private Properties objectNameStaticProperties = new Properties();
 
 	public EndpointMBeanExporter() {
@@ -130,6 +136,11 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 		this.objectNameStaticProperties = objectNameStaticProperties;
 	}
 
+	public void setObjectMapperProvider(final ObjectMapperProvider objectMapperProvider) {
+		Assert.notNull(objectMapperProvider, "Cannot set a null ObjectMapperProvider");
+		this.objectMapperProvider = objectMapperProvider;
+	}
+
 	protected void doStart() {
 		locateAndRegisterEndpoints();
 	}
@@ -168,9 +179,10 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 
 	protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
 		if (endpoint instanceof ShutdownEndpoint) {
-			return new ShutdownEndpointMBean(beanName, endpoint);
+			return new ShutdownEndpointMBean(beanName, endpoint,
+					this.objectMapperProvider);
 		}
-		return new DataEndpointMBean(beanName, endpoint);
+		return new DataEndpointMBean(beanName, endpoint, this.objectMapperProvider);
 	}
 
 	@Override

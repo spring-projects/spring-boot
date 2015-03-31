@@ -29,11 +29,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.json.jackson.WrappedObjectMapperProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable JMX export for
@@ -50,6 +53,9 @@ public class EndpointMBeanExportAutoConfiguration {
 	@Autowired
 	EndpointMBeanExportProperties properties = new EndpointMBeanExportProperties();
 
+	@Autowired(required = false)
+	ObjectMapper objectMapper;
+
 	@Bean
 	public EndpointMBeanExporter endpointMBeanExporter(MBeanServer server) {
 		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter();
@@ -60,6 +66,10 @@ public class EndpointMBeanExportAutoConfiguration {
 		mbeanExporter.setServer(server);
 		mbeanExporter.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
 		mbeanExporter.setObjectNameStaticProperties(this.properties.getStaticNames());
+		if (this.objectMapper != null) {
+			mbeanExporter.setObjectMapperProvider(new WrappedObjectMapperProvider(
+					this.objectMapper));
+		}
 		return mbeanExporter;
 	}
 

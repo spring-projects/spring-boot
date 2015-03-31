@@ -20,12 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.json.jackson.ObjectMapperProvider;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Simple wrapper around {@link Endpoint} implementations to enable JMX export.
@@ -37,12 +36,15 @@ public class EndpointMBean {
 
 	private final Endpoint<?> endpoint;
 
-	private final ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapperProvider objectMapperProvider;
 
-	public EndpointMBean(String beanName, Endpoint<?> endpoint) {
+	public EndpointMBean(String beanName, Endpoint<?> endpoint,
+			ObjectMapperProvider objectMapperProvider) {
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
+		Assert.notNull(objectMapperProvider, "ObjectMapperProvider must not be null");
 		this.endpoint = endpoint;
+		this.objectMapperProvider = objectMapperProvider;
 	}
 
 	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
@@ -69,10 +71,11 @@ public class EndpointMBean {
 		}
 
 		if (result.getClass().isArray() || result instanceof List) {
-			return this.mapper.convertValue(result, List.class);
+			return this.objectMapperProvider.getObjectMapper().convertValue(result,
+					List.class);
 		}
 
-		return this.mapper.convertValue(result, Map.class);
+		return this.objectMapperProvider.getObjectMapper().convertValue(result, Map.class);
 	}
 
 }
