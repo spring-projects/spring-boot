@@ -55,8 +55,9 @@ public @interface ConditionalOnBean {
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
-	 * when each class specified is missing from beans in the {@link ApplicationContext}.
-	 * @return the class types of beans to check
+	 * when any of the annotations specified is defined on a bean in the
+	 * {@link ApplicationContext}.
+	 * @return the class-level annotation types to check
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 
