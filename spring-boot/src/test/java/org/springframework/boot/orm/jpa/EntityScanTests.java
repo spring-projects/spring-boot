@@ -108,6 +108,14 @@ public class EntityScanTests {
 				BeanPostProcessorConfiguration.class, BaseConfig.class);
 		assertSetPackagesToScan("com.mycorp.entity");
 	}
+	
+	@Test
+	public void considersMultipleEntityScanAnnotations() {
+		
+		this.context = new AnnotationConfigApplicationContext(First.class, Second.class);
+		
+		assertSetPackagesToScan("foo", "bar");
+	}
 
 	private void assertSetPackagesToScan(String... expected) {
 		String[] actual = this.context.getBean(
@@ -207,4 +215,9 @@ public class EntityScanTests {
 
 	}
 
+	@EntityScan(basePackages = "foo")
+	static class First extends BaseConfig {}
+	
+	@EntityScan(basePackages = "bar")
+	static class Second extends BaseConfig {}
 }

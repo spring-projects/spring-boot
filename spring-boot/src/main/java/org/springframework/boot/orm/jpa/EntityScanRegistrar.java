@@ -19,12 +19,14 @@ package org.springframework.boot.orm.jpa;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -34,12 +36,14 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} used by {@link EntityScan}.
  *
  * @author Phillip Webb
+ * @author Oliver Gierke
  */
 class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -48,7 +52,19 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
-		if (!registry.containsBeanDefinition(BEAN_NAME)) {
+		
+		if (registry.containsBeanDefinition(BEAN_NAME)) {
+			
+			BeanDefinition definition = registry.getBeanDefinition(BEAN_NAME);
+			ValueHolder holder = definition.getConstructorArgumentValues().getGenericArgumentValue(String[].class);
+			
+			List<String> packages = new ArrayList<String>(Arrays.asList((String[]) holder.getValue()));
+			packages.addAll(Arrays.asList(getPackagesToScan(importingClassMetadata)));
+			
+			holder.setValue(packages.toArray(new String[packages.size()]));
+			
+		} else {
+			
 			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 			beanDefinition.setBeanClass(EntityScanBeanPostProcessor.class);
 			beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(
