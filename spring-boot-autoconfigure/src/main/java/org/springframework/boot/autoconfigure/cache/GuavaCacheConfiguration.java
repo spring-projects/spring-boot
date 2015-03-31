@@ -40,7 +40,7 @@ import com.google.common.cache.CacheLoader;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnClass(CacheBuilder.class)
+@ConditionalOnClass({CacheBuilder.class,GuavaCacheManager.class})
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
 class GuavaCacheConfiguration {

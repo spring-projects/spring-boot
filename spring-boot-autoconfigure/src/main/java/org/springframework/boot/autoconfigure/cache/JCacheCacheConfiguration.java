@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.cache;
 
 import java.util.Iterator;
 import java.util.List;
-
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
@@ -49,7 +48,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnClass(Caching.class)
+@ConditionalOnClass({Caching.class, JCacheCacheManager.class})
 @ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
 @Conditional({ CacheCondition.class,
 		JCacheCacheConfiguration.JCacheAvailableCondition.class })
