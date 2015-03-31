@@ -869,6 +869,10 @@ relative to the current directory.
 Log files will rotate when they reach 10 Mb and as with console output, `ERROR`, `WARN`
 and `INFO` level messages are logged by default.
 
+NOTE: The logging system is initialized early in the application lifecycle and as such
+logging properties will not be found in property files loaded via `@PropertySource`
+annotations.
+
 
 
 [[boot-features-custom-log-levels]]

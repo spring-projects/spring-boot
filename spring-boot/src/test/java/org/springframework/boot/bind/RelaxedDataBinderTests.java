@@ -422,6 +422,48 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindMapWithClashInProperties() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "vanilla.spam: bar\n"
+				+ "vanilla.spam.value: 123", "vanilla");
+		assertEquals(0, result.getErrorCount());
+		assertEquals(2, target.size());
+		assertEquals("bar", target.get("spam"));
+		assertEquals("123", target.get("spam.value"));
+	}
+
+	@Test
+	public void testBindMapWithDeepClashInProperties() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "vanilla.spam.foo: bar\n"
+				+ "vanilla.spam.foo.value: 123", "vanilla");
+		assertEquals(0, result.getErrorCount());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) target.get("spam");
+		assertEquals("123", map.get("foo.value"));
+	}
+
+	@Test
+	public void testBindMapWithDifferentDeepClashInProperties() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "vanilla.spam.bar: bar\n"
+				+ "vanilla.spam.bar.value: 123", "vanilla");
+		assertEquals(0, result.getErrorCount());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) target.get("spam");
+		assertEquals("123", map.get("bar.value"));
+	}
+
+	@Test
+	public void testBindShallowMap() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "vanilla.spam: bar\n" + "vanilla.value: 123",
+				"vanilla");
+		assertEquals(0, result.getErrorCount());
+		assertEquals("123", target.get("value"));
+	}
+
+	@Test
 	public void testBindMapNestedMap() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
 		BindingResult result = bind(target, "spam: bar\n" + "vanilla.foo.value: 123",

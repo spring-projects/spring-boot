@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,8 @@ import org.springframework.validation.DataBinder;
  * @see RelaxedNames
  */
 public class RelaxedDataBinder extends DataBinder {
+
+	private static final Object BLANK = new Object();
 
 	private String namePrefix;
 
@@ -112,11 +115,10 @@ public class RelaxedDataBinder extends DataBinder {
 
 	@Override
 	protected void doBind(MutablePropertyValues propertyValues) {
-		propertyValues = modifyProperties(propertyValues, getTarget());
 		// Harmless additional property editor comes in very handy sometimes...
 		getPropertyEditorRegistry().registerCustomEditor(InetAddress.class,
 				new InetAddressEditor());
-		super.doBind(propertyValues);
+		super.doBind(modifyProperties(propertyValues, getTarget()));
 	}
 
 	/**
@@ -129,22 +131,52 @@ public class RelaxedDataBinder extends DataBinder {
 	 */
 	private MutablePropertyValues modifyProperties(MutablePropertyValues propertyValues,
 			Object target) {
-
 		propertyValues = getPropertyValuesForNamePrefix(propertyValues);
-
 		if (target instanceof MapHolder) {
 			propertyValues = addMapPrefix(propertyValues);
 		}
-
 		BeanWrapper wrapper = new BeanWrapperImpl(target);
 		wrapper.setConversionService(new RelaxedConversionService(getConversionService()));
 		wrapper.setAutoGrowNestedPaths(true);
-
-		List<PropertyValue> list = propertyValues.getPropertyValueList();
-		for (int i = 0; i < list.size(); i++) {
-			modifyProperty(propertyValues, wrapper, list.get(i), i);
+		List<PropertyValue> sortedValues = new ArrayList<PropertyValue>();
+		List<String> sortedNames = getSortedPropertyNames(propertyValues);
+		for (String name : sortedNames) {
+			sortedValues.add(modifyProperty(wrapper,
+					propertyValues.getPropertyValue(name)));
 		}
-		return propertyValues;
+		return new MutablePropertyValues(sortedValues);
+	}
+
+	private List<String> getSortedPropertyNames(MutablePropertyValues propertyValues) {
+		List<String> names = new LinkedList<String>();
+		for (PropertyValue propertyValue : propertyValues.getPropertyValueList()) {
+			names.add(propertyValue.getName());
+		}
+		sortPropertyNames(names);
+		return names;
+	}
+
+	/**
+	 * Sort by name so that parent properties get processed first (e.g. 'foo.bar' before
+	 * 'foo.bar.spam'). Don't use Collections.sort() because the order might be
+	 * significant for other property names (it shouldn't be but who knows what people
+	 * might be relying on, e.g. HSQL has a JDBCXADataSource where "databaseName" is a
+	 * synonym for "url").
+	 * @param names the names to sort
+	 */
+	private void sortPropertyNames(List<String> names) {
+		for (String name : new ArrayList<String>(names)) {
+			int propertyIndex = names.indexOf(name);
+			BeanPath path = new BeanPath(name);
+			for (String prefix : path.prefixes()) {
+				int prefixIndex = names.indexOf(prefix);
+				if (prefixIndex >= propertyIndex) {
+					// The child property has a parent in the list in the wrong order
+					names.remove(name);
+					names.add(prefixIndex, name);
+				}
+			}
+		}
 	}
 
 	private MutablePropertyValues addMapPrefix(MutablePropertyValues propertyValues) {
@@ -175,14 +207,13 @@ public class RelaxedDataBinder extends DataBinder {
 		return rtn;
 	}
 
-	private void modifyProperty(MutablePropertyValues propertyValues, BeanWrapper target,
-			PropertyValue propertyValue, int index) {
-		String oldName = propertyValue.getName();
-		String name = normalizePath(target, oldName);
-		if (!name.equals(oldName)) {
-			propertyValues.setPropertyValueAt(
-					new PropertyValue(name, propertyValue.getValue()), index);
+	private PropertyValue modifyProperty(BeanWrapper target, PropertyValue propertyValue) {
+		String name = propertyValue.getName();
+		String normalizedName = normalizePath(target, name);
+		if (!normalizedName.equals(name)) {
+			return new PropertyValue(normalizedName, propertyValue.getValue());
 		}
+		return propertyValue;
 	}
 
 	/**
@@ -214,15 +245,9 @@ public class RelaxedDataBinder extends DataBinder {
 		String name = path.prefix(index);
 		TypeDescriptor descriptor = wrapper.getPropertyTypeDescriptor(name);
 		if (descriptor == null || descriptor.isMap()) {
-			if (descriptor != null) {
-				TypeDescriptor valueDescriptor = descriptor.getMapValueTypeDescriptor();
-				if (valueDescriptor != null) {
-					Class<?> valueType = valueDescriptor.getObjectType();
-					if (valueType != null
-							&& CharSequence.class.isAssignableFrom(valueType)) {
-						path.collapseKeys(index);
-					}
-				}
+			if (isMapValueStringType(descriptor)
+					|| isBlanked(wrapper, name, path.name(index))) {
+				path.collapseKeys(index);
 			}
 			path.mapIndex(index);
 			extendMapIfNecessary(wrapper, path, index);
@@ -231,14 +256,41 @@ public class RelaxedDataBinder extends DataBinder {
 			extendCollectionIfNecessary(wrapper, path, index);
 		}
 		else if (descriptor.getType().equals(Object.class)) {
+			if (isBlanked(wrapper, name, path.name(index))) {
+				path.collapseKeys(index);
+			}
 			path.mapIndex(index);
-			String next = path.prefix(index + 1);
-			if (wrapper.getPropertyValue(next) == null) {
-				wrapper.setPropertyValue(next, new LinkedHashMap<String, Object>());
+			if (path.isLastNode(index)) {
+				wrapper.setPropertyValue(path.toString(), BLANK);
+			}
+			else {
+				String next = path.prefix(index + 1);
+				if (wrapper.getPropertyValue(next) == null) {
+					wrapper.setPropertyValue(next, new LinkedHashMap<String, Object>());
+				}
 			}
 		}
-
 		return initializePath(wrapper, path, index);
+	}
+
+	private boolean isMapValueStringType(TypeDescriptor descriptor) {
+		if (descriptor == null || descriptor.getMapValueTypeDescriptor() == null) {
+			return false;
+		}
+		Class<?> valueType = descriptor.getMapValueTypeDescriptor().getObjectType();
+		return (valueType != null && CharSequence.class.isAssignableFrom(valueType));
+	}
+
+	@SuppressWarnings("rawtypes")
+	private boolean isBlanked(BeanWrapper wrapper, String propertyName, String key) {
+		Object value = (wrapper.isReadableProperty(propertyName) ? wrapper
+				.getPropertyValue(propertyName) : null);
+		if (value instanceof Map) {
+			if (((Map) value).get(key) == BLANK) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void extendCollectionIfNecessary(BeanWrapper wrapper, BeanPath path, int index) {
@@ -281,6 +333,9 @@ public class RelaxedDataBinder extends DataBinder {
 		Object extend = new LinkedHashMap<String, Object>();
 		if (descriptor.isCollection()) {
 			extend = new ArrayList<Object>();
+		}
+		if (descriptor.getType().equals(Object.class) && path.isLastNode(index)) {
+			extend = BLANK;
 		}
 		wrapper.setPropertyValue(extensionName, extend);
 	}
@@ -380,6 +435,18 @@ public class RelaxedDataBinder extends DataBinder {
 
 		public BeanPath(String path) {
 			this.nodes = splitPath(path);
+		}
+
+		public List<String> prefixes() {
+			List<String> prefixes = new ArrayList<String>();
+			for (int index = 1; index < this.nodes.size(); index++) {
+				prefixes.add(prefix(index));
+			}
+			return prefixes;
+		}
+
+		public boolean isLastNode(int index) {
+			return index >= this.nodes.size() - 1;
 		}
 
 		private List<PathNode> splitPath(String path) {
