@@ -612,7 +612,8 @@ content into your application; rather pick only the properties that you need.
 	management.security.sessions=stateless # session creating policy to use (always, never, if_required, stateless)
 
 	# PID FILE ({sc-spring-boot-actuator}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
-	spring.pidfile= # Location of the PID file to write
+	spring.pid.file= # Location of the PID file to write
+	spring.pid.fail-on-write-error= # Fail if the PID file cannot be written
 
 	# ENDPOINTS ({sc-spring-boot-actuator}/endpoint/AbstractEndpoint.{sc-ext}[AbstractEndpoint] subclasses)
 	endpoints.autoconfig.id=autoconfig

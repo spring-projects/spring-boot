@@ -18,6 +18,9 @@ package org.springframework.boot.actuate.system;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
@@ -36,11 +39,21 @@ import org.springframework.util.Assert;
  * An {@link ApplicationListener} that saves application PID into file. This application
  * listener will be triggered exactly once per JVM, and the file name can be overridden at
  * runtime with a System property or environment variable named "PIDFILE" (or "pidfile")
- * or using a {@code spring.pidfile} property in the Spring {@link Environment}.
+ * or using a {@code spring.pid.file} property in the Spring {@link Environment}.
+ * <p>
+ * If PID file can not be created no exception is reported. This behavior can be changed
+ * by assigning {@code true} to System property or environment variable named
+ * {@code PID_FAIL_ON_WRITE_ERROR} (or "pid_fail_on_write_error") or to
+ * {@code spring.pid.fail-on-write-error} property in the Spring {@link Environment}.
+ * <p>
+ * Note: access to the Spring {@link Environment} is only possible when the
+ * {@link #setTriggerEventType(Class) triggerEventType} is set to
+ * {@link ApplicationEnvironmentPreparedEvent} or {@link ApplicationPreparedEvent}.
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Tomasz Przybyla
  * @since 1.2.0
  */
 public class ApplicationPidFileWriter implements
@@ -50,9 +63,22 @@ public class ApplicationPidFileWriter implements
 
 	private static final String DEFAULT_FILE_NAME = "application.pid";
 
-	private static final String[] SYSTEM_PROPERTY_VARIABLES = { "PIDFILE", "pidfile" };
+	private static final List<Property> FILE_PROPERTIES;
+	static {
+		List<Property> properties = new ArrayList<Property>();
+		properties.add(new SpringProperty("spring.pid.", "file"));
+		properties.add(new SpringProperty("spring.", "pidfile"));
+		properties.add(new SystemProperty("PIDFILE"));
+		FILE_PROPERTIES = Collections.unmodifiableList(properties);
+	}
 
-	private static final String SPRING_PROPERTY = "spring.pidfile";
+	private static final List<Property> FAIL_ON_WRITE_ERROR_PROPERTIES;
+	static {
+		List<Property> properties = new ArrayList<Property>();
+		properties.add(new SpringProperty("spring.pid.", "fail-on-write-error"));
+		properties.add(new SystemProperty("PID_FAIL_ON_WRITE_ERROR"));
+		FAIL_ON_WRITE_ERROR_PROPERTIES = Collections.unmodifiableList(properties);
+	}
 
 	private static final AtomicBoolean created = new AtomicBoolean(false);
 
@@ -108,7 +134,12 @@ public class ApplicationPidFileWriter implements
 					writePidFile(event);
 				}
 				catch (Exception ex) {
-					logger.warn(String.format("Cannot create pid file %s", this.file), ex);
+					String message = String
+							.format("Cannot create pid file %s", this.file);
+					if (failOnWriteError(event)) {
+						throw new IllegalStateException(message, ex);
+					}
+					logger.warn(message, ex);
 				}
 			}
 		}
@@ -116,31 +147,25 @@ public class ApplicationPidFileWriter implements
 
 	private void writePidFile(SpringApplicationEvent event) throws IOException {
 		File pidFile = this.file;
-		String override = SystemProperties.get(SYSTEM_PROPERTY_VARIABLES);
+		String override = getProperty(event, FILE_PROPERTIES);
 		if (override != null) {
 			pidFile = new File(override);
-		}
-		else {
-			Environment environment = getEnvironment(event);
-			if (environment != null) {
-				override = new RelaxedPropertyResolver(environment)
-						.getProperty(SPRING_PROPERTY);
-				if (override != null) {
-					pidFile = new File(override);
-				}
-			}
 		}
 		new ApplicationPid().write(pidFile);
 		pidFile.deleteOnExit();
 	}
 
-	private Environment getEnvironment(SpringApplicationEvent event) {
-		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			return ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
-		}
-		if (event instanceof ApplicationPreparedEvent) {
-			return ((ApplicationPreparedEvent) event).getApplicationContext()
-					.getEnvironment();
+	private boolean failOnWriteError(SpringApplicationEvent event) {
+		String value = getProperty(event, FAIL_ON_WRITE_ERROR_PROPERTIES);
+		return (value == null ? false : Boolean.parseBoolean(value));
+	}
+
+	private String getProperty(SpringApplicationEvent event, List<Property> candidates) {
+		for (Property candidate : candidates) {
+			String value = candidate.getValue(event);
+			if (value != null) {
+				return value;
+			}
 		}
 		return null;
 	}
@@ -160,4 +185,69 @@ public class ApplicationPidFileWriter implements
 	static void reset() {
 		created.set(false);
 	}
+
+	/**
+	 * Provides access to a property value.
+	 */
+	private static interface Property {
+
+		String getValue(SpringApplicationEvent event);
+
+	}
+
+	/**
+	 * {@link Property} obtained from Spring's {@link Environment}.
+	 */
+	private static class SpringProperty implements Property {
+
+		private final String prexfix;
+
+		private final String key;
+
+		public SpringProperty(String prefix, String key) {
+			this.prexfix = prefix;
+			this.key = key;
+		}
+
+		@Override
+		public String getValue(SpringApplicationEvent event) {
+			Environment environment = getEnvironment(event);
+			if (environment == null) {
+				return null;
+			}
+			return new RelaxedPropertyResolver(environment, this.prexfix)
+					.getProperty(this.key);
+		}
+
+		private Environment getEnvironment(SpringApplicationEvent event) {
+			if (event instanceof ApplicationEnvironmentPreparedEvent) {
+				return ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
+			}
+			if (event instanceof ApplicationPreparedEvent) {
+				return ((ApplicationPreparedEvent) event).getApplicationContext()
+						.getEnvironment();
+			}
+			return null;
+		}
+
+	}
+
+	/**
+	 * {@link Property} obtained from {@link SystemProperties}.
+	 */
+	private static class SystemProperty implements Property {
+
+		private final String[] properties;
+
+		public SystemProperty(String name) {
+			this.properties = new String[] { name.toUpperCase(), name.toLowerCase() };
+		}
+
+		@Override
+		public String getValue(SpringApplicationEvent event) {
+			return SystemProperties.get(this.properties);
+		}
+
+	}
+
 }
