@@ -30,6 +30,7 @@ import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.Assert;
 
 /**
@@ -37,10 +38,16 @@ import org.springframework.util.Assert;
  * listener will be triggered exactly once per JVM, and the file name can be overridden at
  * runtime with a System property or environment variable named "PIDFILE" (or "pidfile")
  * or using a {@code spring.pidfile} property in the Spring {@link Environment}.
+ * <p/>
+ * If PID file can not be created no exception is reported. This behaviour can be changed
+ * by assigning "false" to System property or environment variable named
+ * "PIDFILE_CONTINUE_ON_ERROR" (or "pidfile_continue_on_error") or to
+ * {@code spring.pidfile.continue-on-error} property in the Spring {@link Environment}.
  *
  * @author Jakub Kubrynski
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Tomasz Przybyla
  * @since 1.2.0
  */
 public class ApplicationPidFileWriter implements
@@ -50,9 +57,9 @@ public class ApplicationPidFileWriter implements
 
 	private static final String DEFAULT_FILE_NAME = "application.pid";
 
-	private static final String[] SYSTEM_PROPERTY_VARIABLES = { "PIDFILE", "pidfile" };
-
-	private static final String SPRING_PROPERTY = "spring.pidfile";
+	private static final PropertyNames pidFileProperty = new PropertyNames("pidfile");
+	private static final PropertyNames continueOnErrorProperty = new PropertyNames(
+			"pidfile.continue-on-error");
 
 	private static final AtomicBoolean created = new AtomicBoolean(false);
 
@@ -109,6 +116,9 @@ public class ApplicationPidFileWriter implements
 				}
 				catch (Exception ex) {
 					logger.warn(String.format("Cannot create pid file %s", this.file));
+					if (!continueOnError(event)) {
+						throw new IllegalStateException("Pid file not created", ex);
+					}
 				}
 			}
 		}
@@ -116,22 +126,33 @@ public class ApplicationPidFileWriter implements
 
 	private void writePidFile(SpringApplicationEvent event) throws IOException {
 		File pidFile = this.file;
-		String override = SystemProperties.get(SYSTEM_PROPERTY_VARIABLES);
+		String override = getProperty(event, pidFileProperty);
 		if (override != null) {
 			pidFile = new File(override);
 		}
-		else {
-			Environment environment = getEnvironment(event);
-			if (environment != null) {
-				override = new RelaxedPropertyResolver(environment)
-						.getProperty(SPRING_PROPERTY);
-				if (override != null) {
-					pidFile = new File(override);
-				}
-			}
-		}
 		new ApplicationPid().write(pidFile);
 		pidFile.deleteOnExit();
+	}
+
+	private boolean continueOnError(SpringApplicationEvent event) {
+		String value = getProperty(event, continueOnErrorProperty);
+		if (value != null) {
+			return Boolean.parseBoolean(value);
+		}
+		return true;
+	}
+
+	private String getProperty(SpringApplicationEvent event, PropertyNames property) {
+		String value = SystemProperties.get(property.systemNames);
+		if (value != null) {
+			return value;
+		}
+		Environment environment = getEnvironment(event);
+		if (environment != null) {
+			PropertyResolver resolver = new RelaxedPropertyResolver(environment);
+			return resolver.getProperty(property.springName);
+		}
+		return null;
 	}
 
 	private Environment getEnvironment(SpringApplicationEvent event) {
@@ -159,5 +180,16 @@ public class ApplicationPidFileWriter implements
 	 */
 	static void reset() {
 		created.set(false);
+	}
+
+	private static class PropertyNames {
+		private final String[] systemNames;
+		private final String springName;
+
+		private PropertyNames(String name) {
+			String systemName = name.replaceAll("\\W", "_");
+			systemNames = new String[] { systemName.toUpperCase(), systemName };
+			springName = "spring." + name;
+		}
 	}
 }
