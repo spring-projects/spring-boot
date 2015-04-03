@@ -67,7 +67,7 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void importsAreSelected() {
 		configureExclusions();
-		configureFactoryKey(EnableAutoConfiguration.class);
+		configureFactoryKey(EnableAutoConfiguration.class.getName());
 		
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(
@@ -82,7 +82,7 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void exclusionsAreApplied() {
 		configureExclusions(FreeMarkerAutoConfiguration.class.getName());
-		configureFactoryKey(EnableAutoConfiguration.class);
+		configureFactoryKey(EnableAutoConfiguration.class.getName());
 		
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
@@ -94,7 +94,7 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void factoryKeyIsAppliedButNotFound() {
 		configureExclusions();
-		configureFactoryKey(this.getClass());
+		configureFactoryKey(this.getClass().getName());
 		
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
@@ -104,7 +104,7 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void factoryKeyIsApplied() {
 		configureExclusions();
-		configureFactoryKey(TemplateAvailabilityProvider.class); // Just as a test without modifying current spring.factories for test purposes
+		configureFactoryKey(TemplateAvailabilityProvider.class.getName()); // Just as a test without modifying current spring.factories for test purposes
 		
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
@@ -119,18 +119,21 @@ public class EnableAutoConfigurationImportSelectorTests {
 		given(this.annotationAttributes.getStringArray("exclude")).willReturn(exclusions);
 	}
 	
-	private void configureFactoryKey(Class factoryKeyClass) {
+	private void configureFactoryKey(String factoryKeyClass) {
 		given(
 				this.annotationMetadata.getAnnotationAttributes(
 						EnableAutoConfiguration.class.getName(), true))
 						.willReturn(this.annotationAttributes);
 
-		given(this.annotationAttributes.getClass("factoryName"))
-		.willReturn(factoryKeyClass);
+		given(this.annotationAttributes.getString("factoryName")).willReturn(factoryKeyClass);
 	}
 
 	private List<String> getAutoConfigurationClassNames() {
-		return SpringFactoriesLoader.loadFactoryNames(this.annotationAttributes.getClass("factoryName"),
-				getClass().getClassLoader());
+		try {
+			return SpringFactoriesLoader.loadFactoryNames(Class.forName(this.annotationAttributes.getString("factoryName")),
+					getClass().getClassLoader());
+		} catch (ClassNotFoundException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 }
