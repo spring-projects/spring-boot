@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import net.sf.ehcache.Cache;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -35,7 +37,7 @@ import org.springframework.core.io.Resource;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnClass(EhCacheCacheManager.class)
+@ConditionalOnClass({Cache.class, EhCacheCacheManager.class})
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional({ CacheCondition.class,
 		EhCacheCacheConfiguration.ConfigAvailableCondition.class })
