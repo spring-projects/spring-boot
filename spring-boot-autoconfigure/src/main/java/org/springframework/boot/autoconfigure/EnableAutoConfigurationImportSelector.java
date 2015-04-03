@@ -69,7 +69,7 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 
 			// Find all possible auto configuration classes, filtering duplicates
 			List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
-					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
+					SpringFactoriesLoader.loadFactoryNames(attributes.getClass("factoryName"),
 							this.beanClassLoader)));
 
 			// Remove those specifically disabled

@@ -27,6 +27,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -66,6 +67,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void importsAreSelected() {
 		configureExclusions();
+		configureFactoryKey(EnableAutoConfiguration.class);
+		
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(
 				imports.length,
@@ -79,11 +82,33 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void exclusionsAreApplied() {
 		configureExclusions(FreeMarkerAutoConfiguration.class.getName());
+		configureFactoryKey(EnableAutoConfiguration.class);
+		
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
 				is(equalTo(getAutoConfigurationClassNames().size() - 1)));
 		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
 				contains(FreeMarkerAutoConfiguration.class.getName()));
+	}
+	
+	@Test
+	public void factoryKeyIsAppliedButNotFound() {
+		configureExclusions();
+		configureFactoryKey(this.getClass());
+		
+		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
+		assertThat(imports.length,
+				is(equalTo(0)));
+	}
+	
+	@Test
+	public void factoryKeyIsApplied() {
+		configureExclusions();
+		configureFactoryKey(TemplateAvailabilityProvider.class); // Just as a test without modifying current spring.factories for test purposes
+		
+		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
+		assertThat(imports.length,
+				is(equalTo(getAutoConfigurationClassNames().size())));
 	}
 
 	private void configureExclusions(String... exclusions) {
@@ -93,9 +118,19 @@ public class EnableAutoConfigurationImportSelectorTests {
 				this.annotationAttributes);
 		given(this.annotationAttributes.getStringArray("exclude")).willReturn(exclusions);
 	}
+	
+	private void configureFactoryKey(Class factoryKeyClass) {
+		given(
+				this.annotationMetadata.getAnnotationAttributes(
+						EnableAutoConfiguration.class.getName(), true))
+						.willReturn(this.annotationAttributes);
+
+		given(this.annotationAttributes.getClass("factoryName"))
+		.willReturn(factoryKeyClass);
+	}
 
 	private List<String> getAutoConfigurationClassNames() {
-		return SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
+		return SpringFactoriesLoader.loadFactoryNames(this.annotationAttributes.getClass("factoryName"),
 				getClass().getClassLoader());
 	}
 }
