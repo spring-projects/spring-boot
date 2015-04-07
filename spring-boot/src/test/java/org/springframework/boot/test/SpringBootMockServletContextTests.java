@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 import javax.servlet.ServletContext;
 
@@ -83,7 +84,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 		};
 		URL resource = context.getResource("/");
 		assertThat(resource, not(nullValue()));
-		File file = new File(resource.getPath());
+		File file = new File(URLDecoder.decode(resource.getPath(), "UTF-8"));
 		assertThat("File " + file + " exists", file.exists(), equalTo(true));
 		assertThat("File " + file + " is directory", file.isDirectory(), equalTo(true));
 		String[] contents = file.list(new FilenameFilter() {
