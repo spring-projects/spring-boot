@@ -279,6 +279,11 @@
 					<version>3.4</version>
 				</plugin>
 				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>animal-sniffer-maven-plugin</artifactId>
+					<version>1.14</version>
+				</plugin>
+				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven2-plugin</artifactId>
 					<version>1.4.11</version>
@@ -491,6 +496,30 @@
 				  </goals>
 				</execution>
 			  </executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>animal-sniffer-maven-plugin</artifactId>
+				<configuration>
+					<signature>
+						<groupId>org.codehaus.mojo.signature</groupId>
+						<artifactId>java16</artifactId>
+						<version>1.0</version>
+					</signature>
+					<annotations>
+						<annotation>org.springframework.lang.UsesJava8</annotation>
+						<annotation>org.springframework.lang.UsesJava7</annotation>
+					</annotations>
+				</configuration>
+				<executions>
+					<execution>
+						<id>enforce-java-6</id>
+						<phase>test</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
