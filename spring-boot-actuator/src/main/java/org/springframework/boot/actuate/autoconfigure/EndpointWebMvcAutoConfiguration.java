@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -84,6 +84,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -155,14 +156,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Bean
 	@ConditionalOnBean(EnvironmentEndpoint.class)
-	@ConditionalOnProperty(prefix = "endpoints.env", name = "enabled", matchIfMissing = true)
+	@ConditionalOnExpression("${endpoints.env.enabled:${endpoints.enabled:true}}")
 	public EnvironmentMvcEndpoint environmentMvcEndpoint(EnvironmentEndpoint delegate) {
 		return new EnvironmentMvcEndpoint(delegate);
 	}
 
 	@Bean
 	@ConditionalOnBean(HealthEndpoint.class)
-	@ConditionalOnProperty(prefix = "endpoints.health", name = "enabled", matchIfMissing = true)
+	@ConditionalOnExpression("${endpoints.health.enabled:${endpoints.enabled:true}}")
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		Security security = this.managementServerProperties.getSecurity();
 		boolean secure = (security == null || security.isEnabled());
@@ -176,14 +177,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Bean
 	@ConditionalOnBean(MetricsEndpoint.class)
-	@ConditionalOnProperty(prefix = "endpoints.metrics", name = "enabled", matchIfMissing = true)
+	@ConditionalOnExpression("${endpoints.metrics.enabled:${endpoints.enabled:true}}")
 	public MetricsMvcEndpoint metricsMvcEndpoint(MetricsEndpoint delegate) {
 		return new MetricsMvcEndpoint(delegate);
 	}
 
 	@Bean
 	@ConditionalOnBean(ShutdownEndpoint.class)
-	@ConditionalOnProperty(prefix = "endpoints.shutdown", name = "enabled", matchIfMissing = true)
+	@ConditionalOnExpression("${endpoints.shutdown.enabled:false}")
 	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
 		return new ShutdownMvcEndpoint(delegate);
 	}

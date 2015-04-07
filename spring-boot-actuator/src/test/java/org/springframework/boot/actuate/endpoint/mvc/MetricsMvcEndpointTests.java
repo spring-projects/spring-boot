@@ -16,17 +16,20 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpointTests.TestConfiguration;
-import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.PublicMetrics;
+import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpointTests.TestConfiguration;
+import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -38,21 +41,20 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link EnvironmentMvcEndpoint}
+ * Tests for {@link MetricsMvcEndpoint}
  *
- * @author Dave Syer
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { TestConfiguration.class })
 @WebAppConfiguration
-public class EnvironmentMvcEndpointTests {
+public class MetricsMvcEndpointTests {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -61,28 +63,37 @@ public class EnvironmentMvcEndpointTests {
 
 	@Before
 	public void setUp() {
-		this.context.getBean(EnvironmentEndpoint.class).setEnabled(true);
+		this.context.getBean(MetricsEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment(
-				(ConfigurableApplicationContext) this.context, "foo:bar");
 	}
 
 	@Test
 	public void home() throws Exception {
-		this.mvc.perform(get("/env")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("systemProperties")));
+		this.mvc.perform(get("/metrics")).andExpect(status().isOk())
+				.andExpect(content().string(containsString("\"foo\":1")));
 	}
 
 	@Test
-	public void sub() throws Exception {
-		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
-				.andExpect(content().string(equalToIgnoringCase("bar")));
+	public void homeWhenDisabled() throws Exception {
+		this.context.getBean(MetricsEndpoint.class).setEnabled(false);
+		this.mvc.perform(get("/metrics")).andExpect(status().isNotFound());
 	}
 
 	@Test
-	public void subWhenDisabled() throws Exception {
-		this.context.getBean(EnvironmentEndpoint.class).setEnabled(false);
-		this.mvc.perform(get("/env/foo")).andExpect(status().isNotFound());
+	public void specificMetric() throws Exception {
+		this.mvc.perform(get("/metrics/foo")).andExpect(status().isOk())
+				.andExpect(content().string(equalTo("1")));
+	}
+
+	@Test
+	public void specificMetricWhenDisabled() throws Exception {
+		this.context.getBean(MetricsEndpoint.class).setEnabled(false);
+		this.mvc.perform(get("/metrics/foo")).andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void specificMetricThatDoesNotExist() throws Exception {
+		this.mvc.perform(get("/metrics/bar")).andExpect(status().isNotFound());
 	}
 
 	@Import({ EndpointWebMvcAutoConfiguration.class,
@@ -92,13 +103,20 @@ public class EnvironmentMvcEndpointTests {
 	public static class TestConfiguration {
 
 		@Bean
-		public EnvironmentEndpoint endpoint() {
-			return new EnvironmentEndpoint();
+		public MetricsEndpoint endpoint() {
+			return new MetricsEndpoint(new PublicMetrics() {
+
+				@Override
+				public Collection<Metric<?>> metrics() {
+					return Arrays.<Metric<?>> asList(new Metric<Integer>("foo", 1));
+				}
+
+			});
 		}
 
 		@Bean
-		public EnvironmentMvcEndpoint mvcEndpoint() {
-			return new EnvironmentMvcEndpoint(endpoint());
+		public MetricsMvcEndpoint mvcEndpoint() {
+			return new MetricsMvcEndpoint(endpoint());
 		}
 
 	}
