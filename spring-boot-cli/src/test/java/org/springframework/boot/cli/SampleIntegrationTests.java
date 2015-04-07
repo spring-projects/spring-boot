@@ -63,7 +63,6 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	@Ignore("Due to the removal of ParameterizedRowMapper, Spring Batch is incompatible with Spring Framework 4.2")
 	public void jobSample() throws Exception {
 		String output = this.cli.run("job.groovy", "foo=bar");
 		assertTrue("Wrong output: " + output,
@@ -82,7 +81,6 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	@Ignore("Spring Batch is incompatible with Spring Framework 4.2")
 	public void jobWebSample() throws Exception {
 		String output = this.cli.run("job.groovy", "web.groovy", "foo=bar");
 		assertTrue("Wrong output: " + output,

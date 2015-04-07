@@ -23,7 +23,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -85,7 +84,6 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Due to the removal of ParameterizedRowMapper, Spring Batch is incompatible with Spring Framework 4.2")
 	public void testDefaultContext() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
@@ -122,7 +120,6 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Due to the removal of ParameterizedRowMapper, Spring Batch is incompatible with Spring Framework 4.2")
 	public void testDefinesAndLaunchesJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JobConfiguration.class,
@@ -136,7 +133,6 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Due to the removal of ParameterizedRowMapper, Spring Batch is incompatible with Spring Framework 4.2")
 	public void testDefinesAndLaunchesNamedJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -153,7 +149,6 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Due to the removal of ParameterizedRowMapper, Spring Batch is incompatible with Spring Framework 4.2")
 	public void testDefinesAndLaunchesLocalJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -169,7 +164,6 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Due to the removal of ParameterizedRowMapper, Spring Batch is incompatible with Spring Framework 4.2")
 	public void testDisableLaunchesJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -183,7 +177,6 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Due to the removal of ParameterizedRowMapper, Spring Batch is incompatible with Spring Framework 4.2")
 	public void testDisableSchemaLoader() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -200,7 +193,6 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Due to the removal of ParameterizedRowMapper, Spring Batch is incompatible with Spring Framework 4.2")
 	public void testUsingJpa() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		// The order is very important here: DataSource -> Hibernate -> Batch
