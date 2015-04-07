@@ -84,6 +84,8 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 		URL resource = context.getResource("/");
 		assertThat(resource, not(nullValue()));
 		File file = new File(resource.getPath());
+		assertThat("File " + file + " exists", file.exists(), equalTo(true));
+		assertThat("File " + file + " is directory", file.isDirectory(), equalTo(true));
 		String[] contents = file.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
