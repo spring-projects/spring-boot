@@ -269,9 +269,9 @@ public class CacheAutoConfigurationTests {
 	public void jCacheCacheWithWrongConfig() {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
 		String configLocation = "org/springframework/boot/autoconfigure/cache/does-not-exist.xml";
-		thrown.expect(BeanCreationException.class);
-		thrown.expectMessage("spring.cache.config");
-		thrown.expectMessage(configLocation);
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("spring.cache.config");
+		this.thrown.expectMessage(configLocation);
 		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
 				"spring.cache.jcache.provider=" + cachingProviderFqn,
 				"spring.cache.config=" + configLocation);
@@ -367,11 +367,12 @@ public class CacheAutoConfigurationTests {
 		try {
 			load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
 					"spring.cache.jcache.provider=" + cachingProviderFqn,
-					"spring.cache.config="+configLocation);
+					"spring.cache.config=" + configLocation);
 			cacheManager = validateCacheManager(JCacheCacheManager.class);
 
 			Resource configResource = new ClassPathResource(configLocation);
-			assertThat(cacheManager.getCacheManager().getURI(), is(configResource.getURI()));
+			assertThat(cacheManager.getCacheManager().getURI(),
+					is(configResource.getURI()));
 		}
 		finally {
 			if (cacheManager != null) {

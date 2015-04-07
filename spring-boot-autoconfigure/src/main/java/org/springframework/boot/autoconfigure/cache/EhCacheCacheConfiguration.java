@@ -37,7 +37,7 @@ import org.springframework.core.io.Resource;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnClass({Cache.class, EhCacheCacheManager.class})
+@ConditionalOnClass({ Cache.class, EhCacheCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional({ CacheCondition.class,
 		EhCacheCacheConfiguration.ConfigAvailableCondition.class })

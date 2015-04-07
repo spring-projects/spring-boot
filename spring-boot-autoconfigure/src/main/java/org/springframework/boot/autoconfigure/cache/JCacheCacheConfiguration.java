@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
@@ -51,7 +52,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnClass({Caching.class, JCacheCacheManager.class})
+@ConditionalOnClass({ Caching.class, JCacheCacheManager.class })
 @ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
 @Conditional({ CacheCondition.class,
 		JCacheCacheConfiguration.JCacheAvailableCondition.class })
@@ -85,7 +86,8 @@ class JCacheCacheConfiguration {
 		Resource configLocation = this.cacheProperties.resolveConfigLocation();
 		if (configLocation != null) {
 			return cachingProvider.getCacheManager(configLocation.getURI(),
-					cachingProvider.getDefaultClassLoader(), createCacheManagerProperties(configLocation));
+					cachingProvider.getDefaultClassLoader(),
+					createCacheManagerProperties(configLocation));
 		}
 		return cachingProvider.getCacheManager();
 	}
@@ -97,10 +99,12 @@ class JCacheCacheConfiguration {
 		return Caching.getCachingProvider();
 	}
 
-	private Properties createCacheManagerProperties(Resource configLocation) throws IOException {
+	private Properties createCacheManagerProperties(Resource configLocation)
+			throws IOException {
 		Properties properties = new Properties();
 		// Hazelcast does not use the URI as a mean to specify a custom config.
-		properties.setProperty("hazelcast.config.location", configLocation.getURI().toString());
+		properties.setProperty("hazelcast.config.location", configLocation.getURI()
+				.toString());
 		return properties;
 	}
 
