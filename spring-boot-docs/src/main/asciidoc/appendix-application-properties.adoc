@@ -45,7 +45,7 @@ content into your application; rather pick only the properties that you need.
 	logging.path=/var/logs
 	logging.file=myapp.log
 	logging.config= # location of config file (default classpath:logback.xml for logback)
-    logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
+	logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.name=
@@ -140,7 +140,7 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.check-template-location=true
 	spring.thymeleaf.prefix=classpath:/templates/
 	spring.thymeleaf.excluded-view-names= # comma-separated list of view names that should be excluded from resolution
-    spring.thymeleaf.view-names= # comma-separated list of view names that can be resolved
+	spring.thymeleaf.view-names= # comma-separated list of view names that can be resolved
 	spring.thymeleaf.suffix=.html
 	spring.thymeleaf.mode=HTML5
 	spring.thymeleaf.encoding=UTF-8
@@ -487,8 +487,8 @@ content into your application; rather pick only the properties that you need.
 	management.context-path= # default to '/'
 	management.add-application-context-header= # default to true
 	management.security.enabled=true # enable security
-    management.security.role=ADMIN # role required to access the management endpoint
-    management.security.sessions=stateless # session creating policy to use (always, never, if_required, stateless)
+	management.security.role=ADMIN # role required to access the management endpoint
+	management.security.sessions=stateless # session creating policy to use (always, never, if_required, stateless)
 
 	# PID FILE ({sc-spring-boot-actuator}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
 	spring.pidfile= # Location of the PID file to write
@@ -535,10 +535,10 @@ content into your application; rather pick only the properties that you need.
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true
 	management.health.diskspace.enabled=true
-    management.health.mongo.enabled=true
-    management.health.rabbit.enabled=true
-    management.health.redis.enabled=true
-    management.health.solr.enabled=true
+	management.health.mongo.enabled=true
+	management.health.rabbit.enabled=true
+	management.health.redis.enabled=true
+	management.health.solr.enabled=true
 	management.health.diskspace.path=.
 	management.health.diskspace.threshold=10485760
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
