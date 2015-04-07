@@ -115,15 +115,16 @@ content into your application; rather pick only the properties that you need.
 
 	# HTTP response compression ({sc-spring-boot-autoconfigure}/web/GzipFilterProperties.{sc-ext}[GzipFilterProperties])
 	spring.http.gzip.bufferSize= # size of the output buffer in bytes
-	spring.http.gzip.minGzipSize= # minimum content length required for compression to occur
 	spring.http.gzip.deflateCompressionLevel= # the level used for deflate compression (0-9)
 	spring.http.gzip.deflateNoWrap= # noWrap setting for deflate compression (true or false)
-	spring.http.gzip.methods= # comma-separated list of HTTP methods for which compression is enabled
-	spring.http.gzip.mimeTypes= # comma-separated list of MIME types which should be compressed
+	spring.http.gzip.enabled=true # enable gzip filter support
 	spring.http.gzip.excludedAgents= # comma-separated list of user agents to exclude from compression
 	spring.http.gzip.excludedAgentPatterns= # comma-separated list of regular expression patterns to control user agents excluded from compression
 	spring.http.gzip.excludedPaths= # comma-separated list of paths to exclude from compression
 	spring.http.gzip.excludedPathPatterns= # comma-separated list of regular expression patterns to control the paths that are excluded from compression
+	spring.http.gzip.methods= # comma-separated list of HTTP methods for which compression is enabled
+	spring.http.gzip.mimeTypes= # comma-separated list of MIME types which should be compressed
+	spring.http.gzip.minGzipSize= # minimum content length required for compression to occur
 	spring.http.gzip.vary= # Vary header to be sent on responses that may be compressed
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])

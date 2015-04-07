@@ -20,6 +20,7 @@ import org.eclipse.jetty.servlets.GzipFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +41,7 @@ public class GzipFilterAutoConfiguration {
 	private GzipFilterProperties properties;
 
 	@Bean
+	@ConditionalOnProperty(prefix = "spring.http.gzip", name = "enabled", matchIfMissing = true)
 	public FilterRegistrationBean gzipFilter() {
 		FilterRegistrationBean registration = new FilterRegistrationBean(new GzipFilter());
 		registration.addUrlPatterns("/*");
