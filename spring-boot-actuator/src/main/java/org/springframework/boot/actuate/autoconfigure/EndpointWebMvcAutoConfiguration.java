@@ -43,6 +43,7 @@ import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.LogfileMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
@@ -51,6 +52,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -84,6 +86,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @author Johannes Stelzer
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -179,6 +182,13 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnProperty(prefix = "endpoints.metrics", name = "enabled", matchIfMissing = true)
 	public MetricsMvcEndpoint metricsMvcEndpoint(MetricsEndpoint delegate) {
 		return new MetricsMvcEndpoint(delegate);
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = "endpoints.logfile", name = "enabled", matchIfMissing = true)
+	@ConditionalOnExpression("'${logging.file:}' != '' || '${logging.path:}' != ''")
+	public LogfileMvcEndpoint logfileMvcEndpoint() {
+		return new LogfileMvcEndpoint();
 	}
 
 	@Bean
