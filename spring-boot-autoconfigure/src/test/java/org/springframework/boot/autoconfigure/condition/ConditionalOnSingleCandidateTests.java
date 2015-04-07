@@ -20,7 +20,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,8 +57,7 @@ public class ConditionalOnSingleCandidateTests {
 
 	@Test
 	public void singleCandidateOneCandidate() {
-		load(FooConfiguration.class,
-				OnBeanSingleCandidateConfiguration.class);
+		load(FooConfiguration.class, OnBeanSingleCandidateConfiguration.class);
 		assertTrue(this.context.containsBean("baz"));
 		assertEquals("foo", this.context.getBean("baz"));
 	}
@@ -88,17 +86,19 @@ public class ConditionalOnSingleCandidateTests {
 
 	@Test
 	public void invalidAnnotationTwoTypes() {
-		thrown.expect(IllegalStateException.class);
-		thrown.expectCause(isA(IllegalArgumentException.class));
-		thrown.expectMessage(OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectCause(isA(IllegalArgumentException.class));
+		this.thrown.expectMessage(OnBeanSingleCandidateTwoTypesConfiguration.class
+				.getName());
 		load(OnBeanSingleCandidateTwoTypesConfiguration.class);
 	}
 
 	@Test
 	public void invalidAnnotationNoType() {
-		thrown.expect(IllegalStateException.class);
-		thrown.expectCause(isA(IllegalArgumentException.class));
-		thrown.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectCause(isA(IllegalArgumentException.class));
+		this.thrown.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class
+				.getName());
 		load(OnBeanSingleCandidateNoTypeConfiguration.class);
 	}
 
@@ -110,10 +110,12 @@ public class ConditionalOnSingleCandidateTests {
 	@Configuration
 	@ConditionalOnSingleCandidate(value = String.class)
 	protected static class OnBeanSingleCandidateConfiguration {
+
 		@Bean
 		public String baz(String s) {
 			return s;
 		}
+
 	}
 
 	@Configuration
@@ -130,35 +132,43 @@ public class ConditionalOnSingleCandidateTests {
 
 	@Configuration
 	protected static class FooConfiguration {
+
 		@Bean
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
 	protected static class FooPrimaryConfiguration {
+
 		@Bean
 		@Primary
 		public String foo() {
 			return "foo";
 		}
+
 	}
 
 	@Configuration
 	protected static class BarConfiguration {
+
 		@Bean
 		public String bar() {
 			return "bar";
 		}
+
 	}
 
 	@Configuration
 	protected static class BarPrimaryConfiguration {
+
 		@Bean
 		@Primary
 		public String bar() {
 			return "bar";
 		}
+
 	}
 }

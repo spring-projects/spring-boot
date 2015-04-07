@@ -24,12 +24,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -100,15 +98,13 @@ public class OnBeanCondition extends SpringBootCondition implements
 				return ConditionOutcome.noMatch("@ConditionalOnSingleCandidate " + spec
 						+ " found no beans");
 			}
-			else if (hasSingleAutowireCandidate(context.getBeanFactory(), matching)) {
-				matchMessage.append("@ConditionalOnSingleCandidate " + spec + " found a primary " +
-						"candidate amongst the following " + matching);
-			}
-			else {
+			else if (!hasSingleAutowireCandidate(context.getBeanFactory(), matching)) {
 				return ConditionOutcome.noMatch("@ConditionalOnSingleCandidate " + spec
-						+ " found no primary candidate amongst the"
-						+ " following " + matching);
+						+ " found no primary candidate amongst the" + " following "
+						+ matching);
 			}
+			matchMessage.append("@ConditionalOnSingleCandidate " + spec + " found "
+					+ "a primary candidate amongst the following " + matching);
 		}
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
@@ -221,23 +217,21 @@ public class OnBeanCondition extends SpringBootCondition implements
 		}
 	}
 
-	private boolean hasSingleAutowireCandidate(ConfigurableListableBeanFactory beanFactory,
-			List<String> beans) {
+	private boolean hasSingleAutowireCandidate(
+			ConfigurableListableBeanFactory beanFactory, List<String> beanNames) {
+		return (beanNames.size() == 1 || getPrimaryBeans(beanFactory, beanNames).size() == 1);
+	}
 
-		if (beans.size() == 1) {
-			return true;
-		}
-		boolean primaryFound = false;
-		for (String bean : beans) {
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(bean);
+	private List<String> getPrimaryBeans(ConfigurableListableBeanFactory beanFactory,
+			List<String> beanNames) {
+		List<String> primaryBeans = new ArrayList<String>();
+		for (String beanName : beanNames) {
+			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
 			if (beanDefinition != null && beanDefinition.isPrimary()) {
-				if (primaryFound) {
-					return false;
-				}
-				primaryFound = true;
+				primaryBeans.add(beanName);
 			}
 		}
-		return primaryFound;
+		return primaryBeans;
 	}
 
 	private static class BeanSearchSpec {
@@ -288,8 +282,7 @@ public class OnBeanCondition extends SpringBootCondition implements
 			return "@" + ClassUtils.getShortName(this.annotationType);
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		private void collect(MultiValueMap<String, Object> attributes, String key,
+		protected void collect(MultiValueMap<String, Object> attributes, String key,
 				List<String> destination) {
 			List<?> values = attributes.get(key);
 			if (values != null) {
@@ -389,17 +382,16 @@ public class OnBeanCondition extends SpringBootCondition implements
 		}
 
 		@Override
+		protected void collect(MultiValueMap<String, Object> attributes, String key,
+				List<String> destination) {
+			super.collect(attributes, key, destination);
+			destination.removeAll(Arrays.asList("", Object.class.getName()));
+		}
+
+		@Override
 		protected void validate() {
-			List<String> types = getTypes();
-			ListIterator<String> it = types.listIterator();
-			while (it.hasNext()) {
-				String value = it.next();
-				if (!StringUtils.hasText(value) || Object.class.getName().equals(value)) {
-					it.remove();
-				}
-			}
-			Assert.isTrue(types.size() == 1, annotationName() + " annotations must "
-					+ "specify only one type (got " + types + ")");
+			Assert.isTrue(getTypes().size() == 1, annotationName() + " annotations must "
+					+ "specify only one type (got " + getTypes() + ")");
 
 		}
 	}
