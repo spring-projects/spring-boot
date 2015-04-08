@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,12 +92,17 @@ public final class CommandLineInvoker {
 
 		private final Process process;
 
+		private final List<Thread> streamReaders = new ArrayList<Thread>();
+
 		public Invocation(Process process) {
 			this.process = process;
-			new Thread(new StreamReadingRunnable(this.process.getErrorStream(), this.err))
-					.start();
-			new Thread(new StreamReadingRunnable(this.process.getInputStream(), this.out))
-					.start();
+			this.streamReaders.add(new Thread(new StreamReadingRunnable(this.process
+					.getErrorStream(), this.err)));
+			this.streamReaders.add(new Thread(new StreamReadingRunnable(this.process
+					.getInputStream(), this.out)));
+			for (Thread streamReader : this.streamReaders) {
+				streamReader.start();
+			}
 		}
 
 		public String getErrorOutput() {
@@ -140,6 +145,9 @@ public final class CommandLineInvoker {
 		}
 
 		public int await() throws InterruptedException {
+			for (Thread streamReader : this.streamReaders) {
+				streamReader.join();
+			}
 			return this.process.waitFor();
 		}
 
@@ -171,6 +179,7 @@ public final class CommandLineInvoker {
 					// Allow thread to die
 				}
 			}
+
 		}
 
 	}
