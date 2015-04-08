@@ -110,20 +110,40 @@ public class JacksonProperties {
 		return this.serialization;
 	}
 
+	public void setSerialization(Map<SerializationFeature, Boolean> serialization) {
+		this.serialization = serialization;
+	}
+
 	public Map<DeserializationFeature, Boolean> getDeserialization() {
 		return this.deserialization;
+	}
+
+	public void setDeserialization(Map<DeserializationFeature, Boolean> deserialization) {
+		this.deserialization = deserialization;
 	}
 
 	public Map<MapperFeature, Boolean> getMapper() {
 		return this.mapper;
 	}
 
+	public void setMapper(Map<MapperFeature, Boolean> mapper) {
+		this.mapper = mapper;
+	}
+
 	public Map<JsonParser.Feature, Boolean> getParser() {
 		return this.parser;
 	}
 
+	public void setParser(Map<JsonParser.Feature, Boolean> parser) {
+		this.parser = parser;
+	}
+
 	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
 		return this.generator;
+	}
+
+	public void setGenerator(Map<JsonGenerator.Feature, Boolean> generator) {
+		this.generator = generator;
 	}
 
 }
