@@ -36,10 +36,10 @@ import com.google.gson.Gson;
  * @since 1.2.2
  */
 @Configuration
+@ConditionalOnClass(Gson.class)
 class GsonHttpMessageConvertersConfiguration {
 
 	@Configuration
-	@ConditionalOnClass(Gson.class)
 	@ConditionalOnBean(Gson.class)
 	@Conditional(PreferGsonOrMissingJacksonCondition.class)
 	protected static class GsonHttpMessageConverterConfiguration {
