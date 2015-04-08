@@ -280,7 +280,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
-				"endpoints.enabled:false");
+				"ENDPOINTS_ENABLED:false");
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class).size(),
 				is(equalTo(0)));
@@ -342,7 +342,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				"endpoints.enabled:false",
-				String.format("endpoints.%s.enabled:true", name));
+				String.format("endpoints_%s_enabled:true", name));
 		this.applicationContext.refresh();
 		assertThat(this.applicationContext.getBeansOfType(type).size(), is(equalTo(1)));
 	}
