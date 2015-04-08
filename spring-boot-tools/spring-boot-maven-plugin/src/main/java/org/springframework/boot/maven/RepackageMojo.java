@@ -109,6 +109,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private String mainClass;
 
 	/**
+	 * The name of the java agent class.
+	 * @since 1.2.1
+	 */
+	@Parameter
+	private String agentClass;
+
+	/**
 	 * The type of archive (which corresponds to how the dependencies are laid out inside
 	 * it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
 	 * archive type.
@@ -156,6 +163,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			}
 		};
 		repackager.setMainClass(this.mainClass);
+		repackager.setAgentClass(this.agentClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
 			repackager.setLayout(this.layout.layout());

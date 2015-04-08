@@ -369,6 +369,11 @@ want the other Boot features but not this one)
  class name via the "run" task (`main` property) and/or the "startScripts"
  (`mainClassName` property) as an alternative to using the "springBoot" configuration.
 
+|`agentClass`
+|The agent class that should be included into manifest file (as a `Premain-Class` attribute).
+ It will also trigger adding retransform and redefine capabilities which allows you to use
+ built uber-jar file as `-javaagent` value.
+
 |`classifier`
 |A file name segment (before the extension) to add to the archive, so that the original is
  preserved in its original location. Defaults to null in which case the archive is
