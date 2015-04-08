@@ -17,6 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -49,15 +53,17 @@ import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -66,10 +72,14 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -156,14 +166,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Bean
 	@ConditionalOnBean(EnvironmentEndpoint.class)
-	@ConditionalOnExpression("${endpoints.env.enabled:${endpoints.enabled:true}}")
+	@ConditionalOnEnabledEndpoint("env")
 	public EnvironmentMvcEndpoint environmentMvcEndpoint(EnvironmentEndpoint delegate) {
 		return new EnvironmentMvcEndpoint(delegate);
 	}
 
 	@Bean
 	@ConditionalOnBean(HealthEndpoint.class)
-	@ConditionalOnExpression("${endpoints.health.enabled:${endpoints.enabled:true}}")
+	@ConditionalOnEnabledEndpoint("health")
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		Security security = this.managementServerProperties.getSecurity();
 		boolean secure = (security == null || security.isEnabled());
@@ -177,14 +187,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Bean
 	@ConditionalOnBean(MetricsEndpoint.class)
-	@ConditionalOnExpression("${endpoints.metrics.enabled:${endpoints.enabled:true}}")
+	@ConditionalOnEnabledEndpoint("metrics")
 	public MetricsMvcEndpoint metricsMvcEndpoint(MetricsEndpoint delegate) {
 		return new MetricsMvcEndpoint(delegate);
 	}
 
 	@Bean
 	@ConditionalOnBean(ShutdownEndpoint.class)
-	@ConditionalOnExpression("${endpoints.shutdown.enabled:false}")
+	@ConditionalOnEnabledEndpoint(value = "shutdown", enabledByDefault = false)
 	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
 		return new ShutdownMvcEndpoint(delegate);
 	}
@@ -326,6 +336,79 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 					|| (serverProperties.getPort() == null && port.equals(8080))
 					|| (port != 0 && port.equals(serverProperties.getPort())) ? SAME
 					: DIFFERENT);
+		}
+
+	}
+
+	/**
+	 * {@link Conditional} that checks whether or not an endpoint is enabled. Matches if
+	 * the value of the {@code endpoints.<name>.enabled} property is {@code true}. Does
+	 * not match if the property's value or {@code enabledByDefault} is {@code false}.
+	 * Otherwise, matches if the value of the {@code endpoints.enabled} property is
+	 * {@code true} or if the property is not configured.
+	 *
+	 * @since 1.2.4
+	 */
+	@Conditional(OnEnabledEndpointCondition.class)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	public static @interface ConditionalOnEnabledEndpoint {
+
+		/**
+		 * The name of the endpoint.
+		 * @return The name of the endpoint
+		 */
+		public String value();
+
+		/**
+		 * Returns whether or not the endpoint is enabled by default.
+		 * @return {@code true} if the endpoint is enabled by default, otherwise
+		 * {@code false}
+		 */
+		public boolean enabledByDefault() default true;
+
+	}
+
+	private static class OnEnabledEndpointCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			AnnotationAttributes annotationAttributes = AnnotationAttributes
+					.fromMap(metadata.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class
+							.getName()));
+			String endpointName = annotationAttributes.getString("value");
+			boolean enabledByDefault = annotationAttributes
+					.getBoolean("enabledByDefault");
+			ConditionOutcome specificEndpointOutcome = determineSpecificEndpointOutcome(
+					endpointName, enabledByDefault, context);
+			if (specificEndpointOutcome != null) {
+				return specificEndpointOutcome;
+			}
+			return determineAllEndpointsOutcome(context);
+
+		}
+
+		private ConditionOutcome determineSpecificEndpointOutcome(String endpointName,
+				boolean enabledByDefault, ConditionContext context) {
+			RelaxedPropertyResolver endpointPropertyResolver = new RelaxedPropertyResolver(
+					context.getEnvironment(), "endpoints." + endpointName + ".");
+			if (endpointPropertyResolver.containsProperty("enabled") || !enabledByDefault) {
+				boolean match = endpointPropertyResolver.getProperty("enabled",
+						Boolean.class, enabledByDefault);
+				return new ConditionOutcome(match, "The " + endpointName + " is "
+						+ (match ? "enabled" : "disabled"));
+			}
+			return null;
+		}
+
+		private ConditionOutcome determineAllEndpointsOutcome(ConditionContext context) {
+			RelaxedPropertyResolver allEndpointsPropertyResolver = new RelaxedPropertyResolver(
+					context.getEnvironment(), "endpoints.");
+			boolean match = Boolean.valueOf(allEndpointsPropertyResolver.getProperty(
+					"enabled", "true"));
+			return new ConditionOutcome(match, "All endpoints are "
+					+ (match ? "enabled" : "disabled") + " by default");
 		}
 
 	}
