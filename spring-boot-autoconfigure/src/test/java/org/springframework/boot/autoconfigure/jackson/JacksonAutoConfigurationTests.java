@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -385,6 +386,28 @@ public class JacksonAutoConfigurationTests {
 		assertThat(this.context.getBean(CustomModule.class).getOwners(),
 				hasItem((ObjectCodec) objectMapper));
 		assertThat(objectMapper.canSerialize(LocalDateTime.class), is(true));
+	}
+
+	@Test
+	public void defaultSerializationInclusion() {
+		this.context.register(JacksonAutoConfiguration.class);
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context.getBean(
+				Jackson2ObjectMapperBuilder.class).build();
+		assertThat(objectMapper.getSerializationConfig().getSerializationInclusion(),
+				is(JsonInclude.Include.ALWAYS));
+	}
+
+	@Test
+	public void customSerializationInclusion() {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.serialization-inclusion:non_null");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context.getBean(
+				Jackson2ObjectMapperBuilder.class).build();
+		assertThat(objectMapper.getSerializationConfig().getSerializationInclusion(),
+				is(JsonInclude.Include.NON_NULL));
 	}
 
 	@Configuration

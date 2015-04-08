@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -45,8 +46,7 @@ public class JacksonProperties {
 
 	/**
 	 * Joda date time format string (yyyy-MM-dd HH:mm:ss). If not configured,
-	 * "date-format" will be used as a fallback if it is configured with a format
-	 * string.
+	 * "date-format" will be used as a fallback if it is configured with a format string.
 	 */
 	private String jodaDateTimeFormat;
 
@@ -81,6 +81,12 @@ public class JacksonProperties {
 	 * Jackson on/off features for generators.
 	 */
 	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<JsonGenerator.Feature, Boolean>();
+
+	/**
+	 * Controls the inclusion of properties during serialization. Configured with one of
+	 * the values in Jackson's JsonInclude.Include enumeration.
+	 */
+	private JsonInclude.Include serializationInclusion;
 
 	public String getDateFormat() {
 		return this.dateFormat;
@@ -124,6 +130,14 @@ public class JacksonProperties {
 
 	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
 		return this.generator;
+	}
+
+	public JsonInclude.Include getSerializationInclusion() {
+		return this.serializationInclusion;
+	}
+
+	public void setSerializationInclusion(JsonInclude.Include serializationInclusion) {
+		this.serializationInclusion = serializationInclusion;
 	}
 
 }

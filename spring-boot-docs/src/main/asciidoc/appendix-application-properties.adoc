@@ -142,6 +142,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jackson.mapper.*= # see Jackson's MapperFeature
 	spring.jackson.parser.*= # see Jackson's JsonParser.Feature
 	spring.jackson.serialization.*= # see Jackson's SerializationFeature
+	spring.jackson.serialization-inclusion= # Controls the inclusion of properties during serialization (see Jackson's JsonInclude.Include)
 
 	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
 	spring.thymeleaf.check-template-location=true

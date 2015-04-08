@@ -176,6 +176,10 @@ public class JacksonAutoConfiguration {
 			if (isJsonPrettyPrint != null && isJsonPrettyPrint) {
 				builder.featuresToEnable(SerializationFeature.INDENT_OUTPUT);
 			}
+			if (this.jacksonProperties.getSerializationInclusion() != null) {
+				builder.serializationInclusion(this.jacksonProperties
+						.getSerializationInclusion());
+			}
 			configureFeatures(builder, this.jacksonProperties.getDeserialization());
 			configureFeatures(builder, this.jacksonProperties.getSerialization());
 			configureFeatures(builder, this.jacksonProperties.getMapper());
