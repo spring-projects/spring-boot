@@ -65,7 +65,7 @@ public class MustacheAutoConfiguration {
 			Assert.state(location.exists(this.applicationContext),
 					"Cannot find template location: " + location
 							+ " (please add some templates, check your Mustache "
-							+ "configuration, or set spring.mustache.template."
+							+ "configuration, or set spring.mustache."
 							+ "check-template-location=false)");
 		}
 	}
