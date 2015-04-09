@@ -16,10 +16,15 @@
 
 package org.springframework.boot.test;
 
+import javax.annotation.PostConstruct;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.SpringApplicationIntegrationTestPropertyLocationTests.MoreConfig;
 import org.springframework.boot.test.SpringApplicationIntegrationTestTests.Config;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -34,7 +39,7 @@ import static org.junit.Assert.assertThat;
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Config.class)
+@SpringApplicationConfiguration(classes = { Config.class, MoreConfig.class })
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "value1=123" })
 @TestPropertySource(properties = "value2=456", locations = "classpath:/test-property-source-annotation.properties")
@@ -49,6 +54,27 @@ public class SpringApplicationIntegrationTestPropertyLocationTests {
 		assertThat(this.environment.getProperty("value2"), equalTo("456"));
 		assertThat(this.environment.getProperty("annotation-referenced"),
 				equalTo("fromfile"));
+	}
+
+	@Configuration
+	static class MoreConfig {
+
+		@Value("${value1}")
+		private String value1;
+
+		@Value("${value2}")
+		private String value2;
+
+		@Value("${annotation-referenced}")
+		private String annotationReferenced;
+
+		@PostConstruct
+		void checkValues() {
+			assertThat(this.value1, equalTo("123"));
+			assertThat(this.value2, equalTo("456"));
+			assertThat(this.annotationReferenced, equalTo("fromfile"));
+		}
+
 	}
 
 }

@@ -24,6 +24,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -100,6 +101,13 @@ public class GzipFilterAutoConfigurationTests {
 				equalTo("path-pattern"));
 		assertThat(registrationBean.getInitParameters().get("vary"),
 				equalTo("vary-header-value"));
+	}
+
+	@Test
+	public void filterCanBeDisabled() {
+		createAndRefreshContext("spring.http.gzip.enabled:false");
+		assertThat(this.context.getBeanNamesForType(FilterRegistrationBean.class).length,
+				is(equalTo(0)));
 	}
 
 	private void createAndRefreshContext(String... pairs) {

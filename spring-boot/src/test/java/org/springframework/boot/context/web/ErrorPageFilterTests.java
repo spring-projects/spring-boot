@@ -34,6 +34,10 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.context.request.async.StandardServletAsyncWebRequest;
+import org.springframework.web.context.request.async.WebAsyncManager;
+import org.springframework.web.context.request.async.WebAsyncUtils;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -321,9 +325,7 @@ public class ErrorPageFilterTests {
 	@Test
 	public void responseIsNotCommitedWhenRequestIsAsync() throws Exception {
 		this.request.setAsyncStarted(true);
-
 		this.filter.doFilter(this.request, this.response, this.chain);
-
 		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
@@ -343,9 +345,7 @@ public class ErrorPageFilterTests {
 				throw new RuntimeException("BAD");
 			}
 		};
-
 		this.filter.doFilter(this.request, this.response, this.chain);
-
 		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
@@ -364,9 +364,57 @@ public class ErrorPageFilterTests {
 				((HttpServletResponse) response).sendError(400, "BAD");
 			}
 		};
-
 		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertTrue(this.response.isCommitted());
+	}
 
+	@Test
+	public void responseIsNotCommitedDuringAsyncDispatch() throws Exception {
+		setUpAsyncDispatch();
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertFalse(this.response.isCommitted());
+	}
+
+	@Test
+	public void responseIsCommitedWhenExceptionIsThrownDuringAsyncDispatch()
+			throws Exception {
+		this.filter.addErrorPages(new ErrorPage("/error"));
+		setUpAsyncDispatch();
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				throw new RuntimeException("BAD");
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertTrue(this.response.isCommitted());
+	}
+
+	@Test
+	public void responseIsCommitedWhenStatusIs400PlusDuringAsyncDispatch()
+			throws Exception {
+		this.filter.addErrorPages(new ErrorPage("/error"));
+		setUpAsyncDispatch();
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				((HttpServletResponse) response).sendError(400, "BAD");
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
@@ -379,9 +427,7 @@ public class ErrorPageFilterTests {
 		HttpServletResponse committedResponse = mock(HttpServletResponse.class);
 		given(committedResponse.isCommitted()).willReturn(true);
 		given(committedResponse.getStatus()).willReturn(200);
-
 		this.filter.doFilter(this.request, committedResponse, this.chain);
-
 		verify(committedResponse, times(0)).flushBuffer();
 	}
 
@@ -417,6 +463,16 @@ public class ErrorPageFilterTests {
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.output.toString(), containsString("request [/test/alpha]"));
+	}
+
+	private void setUpAsyncDispatch() throws Exception {
+		this.request.setAsyncSupported(true);
+		this.request.setAsyncStarted(true);
+		DeferredResult<String> result = new DeferredResult<String>();
+		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(this.request);
+		asyncManager.setAsyncWebRequest(new StandardServletAsyncWebRequest(this.request,
+				this.response));
+		asyncManager.startDeferredResultProcessing(result);
 	}
 
 }

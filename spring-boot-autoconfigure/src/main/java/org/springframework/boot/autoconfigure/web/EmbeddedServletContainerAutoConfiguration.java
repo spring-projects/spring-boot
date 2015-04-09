@@ -29,6 +29,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,7 +46,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
 import org.xnio.SslClientAuthMode;
@@ -57,7 +57,7 @@ import org.xnio.SslClientAuthMode;
  * @author Dave Syer
  * @author Ivan Sopov
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
 @ConditionalOnWebApplication
 @Import(EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class)

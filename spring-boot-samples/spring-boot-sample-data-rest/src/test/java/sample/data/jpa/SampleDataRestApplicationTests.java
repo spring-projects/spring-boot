@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -71,7 +72,8 @@ public class SampleDataRestApplicationTests {
 		this.mvc.perform(
 				get("/api/cities/search/findByNameAndCountryAllIgnoringCase?name=Melbourne&country=Australia"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("_embedded.citys", hasSize(1)));
+				.andExpect(jsonPath("state", equalTo("Victoria")))
+				.andExpect(jsonPath("name", equalTo("Melbourne")));
 	}
 
 	@Test

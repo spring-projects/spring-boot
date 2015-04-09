@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '1.2.2.BUILD-SNAPSHOT'
+		springBootVersion = '1.3.0.BUILD-SNAPSHOT'
 	}
 	repositories {
 		// NOTE: You should declare only repositories that you need here
@@ -18,7 +18,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot.spring-boot'
 
 jar {
 	baseName = 'spring-boot-sample-simple'

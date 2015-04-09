@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,23 +23,22 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable JMX export for
  * {@link Endpoint}s.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnExpression("${endpoints.jmx.enabled:true} && ${spring.jmx.enabled:true}")
@@ -48,11 +47,14 @@ import org.springframework.util.StringUtils;
 public class EndpointMBeanExportAutoConfiguration {
 
 	@Autowired
-	EndpointMBeanExportProperties properties = new EndpointMBeanExportProperties();
+	private EndpointMBeanExportProperties properties = new EndpointMBeanExportProperties();
+
+	@Autowired(required = false)
+	private ObjectMapper objectMapper;
 
 	@Bean
 	public EndpointMBeanExporter endpointMBeanExporter(MBeanServer server) {
-		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter();
+		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter(this.objectMapper);
 		String domain = this.properties.getDomain();
 		if (StringUtils.hasText(domain)) {
 			mbeanExporter.setDomain(domain);
@@ -69,20 +71,4 @@ public class EndpointMBeanExportAutoConfiguration {
 		return new JmxAutoConfiguration().mbeanServer();
 	}
 
-	static class JmxCondition extends SpringBootCondition {
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			String endpointEnabled = context.getEnvironment().getProperty(
-					"endpoints.jmx.enabled", "true");
-			String jmxEnabled = context.getEnvironment().getProperty(
-					"spring.jmx.enabled", "true");
-			return new ConditionOutcome("true".equalsIgnoreCase(endpointEnabled)
-					&& "true".equalsIgnoreCase(jmxEnabled),
-					"JMX endpoint and JMX enabled");
-
-		}
-
-	}
 }

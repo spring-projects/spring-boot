@@ -45,7 +45,7 @@ content into your application; rather pick only the properties that you need.
 	logging.path=/var/logs
 	logging.file=myapp.log
 	logging.config= # location of config file (default classpath:logback.xml for logback)
-    logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
+	logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.name=
@@ -102,6 +102,13 @@ content into your application; rather pick only the properties that you need.
 	spring.resources.cache-period= # cache timeouts in headers sent to browser
 	spring.resources.add-mappings=true # if default mappings should be added
 
+	# MULTIPART ({sc-spring-boot-autoconfigure}/web/MultipartProperties.{sc-ext}[MultipartProperties])
+	multipart.enabled=true
+	multipart.file-size-threshold=0 # Threshold after which files will be written to disk.
+	multipart.location= # Intermediate location of uploaded files.
+	multipart.max-file-size=1Mb # Max file size.
+	multipart.max-request-size=10Mb # Max request size.
+
 	# SPRING HATEOAS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
 	spring.hateoas.apply-to-primary-object-mapper=true # if the primary mapper should also be configured
 
@@ -113,17 +120,18 @@ content into your application; rather pick only the properties that you need.
 	# HTTP message conversion
 	spring.http.converters.preferred-json-mapper= # the preferred JSON mapper to use for HTTP message conversion. Set to "gson" to force the use of Gson when both it and Jackson are on the classpath.
 
-	# HTTP response compression ({sc-spring-boot-autoconfigure/web/GzipFilterProperties.{sc-ext}[GzipFilterProperties])
+	# HTTP response compression ({sc-spring-boot-autoconfigure}/web/GzipFilterProperties.{sc-ext}[GzipFilterProperties])
 	spring.http.gzip.bufferSize= # size of the output buffer in bytes
-	spring.http.gzip.minGzipSize= # minimum content length required for compression to occur
 	spring.http.gzip.deflateCompressionLevel= # the level used for deflate compression (0-9)
 	spring.http.gzip.deflateNoWrap= # noWrap setting for deflate compression (true or false)
-	spring.http.gzip.methods= # comma-separated list of HTTP methods for which compression is enabled
-	spring.http.gzip.mimeTypes= # comma-separated list of MIME types which should be compressed
+	spring.http.gzip.enabled=true # enable gzip filter support
 	spring.http.gzip.excludedAgents= # comma-separated list of user agents to exclude from compression
 	spring.http.gzip.excludedAgentPatterns= # comma-separated list of regular expression patterns to control user agents excluded from compression
 	spring.http.gzip.excludedPaths= # comma-separated list of paths to exclude from compression
 	spring.http.gzip.excludedPathPatterns= # comma-separated list of regular expression patterns to control the paths that are excluded from compression
+	spring.http.gzip.methods= # comma-separated list of HTTP methods for which compression is enabled
+	spring.http.gzip.mimeTypes= # comma-separated list of MIME types which should be compressed
+	spring.http.gzip.minGzipSize= # minimum content length required for compression to occur
 	spring.http.gzip.vary= # Vary header to be sent on responses that may be compressed
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
@@ -134,12 +142,13 @@ content into your application; rather pick only the properties that you need.
 	spring.jackson.mapper.*= # see Jackson's MapperFeature
 	spring.jackson.parser.*= # see Jackson's JsonParser.Feature
 	spring.jackson.serialization.*= # see Jackson's SerializationFeature
+	spring.jackson.serialization-inclusion= # Controls the inclusion of properties during serialization (see Jackson's JsonInclude.Include)
 
 	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
 	spring.thymeleaf.check-template-location=true
 	spring.thymeleaf.prefix=classpath:/templates/
 	spring.thymeleaf.excluded-view-names= # comma-separated list of view names that should be excluded from resolution
-    spring.thymeleaf.view-names= # comma-separated list of view names that can be resolved
+	spring.thymeleaf.view-names= # comma-separated list of view names that can be resolved
 	spring.thymeleaf.suffix=.html
 	spring.thymeleaf.mode=HTML5
 	spring.thymeleaf.encoding=UTF-8
@@ -351,6 +360,7 @@ content into your application; rather pick only the properties that you need.
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties])
 	spring.data.elasticsearch.cluster-name= # The cluster name (defaults to elasticsearch)
 	spring.data.elasticsearch.cluster-nodes= # The address(es) of the server node (comma-separated; if not specified starts a client node)
+	spring.data.elasticsearch.properties.*= # Additional properties used to configure the client
 	spring.data.elasticsearch.repositories.enabled=true # if spring data repository support is enabled
 
 	# DATA REST ({spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[RepositoryRestConfiguration])
@@ -485,8 +495,8 @@ content into your application; rather pick only the properties that you need.
 	management.context-path= # default to '/'
 	management.add-application-context-header= # default to true
 	management.security.enabled=true # enable security
-    management.security.role=ADMIN # role required to access the management endpoint
-    management.security.sessions=stateless # session creating policy to use (always, never, if_required, stateless)
+	management.security.role=ADMIN # role required to access the management endpoint
+	management.security.sessions=stateless # session creating policy to use (always, never, if_required, stateless)
 
 	# PID FILE ({sc-spring-boot-actuator}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
 	spring.pidfile= # Location of the PID file to write
@@ -532,13 +542,15 @@ content into your application; rather pick only the properties that you need.
 
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true
+	management.health.elasticsearch.enabled=true
+	management.health.elasticsearch.response-timeout=100 # the time, in milliseconds, to wait for a response from the cluster
 	management.health.diskspace.enabled=true
-    management.health.mongo.enabled=true
-    management.health.rabbit.enabled=true
-    management.health.redis.enabled=true
-    management.health.solr.enabled=true
 	management.health.diskspace.path=.
 	management.health.diskspace.threshold=10485760
+	management.health.mongo.enabled=true
+	management.health.rabbit.enabled=true
+	management.health.redis.enabled=true
+	management.health.solr.enabled=true
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 
 	# MVC ONLY ENDPOINTS
@@ -572,6 +584,12 @@ content into your application; rather pick only the properties that you need.
 	shell.auth.simple.user.name=
 	shell.auth.simple.user.password=
 	shell.auth.spring.roles=
+
+	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
+	spring.sendgrid.username= # SendGrid account username
+	spring.sendgrid.password= # SendGrid account password
+	spring.sendgrid.proxy.host= # SendGrid proxy host
+	spring.sendgrid.proxy.port= # SendGrid proxy port
 
 	# GIT INFO
 	spring.git.properties= # resource ref to generated git info properties file

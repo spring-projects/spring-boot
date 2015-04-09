@@ -7,7 +7,7 @@ buildscript {
 	}
 }
 
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot.spring-boot'
 
 group = 'nojar'
 version = '0.0.0'

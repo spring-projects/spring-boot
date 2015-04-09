@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '1.2.2.BUILD-SNAPSHOT'
+		springBootVersion = '1.3.0.BUILD-SNAPSHOT'
 	}
 	repositories {
 		// NOTE: You should declare only repositories that you need here
@@ -19,7 +19,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse-wtp'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot.spring-boot'
 apply plugin: 'war'
 
 mainClassName = "sample.ui.SampleWebStaticApplication"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,8 +39,8 @@ import org.springframework.context.annotation.Configuration;
  *
  * <p>
  * This configuration will get automatically enabled as soon as the Jolokia
- * {@link AgentServlet} is on the classpath. To disable set
- * <code>endpoints.jolokia.enabled: false</code>.
+ * {@link AgentServlet} is on the classpath. To disable it set
+ * <code>endpoints.jolokia.enabled: false</code> or <code>endpoints.enabled: false</code>.
  *
  * <p>
  * Additional configuration parameters for Jolokia can be provided by specifying
@@ -50,11 +50,12 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Christian Dupuis
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ AgentServlet.class })
-@ConditionalOnProperty(prefix = "endpoints.jolokia", name = "enabled", matchIfMissing = true)
+@ConditionalOnExpression("${endpoints.jolokia.enabled:${endpoints.enabled:true}}")
 @AutoConfigureBefore(ManagementSecurityAutoConfiguration.class)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 @EnableConfigurationProperties(JolokiaProperties.class)

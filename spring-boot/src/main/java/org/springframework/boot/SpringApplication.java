@@ -138,6 +138,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)

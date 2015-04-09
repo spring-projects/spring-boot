@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -254,6 +254,49 @@ public class SecurityAutoConfigurationTests {
 		// HibernateJpaAutoConfiguration (e.g. the EntityManagerFactory is not found)
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JpaTransactionManager.class));
+	}
+
+	@Test
+	public void testDefaultUsernamePassword() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+
+		this.context.register(SecurityAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class);
+		this.context.refresh();
+
+		SecurityProperties security = this.context.getBean(SecurityProperties.class);
+		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
+
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+				security.getUser().getName(), security.getUser().getPassword());
+		assertNotNull(manager.authenticate(token));
+	}
+
+	@Test
+	public void testCustomAuthenticationDoesNotAuthenticateWithBootSecurityUser()
+			throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+
+		this.context.register(AuthenticationManagerCustomizer.class,
+				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
+		this.context.refresh();
+
+		SecurityProperties security = this.context.getBean(SecurityProperties.class);
+		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
+
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+				security.getUser().getName(), security.getUser().getPassword());
+		try {
+			manager.authenticate(token);
+			fail("Expected Exception");
+		}
+		catch (AuthenticationException success) {
+		}
+
+		token = new UsernamePasswordAuthenticationToken("foo", "bar");
+		assertNotNull(manager.authenticate(token));
 	}
 
 	private static final class AuthenticationListener implements

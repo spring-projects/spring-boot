@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * Adapter class to expose {@link Endpoint}s as {@link MvcEndpoint}s.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class EndpointMvcAdapter implements MvcEndpoint {
+
+	private final ResponseEntity<Map<String, String>> disabledResponse = new ResponseEntity<Map<String, String>>(
+			Collections.singletonMap("message", "This endpoint is disabled"),
+			HttpStatus.NOT_FOUND);
 
 	private final Endpoint<?> delegate;
 
@@ -49,9 +54,9 @@ public class EndpointMvcAdapter implements MvcEndpoint {
 	@ResponseBody
 	public Object invoke() {
 		if (!this.delegate.isEnabled()) {
-			// Shouldn't happen
-			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
-					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
+			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's
+			// disabled
+			return this.disabledResponse;
 		}
 		return this.delegate.invoke();
 	}
@@ -74,6 +79,17 @@ public class EndpointMvcAdapter implements MvcEndpoint {
 	@SuppressWarnings("rawtypes")
 	public Class<? extends Endpoint> getEndpointType() {
 		return this.delegate.getClass();
+	}
+
+	/**
+	 * Returns the response that should be returned when the endpoint is disabled.
+	 *
+	 * @see Endpoint#isEnabled()
+	 * @since 1.2.4
+	 * @return The response to be returned when the endpoint is disabled
+	 */
+	protected ResponseEntity<?> getDisabledResponse() {
+		return this.disabledResponse;
 	}
 
 }

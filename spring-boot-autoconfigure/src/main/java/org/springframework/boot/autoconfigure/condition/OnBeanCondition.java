@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -53,6 +54,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Jakub Kubrynski
+ * @author Stephane Nicoll
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class OnBeanCondition extends SpringBootCondition implements
@@ -87,6 +89,22 @@ public class OnBeanCondition extends SpringBootCondition implements
 			}
 			matchMessage.append("@ConditionalOnBean " + spec + " found the following "
 					+ matching);
+		}
+		if (metadata.isAnnotated(ConditionalOnSingleCandidate.class.getName())) {
+			BeanSearchSpec spec = new SingleCandidateBeanSearchSpec(context, metadata,
+					ConditionalOnSingleCandidate.class);
+			List<String> matching = getMatchingBeans(context, spec);
+			if (matching.isEmpty()) {
+				return ConditionOutcome.noMatch("@ConditionalOnSingleCandidate " + spec
+						+ " found no beans");
+			}
+			else if (!hasSingleAutowireCandidate(context.getBeanFactory(), matching)) {
+				return ConditionOutcome.noMatch("@ConditionalOnSingleCandidate " + spec
+						+ " found no primary candidate amongst the" + " following "
+						+ matching);
+			}
+			matchMessage.append("@ConditionalOnSingleCandidate " + spec + " found "
+					+ "a primary candidate amongst the following " + matching);
 		}
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
@@ -199,7 +217,26 @@ public class OnBeanCondition extends SpringBootCondition implements
 		}
 	}
 
+	private boolean hasSingleAutowireCandidate(
+			ConfigurableListableBeanFactory beanFactory, List<String> beanNames) {
+		return (beanNames.size() == 1 || getPrimaryBeans(beanFactory, beanNames).size() == 1);
+	}
+
+	private List<String> getPrimaryBeans(ConfigurableListableBeanFactory beanFactory,
+			List<String> beanNames) {
+		List<String> primaryBeans = new ArrayList<String>();
+		for (String beanName : beanNames) {
+			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+			if (beanDefinition != null && beanDefinition.isPrimary()) {
+				primaryBeans.add(beanName);
+			}
+		}
+		return primaryBeans;
+	}
+
 	private static class BeanSearchSpec {
+
+		private final Class<?> annotationType;
 
 		private final List<String> names = new ArrayList<String>();
 
@@ -211,6 +248,7 @@ public class OnBeanCondition extends SpringBootCondition implements
 
 		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
 				Class<?> annotationType) {
+			this.annotationType = annotationType;
 			MultiValueMap<String, Object> attributes = metadata
 					.getAllAnnotationAttributes(annotationType.getName(), true);
 			collect(attributes, "name", this.names);
@@ -220,11 +258,15 @@ public class OnBeanCondition extends SpringBootCondition implements
 			if (this.types.isEmpty() && this.names.isEmpty()) {
 				addDeducedBeanType(context, metadata, this.types);
 			}
-			Assert.isTrue(hasAtLeastOne(this.types, this.names, this.annotations),
-					annotationName(annotationType) + " annotations must "
-							+ "specify at least one bean (type, name or annotation)");
 			this.strategy = (SearchStrategy) metadata.getAnnotationAttributes(
 					annotationType.getName()).get("search");
+			validate();
+		}
+
+		protected void validate() {
+			Assert.isTrue(hasAtLeastOne(this.types, this.names, this.annotations),
+					annotationName() + " annotations must "
+							+ "specify at least one bean (type, name or annotation)");
 		}
 
 		private boolean hasAtLeastOne(List<?>... lists) {
@@ -236,16 +278,22 @@ public class OnBeanCondition extends SpringBootCondition implements
 			return false;
 		}
 
-		private String annotationName(Class<?> annotationType) {
-			return "@" + ClassUtils.getShortName(annotationType);
+		protected String annotationName() {
+			return "@" + ClassUtils.getShortName(this.annotationType);
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		private void collect(MultiValueMap<String, Object> attributes, String key,
+		protected void collect(MultiValueMap<String, Object> attributes, String key,
 				List<String> destination) {
-			List<String[]> valueList = (List) attributes.get(key);
-			for (String[] valueArray : valueList) {
-				Collections.addAll(destination, valueArray);
+			List<?> values = attributes.get(key);
+			if (values != null) {
+				for (Object value : values) {
+					if (value instanceof String[]) {
+						Collections.addAll(destination, (String[]) value);
+					}
+					else {
+						destination.add((String) value);
+					}
+				}
 			}
 		}
 
@@ -324,6 +372,28 @@ public class OnBeanCondition extends SpringBootCondition implements
 			return string.toString();
 		}
 
+	}
+
+	private static class SingleCandidateBeanSearchSpec extends BeanSearchSpec {
+
+		public SingleCandidateBeanSearchSpec(ConditionContext context,
+				AnnotatedTypeMetadata metadata, Class<?> annotationType) {
+			super(context, metadata, annotationType);
+		}
+
+		@Override
+		protected void collect(MultiValueMap<String, Object> attributes, String key,
+				List<String> destination) {
+			super.collect(attributes, key, destination);
+			destination.removeAll(Arrays.asList("", Object.class.getName()));
+		}
+
+		@Override
+		protected void validate() {
+			Assert.isTrue(getTypes().size() == 1, annotationName() + " annotations must "
+					+ "specify only one type (got " + getTypes() + ")");
+
+		}
 	}
 
 }

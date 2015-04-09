@@ -477,16 +477,28 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			}
 
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+
 				@Override
 				public void customize(Connector connector) {
 					ProtocolHandler handler = connector.getProtocolHandler();
 					if (handler instanceof AbstractHttp11Protocol) {
 						@SuppressWarnings("rawtypes")
 						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-						protocol.setCompression(Tomcat.this.compression);
+						protocol.setCompression(coerceCompression(Tomcat.this.compression));
 						protocol.setCompressableMimeTypes(Tomcat.this.compressableMimeTypes);
 					}
 				}
+
+				private String coerceCompression(String compression) {
+					if ("true".equalsIgnoreCase(compression)) {
+						return "on";
+					}
+					if ("false".equalsIgnoreCase(compression)) {
+						return "off";
+					}
+					return compression;
+				}
+
 			});
 
 			if (this.accessLogEnabled) {

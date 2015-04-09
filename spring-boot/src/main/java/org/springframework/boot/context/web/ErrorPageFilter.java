@@ -88,6 +88,11 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 			ErrorPageFilter.this.doFilter(request, response, chain);
 		}
 
+		@Override
+		protected boolean shouldNotFilterAsyncDispatch() {
+			return false;
+		}
+
 	};
 
 	@Override

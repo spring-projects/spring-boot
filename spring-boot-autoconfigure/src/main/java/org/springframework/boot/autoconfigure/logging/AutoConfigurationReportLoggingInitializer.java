@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,10 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.SmartApplicationListener;
+import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -52,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Greg Turnquist
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class AutoConfigurationReportLoggingInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -109,13 +111,12 @@ public class AutoConfigurationReportLoggingInitializer implements
 						+ "debug logging (start with --debug)\n\n");
 			}
 			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(getLogMessage(this.report
-						.getConditionAndOutcomesBySource()));
+				this.logger.debug(getLogMessage(this.report));
 			}
 		}
 	}
 
-	private StringBuilder getLogMessage(Map<String, ConditionAndOutcomes> outcomes) {
+	private StringBuilder getLogMessage(ConditionEvaluationReport report) {
 		StringBuilder message = new StringBuilder();
 		message.append("\n\n\n");
 		message.append("=========================\n");
@@ -123,7 +124,8 @@ public class AutoConfigurationReportLoggingInitializer implements
 		message.append("=========================\n\n\n");
 		message.append("Positive matches:\n");
 		message.append("-----------------\n");
-		Map<String, ConditionAndOutcomes> shortOutcomes = orderByName(outcomes);
+		Map<String, ConditionAndOutcomes> shortOutcomes = orderByName(report
+				.getConditionAndOutcomesBySource());
 		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
 			if (entry.getValue().isFullMatch()) {
 				addLogMessage(message, entry.getKey(), entry.getValue());
@@ -135,6 +137,17 @@ public class AutoConfigurationReportLoggingInitializer implements
 		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
 			if (!entry.getValue().isFullMatch()) {
 				addLogMessage(message, entry.getKey(), entry.getValue());
+			}
+		}
+		message.append("\n\n");
+		message.append("Exclusions:\n");
+		message.append("-----------\n");
+		if (report.getExclusions().isEmpty()) {
+			message.append("\n    None\n");
+		}
+		else {
+			for (String exclusion : report.getExclusions()) {
+				message.append("\n   " + exclusion + "\n");
 			}
 		}
 		message.append("\n\n");
@@ -178,7 +191,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 
 	}
 
-	private class AutoConfigurationReportListener implements SmartApplicationListener {
+	private class AutoConfigurationReportListener implements GenericApplicationListener {
 
 		@Override
 		public int getOrder() {
@@ -186,7 +199,11 @@ public class AutoConfigurationReportLoggingInitializer implements
 		}
 
 		@Override
-		public boolean supportsEventType(Class<? extends ApplicationEvent> type) {
+		public boolean supportsEventType(ResolvableType resolvableType) {
+			Class<?> type = resolvableType.getRawClass();
+			if (type == null) {
+				return false;
+			}
 			return ContextRefreshedEvent.class.isAssignableFrom(type)
 					|| ApplicationFailedEvent.class.isAssignableFrom(type);
 		}

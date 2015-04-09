@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
@@ -142,7 +141,7 @@ class AutoConfigurationSorter {
 
 		public int getOrder() {
 			Map<String, Object> orderedAnnotation = this.metadata
-					.getAnnotationAttributes(Order.class.getName());
+					.getAnnotationAttributes(AutoConfigureOrder.class.getName());
 			return (orderedAnnotation == null ? Ordered.LOWEST_PRECEDENCE
 					: (Integer) orderedAnnotation.get("value"));
 		}

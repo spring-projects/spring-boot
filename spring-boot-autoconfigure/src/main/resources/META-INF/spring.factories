@@ -9,6 +9,7 @@ org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration,\
 org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration,\
 org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration,\
+org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.cloud.CloudAutoConfiguration,\
 org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration,\
@@ -50,6 +51,7 @@ org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration,\
 org.springframework.boot.autoconfigure.social.LinkedInAutoConfiguration,\

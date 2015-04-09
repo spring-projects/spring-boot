@@ -12,7 +12,7 @@ repositories {
 	mavenCentral()
 }
 
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot.spring-boot'
 apply plugin: 'java'
 
 dependencies {

@@ -31,8 +31,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.context.event.SmartApplicationListener;
+import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.util.LinkedMultiValueMap;
@@ -61,7 +62,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @see LoggingSystem#get(ClassLoader)
  */
-public class LoggingApplicationListener implements SmartApplicationListener {
+public class LoggingApplicationListener implements GenericApplicationListener {
 
 	/**
 	 * The name of the Spring property that contains a reference to the logging
@@ -115,8 +116,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	private LogLevel springBootLogging = null;
 
 	@Override
-	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-		return isAssignableFrom(eventType, EVENT_TYPES);
+	public boolean supportsEventType(ResolvableType resolvableType) {
+		return isAssignableFrom(resolvableType.getRawClass(), EVENT_TYPES);
 	}
 
 	@Override
@@ -125,9 +126,11 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	}
 
 	private boolean isAssignableFrom(Class<?> type, Class<?>... supportedTypes) {
-		for (Class<?> supportedType : supportedTypes) {
-			if (supportedType.isAssignableFrom(type)) {
-				return true;
+		if (type != null) {
+			for (Class<?> supportedType : supportedTypes) {
+				if (supportedType.isAssignableFrom(type)) {
+					return true;
+				}
 			}
 		}
 		return false;

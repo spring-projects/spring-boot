@@ -65,7 +65,7 @@ public class MustacheAutoConfiguration {
 			Assert.state(location.exists(this.applicationContext),
 					"Cannot find template location: " + location
 							+ " (please add some templates, check your Mustache "
-							+ "configuration, or set spring.mustache.template."
+							+ "configuration, or set spring.mustache."
 							+ "check-template-location=false)");
 		}
 	}
@@ -108,6 +108,7 @@ public class MustacheAutoConfiguration {
 			resolver.setCache(this.mustache.isCache());
 			resolver.setViewNames(this.mustache.getViewNames());
 			resolver.setContentType(this.mustache.getContentType());
+			resolver.setCharset(this.mustache.getCharset());
 			resolver.setCompiler(mustacheCompiler);
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 			return resolver;

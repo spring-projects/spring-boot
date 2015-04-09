@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '1.2.2.BUILD-SNAPSHOT'
+		springBootVersion = '1.3.0.BUILD-SNAPSHOT'
 		springLoadedVersion = '1.2.0.RELEASE'
 	}
 	repositories {
@@ -21,7 +21,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot.spring-boot'
 
 mainClassName = "sample.ui.SampleWebUiApplication"
 

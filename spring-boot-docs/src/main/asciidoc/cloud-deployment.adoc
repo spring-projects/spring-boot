@@ -283,8 +283,7 @@ in your `application.properties`, e.g.
 
 There's a blog on https://www.openshift.com/blogs/run-gradle-builds-on-openshift[running
 Gradle in Openshift] on their website that will get you started with a gradle build to
-run the app. A http://issues.gradle.org/browse/GRADLE-2871[bug in Gradle] currently
-prevents you from using Gradle newer than 1.6.
+run the app.
 
 
 

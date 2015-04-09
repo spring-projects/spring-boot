@@ -54,8 +54,8 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
 		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
 				healthAggregator);
-		for (Map.Entry<String, HealthIndicator> h : healthIndicators.entrySet()) {
-			healthIndicator.addHealthIndicator(getKey(h.getKey()), h.getValue());
+		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
+			healthIndicator.addHealthIndicator(getKey(entry.getKey()), entry.getValue());
 		}
 		this.healthIndicator = healthIndicator;
 	}

@@ -1,4 +1,6 @@
 language: java
+jdk:
+  - oraclejdk8
 services: mongodb
 
 install: true

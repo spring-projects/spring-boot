@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -39,6 +42,11 @@ public class ElasticsearchProperties {
 	 */
 	private String clusterNodes;
 
+	/**
+	 * Additional properties used to configure the client
+	 */
+	private Map<String, String> properties = new HashMap<String, String>();
+
 	public String getClusterName() {
 		return this.clusterName;
 	}
@@ -54,4 +62,13 @@ public class ElasticsearchProperties {
 	public void setClusterNodes(String clusterNodes) {
 		this.clusterNodes = clusterNodes;
 	}
+
+	public Map<String, String> getProperties() {
+		return this.properties;
+	}
+
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
+	}
+
 }

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.2.2.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-jta-bitronix</artifactId>
 	<name>Spring Boot Bitronix JTA Starter</name>
@@ -18,6 +18,10 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>jms-api</artifactId>
@@ -36,9 +40,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
+
 	</dependencies>
 </project>

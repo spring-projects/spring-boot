@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.actuate.endpoint;
+
+import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 
@@ -37,6 +39,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Greg Turnquist
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class AutoConfigurationReportEndpointTests extends
 		AbstractEndpointTests<AutoConfigurationReportEndpoint> {
@@ -51,6 +54,7 @@ public class AutoConfigurationReportEndpointTests extends
 		Report report = getEndpointBean().invoke();
 		assertTrue(report.getPositiveMatches().isEmpty());
 		assertTrue(report.getNegativeMatches().containsKey("a"));
+		assertTrue(report.getExclusions().contains("com.foo.Bar"));
 	}
 
 	@Configuration
@@ -66,6 +70,7 @@ public class AutoConfigurationReportEndpointTests extends
 					.getBeanFactory());
 			report.recordConditionEvaluation("a", mock(Condition.class),
 					mock(ConditionOutcome.class));
+			report.recordExclusions(Arrays.asList("com.foo.Bar"));
 		}
 
 		@Bean

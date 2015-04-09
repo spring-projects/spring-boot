@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
+ * Tests for {@link EnvironmentMvcEndpoint}
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { TestConfiguration.class })
@@ -58,6 +61,7 @@ public class EnvironmentMvcEndpointTests {
 
 	@Before
 	public void setUp() {
+		this.context.getBean(EnvironmentEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		EnvironmentTestUtils.addEnvironment(
 				(ConfigurableApplicationContext) this.context, "foo:bar");
@@ -73,6 +77,12 @@ public class EnvironmentMvcEndpointTests {
 	public void sub() throws Exception {
 		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
 				.andExpect(content().string(equalToIgnoringCase("bar")));
+	}
+
+	@Test
+	public void subWhenDisabled() throws Exception {
+		this.context.getBean(EnvironmentEndpoint.class).setEnabled(false);
+		this.mvc.perform(get("/env/foo")).andExpect(status().isNotFound());
 	}
 
 	@Import({ EndpointWebMvcAutoConfiguration.class,

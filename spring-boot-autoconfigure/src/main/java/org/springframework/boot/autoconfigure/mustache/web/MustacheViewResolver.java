@@ -34,11 +34,14 @@ import com.samskivert.mustache.Template;
  * Spring MVC {@link ViewResolver} for Mustache.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  * @since 1.2.2
  */
 public class MustacheViewResolver extends UrlBasedViewResolver {
 
 	private Compiler compiler = Mustache.compiler();
+
+	private String charset;
 
 	public MustacheViewResolver() {
 		setViewClass(MustacheView.class);
@@ -49,6 +52,13 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	 */
 	public void setCompiler(Compiler compiler) {
 		this.compiler = compiler;
+	}
+
+	/**
+	 * @param charset the charset to set
+	 */
+	public void setCharset(String charset) {
+		this.charset = charset;
 	}
 
 	@Override
@@ -64,7 +74,9 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	private Template createTemplate(Resource resource) throws IOException {
-		return this.compiler.compile(new InputStreamReader(resource.getInputStream()));
+		return this.charset == null ? this.compiler.compile(new InputStreamReader(
+				resource.getInputStream())) : this.compiler
+				.compile(new InputStreamReader(resource.getInputStream(), this.charset));
 	}
 
 	private Resource resolveResource(String viewName, Locale locale) {

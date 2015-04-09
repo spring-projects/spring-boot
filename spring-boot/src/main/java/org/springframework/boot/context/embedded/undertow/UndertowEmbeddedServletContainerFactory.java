@@ -69,7 +69,6 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.SocketUtils;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 
@@ -203,9 +202,6 @@ public class UndertowEmbeddedServletContainerFactory extends
 			ServletContextInitializer... initializers) {
 		DeploymentManager manager = createDeploymentManager(initializers);
 		int port = getPort();
-		if (port == 0) {
-			port = SocketUtils.findAvailableTcpPort(40000);
-		}
 		Builder builder = createBuilder(port);
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
 				port, port >= 0);

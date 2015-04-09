@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link JolokiaAutoConfiguration}.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 public class JolokiaAutoConfigurationTests {
 
@@ -67,10 +68,23 @@ public class JolokiaAutoConfigurationTests {
 	}
 
 	@Test
-	public void agentDisabled() throws Exception {
+	public void endpointDisabled() throws Exception {
+		assertEndpointDisabled("endpoints.jolokia.enabled:false");
+	}
+
+	@Test
+	public void allEndpointsDisabled() throws Exception {
+		assertEndpointDisabled("endpoints.enabled:false");
+	}
+
+	@Test
+	public void endpointEnabledAsOverride() throws Exception {
+		assertEndpointEnabled("endpoints.enabled:false", "endpoints.jolokia.enabled:true");
+	}
+
+	private void assertEndpointDisabled(String... pairs) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"endpoints.jolokia.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, pairs);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
@@ -78,6 +92,18 @@ public class JolokiaAutoConfigurationTests {
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+	}
+
+	private void assertEndpointEnabled(String... pairs) {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, pairs);
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				JolokiaAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
 	}
 
 	@Configuration

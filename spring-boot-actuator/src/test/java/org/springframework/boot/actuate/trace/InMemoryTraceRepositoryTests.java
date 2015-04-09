@@ -40,7 +40,7 @@ public class InMemoryTraceRepositoryTests {
 		this.repository.add(Collections.<String, Object> singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
 		assertEquals(2, traces.size());
-		assertEquals("bar", traces.get(1).getInfo().get("bar"));
+		assertEquals("bar", traces.get(0).getInfo().get("bar"));
 	}
 
 }

@@ -29,6 +29,7 @@ import javax.sql.XADataSource;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.lang.UsesJava7;
 import org.springframework.util.StringUtils;
 
 import bitronix.tm.resource.common.ResourceBean;
@@ -110,6 +111,7 @@ public class PoolingDataSourceBean extends PoolingDataSource implements BeanName
 	}
 
 	@Override
+	@UsesJava7
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		try {
 			return ((DataSource) this).getParentLogger();
@@ -166,6 +168,7 @@ public class PoolingDataSourceBean extends PoolingDataSource implements BeanName
 		}
 
 		@Override
+		@UsesJava7
 		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 			return this.dataSource.getParentLogger();
 		}

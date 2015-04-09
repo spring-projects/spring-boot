@@ -35,6 +35,12 @@
     "defaultValue": true
   },
   {
+    "name": "management.health.jms.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable JMS health check.",
+    "defaultValue": true
+  },
+  {
     "name": "management.health.mongo.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable MongoDB health check.",
@@ -56,6 +62,12 @@
     "name": "management.health.solr.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Solr health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.mail.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Mail health check.",
     "defaultValue": true
   },
   {

@@ -14,8 +14,19 @@ http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#us
 If you create a starter for a technology that is not already in the standard list we can
 list it here. Just send a pull request for this page.
 
+WARNING: While the
+http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-starter-poms[reference documentation]
+mentions that 3rd party starters should not start with `spring-boot-starter`, some starters
+do as they were designed before this was clarified.
+
 |===
 | Name | Location
+
+| https://vaadin.com/[Vaadin]
+| https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
+
+| http://camel.apache.org/spring-boot.html[Apache Camel]
+| https://github.com/apache/camel/tree/master/components/camel-spring-boot
 
 | https://code.google.com/p/wro4j/[WRO4J]
 | https://github.com/sbuettner/spring-boot-autoconfigure-wro4j

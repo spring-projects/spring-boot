@@ -55,9 +55,9 @@ public @interface ConditionalOnMissingBean {
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
-	 * when each class specified is missing from all beans in the
+	 * when each annotation specified is missing from all beans in the
 	 * {@link ApplicationContext}.
-	 * @return the class types of beans to check
+	 * @return the class-level annotation types to check
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 

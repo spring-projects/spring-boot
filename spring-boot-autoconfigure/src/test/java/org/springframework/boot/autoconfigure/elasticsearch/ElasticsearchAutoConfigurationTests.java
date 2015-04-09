@@ -27,7 +27,9 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -52,11 +54,16 @@ public class ElasticsearchAutoConfigurationTests {
 
 	@Test
 	public void createNodeClient() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class,
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.foo.bar:baz");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
+		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
-		assertThat(this.context.getBean(Client.class), instanceOf(NodeClient.class));
+		Client client = this.context.getBean(Client.class);
+		assertThat(client, instanceOf(NodeClient.class));
+		assertThat(((NodeClient) client).settings().get("foo.bar"), is(equalTo("baz")));
 	}
 
 	@Test

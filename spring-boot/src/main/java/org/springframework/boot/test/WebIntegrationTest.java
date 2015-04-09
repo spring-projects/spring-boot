@@ -55,8 +55,8 @@ public @interface WebIntegrationTest {
 	/**
 	 * Convenience attribute that can be used to set a {@code server.port=0}
 	 * {@link Environment} property which usually triggers listening on a random port.
-	 * Often used in conjunction with a {@code @Value("server.local.port")} injected field
-	 * on the test.
+	 * Often used in conjunction with a <code>&#064;Value("${local.server.port}")</code>
+	 * injected field on the test.
 	 */
 	boolean randomPort() default false;
 
