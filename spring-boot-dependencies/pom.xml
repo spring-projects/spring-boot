@@ -63,6 +63,7 @@
 		<ehcache.version>2.9.1</ehcache.version>
 		<flyway.version>3.2</flyway.version>
 		<freemarker.version>2.3.22</freemarker.version>
+		<elasticsearch.version>1.4.4</elasticsearch.version>
 		<gemfire.version>7.0.2</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.12</gradle.version>
@@ -1083,6 +1084,11 @@
 				<groupId>org.eclipse.jetty.websocket</groupId>
 				<artifactId>websocket-server</artifactId>
 				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.elasticsearch</groupId>
+				<artifactId>elasticsearch</artifactId>
+				<version>${elasticsearch.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.flywaydb</groupId>

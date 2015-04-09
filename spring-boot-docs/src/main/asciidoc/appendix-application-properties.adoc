@@ -542,13 +542,15 @@ content into your application; rather pick only the properties that you need.
 
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true
+	management.health.elasticsearch.enabled=true
+	management.health.elasticsearch.response-timeout=100 # the time, in milliseconds, to wait for a response from the cluster
 	management.health.diskspace.enabled=true
+	management.health.diskspace.path=.
+	management.health.diskspace.threshold=10485760
 	management.health.mongo.enabled=true
 	management.health.rabbit.enabled=true
 	management.health.redis.enabled=true
 	management.health.solr.enabled=true
-	management.health.diskspace.path=.
-	management.health.diskspace.threshold=10485760
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 
 	# MVC ONLY ENDPOINTS
