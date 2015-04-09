@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -63,7 +66,37 @@ public class JarWriter {
 	 * @throws FileNotFoundException
 	 */
 	public JarWriter(File file) throws FileNotFoundException, IOException {
-		this.jarOutput = new JarOutputStream(new FileOutputStream(file));
+		this(file, null);
+	}
+
+	/**
+	 * Create a new {@link JarWriter} instance.
+	 * @param file the file to write
+	 * @param launchScript an optional launch script to prepend to the front of the jar
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	public JarWriter(File file, LaunchScript launchScript) throws FileNotFoundException,
+			IOException {
+		FileOutputStream fileOutputStream = new FileOutputStream(file);
+		if (launchScript != null) {
+			fileOutputStream.write(launchScript.toByteArray());
+			setExecutableFilePermission(file);
+		}
+		this.jarOutput = new JarOutputStream(fileOutputStream);
+	}
+
+	private void setExecutableFilePermission(File file) {
+		try {
+			Path path = file.toPath();
+			Set<PosixFilePermission> permissions = new HashSet<PosixFilePermission>(
+					Files.getPosixFilePermissions(path));
+			permissions.add(PosixFilePermission.OWNER_EXECUTE);
+			Files.setPosixFilePermissions(path, permissions);
+		}
+		catch (Throwable ex) {
+			// Ignore and continue creating the jar
+		}
 	}
 
 	/**

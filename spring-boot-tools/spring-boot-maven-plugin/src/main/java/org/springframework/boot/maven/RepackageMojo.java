@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
@@ -34,6 +35,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.springframework.boot.loader.tools.DefaultLaunchScript;
+import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
@@ -124,6 +127,29 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	@Parameter
 	private List<Dependency> requiresUnpack;
 
+	/**
+	 * Make a fully executable jar for *nix machines by prepending a launch script to the
+	 * jar.
+	 * @since 1.3
+	 */
+	@Parameter(defaultValue = "true")
+	private boolean executable;
+
+	/**
+	 * The embedded launch script to prepend to the front of the jar if it is fully
+	 * executable. If not specified the 'Spring Boot' default script will be used.
+	 * @since 1.3
+	 */
+	@Parameter
+	private File embeddedLaunchScript;
+
+	/**
+	 * Properties that should be expanded in the embedded launch script.
+	 * @since 1.3
+	 */
+	@Parameter
+	private Properties embeddedLaunchScriptProperties;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -167,7 +193,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
 				getLog());
 		try {
-			repackager.repackage(target, libraries);
+			LaunchScript launchScript = getLaunchScript();
+			repackager.repackage(target, libraries, launchScript);
 		}
 		catch (IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
@@ -188,6 +215,14 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 		return new File(this.outputDirectory, this.finalName + classifier + "."
 				+ this.project.getPackaging());
+	}
+
+	private LaunchScript getLaunchScript() throws IOException {
+		if (this.executable) {
+			return new DefaultLaunchScript(this.embeddedLaunchScript,
+					this.embeddedLaunchScriptProperties);
+		}
+		return null;
 	}
 
 	public static enum LayoutType {

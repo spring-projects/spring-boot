@@ -18,6 +18,8 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -34,6 +36,7 @@ import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -141,7 +144,6 @@ public class RepackagerTests {
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(NO_LIBRARIES);
 		repackager.repackage(NO_LIBRARIES);
-
 		Manifest actualManifest = getManifest(file);
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"),
 				equalTo("org.springframework.boot.loader.JarLauncher"));
@@ -230,7 +232,6 @@ public class RepackagerTests {
 				equalTo(false));
 		assertThat(hasLauncherClasses(source), equalTo(false));
 		assertThat(hasLauncherClasses(dest), equalTo(true));
-
 	}
 
 	@Test
@@ -380,7 +381,6 @@ public class RepackagerTests {
 				callback.library(new Library(nestedFile, LibraryScope.COMPILE));
 			}
 		});
-
 		JarFile jarFile = new JarFile(file);
 		try {
 			assertThat(jarFile.getEntry("lib/" + nestedFile.getName()).getMethod(),
@@ -391,6 +391,22 @@ public class RepackagerTests {
 		finally {
 			jarFile.close();
 		}
+	}
+
+	@Test
+	public void addLauncherScript() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File source = this.testJarFile.getFile();
+		File dest = this.temporaryFolder.newFile("dest.jar");
+		Repackager repackager = new Repackager(source);
+		LaunchScript script = new MockLauncherScript("ABC");
+		repackager.repackage(dest, NO_LIBRARIES, script);
+		byte[] bytes = FileCopyUtils.copyToByteArray(dest);
+		assertThat(Files.getPosixFilePermissions(dest.toPath()),
+				hasItem(PosixFilePermission.OWNER_EXECUTE));
+		assertThat(new String(bytes), startsWith("ABC"));
+		assertThat(hasLauncherClasses(source), equalTo(false));
+		assertThat(hasLauncherClasses(dest), equalTo(true));
 	}
 
 	private boolean hasLauncherClasses(File file) throws IOException {
@@ -420,6 +436,21 @@ public class RepackagerTests {
 		finally {
 			jarFile.close();
 		}
+	}
+
+	private static class MockLauncherScript implements LaunchScript {
+
+		private final byte[] bytes;
+
+		public MockLauncherScript(String script) {
+			this.bytes = script.getBytes();
+		}
+
+		@Override
+		public byte[] toByteArray() {
+			return this.bytes;
+		}
+
 	}
 
 }
