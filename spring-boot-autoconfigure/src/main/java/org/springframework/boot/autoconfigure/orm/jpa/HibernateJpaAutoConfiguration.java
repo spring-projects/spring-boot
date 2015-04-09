@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jta.JtaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.HibernateEntityManagerCondition;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.context.annotation.ConditionContext;
@@ -59,7 +58,7 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
 		EnableTransactionManagement.class, EntityManager.class })
 @Conditional(HibernateEntityManagerCondition.class)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class, JtaAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class })
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	private static final Log logger = LogFactory
