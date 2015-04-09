@@ -383,6 +383,18 @@ want the other Boot features but not this one)
 |`customConfiguration`
 |The name of the custom configuration which is used to populate the nested lib directory
  (without specifying this you get all compile and runtime dependencies).
+
+|`executable`
+|Boolean flag to indicate if jar files are fully executable on Unix like operating
+ systems. Defaults to `true`.
+
+|`embeddedLaunchScript`
+|The embedded launch script to prepend to the front of the jar if it is fully executable.
+ If not specified the 'Spring Boot' default script will be used.
+
+|`embeddedLaunchScriptProperties`
+|Additional properties that to be expanded in the launch script. The default script
+ supports a `mode` property which can contain the values `auto`, `service` or `run`.
 |===
 
 

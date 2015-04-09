@@ -1,8 +1,20 @@
-[[cloud-deployment]]
-= Deploying to the cloud
+[[deployment]]
+== Deploying Spring Boot applications
 
 [partintro]
 --
+Spring Boot's flexible packaging options provide a great deal of choice when it comes to
+deploying your application. You can easily deploy Spring Boot applications to a variety
+of cloud platforms, to a container images (such as Docker) or to virtual/real machines.
+
+This section covers some of the more common deployment scenarios.
+--
+
+
+
+[[cloud-deployment]]
+== Deploying to the cloud
+
 Spring Boot's executable jars are ready-made for most popular cloud PaaS
 (platform-as-a-service) providers. These providers tend to require that you
 "`bring your own container`"; they manage application processes (not Java applications
@@ -23,12 +35,11 @@ to run packaged within it.
 In this section we'll look at what it takes to get the
 <<getting-started.adoc#getting-started-first-application, simple application that we
 developed>> in the "`Getting Started`" section up and running in the Cloud.
---
 
 
 
 [[cloud-deployment-cloud-foundry]]
-== Cloud Foundry
+=== Cloud Foundry
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is
 specified. The Cloud Foundry https://github.com/cloudfoundry/java-buildpack[Java buildpack]
 has excellent support for Spring applications, including Spring Boot.  You can deploy
@@ -102,7 +113,7 @@ able to hit the application at the URI given, in this case
 
 
 [[cloud-deployment-cloud-foundry-services]]
-=== Binding to services
+==== Binding to services
 By default, metadata about the running application as well as service connection
 information is exposed to the application as environment variables (for example:
 `$VCAP_SERVICES`). This architecture decision is due to Cloud Foundry's polyglot
@@ -142,7 +153,7 @@ auto-configuration support and a `spring-boot-starter-cloud-connectors` starter 
 
 
 [[cloud-deployment-heroku]]
-== Heroku
+=== Heroku
 Heroku is another popular PaaS platform. To customize Heroku builds, you provide a
 `Procfile`, which provides the incantation required to deploy an application. Heroku
 assigns a `port` for the Java application to use and then ensures that routing to the
@@ -225,7 +236,7 @@ Your application should now be up and running on Heroku.
 
 
 [[cloud-deployment-openshift]]
-== Openshift
+=== Openshift
 https://www.openshift.com/[Openshift] is the RedHat public (and enterprise) PaaS solution.
 Like Heroku, it works by running scripts triggered by git commits, so you can script
 the launching of a Spring Boot application in pretty much any way you like as long as the
@@ -288,14 +299,85 @@ run the app.
 
 
 [[cloud-deployment-gae]]
-== Google App Engine
+=== Google App Engine
 Google App Engine is tied to the Servlet 2.5 API, so you can't deploy a Spring Application
 there without some modifications. See the <<howto.adoc#howto-servlet-2-5, Servlet 2.5 section>>
 of this guide.
 
 
+[[deployment-service]]
+== Installing Spring Boot applications
+In additional to running Spring Boot applications using `java -jar` it is also possible
+to execute applications directly on Unix systems (Linux, OSX, FreeBSD etc). This makes it
+very easy to install and manage Spring Boot applications in common production
+environments. As long as you are generating '`fully executable`' jars from your build, and
+you are not using a custom `embeddedLaunchScript`, the following techniques can be used.
 
-[[cloud-deployment-whats-next]]
+
+
+=== Unix/Linux services
+Spring Boot application can be easily started as Unix/Linux services using either `init.d`
+or `systemd`.
+
+
+
+==== Installation as a init.d (system v) service
+The default executable script that is embedded into Spring Boot executable jars will act
+as an `init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
+`restart` and `status` commands can be used. The script supports the following features:
+
+* Starts the services as the user that owns the jar file
+* Tracks application PIDs using `/var/run/<appname>.pid`
+* Writes console logs to `/var/log/<appname>.log`
+
+Assuming that you have a Spring Boot application installed in `/var/myapp`, to install a
+Spring Boot application as an `init.d` service simply create a symlink:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ sudo link -s /var/myapp/myapp.jar /etc/init.d/myapp
+----
+
+TIP: It is advisable to create a specific user account to run you application. Ensure
+that you have set the owner of the jar file using `chown` before installing your service.
+
+Once installed, you can start and stop the service in the usual way. You can also flag the
+application to start automatically using your standard operating system tools. For example,
+if you use Debian:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ update-rc.d myapp defaults <priority>
+----
+
+
+
+==== Installation as a systemd service
+Systemd is the successor to `init.d` scripts, and now being used by many many modern Linux
+distributions. Although you can continue to use `init.d` script with `systemd`, it is also
+possible to launch Spring Boot applications using `systemd` '`service`' scripts.
+
+For example, to run a Spring Boot application installed in `var/myapp` you can add the
+following script in `/etc/systemd/system/myapp.service`:
+
+[indent=0]
+----
+	[Unit]
+	Description=myapp
+	After=syslog.target
+
+	[Service]
+	ExecStart=/var/myapp/myapp.jar
+
+	[Install]
+	WantedBy=multi-user.target
+----
+
+TIP: Remember to change the `Description` and `ExecStart` fields for your application.
+
+
+
+[[deployment-whats-next]]
 == What to read next
 Check out the http://www.cloudfoundry.com/[Cloud Foundry], https://www.heroku.com/[Heroku]
 and https://www.openshift.com[Openshift] web sites for more information about the kinds of
@@ -306,7 +388,4 @@ consider other providers as well.
 The next section goes on to cover the _<<spring-boot-cli.adoc#cli, Spring Boot CLI>>_;
 or you can jump ahead to read about
 _<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.
-
-
-
 
