@@ -1,0 +1,164 @@
+#!/bin/bash
+#
+#    .   ____          _            __ _ _
+#   /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+#  ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+#   \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+#    '  |____| .__|_| |_|_| |_\__, | / / / /
+#   =========|_|==============|___/=/_/_/_/
+#   :: Spring Boot Startup Script ::
+#
+
+WORKING_DIR="$(pwd)"
+PID_FOLDER="/var/run"
+USER_PID_FOLDER="/tmp"
+LOG_FOLDER="/var/log"
+USER_LOG_FOLDER="/tmp"
+
+# Setup defaults
+[[ -z "$mode" ]] && mode="{{mode:auto}}" # modes are "auto", "service" or "run"
+
+# ANSI Colors
+echoRed() { echo $'\e[0;31m'$1$'\e[0m'; }
+echoGreen() { echo $'\e[0;32m'$1$'\e[0m'; }
+echoYellow() { echo $'\e[0;33m'$1$'\e[0m'; }
+
+# Follow symlinks to find the real jar and detect init.d script
+cd $(dirname "$0")
+[[ -z "$jarfile" ]] && jarfile=$(pwd)/$(basename "$0")
+while [[ -L "$jarfile" ]]; do
+  [[ "$jarfile" =~ "init.d" ]] && init_script=$(basename "$jarfile")
+  jarfile=$(readlink "$jarfile")
+  cd $(dirname "$jarfile")
+  jarfile=$(pwd)/$(basename "$jarfile")
+done
+cd "$WORKING_DIR"
+
+# Determine the script mode
+action="run"
+if [[ "$mode" == "auto" && -n "$init_script" ]] || [[ "$mode" == "service" ]]; then
+  action="$1"
+  shift
+fi
+
+# Create an identity for log/pid files
+if [[ -n "$init_script" ]]; then
+  identity="${init_script}"
+else
+  jar_folder=$(dirname "$jarfile")
+  identity=$(basename "${jarfile%.*}")_${jar_folder//\//}
+fi
+
+# Build the pid and log filenames
+if [[ -n "$init_script" ]]; then
+  pid_file="$PID_FOLDER/${identity}/${identity}.pid"
+  log_file="$LOG_FOLDER/${identity}.log"
+else
+  pid_file="$USER_PID_FOLDER/${identity}.pid"
+  log_file="$USER_LOG_FOLDER/${identity}.log"
+fi
+
+# Determine the user to run as
+[[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
+
+# Find Java
+if type -p java 2>&1> /dev/null; then
+    javaexe=java
+elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
+    javaexe="$JAVA_HOME/bin/java"
+elif [[ -x "/usr/bin/java" ]];  then
+    javaexe="/usr/bin/java"
+else
+    echo "Unable to find Java"
+    exit 1
+fi
+
+# Build actual command to execute
+command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $jarfile $@"
+
+# Utility functions
+checkPermissions() {
+  touch "$pid_file" &> /dev/null || { echoRed "Operation not permitted (cannot access pid file)"; exit 1; }
+  touch "$log_file" &> /dev/null || { echoRed "Operation not permitted (cannot access log file)"; exit 1; }
+}
+
+isRunning() {
+  ps -p $1 &> /dev/null
+}
+
+# Action functions
+start() {
+  if [[ -f "$pid_file" ]]; then
+    pid=$(cat "$pid_file")
+    isRunning $pid && { echoYellow "Already running [$pid]"; exit 0; }
+  fi
+  pushd $(dirname "$jarfile") > /dev/null
+  if [[ -n "$run_user" ]]; then
+    mkdir "$PID_FOLDER/${identity}" &> /dev/null
+    checkPermissions
+    chown "$run_user" "$PID_FOLDER/${identity}"
+    chown "$run_user" "$pid_file"
+    chown "$run_user" "$log_file"
+    su -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
+    pid=$(cat "$pid_file")
+  else
+    checkPermissions
+    $command &> "$log_file" &
+    pid=$!
+    disown $pid
+    echo "$pid" > "$pid_file"
+  fi
+  [[ -z $pid ]] && { echoRed "Failed to start"; exit 1; }
+  echoGreen "Started [$pid]"
+}
+
+stop() {
+  [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; exit 1; }
+  pid=$(cat "$pid_file")
+  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; exit 1; }
+  kill -HUP $pid &> /dev/null || { echoRed "Unable to kill process ${pid}"; exit 1; }
+  for i in $(seq 1 20); do
+    isRunning ${pid} || { echoGreen "Stopped [$pid]"; rm -f $pid_file; exit 0; }
+    sleep 1
+  done
+  echoRed "Unable to kill process ${pid}";
+  exit 3;
+}
+
+restart() {
+  stop
+  start
+}
+
+status() {
+  [[ -f $pid_file ]] || { echoRed "Not running"; exit 1; }
+  pid=$(cat "$pid_file")
+  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; exit 1; }
+  echoGreen "Running [$pid]"
+  exit 0
+}
+
+run() {
+  pushd $(dirname "$jarfile") > /dev/null
+  exec $command
+  popd
+}
+
+# Call the appropriate action function
+case "$action" in
+start)
+  start "$@";;
+stop)
+  stop "$@";;
+restart)
+  restart "$@";;
+status)
+  status "$@";;
+run)
+  run "$@";;
+*)
+  echo "Usage: $0 {start|stop|restart|status|run}"; exit 1;
+esac
+
+exit 0
+
