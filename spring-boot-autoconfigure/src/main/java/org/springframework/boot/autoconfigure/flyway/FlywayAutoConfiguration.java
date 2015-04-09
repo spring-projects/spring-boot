@@ -16,12 +16,20 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.flywaydb.core.Flyway;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -46,6 +54,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andreas Ahlenstorf
  * @since 1.1.0
  */
 @Configuration
@@ -95,7 +104,7 @@ public class FlywayAutoConfiguration {
 			return false;
 		}
 
-		@Bean(initMethod = "migrate")
+		@Bean
 		@ConfigurationProperties(prefix = "flyway")
 		public Flyway flyway() {
 			Flyway flyway = new Flyway();
@@ -110,6 +119,7 @@ public class FlywayAutoConfiguration {
 			else {
 				flyway.setDataSource(this.dataSource);
 			}
+
 			return flyway;
 		}
 
@@ -131,4 +141,52 @@ public class FlywayAutoConfiguration {
 
 	}
 
+	/**
+	 * {@link BeanPostProcessor} for {@link Flyway} that allows to customize how migrations are applied using a
+	 * {@link FlywayMigrationProcedure}. By default, when no other procedure is registered with the bean factory,
+	 * {@link DefaultFlywayMigrationProcedure} is executed.
+	 * <p/>
+	 * A {@link BeanPostProcessor} is used because migrations cannot be executed until the
+	 * {@link org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor} has done its job.
+	 */
+	@Configuration
+	@ConditionalOnClass(Flyway.class)
+	static class FlywayBeanPostProcessor implements BeanPostProcessor {
+
+		private static Log logger = LogFactory.getLog(FlywayBeanPostProcessor.class);
+
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+			return bean;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			if (!(bean instanceof Flyway)) {
+				return bean;
+			}
+
+			List<FlywayMigrationProcedure> procedures = new ArrayList<FlywayMigrationProcedure>(
+					beanFactory.getBeansOfType(FlywayMigrationProcedure.class).values());
+
+			if (procedures.size() > 1) {
+				logger.warn("More than one FlywayMigrationProcedure found in the bean factory.");
+			}
+
+			FlywayMigrationProcedure procedure;
+			if (procedures.isEmpty()) {
+				procedure = new DefaultFlywayMigrationProcedure();
+			} else {
+				procedure = procedures.get(0);
+			}
+
+			logger.info("Migrating database with Flyway using " + procedure.getClass() + ".");
+			procedure.apply((Flyway)bean);
+
+			return bean;
+		}
+	}
 }

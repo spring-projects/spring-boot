@@ -34,9 +34,11 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link FlywayAutoConfiguration}.
@@ -148,6 +150,17 @@ public class FlywayAutoConfigurationTests {
 				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 	}
 
+	@Test
+	public void databaseIsMigratedWithCustomProcedureWhenSuchIsRegisteredWithContext() throws Exception {
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, TestableFlywayMigrationProcedure.class);
+
+		assertNotNull(this.context.getBean(Flyway.class));
+
+		TestableFlywayMigrationProcedure procedure = this.context.getBean(TestableFlywayMigrationProcedure.class);
+		assertTrue(procedure.applyCalled);
+	}
+
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
 		this.context.register(annotatedClasses);
 		this.context.refresh();
@@ -164,5 +177,15 @@ public class FlywayAutoConfigurationTests {
 					.username("sa").build();
 		}
 
+	}
+
+	@Component
+	protected static class TestableFlywayMigrationProcedure implements FlywayMigrationProcedure {
+		protected boolean applyCalled = false;
+
+		@Override
+		public void apply(Flyway flyway) {
+			applyCalled = true;
+		}
 	}
 }
