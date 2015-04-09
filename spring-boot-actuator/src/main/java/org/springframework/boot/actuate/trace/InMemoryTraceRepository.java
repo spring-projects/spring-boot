@@ -63,7 +63,7 @@ public class InMemoryTraceRepository implements TraceRepository {
 		Trace trace = new Trace(new Date(), map);
 		synchronized (this.traces) {
 			while (this.traces.size() >= this.capacity) {
-				this.traces.remove(this.capacity - 1);
+				this.traces.remove(this.reverse ? this.capacity - 1 : 0);
 			}
 			if (this.reverse) {
 				this.traces.add(0, trace);
