@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.trace;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +31,18 @@ public class InMemoryTraceRepository implements TraceRepository {
 
 	private int capacity = 100;
 
-	private final List<Trace> traces = new ArrayList<Trace>();
+	private boolean reverse = true;
+
+	private final List<Trace> traces = new LinkedList<Trace>();
+
+	/**
+	 * Flag to say that the repository lists traces in reverse order.
+	 *
+	 * @param reverse flag value (default true)
+	 */
+	public void setReverse(boolean reverse) {
+		this.reverse = reverse;
+	}
 
 	/**
 	 * @param capacity the capacity to set
@@ -52,9 +63,14 @@ public class InMemoryTraceRepository implements TraceRepository {
 		Trace trace = new Trace(new Date(), map);
 		synchronized (this.traces) {
 			while (this.traces.size() >= this.capacity) {
-				this.traces.remove(0);
+				this.traces.remove(this.capacity - 1);
 			}
-			this.traces.add(trace);
+			if (this.reverse) {
+				this.traces.add(0, trace);
+			}
+			else {
+				this.traces.add(trace);
+			}
 		}
 	}
 
