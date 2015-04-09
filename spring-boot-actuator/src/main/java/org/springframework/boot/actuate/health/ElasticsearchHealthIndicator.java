@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,47 +16,58 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.List;
+
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Simple implementation of a {@link HealthIndicator} returning health status information for
- * ElasticSearch cluster.
+ * {@link HealthIndicator} for an Elasticsearch cluster.
  *
  * @author Binwei Yang
- * @since 1.2.2
+ * @author Andy Wilkinson
+ * @since 1.3.0
  */
-public class ElasticsearchHealthIndicator extends ApplicationHealthIndicator {
-    @Autowired
-    private Client client;
+public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 
-    @Autowired
-    private ElasticsearchHealthIndicatorProperties properties;
+	private final Client client;
 
-    @Override
-    protected void doHealthCheck(Health.Builder builder) throws Exception {
-        try {
-            ClusterHealthResponse response = client.admin().cluster().health(Requests.clusterHealthRequest(
-                    properties.getIndexNamesAsArray()
-            )).actionGet(100);
+	private final ElasticsearchHealthIndicatorProperties properties;
 
-            switch (response.getStatus()) {
-                case GREEN:
-                    builder.up();
-                    break;
-                case RED:
-                    builder.down();
-                    break;
-                case YELLOW:
-                default:
-                    builder.unknown();
-                    break;
-            }
-            builder.withDetail("clusterHealth", response);
-        } catch (Exception handled) {
-            builder.unknown().withDetail("exception", handled);
-        }
-    }
+	public ElasticsearchHealthIndicator(Client client,
+			ElasticsearchHealthIndicatorProperties properties) {
+		this.client = client;
+		this.properties = properties;
+	}
+
+	@Override
+	protected void doHealthCheck(Health.Builder builder) throws Exception {
+		List<String> indices = this.properties.getIndices();
+		ClusterHealthResponse response = this.client
+				.admin()
+				.cluster()
+				.health(Requests.clusterHealthRequest(indices.isEmpty() ? null : indices
+						.toArray(new String[indices.size()])))
+				.actionGet(this.properties.getResponseTimeout());
+
+		switch (response.getStatus()) {
+		case GREEN:
+		case YELLOW:
+			builder.up();
+			break;
+		case RED:
+		default:
+			builder.down();
+			break;
+		}
+		builder.withDetail("clusterName", response.getClusterName());
+		builder.withDetail("numberOfNodes", response.getNumberOfNodes());
+		builder.withDetail("numberOfDataNodes", response.getNumberOfDataNodes());
+		builder.withDetail("activePrimaryShards", response.getActivePrimaryShards());
+		builder.withDetail("activeShards", response.getActiveShards());
+		builder.withDetail("relocatingShards", response.getRelocatingShards());
+		builder.withDetail("initializingShards", response.getInitializingShards());
+		builder.withDetail("unassignedShards", response.getUnassignedShards());
+	}
 }

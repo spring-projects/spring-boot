@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
+import org.springframework.boot.actuate.health.ElasticsearchHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.JmsHealthIndicator;
 import org.springframework.boot.actuate.health.MailHealthIndicator;
@@ -35,6 +36,7 @@ import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -59,6 +61,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 public class HealthIndicatorAutoConfigurationTests {
 
@@ -352,6 +355,39 @@ public class HealthIndicatorAutoConfigurationTests {
 				"management.health.jms.enabled:false",
 				"management.health.diskspace.enabled:false");
 		this.context.register(ActiveMQAutoConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(ApplicationHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@Test
+	public void elasticSearchHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false");
+		this.context.register(ElasticsearchAutoConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(ElasticsearchHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@Test
+	public void notElasticSearchHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.elasticsearch.enabled:false",
+				"management.health.diskspace.enabled:false");
+		this.context.register(ElasticsearchAutoConfiguration.class,
 				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 

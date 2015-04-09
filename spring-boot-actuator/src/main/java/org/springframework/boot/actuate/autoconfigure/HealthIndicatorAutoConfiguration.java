@@ -23,6 +23,7 @@ import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
 import org.apache.solr.client.solrj.SolrServer;
+import org.elasticsearch.client.Client;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicatorProperties;
+import org.springframework.boot.actuate.health.ElasticsearchHealthIndicator;
+import org.springframework.boot.actuate.health.ElasticsearchHealthIndicatorProperties;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.JmsHealthIndicator;
@@ -47,6 +50,7 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
@@ -79,7 +83,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
 		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
 		RabbitAutoConfiguration.class, SolrAutoConfiguration.class,
-		MailSenderAutoConfiguration.class, JmsAutoConfiguration.class })
+		MailSenderAutoConfiguration.class, JmsAutoConfiguration.class,
+		ElasticsearchAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthIndicatorAutoConfigurationProperties.class })
 public class HealthIndicatorAutoConfiguration {
 
@@ -302,6 +307,32 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "jmsHealthIndicator")
 		public HealthIndicator jmsHealthIndicator() {
 			return createHealthIndicator(this.connectionFactories);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(Client.class)
+	@ConditionalOnProperty(prefix = "management.health.elasticsearch", name = "enabled", matchIfMissing = true)
+	@EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
+	public static class ElasticsearchHealthIndicatorConfiguration extends
+			CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
+
+		@Autowired
+		private Map<String, Client> clients;
+
+		@Autowired
+		private ElasticsearchHealthIndicatorProperties properties;
+
+		@Bean
+		@ConditionalOnMissingBean(name = "elasticsearchHealthIndicator")
+		public HealthIndicator elasticsearchHealthIndicator() {
+			return createHealthIndicator(this.clients);
+		}
+
+		@Override
+		protected ElasticsearchHealthIndicator createHealthIndicator(Client client) {
+			return new ElasticsearchHealthIndicator(client, this.properties);
 		}
 
 	}

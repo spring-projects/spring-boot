@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,37 +16,41 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * External configuration properties for {@link ElasticsearchHealthIndicator}
  *
  * @author Binwei Yang
- * @since 1.2.2
+ * @author Andy Wilkinson
+ * @since 1.3.0
  */
 @ConfigurationProperties("management.health.elasticsearch")
 public class ElasticsearchHealthIndicatorProperties {
 
-    public static final String ALL = "_all";
+	/**
+	 * Comma-separated index names
+	 */
+	private List<String> indices = new ArrayList<String>();
 
-    /**
-     * comma separated index names. the default includes all indices.
-     */
-    private String indices = ALL;
+	/**
+	 * The time, in milliseconds, to wait for a response from the cluster
+	 */
+	private long responseTimeout = 100L;
 
-    public String getIndices() {
-        return indices;
-    }
+	public List<String> getIndices() {
+		return this.indices;
+	}
 
-    public void setIndices(String indices) {
-        this.indices = indices;
-    }
+	public long getResponseTimeout() {
+		return this.responseTimeout;
+	}
 
-    String[] getIndexNamesAsArray() {
-        if (null == indices) {
-            return new String[]{ALL};
-        } else {
-            return indices.split(",");
-        }
-    }
+	public void setResponseTimeout(long responseTimeout) {
+		this.responseTimeout = responseTimeout;
+	}
+
 }
