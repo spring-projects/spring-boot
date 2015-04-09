@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jta;
+package org.springframework.boot.autoconfigure.transaction.jta;
 
 import java.io.File;
 import java.net.InetAddress;
