@@ -127,7 +127,7 @@
 		<spring-loaded.version>1.2.1.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.3.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.1.0.RELEASE</spring-plugin.version>
-		<spring-security.version>3.2.7.RELEASE</spring-security.version>
+		<spring-security.version>4.0.0.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.3.RELEASE</spring-security-jwt.version>
 		<spring-social.version>1.1.0.RELEASE</spring-social.version>
 		<spring-social-facebook.version>1.1.1.RELEASE</spring-social-facebook.version>
@@ -136,7 +136,7 @@
 		<spring-ws.version>2.2.1.RELEASE</spring-ws.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
-		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
+		<thymeleaf-extras-springsecurity4.version>2.1.2.RELEASE</thymeleaf-extras-springsecurity4.version>
 		<thymeleaf-extras-conditionalcomments.version>2.1.1.RELEASE</thymeleaf-extras-conditionalcomments.version>
 		<thymeleaf-layout-dialect.version>1.2.7</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>1.3</thymeleaf-extras-data-attribute.version>
@@ -1562,8 +1562,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf.extras</groupId>
-				<artifactId>thymeleaf-extras-springsecurity3</artifactId>
-				<version>${thymeleaf-extras-springsecurity3.version}</version>
+				<artifactId>thymeleaf-extras-springsecurity4</artifactId>
+				<version>${thymeleaf-extras-springsecurity4.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>
