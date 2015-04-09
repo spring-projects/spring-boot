@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ public abstract class AnsiOutput {
 
 	private static Enabled enabled = Enabled.DETECT;
 
+	private static Boolean consoleAvailable;
+
 	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name")
 			.toLowerCase();
 
@@ -46,6 +48,15 @@ public abstract class AnsiOutput {
 	public static void setEnabled(Enabled enabled) {
 		Assert.notNull(enabled, "Enabled must not be null");
 		AnsiOutput.enabled = enabled;
+	}
+
+	/**
+	 * Sets if the System.console() is know to be available.
+	 * @param consoleAvailable if the console is known to be available or {@code null} to
+	 * use standard detection logic.
+	 */
+	public static void setConsoleAvailable(Boolean consoleAvailable) {
+		AnsiOutput.consoleAvailable = consoleAvailable;
 	}
 
 	static Enabled getEnabled() {
@@ -115,7 +126,10 @@ public abstract class AnsiOutput {
 
 	private static boolean detectIfEnabled() {
 		try {
-			if (System.console() == null) {
+			if (Boolean.FALSE.equals(consoleAvailable)) {
+				return false;
+			}
+			if ((consoleAvailable == null) && (System.console() == null)) {
 				return false;
 			}
 			return !(OPERATING_SYSTEM_NAME.indexOf("win") >= 0);
