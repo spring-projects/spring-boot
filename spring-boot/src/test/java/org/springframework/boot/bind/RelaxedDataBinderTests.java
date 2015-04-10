@@ -302,6 +302,14 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedMapOfStringReferenced() throws Exception {
+		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
+		bind(target, "nested.foo: bar\n" + "nested[value.foo]: 123");
+		assertEquals("bar", target.getNested().get("foo"));
+		assertEquals("123", target.getNested().get("value.foo"));
+	}
+
+	@Test
 	public void testBindNestedMapOfEnum() throws Exception {
 		this.conversionService = new DefaultConversionService();
 		TargetWithNestedMapOfEnum target = new TargetWithNestedMapOfEnum();
@@ -315,6 +323,13 @@ public class RelaxedDataBinderTests {
 		TargetWithNestedMap target = new TargetWithNestedMap();
 		bind(target, "nested[foo]: bar\n" + "nested[value]: 123");
 		assertEquals("123", target.getNested().get("value"));
+	}
+
+	@Test
+	public void testBindNestedMapBracketReferencedAndPeriods() throws Exception {
+		TargetWithNestedMap target = new TargetWithNestedMap();
+		bind(target, "nested[foo]: bar\n" + "nested[foo.value]: 123");
+		assertEquals("123", target.getNested().get("foo.value"));
 	}
 
 	@SuppressWarnings("unchecked")

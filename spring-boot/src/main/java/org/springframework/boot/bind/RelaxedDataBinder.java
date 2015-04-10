@@ -451,25 +451,38 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private List<PathNode> splitPath(String path) {
 			List<PathNode> nodes = new ArrayList<PathNode>();
-			for (String name : StringUtils.delimitedListToStringArray(path, ".")) {
-				for (String sub : StringUtils.delimitedListToStringArray(name, "[")) {
-					if (StringUtils.hasText(sub)) {
-						if (sub.endsWith("]")) {
-							sub = sub.substring(0, sub.length() - 1);
-							if (sub.matches("[0-9]+")) {
-								nodes.add(new ArrayIndexNode(sub));
-							}
-							else {
-								nodes.add(new MapIndexNode(sub));
-							}
-						}
-						else {
-							nodes.add(new PropertyNode(sub));
-						}
-					}
+			String current = extractIndexedPaths(path, nodes);
+			for (String name : StringUtils.delimitedListToStringArray(current, ".")) {
+				if (StringUtils.hasText(name)) {
+					nodes.add(new PropertyNode(name));
 				}
 			}
 			return nodes;
+		}
+
+		private String extractIndexedPaths(String path, List<PathNode> nodes) {
+			int begin = 0;
+			int startRef = path.indexOf("[");
+			String current = path;
+			while (startRef >= 0) {
+				if (startRef > begin) {
+					nodes.addAll(splitPath(current.substring(begin, startRef)));
+				}
+				int endRef = current.indexOf("]", startRef);
+				if (endRef > 0) {
+					String sub = current.substring(startRef + 1, endRef);
+					if (sub.matches("[0-9]+")) {
+						nodes.add(new ArrayIndexNode(sub));
+					}
+					else {
+						nodes.add(new MapIndexNode(sub));
+					}
+				}
+				begin = endRef + 1;
+				current = current.substring(begin);
+				startRef = current.indexOf("[");
+			}
+			return current;
 		}
 
 		public void collapseKeys(int index) {
