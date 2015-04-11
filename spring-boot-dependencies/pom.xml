@@ -99,6 +99,7 @@
 		<jmustache.version>1.10</jmustache.version>
 		<joda-time.version>2.8.1</joda-time.version>
 		<jolokia.version>1.3.1</jolokia.version>
+		<jooq.version>3.5.4</jooq.version>
 		<json-path.version>2.0.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.12</junit.version>
@@ -310,6 +311,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jetty</artifactId>
+				<version>1.3.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-jooq</artifactId>
 				<version>1.3.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -1474,6 +1480,11 @@
 				<groupId>org.jolokia</groupId>
 				<artifactId>jolokia-core</artifactId>
 				<version>${jolokia.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq</artifactId>
+				<version>${jooq.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>

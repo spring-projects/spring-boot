@@ -510,6 +510,11 @@
 			<artifactId>aspectjweaver</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<!-- Annotation processing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
