@@ -348,7 +348,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.datasource.prepared-statement-cache-size=0 # The target size of the prepared statement cache. 0 disables the cache
 	spring.jta.bitronix.datasource.share-transaction-connections=false #  Whether or not connections in the ACCESSIBLE state can be shared within the context of a transaction
 	spring.jta.bitronix.datasource.test-query # SQL query or statement used to validate a connection before returning it
-	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The postion that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE)
+	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE)
 	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery
 	spring.jta.bitronix.datasource.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources
 
