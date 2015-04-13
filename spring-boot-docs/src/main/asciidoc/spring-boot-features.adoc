@@ -638,6 +638,14 @@ For example, given the following `@ConfigurationProperties` class:
 
 		private String firstName;
 
+		public String getFirstName() {
+			return this.firstName;
+		}
+
+		public void setFirstName(String firstName) {
+			this.firstName = firstName;
+		}
+
 	}
 ----
 
