@@ -45,6 +45,10 @@ public class ElasticsearchHealthIndicatorProperties {
 		return this.indices;
 	}
 
+	public void setIndices(List<String> indices) {
+		this.indices = indices;
+	}
+
 	public long getResponseTimeout() {
 		return this.responseTimeout;
 	}
