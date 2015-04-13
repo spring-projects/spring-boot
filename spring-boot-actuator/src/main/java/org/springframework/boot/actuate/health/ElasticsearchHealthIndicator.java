@@ -31,6 +31,8 @@ import org.elasticsearch.client.Requests;
  */
 public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 
+	private final static String[] ALL_INDICES = { "_all" };
+
 	private final Client client;
 
 	private final ElasticsearchHealthIndicatorProperties properties;
@@ -47,8 +49,10 @@ public class ElasticsearchHealthIndicator extends AbstractHealthIndicator {
 		ClusterHealthResponse response = this.client
 				.admin()
 				.cluster()
-				.health(Requests.clusterHealthRequest(indices.isEmpty() ? null : indices
-						.toArray(new String[indices.size()])))
+				.health(Requests.clusterHealthRequest(indices.isEmpty()
+																											? ALL_INDICES
+																											: indices.toArray(new String[indices.size()])))
+
 				.actionGet(this.properties.getResponseTimeout());
 
 		switch (response.getStatus()) {
