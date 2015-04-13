@@ -456,7 +456,7 @@ content into your application; rather pick only the properties that you need.
 	spring.aop.proxy-target-class=
 
 	# FILE ENCODING ({sc-spring-boot}/context/FileEncodingApplicationListener.{sc-ext}[FileEncodingApplicationListener])
-	spring.mandatory-file-encoding=false
+	spring.mandatory-file-encoding= # Expected character encoding the application must use
 
 	# SPRING SOCIAL ({sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration])
 	spring.social.auto-connection-views=true # Set to true for default connection views or false if you provide your own

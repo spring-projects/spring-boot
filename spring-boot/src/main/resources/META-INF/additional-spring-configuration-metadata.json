@@ -50,7 +50,7 @@
   {
     "name": "spring.mandatory-file-encoding",
     "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
-    "type": "java.lang.String",
+    "type": "java.nio.charset.Charset",
     "description": "Expected character encoding the application must use."
   },
   {
