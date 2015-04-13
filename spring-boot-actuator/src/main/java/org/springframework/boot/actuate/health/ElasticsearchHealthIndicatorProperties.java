@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@ConfigurationProperties("management.health.elasticsearch")
+@ConfigurationProperties(prefix = "management.health.elasticsearch", ignoreUnknownFields = false)
 public class ElasticsearchHealthIndicatorProperties {
 
 	/**
@@ -43,6 +43,10 @@ public class ElasticsearchHealthIndicatorProperties {
 
 	public List<String> getIndices() {
 		return this.indices;
+	}
+
+	public void setIndices(List<String> indices) {
+		this.indices = indices;
 	}
 
 	public long getResponseTimeout() {
