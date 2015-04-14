@@ -402,11 +402,16 @@ public class RepackagerTests {
 		LaunchScript script = new MockLauncherScript("ABC");
 		repackager.repackage(dest, NO_LIBRARIES, script);
 		byte[] bytes = FileCopyUtils.copyToByteArray(dest);
-		assertThat(Files.getPosixFilePermissions(dest.toPath()),
-				hasItem(PosixFilePermission.OWNER_EXECUTE));
 		assertThat(new String(bytes), startsWith("ABC"));
 		assertThat(hasLauncherClasses(source), equalTo(false));
 		assertThat(hasLauncherClasses(dest), equalTo(true));
+		try {
+			assertThat(Files.getPosixFilePermissions(dest.toPath()),
+					hasItem(PosixFilePermission.OWNER_EXECUTE));
+		}
+		catch (UnsupportedOperationException ex) {
+			// Probably running the test on Windows
+		}
 	}
 
 	private boolean hasLauncherClasses(File file) throws IOException {
