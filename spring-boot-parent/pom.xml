@@ -54,7 +54,7 @@
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>0.4.1.RELEASE</version>
+				<version>0.5.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
