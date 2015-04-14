@@ -62,7 +62,7 @@
 		<derby.version>10.10.2.0</derby.version>
 		<dropwizard-metrics.version>3.1.1</dropwizard-metrics.version>
 		<ehcache.version>2.9.1</ehcache.version>
-		<flyway.version>3.2</flyway.version>
+		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.22</freemarker.version>
 		<elasticsearch.version>1.4.4</elasticsearch.version>
 		<gemfire.version>7.0.2</gemfire.version>
