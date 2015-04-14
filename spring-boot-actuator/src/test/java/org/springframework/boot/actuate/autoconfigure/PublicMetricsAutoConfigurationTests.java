@@ -56,9 +56,10 @@ import org.springframework.util.SocketUtils;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -236,7 +237,7 @@ public class PublicMetricsAutoConfigurationTests {
 			content.put(metric.getName(), metric.getValue());
 		}
 		for (String key : keys) {
-			assertTrue("Key '" + key + "' was not found", content.containsKey(key));
+			assertThat(content, hasKey(key));
 		}
 	}
 
