@@ -32,12 +32,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ElasticsearchHealthIndicatorProperties {
 
 	/**
-	 * Comma-separated index names
+	 * Comma-separated index names.
 	 */
 	private List<String> indices = new ArrayList<String>();
 
 	/**
-	 * The time, in milliseconds, to wait for a response from the cluster
+	 * The time, in milliseconds, to wait for a response from the cluster.
 	 */
 	private long responseTimeout = 100L;
 
