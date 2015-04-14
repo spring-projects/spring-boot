@@ -43,7 +43,7 @@ public class ElasticsearchProperties {
 	private String clusterNodes;
 
 	/**
-	 * Additional properties used to configure the client
+	 * Additional properties used to configure the client.
 	 */
 	private Map<String, String> properties = new HashMap<String, String>();
 
