@@ -451,6 +451,13 @@ content into your application; rather pick only the properties that you need.
 	spring.batch.initializer.enabled=true
 	spring.batch.schema= # batch schema to load
 
+	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
+	spring.cache.type= # generic, ehcache, hazelcast, jcache, redis, guava, simple, none
+	spring.cache.config= #
+	spring.cache.cache-names= # cache names to create on startup
+	spring.cache.jcache.provider= # fully qualified name of the CachingProvider implementation to use
+	spring.cache.guava.spec= # link:http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilderSpec.html[guava specs]
+
 	# AOP
 	spring.aop.auto=
 	spring.aop.proxy-target-class=
