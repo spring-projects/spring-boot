@@ -105,7 +105,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 			if (isCrashReport && this.logger.isInfoEnabled()
 					&& !this.logger.isDebugEnabled()) {
 				this.logger.info("\n\nError starting ApplicationContext. "
-						+ "To display the auto-configuration report enabled "
+						+ "To display the auto-configuration report enable "
 						+ "debug logging (start with --debug)\n\n");
 			}
 			if (this.logger.isDebugEnabled()) {
