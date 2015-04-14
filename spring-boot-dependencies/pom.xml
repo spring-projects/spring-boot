@@ -47,6 +47,7 @@
 		<spring-boot.version>1.2.4.BUILD-SNAPSHOT</spring-boot.version>
 		<!-- Third Party -->
 		<activemq.version>5.10.1</activemq.version>
+		<antlr2.version>2.7.7</antlr2.version>
 		<aspectj.version>1.8.5</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
@@ -410,6 +411,11 @@
 			</dependency>
 
 			<!-- Third Party -->
+			<dependency>
+				<groupId>antlr</groupId>
+				<artifactId>antlr</artifactId>
+				<version>${antlr2.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
