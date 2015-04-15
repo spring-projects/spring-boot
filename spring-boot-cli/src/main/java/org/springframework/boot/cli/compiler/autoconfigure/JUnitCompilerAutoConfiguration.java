@@ -30,20 +30,22 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  */
 public class JUnitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
+	private static final String MODULE = "junit";
+
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "Test");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, getPropertyMapper().getAnnotations(MODULE));
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("spring-boot-starter-test");
+		dependencies.add(getPropertyMapper().getDependencies(MODULE));
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("org.junit").addStaticStars("org.junit.Assert")
+		imports.addStarImports(getPropertyMapper().getStarImports(MODULE)).addStaticStars("org.junit.Assert")
 				.addStaticStars("org.hamcrest.MatcherAssert")
 				.addStaticStars("org.hamcrest.Matchers");
 	}

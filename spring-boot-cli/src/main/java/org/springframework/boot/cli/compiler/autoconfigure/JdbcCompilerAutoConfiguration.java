@@ -26,25 +26,26 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * {@link CompilerAutoConfiguration} for Spring JDBC.
  *
  * @author Dave Syer
+ * @author Greg Turnquist
  */
 public class JdbcCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
+	private static final String MODULE = "jdbc";
+
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneFieldOrMethod(classNode, "JdbcTemplate",
-				"NamedParameterJdbcTemplate", "DataSource");
+		return AstUtils.hasAtLeastOneFieldOrMethod(classNode, getPropertyMapper().getFields(MODULE));
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("org.springframework.jdbc.core.JdbcTemplate")
-				.add("spring-boot-starter-jdbc");
+				.add(getPropertyMapper().getDependencies(MODULE));
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addStarImports("org.springframework.jdbc.core",
-				"org.springframework.jdbc.core.namedparam");
+		imports.addStarImports(getPropertyMapper().getStarImports(MODULE));
 		imports.addImports("javax.sql.DataSource");
 	}
 

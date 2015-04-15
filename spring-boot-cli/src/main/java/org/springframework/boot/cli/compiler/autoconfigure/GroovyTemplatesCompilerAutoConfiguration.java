@@ -32,20 +32,22 @@ import org.springframework.boot.groovy.GroovyTemplate;
  */
 public class GroovyTemplatesCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
+	private static final String MODULE = "groovy-templates";
+
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableGroovyTemplates");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, getPropertyMapper().getAnnotations(MODULE));
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("groovy.text.TemplateEngine").add(
-				"groovy-templates");
+				getPropertyMapper().getDependencies(MODULE));
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addStarImports("groovy.text");
+		imports.addStarImports(getPropertyMapper().getStarImports(MODULE));
 		imports.addImports(EnableGroovyTemplates.class.getCanonicalName());
 		imports.addStaticImport(GroovyTemplate.class.getName(), "template");
 	}

@@ -30,6 +30,8 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  */
 public class SpockCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
+	private static final String MODULE = "spock";
+
 	@Override
 	public boolean matches(ClassNode classNode) {
 		return AstUtils.subclasses(classNode, "Specification");
@@ -38,13 +40,12 @@ public class SpockCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("spock-core").add("junit").add("spring-test")
-				.add("hamcrest-library");
+		dependencies.add(getPropertyMapper().getDependencies(MODULE));
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("spock.lang").addStarImports("org.junit")
+		imports.addStarImports(getPropertyMapper().getStarImports(MODULE))
 				.addStaticStars("org.junit.Assert")
 				.addStaticStars("org.hamcrest.MatcherAssert")
 				.addStaticStars("org.hamcrest.Matchers");

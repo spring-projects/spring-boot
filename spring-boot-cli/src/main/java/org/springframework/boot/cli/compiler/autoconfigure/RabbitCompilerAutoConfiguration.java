@@ -31,29 +31,24 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  */
 public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
+	private final static String MODULE = "rabbit";
+
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableRabbit")
-				|| AstUtils.hasAtLeastOneAnnotation(classNode, "EnableRabbitMessaging");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, getPropertyMapper().getAnnotations(MODULE));
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("spring-rabbit");
+		dependencies.add(getPropertyMapper().getDependencies(MODULE));
 
 	}
 
 	@Override
 	@SuppressWarnings("deprecation")
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("org.springframework.amqp.rabbit.annotation",
-				"org.springframework.amqp.rabbit.core",
-				"org.springframework.amqp.rabbit.config",
-				"org.springframework.amqp.rabbit.connection",
-				"org.springframework.amqp.rabbit.listener",
-				"org.springframework.amqp.rabbit.listener.adapter",
-				"org.springframework.amqp.core").addImports(
+		imports.addStarImports(getPropertyMapper().getStarImports(MODULE)).addImports(
 				org.springframework.boot.groovy.EnableRabbitMessaging.class.getName());
 	}
 

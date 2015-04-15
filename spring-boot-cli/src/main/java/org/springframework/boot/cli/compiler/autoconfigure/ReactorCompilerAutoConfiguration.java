@@ -26,20 +26,23 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * {@link CompilerAutoConfiguration} for the Reactor.
  *
  * @author Dave Syer
+ * @author Greg Turnquist
  */
 public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
+	private final static String MODULE = "reactor";
+
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableReactor")
-				|| AstUtils.hasAtLeastOneFieldOrMethod(classNode, "Reactor");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, getPropertyMapper().getAnnotations(MODULE))
+				|| AstUtils.hasAtLeastOneFieldOrMethod(classNode, getPropertyMapper().getFields(MODULE));
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("reactor.core.Reactor")
 				.add("reactor-spring-context", false).add("reactor-spring-core", false)
-				.add("reactor-core");
+				.add(getPropertyMapper().getDependencies(MODULE));
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration 
 				"reactor.spring.context.annotation.SelectorType",
 				"reactor.spring.context.annotation.ReplyTo",
 				"reactor.spring.context.config.EnableReactor")
-				.addStarImports("reactor.event.selector.Selectors")
+				.addStarImports(getPropertyMapper().getStarImports(MODULE))
 				.addImport("ReactorEnvironment", "reactor.core.Environment");
 	}
 
