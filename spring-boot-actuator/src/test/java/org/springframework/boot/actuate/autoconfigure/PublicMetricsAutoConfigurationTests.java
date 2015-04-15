@@ -218,7 +218,7 @@ public class PublicMetricsAutoConfigurationTests {
 		CachePublicMetrics bean = this.context.getBean(CachePublicMetrics.class);
 		Collection<Metric<?>> metrics = bean.metrics();
 		assertMetrics(metrics, "cache.books.size", "cache.second_speakers.size",
-				"cache.speakers.size", "cache.users.size");
+				"cache.first_speakers.size", "cache.users.size");
 	}
 
 	private void assertHasMetric(Collection<Metric<?>> metrics, Metric<?> metric) {
