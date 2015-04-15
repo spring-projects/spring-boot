@@ -21,7 +21,9 @@ import java.net.SocketException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Vector;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -78,6 +80,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EndpointWebMvcAutoConfiguration}.
@@ -146,6 +150,24 @@ public class EndpointWebMvcAutoConfigurationTests {
 				this.applicationContext.getBean(EndpointHandlerMapping.class),
 				"interceptors");
 		assertEquals(1, interceptors.size());
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
+	public void onDifferentPortInServletContainer() throws Exception {
+		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
+				DifferentPortConfig.class, BaseConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.getInitParameterNames()).willReturn(
+				new Vector<String>().elements());
+		given(servletContext.getAttributeNames()).willReturn(
+				new Vector<String>().elements());
+		this.applicationContext.setServletContext(servletContext);
+		this.applicationContext.refresh();
+		assertContent("/controller", ports.get().management, null);
+		assertContent("/endpoint", ports.get().management, null);
 		this.applicationContext.close();
 		assertAllClosed();
 	}
