@@ -70,7 +70,7 @@ The following endpoints are available:
 |true
 
 |`beans`
-|Displays a complete list of all the Spring Beans in your application.
+|Displays a complete list of all the Spring beans in your application.
 |true
 
 |`configprops`
@@ -111,7 +111,7 @@ unauthenticated connection or full message details when authenticated).
 |true
 |===
 
-NOTE: Depending on how an endpoint is exposed, the `sensitive` parameter may be used as
+NOTE: Depending on how an endpoint is exposed, the `sensitive` property may be used as
 a security hint. For example, sensitive endpoints will require a username/password when
 they are accessed over HTTP (or simply disabled if web security is not enabled).
 
@@ -427,7 +427,7 @@ you should carefully consider which endpoints you enable. See
 === Customizing the management server context path
 Sometimes it is useful to group all management endpoints under a single path. For example,
 your application might already use `/info` for another purpose. You can use the
-`management.contextPath` property to set a prefix for your management endpoint:
+`management.context-path` property to set a prefix for your management endpoint:
 
 [source,properties,indent=0]
 ----
@@ -500,7 +500,7 @@ If you don't want to expose endpoints over HTTP you can set the management port 
 
 
 [[production-ready-health-access-restrictions]]
-=== HTTP Health endpoint access restrictions
+=== HTTP health endpoint access restrictions
 The information exposed by the health endpoint varies depending on whether or not it's
 accessed anonymously. By default, when accessed anonymously, any details about the
 server's health are hidden and the endpoint will simply indicate whether or not the server
@@ -611,7 +611,7 @@ dependency to `spring-boot-starter-remote-shell`:
  	</dependency>
 ----
 
-TIP: If you want to also enable telnet access your will additionally need a dependency
+TIP: If you want to also enable telnet access you will additionally need a dependency
 on `org.crsh:crsh.shell.telnet`.
 
 
@@ -646,7 +646,7 @@ download and install http://www.putty.org/[PuTTY].
 	 :: Spring Boot ::  (v{spring-boot-version}) on myhost
 ----
 
-Type `help` for a list of commands. Spring boot provides `metrics`, `beans`, `autoconfig`
+Type `help` for a list of commands. Spring Boot provides `metrics`, `beans`, `autoconfig`
 and `endpoint` commands.
 
 
@@ -676,7 +676,7 @@ for details). By default Spring Boot will search for commands in the following l
 * `+classpath*:/commands/**+`
 * `+classpath*:/crash/commands/**+`
 
-TIP: You can change the search path by settings a `shell.commandPathPatterns` property.
+TIP: You can change the search path by settings a `shell.command-path-patterns` property.
 
 Here is a simple '`hello world`' command that could be loaded from
 `src/main/resources/commands/hello.groovy`
@@ -793,13 +793,13 @@ NOTE: In this example we are actually accessing the endpoint over HTTP using the
 === System metrics
 The following system metrics are exposed by Spring Boot:
 
-* The total system memory in Kb (`mem`)
-* The amount of free memory in Kb (`mem.free`)
+* The total system memory in KB (`mem`)
+* The amount of free memory in KB (`mem.free`)
 * The number of processors (`processors`)
 * The system uptime in milliseconds (`uptime`)
 * The application context uptime in milliseconds (`instance.uptime`)
 * The average system load (`systemload.average`)
-* Heap information in Kb (`heap`, `heap.committed`, `heap.init`, `heap.used`)
+* Heap information in KB (`heap`, `heap.committed`, `heap.init`, `heap.used`)
 * Thread information (`threads`, `thread.peak`, `thead.daemon`)
 * Class load information (`classes`, `classes.loaded`, `classes.unloaded`)
 * Garbage collection information (`gc.xxx.count`, `gc.xxx.time`)
@@ -822,13 +822,13 @@ for each data source:
 * If the data source is the primary data source (that is either the only available data
   source or the one flagged `@Primary` amongst the existing ones), the prefix is
   `datasource.primary`.
-* If the data source bean name ends with `dataSource`, the prefix is the name of the bean
-  without `dataSource` (i.e. `datasource.batch` for `batchDataSource`).
+* If the data source bean name ends with `DataSource`, the prefix is the name of the bean
+  without `DataSource` (i.e. `datasource.batch` for `batchDataSource`).
 * In all other cases, the name of the bean is used.
 
 It is possible to override part or all of those defaults by registering a bean with a
 customized version of `DataSourcePublicMetrics`. By default, Spring Boot provides metadata
-for all  supported datasources; you can add additional `DataSourcePoolMetadataProvider`
+for all supported data sources; you can add additional `DataSourcePoolMetadataProvider`
 beans if your favorite data source isn't supported out of the box. See
 `DataSourcePoolMetadataProvidersConfiguration` for examples.
 
@@ -918,7 +918,7 @@ automatically find that Spring Boot metrics are published to
 Spring bean will be created when you declare a dependency to the
 `io.dropwizard.metrics:metrics-core` library; you can also register you own `@Bean`
 instance if you need customizations. Metrics from the `MetricRegistry` are also
-automatically exposed via the `/metrics` endpoint
+automatically exposed via the `/metrics` endpoint.
 
 Users can create Dropwizard metrics by prefixing their metric names with the appropriate
 type (e.g. `+histogram.*+`, `+meter.*+`).
@@ -991,7 +991,7 @@ and obtain basic information about the last few requests:
 === Custom tracing
 If you need to trace additional events you can inject a
 {sc-spring-boot-actuator}/trace/TraceRepository.{sc-ext}[`TraceRepository`] into your
-Spring Beans. The `add` method accepts a single `Map` structure that will be converted to
+Spring beans. The `add` method accepts a single `Map` structure that will be converted to
 JSON and logged.
 
 By default an `InMemoryTraceRepository` will be used that stores the last 100 events. You
