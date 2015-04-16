@@ -40,7 +40,7 @@ import org.springframework.util.SocketUtils;
 public class SampleTomcatTwoConnectorsApplication {
 
 	@Bean
-	public int port() {
+	public Integer port() {
 		return SocketUtils.findAvailableTcpPort();
 	}
 
