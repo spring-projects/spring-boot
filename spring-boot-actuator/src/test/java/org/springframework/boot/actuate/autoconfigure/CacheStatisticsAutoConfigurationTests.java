@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.cache;
+package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,6 +24,9 @@ import javax.cache.configuration.MutableConfiguration;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.actuate.autoconfigure.CacheStatisticsAutoConfiguration;
+import org.springframework.boot.actuate.cache.CacheStatistics;
+import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -51,9 +54,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link CacheStatisticsAutoConfiguration}.
+ *
  * @author Stephane Nicoll
  */
-public class CacheStatisticsProviderTests {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class CacheStatisticsAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -70,7 +76,7 @@ public class CacheStatisticsProviderTests {
 	public void basicJCacheCacheStatistics() {
 		load(JCacheCacheConfig.class);
 		CacheStatisticsProvider provider = this.context.getBean(
-				"jCacheCacheStatisticsProvider", CacheStatisticsProvider.class);
+				"jCacheStatisticsProvider", CacheStatisticsProvider.class);
 		doTestCoreStatistics(provider, false);
 	}
 
@@ -104,12 +110,12 @@ public class CacheStatisticsProviderTests {
 		CacheStatisticsProvider provider = this.context.getBean(
 				"concurrentMapCacheStatisticsProvider", CacheStatisticsProvider.class);
 		Cache books = getCache("books");
-		CacheStatistics cacheStatistics = provider.getCacheStatistics(books,
-				this.cacheManager);
+		CacheStatistics cacheStatistics = provider.getCacheStatistics(this.cacheManager,
+				books);
 		assertCoreStatistics(cacheStatistics, 0L, null, null);
 		getOrCreate(books, "a", "b", "b", "a", "a");
-		CacheStatistics updatedCacheStatistics = provider.getCacheStatistics(books,
-				this.cacheManager);
+		CacheStatistics updatedCacheStatistics = provider.getCacheStatistics(
+				this.cacheManager, books);
 		assertCoreStatistics(updatedCacheStatistics, 2L, null, null);
 	}
 
@@ -119,24 +125,24 @@ public class CacheStatisticsProviderTests {
 		CacheStatisticsProvider provider = this.context.getBean(
 				"noOpCacheStatisticsProvider", CacheStatisticsProvider.class);
 		Cache books = getCache("books");
-		CacheStatistics cacheStatistics = provider.getCacheStatistics(books,
-				this.cacheManager);
+		CacheStatistics cacheStatistics = provider.getCacheStatistics(this.cacheManager,
+				books);
 		assertCoreStatistics(cacheStatistics, null, null, null);
 		getOrCreate(books, "a", "b", "b", "a", "a");
-		CacheStatistics updatedCacheStatistics = provider.getCacheStatistics(books,
-				this.cacheManager);
+		CacheStatistics updatedCacheStatistics = provider.getCacheStatistics(
+				this.cacheManager, books);
 		assertCoreStatistics(updatedCacheStatistics, null, null, null);
 	}
 
 	private void doTestCoreStatistics(CacheStatisticsProvider provider,
 			boolean supportSize) {
 		Cache books = getCache("books");
-		CacheStatistics cacheStatistics = provider.getCacheStatistics(books,
-				this.cacheManager);
+		CacheStatistics cacheStatistics = provider.getCacheStatistics(this.cacheManager,
+				books);
 		assertCoreStatistics(cacheStatistics, (supportSize ? 0L : null), null, null);
 		getOrCreate(books, "a", "b", "b", "a", "a", "a");
-		CacheStatistics updatedCacheStatistics = provider.getCacheStatistics(books,
-				this.cacheManager);
+		CacheStatistics updatedCacheStatistics = provider.getCacheStatistics(
+				this.cacheManager, books);
 		assertCoreStatistics(updatedCacheStatistics, (supportSize ? 2L : null), 0.66D,
 				0.33D);
 	}
@@ -180,7 +186,7 @@ public class CacheStatisticsProviderTests {
 		if (config.length > 0) {
 			this.context.register(config);
 		}
-		this.context.register(CacheStatisticsProvidersConfiguration.class);
+		this.context.register(CacheStatisticsAutoConfiguration.class);
 		this.context.refresh();
 		this.cacheManager = this.context.getBean(CacheManager.class);
 	}
@@ -204,6 +210,7 @@ public class CacheStatisticsProviderTests {
 			cacheManager.createCache("speakers", config);
 			return cacheManager;
 		}
+
 	}
 
 	@Configuration
@@ -219,6 +226,7 @@ public class CacheStatisticsProviderTests {
 			return EhCacheManagerUtils.buildCacheManager(new ClassPathResource(
 					"cache/test-ehcache.xml"));
 		}
+
 	}
 
 	@Configuration
@@ -235,6 +243,7 @@ public class CacheStatisticsProviderTests {
 			Config cfg = new XmlConfigBuilder(resource.getURL()).build();
 			return Hazelcast.newHazelcastInstance(cfg);
 		}
+
 	}
 
 	@Configuration
@@ -247,6 +256,7 @@ public class CacheStatisticsProviderTests {
 			cacheManager.setCacheNames(Arrays.asList("books", "speakers"));
 			return cacheManager;
 		}
+
 	}
 
 	@Configuration
@@ -256,6 +266,7 @@ public class CacheStatisticsProviderTests {
 		public ConcurrentMapCacheManager cacheManager() {
 			return new ConcurrentMapCacheManager("books", "speakers");
 		}
+
 	}
 
 	@Configuration
@@ -265,6 +276,7 @@ public class CacheStatisticsProviderTests {
 		public NoOpCacheManager cacheManager() {
 			return new NoOpCacheManager();
 		}
+
 	}
 
 }

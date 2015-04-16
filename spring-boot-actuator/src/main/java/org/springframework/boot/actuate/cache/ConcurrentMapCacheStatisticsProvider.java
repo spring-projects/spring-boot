@@ -16,26 +16,24 @@
 
 package org.springframework.boot.actuate.cache;
 
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 
 /**
- * Provide a {@link CacheStatistics} based on a {@link Cache}.
+ * {@link CacheStatisticsProvider} implementation for {@link ConcurrentMapCache}.
  *
- * @param <C> The {@link Cache} type
  * @author Stephane Nicoll
- * @author Phillip Webb
  * @since 1.3.0
  */
-public interface CacheStatisticsProvider<C extends Cache> {
+public class ConcurrentMapCacheStatisticsProvider implements
+		CacheStatisticsProvider<ConcurrentMapCache> {
 
-	/**
-	 * Return the current {@link CacheStatistics} snapshot for the specified {@link Cache}
-	 * or {@code null} if the given cache could not be handled.
-	 * @param cacheManager the {@link CacheManager} handling this cache
-	 * @param cache the cache to handle
-	 * @return the current cache statistics or {@code null}
-	 */
-	CacheStatistics getCacheStatistics(CacheManager cacheManager, C cache);
+	@Override
+	public CacheStatistics getCacheStatistics(CacheManager cacheManager,
+			ConcurrentMapCache cache) {
+		DefaultCacheStatistics statistics = new DefaultCacheStatistics();
+		statistics.setSize((long) cache.getNativeCache().size());
+		return statistics;
+	}
 
 }

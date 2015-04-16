@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 import org.apache.catalina.startup.Tomcat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
-import org.springframework.boot.actuate.cache.CacheStatisticsProvidersConfiguration;
 import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
@@ -45,7 +44,6 @@ import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetada
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link PublicMetrics}.
@@ -56,9 +54,9 @@ import org.springframework.context.annotation.Import;
  * @since 1.2.0
  */
 @Configuration
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class, CacheAutoConfiguration.class,
-		MetricRepositoryAutoConfiguration.class })
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, CacheAutoConfiguration.class,
+		MetricRepositoryAutoConfiguration.class, CacheStatisticsAutoConfiguration.class })
 public class PublicMetricsAutoConfiguration {
 
 	@Autowired(required = false)
@@ -110,7 +108,6 @@ public class PublicMetricsAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(CacheManager.class)
 	@ConditionalOnBean(CacheManager.class)
-	@Import(CacheStatisticsProvidersConfiguration.class)
 	static class CacheStatisticsConfiguration {
 
 		@Bean

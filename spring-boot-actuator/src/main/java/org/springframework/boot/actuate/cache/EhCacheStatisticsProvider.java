@@ -16,26 +16,31 @@
 
 package org.springframework.boot.actuate.cache;
 
-import org.springframework.cache.Cache;
+import net.sf.ehcache.statistics.StatisticsGateway;
+
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.ehcache.EhCacheCache;
 
 /**
- * Provide a {@link CacheStatistics} based on a {@link Cache}.
+ * {@link CacheStatisticsProvider} implementation for {@link EhCacheCache}.
  *
- * @param <C> The {@link Cache} type
  * @author Stephane Nicoll
- * @author Phillip Webb
  * @since 1.3.0
  */
-public interface CacheStatisticsProvider<C extends Cache> {
+public class EhCacheStatisticsProvider implements CacheStatisticsProvider<EhCacheCache> {
 
-	/**
-	 * Return the current {@link CacheStatistics} snapshot for the specified {@link Cache}
-	 * or {@code null} if the given cache could not be handled.
-	 * @param cacheManager the {@link CacheManager} handling this cache
-	 * @param cache the cache to handle
-	 * @return the current cache statistics or {@code null}
-	 */
-	CacheStatistics getCacheStatistics(CacheManager cacheManager, C cache);
+	@Override
+	public CacheStatistics getCacheStatistics(CacheManager cacheManager,
+			EhCacheCache cache) {
+		DefaultCacheStatistics statistics = new DefaultCacheStatistics();
+		StatisticsGateway ehCacheStatistics = cache.getNativeCache().getStatistics();
+		statistics.setSize(ehCacheStatistics.getSize());
+		Double hitRatio = ehCacheStatistics.cacheHitRatio();
+		if (!hitRatio.isNaN()) {
+			statistics.setHitRatio(hitRatio);
+			statistics.setMissRatio(1 - hitRatio);
+		}
+		return statistics;
+	}
 
 }

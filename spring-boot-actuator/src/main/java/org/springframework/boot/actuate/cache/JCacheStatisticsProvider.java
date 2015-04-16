@@ -32,34 +32,26 @@ import javax.management.ReflectionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.jcache.JCacheCache;
 
 /**
- * {@link CacheStatisticsProvider} implementation for a JSR-107 compliant cache.
+ * {@link CacheStatisticsProvider} implementation for {@link JCacheCache}.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-class JCacheCacheStatisticsProvider implements CacheStatisticsProvider {
+public class JCacheStatisticsProvider implements CacheStatisticsProvider<JCacheCache> {
 
 	private static final Logger logger = LoggerFactory
-			.getLogger(JCacheCacheStatisticsProvider.class);
+			.getLogger(JCacheStatisticsProvider.class);
 
 	private MBeanServer mBeanServer;
 
 	private Map<JCacheCache, ObjectName> caches = new ConcurrentHashMap<JCacheCache, ObjectName>();
 
 	@Override
-	public CacheStatistics getCacheStatistics(Cache cache, CacheManager cacheManager) {
-		if (cache instanceof JCacheCache) {
-			return getCacheStatistics((JCacheCache) cache);
-		}
-		return null;
-	}
-
-	protected CacheStatistics getCacheStatistics(JCacheCache cache) {
+	public CacheStatistics getCacheStatistics(CacheManager cacheManager, JCacheCache cache) {
 		try {
 			ObjectName objectName = getObjectName(cache);
 			if (objectName != null) {
@@ -67,24 +59,24 @@ class JCacheCacheStatisticsProvider implements CacheStatisticsProvider {
 			}
 			return null;
 		}
-		catch (MalformedObjectNameException e) {
-			throw new IllegalStateException(e);
+		catch (MalformedObjectNameException ex) {
+			throw new IllegalStateException(ex);
 		}
 	}
 
 	protected CacheStatistics getCacheStatistics(ObjectName objectName) {
 		MBeanServer mBeanServer = getMBeanServer();
-		DefaultCacheStatistics stats = new DefaultCacheStatistics();
+		DefaultCacheStatistics statistics = new DefaultCacheStatistics();
 		Float hitPercentage = getAttribute(mBeanServer, objectName, "CacheHitPercentage",
 				Float.class);
 		Float missPercentage = getAttribute(mBeanServer, objectName,
 				"CacheMissPercentage", Float.class);
 		if ((hitPercentage != null && missPercentage != null)
 				&& (hitPercentage > 0 || missPercentage > 0)) {
-			stats.setHitRatio(hitPercentage / (double) 100);
-			stats.setMissRatio(missPercentage / (double) 100);
+			statistics.setHitRatio(hitPercentage / (double) 100);
+			statistics.setMissRatio(missPercentage / (double) 100);
 		}
-		return stats;
+		return statistics;
 	}
 
 	protected ObjectName getObjectName(JCacheCache cache)
@@ -92,7 +84,6 @@ class JCacheCacheStatisticsProvider implements CacheStatisticsProvider {
 		if (this.caches.containsKey(cache)) {
 			return this.caches.get(cache);
 		}
-
 		Set<ObjectInstance> instances = getMBeanServer().queryMBeans(
 				new ObjectName("javax.cache:type=CacheStatistics,Cache="
 						+ cache.getName() + ",*"), null);
@@ -117,20 +108,20 @@ class JCacheCacheStatisticsProvider implements CacheStatisticsProvider {
 			Object attribute = mBeanServer.getAttribute(objectName, attributeName);
 			return type.cast(attribute);
 		}
-		catch (MBeanException e) {
-			throw new IllegalStateException(e);
+		catch (MBeanException ex) {
+			throw new IllegalStateException(ex);
 		}
-		catch (AttributeNotFoundException e) {
+		catch (AttributeNotFoundException ex) {
 			throw new IllegalStateException("Unexpected: jcache provider does not "
-					+ "expose standard attribute " + attributeName, e);
+					+ "expose standard attribute " + attributeName, ex);
 		}
-		catch (InstanceNotFoundException e) {
-			logger.warn("Cache statistics are no longer available", e);
+		catch (ReflectionException ex) {
+			throw new IllegalStateException(ex);
 		}
-		catch (ReflectionException e) {
-			throw new IllegalStateException(e);
+		catch (InstanceNotFoundException ex) {
+			logger.warn("Cache statistics are no longer available", ex);
+			return null;
 		}
-		return null;
 	}
 
 }
