@@ -110,7 +110,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 */
 	public UndertowEmbeddedServletContainerFactory() {
 		super();
-		setRegisterJspServlet(false);
+		getJspServlet().setRegistered(false);
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 */
 	public UndertowEmbeddedServletContainerFactory(int port) {
 		super(port);
-		setRegisterJspServlet(false);
+		getJspServlet().setRegistered(false);
 	}
 
 	/**
@@ -131,7 +131,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 */
 	public UndertowEmbeddedServletContainerFactory(String contextPath, int port) {
 		super(contextPath, port);
-		setRegisterJspServlet(false);
+		getJspServlet().setRegistered(false);
 	}
 
 	/**
@@ -439,12 +439,6 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 	public void setDirectBuffers(Boolean directBuffers) {
 		this.directBuffers = directBuffers;
-	}
-
-	@Override
-	public void setRegisterJspServlet(boolean registerJspServlet) {
-		Assert.isTrue(!registerJspServlet, "Undertow does not support JSPs");
-		super.setRegisterJspServlet(registerJspServlet);
 	}
 
 	/**

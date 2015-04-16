@@ -60,8 +60,10 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
@@ -477,6 +479,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				equalTo("test"));
 	}
 
+	@Test
+	public void disableJspServletRegistration() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.getJspServlet().setRegistered(false);
+		this.container = factory.getEmbeddedServletContainer();
+		assertThat(getJspServlet(), is(nullValue()));
+	}
+
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
 		return getSsl(clientAuth, keyPassword, keyStore, null);
 	}
@@ -566,6 +576,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	protected abstract AbstractEmbeddedServletContainerFactory getFactory();
+
+	protected abstract Object getJspServlet();
 
 	protected ServletContextInitializer exampleServletRegistration() {
 		return new ServletRegistrationBean(new ExampleServlet(), "/hello");

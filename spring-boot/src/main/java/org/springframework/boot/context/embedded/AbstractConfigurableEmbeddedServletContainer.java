@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,14 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Abstract base class for {@link ConfigurableEmbeddedServletContainer} implementations.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer implements
@@ -43,10 +45,6 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	private String contextPath = "";
 
 	private boolean registerDefaultServlet = true;
-
-	private boolean registerJspServlet = true;
-
-	private String jspServletClassName = "org.apache.jasper.servlet.JspServlet";
 
 	private int port = 8080;
 
@@ -63,6 +61,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
 
 	private Ssl ssl;
+
+	private JspServlet jspServlet = new JspServlet();
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -228,18 +228,10 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		this.registerDefaultServlet = registerDefaultServlet;
 	}
 
-	/**
-	 * Flag to indicate that the JSP servlet should be registered if available on the
-	 * classpath.
-	 * @return true if the JSP servlet is to be registered
-	 */
-	public boolean isRegisterJspServlet() {
-		return this.registerJspServlet;
-	}
-
 	@Override
 	public void setRegisterJspServlet(boolean registerJspServlet) {
-		this.registerJspServlet = registerJspServlet;
+		Assert.notNull(this.jspServlet);
+		this.jspServlet.setRegistered(registerJspServlet);
 	}
 
 	/**
@@ -261,14 +253,17 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	@Override
 	public void setJspServletClassName(String jspServletClassName) {
-		this.jspServletClassName = jspServletClassName;
+		Assert.notNull(this.jspServlet);
+		this.jspServlet.setClassName(jspServletClassName);
 	}
 
-	/**
-	 * @return the JSP servlet class name
-	 */
-	protected String getJspServletClassName() {
-		return this.jspServletClassName;
+	@Override
+	public void setJspServlet(JspServlet jspServlet) {
+		this.jspServlet = jspServlet;
+	}
+
+	public JspServlet getJspServlet() {
+		return this.jspServlet;
 	}
 
 	/**
@@ -285,6 +280,18 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		mergedInitializers.addAll(this.initializers);
 		return mergedInitializers
 				.toArray(new ServletContextInitializer[mergedInitializers.size()]);
+	}
+
+	/**
+	 * Returns whether or not he JSP servlet should be registered with the embedded
+	 * container.
+	 * @return {@code true} if the container should be registered, otherwise {@code false}
+	 */
+	protected boolean shouldRegisterJspServlet() {
+		return this.jspServlet != null
+				&& this.jspServlet.getRegistered()
+				&& ClassUtils.isPresent(this.jspServlet.getClassName(), getClass()
+						.getClassLoader());
 	}
 
 }

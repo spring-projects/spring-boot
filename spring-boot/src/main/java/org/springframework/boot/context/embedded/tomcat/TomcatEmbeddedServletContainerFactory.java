@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -173,9 +174,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
-		if (isRegisterJspServlet()
-				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
-						.getClassLoader())) {
+		if (shouldRegisterJspServlet()) {
 			addJspServlet(context);
 			addJasperInitializer(context);
 			context.addLifecycleListener(new StoreMergedWebXmlListener());
@@ -202,8 +201,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private void addJspServlet(Context context) {
 		Wrapper jspServlet = context.createWrapper();
 		jspServlet.setName("jsp");
-		jspServlet.setServletClass(getJspServletClassName());
+		jspServlet.setServletClass(getJspServlet().getClassName());
 		jspServlet.addInitParameter("fork", "false");
+		for (Entry<String, String> initParameter : getJspServlet().getInitParameters()
+				.entrySet()) {
+			jspServlet.addInitParameter(initParameter.getKey(), initParameter.getValue());
+		}
 		jspServlet.setLoadOnStartup(3);
 		context.addChild(jspServlet);
 		context.addServletMapping("*.jsp", "jsp");

@@ -36,6 +36,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.InitParameterConfiguringServletContextInitializer;
+import org.springframework.boot.context.embedded.JspServlet;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
@@ -92,6 +93,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	private final Undertow undertow = new Undertow();
 
+	@NestedConfigurationProperty
+	private JspServlet jspServlet;
+
 	/**
 	 * ServletContext parameters.
 	 */
@@ -108,6 +112,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	public Undertow getUndertow() {
 		return this.undertow;
+	}
+
+	public JspServlet jspServlet() {
+		return this.jspServlet;
 	}
 
 	public String getContextPath() {
@@ -182,6 +190,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		this.ssl = ssl;
 	}
 
+	public JspServlet getJspServlet() {
+		return this.jspServlet;
+	}
+
+	public void setJspServlet(JspServlet jspServlet) {
+		this.jspServlet = jspServlet;
+	}
+
 	public Map<String, String> getContextParameters() {
 		return this.contextParameters;
 	}
@@ -206,6 +222,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		}
 		if (getSsl() != null) {
 			container.setSsl(getSsl());
+		}
+		if (getJspServlet() != null) {
+			container.setJspServlet(getJspServlet());
 		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat()
@@ -428,6 +447,13 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
 			}
+
+			factory.addContextCustomizers(new TomcatContextCustomizer() {
+				@Override
+				public void customize(Context context) {
+					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
+				}
+			});
 
 			factory.addContextCustomizers(new TomcatContextCustomizer() {
 				@Override
