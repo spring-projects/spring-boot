@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Jakub Kubrynski
+ * @author Andy Wilkinson
  */
 @SuppressWarnings("resource")
 public class ConditionalOnMissingBeanTests {
@@ -157,8 +158,18 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithNonspecificFactoryBean() {
-		this.context.register(NonspecificFactoryBeanConfiguration.class,
+	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithClassAttribute() {
+		this.context.register(NonspecificFactoryBeanClassAttributeConfiguration.class,
+				ConditionalOnFactoryBean.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(ExampleBean.class).toString(),
+				equalTo("fromFactory"));
+	}
+
+	@Test
+	public void testOnMissingBeanConditionWithNonspecificFactoryBeanWithStringAttribute() {
+		this.context.register(NonspecificFactoryBeanStringAttributeConfiguration.class,
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -211,11 +222,11 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration
-	@Import(NonspecificFactoryBeanRegistrar.class)
-	protected static class NonspecificFactoryBeanConfiguration {
+	@Import(NonspecificFactoryBeanClassAttributeRegistrar.class)
+	protected static class NonspecificFactoryBeanClassAttributeConfiguration {
 	}
 
-	protected static class NonspecificFactoryBeanRegistrar implements
+	protected static class NonspecificFactoryBeanClassAttributeRegistrar implements
 			ImportBeanDefinitionRegistrar {
 
 		@Override
@@ -226,6 +237,29 @@ public class ConditionalOnMissingBeanTests {
 			builder.addConstructorArgValue("foo");
 			builder.getBeanDefinition().setAttribute(
 					OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE, ExampleBean.class);
+			registry.registerBeanDefinition("exampleBeanFactoryBean",
+					builder.getBeanDefinition());
+		}
+
+	}
+
+	@Configuration
+	@Import(NonspecificFactoryBeanClassAttributeRegistrar.class)
+	protected static class NonspecificFactoryBeanStringAttributeConfiguration {
+	}
+
+	protected static class NonspecificFactoryBeanStringAttributeRegistrar implements
+			ImportBeanDefinitionRegistrar {
+
+		@Override
+		public void registerBeanDefinitions(AnnotationMetadata meta,
+				BeanDefinitionRegistry registry) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder
+					.genericBeanDefinition(NonspecificFactoryBean.class);
+			builder.addConstructorArgValue("foo");
+			builder.getBeanDefinition()
+					.setAttribute(OnBeanCondition.FACTORY_BEAN_OBJECT_TYPE,
+							ExampleBean.class.getName());
 			registry.registerBeanDefinition("exampleBeanFactoryBean",
 					builder.getBeanDefinition());
 		}
