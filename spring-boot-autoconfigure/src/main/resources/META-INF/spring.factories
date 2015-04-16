@@ -37,7 +37,6 @@ org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfig
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration,\
-org.springframework.boot.autoconfigure.lifecycle.SpringApplicationLifecycleAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.DeviceResolverAutoConfiguration,\

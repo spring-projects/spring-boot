@@ -19,10 +19,6 @@ Spring Boot Maven Plugin
 
   * {{{./repackage-mojo.html}spring-boot:repackage}} repackages your jar/war to be executable.
 
-  * {{{./start-mojo.html}spring-boot:start}} and {{{./stop-mojo.html}spring-boot:stop}} to manage
-    the lifecycle of your Spring Boot application (i.e. for integration tests).
-
-
 * Usage
 
   General instructions on how to use the Spring Boot Plugin can be found on the {{{./usage.html}usage page}}. Some
@@ -45,8 +41,6 @@ Spring Boot Maven Plugin
   * {{{./examples/exclude-dependency.html}Exclude a dependency}}
 
   * {{{./examples/run-debug.html}Debug the application}}
-
-  * {{{./examples/it-random-port.html}Random port for integration tests}}
 
   []
 

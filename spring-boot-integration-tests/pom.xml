@@ -21,7 +21,6 @@
 	</properties>
 	<modules>
 		<module>spring-boot-gradle-tests</module>
-		<module>spring-boot-maven-tests</module>
 		<module>spring-boot-security-tests</module>
 	</modules>
 	<profiles>
