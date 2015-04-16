@@ -113,7 +113,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			String value = response.getHeader(header);
 			headers.put(header, value);
 		}
-		headers.put("status", "" + response.getStatus());
+		trace.put("status", "" + response.getStatus());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> allHeaders = (Map<String, Object>) trace.get("headers");
 		allHeaders.put("response", headers);
