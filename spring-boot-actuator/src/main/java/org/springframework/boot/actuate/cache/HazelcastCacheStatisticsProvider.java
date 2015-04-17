@@ -23,7 +23,7 @@ import com.hazelcast.monitor.LocalMapStats;
 import com.hazelcast.spring.cache.HazelcastCache;
 
 /**
- * {@link CacheStatisticsProvider} implementation for {@link HazelcastCache}.
+ * {@link CacheStatisticsProvider} implementation for Hazelcast.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

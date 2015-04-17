@@ -22,7 +22,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCache;
 
 /**
- * {@link CacheStatisticsProvider} implementation for {@link EhCacheCache}.
+ * {@link CacheStatisticsProvider} implementation for EhCache.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

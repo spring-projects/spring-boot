@@ -22,7 +22,7 @@ import org.springframework.cache.guava.GuavaCache;
 import com.google.common.cache.CacheStats;
 
 /**
- * {@link CacheStatisticsProvider} implementation for {@link GuavaCache}.
+ * {@link CacheStatisticsProvider} implementation for Guava.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

@@ -36,7 +36,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.jcache.JCacheCache;
 
 /**
- * {@link CacheStatisticsProvider} implementation for {@link JCacheCache}.
+ * {@link CacheStatisticsProvider} implementation for a JSR-107 compliant cache.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
