@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.Calendar;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -57,6 +58,17 @@ public class RepackagerTests {
 		public void doWithLibraries(LibraryCallback callback) throws IOException {
 		}
 	};
+
+	private static final long JAN_1_1980;
+	private static final long JAN_1_1985;
+	static {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(1980, 0, 1, 0, 0, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		JAN_1_1980 = calendar.getTime().getTime();
+		calendar.set(Calendar.YEAR, 1985);
+		JAN_1_1985 = calendar.getTime().getTime();
+	}
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -275,7 +287,7 @@ public class RepackagerTests {
 	@Test
 	public void libraries() throws Exception {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
-		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class, JAN_1_1985);
 		final File libJarFile = libJar.getFile();
 		final File libJarFileToUnpack = libJar.getFile();
 		final File libNonJarFile = this.temporaryFolder.newFile();
@@ -284,6 +296,7 @@ public class RepackagerTests {
 		this.testJarFile.addFile("lib/" + libJarFileToUnpack.getName(),
 				libJarFileToUnpack);
 		File file = this.testJarFile.getFile();
+		libJarFile.setLastModified(JAN_1_1980);
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(new Libraries() {
 			@Override
@@ -297,7 +310,9 @@ public class RepackagerTests {
 		assertThat(hasEntry(file, "lib/" + libJarFile.getName()), equalTo(true));
 		assertThat(hasEntry(file, "lib/" + libJarFileToUnpack.getName()), equalTo(true));
 		assertThat(hasEntry(file, "lib/" + libNonJarFile.getName()), equalTo(false));
-		JarEntry entry = getEntry(file, "lib/" + libJarFileToUnpack.getName());
+		JarEntry entry = getEntry(file, "lib/" + libJarFile.getName());
+		assertThat(entry.getTime(), equalTo(JAN_1_1985));
+		entry = getEntry(file, "lib/" + libJarFileToUnpack.getName());
 		assertThat(entry.getComment(), startsWith("UNPACK:"));
 		assertThat(entry.getComment().length(), equalTo(47));
 	}
