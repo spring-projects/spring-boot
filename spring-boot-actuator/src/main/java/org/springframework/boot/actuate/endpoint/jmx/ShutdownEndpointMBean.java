@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.jmx;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.boot.json.jackson.ObjectMapperProvider;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
@@ -29,8 +30,9 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 @ManagedResource
 public class ShutdownEndpointMBean extends EndpointMBean {
 
-	public ShutdownEndpointMBean(String beanName, Endpoint<?> endpoint) {
-		super(beanName, endpoint);
+	public ShutdownEndpointMBean(String beanName, Endpoint<?> endpoint,
+			ObjectMapperProvider objectMapperProvider) {
+		super(beanName, endpoint, objectMapperProvider);
 	}
 
 	@ManagedOperation(description = "Shutdown the ApplicationContext")
