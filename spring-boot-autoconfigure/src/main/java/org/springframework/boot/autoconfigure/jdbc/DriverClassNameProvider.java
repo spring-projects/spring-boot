@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,9 @@ class DriverClassNameProvider {
 		drivers.put("postgresql", "org.postgresql.Driver");
 		drivers.put("jtds", "net.sourceforge.jtds.jdbc.Driver");
 		drivers.put("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		drivers.put("firebirdsql", "org.firebirdsql.jdbc.FBDriver");
+		drivers.put("db2", "com.ibm.db2.jcc.DB2Driver");
+		drivers.put("teradata", "com.teradata.jdbc.TeraDriver");
 		DRIVERS = Collections.unmodifiableMap(drivers);
 	}
 
