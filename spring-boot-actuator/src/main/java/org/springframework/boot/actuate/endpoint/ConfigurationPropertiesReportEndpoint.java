@@ -33,6 +33,8 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.json.jackson.MemoizingObjectMapperProvider;
+import org.springframework.boot.json.jackson.ObjectMapperProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
@@ -85,6 +87,9 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private ConfigurationPropertiesMetaData metadata;
 
+	private ObjectMapperProvider objectMapperProvider = new MemoizingObjectMapperProvider(
+			new ConfigurationPropertiesObjectMapperProvider());
+
 	private String metadataLocations = "classpath:*/META-INF/*spring-configuration-metadata.json";
 
 	public ConfigurationPropertiesReportEndpoint() {
@@ -121,9 +126,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 */
 	protected Map<String, Object> extract(ApplicationContext context) {
 		// Serialize beans into map structure and sanitize values
-		ObjectMapper mapper = new ObjectMapper();
-		configureObjectMapper(mapper);
-		return extract(context, mapper);
+		return extract(context, this.objectMapperProvider.getObjectMapper());
 	}
 
 	private Map<String, Object> extract(ApplicationContext context, ObjectMapper mapper) {
@@ -187,37 +190,6 @@ public class ConfigurationPropertiesReportEndpoint extends
 			return new HashMap<String, Object>(Collections.<String, Object> singletonMap(
 					"error", "Cannot serialize '" + prefix + "'"));
 		}
-	}
-
-	/**
-	 * Configure Jackson's {@link ObjectMapper} to be used to serialize the
-	 * {@link ConfigurationProperties} objects into a {@link Map} structure.
-	 * @param mapper the object mapper
-	 */
-	protected void configureObjectMapper(ObjectMapper mapper) {
-		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-		mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-		applyCglibFilters(mapper);
-		applySerializationModifier(mapper);
-	}
-
-	/**
-	 * Ensure only bindable and non-cyclic bean properties are reported.
-	 */
-	private void applySerializationModifier(ObjectMapper mapper) {
-		SerializerFactory factory = BeanSerializerFactory.instance
-				.withSerializerModifier(new GenericSerializerModifier());
-		mapper.setSerializerFactory(factory);
-	}
-
-	/**
-	 * Configure PropertyFilter to make sure Jackson doesn't process CGLIB generated bean
-	 * properties.
-	 */
-	private void applyCglibFilters(ObjectMapper mapper) {
-		mapper.setAnnotationIntrospector(new CglibAnnotationIntrospector());
-		mapper.setFilters(new SimpleFilterProvider().addFilter(CGLIB_FILTER_ID,
-				new CglibBeanPropertyFilter()));
 	}
 
 	/**
@@ -335,6 +307,54 @@ public class ConfigurationPropertiesReportEndpoint extends
 			return (setter != null)
 					|| ClassUtils.getPackageName(parentType).equals(
 							ClassUtils.getPackageName(type));
+		}
+	}
+
+	protected static class ConfigurationPropertiesObjectMapperProvider implements
+			ObjectMapperProvider {
+
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see
+		 * org.springframework.boot.json.jackson.ObjectMapperProvider#getObjectMapper()
+		 */
+		@Override
+		public ObjectMapper getObjectMapper() {
+			ObjectMapper mapper = new ObjectMapper();
+			configureObjectMapper(mapper);
+			return mapper;
+		}
+
+		/**
+		 * Configure Jackson's {@link ObjectMapper} to be used to serialize the
+		 * {@link ConfigurationProperties} objects into a {@link Map} structure.
+		 * @param mapper the object mapper
+		 */
+		protected void configureObjectMapper(ObjectMapper mapper) {
+			mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+			mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+			applyCglibFilters(mapper);
+			applySerializationModifier(mapper);
+		}
+
+		/**
+		 * Ensure only bindable and non-cyclic bean properties are reported.
+		 */
+		private void applySerializationModifier(ObjectMapper mapper) {
+			SerializerFactory factory = BeanSerializerFactory.instance
+					.withSerializerModifier(new GenericSerializerModifier());
+			mapper.setSerializerFactory(factory);
+		}
+
+		/**
+		 * Configure PropertyFilter to make sure Jackson doesn't process CGLIB generated
+		 * bean properties.
+		 */
+		private void applyCglibFilters(ObjectMapper mapper) {
+			mapper.setAnnotationIntrospector(new CglibAnnotationIntrospector());
+			mapper.setFilters(new SimpleFilterProvider().addFilter(CGLIB_FILTER_ID,
+					new CglibBeanPropertyFilter()));
 		}
 	}
 
