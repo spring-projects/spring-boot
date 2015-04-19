@@ -1122,7 +1122,7 @@ added.
   and `spring.freemarker.suffix`, with empty and '`.ftl`' defaults respectively). It can
   be overridden by providing a bean of the same name.
 * If you use Groovy templates (actually if groovy-templates is on your classpath) you will
-  also have a `Groovy TemplateViewResolver` with id '`groovyTemplateViewResolver`'. It
+  also have a `GroovyMarkupViewResolver` with id '`groovyMarkupViewResolver`'. It
   looks for resources in a loader path by surrounding the view name with a prefix and
   suffix (externalized to `spring.groovy.template.prefix` and
   `spring.groovy.template.suffix`, defaults '`classpath:/templates/`' and '`.tpl`'
