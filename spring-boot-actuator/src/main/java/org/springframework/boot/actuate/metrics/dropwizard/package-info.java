@@ -15,7 +15,7 @@
  */
 
 /**
- * Support for writing metrics
+ * Metrics integration with Dropwizard Metrics.
  */
-package org.springframework.boot.actuate.metrics.writer;
+package org.springframework.boot.actuate.metrics.dropwizard;
 

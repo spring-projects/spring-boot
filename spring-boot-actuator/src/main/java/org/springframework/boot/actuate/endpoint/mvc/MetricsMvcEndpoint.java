@@ -56,21 +56,21 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 	/**
 	 * {@link NamePatternFilter} for the Map source.
 	 */
-	private class NamePatternMapFilter extends NamePatternFilter<Map<String, Object>> {
+	private class NamePatternMapFilter extends NamePatternFilter<Map<String, ?>> {
 
-		public NamePatternMapFilter(Map<String, Object> source) {
+		public NamePatternMapFilter(Map<String, ?> source) {
 			super(source);
 		}
 
 		@Override
-		protected void getNames(Map<String, Object> source, NameCallback callback) {
+		protected void getNames(Map<String, ?> source, NameCallback callback) {
 			for (String name : source.keySet()) {
 				callback.addName(name);
 			}
 		}
 
 		@Override
-		protected Object getValue(Map<String, Object> source, String name) {
+		protected Object getValue(Map<String, ?> source, String name) {
 			Object value = source.get(name);
 			if (value == null) {
 				throw new NoSuchMetricException("No such metric: " + name);

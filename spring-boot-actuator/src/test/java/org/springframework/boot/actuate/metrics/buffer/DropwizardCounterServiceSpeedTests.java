@@ -34,9 +34,9 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.reader.MetricRegistryMetricReader;
-import org.springframework.boot.actuate.metrics.writer.DropwizardMetricServices;
 import org.springframework.lang.UsesJava8;
 import org.springframework.util.StopWatch;
 

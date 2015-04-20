@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.writer;
+package org.springframework.boot.actuate.metrics.dropwizard;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
