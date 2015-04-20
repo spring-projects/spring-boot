@@ -60,6 +60,11 @@ public class RabbitProperties {
 	 * Comma-separated list of addresses to which the client should connect to.
 	 */
 	private String addresses;
+	
+	/**
+	 * Requested heartbeat to send to broker, in seconds.
+	 */
+	private int requestedHeartbeat = 0;
 
 	public String getHost() {
 		if (this.addresses == null) {
@@ -153,6 +158,14 @@ public class RabbitProperties {
 
 	public void setVirtualHost(String virtualHost) {
 		this.virtualHost = ("".equals(virtualHost) ? "/" : virtualHost);
+	}
+
+	public int getRequestedHeartbeat() {
+		return this.requestedHeartbeat;
+	}
+
+	public void setRequestedHeartbeat(int requestedHeartbeat) {
+		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
 }

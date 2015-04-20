@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.amqp;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -69,6 +70,9 @@ import com.rabbitmq.client.Channel;
  * {@literal localhost}.</li>
  * <li>{@literal spring.rabbitmq.virtualHost} is used to specify the (optional) virtual
  * host to which the client should connect.</li>
+ * <li>
+ * {@literal spring.rabbitmq.requested-heartbeat} is used to specify the client
+ * requested heartbeat timeout, in seconds. Defaults to 0, heartbeat disabled.</li>
  * </ul>
  * @author Greg Turnquist
  * @author Josh Long
@@ -99,25 +103,41 @@ public class RabbitAutoConfiguration {
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class RabbitConnectionFactoryCreator {
 
+		@Autowired
+		private RabbitProperties config;
+		
 		@Bean
-		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config) {
-			CachingConnectionFactory factory = new CachingConnectionFactory();
+		public ConnectionFactory rabbitConnectionFactory(RabbitConnectionFactoryBean factoryBean) {			
+			com.rabbitmq.client.ConnectionFactory connectionFactory = null;
+			try {
+				connectionFactory = factoryBean.getObject();
+			} catch (Exception e) {
+				throw new IllegalStateException("Unable to create ConnectionFactory",e);
+			}			
+			CachingConnectionFactory factory = new CachingConnectionFactory(connectionFactory);			
 			String addresses = config.getAddresses();
-			factory.setAddresses(addresses);
+			factory.setAddresses(addresses);			
+			return factory;
+		}
+		
+		@Bean 
+		public RabbitConnectionFactoryBean rabbitConnectionFactoryBean(){
+			RabbitConnectionFactoryBean factoryBean = new RabbitConnectionFactoryBean();			
 			if (config.getHost() != null) {
-				factory.setHost(config.getHost());
-				factory.setPort(config.getPort());
+				factoryBean.setHost(config.getHost());
+				factoryBean.setPort(config.getPort());
 			}
 			if (config.getUsername() != null) {
-				factory.setUsername(config.getUsername());
+				factoryBean.setUsername(config.getUsername());
 			}
 			if (config.getPassword() != null) {
-				factory.setPassword(config.getPassword());
+				factoryBean.setPassword(config.getPassword());
 			}
 			if (config.getVirtualHost() != null) {
-				factory.setVirtualHost(config.getVirtualHost());
+				factoryBean.setVirtualHost(config.getVirtualHost());
 			}
-			return factory;
+			factoryBean.setRequestedHeartbeat(config.getRequestedHeartbeat());
+			return factoryBean;
 		}
 
 	}
