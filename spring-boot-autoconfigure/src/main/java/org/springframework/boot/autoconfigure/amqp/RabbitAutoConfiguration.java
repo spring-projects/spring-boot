@@ -107,22 +107,16 @@ public class RabbitAutoConfiguration {
 		private RabbitProperties config;
 		
 		@Bean
-		public ConnectionFactory rabbitConnectionFactory(RabbitConnectionFactoryBean factoryBean) {			
-			com.rabbitmq.client.ConnectionFactory connectionFactory = null;
-			try {
-				connectionFactory = factoryBean.getObject();
-			} catch (Exception e) {
-				throw new IllegalStateException("Unable to create ConnectionFactory",e);
-			}			
-			CachingConnectionFactory factory = new CachingConnectionFactory(connectionFactory);			
+		public ConnectionFactory rabbitConnectionFactory(com.rabbitmq.client.ConnectionFactory connectionFactory) {
+			CachingConnectionFactory factory = new CachingConnectionFactory(connectionFactory);
 			String addresses = config.getAddresses();
 			factory.setAddresses(addresses);			
 			return factory;
 		}
-		
-		@Bean 
-		public RabbitConnectionFactoryBean rabbitConnectionFactoryBean(){
-			RabbitConnectionFactoryBean factoryBean = new RabbitConnectionFactoryBean();			
+
+		@Bean
+		public RabbitConnectionFactoryBean nativeRabbitConnectionFactory(){
+			RabbitConnectionFactoryBean factoryBean = new RabbitConnectionFactoryBean();
 			if (config.getHost() != null) {
 				factoryBean.setHost(config.getHost());
 				factoryBean.setPort(config.getPort());
