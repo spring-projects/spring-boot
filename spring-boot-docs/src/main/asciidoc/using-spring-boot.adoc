@@ -170,7 +170,7 @@ managed by Spring Boot:
 	}
 
 	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot.spring-boot'
+	apply plugin: 'spring-boot'
 
 	repositories { jcenter() }
 	dependencies {
