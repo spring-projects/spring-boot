@@ -63,22 +63,21 @@ import com.codahale.metrics.MetricRegistry;
  * periodic basis) using an {@link Exporter}, most implementations of which have
  * optimizations for sending data to remote repositories.
  * <p>
- * If Spring Messaging is on the classpath a {@link MessageChannel} called
- * "metricsChannel" is also created (unless one already exists) and all metric update
- * events are published additionally as messages on that channel. Additional analysis or
- * actions can be taken by clients subscribing to that channel.
+ * If Spring Messaging is on the classpath and a {@link MessageChannel} called
+ * "metricsChannel" is also available, all metric update events are published additionally
+ * as messages on that channel. Additional analysis or actions can be taken by clients
+ * subscribing to that channel.
  * <p>
- * In addition if Codahale's metrics library is on the classpath a {@link MetricRegistry}
- * will be created and wired up to the counter and gauge services in addition to the basic
- * repository. Users can create Codahale metrics by prefixing their metric names with the
- * appropriate type (e.g. "histogram.*", "meter.*") and sending them to the standard
- * <code>GaugeService</code> or <code>CounterService</code>.
+ * In addition if Dropwizard's metrics library is on the classpath a
+ * {@link MetricRegistry} will be created and the default counter and gauge services will
+ * switch to using it instead of the default repository. Users can create "special"
+ * Dropwizard metrics by prefixing their metric names with the appropriate type (e.g.
+ * "histogram.*", "meter.*". "timer.*") and sending them to the <code>GaugeService</code>
+ * or <code>CounterService</code>.
  * <p>
  * By default all metric updates go to all {@link MetricWriter} instances in the
- * application context. To change this behaviour define your own metric writer bean called
- * "primaryMetricWriter", mark it <code>@Primary</code>, and this one will receive all
- * updates from the default counter and gauge services. Alternatively you can provide your
- * own counter and gauge services and wire them to whichever writer you choose.
+ * application context via a {@link MetricCopyExporter} firing every 5 seconds (disable
+ * this by setting <code>spring.metrics.export.enabled=false</code>).
  *
  * @see GaugeService
  * @see CounterService
