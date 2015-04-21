@@ -20,6 +20,7 @@ import java.net.ConnectException;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
@@ -38,7 +39,11 @@ public class SampleElasticsearchApplicationTests {
 	@Test
 	public void testDefaultSettings() throws Exception {
 		try {
-			SampleElasticsearchApplication.main(new String[0]);
+			new SpringApplicationBuilder(SampleElasticsearchApplication.class)
+					.properties(
+							"spring.data.elasticsearch.properties.path.data:target/data",
+							"spring.data.elasticsearch.properties.path.logs:target/logs")
+					.run();
 		}
 		catch (IllegalStateException ex) {
 			if (serverNotRunning(ex)) {
