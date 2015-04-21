@@ -325,6 +325,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 				initializers);
 		deployment.setClassLoader(getServletClassLoader());
 		deployment.setContextPath(getContextPath());
+		deployment.setDisplayName(getDisplayName());
 		deployment.setDeploymentName("spring-boot");
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));

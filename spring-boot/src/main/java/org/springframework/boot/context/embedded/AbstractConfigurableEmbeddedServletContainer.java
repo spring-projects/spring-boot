@@ -34,6 +34,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer implements
@@ -43,6 +44,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 			.toSeconds(30);
 
 	private String contextPath = "";
+
+	private String displayName;
 
 	private boolean registerDefaultServlet = true;
 
@@ -118,6 +121,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	 */
 	public String getContextPath() {
 		return this.contextPath;
+	}
+
+	@Override
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDisplayName() {
+		return this.displayName;
 	}
 
 	@Override

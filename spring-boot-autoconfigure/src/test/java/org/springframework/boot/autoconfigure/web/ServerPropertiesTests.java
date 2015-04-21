@@ -113,6 +113,21 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void testDefaultDisplayName() throws Exception {
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		this.properties.customize(factory);
+		verify(factory).setDisplayName("application");
+	}
+
+	@Test
+	public void testCustomizeDisplayName() throws Exception {
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		this.properties.setDisplayName("TestName");
+		this.properties.customize(factory);
+		verify(factory).setDisplayName("TestName");
+	}
+
+	@Test
 	public void testCustomizeTomcatPort() throws Exception {
 		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.setPort(8080);
@@ -134,6 +149,18 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.maxHttpHeaderSize", "9999");
 		bindProperties(map);
 		assertEquals(9999, this.properties.getTomcat().getMaxHttpHeaderSize());
+	}
+
+	@Test
+	public void customizeTomcatDisplayName() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.display-name", "MyBootApp");
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+
+		assertEquals("MyBootApp", container.getDisplayName());
 	}
 
 	@Test

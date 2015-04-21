@@ -61,6 +61,7 @@ content into your application; rather pick only the properties that you need.
 	server.jsp-servlet.init-parameters.*= # Init parameters used to configure the JSP servlet
 	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.servlet-path= # the servlet path, defaults to '/'
+	server.display-name= # the display name of the application
 	server.ssl.enabled=true # if SSL support is enabled
 	server.ssl.client-auth= # want or need
 	server.ssl.key-alias=

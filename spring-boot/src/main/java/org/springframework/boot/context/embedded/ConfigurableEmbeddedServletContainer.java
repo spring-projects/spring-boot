@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
@@ -40,6 +41,12 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param contextPath the contextPath to set
 	 */
 	void setContextPath(String contextPath);
+
+	/**
+	 * Sets the display name of the application deployed in the embedded servlet container.
+	 * @param displayName the displayName to set
+	 */
+	void setDisplayName(String displayName);
 
 	/**
 	 * Sets the port that the embedded servlet container should listen on. If not

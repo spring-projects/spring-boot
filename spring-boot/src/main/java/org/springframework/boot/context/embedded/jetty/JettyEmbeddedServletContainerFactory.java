@@ -231,6 +231,7 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 		String contextPath = getContextPath();
 		context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
+		context.setDisplayName(getDisplayName());
 		configureDocumentRoot(context);
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
