@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer implements
@@ -41,6 +42,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 			.toSeconds(30);
 
 	private String contextPath = "";
+
+	private String displayName;
 
 	private boolean registerDefaultServlet = true;
 
@@ -118,6 +121,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	 */
 	public String getContextPath() {
 		return this.contextPath;
+	}
+
+	@Override
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDisplayName() {
+		return this.displayName;
 	}
 
 	@Override
