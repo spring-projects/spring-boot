@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.groovy.template;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.boot.autoconfigure.template.AbstractViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -45,11 +42,6 @@ public class GroovyTemplateProperties extends AbstractViewResolverProperties {
 	 */
 	private String suffix = DEFAULT_SUFFIX;
 
-	/**
-	 * Configuration to pass to TemplateConfiguration.
-	 */
-	private Map<String, Object> configuration = new HashMap<String, Object>();
-
 	public String getPrefix() {
 		return this.prefix;
 	}
@@ -64,14 +56,6 @@ public class GroovyTemplateProperties extends AbstractViewResolverProperties {
 
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
-	}
-
-	public void setConfiguration(Map<String, Object> configuration) {
-		this.configuration = configuration;
-	}
-
-	public Map<String, Object> getConfiguration() {
-		return this.configuration;
 	}
 
 }
