@@ -27,7 +27,7 @@ application: it might be a JDK and a call to `java`, it might be an embedded web
 or it might be a full-fledged application server. A buildpack is pluggable, but ideally
 you should be able to get by with as few customizations to it as possible.
 This reduces the footprint of functionality that is not under your control. It minimizes
-divergence between deployment and production environments.
+divergence between development and production environments.
 
 Ideally, your application, like a Spring Boot executable jar, has everything that it needs
 to run packaged within it.
