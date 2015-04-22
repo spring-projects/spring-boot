@@ -147,7 +147,16 @@ Maven, there is no "`super parent`" to import to share some configuration.
 ----
 	apply plugin: 'java'
 
-	repositories { jcenter() }
+	repositories {
+ifeval::["{spring-boot-repo}" != "release"]
+		maven { url "http://repo.spring.io/snapshot" }
+		maven { url "http://repo.spring.io/milestone" }
+endif::[]
+ifeval::["{spring-boot-repo}" == "release"]
+		jcenter()
+endif::[]
+	}
+
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
 	}
@@ -162,7 +171,16 @@ for "`blessed`" dependencies>>:
 [source,groovy,indent=0,subs="attributes"]
 ----
 	buildscript {
-		repositories { jcenter() }
+		repositories {
+ifeval::["{spring-boot-repo}" != "release"]
+			maven { url "http://repo.spring.io/snapshot" }
+			maven { url "http://repo.spring.io/milestone" }
+endif::[]
+ifeval::["{spring-boot-repo}" == "release"]
+			jcenter()
+endif::[]
+		}
+
 		dependencies {
 			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
 		}
@@ -171,7 +189,16 @@ for "`blessed`" dependencies>>:
 	apply plugin: 'java'
 	apply plugin: 'spring-boot'
 
-	repositories { jcenter() }
+	repositories {
+ifeval::["{spring-boot-repo}" != "release"]
+		maven { url "http://repo.spring.io/snapshot" }
+		maven { url "http://repo.spring.io/milestone" }
+endif::[]
+ifeval::["{spring-boot-repo}" == "release"]
+		jcenter()
+endif::[]
+	}
+
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web")
 		testCompile("org.springframework.boot:spring-boot-starter-test")
