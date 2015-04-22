@@ -39,4 +39,7 @@ do as they were designed before this was clarified.
 
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
 | https://github.com/domix/spring-boot-starter-jade4j
+
+| https://www.mulesoft.com/platform/soa/mule-esb-open-source-esb[Mule ESB] (Mule)
+| https://github.com/glawson6/mule-starter-app
 |===
