@@ -890,7 +890,7 @@ beans are gathered by the endpoint. You can easily change that by defining your 
 
 
 [[production-ready-metric-repositories]]
-=== Performance
+=== Special features with Java 8
 
 The default implementation of `GaugeService` and `CounterService` provided by Spring Boot
 depends on the version of Java that you are using. With Java 8 (or better) the
@@ -944,10 +944,10 @@ Example:
 ----
 
 @Value("${spring.application.name:application}.${random.value:0000}")
-private String prefix = "metrics;
+private String prefix = "metrics";
 
 @Value("${metrics.key:METRICSKEY}")
-private String key = "KEY;
+private String key = "METRICSKEY";
 
 @Bean
 MetricWriter metricWriter() {
@@ -957,15 +957,51 @@ MetricWriter metricWriter() {
 
 
 
+[[production-ready-metric-aggregation]]
+=== Aggregating metrics from multiple sources
+There is an `AggregateMetricReader` that you can use to consolidate metrics from different
+physical sources. Sources for the same logical metric just need to publish them with a
+period-separated prefix, and the reader will aggregate (by truncating the metric names,
+and dropping the prefix). Counters are summed and everything else (i.e. gauges) take their
+most recent value.
+
+This is very useful (for instance) if multiple application instances are feeding to a
+central (e.g. redis) repository and you want to display the results. Particularly
+recommended in conjunction with a `MetricReaderPublicMetrics` for hooking up to the
+results to the "/metrics" endpoint. Example:
+
+[source,java,indent=0]
+----
+	@Bean
+	public PublicMetrics metricsAggregate() {
+		return new MetricReaderPublicMetrics(aggregates());
+	}
+
+	@Bean
+	protected MetricReader repository(RedisConnectionFactory connectionFactory) {
+		RedisMetricRepository repository = new RedisMetricRepository(connectionFactory,
+				"metrics", "METRICSKEY");
+		return repository;
+	}
+
+	@Bean
+	protected MetricReader aggregates() {
+		AggregateMetricReader repository = new AggregateMetricReader(repository());
+		return repository;
+	}
+----
+
+
+
 [[production-ready-dropwizard-metrics]]
 === Dropwizard Metrics
-Users of the https://dropwizard.github.io/metrics/[Dropwizard '`Metrics`' library] will
-automatically find that Spring Boot metrics are published to
-`com.codahale.metrics.MetricRegistry`. A default `com.codahale.metrics.MetricRegistry`
-Spring bean will be created when you declare a dependency to the
-`io.dropwizard.metrics:metrics-core` library; you can also register you own `@Bean`
-instance if you need customizations. Metrics from the `MetricRegistry` are also
-automatically exposed via the `/metrics` endpoint.
+A default `MetricRegistry` Spring bean will be created when you declare a dependency to
+the `io.dropwizard.metrics:metric-core` library; you can also register you own `@Bean`
+instance if you need customizations. Users of the
+https://dropwizard.github.io/metrics/[Dropwizard '`Metrics`' library] will find that
+Spring Boot metrics are automatically published to `com.codahale.metrics.MetricRegistry`.
+Metrics from the `MetricRegistry` are also automatically exposed via the `/metrics`
+endpoint
 
 When Dropwizard metrics are in use, the default `CounterService` and `GaugeService` are
 replaced with a `DropwizardMetricServices`, which is a wrapper around the `MetricRegistry`
