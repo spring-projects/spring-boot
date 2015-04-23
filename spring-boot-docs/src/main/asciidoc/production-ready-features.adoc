@@ -957,6 +957,51 @@ MetricWriter metricWriter() {
 
 
 
+[[production-ready-metric-writers-export-to-statsd]]
+==== Example: Export to Statsd
+If you provide a `@Bean` of type `StatsdMetricWriter`  the metrics are exported to a
+statsd server:
+
+[source,java,indent=0]
+----
+@Value("${spring.application.name:application}.${random.value:0000}")
+private String prefix = "metrics";
+
+@Value("${statsd.host:localhost}")
+private String host = "localhost";
+
+@Value("${statsd.port:8125}")
+private int port;
+
+@Bean
+MetricWriter metricWriter() {
+  return new StatsdMetricWriter(prefix, host, port);
+}
+----
+
+
+[[production-ready-metric-writers-export-to-jmx]]
+==== Example: Export to JMX
+If you provide a `@Bean` of type `JmxMetricWriter` the metrics are exported as MBeans to
+the local server (the `MBeanExporter` is provided by Spring Boot JMX autoconfiguration as
+long as it is switched on). Metrics can then be inspected, graphed, alerted etc. using any
+tool that understands JMX (e.g. JConsole or JVisualVM). Example:
+
+[source,java,indent=0]
+----
+@Bean
+MetricWriter metricWriter(MBeanExporter exporter) {
+  return new JmxMetricWriter(exporter);
+}
+----
+
+Each metric is exported as an individual MBean. The format for the `ObjectNames` is given
+by an `ObjectNamingStrategy` which can be injected into the `JmxMetricWriter` (the default
+breaks up the metric name and tags the first two period-separated sections in a way that
+should make the metrics group nicely in JVisualVM or JConsole).
+
+
+
 [[production-ready-metric-aggregation]]
 === Aggregating metrics from multiple sources
 There is an `AggregateMetricReader` that you can use to consolidate metrics from different
