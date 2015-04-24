@@ -19,6 +19,7 @@ package org.springframework.boot.loader.jar;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
+import java.util.GregorianCalendar;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
@@ -145,7 +146,20 @@ public final class JarEntryData {
 	}
 
 	public long getTime() {
-		return Bytes.littleEndianValue(this.header, 12, 4);
+		long time = Bytes.littleEndianValue(this.header, 12, 2);
+
+		int seconds = (int) ((time << 1) & 0x3E);
+		int minutes = (int) ((time >> 5) & 0x3F);
+		int hours = (int) ((time >> 11) & 0x1F);
+
+		long date = Bytes.littleEndianValue(this.header, 14, 2);
+
+		int day = (int) (date & 0x1F);
+		int month = (int) ((date >> 5) & 0xF) - 1;
+		int year = (int) ((date >> 9) & 0x7F) + 1980;
+
+		return new GregorianCalendar(year, month, day, hours, minutes, seconds)
+				.getTimeInMillis();
 	}
 
 	public long getCrc() {

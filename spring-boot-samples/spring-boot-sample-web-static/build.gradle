@@ -19,7 +19,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse-wtp'
 apply plugin: 'idea'
-apply plugin: 'org.springframework.boot.spring-boot'
+apply plugin: 'spring-boot'
 apply plugin: 'war'
 
 mainClassName = "sample.ui.SampleWebStaticApplication"

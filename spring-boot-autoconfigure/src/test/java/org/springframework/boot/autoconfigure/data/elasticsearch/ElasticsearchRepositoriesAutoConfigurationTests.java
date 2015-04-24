@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.data.elasticsearch.city.CityReposi
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
@@ -50,6 +51,9 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
 		this.context.register(TestConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -63,6 +67,9 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
 		this.context.register(EmptyConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -75,6 +82,9 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
 		this.context.register(CustomizedConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,

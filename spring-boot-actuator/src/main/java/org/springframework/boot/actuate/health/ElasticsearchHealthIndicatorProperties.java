@@ -28,21 +28,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@ConfigurationProperties("management.health.elasticsearch")
+@ConfigurationProperties(prefix = "management.health.elasticsearch", ignoreUnknownFields = false)
 public class ElasticsearchHealthIndicatorProperties {
 
 	/**
-	 * Comma-separated index names
+	 * Comma-separated index names.
 	 */
 	private List<String> indices = new ArrayList<String>();
 
 	/**
-	 * The time, in milliseconds, to wait for a response from the cluster
+	 * The time, in milliseconds, to wait for a response from the cluster.
 	 */
 	private long responseTimeout = 100L;
 
 	public List<String> getIndices() {
 		return this.indices;
+	}
+
+	public void setIndices(List<String> indices) {
+		this.indices = indices;
 	}
 
 	public long getResponseTimeout() {

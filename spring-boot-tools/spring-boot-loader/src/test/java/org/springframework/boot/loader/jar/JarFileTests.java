@@ -171,6 +171,14 @@ public class JarFileTests {
 	}
 
 	@Test
+	public void getEntryTime() throws Exception {
+		java.util.jar.JarFile jdkJarFile = new java.util.jar.JarFile(this.rootJarFile);
+		assertThat(this.jarFile.getEntry("META-INF/MANIFEST.MF").getTime(),
+				equalTo(jdkJarFile.getEntry("META-INF/MANIFEST.MF").getTime()));
+		jdkJarFile.close();
+	}
+
+	@Test
 	public void close() throws Exception {
 		RandomAccessDataFile randomAccessDataFile = spy(new RandomAccessDataFile(
 				this.rootJarFile, 1));

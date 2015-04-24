@@ -19,6 +19,9 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -50,12 +53,17 @@ public class SpringApplicationHierarchyTests {
 				"--server.port=0");
 	}
 
-	@EnableAutoConfiguration
+	@EnableAutoConfiguration(exclude = { ElasticsearchAutoConfiguration.class,
+			ElasticsearchDataAutoConfiguration.class,
+			ElasticsearchRepositoriesAutoConfiguration.class })
 	public static class Child {
 	}
 
 	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
+			EndpointMBeanExportAutoConfiguration.class,
+			ElasticsearchAutoConfiguration.class,
+			ElasticsearchDataAutoConfiguration.class,
+			ElasticsearchRepositoriesAutoConfiguration.class })
 	public static class Parent {
 	}
 

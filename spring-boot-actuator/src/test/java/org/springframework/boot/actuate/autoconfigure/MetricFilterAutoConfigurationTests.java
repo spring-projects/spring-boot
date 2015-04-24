@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.NestedServletException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -53,6 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for {@link MetricFilterAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class MetricFilterAutoConfigurationTests {
 
@@ -138,6 +140,29 @@ public class MetricFilterAutoConfigurationTests {
 		context.close();
 	}
 
+	@Test
+	public void controllerMethodThatThrowsUnhandledException() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter).build();
+
+		try {
+			mvc.perform(get("/unhandledException")).andExpect(
+					status().isInternalServerError());
+		}
+		catch (NestedServletException ex) {
+			// Expected
+		}
+
+		verify(context.getBean(CounterService.class)).increment(
+				"status.500.unhandledException");
+		verify(context.getBean(GaugeService.class)).submit(
+				eq("response.unhandledException"), anyDouble());
+		context.close();
+	}
+
 	@Configuration
 	public static class Config {
 
@@ -168,5 +193,11 @@ class MetricFilterTestController {
 	@ResponseBody
 	public String testKnownPathWith404Response(@PathVariable String someVariable) {
 		return someVariable;
+	}
+
+	@ResponseBody
+	@RequestMapping("unhandledException")
+	public String testException() {
+		throw new RuntimeException();
 	}
 }

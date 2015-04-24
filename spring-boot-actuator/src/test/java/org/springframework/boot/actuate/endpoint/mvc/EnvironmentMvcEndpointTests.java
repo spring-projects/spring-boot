@@ -64,7 +64,7 @@ public class EnvironmentMvcEndpointTests {
 		this.context.getBean(EnvironmentEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		EnvironmentTestUtils.addEnvironment(
-				(ConfigurableApplicationContext) this.context, "foo:bar");
+				(ConfigurableApplicationContext) this.context, "foo:bar", "fool:baz");
 	}
 
 	@Test
@@ -83,6 +83,13 @@ public class EnvironmentMvcEndpointTests {
 	public void subWhenDisabled() throws Exception {
 		this.context.getBean(EnvironmentEndpoint.class).setEnabled(false);
 		this.mvc.perform(get("/env/foo")).andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void regex() throws Exception {
+		this.mvc.perform(get("/env/foo.*")).andExpect(status().isOk())
+				.andExpect(content().string(containsString("\"foo\":\"bar\"")))
+				.andExpect(content().string(containsString("\"fool\":\"baz\"")));
 	}
 
 	@Import({ EndpointWebMvcAutoConfiguration.class,

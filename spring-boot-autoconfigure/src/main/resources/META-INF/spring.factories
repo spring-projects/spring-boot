@@ -32,7 +32,6 @@ org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfiguration,\
-org.springframework.boot.autoconfigure.jta.JtaAutoConfiguration,\
 org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration,\
 org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
@@ -59,6 +58,8 @@ org.springframework.boot.autoconfigure.social.TwitterAutoConfiguration,\
 org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
 org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
+org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration,\
+org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\

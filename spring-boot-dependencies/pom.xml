@@ -47,6 +47,7 @@
 		<spring-boot.version>1.3.0.BUILD-SNAPSHOT</spring-boot.version>
 		<!-- Third Party -->
 		<activemq.version>5.11.1</activemq.version>
+		<antlr2.version>2.7.7</antlr2.version>
 		<aspectj.version>1.8.5</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
@@ -61,13 +62,13 @@
 		<derby.version>10.10.2.0</derby.version>
 		<dropwizard-metrics.version>3.1.1</dropwizard-metrics.version>
 		<ehcache.version>2.9.1</ehcache.version>
-		<flyway.version>3.2</flyway.version>
+		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.22</freemarker.version>
 		<elasticsearch.version>1.4.4</elasticsearch.version>
-		<gemfire.version>7.0.2</gemfire.version>
+		<gemfire.version>8.0.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.12</gradle.version>
-		<groovy.version>2.4.1</groovy.version>
+		<groovy.version>2.4.3</groovy.version>
 		<gson.version>2.3.1</gson.version>
 		<h2.version>1.4.185</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
@@ -84,7 +85,7 @@
 		<janino.version>2.6.1</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
-		<javax-mail.version>1.5.2</javax-mail.version>
+		<javax-mail.version>1.5.3</javax-mail.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<jdom2.version>2.0.6</jdom2.version>
@@ -127,7 +128,7 @@
 		<spring-loaded.version>1.2.1.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.3.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.1.0.RELEASE</spring-plugin.version>
-		<spring-security.version>3.2.7.RELEASE</spring-security.version>
+		<spring-security.version>4.0.0.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.3.RELEASE</spring-security-jwt.version>
 		<spring-social.version>1.1.0.RELEASE</spring-social.version>
 		<spring-social-facebook.version>1.1.1.RELEASE</spring-social-facebook.version>
@@ -136,12 +137,12 @@
 		<spring-ws.version>2.2.1.RELEASE</spring-ws.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
-		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
+		<thymeleaf-extras-springsecurity4.version>2.1.2.RELEASE</thymeleaf-extras-springsecurity4.version>
 		<thymeleaf-extras-conditionalcomments.version>2.1.1.RELEASE</thymeleaf-extras-conditionalcomments.version>
 		<thymeleaf-layout-dialect.version>1.2.7</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>1.3</thymeleaf-extras-data-attribute.version>
 		<tomcat.version>8.0.21</tomcat.version>
-		<undertow.version>1.1.3.Final</undertow.version>
+		<undertow.version>1.2.0.CR1</undertow.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
@@ -422,6 +423,11 @@
 			</dependency>
 
 			<!-- Third Party -->
+			<dependency>
+				<groupId>antlr</groupId>
+				<artifactId>antlr</artifactId>
+				<version>${antlr2.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-access</artifactId>
@@ -1562,8 +1568,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf.extras</groupId>
-				<artifactId>thymeleaf-extras-springsecurity3</artifactId>
-				<version>${thymeleaf-extras-springsecurity3.version}</version>
+				<artifactId>thymeleaf-extras-springsecurity4</artifactId>
+				<version>${thymeleaf-extras-springsecurity4.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>

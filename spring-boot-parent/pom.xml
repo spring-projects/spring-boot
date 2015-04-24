@@ -23,7 +23,6 @@
 		<json.version>20140107</json.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<json.version>20140107</json.version>
 		<maven.version>3.1.1</maven.version>
 	</properties>
 	<prerequisites>
@@ -47,9 +46,14 @@
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
 				will generally not need -->
 			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>18.0</version>
+			</dependency>
+			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>0.4.1.RELEASE</version>
+				<version>0.5.0.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>

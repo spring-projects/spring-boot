@@ -66,6 +66,7 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -148,7 +149,9 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		ManagementServerPort managementPort = ManagementServerPort
 				.get(this.applicationContext);
 		if (managementPort == ManagementServerPort.DIFFERENT
-				&& this.applicationContext instanceof WebApplicationContext) {
+				&& this.applicationContext instanceof EmbeddedWebApplicationContext
+				&& ((EmbeddedWebApplicationContext) this.applicationContext)
+						.getEmbeddedServletContainer() != null) {
 			createChildManagementContext();
 		}
 		if (managementPort == ManagementServerPort.SAME
@@ -375,8 +378,9 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			AnnotationAttributes annotationAttributes = AnnotationAttributes
-					.fromMap(metadata.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class
-							.getName()));
+					.fromMap(metadata
+							.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class
+									.getName()));
 			String endpointName = annotationAttributes.getString("value");
 			boolean enabledByDefault = annotationAttributes
 					.getBoolean("enabledByDefault");

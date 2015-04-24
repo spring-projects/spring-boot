@@ -47,7 +47,7 @@ public class CacheProperties {
 	 * Comma-separated list of cache names to create if supported by the underlying cache
 	 * manager. Usually, this disables the ability to create additional caches on-the-fly.
 	 */
-	private final List<String> cacheNames = new ArrayList<String>();
+	private List<String> cacheNames = new ArrayList<String>();
 
 	private final JCache jcache = new JCache();
 
@@ -71,6 +71,10 @@ public class CacheProperties {
 
 	public List<String> getCacheNames() {
 		return this.cacheNames;
+	}
+
+	public void setCacheNames(List<String> cacheNames) {
+		this.cacheNames = cacheNames;
 	}
 
 	public JCache getJcache() {

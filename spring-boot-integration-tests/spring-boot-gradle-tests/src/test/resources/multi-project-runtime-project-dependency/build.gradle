@@ -8,7 +8,7 @@ buildscript {
 }
 
 project(':projectA') {
-	apply plugin: 'org.springframework.boot.spring-boot'
+	apply plugin: 'spring-boot'
 	repositories {
 		mavenLocal()
 	}

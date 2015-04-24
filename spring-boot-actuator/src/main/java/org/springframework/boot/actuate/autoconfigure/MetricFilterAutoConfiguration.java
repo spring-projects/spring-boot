@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import org.springframework.web.util.UrlPathHelper;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnBean({ CounterService.class, GaugeService.class })
@@ -86,25 +87,19 @@ public class MetricFilterAutoConfiguration {
 			String suffix = helper.getPathWithinApplication(request);
 			StopWatch stopWatch = new StopWatch();
 			stopWatch.start();
+			int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
 			try {
 				chain.doFilter(request, response);
+				status = getStatus(response);
 			}
 			finally {
 				stopWatch.stop();
-				int status = getStatus(response);
 				Object bestMatchingPattern = request
 						.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-				HttpStatus httpStatus = HttpStatus.OK;
-				try {
-					httpStatus = HttpStatus.valueOf(status);
-				}
-				catch (Exception ex) {
-					// not convertible
-				}
 				if (bestMatchingPattern != null) {
 					suffix = fixSpecialCharacters(bestMatchingPattern.toString());
 				}
-				else if (httpStatus.is4xxClientError()) {
+				else if (is4xxClientError(status)) {
 					suffix = UNKNOWN_PATH_SUFFIX;
 				}
 				String gaugeKey = getKey("response" + suffix);
@@ -137,6 +132,17 @@ public class MetricFilterAutoConfiguration {
 			catch (Exception ex) {
 				return UNDEFINED_HTTP_STATUS;
 			}
+		}
+
+		private boolean is4xxClientError(int status) {
+			HttpStatus httpStatus = HttpStatus.OK;
+			try {
+				httpStatus = HttpStatus.valueOf(status);
+			}
+			catch (Exception ex) {
+				// not convertible
+			}
+			return httpStatus.is4xxClientError();
 		}
 
 		private String getKey(String string) {

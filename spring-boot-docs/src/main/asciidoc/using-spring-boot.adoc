@@ -5,8 +5,8 @@
 [partintro]
 --
 This section goes into more detail about how you should use Spring Boot. It covers topics
-such as build systems, auto-configuration and run/deployment options. We also cover some
-Spring Boot best practices. Although there is nothing particularly special about
+such as build systems, auto-configuration and how to run your applications. We also cover
+some Spring Boot best practices. Although there is nothing particularly special about
 Spring Boot (it is just another library that you can consume), there are a few
 recommendations that, when followed, will make your development process just a
 little easier.
@@ -147,7 +147,16 @@ Maven, there is no "`super parent`" to import to share some configuration.
 ----
 	apply plugin: 'java'
 
-	repositories { jcenter() }
+	repositories {
+ifeval::["{spring-boot-repo}" != "release"]
+		maven { url "http://repo.spring.io/snapshot" }
+		maven { url "http://repo.spring.io/milestone" }
+endif::[]
+ifeval::["{spring-boot-repo}" == "release"]
+		jcenter()
+endif::[]
+	}
+
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
 	}
@@ -163,16 +172,34 @@ managed by Spring Boot:
 [source,groovy,indent=0,subs="attributes"]
 ----
 	buildscript {
-		repositories { jcenter() }
+		repositories {
+ifeval::["{spring-boot-repo}" != "release"]
+			maven { url "http://repo.spring.io/snapshot" }
+			maven { url "http://repo.spring.io/milestone" }
+endif::[]
+ifeval::["{spring-boot-repo}" == "release"]
+			jcenter()
+endif::[]
+		}
+
 		dependencies {
 			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
 		}
 	}
 
 	apply plugin: 'java'
-	apply plugin: 'org.springframework.boot.spring-boot'
+	apply plugin: 'spring-boot'
 
-	repositories { jcenter() }
+	repositories {
+ifeval::["{spring-boot-repo}" != "release"]
+		maven { url "http://repo.spring.io/snapshot" }
+		maven { url "http://repo.spring.io/milestone" }
+endif::[]
+ifeval::["{spring-boot-repo}" == "release"]
+		jcenter()
+endif::[]
+	}
+
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web")
 		testCompile("org.springframework.boot:spring-boot-starter-test")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ public class InMemoryTraceRepository implements TraceRepository {
 
 	/**
 	 * Flag to say that the repository lists traces in reverse order.
-	 *
 	 * @param reverse flag value (default true)
 	 */
 	public void setReverse(boolean reverse) {
@@ -63,7 +62,7 @@ public class InMemoryTraceRepository implements TraceRepository {
 		Trace trace = new Trace(new Date(), map);
 		synchronized (this.traces) {
 			while (this.traces.size() >= this.capacity) {
-				this.traces.remove(this.capacity - 1);
+				this.traces.remove(this.reverse ? this.capacity - 1 : 0);
 			}
 			if (this.reverse) {
 				this.traces.add(0, trace);

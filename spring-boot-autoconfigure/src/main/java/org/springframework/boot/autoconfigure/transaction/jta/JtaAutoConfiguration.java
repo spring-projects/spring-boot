@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jta;
+package org.springframework.boot.autoconfigure.transaction.jta;
 
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 
@@ -31,6 +36,9 @@ import org.springframework.context.annotation.Import;
  */
 @ConditionalOnClass(javax.transaction.Transaction.class)
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
+@AutoConfigureBefore({ XADataSourceAutoConfiguration.class,
+		ActiveMQAutoConfiguration.class, HornetQAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class })
 @Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class,
 		AtomikosJtaConfiguration.class })
 @EnableConfigurationProperties(JtaProperties.class)

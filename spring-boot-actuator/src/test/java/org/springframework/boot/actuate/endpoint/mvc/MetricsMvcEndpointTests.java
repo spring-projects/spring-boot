@@ -16,8 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for {@link MetricsMvcEndpoint}
  *
  * @author Andy Wilkinson
+ * @author Sergei Egorov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { TestConfiguration.class })
@@ -96,6 +98,34 @@ public class MetricsMvcEndpointTests {
 		this.mvc.perform(get("/metrics/bar")).andExpect(status().isNotFound());
 	}
 
+	@Test
+	public void regexAll() throws Exception {
+		String expected = "{\"foo\":1,\"group1.a\":1,\"group1.b\":1,\"group2.a\":1,\"group2_a\":1}";
+		this.mvc.perform(get("/metrics/.*")).andExpect(status().isOk())
+				.andExpect(content().string(expected));
+	}
+
+	@Test
+	public void regexGroupDot() throws Exception {
+		String expected = "{\"group1.a\":1,\"group1.b\":1,\"group2.a\":1}";
+		this.mvc.perform(get("/metrics/group[0-9]+\\..*")).andExpect(status().isOk())
+				.andExpect(content().string(expected));
+	}
+
+	@Test
+	public void regexGroup1() throws Exception {
+		String expected = "{\"group1.a\":1,\"group1.b\":1}";
+		this.mvc.perform(get("/metrics/group1\\..*")).andExpect(status().isOk())
+				.andExpect(content().string(expected));
+	}
+
+	@Test
+	public void specificMetricWithDot() throws Exception {
+		this.mvc.perform(get("/metrics/group2.a")).andExpect(status().isOk())
+				.andExpect(content().string("1"));
+
+	}
+
 	@Import({ EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
 	@EnableWebMvc
@@ -108,7 +138,13 @@ public class MetricsMvcEndpointTests {
 
 				@Override
 				public Collection<Metric<?>> metrics() {
-					return Arrays.<Metric<?>> asList(new Metric<Integer>("foo", 1));
+					ArrayList<Metric<?>> metrics = new ArrayList<Metric<?>>();
+					metrics.add(new Metric<Integer>("foo", 1));
+					metrics.add(new Metric<Integer>("group1.a", 1));
+					metrics.add(new Metric<Integer>("group1.b", 1));
+					metrics.add(new Metric<Integer>("group2.a", 1));
+					metrics.add(new Metric<Integer>("group2_a", 1));
+					return Collections.unmodifiableList(metrics);
 				}
 
 			});

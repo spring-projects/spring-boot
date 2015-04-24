@@ -22,7 +22,7 @@ dependencies {
 	springBootStarter "org.springframework.boot:${project.starter}:${project.bootVersion}"
 }
 
-apply plugin: 'org.springframework.boot.spring-boot'
+apply plugin: 'spring-boot'
 
 task checkCommonsLogging {
 	doFirst {
