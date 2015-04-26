@@ -214,7 +214,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			classifier = "-" + classifier;
 		}
 		return new File(this.outputDirectory, this.finalName + classifier + "."
-				+ this.project.getPackaging());
+				+ this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
 	private LaunchScript getLaunchScript() throws IOException {
