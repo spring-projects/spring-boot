@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,7 +138,8 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 	protected void locateAndRegisterEndpoints() {
 		Map<String, Endpoint> endpoints = this.beanFactory.getBeansOfType(Endpoint.class);
 		for (Map.Entry<String, Endpoint> endpointEntry : endpoints.entrySet()) {
-			if (!this.registeredEndpoints.contains(endpointEntry.getValue())) {
+			if (!this.registeredEndpoints.contains(endpointEntry.getValue())
+					&& endpointEntry.getValue().isEnabled()) {
 				registerEndpoint(endpointEntry.getKey(), endpointEntry.getValue());
 				this.registeredEndpoints.add(endpointEntry.getValue());
 			}
