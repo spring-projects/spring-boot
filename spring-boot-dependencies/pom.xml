@@ -64,6 +64,7 @@
 		<ehcache.version>2.9.1</ehcache.version>
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.22</freemarker.version>
+		<ecj.version>4.4.2</ecj.version>
 		<elasticsearch.version>1.4.4</elasticsearch.version>
 		<gemfire.version>8.0.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
@@ -146,6 +147,7 @@
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
+		<xml-apis.version>1.3.04</xml-apis.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0.2</maven>
@@ -497,6 +499,12 @@
 				<groupId>com.gemstone.gemfire</groupId>
 				<artifactId>gemfire</artifactId>
 				<version>${gemfire.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework.data</groupId>
+						<artifactId>spring-data-gemfire</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.github.mxab.thymeleaf.extras</groupId>
@@ -994,6 +1002,11 @@
 				<groupId>org.crashub</groupId>
 				<artifactId>crash.shell</artifactId>
 				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jdt.core.compiler</groupId>
+				<artifactId>ecj</artifactId>
+				<version>${ecj.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
@@ -1585,6 +1598,11 @@
 				<groupId>wsdl4j</groupId>
 				<artifactId>wsdl4j</artifactId>
 				<version>${wsdl4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>xml-apis</groupId>
+				<artifactId>xml-apis</artifactId>
+				<version>${xml-apis.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
