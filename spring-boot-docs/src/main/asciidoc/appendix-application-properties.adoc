@@ -367,6 +367,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.rest.base-uri= # base URI against which the exporter should calculate its links
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
+	flyway.*= # Any public property available on the auto-configured `Flyway` object
 	flyway.check-location=false # check that migration scripts location exists
 	flyway.locations=classpath:db/migration # locations of migrations scripts
 	flyway.schemas= # schemas to update

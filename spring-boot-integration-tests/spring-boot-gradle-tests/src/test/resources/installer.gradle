@@ -9,7 +9,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'org.springframework.boot.spring-boot'
+apply plugin: 'spring-boot'
 
 group = 'installer'
 version = '0.0.0'
@@ -17,7 +17,7 @@ version = '0.0.0'
 install {
     repositories.mavenInstaller {
         pom.project {
-          parent {
+          parent { 
             groupId 'org.springframework.boot'
             artifactId 'spring-boot-starter-parent'
             version "${project.bootVersion}"

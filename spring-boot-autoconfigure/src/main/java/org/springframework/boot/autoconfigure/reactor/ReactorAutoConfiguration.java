@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import reactor.core.Environment;
-import reactor.core.Reactor;
+import reactor.Environment;
+import reactor.bus.EventBus;
 import reactor.spring.context.config.EnableReactor;
 
 /**
@@ -39,15 +39,16 @@ import reactor.spring.context.config.EnableReactor;
 public class ReactorAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(Reactor.class)
-	public Reactor rootReactor(Environment environment) {
-		return environment.getRootReactor();
+	@ConditionalOnMissingBean(EventBus.class)
+	public EventBus eventBus(Environment environment) {
+		return EventBus.create(environment);
 	}
 
 	@Configuration
 	@ConditionalOnMissingBean(Environment.class)
 	@EnableReactor
 	protected static class ReactorConfiguration {
+
 	}
 
 }

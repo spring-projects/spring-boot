@@ -7,7 +7,7 @@ buildscript {
 	}
 }
 
-apply plugin: 'org.springframework.boot.spring-boot'
+apply plugin: 'spring-boot'
 
 group = 'flatdir'
 version = '0.0.0'

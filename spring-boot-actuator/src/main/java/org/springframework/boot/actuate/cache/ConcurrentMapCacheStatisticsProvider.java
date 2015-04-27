@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.lifecycle;
+package org.springframework.boot.actuate.cache;
+
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
 
 /**
- * A simple MBean contract to control the lifecycle of a {@code SpringApplication} via
- * JMX. Intended for internal use only.
+ * {@link CacheStatisticsProvider} implementation for {@link ConcurrentMapCache}.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public interface SpringApplicationLifecycleMXBean {
+public class ConcurrentMapCacheStatisticsProvider implements
+		CacheStatisticsProvider<ConcurrentMapCache> {
 
-	/**
-	 * Specify if the application has fully started and is now ready.
-	 * @return {@code true} if the application is ready
-	 * @see org.springframework.boot.context.event.ApplicationReadyEvent
-	 */
-	boolean isReady();
-
-	/**
-	 * Shutdown the application.
-	 * @see org.springframework.context.ConfigurableApplicationContext#close()
-	 */
-	void shutdown();
+	@Override
+	public CacheStatistics getCacheStatistics(CacheManager cacheManager,
+			ConcurrentMapCache cache) {
+		DefaultCacheStatistics statistics = new DefaultCacheStatistics();
+		statistics.setSize((long) cache.getNativeCache().size());
+		return statistics;
+	}
 
 }

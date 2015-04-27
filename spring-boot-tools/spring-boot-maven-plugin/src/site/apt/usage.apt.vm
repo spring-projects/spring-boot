@@ -9,19 +9,8 @@
 
 Usage
 
-  The plugin provides several goals to work with a Spring Boot application:
-
-  * <<<repackage>>>: create a jar or war file that is auto-executable. It can replace the regular artifact or can be
-    attached to the build lifecyle with a separate <<classifier>>.
-
-  * <<<run>>>: run your Spring Boot application with several options to pass parameters to it.
-
-  * <<<start>>> and <<<stop>>>: integrate your Spring Boot application to the <<<integration-test>>> phase so that
-   the application starts before it.
-
-   []
-
-  Each goal is further described below.
+  The plugin offers a goal for repackaging an application as an executable JAR/WAR as well as a goal
+  for running the application.
 
 * Repackaging an application
 
@@ -151,49 +140,3 @@ mvn spring-boot:run
   in such a way that any dependency that is excluded in the plugin's configuration gets excluded
   from the classpath as well. See {{{./examples/exclude-dependency.html}Exclude a dependency}} for
   more details.
-
-* Working with integration tests
-
-  While you may start your Spring Boot application very easily from your test (or test suite) itself,
-  it may be desirable to handle that in the build itself. To make sure that the lifecycle of you Spring
-  Boot application is properly managed <around> your integration tests, you can use the <<<start>>> and
-  <<<stop>>> goals as desribed below:
-
----
-<build>
-  ...
-  <plugins>
-    ...
-    <plugin>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>${project.artifactId}</artifactId>
-      <version>${project.version}</version>
-      <executions>
-        <execution>
-          <id>pre-integration-test</id>
-          <goals>
-            <goal>start</goal>
-          </goals>
-        </execution>
-        <execution>
-          <id>post-integration-test</id>
-          <goals>
-            <goal>stop</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
-    ...
-  </plugins>
-  ...
-</build>
----
-
-  Such setup can now use the {{{http://maven.apache.org/surefire/maven-failsafe-plugin/}failsafe-plugin}} to
-  run your integration tests as you would expect.
-
-  For more detailed examples of how to configure this goal see:
-
-    * {{{./examples/it-random-port.html}Random port for integration tests}}
-
-    []

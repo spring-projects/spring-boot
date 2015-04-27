@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,11 +162,34 @@ public class JarWriter {
 			throws IOException {
 		File file = library.getFile();
 		JarEntry entry = new JarEntry(destination + library.getName());
+		entry.setTime(getNestedLibraryTime(file));
 		if (library.isUnpackRequired()) {
 			entry.setComment("UNPACK:" + FileUtils.sha1Hash(file));
 		}
 		new CrcAndSize(file).setupStoredEntry(entry);
 		writeEntry(entry, new InputStreamEntryWriter(new FileInputStream(file), true));
+	}
+
+	private long getNestedLibraryTime(File file) {
+		try {
+			JarFile jarFile = new JarFile(file);
+			try {
+				Enumeration<JarEntry> entries = jarFile.entries();
+				while (entries.hasMoreElements()) {
+					JarEntry entry = entries.nextElement();
+					if (!entry.isDirectory()) {
+						return entry.getTime();
+					}
+				}
+			}
+			finally {
+				jarFile.close();
+			}
+		}
+		catch (Exception ex) {
+			// Ignore and just use the source file timestamp
+		}
+		return file.lastModified();
 	}
 
 	/**
