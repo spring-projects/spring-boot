@@ -16,9 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.buffer.BufferCounterService;
@@ -170,11 +172,20 @@ public class MetricRepositoryAutoConfiguration {
 		@Autowired(required = false)
 		private List<MetricWriter> writers;
 
+		@Autowired(required = false)
+		@Qualifier("actuatorMetricRepository")
+		private MetricWriter actuatorMetricRepository;
+
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(MetricWriter.class)
 		public MetricCopyExporter messageChannelMetricExporter(MetricReader reader) {
-			return new MetricCopyExporter(reader, new CompositeMetricWriter(this.writers)) {
+			List<MetricWriter> writers = new ArrayList<MetricWriter>(this.writers);
+			if (this.actuatorMetricRepository != null
+					&& writers.contains(this.actuatorMetricRepository)) {
+				writers.remove(this.actuatorMetricRepository);
+			}
+			return new MetricCopyExporter(reader, new CompositeMetricWriter(writers)) {
 				@Scheduled(fixedDelayString = "${spring.metrics.export.delayMillis:5000}")
 				@Override
 				public void export() {
