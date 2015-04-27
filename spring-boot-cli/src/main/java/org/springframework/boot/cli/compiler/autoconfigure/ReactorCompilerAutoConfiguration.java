@@ -32,29 +32,28 @@ public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration 
 	@Override
 	public boolean matches(ClassNode classNode) {
 		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableReactor")
-				|| AstUtils.hasAtLeastOneFieldOrMethod(classNode, "Reactor");
+				|| AstUtils.hasAtLeastOneFieldOrMethod(classNode, "EventBus");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("reactor.core.Reactor")
+		dependencies.ifAnyMissingClasses("reactor.bus.EventBus")
 				.add("reactor-spring-context", false).add("reactor-spring-core", false)
-				.add("reactor-core");
+				.add("reactor-bus").add("reactor-stream");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("reactor.core.Reactor", "reactor.core.spec.Reactors",
-				"reactor.core.Observable", "reactor.event.Event",
-				"reactor.function.Functions", "reactor.function.Predicates",
-				"reactor.function.Suppliers",
-				"reactor.spring.context.annotation.Consumer",
+		imports.addImports("reactor.bus.Bus", "reactor.bus.Event",
+				"reactor.bus.EventBus", "reactor.fn.Function", "reactor.fn.Functions",
+				"reactor.fn.Predicate", "reactor.fn.Predicates", "reactor.fn.Supplier",
+				"reactor.fn.Suppliers", "reactor.spring.context.annotation.Consumer",
+				"reactor.spring.context.annotation.ReplyTo",
 				"reactor.spring.context.annotation.Selector",
 				"reactor.spring.context.annotation.SelectorType",
-				"reactor.spring.context.annotation.ReplyTo",
 				"reactor.spring.context.config.EnableReactor")
-				.addStarImports("reactor.event.selector.Selectors")
-				.addImport("ReactorEnvironment", "reactor.core.Environment");
+				.addStarImports("reactor.bus.selector.Selectors")
+				.addImport("ReactorEnvironment", "reactor.Environment");
 	}
 
 }

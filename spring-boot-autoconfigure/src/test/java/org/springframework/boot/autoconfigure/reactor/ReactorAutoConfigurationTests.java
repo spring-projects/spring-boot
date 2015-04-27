@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,43 +21,53 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import reactor.core.Environment;
-import reactor.core.Reactor;
-import reactor.core.spec.Reactors;
+import reactor.bus.EventBus;
+import reactor.core.Dispatcher;
+import reactor.core.dispatch.MpscDispatcher;
+import reactor.core.dispatch.RingBufferDispatcher;
 
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ReactorAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class ReactorAutoConfigurationTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void reactorIsAvailable() {
+	public void eventBusIsAvailable() {
 		this.context.register(ReactorAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(Reactor.class));
+		EventBus eventBus = this.context.getBean(EventBus.class);
+		assertThat(eventBus.getDispatcher(), instanceOf(RingBufferDispatcher.class));
 		this.context.close();
 	}
 
 	@Test
-	public void customReactor() {
+	public void customEventBus() {
 		this.context.register(TestConfiguration.class, ReactorAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(Reactor.class));
+		EventBus eventBus = this.context.getBean(EventBus.class);
+		assertThat(eventBus.getDispatcher(), instanceOf(MpscDispatcher.class));
 		this.context.close();
 	}
 
 	@Configuration
 	protected static class TestConfiguration {
 
+		@Bean(destroyMethod = "shutdown")
+		public Dispatcher dispatcher() {
+			return new MpscDispatcher("test");
+		}
+
 		@Bean
-		public Reactor reactor(Environment env) {
-			return Reactors.reactor().env(env).dispatcher(Environment.RING_BUFFER).get();
+		public EventBus customEventBus() {
+			return EventBus.create(dispatcher());
 		}
 	}
 
