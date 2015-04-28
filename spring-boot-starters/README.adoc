@@ -39,4 +39,7 @@ do as they were designed before this was clarified.
 
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
 | https://github.com/domix/spring-boot-starter-jade4j
+
+| https://github.com/jknack/handlebars.java[Handlebars Templates] (Handlebars)
+| https://github.com/allegro/handlebars-spring-boot-starter
 |===
