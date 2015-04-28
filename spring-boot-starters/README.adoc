@@ -22,6 +22,9 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
+| https://github.com/jknack/handlebars.java[Handlebars]
+| https://github.com/allegro/handlebars-spring-boot-starter
+
 | https://vaadin.com/[Vaadin]
 | https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
 
@@ -39,4 +42,5 @@ do as they were designed before this was clarified.
 
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
 | https://github.com/domix/spring-boot-starter-jade4j
+
 |===
