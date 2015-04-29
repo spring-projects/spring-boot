@@ -58,6 +58,17 @@ public class PropertySourcesPropertyValuesTests {
 	}
 
 	@Test
+	public void testTypesPreserved() {
+		this.propertySources.replace(
+				"map",
+				new MapPropertySource("map", Collections.<String, Object> singletonMap(
+						"name", 123)));
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+				this.propertySources);
+		assertEquals(123, propertyValues.getPropertyValues()[0].getValue());
+	}
+
+	@Test
 	public void testSize() {
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
