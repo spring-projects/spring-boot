@@ -623,8 +623,8 @@ Example in Gradle:
 	}
 
 	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
-		compile 'org.springframework.boot:spring-boot-starter-undertow:{spring-boot-version}")
+		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
+		compile("org.springframework.boot:spring-boot-starter-undertow:{spring-boot-version}")
 		// ...
 	}
 ----
