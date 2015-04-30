@@ -45,8 +45,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link EndpointMBeanExporter}
@@ -79,6 +81,36 @@ public class EndpointMBeanExporterTests {
 		assertNotNull(mbeanInfo);
 		assertEquals(3, mbeanInfo.getOperations().length);
 		assertEquals(3, mbeanInfo.getAttributes().length);
+	}
+
+	@Test
+	public void testSkipRegistrationOfDisabledEndpoint() throws Exception {
+		this.context = new GenericApplicationContext();
+		this.context.registerBeanDefinition("endpointMbeanExporter",
+				new RootBeanDefinition(EndpointMBeanExporter.class));
+		MutablePropertyValues mvp = new MutablePropertyValues();
+		mvp.add("enabled", Boolean.FALSE);
+		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
+				TestEndpoint.class, null, mvp));
+		this.context.refresh();
+		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
+		assertFalse(mbeanExporter.getServer().isRegistered(
+				getObjectName("endpoint1", this.context)));
+	}
+
+	@Test
+	public void testRegistrationOfEnabledEndpoint() throws Exception {
+		this.context = new GenericApplicationContext();
+		this.context.registerBeanDefinition("endpointMbeanExporter",
+				new RootBeanDefinition(EndpointMBeanExporter.class));
+		MutablePropertyValues mvp = new MutablePropertyValues();
+		mvp.add("enabled", Boolean.TRUE);
+		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
+				TestEndpoint.class, null, mvp));
+		this.context.refresh();
+		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
+		assertTrue(mbeanExporter.getServer().isRegistered(
+				getObjectName("endpoint1", this.context)));
 	}
 
 	@Test

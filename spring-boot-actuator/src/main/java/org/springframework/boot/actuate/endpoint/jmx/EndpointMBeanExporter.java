@@ -154,7 +154,8 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 	protected void locateAndRegisterEndpoints() {
 		Map<String, Endpoint> endpoints = this.beanFactory.getBeansOfType(Endpoint.class);
 		for (Map.Entry<String, Endpoint> endpointEntry : endpoints.entrySet()) {
-			if (!this.registeredEndpoints.contains(endpointEntry.getValue())) {
+			if (!this.registeredEndpoints.contains(endpointEntry.getValue())
+					&& endpointEntry.getValue().isEnabled()) {
 				registerEndpoint(endpointEntry.getKey(), endpointEntry.getValue());
 				this.registeredEndpoints.add(endpointEntry.getValue());
 			}
