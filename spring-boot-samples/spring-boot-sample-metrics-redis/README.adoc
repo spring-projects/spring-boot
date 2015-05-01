@@ -1,0 +1,24 @@
+Spring Boot sample with Redis export for metrics.
+
+Start redis, e.g. with [Docker Compose]()
+
+[source,indent=0]
+----
+	$ docker-compose up
+----
+
+Run the app and ping the home page (http://localhost:8080) a few times. Go and look at
+the result in Redis, e.g.
+
+[source,indent=0]
+----
+	$ redis-cli
+	127.0.0.1:6379> keys *
+	1) "keys.spring.metrics"
+	2) "spring.metrics.counter.status.200.root"
+	3) "spring.metrics.gauge.response.root"
+	127.0.0.1:6379> zrange keys.spring.metrics 0 0 WITHSCORES
+	1) "spring.metrics.counter.status.200.root"
+	2) "4"
+----
+
