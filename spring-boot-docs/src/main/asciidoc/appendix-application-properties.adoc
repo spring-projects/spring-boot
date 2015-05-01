@@ -197,6 +197,7 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.expose-session-attributes=false
 	spring.freemarker.expose-spring-macro-helpers=false
 	spring.freemarker.prefix=
+	spring.freemarker.prefer-file-system-access=true # prefer file system access for template loading
 	spring.freemarker.request-context-attribute=
 	spring.freemarker.settings.*=
 	spring.freemarker.suffix=.ftl
