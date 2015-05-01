@@ -22,6 +22,7 @@ import java.util.Iterator;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
+import org.springframework.boot.actuate.metrics.writer.WriterUtils;
 import org.springframework.util.PatternMatchUtils;
 
 /**
@@ -77,6 +78,11 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 		for (Metric<?> value : values) {
 			this.writer.set(value);
 		}
+	}
+
+	@Override
+	public void flush() {
+		WriterUtils.flush(this.writer);
 	}
 
 	private class PatternMatchingIterator implements Iterator<Metric<?>> {

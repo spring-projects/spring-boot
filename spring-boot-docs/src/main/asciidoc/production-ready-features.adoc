@@ -957,6 +957,38 @@ MetricWriter metricWriter() {
 
 
 
+[[production-ready-metric-writers-export-to-open-tdsb]]
+==== Example: Export to Open TSDB
+If you provide a `@Bean` of type `OpenTsdbHttpMetricWriter` the metrics are exported to
+http://opentsdb.net/[Open TSDB] for aggregation. The `OpenTsdbHttpMetricWriter`  has a
+`url` property that you need to set to the Open TSDB "/put" endpoint, e.g.
+`http://localhost:4242/api/put`). It also has a  `namingStrategy` that you can customize
+or configure to make the metrics match the data structure you need on the server. By
+default it just passes through the metric name as an Open TSDB metric name and adds a tag
+"prefix" with value "spring.X" where "X" is the object hash of the default naming
+strategy. Thus, after running the application and generating some metrics (e.g. by pinging
+the home page) you can inspect the metrics in the TDB UI (http://localhost:4242 by
+default). Example:
+
+----
+curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
+[
+	{
+		"metric": "counter.status.200.root",
+		"tags": {
+			"prefix": "spring.b968a76"
+		},
+		"aggregateTags": [],
+		"dps": {
+			"1430492872": 2,
+			"1430492875": 6
+		}
+  	}
+]
+----
+
+
+
 [[production-ready-metric-writers-export-to-statsd]]
 ==== Example: Export to Statsd
 If you provide a `@Bean` of type `StatsdMetricWriter`  the metrics are exported to a
@@ -975,7 +1007,7 @@ private int port;
 
 @Bean
 MetricWriter metricWriter() {
-  return new StatsdMetricWriter(prefix, host, port);
+	return new StatsdMetricWriter(prefix, host, port);
 }
 ----
 
@@ -991,7 +1023,7 @@ tool that understands JMX (e.g. JConsole or JVisualVM). Example:
 ----
 @Bean
 MetricWriter metricWriter(MBeanExporter exporter) {
-  return new JmxMetricWriter(exporter);
+	return new JmxMetricWriter(exporter);
 }
 ----
 

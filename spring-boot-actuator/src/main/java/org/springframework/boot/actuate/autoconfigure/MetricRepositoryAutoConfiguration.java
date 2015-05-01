@@ -134,6 +134,7 @@ public class MetricRepositoryAutoConfiguration {
 		}
 
 		@Bean
+		@Primary
 		@ConditionalOnMissingBean
 		public BufferMetricReader metricReader(CounterBuffers counters,
 				GaugeBuffers gauges) {
@@ -181,7 +182,7 @@ public class MetricRepositoryAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(MetricWriter.class)
-		public MetricCopyExporter messageChannelMetricExporter(MetricReader reader) {
+		public MetricCopyExporter metricWritersMetricExporter(MetricReader reader) {
 			List<MetricWriter> writers = new ArrayList<MetricWriter>(this.writers);
 			if (this.actuatorMetricRepository != null
 					&& writers.contains(this.actuatorMetricRepository)) {

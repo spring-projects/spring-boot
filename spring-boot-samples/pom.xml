@@ -52,6 +52,7 @@
 		<module>spring-boot-sample-jta-bitronix</module>
 		<module>spring-boot-sample-jta-jndi</module>
 		<module>spring-boot-sample-liquibase</module>
+		<module>spring-boot-sample-metrics-opentsdb</module>
 		<module>spring-boot-sample-metrics-redis</module>
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
