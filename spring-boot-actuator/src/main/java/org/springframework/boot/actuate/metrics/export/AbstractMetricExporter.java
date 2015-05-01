@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.util.StringUtils;
 
@@ -33,6 +35,8 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  */
 public abstract class AbstractMetricExporter implements Exporter {
+
+	private static final Log logger = LogFactory.getLog(AbstractMetricExporter.class);
 
 	private volatile AtomicBoolean processing = new AtomicBoolean(false);
 
@@ -86,9 +90,23 @@ public abstract class AbstractMetricExporter implements Exporter {
 				}
 			}
 		}
+		catch (Exception e) {
+			logger.warn("Could not write to MetricWriter: " + e.getClass() + ": "
+					+ e.getMessage());
+		}
 		finally {
+			try {
+				flush();
+			}
+			catch (Exception e) {
+				logger.warn("Could not flush MetricWriter: " + e.getClass() + ": "
+						+ e.getMessage());
+			}
 			this.processing.set(false);
 		}
+	}
+
+	public void flush() {
 	}
 
 	/**
