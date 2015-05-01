@@ -48,6 +48,12 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 	 */
 	private String[] templateLoaderPath = new String[] { DEFAULT_TEMPLATE_LOADER_PATH };
 
+	/**
+	 * Prefer file system access for template loading. File system access enables hot
+	 * detection of template changes.
+	 */
+	private boolean preferFileSystemAccess = true;
+
 	public FreeMarkerProperties() {
 		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
 	}
@@ -62,6 +68,14 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 
 	public String[] getTemplateLoaderPath() {
 		return this.templateLoaderPath;
+	}
+
+	public boolean isPreferFileSystemAccess() {
+		return this.preferFileSystemAccess;
+	}
+
+	public void setPreferFileSystemAccess(boolean preferFileSystemAccess) {
+		this.preferFileSystemAccess = preferFileSystemAccess;
 	}
 
 	public void setTemplateLoaderPath(String... templateLoaderPaths) {
