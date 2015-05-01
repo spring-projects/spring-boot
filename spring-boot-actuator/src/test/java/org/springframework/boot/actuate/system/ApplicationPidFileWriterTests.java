@@ -16,6 +16,12 @@
 
 package org.springframework.boot.actuate.system;
 
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
 import java.io.File;
 import java.io.FileReader;
 
@@ -23,22 +29,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.util.FileCopyUtils;
-
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ApplicationPidFileWriter}.
@@ -46,6 +48,7 @@ import static org.mockito.Mockito.mock;
  * @author Jakub Kubrynski
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Tomasz Przybyla
  */
 public class ApplicationPidFileWriterTests {
 
@@ -55,6 +58,9 @@ public class ApplicationPidFileWriterTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
 
 	@Before
 	@After
@@ -85,14 +91,8 @@ public class ApplicationPidFileWriterTests {
 	@Test
 	public void overridePidFileWithSpring() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		ConfigurableEnvironment environment = new StandardEnvironment();
-		MockPropertySource propertySource = new MockPropertySource();
-		propertySource.setProperty("spring.pidfile", file.getAbsolutePath());
-		environment.getPropertySources().addLast(propertySource);
-		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
-		given(context.getEnvironment()).willReturn(environment);
-		ApplicationPreparedEvent event = new ApplicationPreparedEvent(
-				new SpringApplication(), new String[] {}, context);
+		SpringApplicationEvent event = createPreparedEvent("spring.pidfile",
+				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
 		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
@@ -101,12 +101,8 @@ public class ApplicationPidFileWriterTests {
 	@Test
 	public void differentEventTypes() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		ConfigurableEnvironment environment = new StandardEnvironment();
-		MockPropertySource propertySource = new MockPropertySource();
-		propertySource.setProperty("spring.pidfile", file.getAbsolutePath());
-		environment.getPropertySources().addLast(propertySource);
-		ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
-				new SpringApplication(), new String[] {}, environment);
+		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pidfile",
+				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
 		assertThat(FileCopyUtils.copyToString(new FileReader(file)), isEmptyString());
@@ -125,4 +121,63 @@ public class ApplicationPidFileWriterTests {
 		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
 	}
 
+	@Test
+	public void continueWhenPidFileIsReadOnly() throws Exception {
+		File file = temporaryFolder.newFile();
+		file.setReadOnly();
+		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+		listener.onApplicationEvent(EVENT);
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)), isEmptyString());
+	}
+
+	@Test
+	public void throwWhenPidFileIsReadOnly() throws Exception {
+		File file = temporaryFolder.newFile();
+		file.setReadOnly();
+		System.setProperty("PIDFILE_CONTINUE_ON_ERROR", "false");
+		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+		exception.expect(IllegalStateException.class);
+		exception.expectMessage("Pid file not created");
+		listener.onApplicationEvent(EVENT);
+	}
+
+	@Test
+	public void throwWhenPidFileIsReadOnlyWithSpring() throws Exception {
+		File file = temporaryFolder.newFile();
+		file.setReadOnly();
+		SpringApplicationEvent event = createPreparedEvent(
+				"spring.pidfile.continue-on-error", "false");
+		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
+		exception.expect(IllegalStateException.class);
+		exception.expectMessage("Pid file not created");
+		listener.onApplicationEvent(event);
+	}
+
+	private SpringApplicationEvent createEnvironmentPreparedEvent(String propName,
+			String propValue) {
+		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
+		return new ApplicationEnvironmentPreparedEvent(new SpringApplication(),
+				new String[] {}, environment);
+	}
+
+	private SpringApplicationEvent createPreparedEvent(String propName, String propValue) {
+		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
+		given(context.getEnvironment()).willReturn(environment);
+		return new ApplicationPreparedEvent(new SpringApplication(), new String[] {},
+				context);
+	}
+
+	private ConfigurableEnvironment createEnvironment(String propName, String propValue) {
+		MockPropertySource propertySource = mockPropertySource(propName, propValue);
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		environment.getPropertySources().addLast(propertySource);
+		return environment;
+	}
+
+	private MockPropertySource mockPropertySource(String name, String value) {
+		MockPropertySource propertySource = new MockPropertySource();
+		propertySource.setProperty(name, value);
+		return propertySource;
+	}
 }
