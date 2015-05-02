@@ -19,12 +19,12 @@ package org.springframework.boot.autoconfigure.social;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Properties for Spring Social LinkedIn.
+ * Properties for Spring Social Google.
  *
- * @author Stephane Nicoll
- * @since 1.2.0
+ * @author Yuan Ji
+ * @since 1.3.0
  */
-@ConfigurationProperties("spring.social.linkedin")
-public class LinkedInProperties extends SocialProperties {
+@ConfigurationProperties("spring.social.google")
+public class GoogleProperties extends SocialProperties {
 
 }

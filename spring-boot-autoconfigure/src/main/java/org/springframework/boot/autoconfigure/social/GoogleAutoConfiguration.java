@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,53 +35,54 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.GenericConnectionStatusView;
-import org.springframework.social.linkedin.api.LinkedIn;
-import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
+import org.springframework.social.google.api.Google;
+import org.springframework.social.google.api.impl.GoogleTemplate;
+import org.springframework.social.google.connect.GoogleConnectionFactory;
 import org.springframework.web.servlet.View;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
- * LinkedIn.
+ * Google.
  *
- * @author Craig Walls
- * @since 1.1.0
+ * @author Yuan Ji
+ * @since 1.3.0
  */
 @Configuration
-@ConditionalOnClass({ SocialConfigurerAdapter.class, LinkedInConnectionFactory.class })
-@ConditionalOnProperty(prefix = "spring.social.linkedin", name = "app-id")
+@ConditionalOnClass({ SocialConfigurerAdapter.class, GoogleConnectionFactory.class })
+@ConditionalOnProperty(prefix = "spring.social.google", name = "app-id")
 @AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-public class LinkedInAutoConfiguration {
-
+public class GoogleAutoConfiguration {
+	
 	@Configuration
 	@EnableSocial
-	@EnableConfigurationProperties(LinkedInProperties.class)
+	@EnableConfigurationProperties(GoogleProperties.class)
 	@ConditionalOnWebApplication
-	protected static class LinkedInConfigurerAdapter extends SocialAutoConfigurerAdapter {
+	protected static class GoogleConfigurerAdapter extends SocialAutoConfigurerAdapter {
 
 		@Autowired
-		private LinkedInProperties properties;
+		private GoogleProperties properties;
 
 		@Bean
-		@ConditionalOnMissingBean(LinkedIn.class)
+		@ConditionalOnMissingBean(Google.class)
 		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
-		public LinkedIn linkedin(ConnectionRepository repository) {
-			Connection<LinkedIn> connection = repository
-					.findPrimaryConnection(LinkedIn.class);
-			return connection != null ? connection.getApi() : null;
+		public Google google(ConnectionRepository repository) {
+			Connection<Google> connection = repository
+					.findPrimaryConnection(Google.class);
+			return connection != null ? connection.getApi() : new GoogleTemplate();
 		}
 
-		@Bean(name = { "connect/linkedinConnect", "connect/linkedinConnected" })
+		@Bean(name = { "connect/googleConnect", "connect/googleConnected" })
 		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
-		public View linkedInConnectView() {
-			return new GenericConnectionStatusView("linkedin", "LinkedIn");
+		public View googleConnectView() {
+			return new GenericConnectionStatusView("google", "Google");
 		}
 
 		@Override
 		protected ConnectionFactory<?> createConnectionFactory() {
-			return new LinkedInConnectionFactory(this.properties.getAppId(),
+			return new GoogleConnectionFactory(this.properties.getAppId(),
 					this.properties.getAppSecret());
 		}
-	}
 
+	}
 }

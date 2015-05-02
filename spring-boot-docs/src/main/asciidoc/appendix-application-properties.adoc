@@ -473,6 +473,10 @@ content into your application; rather pick only the properties that you need.
 	spring.social.facebook.app-id= # your application's Facebook App ID
 	spring.social.facebook.app-secret= # your application's Facebook App Secret
 
+	# SPRING SOCIAL GOOGLE ({sc-spring-boot-autoconfigure}/social/GoogleAutoConfiguration.{sc-ext}[GoogleAutoConfiguration])
+	spring.social.google.app-id= # your application's Google App ID
+	spring.social.google.app-secret= # your application's Google App Secret
+
 	# SPRING SOCIAL LINKEDIN ({sc-spring-boot-autoconfigure}/social/LinkedInAutoConfiguration.{sc-ext}[LinkedInAutoConfiguration])
 	spring.social.linkedin.app-id= # your application's LinkedIn App ID
 	spring.social.linkedin.app-secret= # your application's LinkedIn App Secret

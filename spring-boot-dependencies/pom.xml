@@ -133,6 +133,7 @@
 		<spring-security-jwt.version>1.0.3.RELEASE</spring-security-jwt.version>
 		<spring-social.version>1.1.0.RELEASE</spring-social.version>
 		<spring-social-facebook.version>1.1.1.RELEASE</spring-social-facebook.version>
+		<spring-social-google.version>1.0.0.RELEASE</spring-social-google.version>
 		<spring-social-linkedin.version>1.0.1.RELEASE</spring-social-linkedin.version>
 		<spring-social-twitter.version>1.1.0.RELEASE</spring-social-twitter.version>
 		<spring-ws.version>2.2.1.RELEASE</spring-ws.version>
@@ -366,6 +367,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-social-facebook</artifactId>
 				<version>1.3.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-social-google</artifactId>
+				<version>1.2.2.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -1519,6 +1525,11 @@
 				<groupId>org.springframework.social</groupId>
 				<artifactId>spring-social-facebook-web</artifactId>
 				<version>${spring-social-facebook.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.social</groupId>
+				<artifactId>spring-social-google</artifactId>
+				<version>${spring-social-google.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.social</groupId>
