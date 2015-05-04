@@ -37,6 +37,7 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link ProjectGenerationRequest}
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class ProjectGenerationRequestTests {
 
@@ -110,6 +111,24 @@ public class ProjectGenerationRequestTests {
 		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
 				+ "/foo?dependencies=data-rest&type=custom"),
 				this.request.generateUrl(metadata));
+	}
+
+	@Test
+	public void customLanguage() {
+		this.request.setLanguage("java");
+		assertEquals(createDefaultUrl("?language=java&type=test-type"),
+			this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
+	public void customProjectInfo() {
+		this.request.setGroupId("org.test");
+		this.request.setArtifactId("demo");
+		this.request.setVersion("0.0.1-SNAPSHOT");
+		this.request.setDescription("Spring Boot Demo");
+		assertEquals(createDefaultUrl("?artifactId=demo&description=Spring+Boot+Demo"
+				+ "&groupId=org.test&type=test-type&version=0.0.1-SNAPSHOT"),
+			this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
