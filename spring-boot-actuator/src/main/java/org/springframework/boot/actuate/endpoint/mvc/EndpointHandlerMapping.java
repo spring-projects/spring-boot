@@ -89,7 +89,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	@Override
-	protected void registerHandlerMethod(Object handler, Method method,
+	public void registerHandlerMethod(Object handler, Method method,
 			RequestMappingInfo mapping) {
 		if (mapping == null) {
 			return;
