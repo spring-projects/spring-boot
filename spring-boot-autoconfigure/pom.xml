@@ -236,6 +236,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.infinispan</groupId>
+			<artifactId>infinispan-spring4</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
 			<optional>true</optional>
