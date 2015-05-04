@@ -381,6 +381,32 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
+	public void infinispanCacheWithCaches() {
+		SpringEmbeddedCacheManager cacheManager = null;
+		try {
+			load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
+					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+			cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
+		} finally {
+			cacheManager.stop();
+		}
+	}
+
+	@Test
+	public void infinispanCacheWithConfig() {
+		SpringEmbeddedCacheManager cacheManager = null;
+		try {
+			load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
+					"spring.cache.config=infinispan.xml");
+			cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
+		} finally {
+			cacheManager.stop();
+		}
+	}
+
+	@Test
 	public void jCacheCacheWithCachesAndCustomizer() {
 		String cachingProviderFqn = HazelcastCachingProvider.class.getName();
 		load(JCacheWithCustomizerConfiguration.class, "spring.cache.type=jcache",

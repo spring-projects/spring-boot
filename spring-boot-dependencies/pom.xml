@@ -82,6 +82,7 @@
 		<hsqldb.version>2.3.2</hsqldb.version>
 		<httpasyncclient.version>4.0.2</httpasyncclient.version>
 		<httpclient.version>4.4.1</httpclient.version>
+		<infinispan.version>7.2.1.Final</infinispan.version>
 		<jackson.version>2.5.1</jackson.version>
 		<janino.version>2.6.1</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
@@ -1275,6 +1276,11 @@
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
 				<version>${hsqldb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.infinispan</groupId>
+				<artifactId>infinispan-spring4</artifactId>
+				<version>${infinispan.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.javassist</groupId>

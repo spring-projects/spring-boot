@@ -42,6 +42,11 @@ public enum CacheType {
 	HAZELCAST(HazelcastCacheConfiguration.class),
 
 	/**
+	 * Infinispan backed caching.
+	 */
+	INFINISPAN(InfinispanCacheConfiguration.class),
+
+	/**
 	 * JCache (JSR-107) backed caching.
 	 */
 	JCACHE(JCacheCacheConfiguration.class),
