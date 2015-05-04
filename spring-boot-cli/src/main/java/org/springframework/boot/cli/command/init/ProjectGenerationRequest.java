@@ -59,6 +59,18 @@ class ProjectGenerationRequest {
 
 	private String type;
 
+	private String language;
+
+	private String groupId;
+
+	private String artifactId;
+
+	private String name;
+
+	private String version;
+
+	private String description;
+
 	/**
 	 * The URL of the service to use.
 	 * @see #DEFAULT_SERVICE_URL
@@ -200,6 +212,72 @@ class ProjectGenerationRequest {
 	}
 
 	/**
+	 * The programming language to use or {@code null} if it should not be customized.
+	 */
+	public String getLanguage() {
+		return this.language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	/**
+	 * The groupId to use or {@code null} if it should not be customized.
+	 */
+	public String getGroupId() {
+		return this.groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+
+	/**
+	 * The artifactId to use or {@code null} if it should not be customized.
+	 */
+	public String getArtifactId() {
+		return this.artifactId;
+	}
+
+	public void setArtifactId(String artifactId) {
+		this.artifactId = artifactId;
+	}
+
+	/**
+	 * The name to use or {@code null} if it should not be customized.
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * The artifact version to use or {@code null} if it should not be customized.
+	 */
+	public String getVersion() {
+		return this.version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	/**
+	 *
+	 */
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
 	 * Generates the URI to use to generate a project represented by this request
 	 * @param metadata the metadata that describes the service
 	 * @return the project generation URI
@@ -217,6 +295,9 @@ class ProjectGenerationRequest {
 			sb.append(projectType.getAction());
 			builder.setPath(sb.toString());
 
+			if (this.artifactId != null) {
+				builder.setParameter("artifactId", this.artifactId);
+			}
 			if (this.bootVersion != null) {
 				builder.setParameter("bootVersion", this.bootVersion);
 			}
@@ -225,14 +306,29 @@ class ProjectGenerationRequest {
 				builder.setParameter("dependencies",
 						StringUtils.collectionToCommaDelimitedString(this.dependencies));
 			}
+			if (this.description != null) {
+				builder.setParameter("description", this.description);
+			}
+			if (this.groupId != null) {
+				builder.setParameter("groupId", this.groupId);
+			}
 			if (this.javaVersion != null) {
 				builder.setParameter("javaVersion", this.javaVersion);
+			}
+			if (this.language != null) {
+				builder.setParameter("language", this.language);
+			}
+			if (this.name != null) {
+				builder.setParameter("name", this.name);
 			}
 			if (this.packaging != null) {
 				builder.setParameter("packaging", this.packaging);
 			}
 			if (this.type != null) {
 				builder.setParameter("type", projectType.getId());
+			}
+			if (this.version != null) {
+				builder.setParameter("version", this.version);
 			}
 
 			return builder.build();
