@@ -16,8 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import javax.servlet.Filter;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
@@ -31,6 +35,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -38,7 +43,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.hamcrest.Matchers.greaterThan;
@@ -183,6 +193,71 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
 				this.context.getBean(AuthenticationManager.class));
+	}
+
+	// gh-2466
+	@Test
+	public void realmSameForManagement() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(AuthenticationConfig.class,
+				SecurityAutoConfiguration.class,
+				ManagementSecurityAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+
+		MockMvc mockMvc = MockMvcBuilders
+				.webAppContextSetup((WebApplicationContext) this.context)
+				.addFilters(
+						this.context.getBean("springSecurityFilterChain", Filter.class))
+				.build();
+
+
+		// no user (Main)
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(
+						MockMvcResultMatchers.header().string("www-authenticate",
+								Matchers.containsString("realm=\"Spring\"")));
+
+		// invalid user (Main)
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/").header("authorization", "Basic xxx"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(
+						MockMvcResultMatchers.header().string("www-authenticate",
+								Matchers.containsString("realm=\"Spring\"")));
+
+		// no user (Management)
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/beans"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(
+						MockMvcResultMatchers.header().string("www-authenticate",
+								Matchers.containsString("realm=\"Spring\"")));
+
+		// invalid user (Management)
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/beans").header("authorization", "Basic xxx"))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(
+						MockMvcResultMatchers.header().string("www-authenticate",
+								Matchers.containsString("realm=\"Spring\"")));
+	}
+
+	@EnableGlobalAuthentication
+	@Configuration
+	static class AuthenticationConfig {
+		@Autowired
+		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+			auth
+				.inMemoryAuthentication()
+					.withUser("user").password("password").roles("USER");
+		}
 	}
 
 	@Configuration

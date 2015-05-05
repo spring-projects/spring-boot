@@ -108,7 +108,7 @@ public class ApplicationPidFileWriter implements
 					writePidFile(event);
 				}
 				catch (Exception ex) {
-					logger.warn(String.format("Cannot create pid file %s", this.file));
+					logger.warn(String.format("Cannot create pid file %s", this.file), ex);
 				}
 			}
 		}

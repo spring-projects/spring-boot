@@ -229,13 +229,14 @@ public class ManagementSecurityAutoConfiguration {
 				if (this.security.isRequireSsl()) {
 					http.requiresChannel().anyRequest().requiresSecure();
 				}
-				http.exceptionHandling().authenticationEntryPoint(entryPoint());
+				AuthenticationEntryPoint entryPoint = entryPoint();
+				http.exceptionHandling().authenticationEntryPoint(entryPoint);
 				paths = this.server.getPathsArray(paths);
 				http.requestMatchers().antMatchers(paths);
 				String[] endpointPaths = this.server.getPathsArray(getEndpointPaths(
 						this.endpointHandlerMapping, false));
 				configureAuthorizeRequests(endpointPaths, http.authorizeRequests());
-				http.httpBasic();
+				http.httpBasic().authenticationEntryPoint(entryPoint);
 				// No cookies for management endpoints by default
 				http.csrf().disable();
 				http.sessionManagement().sessionCreationPolicy(
