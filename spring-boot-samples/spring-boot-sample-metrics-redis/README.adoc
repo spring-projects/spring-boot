@@ -22,3 +22,25 @@ the result in Redis, e.g.
 	2) "4"
 ----
 
+There is also an `AggregateMetricReader` with public metrics in the application context,
+and you can see the result in the "/metrics" (metrics with names in "aggregate.*").
+The way the Redis repository was set up (with a random key in the metric names) makes the
+aggregates work across restarts of the same application, or across a scaled up application
+running in multiple processes. E.g.
+
+[source,indent=0]
+----
+	$ curl localhost:8080/metrics
+	{
+		...
+		"aggregate.application.counter.status.200.metrics": 12,
+		"aggregate.application.counter.status.200.root": 29,
+		"aggregate.application.gauge.response.metrics": 43,
+		"aggregate.application.gauge.response.root": 5,
+		"counter.status.200.root": 2,
+		"counter.status.200.metrics": 1,
+		"gauge.response.metrics": 43,
+		"gauge.response.root": 5
+	}
+----
+

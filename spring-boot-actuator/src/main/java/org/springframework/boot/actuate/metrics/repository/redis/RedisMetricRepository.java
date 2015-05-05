@@ -29,6 +29,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.BoundZSetOperations;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link MetricRepository} implementation for a redis backend. Metric values are stored
@@ -92,6 +93,8 @@ public class RedisMetricRepository implements MetricRepository {
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory,
 			String prefix, String key) {
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
+		Assert.state(StringUtils.hasText(prefix), "Prefix must be non-empty");
+		Assert.state(StringUtils.hasText(key), "Key must be non-empty");
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";

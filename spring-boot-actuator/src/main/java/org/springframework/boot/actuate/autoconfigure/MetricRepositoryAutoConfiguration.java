@@ -175,6 +175,9 @@ public class MetricRepositoryAutoConfiguration {
 		@Autowired(required = false)
 		private List<MetricWriter> writers;
 
+		@Autowired
+		private MetricsProperties metrics;
+
 		@Autowired(required = false)
 		@Qualifier("actuatorMetricRepository")
 		private MetricWriter actuatorMetricRepository;
@@ -188,13 +191,20 @@ public class MetricRepositoryAutoConfiguration {
 					&& writers.contains(this.actuatorMetricRepository)) {
 				writers.remove(this.actuatorMetricRepository);
 			}
-			return new MetricCopyExporter(reader, new CompositeMetricWriter(writers)) {
+			MetricCopyExporter exporter = new MetricCopyExporter(reader,
+					new CompositeMetricWriter(writers)) {
 				@Scheduled(fixedDelayString = "${spring.metrics.export.delayMillis:5000}")
 				@Override
 				public void export() {
 					super.export();
 				}
 			};
+			if (this.metrics.getExport().getIncludes() != null
+					|| this.metrics.getExport().getExcludes() != null) {
+				exporter.setIncludes(this.metrics.getExport().getIncludes());
+				exporter.setExcludes(this.metrics.getExport().getExcludes());
+			}
+			return exporter;
 		}
 	}
 

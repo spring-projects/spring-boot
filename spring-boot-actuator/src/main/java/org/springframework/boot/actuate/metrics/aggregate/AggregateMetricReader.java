@@ -115,7 +115,7 @@ public class AggregateMetricReader implements MetricReader {
 		if (aggregate == null) {
 			aggregate = new Metric<Number>(name, metric.getValue(), metric.getTimestamp());
 		}
-		else if (key.startsWith("counter")) {
+		else if (key.contains("counter.")) {
 			// accumulate all values
 			aggregate = new Metric<Number>(name, metric.increment(
 					aggregate.getValue().intValue()).getValue(), metric.getTimestamp());

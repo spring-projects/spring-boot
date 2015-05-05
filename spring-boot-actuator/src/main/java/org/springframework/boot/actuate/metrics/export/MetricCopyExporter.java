@@ -46,11 +46,15 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 	}
 
 	public void setIncludes(String... includes) {
-		this.includes = includes;
+		if (includes != null) {
+			this.includes = includes;
+		}
 	}
 
 	public void setExcludes(String... excludes) {
-		this.excludes = excludes;
+		if (excludes != null) {
+			this.excludes = excludes;
+		}
 	}
 
 	public MetricCopyExporter(MetricReader reader, MetricWriter writer, String prefix) {
@@ -61,7 +65,8 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 
 	@Override
 	protected Iterable<Metric<?>> next(String group) {
-		if (this.includes.length == 0 && this.excludes.length == 0) {
+		if ((this.includes != null || this.includes.length == 0)
+				&& (this.excludes != null || this.excludes.length == 0)) {
 			return this.reader.findAll();
 		}
 		return new Iterable<Metric<?>>() {
@@ -108,7 +113,8 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 			boolean matched = false;
 			while (this.iterator.hasNext() && !matched) {
 				metric = this.iterator.next();
-				if (MetricCopyExporter.this.includes.length == 0) {
+				if (MetricCopyExporter.this.includes == null
+						|| MetricCopyExporter.this.includes.length == 0) {
 					matched = true;
 				}
 				else {
@@ -119,10 +125,12 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 						}
 					}
 				}
-				for (String pattern : MetricCopyExporter.this.excludes) {
-					if (PatternMatchUtils.simpleMatch(pattern, metric.getName())) {
-						matched = false;
-						break;
+				if (MetricCopyExporter.this.excludes != null) {
+					for (String pattern : MetricCopyExporter.this.excludes) {
+						if (PatternMatchUtils.simpleMatch(pattern, metric.getName())) {
+							matched = false;
+							break;
+						}
 					}
 				}
 			}

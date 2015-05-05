@@ -43,10 +43,30 @@ public class MetricsProperties {
 		private boolean enabled = true;
 
 		/**
-		 * Flag to switch off an optimization based on not exporting unchanged metric
-		 * values.
+		 * Flag to switch off any available optimizations based on not exporting unchanged
+		 * metric values.
 		 */
 		private boolean ignoreTimestamps = false;
+
+		private String[] includes;
+
+		private String[] excludes;
+
+		public String[] getIncludes() {
+			return this.includes;
+		}
+
+		public void setIncludes(String[] includes) {
+			this.includes = includes;
+		}
+
+		public String[] getExcludes() {
+			return this.excludes;
+		}
+
+		public void setExcludes(String[] excludes) {
+			this.excludes = excludes;
+		}
 
 		public boolean isEnabled() {
 			return this.enabled;

@@ -17,6 +17,7 @@
 package sample.metrics.redis;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 @ConfigurationProperties("metrics.export")
 class ExportProperties {
@@ -38,6 +39,17 @@ class ExportProperties {
 
 	public void setKey(String key) {
 		this.key = key;
+	}
+
+	public String getAggregatePrefix() {
+		String[] tokens = StringUtils.delimitedListToStringArray(this.prefix, ".");
+		if (tokens.length > 1) {
+			if (StringUtils.hasText(tokens[1])) {
+				// If the prefix has 2 or more non-trivial parts, use the first 1
+				return tokens[0];
+			}
+		}
+		return this.prefix;
 	}
 
 }
