@@ -24,18 +24,22 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * A naming strategy that just passes through the metric name, together with tags from a
- * set of static values. Open TSDB requires at least one tag, so one is always added for
- * you: the {@value #PREFIX_KEY} key is added with a unique value "spring.X" where X is an
- * object hash code ID for this (the naming stategy). In most cases this will be unique
- * enough to allow aggregation of the underlying metrics in Open TSDB, but normally it is
- * best to provide your own tags, including a prefix if you know one (overwriting the
- * default).
+ * set of static values. Open TSDB requires at least one tag, so tags are always added for
+ * you: the {@value #DOMAIN_KEY} key is added with a value "spring", and the
+ * {@value #PROCESS_KEY} key is added with a value equal to the object hash of "this" (the
+ * naming strategy). The "domain" value is a system identifier - it would be common to all
+ * processes in the same distributed system. In most cases this will be unique enough to
+ * allow aggregation of the underlying metrics in Open TSDB, but normally it is best to
+ * provide your own tags, including a prefix and process identifier if you know one
+ * (overwriting the default).
  *
  * @author Dave Syer
  */
 public class DefaultOpenTsdbNamingStrategy implements OpenTsdbNamingStrategy {
 
-	public static final String PREFIX_KEY = "prefix";
+	public static final String DOMAIN_KEY = "domain";
+
+	public static final String PROCESS_KEY = "process";
 
 	/**
 	 * Tags to apply to every metric. Open TSDB requires at least one tag, so a "prefix"
@@ -46,8 +50,8 @@ public class DefaultOpenTsdbNamingStrategy implements OpenTsdbNamingStrategy {
 	private Map<String, OpenTsdbName> cache = new HashMap<String, OpenTsdbName>();
 
 	public DefaultOpenTsdbNamingStrategy() {
-		this.tags.put(PREFIX_KEY,
-				"spring." + ObjectUtils.getIdentityHexString(this));
+		this.tags.put(DOMAIN_KEY, "org.springframework.metrics");
+		this.tags.put(PROCESS_KEY, ObjectUtils.getIdentityHexString(this));
 	}
 
 	public void setTags(Map<String, String> staticTags) {
