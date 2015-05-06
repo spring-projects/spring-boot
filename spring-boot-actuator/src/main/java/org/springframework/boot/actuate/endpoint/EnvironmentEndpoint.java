@@ -63,7 +63,8 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
 				Map<String, Object> map = new LinkedHashMap<String, Object>();
 				for (String name : enumerable.getPropertyNames()) {
-					map.put(name, sanitize(name, enumerable.getProperty(name)));
+					map.put(name,
+							sanitize(sourceName, name, enumerable.getProperty(name)));
 				}
 				result.put(sourceName, map);
 			}
@@ -100,8 +101,8 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		}
 	}
 
-	public Object sanitize(String name, Object object) {
-		return this.sanitizer.sanitize(name, object);
+	public Object sanitize(String sourceName, String name, Object object) {
+		return this.sanitizer.sanitize(sourceName, name, object);
 	}
 
 }

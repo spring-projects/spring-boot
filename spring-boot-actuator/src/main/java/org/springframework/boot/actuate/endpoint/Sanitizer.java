@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.springframework.util.Assert;
@@ -26,12 +27,15 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @author Toshiaki Maki
  * @author Phillip Webb
+ * @author Johannes Stelzer
  */
 class Sanitizer {
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
 
 	private Pattern[] keysToSanitize;
+
+	private String[] sourcesToSanitize = { "decrypted" };
 
 	public Sanitizer() {
 		setKeysToSanitize(new String[] { "password", "secret", "key" });
@@ -48,6 +52,16 @@ class Sanitizer {
 		for (int i = 0; i < keysToSanitize.length; i++) {
 			this.keysToSanitize[i] = getPattern(keysToSanitize[i]);
 		}
+	}
+
+	/**
+	 * PropertySources whose properties should be sanitized.
+	 * @param sourcesToSanitize name of the propertySource to sanitize
+	 */
+	public void setSourcesToSanitized(String... sourcesToSanitize) {
+		Assert.notNull(sourcesToSanitize, "sourcesToSanitize must not be null");
+		this.sourcesToSanitize = Arrays.copyOf(sourcesToSanitize,
+				sourcesToSanitize.length);
 	}
 
 	private Pattern getPattern(String value) {
@@ -68,14 +82,23 @@ class Sanitizer {
 
 	/**
 	 * Sanitize the given value if necessary.
+	 * @param sourceName propertySourcename to sanitize
 	 * @param key the key to sanitize
 	 * @param value the value
 	 * @return the potentially sanitized value
 	 */
-	public Object sanitize(String key, Object value) {
+	public Object sanitize(String sourceName, String key, Object value) {
+		if (value == null) {
+			return null;
+		}
+		for (String source : this.sourcesToSanitize) {
+			if (source.equalsIgnoreCase(sourceName)) {
+				return "******";
+			}
+		}
 		for (Pattern pattern : this.keysToSanitize) {
 			if (pattern.matcher(key).matches()) {
-				return (value == null ? null : "******");
+				return "******";
 			}
 		}
 		return value;

@@ -96,7 +96,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
 			if (result == null) {
 				throw new NoSuchPropertyException("No such property: " + name);
 			}
-			return ((EnvironmentEndpoint) getDelegate()).sanitize(name, result);
+			return ((EnvironmentEndpoint) getDelegate()).sanitize("", name, result);
 		}
 
 	}
