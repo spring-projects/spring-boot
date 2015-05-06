@@ -70,7 +70,7 @@ public class FacebookAutoConfiguration {
 		public Facebook facebook(ConnectionRepository repository) {
 			Connection<Facebook> connection = repository
 					.findPrimaryConnection(Facebook.class);
-			return connection != null ? connection.getApi() : new FacebookTemplate();
+			return connection != null ? connection.getApi() : null;
 		}
 
 		@Bean(name = { "connect/facebookConnect", "connect/facebookConnected" })
