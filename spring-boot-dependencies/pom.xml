@@ -60,7 +60,7 @@
 		<commons-pool2.version>2.2</commons-pool2.version>
 		<crashub.version>1.3.1</crashub.version>
 		<derby.version>10.10.2.0</derby.version>
-		<dropwizard-metrics.version>3.1.1</dropwizard-metrics.version>
+		<dropwizard-metrics.version>3.1.2</dropwizard-metrics.version>
 		<flyway.version>3.1</flyway.version>
 		<freemarker.version>2.3.22</freemarker.version>
 		<gemfire.version>7.0.2</gemfire.version>
