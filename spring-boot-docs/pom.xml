@@ -335,6 +335,7 @@
 								<goals>
 									<goal>jar</goal>
 								</goals>
+								<phase>prepare-package</phase>
 								<configuration>
 									<includeDependencySources>true</includeDependencySources>
 									<dependencySourceIncludes>
@@ -383,7 +384,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>copy-versions-effective-pom</id>
+								<id>copy-dependencies-effective-pom</id>
 								<phase>generate-resources</phase>
 								<goals>
 									<goal>copy</goal>
