@@ -27,9 +27,11 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.spi.CachingProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
@@ -68,19 +70,13 @@ class JCacheCacheConfiguration {
 	private List<JCacheManagerCustomizer> cacheManagerCustomizers;
 
 	@Bean
-	public JCacheCacheManager cacheManager() throws IOException {
-		CacheManager cacheManager = createCacheManager();
-		List<String> cacheNames = this.cacheProperties.getCacheNames();
-		if (!CollectionUtils.isEmpty(cacheNames)) {
-			for (String cacheName : cacheNames) {
-				cacheManager.createCache(cacheName, getDefaultCacheConfiguration());
-			}
-		}
-		customize(cacheManager);
-		return new JCacheCacheManager(cacheManager);
+	public JCacheCacheManager cacheManager(CacheManager jCacheCacheManager) {
+		return new JCacheCacheManager(jCacheCacheManager);
 	}
 
-	private CacheManager createCacheManager() throws IOException {
+	@Bean
+	@ConditionalOnMissingBean
+	public CacheManager jCacheCacheManager() throws IOException {
 		CachingProvider cachingProvider = getCachingProvider(this.cacheProperties
 				.getJcache().getProvider());
 		Resource configLocation = this.cacheProperties.resolveConfigLocation();
@@ -89,7 +85,15 @@ class JCacheCacheConfiguration {
 					cachingProvider.getDefaultClassLoader(),
 					createCacheManagerProperties(configLocation));
 		}
-		return cachingProvider.getCacheManager();
+		CacheManager jCacheCacheManager = cachingProvider.getCacheManager();
+		List<String> cacheNames = this.cacheProperties.getCacheNames();
+		if (!CollectionUtils.isEmpty(cacheNames)) {
+			for (String cacheName : cacheNames) {
+				jCacheCacheManager.createCache(cacheName, getDefaultCacheConfiguration());
+			}
+		}
+		customize(jCacheCacheManager);
+		return jCacheCacheManager;
 	}
 
 	private CachingProvider getCachingProvider(String cachingProviderFqn) {
@@ -125,12 +129,32 @@ class JCacheCacheConfiguration {
 	}
 
 	/**
-	 * Determines if JCache is available. This either kick in if a default
+	 * Determine if JCache is available. This either kick in if a provider is available
+	 * as defined per {@link JCacheProviderAvailableCondition} or if a {@link CacheManager}
+	 * has already been defined.
+	 */
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	static class JCacheAvailableCondition extends AnyNestedCondition {
+
+		public JCacheAvailableCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@Conditional(JCacheProviderAvailableCondition.class)
+		static class JCacheProvider {}
+
+		@ConditionalOnSingleCandidate(CacheManager.class)
+		static class CustomJCacheCacheManager {}
+
+	}
+
+	/**
+	 * Determine if a JCache provider is available. This either kick in if a default
 	 * {@link CachingProvider} has been found or if the property referring to the provider
 	 * to use has been set.
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	static class JCacheAvailableCondition extends SpringBootCondition {
+	static class JCacheProviderAvailableCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,

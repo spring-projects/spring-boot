@@ -57,11 +57,13 @@ class HazelcastCacheConfiguration {
 	private CacheProperties cacheProperties;
 
 	@Bean
-	public HazelcastCacheManager cacheManager() throws IOException {
-		return new HazelcastCacheManager(createHazelcastInstance());
+	public HazelcastCacheManager cacheManager(HazelcastInstance hazelcastInstance) {
+		return new HazelcastCacheManager(hazelcastInstance);
 	}
 
-	private HazelcastInstance createHazelcastInstance() throws IOException {
+	@Bean
+	@ConditionalOnMissingBean
+	public HazelcastInstance hazelcastInstance() throws IOException {
 		Resource location = this.cacheProperties.resolveConfigLocation();
 		if (location != null) {
 			Config cfg = new XmlConfigBuilder(location.getURL()).build();
