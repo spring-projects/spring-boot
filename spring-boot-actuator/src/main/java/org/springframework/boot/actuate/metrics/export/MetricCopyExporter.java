@@ -65,8 +65,8 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 
 	@Override
 	protected Iterable<Metric<?>> next(String group) {
-		if ((this.includes != null || this.includes.length == 0)
-				&& (this.excludes != null || this.excludes.length == 0)) {
+		if ((this.includes == null || this.includes.length == 0)
+				&& (this.excludes == null || this.excludes.length == 0)) {
 			return this.reader.findAll();
 		}
 		return new Iterable<Metric<?>>() {
