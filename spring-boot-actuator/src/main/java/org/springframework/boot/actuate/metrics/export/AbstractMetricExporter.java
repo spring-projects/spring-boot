@@ -46,6 +46,10 @@ public abstract class AbstractMetricExporter implements Exporter {
 
 	private final String prefix;
 
+	private Date latestTimestamp = new Date(0L);
+
+	private boolean sendLatest = true;
+
 	public AbstractMetricExporter(String prefix) {
 		this.prefix = !StringUtils.hasText(prefix) ? "" : (prefix.endsWith(".") ? prefix
 				: prefix + ".");
@@ -67,13 +71,24 @@ public abstract class AbstractMetricExporter implements Exporter {
 		this.ignoreTimestamps = ignoreTimestamps;
 	}
 
+	/**
+	 * Send only the data that changed since the last export.
+	 *
+	 * @param sendLatest the flag to set
+	 */
+	public void setSendLatest(boolean sendLatest) {
+		this.sendLatest = sendLatest;
+	}
+
 	@Override
 	public void export() {
 		if (!this.processing.compareAndSet(false, true)) {
 			// skip a tick
 			return;
 		}
+		long latestTimestamp = 0;
 		try {
+			latestTimestamp = System.currentTimeMillis();
 			for (String group : groups()) {
 				Collection<Metric<?>> values = new ArrayList<Metric<?>>();
 				for (Metric<?> metric : next(group)) {
@@ -81,6 +96,10 @@ public abstract class AbstractMetricExporter implements Exporter {
 							metric.getValue(), metric.getTimestamp());
 					Date timestamp = metric.getTimestamp();
 					if (!this.ignoreTimestamps && this.earliestTimestamp.after(timestamp)) {
+						continue;
+					}
+					if (!this.ignoreTimestamps && this.sendLatest
+							&& this.latestTimestamp.after(timestamp)) {
 						continue;
 					}
 					values.add(value);
@@ -96,6 +115,7 @@ public abstract class AbstractMetricExporter implements Exporter {
 		}
 		finally {
 			try {
+				this.latestTimestamp = new Date(latestTimestamp);
 				flush();
 			}
 			catch (Exception e) {
