@@ -31,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -43,11 +44,11 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Dave Syer
  */
-public class OpenTsdbHttpMetricWriter implements MetricWriter {
+public class OpenTsdbMetricWriter implements MetricWriter {
 
-	private static final Log logger = LogFactory.getLog(OpenTsdbHttpMetricWriter.class);
+	private static final Log logger = LogFactory.getLog(OpenTsdbMetricWriter.class);
 
-	private RestTemplate restTemplate = new RestTemplate();
+	private RestOperations restTemplate = new RestTemplate();
 
 	/**
 	 * URL for POSTing data. Defaults to http://localhost:4242/api/put.
@@ -69,11 +70,11 @@ public class OpenTsdbHttpMetricWriter implements MetricWriter {
 
 	private OpenTsdbNamingStrategy namingStrategy = new DefaultOpenTsdbNamingStrategy();
 
-	public RestTemplate getRestTemplate() {
+	public RestOperations getRestTemplate() {
 		return this.restTemplate;
 	}
 
-	public void setRestTemplate(RestTemplate restTemplate) {
+	public void setRestTemplate(RestOperations restTemplate) {
 		this.restTemplate = restTemplate;
 	}
 
