@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.buffer.BufferCounterService;
@@ -48,7 +47,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -96,10 +94,11 @@ public class MetricRepositoryAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnJava(value = JavaVersion.EIGHT, range = Range.OLDER_THAN)
-	@ConditionalOnMissingBean(MetricRepository.class)
+	@ConditionalOnMissingBean(GaugeService.class)
 	static class LegacyMetricServicesConfiguration {
 
 		@Autowired
+		@ActuatorMetricRepository
 		private MetricWriter writer;
 
 		@Bean
@@ -118,7 +117,7 @@ public class MetricRepositoryAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnJava(value = JavaVersion.EIGHT)
-	@ConditionalOnMissingBean(MetricRepository.class)
+	@ConditionalOnMissingBean(GaugeService.class)
 	static class FastMetricServicesConfiguration {
 
 		@Bean
@@ -134,9 +133,9 @@ public class MetricRepositoryAutoConfiguration {
 		}
 
 		@Bean
-		@Primary
+		@ActuatorMetricRepository
 		@ConditionalOnMissingBean
-		public BufferMetricReader metricReader(CounterBuffers counters,
+		public BufferMetricReader actuatorMetricReader(CounterBuffers counters,
 				GaugeBuffers gauges) {
 			return new BufferMetricReader(counters, gauges);
 		}
@@ -160,7 +159,7 @@ public class MetricRepositoryAutoConfiguration {
 	static class LegacyMetricRepositoryConfiguration {
 
 		@Bean
-		@Primary
+		@ActuatorMetricRepository
 		public InMemoryMetricRepository actuatorMetricRepository() {
 			return new InMemoryMetricRepository();
 		}
@@ -179,12 +178,13 @@ public class MetricRepositoryAutoConfiguration {
 		private MetricExportProperties metrics;
 
 		@Autowired(required = false)
-		@Qualifier("actuatorMetricRepository")
+		@ActuatorMetricRepository
 		private MetricWriter actuatorMetricRepository;
 
 		@Bean
 		@ConditionalOnMissingBean
-		public MetricExporters metricWritersMetricExporter(MetricReader reader) {
+		public MetricExporters metricWritersMetricExporter(
+				@ActuatorMetricRepository MetricReader reader) {
 			Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>(
 					this.writers);
 			if (this.actuatorMetricRepository != null

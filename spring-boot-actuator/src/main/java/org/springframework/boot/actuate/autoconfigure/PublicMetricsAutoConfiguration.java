@@ -60,6 +60,7 @@ import org.springframework.context.annotation.Configuration;
 public class PublicMetricsAutoConfiguration {
 
 	@Autowired(required = false)
+	@ActuatorMetricRepository
 	private MetricReader metricReader = new InMemoryMetricRepository();
 
 	@Bean
