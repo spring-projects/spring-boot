@@ -63,7 +63,7 @@ public class MetricExportProperties {
 	}
 
 	@PostConstruct
-	public void setDefaults() {
+	public void setUpDefaults() {
 		Export defaults = null;
 		for (Entry<String, Export> entry : this.writers.entrySet()) {
 			String key = entry.getKey();
@@ -91,13 +91,13 @@ public class MetricExportProperties {
 		}
 		for (Export value : this.writers.values()) {
 			if (value.isIgnoreTimestamps() == null) {
-				value.setIgnoreTimestamps(false);
+				value.setIgnoreTimestamps(defaults.isIgnoreTimestamps());
 			}
 			if (value.isSendLatest() == null) {
-				value.setSendLatest(true);
+				value.setSendLatest(defaults.isSendLatest());
 			}
 			if (value.getDelayMillis() == null) {
-				value.setDelayMillis(5000);
+				value.setDelayMillis(defaults.getDelayMillis());
 			}
 		}
 	}
@@ -210,6 +210,6 @@ public class MetricExportProperties {
 				return value;
 			}
 		}
-		return null;
+		return this.export;
 	}
 }
