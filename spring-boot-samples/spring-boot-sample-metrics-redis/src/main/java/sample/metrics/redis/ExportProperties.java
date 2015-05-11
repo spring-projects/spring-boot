@@ -19,7 +19,7 @@ package sample.metrics.redis;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
-@ConfigurationProperties("metrics.export")
+@ConfigurationProperties("redis.metrics.export")
 class ExportProperties {
 
 	private String prefix = "spring.metrics";
