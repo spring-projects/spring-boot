@@ -47,6 +47,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
 		ApplicationContextAware {
@@ -95,7 +96,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 			return;
 		}
 		String[] patterns = getPatterns(handler, mapping);
-		super.registerHandlerMethod(handler, method, withNewPatterns(mapping, patterns));
+		super.registerMapping(withNewPatterns(mapping, patterns), handler, method);
 	}
 
 	private String[] getPatterns(Object handler, RequestMappingInfo mapping) {
