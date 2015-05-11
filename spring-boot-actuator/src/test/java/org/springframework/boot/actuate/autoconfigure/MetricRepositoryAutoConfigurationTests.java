@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.metrics.buffer.BufferCounterService;
 import org.springframework.boot.actuate.metrics.buffer.BufferGaugeService;
 import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
+import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
@@ -86,7 +87,7 @@ public class MetricRepositoryAutoConfigurationTests {
 				MessageChannelConfiguration.class, MetricsChannelAutoConfiguration.class,
 				MetricRepositoryAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		MetricCopyExporter exporter = this.context.getBean(MetricCopyExporter.class);
+		MetricExporters exporter = this.context.getBean(MetricExporters.class);
 		assertNotNull(exporter);
 	}
 
@@ -98,7 +99,9 @@ public class MetricRepositoryAutoConfigurationTests {
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
 		assertNotNull(gaugeService);
 		gaugeService.submit("foo", 2.7);
-		MetricCopyExporter exporter = this.context.getBean(MetricCopyExporter.class);
+		MetricExporters exporters = this.context.getBean(MetricExporters.class);
+		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters().get(
+				"writer");
 		exporter.setIgnoreTimestamps(true);
 		exporter.export();
 		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);

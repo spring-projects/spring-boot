@@ -16,8 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,15 +31,15 @@ import org.springframework.boot.actuate.metrics.buffer.CounterBuffers;
 import org.springframework.boot.actuate.metrics.buffer.GaugeBuffers;
 import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
+import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
+import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
-import org.springframework.boot.actuate.metrics.writer.CompositeMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
 import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
@@ -50,7 +51,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -91,7 +91,7 @@ import com.codahale.metrics.MetricRegistry;
  * @author Dave Syer
  */
 @Configuration
-@EnableConfigurationProperties(MetricsProperties.class)
+@EnableConfigurationProperties(MetricExportProperties.class)
 public class MetricRepositoryAutoConfiguration {
 
 	@Configuration
@@ -173,10 +173,10 @@ public class MetricRepositoryAutoConfiguration {
 	static class DefaultMetricsExporterConfiguration {
 
 		@Autowired(required = false)
-		private List<MetricWriter> writers;
+		private Map<String, MetricWriter> writers = Collections.emptyMap();
 
 		@Autowired
-		private MetricsProperties metrics;
+		private MetricExportProperties metrics;
 
 		@Autowired(required = false)
 		@Qualifier("actuatorMetricRepository")
@@ -184,27 +184,19 @@ public class MetricRepositoryAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnBean(MetricWriter.class)
-		public MetricCopyExporter metricWritersMetricExporter(MetricReader reader) {
-			List<MetricWriter> writers = new ArrayList<MetricWriter>(this.writers);
+		public MetricExporters metricWritersMetricExporter(MetricReader reader) {
+			Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>(
+					this.writers);
 			if (this.actuatorMetricRepository != null
-					&& writers.contains(this.actuatorMetricRepository)) {
-				writers.remove(this.actuatorMetricRepository);
-			}
-			MetricCopyExporter exporter = new MetricCopyExporter(reader,
-					new CompositeMetricWriter(writers)) {
-				@Scheduled(fixedDelayString = "${spring.metrics.export.delayMillis:5000}")
-				@Override
-				public void export() {
-					super.export();
+					&& writers.containsValue(this.actuatorMetricRepository)) {
+				for (String name : this.writers.keySet()) {
+					if (writers.get(name).equals(this.actuatorMetricRepository)) {
+						writers.remove(name);
+					}
 				}
-			};
-			if (this.metrics.getExport().getIncludes() != null
-					|| this.metrics.getExport().getExcludes() != null) {
-				exporter.setIncludes(this.metrics.getExport().getIncludes());
-				exporter.setExcludes(this.metrics.getExport().getExcludes());
 			}
-			return exporter;
+			MetricExporters exporters = new MetricExporters(reader, writers, this.metrics);
+			return exporters;
 		}
 	}
 
