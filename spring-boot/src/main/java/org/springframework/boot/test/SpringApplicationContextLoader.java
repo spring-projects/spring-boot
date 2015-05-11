@@ -68,6 +68,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see IntegrationTest
  * @see WebIntegrationTest
  * @see TestRestTemplate
@@ -81,6 +82,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			throws Exception {
 		assertValidAnnotations(config.getTestClass());
 		SpringApplication application = getSpringApplication();
+		application.setMainApplicationClass(config.getTestClass());
 		application.setSources(getSources(config));
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
