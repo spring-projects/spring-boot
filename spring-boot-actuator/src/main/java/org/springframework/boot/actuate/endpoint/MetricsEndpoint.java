@@ -62,8 +62,13 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		for (PublicMetrics publicMetric : this.publicMetrics) {
-			for (Metric<?> metric : publicMetric.metrics()) {
-				result.put(metric.getName(), metric.getValue());
+			try {
+				for (Metric<?> metric : publicMetric.metrics()) {
+					result.put(metric.getName(), metric.getValue());
+				}
+			}
+			catch (Exception e) {
+				// Could not evaluate metrics
 			}
 		}
 		return result;
