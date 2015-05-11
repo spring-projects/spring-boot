@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Jakub Kubrynski
+ * @author Andy Wilkinson
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class OnBeanCondition extends SpringBootCondition implements
@@ -117,6 +118,10 @@ public class OnBeanCondition extends SpringBootCondition implements
 		boolean considerHierarchy = beans.getStrategy() == SearchStrategy.ALL;
 		for (String type : beans.getTypes()) {
 			beanNames.addAll(getBeanNamesForType(beanFactory, type,
+					context.getClassLoader(), considerHierarchy));
+		}
+		for (String ignoredType : beans.getIgnoredTypes()) {
+			beanNames.removeAll(getBeanNamesForType(beanFactory, ignoredType,
 					context.getClassLoader(), considerHierarchy));
 		}
 		for (String annotation : beans.getAnnotations()) {
@@ -207,6 +212,8 @@ public class OnBeanCondition extends SpringBootCondition implements
 
 		private final List<String> annotations = new ArrayList<String>();
 
+		private final List<String> ignoredTypes = new ArrayList<String>();
+
 		private final SearchStrategy strategy;
 
 		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
@@ -217,6 +224,8 @@ public class OnBeanCondition extends SpringBootCondition implements
 			collect(attributes, "value", this.types);
 			collect(attributes, "type", this.types);
 			collect(attributes, "annotation", this.annotations);
+			collect(attributes, "ignored", this.ignoredTypes);
+			collect(attributes, "ignoredType", this.ignoredTypes);
 			if (this.types.isEmpty() && this.names.isEmpty()) {
 				addDeducedBeanType(context, metadata, this.types);
 			}
@@ -244,8 +253,10 @@ public class OnBeanCondition extends SpringBootCondition implements
 		private void collect(MultiValueMap<String, Object> attributes, String key,
 				List<String> destination) {
 			List<String[]> valueList = (List) attributes.get(key);
-			for (String[] valueArray : valueList) {
-				Collections.addAll(destination, valueArray);
+			if (valueList != null) {
+				for (String[] valueArray : valueList) {
+					Collections.addAll(destination, valueArray);
+				}
 			}
 		}
 
@@ -301,6 +312,10 @@ public class OnBeanCondition extends SpringBootCondition implements
 
 		public List<String> getAnnotations() {
 			return this.annotations;
+		}
+
+		public List<String> getIgnoredTypes() {
+			return this.ignoredTypes;
 		}
 
 		@Override

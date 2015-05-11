@@ -32,6 +32,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.Assert;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -187,6 +188,28 @@ public class ConditionalOnMissingBeanTests {
 				equalTo("fromFactory"));
 	}
 
+	@Test
+	public void testOnMissingBeanConditionWithIgnoredSubclass() {
+		this.context.register(CustomExampleBeanConfiguration.class,
+				ConditionalOnIgnoredSubclass.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(ExampleBean.class).size(), is(equalTo(2)));
+		assertThat(this.context.getBeansOfType(CustomExampleBean.class).size(),
+				is(equalTo(1)));
+	}
+
+	@Test
+	public void testOnMissingBeanConditionWithIgnoredSubclassByName() {
+		this.context.register(CustomExampleBeanConfiguration.class,
+				ConditionalOnIgnoredSubclassByName.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(ExampleBean.class).size(), is(equalTo(2)));
+		assertThat(this.context.getBeansOfType(CustomExampleBean.class).size(),
+				is(equalTo(1)));
+	}
+
 	@Configuration
 	@ConditionalOnMissingBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
@@ -300,6 +323,38 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration
+	protected static class ConditionalOnIgnoredSubclass {
+
+		@Bean
+		@ConditionalOnMissingBean(value = ExampleBean.class, ignored = CustomExampleBean.class)
+		public ExampleBean exampleBean() {
+			return new ExampleBean("test");
+		}
+
+	}
+
+	@Configuration
+	protected static class ConditionalOnIgnoredSubclassByName {
+
+		@Bean
+		@ConditionalOnMissingBean(value = ExampleBean.class, ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests.CustomExampleBean")
+		public ExampleBean exampleBean() {
+			return new ExampleBean("test");
+		}
+
+	}
+
+	@Configuration
+	protected static class CustomExampleBeanConfiguration {
+
+		@Bean
+		public CustomExampleBean customExampleBean() {
+			return new CustomExampleBean();
+		}
+
+	}
+
+	@Configuration
 	@ConditionalOnMissingBean(annotation = EnableScheduling.class)
 	protected static class OnAnnotationConfiguration {
 		@Bean
@@ -365,6 +420,14 @@ public class ConditionalOnMissingBeanTests {
 		@Override
 		public String toString() {
 			return this.value;
+		}
+
+	}
+
+	public static class CustomExampleBean extends ExampleBean {
+
+		public CustomExampleBean() {
+			super("custom subclass");
 		}
 
 	}

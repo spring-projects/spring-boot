@@ -54,7 +54,7 @@ class JacksonHttpMessageConvertersConfiguration {
 		private HttpMapperProperties properties = new HttpMapperProperties();
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(value = MappingJackson2HttpMessageConverter.class, ignoredType = "org.springframework.hateoas.mvc.TypeConstrainedMappingJackson2HttpMessageConverter")
 		public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
 				ObjectMapper objectMapper) {
 			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(
