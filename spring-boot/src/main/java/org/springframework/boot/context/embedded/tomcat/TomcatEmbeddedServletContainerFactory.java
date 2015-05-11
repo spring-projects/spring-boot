@@ -160,6 +160,10 @@ public class TomcatEmbeddedServletContainerFactory extends
 		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
+		String displayName = getDisplayName();
+		if (displayName != null) {
+			context.setDisplayName(displayName);
+		}
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());

@@ -79,6 +79,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 */
 	private String contextPath;
 
+	/**
+	 * Display name of the application.
+	 */
+	private String displayName;
+
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
@@ -116,6 +121,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
+	}
+
+	public String getDisplayName() {
+		return this.displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	public String getServletPath() {
@@ -200,6 +213,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		}
 		if (getContextPath() != null) {
 			container.setContextPath(getContextPath());
+		}
+		if (getDisplayName() != null) {
+			container.setDisplayName(getDisplayName());
 		}
 		if (getSessionTimeout() != null) {
 			container.setSessionTimeout(getSessionTimeout());
