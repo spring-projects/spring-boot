@@ -30,6 +30,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 /**
  * @author Dave Syer
@@ -49,13 +51,15 @@ public class MetricExportAutoConfiguration {
 	@ActuatorMetricRepository
 	private MetricWriter actuatorMetricRepository;
 
-	@Bean
 	@Autowired(required = false)
+	@ActuatorMetricRepository
+	private MetricReader reader;
+
+	@Bean
 	@ConditionalOnMissingBean
-	public MetricExporters metricWritersMetricExporter(
-			@ActuatorMetricRepository MetricReader reader) {
+	public SchedulingConfigurer metricWritersMetricExporter() {
 		Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>();
-		if (reader != null) {
+		if (this.reader != null) {
 			writers.putAll(this.writers);
 			if (this.actuatorMetricRepository != null
 					&& writers.containsValue(this.actuatorMetricRepository)) {
@@ -65,10 +69,16 @@ public class MetricExportAutoConfiguration {
 					}
 				}
 			}
-			MetricExporters exporters = new MetricExporters(reader, writers, this.metrics);
+			MetricExporters exporters = new MetricExporters(this.reader, writers,
+					this.metrics);
 			return exporters;
 		}
-		return null;
+		return new SchedulingConfigurer() {
+
+			@Override
+			public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+			}
+		};
 	}
 
 }
