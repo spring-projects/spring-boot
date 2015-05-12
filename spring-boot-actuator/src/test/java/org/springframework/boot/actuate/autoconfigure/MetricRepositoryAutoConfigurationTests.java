@@ -84,8 +84,10 @@ public class MetricRepositoryAutoConfigurationTests {
 	@Test
 	public void defaultExporterWhenMessageChannelAvailable() throws Exception {
 		this.context = new AnnotationConfigApplicationContext(
-				MessageChannelConfiguration.class, MetricsChannelAutoConfiguration.class,
+				MessageChannelConfiguration.class,
 				MetricRepositoryAutoConfiguration.class,
+				MetricsChannelAutoConfiguration.class,
+				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporter = this.context.getBean(MetricExporters.class);
 		assertNotNull(exporter);
@@ -95,6 +97,7 @@ public class MetricRepositoryAutoConfigurationTests {
 	public void provideAdditionalWriter() {
 		this.context = new AnnotationConfigApplicationContext(WriterConfig.class,
 				MetricRepositoryAutoConfiguration.class,
+				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
 		assertNotNull(gaugeService);

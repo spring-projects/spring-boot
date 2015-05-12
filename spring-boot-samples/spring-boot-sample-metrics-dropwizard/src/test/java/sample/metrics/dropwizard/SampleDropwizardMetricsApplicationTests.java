@@ -14,30 +14,44 @@
  * limitations under the License.
  */
 
-package sample.metrics.redis;
+package sample.metrics.dropwizard;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.codahale.metrics.MetricRegistry;
+
+import static org.junit.Assert.assertEquals;
+
 /**
- * Basic integration tests for {@link SampleRedisExportApplication}.
+ * Basic integration tests for {@link SampleDropwizardMetricsApplication}.
  *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleRedisExportApplication.class)
+@SpringApplicationConfiguration(classes = SampleDropwizardMetricsApplication.class)
 @WebAppConfiguration
-@IntegrationTest({ "server.port=0", "spring.jmx.enabled=true" })
+@IntegrationTest("server.port=0")
 @DirtiesContext
-public class SampleRedisExportApplicationTests {
+public class SampleDropwizardMetricsApplicationTests {
+
+	@Autowired
+	private MetricRegistry registry;
+
+	@Autowired
+	private GaugeService gauges;
 
 	@Test
-	public void contextLoads() {
+	public void timerCreated() {
+		this.gauges.submit("timer.test", 1234);
+		assertEquals(1, this.registry.getTimers().get("timer.test").getCount());
 	}
 
 }
