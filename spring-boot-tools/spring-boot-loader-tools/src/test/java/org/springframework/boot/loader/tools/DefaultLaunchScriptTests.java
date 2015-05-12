@@ -43,7 +43,7 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(null, null);
 		String content = new String(script.toByteArray());
 		assertThat(content, containsString("Spring Boot Startup Script"));
-		assertThat(content, containsString("mode=\"auto\""));
+		assertThat(content, containsString("MODE=\"auto\""));
 	}
 
 	@Test
