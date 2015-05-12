@@ -16,10 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
@@ -31,8 +27,6 @@ import org.springframework.boot.actuate.metrics.buffer.GaugeBuffers;
 import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
 import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
-import org.springframework.boot.actuate.metrics.export.MetricExporters;
-import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
@@ -43,12 +37,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -164,40 +156,6 @@ public class MetricRepositoryAutoConfiguration {
 			return new InMemoryMetricRepository();
 		}
 
-	}
-
-	@Configuration
-	@EnableScheduling
-	@ConditionalOnProperty(value = "spring.metrics.export.enabled", matchIfMissing = true)
-	static class DefaultMetricsExporterConfiguration {
-
-		@Autowired(required = false)
-		private Map<String, MetricWriter> writers = Collections.emptyMap();
-
-		@Autowired
-		private MetricExportProperties metrics;
-
-		@Autowired(required = false)
-		@ActuatorMetricRepository
-		private MetricWriter actuatorMetricRepository;
-
-		@Bean
-		@ConditionalOnMissingBean
-		public MetricExporters metricWritersMetricExporter(
-				@ActuatorMetricRepository MetricReader reader) {
-			Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>(
-					this.writers);
-			if (this.actuatorMetricRepository != null
-					&& writers.containsValue(this.actuatorMetricRepository)) {
-				for (String name : this.writers.keySet()) {
-					if (writers.get(name).equals(this.actuatorMetricRepository)) {
-						writers.remove(name);
-					}
-				}
-			}
-			MetricExporters exporters = new MetricExporters(reader, writers, this.metrics);
-			return exporters;
-		}
 	}
 
 }
