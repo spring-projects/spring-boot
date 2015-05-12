@@ -321,13 +321,13 @@ or `systemd`.
 
 
 
-==== Installation as a init.d (system v) service
+==== Installation as a init.d (System V) service
 The default executable script that is embedded into Spring Boot executable jars will act
 as an `init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
 `restart` and `status` commands can be used. The script supports the following features:
 
 * Starts the services as the user that owns the jar file
-* Tracks application PIDs using `/var/run/<appname>.pid`
+* Tracks application PIDs using `/var/run/<appname>/<appname>.pid`
 * Writes console logs to `/var/log/<appname>.log`
 
 Assuming that you have a Spring Boot application installed in `/var/myapp`, to install a
@@ -350,6 +350,33 @@ if you use Debian:
 	$ update-rc.d myapp defaults <priority>
 ----
 
+=== Running a JAR as a regular (not service) script
+
+The script accepts the following parameters as environment variables, so you can change the
+default behaviour in a script or on the command line:
+
+* `MODE` - the "mode" of operation. The default depends on the way the jar was built, but
+will usually be "auto" (meaning it tries to guess if it is an init script by checking if
+it is a symlink in a directory called "init.d"). You can explicitly set it to "service"
+so that the "stop|start|status|restart" commands work, or to "run" if you just want to
+run the script and not in the background.
+
+* `PID_FOLDER` - the root name of the pid folder (`/var/run` by default).
+
+* `LOG_FOLDER` - the name of the folder to put log files in (`/var/log` by default).
+
+* `APP_NAME` - the name of the app. If the jar is run from a symlink the script guesses the 
+app name, but if it is not a symlink, or you want to explicitly set the app name this can be
+useful.
+
+* `JAVA_HOME` - the location of the `java` executable is discovered by using the `PATH` by 
+default, but you can set it explicitly if there is an executable file at `$JAVA_HOME/bin/java`.
+
+* `JARFILE` - the explicit location of the jar file, in case the script is being used to launch
+a jar that it is not actually embedded in.
+
+* `DEBUG` - if not empty will set the `-x` flag on the shell process, making it easy to
+see the logic in the script.
 
 
 ==== Installation as a systemd service

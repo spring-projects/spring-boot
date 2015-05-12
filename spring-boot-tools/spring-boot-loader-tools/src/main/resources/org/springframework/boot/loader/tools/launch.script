@@ -9,19 +9,33 @@
 #   :: Spring Boot Startup Script ::
 #
 
+[[ -n "$DEBUG" ]] && set -x
+
 WORKING_DIR="$(pwd)"
-PID_FOLDER="/var/run"
-USER_PID_FOLDER="/tmp"
-LOG_FOLDER="/var/log"
-USER_LOG_FOLDER="/tmp"
+[[ -n "$JARFILE" ]] && jarfile="$JARFILE"
+[[ -n "$APP_NAME" ]] && identity="$APP_NAME"
+[[ -z "$PID_FOLDER" ]] && PID_FOLDER="/var/run"
+[[ -z "$LOG_FOLDER" ]] && LOG_FOLDER="/var/log"
+! [[ -x "$PID_FOLDER" ]] && PID_FOLDER="/tmp"
+! [[ -x "$LOG_FOLDER" ]] && LOG_FOLDER="/tmp"
 
 # Setup defaults
-[[ -z "$mode" ]] && mode="{{mode:auto}}" # modes are "auto", "service" or "run"
+[[ -z "$MODE" ]] && MODE="{{mode:auto}}" # modes are "auto", "service" or "run"
 
 # ANSI Colors
 echoRed() { echo $'\e[0;31m'$1$'\e[0m'; }
 echoGreen() { echo $'\e[0;32m'$1$'\e[0m'; }
 echoYellow() { echo $'\e[0;33m'$1$'\e[0m'; }
+
+# Utility functions
+checkPermissions() {
+  touch "$pid_file" &> /dev/null || { echoRed "Operation not permitted (cannot access pid file)"; exit 1; }
+  touch "$log_file" &> /dev/null || { echoRed "Operation not permitted (cannot access log file)"; exit 1; }
+}
+
+isRunning() {
+  ps -p $1 &> /dev/null
+}
 
 # Follow symlinks to find the real jar and detect init.d script
 cd $(dirname "$0")
@@ -36,36 +50,36 @@ cd "$WORKING_DIR"
 
 # Determine the script mode
 action="run"
-if [[ "$mode" == "auto" && -n "$init_script" ]] || [[ "$mode" == "service" ]]; then
+if [[ "$MODE" == "auto" && -n "$init_script" ]] || [[ "$MODE" == "service" ]]; then
   action="$1"
   shift
 fi
 
 # Create an identity for log/pid files
-if [[ -n "$init_script" ]]; then
-  identity="${init_script}"
-else
-  jar_folder=$(dirname "$jarfile")
-  identity=$(basename "${jarfile%.*}")_${jar_folder//\//}
+if [[ -z "$identity" ]]; then
+  if [[ -n "$init_script" ]]; then
+    identity="${init_script}"
+  else
+    jar_folder=$(dirname "$jarfile")
+    identity=$(basename "${jarfile%.*}")_${jar_folder//\//}
+  fi
 fi
 
 # Build the pid and log filenames
-if [[ -n "$init_script" ]]; then
-  pid_file="$PID_FOLDER/${identity}/${identity}.pid"
-  log_file="$LOG_FOLDER/${identity}.log"
-else
-  pid_file="$USER_PID_FOLDER/${identity}.pid"
-  log_file="$USER_LOG_FOLDER/${identity}.log"
+if [[ "$identity" == "$init_script" ]] || [[ "$identity" == "$APP_NAME" ]]; then
+  PID_FOLDER="$PID_FOLDER/${identity}"
 fi
+pid_file="$PID_FOLDER/${identity}.pid"
+log_file="$LOG_FOLDER/${identity}.log"
 
-# Determine the user to run as
+# Determine the user to run as if we are root
 [[ $(id -u) == "0" ]] && run_user=$(ls -ld "$jarfile" | awk '{print $3}')
 
 # Find Java
-if type -p java 2>&1> /dev/null; then
-    javaexe=java
-elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
+if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
     javaexe="$JAVA_HOME/bin/java"
+elif type -p java 2>&1> /dev/null; then
+    javaexe=java
 elif [[ -x "/usr/bin/java" ]];  then
     javaexe="/usr/bin/java"
 else
@@ -76,16 +90,6 @@ fi
 # Build actual command to execute
 command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $jarfile $@"
 
-# Utility functions
-checkPermissions() {
-  touch "$pid_file" &> /dev/null || { echoRed "Operation not permitted (cannot access pid file)"; exit 1; }
-  touch "$log_file" &> /dev/null || { echoRed "Operation not permitted (cannot access log file)"; exit 1; }
-}
-
-isRunning() {
-  ps -p $1 &> /dev/null
-}
-
 # Action functions
 start() {
   if [[ -f "$pid_file" ]]; then
@@ -94,9 +98,9 @@ start() {
   fi
   pushd $(dirname "$jarfile") > /dev/null
   if [[ -n "$run_user" ]]; then
-    mkdir "$PID_FOLDER/${identity}" &> /dev/null
+    mkdir "$PID_FOLDER" &> /dev/null
     checkPermissions
-    chown "$run_user" "$PID_FOLDER/${identity}"
+    chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
     su -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
@@ -115,6 +119,7 @@ start() {
 stop() {
   [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; exit 1; }
   pid=$(cat "$pid_file")
+  rm -f "$pid_file"
   isRunning $pid || { echoRed "Not running (process ${pid} not found)"; exit 1; }
   kill -HUP $pid &> /dev/null || { echoRed "Unable to kill process ${pid}"; exit 1; }
   for i in $(seq 1 20); do
