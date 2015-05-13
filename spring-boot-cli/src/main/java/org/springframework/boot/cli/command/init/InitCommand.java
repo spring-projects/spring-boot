@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
  * {@link Command} that initializes a project using Spring initializr.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 public class InitCommand extends OptionParsingCommand {
@@ -96,6 +97,18 @@ public class InitCommand extends OptionParsingCommand {
 
 		private OptionSpec<Void> force;
 
+		private OptionSpec<String> language;
+
+		private OptionSpec<String> groupId;
+
+		private OptionSpec<String> artifactId;
+
+		private OptionSpec<String> name;
+
+		private OptionSpec<String> version;
+
+		private OptionSpec<String> description;
+
 		InitOptionHandler(InitializrService initializrService) {
 			this.serviceCapabilitiesReport = new ServiceCapabilitiesReportGenerator(
 					initializrService);
@@ -140,6 +153,24 @@ public class InitCommand extends OptionParsingCommand {
 					"The project type to use. Not normally needed if you use --build "
 							+ "and/or --format. Check the capabilities of the service "
 							+ "(--list) for more details").withRequiredArg();
+			this.language = option(Arrays.asList("language", "lang"),
+				"Programming Language to use (for example 'java')")
+				.withRequiredArg();
+			this.groupId = option(Arrays.asList("groupId", "g"),
+				"The project group that produced the dependency (for example 'org.test')")
+				.withRequiredArg();
+			this.artifactId = option(Arrays.asList("artifactId", "a"),
+				"The unique id for an artifact produced by the project group (for example 'test')")
+				.withRequiredArg();
+			this.name = option(Arrays.asList("name", "n"),
+				"The full name of the project.")
+				.withRequiredArg();
+			this.version = option(Arrays.asList("version", "v"),
+				"The version of the dependency (for example '0.0.1-SNAPSHOT')")
+				.withRequiredArg();
+			this.description = option(Arrays.asList("description", "des"),
+				"A detailed description of the project")
+				.withRequiredArg();
 		}
 
 		private void otherOptions() {
@@ -208,6 +239,24 @@ public class InitCommand extends OptionParsingCommand {
 			request.setDetectType(options.has(this.build) || options.has(this.format));
 			if (options.has(this.type)) {
 				request.setType(options.valueOf(this.type));
+			}
+			if(options.has(this.language)) {
+				request.setLanguage(options.valueOf(this.language));
+			}
+			if(options.has(this.groupId)) {
+				request.setGroupId(options.valueOf(this.groupId));
+			}
+			if (options.has(this.artifactId)) {
+				request.setArtifactId(options.valueOf(this.artifactId));
+			}
+			if(options.has(this.name)) {
+				request.setName(options.valueOf(this.name));
+			}
+			if(options.has(this.version)) {
+				request.setVersion(options.valueOf(this.version));
+			}
+			if(options.has(this.description)) {
+				request.setDescription(options.valueOf(this.description));
 			}
 			request.setExtract(options.has(this.extract));
 			if (nonOptionArguments.size() == 1) {

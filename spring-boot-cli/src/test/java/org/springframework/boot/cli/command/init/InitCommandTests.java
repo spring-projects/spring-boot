@@ -49,6 +49,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link InitCommand}
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class InitCommandTests extends AbstractHttpClientMockTests {
 
@@ -280,8 +281,9 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	@Test
 	public void parseProjectOptions() throws Exception {
 		this.handler.disableProjectGeneration();
-		this.command.run("-b=1.2.0.RELEASE", "-d=web,data-jpa", "-j=1.9", "-p=war",
-				"--build=grunt", "--format=web", "-t=ant-project");
+		this.command.run("-b=1.2.0.RELEASE", "-d=web,data-jpa", "-j=1.9", "-p=war", "--build=grunt",
+			"--format=web", "-t=ant-project", "-lang=groovy", "-g=org.test", "-a=demo", "-n=demo",
+			"-v=0.0.1-SNAPSHOT", "-des=Demo project for Spring Boot");
 		assertEquals("1.2.0.RELEASE", this.handler.lastRequest.getBootVersion());
 		List<String> dependencies = this.handler.lastRequest.getDependencies();
 		assertEquals(2, dependencies.size());
@@ -292,6 +294,12 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		assertEquals("grunt", this.handler.lastRequest.getBuild());
 		assertEquals("web", this.handler.lastRequest.getFormat());
 		assertEquals("ant-project", this.handler.lastRequest.getType());
+		assertEquals("groovy", this.handler.lastRequest.getLanguage());
+		assertEquals("org.test", this.handler.lastRequest.getGroupId());
+		assertEquals("demo", this.handler.lastRequest.getArtifactId());
+		assertEquals("demo", this.handler.lastRequest.getName());
+		assertEquals("0.0.1-SNAPSHOT", this.handler.lastRequest.getVersion());
+		assertEquals("Demo project for Spring Boot", this.handler.lastRequest.getDescription());
 	}
 
 	@Test
