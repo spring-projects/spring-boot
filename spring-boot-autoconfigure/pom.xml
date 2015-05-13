@@ -237,6 +237,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan</groupId>
+			<artifactId>infinispan-jcache</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-spring4</artifactId>
 			<optional>true</optional>
 		</dependency>

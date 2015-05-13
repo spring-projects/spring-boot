@@ -16,8 +16,15 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,13 +35,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
  * Infinispan cache configuration.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 1.3.0
  */
 @Configuration
@@ -46,24 +51,46 @@ public class InfinispanCacheConfiguration {
 	@Autowired
 	private CacheProperties cacheProperties;
 
+	@Autowired(required = false)
+	private ConfigurationBuilder defaultConfigurationBuilder;
+
 	@Bean
-	public CacheManager cacheManager() throws IOException {
-		DefaultCacheManager defaultCacheManager = createCacheManager();
+	public CacheManager cacheManager(EmbeddedCacheManager embeddedCacheManager) {
+		return new SpringEmbeddedCacheManager(embeddedCacheManager);
+	}
+
+	@Bean(destroyMethod = "stop")
+	@ConditionalOnMissingBean
+	public EmbeddedCacheManager infinispanCacheManager() throws IOException {
+		EmbeddedCacheManager infinispanCacheManager = createEmbeddedCacheManager();
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			for (String cacheName : cacheNames) {
-				defaultCacheManager.startCache(cacheName);
+				infinispanCacheManager.defineConfiguration(cacheName, getDefaultCacheConfiguration());
 			}
 		}
-		return new SpringEmbeddedCacheManager(defaultCacheManager);
+		return infinispanCacheManager;
 	}
 
-	private DefaultCacheManager createCacheManager() throws IOException {
+	private EmbeddedCacheManager createEmbeddedCacheManager() throws IOException {
 		Resource location = this.cacheProperties.resolveConfigLocation();
 		if (location != null) {
-			return new DefaultCacheManager(this.cacheProperties.getConfig().getInputStream());
+			InputStream in = this.cacheProperties.getConfig().getInputStream();
+			try {
+				return new DefaultCacheManager(in);
+			}
+			finally {
+				in.close();
+			}
 		}
 		return new DefaultCacheManager();
+	}
+
+	private org.infinispan.configuration.cache.Configuration getDefaultCacheConfiguration() {
+		if (this.defaultConfigurationBuilder != null) {
+			return defaultConfigurationBuilder.build();
+		}
+		return new ConfigurationBuilder().build();
 	}
 
 }

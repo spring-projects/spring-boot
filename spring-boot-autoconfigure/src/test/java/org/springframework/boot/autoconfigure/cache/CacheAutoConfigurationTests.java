@@ -29,6 +29,9 @@ import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import net.sf.ehcache.Status;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.jcache.embedded.JCachingProvider;
+import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,6 +74,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -381,29 +385,58 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Test
-	public void infinispanCacheWithCaches() {
-		SpringEmbeddedCacheManager cacheManager = null;
-		try {
-			load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
-					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-			cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
-			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
-		} finally {
-			cacheManager.stop();
-		}
+	public void infinispanCacheWithConfig() {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
+				"spring.cache.config=infinispan.xml");
+		SpringEmbeddedCacheManager cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
 	}
 
 	@Test
-	public void infinispanCacheWithConfig() {
-		SpringEmbeddedCacheManager cacheManager = null;
-		try {
-			load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
-					"spring.cache.config=infinispan.xml");
-			cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
-			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
-		} finally {
-			cacheManager.stop();
-		}
+	public void infinispanCacheWithCaches() {
+		load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
+				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+		SpringEmbeddedCacheManager cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
+		assertThat(cacheManager.getCacheNames(), hasSize(2));
+	}
+
+	@Test
+	public void infinispanCacheWithCachesAndCustomConfig() {
+		load(InfinispanCustomConfiguration.class, "spring.cache.type=infinispan",
+				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+		SpringEmbeddedCacheManager cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
+		assertThat(cacheManager.getCacheNames(), hasSize(2));
+
+		ConfigurationBuilder defaultConfigurationBuilder = this.context
+				.getBean(ConfigurationBuilder.class);
+		verify(defaultConfigurationBuilder, times(2)).build();
+	}
+
+	@Test
+	public void infinispanAsJCacheWithCaches() {
+		String cachingProviderFqn = JCachingProvider.class.getName();
+		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
+				"spring.cache.jcache.provider=" + cachingProviderFqn,
+				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
+		assertThat(cacheManager.getCacheNames(), hasSize(2));
+	}
+
+	@Test
+	public void infinispanAsJCacheWithConfig() throws IOException {
+		String cachingProviderFqn = JCachingProvider.class.getName();
+		String configLocation = "infinispan.xml";
+		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
+				"spring.cache.jcache.provider=" + cachingProviderFqn,
+				"spring.cache.config=" + configLocation);
+		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
+
+		Resource configResource = new ClassPathResource(configLocation);
+		assertThat(cacheManager.getCacheManager().getURI(),
+				is(configResource.getURI()));
 	}
 
 	@Test
@@ -577,6 +610,19 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public HazelcastInstance customHazelcastInstance() {
 			return mock(HazelcastInstance.class);
+		}
+
+	}
+
+	@Configuration
+	@EnableCaching
+	static class InfinispanCustomConfiguration {
+
+		@Bean
+		public ConfigurationBuilder configurationBuilder() {
+			ConfigurationBuilder builder = mock(ConfigurationBuilder.class);
+			when(builder.build()).thenReturn(new ConfigurationBuilder().build());
+			return builder;
 		}
 
 	}
