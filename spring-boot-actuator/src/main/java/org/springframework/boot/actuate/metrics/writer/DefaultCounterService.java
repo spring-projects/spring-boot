@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.boot.actuate.metrics.CounterService;
 
 /**
@@ -26,6 +28,8 @@ import org.springframework.boot.actuate.metrics.CounterService;
 public class DefaultCounterService implements CounterService {
 
 	private final MetricWriter writer;
+
+	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
 
 	/**
 	 * Create a {@link DefaultCounterService} instance.
@@ -51,10 +55,14 @@ public class DefaultCounterService implements CounterService {
 	}
 
 	private String wrap(String metricName) {
+		if (this.names.containsKey(metricName)) {
+			return this.names.get(metricName);
+		}
 		if (metricName.startsWith("counter") || metricName.startsWith("meter")) {
 			return metricName;
 		}
-		return "counter." + metricName;
+		String name = "counter." + metricName;
+		this.names.put(metricName, name);
+		return name;
 	}
-
 }
