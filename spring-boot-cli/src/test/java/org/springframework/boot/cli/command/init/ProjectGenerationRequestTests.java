@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
@@ -68,7 +69,7 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void customBootVersion() {
 		this.request.setBootVersion("1.2.0.RELEASE");
-		assertEquals(createDefaultUrl("?bootVersion=1.2.0.RELEASE&type=test-type"),
+		assertEquals(createDefaultUrl("?type=test-type&bootVersion=1.2.0.RELEASE"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -90,7 +91,7 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void customJavaVersion() {
 		this.request.setJavaVersion("1.8");
-		assertEquals(createDefaultUrl("?javaVersion=1.8&type=test-type"),
+		assertEquals(createDefaultUrl("?type=test-type&javaVersion=1.8"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -115,20 +116,20 @@ public class ProjectGenerationRequestTests {
 
 	@Test
 	public void customLanguage() {
-		this.request.setLanguage("java");
-		assertEquals(createDefaultUrl("?language=java&type=test-type"),
+		this.request.setLanguage("groovy");
+		assertEquals(createDefaultUrl("?type=test-type&language=groovy"),
 			this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void customProjectInfo() {
-		this.request.setGroupId("org.test");
-		this.request.setArtifactId("demo");
-		this.request.setVersion("0.0.1-SNAPSHOT");
-		this.request.setDescription("Spring Boot Demo");
-		assertEquals(createDefaultUrl("?artifactId=demo&description=Spring+Boot+Demo"
-				+ "&groupId=org.test&type=test-type&version=0.0.1-SNAPSHOT"),
-			this.request.generateUrl(createDefaultMetadata()));
+		this.request.setGroupId("org.acme");
+		this.request.setArtifactId("sample");
+		this.request.setVersion("1.0.1-SNAPSHOT");
+		this.request.setDescription("Spring Boot Test");
+		assertEquals(createDefaultUrl("?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT" +
+						"&description=Spring+Boot+Test&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
