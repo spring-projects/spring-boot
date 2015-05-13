@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,9 +35,13 @@ public class SampleController {
 	@Autowired
 	private HelloWorldService helloWorldService;
 
+	@Autowired
+	private GaugeService gauges;
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, String> hello() {
+		this.gauges.submit("timer.test.value", Math.random() * 1000 + 1000);
 		return Collections.singletonMap("message",
 				this.helloWorldService.getHelloMessage());
 	}

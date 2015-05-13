@@ -18,7 +18,6 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
-		<java.version>1.8</java.version>
 	</properties>
 	<dependencies>
 		<!-- Compile -->
