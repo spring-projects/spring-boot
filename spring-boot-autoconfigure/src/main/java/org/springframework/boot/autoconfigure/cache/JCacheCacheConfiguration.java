@@ -77,15 +77,7 @@ class JCacheCacheConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CacheManager jCacheCacheManager() throws IOException {
-		CachingProvider cachingProvider = getCachingProvider(this.cacheProperties
-				.getJcache().getProvider());
-		Resource configLocation = this.cacheProperties.resolveConfigLocation();
-		if (configLocation != null) {
-			return cachingProvider.getCacheManager(configLocation.getURI(),
-					cachingProvider.getDefaultClassLoader(),
-					createCacheManagerProperties(configLocation));
-		}
-		CacheManager jCacheCacheManager = cachingProvider.getCacheManager();
+		CacheManager jCacheCacheManager = createCacheManager();
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			for (String cacheName : cacheNames) {
@@ -94,6 +86,18 @@ class JCacheCacheConfiguration {
 		}
 		customize(jCacheCacheManager);
 		return jCacheCacheManager;
+	}
+
+	private CacheManager createCacheManager() throws IOException {
+		CachingProvider cachingProvider = getCachingProvider(this.cacheProperties
+				.getJcache().getProvider());
+		Resource configLocation = this.cacheProperties.resolveConfigLocation();
+		if (configLocation != null) {
+			return cachingProvider.getCacheManager(configLocation.getURI(),
+					cachingProvider.getDefaultClassLoader(),
+					createCacheManagerProperties(configLocation));
+		}
+		return cachingProvider.getCacheManager();
 	}
 
 	private CachingProvider getCachingProvider(String cachingProviderFqn) {
