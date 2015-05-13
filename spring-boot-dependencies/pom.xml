@@ -81,7 +81,7 @@
 		<hornetq.version>2.4.5.Final</hornetq.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 		<httpasyncclient.version>4.0.2</httpasyncclient.version>
-		<httpclient.version>4.3.6</httpclient.version>
+		<httpclient.version>4.4.1</httpclient.version>
 		<jackson.version>2.5.1</jackson.version>
 		<janino.version>2.6.1</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
