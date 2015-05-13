@@ -25,6 +25,7 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 
+import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -378,6 +379,32 @@ public class CacheAutoConfigurationTests {
 			if (cacheManager != null) {
 				cacheManager.getCacheManager().close();
 			}
+		}
+	}
+
+	@Test
+	public void infinispanCacheWithCaches() {
+		SpringEmbeddedCacheManager cacheManager = null;
+		try {
+			load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
+				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
+			cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
+		} finally {
+			cacheManager.stop();
+		}
+	}
+
+	@Test
+	public void infinispanCacheWithConfig() {
+		SpringEmbeddedCacheManager cacheManager = null;
+		try {
+			load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
+				"spring.cache.config=infinispan.xml");
+			cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+			assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
+		} finally {
+			cacheManager.stop();
 		}
 	}
 
