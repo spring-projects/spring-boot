@@ -57,6 +57,9 @@ content into your application; rather pick only the properties that you need.
 	server.session-timeout= # session timeout in seconds
 	server.context-parameters.*= # Servlet context init parameters, e.g. server.context-parameters.a=alpha
 	server.context-path= # the context path, defaults to '/'
+	server.jsp-servlet.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet
+	server.jsp-servlet.init-parameters.*= # Init parameters used to configure the JSP servlet
+	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.servlet-path= # the servlet path, defaults to '/'
 	server.ssl.enabled=true # if SSL support is enabled
 	server.ssl.client-auth= # want or need

@@ -114,10 +114,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		return this.undertow;
 	}
 
-	public JspServlet jspServlet() {
-		return this.jspServlet;
-	}
-
 	public String getContextPath() {
 		return this.contextPath;
 	}
@@ -447,13 +443,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
 			}
-
-			factory.addContextCustomizers(new TomcatContextCustomizer() {
-				@Override
-				public void customize(Context context) {
-					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
-				}
-			});
 
 			factory.addContextCustomizers(new TomcatContextCustomizer() {
 				@Override
