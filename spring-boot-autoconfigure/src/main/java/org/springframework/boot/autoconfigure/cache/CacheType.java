@@ -37,7 +37,7 @@ public enum CacheType {
 	EHCACHE(EhCacheCacheConfiguration.class),
 
 	/**
-	 * Haezelcast backed caching
+	 * Hazelcast backed caching
 	 */
 	HAZELCAST(HazelcastCacheConfiguration.class),
 
