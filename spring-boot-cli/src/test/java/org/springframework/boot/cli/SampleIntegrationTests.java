@@ -70,6 +70,18 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	@Ignore("Spring Security Oauth2 autoconfiguration reports bean creation issue with methodSecurityInterceptor")
+	public void oauth2Sample() throws Exception {
+		String output = this.cli.run("oauth2.groovy");
+		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.clientId"));
+		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.secret = ****"));
+		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.resourceId"));
+		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.authorizationTypes"));
+		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.scopes"));
+		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.redirectUris"));
+	}
+
+	@Test
 	public void reactorSample() throws Exception {
 		String output = this.cli.run("reactor.groovy", "Phil");
 		int count = 0;
