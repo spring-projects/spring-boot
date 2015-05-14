@@ -97,7 +97,7 @@
 		<jmustache.version>1.10</jmustache.version>
 		<joda-time.version>2.7</joda-time.version>
 		<jolokia.version>1.2.3</jolokia.version>
-		<json-path.version>0.9.1</json-path.version>
+		<json-path.version>2.0.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.12</junit.version>
 		<liquibase.version>3.3.2</liquibase.version>
