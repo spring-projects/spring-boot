@@ -57,8 +57,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class OnBeanCondition extends SpringBootCondition implements
-		ConfigurationCondition {
+class OnBeanCondition extends SpringBootCondition implements ConfigurationCondition {
 
 	private static final Log logger = LogFactory.getLog(OnBeanCondition.class);
 
