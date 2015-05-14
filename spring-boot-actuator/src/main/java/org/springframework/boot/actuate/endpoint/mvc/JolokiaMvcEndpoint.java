@@ -71,7 +71,6 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		this.path = "/jolokia";
 		this.controller.setServletClass(AgentServlet.class);
 		this.controller.setServletName("jolokia");
-		this.controller.setSupportedMethods("GET", "POST", "HEAD", "OPTIONS");
 	}
 
 	@Override

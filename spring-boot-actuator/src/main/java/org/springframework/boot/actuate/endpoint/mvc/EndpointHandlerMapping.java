@@ -28,6 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -47,12 +48,13 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Dave Syer
- * @author Andy Wilkinson
  */
 public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
 		ApplicationContextAware {
 
 	private final Set<MvcEndpoint> endpoints;
+
+	private final CorsConfiguration corsConfiguration;
 
 	private String prefix = "";
 
@@ -60,11 +62,26 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 
 	/**
 	 * Create a new {@link EndpointHandlerMapping} instance. All {@link Endpoint}s will be
-	 * detected from the {@link ApplicationContext}.
+	 * detected from the {@link ApplicationContext}. The endpoints will not accept CORS
+	 * requests.
 	 * @param endpoints the endpoints
 	 */
 	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
+		this(endpoints, null);
+	}
+
+	/**
+	 * Create a new {@link EndpointHandlerMapping} instance. All {@link Endpoint}s will be
+	 * detected from the {@link ApplicationContext}. The endpoints will accepts CORS
+	 * requests based on the given {@code corsConfiguration}.
+	 * @param endpoints the endpoints
+	 * @param corsConfiguration the CORS configuration for the endpoints
+	 * @since 1.3.0
+	 */
+	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints,
+			CorsConfiguration corsConfiguration) {
 		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
+		this.corsConfiguration = corsConfiguration;
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
 		// and the RequestMappingHandlerMapping is 0 (we ideally want to be before both)
 		setOrder(-100);
@@ -96,7 +113,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 			return;
 		}
 		String[] patterns = getPatterns(handler, mapping);
-		super.registerMapping(withNewPatterns(mapping, patterns), handler, method);
+		super.registerHandlerMethod(handler, method, withNewPatterns(mapping, patterns));
 	}
 
 	private String[] getPatterns(Object handler, RequestMappingInfo mapping) {
@@ -180,4 +197,9 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 		return new HashSet<MvcEndpoint>(this.endpoints);
 	}
 
+	@Override
+	protected CorsConfiguration initCorsConfiguration(Object handler, Method method,
+			RequestMappingInfo mappingInfo) {
+		return this.corsConfiguration;
+	}
 }

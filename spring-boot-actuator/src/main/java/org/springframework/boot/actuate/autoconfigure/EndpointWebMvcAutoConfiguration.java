@@ -103,7 +103,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
 		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
 		ManagementServerPropertiesAutoConfiguration.class })
-@EnableConfigurationProperties(HealthMvcEndpointProperties.class)
+@EnableConfigurationProperties({ HealthMvcEndpointProperties.class,
+		MvcEndpointCorsProperties.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		SmartInitializingSingleton {
 
@@ -116,6 +117,9 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Autowired
 	private ManagementServerProperties managementServerProperties;
+
+	@Autowired
+	private MvcEndpointCorsProperties corsMvcEndpointProperties;
 
 	@Autowired(required = false)
 	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
@@ -130,7 +134,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnMissingBean
 	public EndpointHandlerMapping endpointHandlerMapping() {
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(mvcEndpoints()
-				.getEndpoints());
+				.getEndpoints(), this.corsMvcEndpointProperties.toCorsConfiguration());
 		boolean disabled = ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME;
 		mapping.setDisabled(disabled);
 		if (!disabled) {

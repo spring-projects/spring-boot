@@ -551,6 +551,13 @@ content into your application; rather pick only the properties that you need.
 	endpoints.trace.sensitive=true
 	endpoints.trace.enabled=true
 
+	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/MvcEndpointCorsProperties.{sc-ext}[MvcEndpointCorsProperties])
+	endpoints.cors.allow-credentials= # whether user credentials are support. When not set, credentials are not supported.
+	endpoints.cors.allowed-origins= # comma-separated list of origins to allow. * allows all origins. When not set, CORS support is disabled.
+	endpoints.cors.allowed-methods= # comma-separated list of methods to allow. * allows all methods. When not set, defaults to GET.
+	endpoints.cors.allowed-headers= # comma-separated list of headers to allow in a request. * allows all headers.
+	endpoints.cors.exposed-headers= # comma-separated list of headers to include in a response.
+
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true
 	management.health.elasticsearch.enabled=true

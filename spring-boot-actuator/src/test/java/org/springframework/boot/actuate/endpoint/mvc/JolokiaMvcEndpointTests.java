@@ -32,7 +32,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -44,9 +43,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -54,7 +51,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Christian Dupuis
  * @author Dave Syer
- * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { Config.class })
@@ -101,15 +97,6 @@ public class JolokiaMvcEndpointTests {
 		this.mvc.perform(get("/jolokia/list/java.lang/type=Memory/attr"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
-	}
-
-	@Test
-	public void corsOptionsRequest() throws Exception {
-		this.mvc.perform(
-				options("/jolokia/read/java.lang:type=Memory").header(HttpHeaders.ORIGIN,
-						"example.com").header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD,
-						"GET")).andExpect(
-				header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "example.com"));
 	}
 
 	@Configuration
