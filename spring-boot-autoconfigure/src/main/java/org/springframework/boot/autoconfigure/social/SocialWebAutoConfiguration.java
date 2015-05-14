@@ -125,7 +125,7 @@ public class SocialWebAutoConfiguration {
 	@Configuration
 	@EnableSocial
 	@ConditionalOnWebApplication
-	@ConditionalOnMissingClass(name = "org.springframework.security.core.context.SecurityContextHolder")
+	@ConditionalOnMissingClass("org.springframework.security.core.context.SecurityContextHolder")
 	protected static class AnonymousUserIdSourceConfig extends SocialConfigurerAdapter {
 
 		@Override

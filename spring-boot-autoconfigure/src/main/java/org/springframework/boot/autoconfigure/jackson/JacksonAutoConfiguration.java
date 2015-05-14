@@ -35,7 +35,6 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.HttpMapperProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -50,7 +49,6 @@ import org.springframework.util.ReflectionUtils;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.joda.cfg.JacksonJodaDateFormat;
 import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
@@ -72,7 +70,6 @@ import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
  */
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
-@SuppressWarnings("deprecation")
 public class JacksonAutoConfiguration {
 
 	@Autowired
@@ -151,7 +148,7 @@ public class JacksonAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
-	@EnableConfigurationProperties({ HttpMapperProperties.class, JacksonProperties.class })
+	@EnableConfigurationProperties(JacksonProperties.class)
 	static class JacksonObjectMapperBuilderConfiguration implements
 			ApplicationContextAware {
 
@@ -160,22 +157,11 @@ public class JacksonAutoConfiguration {
 		@Autowired
 		private JacksonProperties jacksonProperties;
 
-		@Autowired
-		private HttpMapperProperties httpMapperProperties;
-
 		@Bean
 		@ConditionalOnMissingBean(Jackson2ObjectMapperBuilder.class)
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder() {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
 			builder.applicationContext(this.applicationContext);
-			Boolean isJsonSortKeys = this.httpMapperProperties.isJsonSortKeys();
-			if (isJsonSortKeys != null && isJsonSortKeys) {
-				builder.featuresToEnable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
-			}
-			Boolean isJsonPrettyPrint = this.httpMapperProperties.isJsonPrettyPrint();
-			if (isJsonPrettyPrint != null && isJsonPrettyPrint) {
-				builder.featuresToEnable(SerializationFeature.INDENT_OUTPUT);
-			}
 			if (this.jacksonProperties.getSerializationInclusion() != null) {
 				builder.serializationInclusion(this.jacksonProperties
 						.getSerializationInclusion());

@@ -39,6 +39,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextInitializer;
@@ -98,6 +99,9 @@ public class SpringApplicationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	private ConfigurableApplicationContext context;
 
@@ -171,22 +175,20 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	public void customBanner() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
 		application.run("--banner.location=classpath:test-banner.txt");
-		verify(application, never()).printBanner();
+		assertThat(this.output.toString(), startsWith("Running a Test!"));
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	public void customBannerWithProperties() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
 		application.run("--banner.location=classpath:test-banner-with-placeholder.txt",
 				"--test.property=123456");
-		verify(application, never()).printBanner();
+		assertThat(this.output.toString(), startsWith("Running a Test!\n\n123456"));
 	}
 
 	@Test

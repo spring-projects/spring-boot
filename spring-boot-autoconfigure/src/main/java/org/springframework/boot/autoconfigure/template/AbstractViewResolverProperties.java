@@ -101,24 +101,6 @@ public abstract class AbstractViewResolverProperties {
 		this.contentType = contentType;
 	}
 
-	/**
-	 * @deprecated since 1.2.0 in favor of {@link #getCharset()}
-	 * @return the charset
-	 */
-	@Deprecated
-	public String getCharSet() {
-		return getCharset();
-	}
-
-	/**
-	 * @deprecated since 1.2.0 in favor of {@link #setCharset(String)}
-	 * @param charSet the charset
-	 */
-	@Deprecated
-	public void setCharSet(String charSet) {
-		setCharset(charSet);
-	}
-
 	public String getCharset() {
 		return this.charset;
 	}

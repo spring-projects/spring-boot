@@ -356,28 +356,6 @@ public class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	public void httpMappersJsonPrettyPrintIsApplied() {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"http.mappers.json-pretty-print:true");
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig().isEnabled(
-				SerializationFeature.INDENT_OUTPUT));
-	}
-
-	@Test
-	public void httpMappersJsonSortKeysIsApplied() {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"http.mappers.json-sort-keys:true");
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig().isEnabled(
-				SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS));
-	}
-
-	@Test
 	public void moduleBeansAndWellKnownModulesAreRegisteredWithTheObjectMapperBuilder() {
 		this.context.register(ModuleConfig.class, JacksonAutoConfiguration.class);
 		this.context.refresh();

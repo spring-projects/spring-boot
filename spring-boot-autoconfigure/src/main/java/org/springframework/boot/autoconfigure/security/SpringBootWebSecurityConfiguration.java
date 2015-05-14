@@ -202,7 +202,7 @@ public class SpringBootWebSecurityConfiguration {
 
 	// Pull in a plain @EnableWebSecurity if Spring MVC is not available
 	@ConditionalOnMissingBean(WebMvcSecurityConfigurationConditions.class)
-	@ConditionalOnMissingClass(name = "org.springframework.web.servlet.support.RequestDataValueProcessor")
+	@ConditionalOnMissingClass("org.springframework.web.servlet.support.RequestDataValueProcessor")
 	@Configuration
 	@EnableWebSecurity
 	protected static class DefaultWebSecurityConfiguration {

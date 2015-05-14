@@ -21,8 +21,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.orm.jpa.vendor.Database;
@@ -37,8 +35,6 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = "spring.jpa")
 public class JpaProperties {
-
-	private static final Log logger = LogFactory.getLog(JpaProperties.class);
 
 	/**
 	 * Additional native properties to set on the JPA provider.
@@ -149,13 +145,6 @@ public class JpaProperties {
 
 		public void setNamingStrategy(Class<?> namingStrategy) {
 			this.namingStrategy = namingStrategy;
-		}
-
-		@Deprecated
-		public void setNamingstrategy(Class<?> namingStrategy) {
-			logger.warn("The property spring.jpa.namingstrategy has been renamed, "
-					+ "please update your configuration to use namingStrategy or naming-strategy or naming_strategy");
-			this.setNamingStrategy(namingStrategy);
 		}
 
 		public String getDdlAuto() {

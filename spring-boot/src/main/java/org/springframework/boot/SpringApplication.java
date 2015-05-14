@@ -469,7 +469,6 @@ public class SpringApplication {
 	 * not exist or cannot be printed, a simple default is created.
 	 * @param environment the environment
 	 * @see #setShowBanner(boolean)
-	 * @see #printBanner()
 	 */
 	protected void printBanner(Environment environment) {
 		String location = environment.getProperty("banner.location", "banner.txt");
@@ -485,18 +484,10 @@ public class SpringApplication {
 			this.banner.printBanner(environment, this.mainApplicationClass, System.out);
 			return;
 		}
-		printBanner();
+		printDefaultBanner();
 	}
 
-	/**
-	 * Print a simple banner message to the console. Subclasses can override this method
-	 * to provide additional or alternative banners.
-	 * @see #setShowBanner(boolean)
-	 * @see #printBanner(Environment)
-	 * @deprecated since 1.2.0 in favor of {@link #setBanner(Banner)}
-	 */
-	@Deprecated
-	protected void printBanner() {
+	private void printDefaultBanner() {
 		DEFAULT_BANNER.printBanner(null, this.mainApplicationClass, System.out);
 	}
 
@@ -759,7 +750,7 @@ public class SpringApplication {
 	 * Sets if the Spring banner should be displayed when the application runs. Defaults
 	 * to {@code true}.
 	 * @param showBanner if the banner should be shown
-	 * @see #printBanner()
+	 * @see #printDefaultBanner()
 	 */
 	public void setShowBanner(boolean showBanner) {
 		this.showBanner = showBanner;
