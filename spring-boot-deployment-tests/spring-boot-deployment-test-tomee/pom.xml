@@ -68,7 +68,7 @@
 					<container>
 						<containerId>tomee1x</containerId>
 						<zipUrlInstaller>
-							<url>http://mirrors.ibiblio.org/apache/tomee/tomee-${tomee.version}/apache-tomee-${tomee.version}-webprofile.zip</url>
+							<url>http://www.us.apache.org/dist/tomee/tomee-${tomee.version}/apache-tomee-${tomee.version}-webprofile.zip</url>
 						</zipUrlInstaller>
 					</container>
 					<configuration>
