@@ -31,21 +31,22 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.InitParameterConfiguringServletContextInitializer;
-import org.springframework.boot.context.embedded.JspServlet;
-import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.*;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
+
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
+import io.undertow.servlet.api.DeploymentInfo;
 
 /**
  * {@link ConfigurationProperties} for a web server (e.g. port and path settings). Will be
@@ -56,6 +57,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Ivan Sopov
+ * @author Marcos Barbero
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
@@ -575,6 +577,45 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		private Boolean directBuffers;
 
+		/**
+		 * Format pattern for access logs.
+		 */
+		private String accessLogPattern;
+
+		/**
+		 * Enable access log.
+		 */
+		private boolean accessLogEnabled = false;
+
+		/**
+		 * Undertow base directory. If not specified a temporary directory will be used.
+		 */
+		private File basedir;
+
+		public String getAccessLogPattern() {
+			return accessLogPattern;
+		}
+
+		public void setAccessLogPattern(String accessLogPattern) {
+			this.accessLogPattern = accessLogPattern;
+		}
+
+		public boolean isAccessLogEnabled() {
+			return accessLogEnabled;
+		}
+
+		public void setAccessLogEnabled(boolean accessLogEnabled) {
+			this.accessLogEnabled = accessLogEnabled;
+		}
+
+		public File getBasedir() {
+			return basedir;
+		}
+
+		public void setBasedir(File basedir) {
+			this.basedir = basedir;
+		}
+
 		public Integer getBufferSize() {
 			return this.bufferSize;
 		}
@@ -615,12 +656,19 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.directBuffers = directBuffers;
 		}
 
-		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
+		void customizeUndertow(final UndertowEmbeddedServletContainerFactory factory) {
 			factory.setBufferSize(this.bufferSize);
 			factory.setBuffersPerRegion(this.buffersPerRegion);
 			factory.setIoThreads(this.ioThreads);
 			factory.setWorkerThreads(this.workerThreads);
 			factory.setDirectBuffers(this.directBuffers);
+
+			if (isAccessLogEnabled()) {
+				factory.setBaseDirectory(this.basedir);
+				factory.setAccessLogPattern(this.accessLogPattern);
+				factory.setAccessLogEnabled(this.accessLogEnabled);
+			}
+
 		}
 
 	}

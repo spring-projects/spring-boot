@@ -16,61 +16,42 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
-import io.undertow.Undertow;
-import io.undertow.Undertow.Builder;
-import io.undertow.UndertowMessages;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
-import io.undertow.server.handlers.resource.FileResourceManager;
-import io.undertow.server.handlers.resource.Resource;
-import io.undertow.server.handlers.resource.ResourceChangeListener;
-import io.undertow.server.handlers.resource.ResourceManager;
-import io.undertow.server.handlers.resource.URLResource;
-import io.undertow.server.session.SessionManager;
-import io.undertow.servlet.Servlets;
-import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.servlet.api.MimeMapping;
-import io.undertow.servlet.api.ServletContainerInitializerInfo;
-import io.undertow.servlet.api.ServletStackTraces;
-import io.undertow.servlet.handlers.DefaultServlet;
-import io.undertow.servlet.util.ImmediateInstanceFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.*;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
+import org.springframework.boot.context.embedded.*;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
-import org.xnio.Options;
-import org.xnio.SslClientAuthMode;
+import org.xnio.*;
+
+import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
+import io.undertow.UndertowMessages;
+import io.undertow.server.handlers.resource.*;
+import io.undertow.server.session.SessionManager;
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.*;
+import io.undertow.servlet.handlers.DefaultServlet;
+import io.undertow.servlet.util.ImmediateInstanceFactory;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -81,8 +62,9 @@ import org.xnio.SslClientAuthMode;
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
- * @since 1.2.0
+ * @author Marcos Barbero
  * @see UndertowEmbeddedServletContainer
+ * @since 1.2.0
  */
 public class UndertowEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
@@ -104,6 +86,12 @@ public class UndertowEmbeddedServletContainerFactory extends
 	private Integer workerThreads;
 
 	private Boolean directBuffers;
+
+	private File baseDirectory;
+
+	private String accessLogPattern;
+
+	private boolean accessLogEnabled = false;
 
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
@@ -236,6 +224,30 @@ public class UndertowEmbeddedServletContainerFactory extends
 		return builder;
 	}
 
+	// configure access_log
+	private void configureAccessLog(DeploymentInfo deploymentInfo) {
+		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+			@Override
+			public HttpHandler wrap(HttpHandler handler) {
+				try {
+					Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
+					XnioWorker worker = xnio.createWorker(OptionMap.builder().getMap());
+					File baseDir = (baseDirectory != null ? baseDirectory
+							: createTempDir("undertow"));
+					String formatString = (accessLogPattern != null) ? accessLogPattern
+							: "common";
+					DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
+							worker, baseDir, "access_log");
+					return new AccessLogHandler(handler, accessLogReceiver, formatString,
+							Undertow.class.getClassLoader());
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+		});
+	}
+
 	private void configureSsl(Ssl ssl, int port, Builder builder) {
 		try {
 			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
@@ -336,6 +348,9 @@ public class UndertowEmbeddedServletContainerFactory extends
 		configureMimeMappings(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
+		}
+		if (isAccessLogEnabled()) {
+			configureAccessLog(deployment);
 		}
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
 		manager.deploy();
@@ -442,6 +457,22 @@ public class UndertowEmbeddedServletContainerFactory extends
 		this.directBuffers = directBuffers;
 	}
 
+	public void setBaseDirectory(File baseDirectory) {
+		this.baseDirectory = baseDirectory;
+	}
+
+	public void setAccessLogPattern(String accessLogPattern) {
+		this.accessLogPattern = accessLogPattern;
+	}
+
+	public void setAccessLogEnabled(boolean accessLogEnabled) {
+		this.accessLogEnabled = accessLogEnabled;
+	}
+
+	public boolean isAccessLogEnabled() {
+		return accessLogEnabled;
+	}
+
 	/**
 	 * Undertow {@link ResourceManager} for JAR resources.
 	 */
@@ -510,5 +541,4 @@ public class UndertowEmbeddedServletContainerFactory extends
 		}
 
 	}
-
 }
