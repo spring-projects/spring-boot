@@ -33,27 +33,30 @@ import org.springframework.web.cors.CorsConfiguration;
 public class MvcEndpointCorsProperties {
 
 	/**
-	 * List of origins to allow.
+	 * Comma-separated list of origins to allow. '*' allows all origins. When
+	 * not set, CORS support is disabled.
 	 */
 	private List<String> allowedOrigins = new ArrayList<String>();
 
 	/**
-	 * List of methods to allow.
+	 * Comma-separated list of methods to allow. '*' allows all methods. When
+	 * not set, defaults to GET.
 	 */
 	private List<String> allowedMethods = new ArrayList<String>();
 
 	/**
-	 * List of headers to allow in a request
+	 * Comma-separated list of headers to allow in a request. '*' allows all
+	 * headers.
 	 */
 	private List<String> allowedHeaders = new ArrayList<String>();
 
 	/**
-	 * List of headers to include in a response.
+	 * Comma-separated list of headers to include in a response.
 	 */
 	private List<String> exposedHeaders = new ArrayList<String>();
 
 	/**
-	 * Whether credentials are supported
+	 * Set whether credentials are supported. When not set, credentials are not supported.
 	 */
 	private Boolean allowCredentials;
 
