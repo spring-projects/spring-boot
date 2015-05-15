@@ -131,6 +131,13 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	private File classesDirectory;
 
 	/**
+	 * Flag to include the test classpath when running.
+	 * @since 1.3
+	 */
+	@Parameter(property = "useTestClasspath", defaultValue = "false")
+	private Boolean useTestClasspath;
+
+	/**
 	 * Flag to indicate if the run processes should be forked. By default process forking
 	 * is only used if an agent or jvmArguments are specified.
 	 * @since 1.2
@@ -312,7 +319,7 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 
 	private void addDependencies(List<URL> urls) throws MalformedURLException,
 			MojoExecutionException {
-		FilterArtifacts filters = getFilters(new TestArtifactFilter());
+		FilterArtifacts filters = this.useTestClasspath ? getFilters() : getFilters(new TestArtifactFilter());
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), filters);
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {
