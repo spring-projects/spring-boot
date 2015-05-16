@@ -132,8 +132,19 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	/**
+	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
+	 * applied to the Undertow {@link Builder} .
+	 *
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
+		return this.builderCustomizers;
+	}
+
+	/**
 	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
 	 * {@link Builder}. Calling this method will replace any existing customizers.
+	 *
 	 * @param customizers the customizers to set
 	 */
 	public void setBuilderCustomizers(
@@ -143,17 +154,11 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
-	 * applied to the Undertow {@link Builder} .
-	 * @return the customizers that will be applied
-	 */
-	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
-		return this.builderCustomizers;
-	}
-
-	/**
 	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
 	 * Undertow {@link Builder}.
+	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
+	 * Undertow {@link Builder}.
+	 *
 	 * @param customizers the customizers to add
 	 */
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
@@ -165,6 +170,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 * Set {@link UndertowDeploymentInfoCustomizer}s that should be applied to the
 	 * Undertow {@link DeploymentInfo}. Calling this method will replace any existing
 	 * customizers.
+	 *
 	 * @param customizers the customizers to set
 	 */
 	public void setDeploymentInfoCustomizers(
@@ -186,6 +192,9 @@ public class UndertowEmbeddedServletContainerFactory extends
 	/**
 	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
 	 * Undertow {@link DeploymentInfo}.
+	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
+	 * Undertow {@link DeploymentInfo}.
+	 *
 	 * @param customizers the customizers to add
 	 */
 	public void addDeploymentInfoCustomizers(
@@ -430,6 +439,10 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 * Subclasses can override this method to return a different
 	 * {@link UndertowEmbeddedServletContainer} or apply additional processing to the
 	 * {@link Builder} and {@link DeploymentManager} used to bootstrap Undertow
+<<<<<<< HEAD
+=======
+	 *
+>>>>>>> Code formatting.
 	 * @param builder the builder
 	 * @param manager the deployment manager
 	 * @param port the port that Undertow should listen on
@@ -466,20 +479,42 @@ public class UndertowEmbeddedServletContainerFactory extends
 		this.directBuffers = directBuffers;
 	}
 
+	/**
+	 * Set the Undertow base directory. If not specified a temporary directory will be
+	 * used.
+	 *
+	 * @param baseDirectory the tomcat base directory
+	 */
 	public void setBaseDirectory(File baseDirectory) {
 		this.baseDirectory = baseDirectory;
 	}
 
+	/**
+	 * Set the access log pattern.
+	 *
+	 * @param accessLogPattern The pattern for access log
+	 */
 	public void setAccessLogPattern(String accessLogPattern) {
 		this.accessLogPattern = accessLogPattern;
 	}
 
-	public void setAccessLogEnabled(boolean accessLogEnabled) {
-		this.accessLogEnabled = accessLogEnabled;
-	}
-
+	/**
+	 * Get access log configuration.
+	 *
+	 * @return Getter for access_log flag.
+	 */
 	public boolean isAccessLogEnabled() {
 		return accessLogEnabled;
+	}
+
+	/**
+	 * Flag to turn on/off the access_log.
+	 *
+	 * @param accessLogEnabled The flag value
+	 */
+	public void setAccessLogEnabled(boolean accessLogEnabled) {
+
+		this.accessLogEnabled = accessLogEnabled;
 	}
 
 	/**
