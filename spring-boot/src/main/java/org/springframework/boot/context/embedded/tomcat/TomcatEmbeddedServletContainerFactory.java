@@ -79,6 +79,8 @@ import org.springframework.util.StringUtils;
  * @author Brock Mills
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Marcos Barbero
+ *
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
