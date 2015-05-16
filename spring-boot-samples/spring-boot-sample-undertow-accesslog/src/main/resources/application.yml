@@ -1,4 +1,0 @@
-server:
-  port: 8080
-  undertow:
-    access-log-enabled: true
