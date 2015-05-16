@@ -16,11 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import io.undertow.server.HandlerWrapper;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.accesslog.AccessLogHandler;
-import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
-import io.undertow.servlet.api.DeploymentInfo;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
@@ -32,7 +27,6 @@ import org.springframework.boot.context.embedded.*;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -635,28 +629,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
             factory.setWorkerThreads(this.workerThreads);
             factory.setDirectBuffers(this.directBuffers);
 
-
             if (isAccessLogEnabled()) {
                 factory.setBaseDirectory(this.basedir);
-
-                factory.addDeploymentInfoCustomizers(new UndertowDeploymentInfoCustomizer() {
-                    @Override
-                    public void customize(final DeploymentInfo deploymentInfo) {
-                        deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
-                            @Override
-                            public HttpHandler wrap(HttpHandler handler) {
-                                String formatString = (accessLogPattern != null) ? accessLogPattern : "common";
-
-                                DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(deploymentInfo.getExecutor(), getBasedir(), "access_log");
-
-                                return new AccessLogHandler(handler, accessLogReceiver, formatString, deploymentInfo.getClassLoader());
-                            }
-                        });
-                    }
-                });
+                factory.setAccessLogPattern(this.accessLogPattern);
+                factory.setAccessLogEnabled(this.accessLogEnabled);
             }
-
-
         }
 
     }

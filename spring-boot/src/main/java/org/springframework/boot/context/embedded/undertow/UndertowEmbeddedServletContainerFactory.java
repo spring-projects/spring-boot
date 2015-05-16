@@ -19,6 +19,10 @@ package org.springframework.boot.context.embedded.undertow;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowMessages;
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import io.undertow.server.handlers.resource.*;
 import io.undertow.server.session.SessionManager;
 import io.undertow.servlet.Servlets;
@@ -33,8 +37,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
-import org.xnio.Options;
-import org.xnio.SslClientAuthMode;
+import org.xnio.*;
 
 import javax.net.ssl.*;
 import javax.servlet.ServletContainerInitializer;
@@ -85,6 +88,8 @@ public class UndertowEmbeddedServletContainerFactory extends
     private File baseDirectory;
 
     private String accessLogPattern;
+
+    private boolean accessLogEnabled = false;
 
     /**
      * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
@@ -198,10 +203,29 @@ public class UndertowEmbeddedServletContainerFactory extends
     /**
      * Set the access log pattern.
      *
-     * @param accessLogPattern
+     * @param accessLogPattern The pattern for access log
      */
     public void setAccessLogPattern(String accessLogPattern) {
         this.accessLogPattern = accessLogPattern;
+    }
+
+    /**
+     * Get access log configuration.
+     *
+     * @return Getter for access_log flag.
+     */
+    public boolean isAccessLogEnabled() {
+        return accessLogEnabled;
+    }
+
+    /**
+     * Flag to turn on/off the access_log.
+     *
+     * @param accessLogEnabled The flag value
+     */
+    public void setAccessLogEnabled(boolean accessLogEnabled) {
+
+        this.accessLogEnabled = accessLogEnabled;
     }
 
     @Override
@@ -209,20 +233,9 @@ public class UndertowEmbeddedServletContainerFactory extends
             ServletContextInitializer... initializers) {
         DeploymentManager manager = createDeploymentManager(initializers);
         int port = getPort();
-        File baseDir = (this.baseDirectory != null ? this.baseDirectory
-                : createTempDir("undertow"));
-
-//		Undertow undertow = new Undertow();
-//		tomcat.setBaseDir(baseDir.getAbsolutePath());
-
         Builder builder = createBuilder(port);
-
-
-
-        UndertowEmbeddedServletContainer container = new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
+        return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
                 port, port >= 0);
-
-        return container;
     }
 
     private Builder createBuilder(int port) {
@@ -250,6 +263,7 @@ public class UndertowEmbeddedServletContainerFactory extends
         for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
             customizer.customize(builder);
         }
+
         return builder;
     }
 
@@ -265,6 +279,25 @@ public class UndertowEmbeddedServletContainerFactory extends
         } catch (KeyManagementException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+
+    // configure access_log
+    private void configureAccessLog(DeploymentInfo deploymentInfo) {
+        deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+            @Override
+            public HttpHandler wrap(HttpHandler handler) {
+                try {
+                    Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
+                    XnioWorker worker = xnio.createWorker(OptionMap.builder().getMap());
+                    File baseDir = (baseDirectory != null ? baseDirectory : createTempDir("undertow"));
+                    String formatString = (accessLogPattern != null) ? accessLogPattern : "common";
+                    DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(worker, baseDir, "access_log");
+                    return new AccessLogHandler(handler, accessLogReceiver, formatString, Undertow.class.getClassLoader());
+                } catch (IOException ex) {
+                    throw new IllegalStateException(ex);
+                }
+            }
+        });
     }
 
     private String getListenAddress() {
@@ -349,6 +382,7 @@ public class UndertowEmbeddedServletContainerFactory extends
         for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
             customizer.customize(deployment);
         }
+        if (isAccessLogEnabled()) { configureAccessLog(deployment); }
         DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
         manager.deploy();
         SessionManager sessionManager = manager.getDeployment().getSessionManager();
