@@ -41,12 +41,6 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
 
-import io.undertow.server.HandlerWrapper;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.accesslog.AccessLogHandler;
-import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
-import io.undertow.servlet.api.DeploymentInfo;
-
 /**
  * {@link ConfigurationProperties} for a web server (e.g. port and path settings). Will be
  * used to customize an {@link EmbeddedServletContainerFactory} when an
@@ -61,44 +55,25 @@ import io.undertow.servlet.api.DeploymentInfo;
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
 
-<<<<<<< HEAD
-=======
-	private final Tomcat tomcat = new Tomcat();
-	private final Undertow undertow = new Undertow();
-	/**
-	 * ServletContext parameters.
-	 */
-	private final Map<String, String> contextParameters = new HashMap<String, String>();
->>>>>>> Code formatting.
 	/**
 	 * Server HTTP port.
 	 */
 	private Integer port;
-<<<<<<< HEAD
 
-=======
->>>>>>> Code formatting.
 	/**
 	 * Network address to which the server should bind to.
 	 */
 	private InetAddress address;
-<<<<<<< HEAD
 
-=======
->>>>>>> Code formatting.
 	/**
 	 * Session timeout in seconds.
 	 */
 	private Integer sessionTimeout;
-<<<<<<< HEAD
 
-=======
->>>>>>> Code formatting.
 	/**
 	 * Context path of the application.
 	 */
 	private String contextPath;
-<<<<<<< HEAD
 
 	/**
 	 * Display name of the application.
@@ -108,34 +83,24 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
-=======
-	@NestedConfigurationProperty
-	private Ssl ssl;
->>>>>>> Code formatting.
 	/**
 	 * Path of the main dispatcher servlet.
 	 */
 	@NotNull
 	private String servletPath = "/";
-<<<<<<< HEAD
 
 	private final Tomcat tomcat = new Tomcat();
 
 	private final Undertow undertow = new Undertow();
-
-	@NestedConfigurationProperty
-	private JspServlet jspServlet;
 
 	/**
 	 * ServletContext parameters.
 	 */
 	private final Map<String, String> contextParameters = new HashMap<String, String>();
 
-=======
 	@NestedConfigurationProperty
 	private JspServlet jspServlet;
 
->>>>>>> Code formatting.
 	@Override
 	public int getOrder() {
 		return 0;
@@ -157,7 +122,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		this.contextPath = contextPath;
 	}
 
-<<<<<<< HEAD
 	public String getDisplayName() {
 		return this.displayName;
 	}
@@ -166,19 +130,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		this.displayName = displayName;
 	}
 
-=======
->>>>>>> Code formatting.
 	public String getServletPath() {
 		return this.servletPath;
 	}
 
-<<<<<<< HEAD
-=======
 	public void setServletPath(String servletPath) {
 		this.servletPath = servletPath;
 	}
 
->>>>>>> Code formatting.
 	public String getServletMapping() {
 		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
 			return "/";
@@ -203,13 +162,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		return result;
 	}
 
-<<<<<<< HEAD
-	public void setServletPath(String servletPath) {
-		this.servletPath = servletPath;
-	}
-
-=======
->>>>>>> Code formatting.
 	public Integer getPort() {
 		return this.port;
 	}
@@ -269,12 +221,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		if (getContextPath() != null) {
 			container.setContextPath(getContextPath());
 		}
-<<<<<<< HEAD
 		if (getDisplayName() != null) {
 			container.setDisplayName(getDisplayName());
 		}
-=======
->>>>>>> Code formatting.
 		if (getSessionTimeout() != null) {
 			container.setSessionTimeout(getSessionTimeout());
 		}
@@ -712,15 +661,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 				factory.setAccessLogPattern(this.accessLogPattern);
 				factory.setAccessLogEnabled(this.accessLogEnabled);
 			}
-<<<<<<< HEAD
-
 		}
 
 	}
-=======
-		}
-
-	}
-
->>>>>>> Code formatting.
 }

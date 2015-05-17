@@ -29,19 +29,6 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import io.undertow.Undertow;
-import io.undertow.Undertow.Builder;
-import io.undertow.UndertowMessages;
-import io.undertow.server.HandlerWrapper;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.accesslog.AccessLogHandler;
-import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
-import io.undertow.server.handlers.resource.*;
-import io.undertow.server.session.SessionManager;
-import io.undertow.servlet.Servlets;
-import io.undertow.servlet.api.*;
-import io.undertow.servlet.handlers.DefaultServlet;
-import io.undertow.servlet.util.ImmediateInstanceFactory;
 import org.springframework.boot.context.embedded.*;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
@@ -55,6 +42,10 @@ import org.xnio.*;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowMessages;
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import io.undertow.server.handlers.resource.*;
 import io.undertow.server.session.SessionManager;
 import io.undertow.servlet.Servlets;
@@ -113,6 +104,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} that listens for
 	 * requests using the specified port.
+	 *
 	 * @param port the port to listen on
 	 */
 	public UndertowEmbeddedServletContainerFactory(int port) {
@@ -123,6 +115,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} with the specified
 	 * context path and port.
+	 *
 	 * @param contextPath root the context path
 	 * @param port the port to listen on
 	 */
@@ -156,14 +149,22 @@ public class UndertowEmbeddedServletContainerFactory extends
 	/**
 	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
 	 * Undertow {@link Builder}.
-	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
-	 * Undertow {@link Builder}.
 	 *
 	 * @param customizers the customizers to add
 	 */
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.builderCustomizers.addAll(Arrays.asList(customizers));
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
+	 * will be applied to the Undertow {@link DeploymentInfo} .
+	 *
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
+		return this.deploymentInfoCustomizers;
 	}
 
 	/**
@@ -181,17 +182,6 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
-	 * will be applied to the Undertow {@link DeploymentInfo} .
-	 * @return the customizers that will be applied
-	 */
-	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
-		return this.deploymentInfoCustomizers;
-	}
-
-	/**
-	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
-	 * Undertow {@link DeploymentInfo}.
 	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
 	 * Undertow {@link DeploymentInfo}.
 	 *
@@ -239,7 +229,24 @@ public class UndertowEmbeddedServletContainerFactory extends
 		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
 		}
+
 		return builder;
+	}
+
+	private void configureSsl(Ssl ssl, int port, Builder builder) {
+		try {
+			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
+			sslContext.init(getKeyManagers(), getTrustManagers(), null);
+			builder.addHttpsListener(port, getListenAddress(), sslContext);
+			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
+					getSslClientAuthMode(ssl));
+		}
+		catch (NoSuchAlgorithmException ex) {
+			throw new IllegalStateException(ex);
+		}
+		catch (KeyManagementException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	// configure access_log
@@ -264,22 +271,6 @@ public class UndertowEmbeddedServletContainerFactory extends
 				}
 			}
 		});
-	}
-
-	private void configureSsl(Ssl ssl, int port, Builder builder) {
-		try {
-			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
-			sslContext.init(getKeyManagers(), getTrustManagers(), null);
-			builder.addHttpsListener(port, getListenAddress(), sslContext);
-			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE,
-					getSslClientAuthMode(ssl));
-		}
-		catch (NoSuchAlgorithmException ex) {
-			throw new IllegalStateException(ex);
-		}
-		catch (KeyManagementException ex) {
-			throw new IllegalStateException(ex);
-		}
 	}
 
 	private String getListenAddress() {
@@ -439,10 +430,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 * Subclasses can override this method to return a different
 	 * {@link UndertowEmbeddedServletContainer} or apply additional processing to the
 	 * {@link Builder} and {@link DeploymentManager} used to bootstrap Undertow
-<<<<<<< HEAD
-=======
 	 *
->>>>>>> Code formatting.
 	 * @param builder the builder
 	 * @param manager the deployment manager
 	 * @param port the port that Undertow should listen on
