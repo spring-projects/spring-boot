@@ -16,14 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.validation.constraints.NotNull;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
@@ -31,13 +23,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.InitParameterConfiguringServletContextInitializer;
-import org.springframework.boot.context.embedded.JspServlet;
-import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.*;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -46,6 +32,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
+
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.net.InetAddress;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link ConfigurationProperties} for a web server (e.g. port and path settings). Will be
@@ -56,50 +49,42 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Ivan Sopov
+ * @author Marcos Barbero
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
 
+	private final Tomcat tomcat = new Tomcat();
+	private final Undertow undertow = new Undertow();
+	/**
+	 * ServletContext parameters.
+	 */
+	private final Map<String, String> contextParameters = new HashMap<String, String>();
 	/**
 	 * Server HTTP port.
 	 */
 	private Integer port;
-
 	/**
 	 * Network address to which the server should bind to.
 	 */
 	private InetAddress address;
-
 	/**
 	 * Session timeout in seconds.
 	 */
 	private Integer sessionTimeout;
-
 	/**
 	 * Context path of the application.
 	 */
 	private String contextPath;
-
 	@NestedConfigurationProperty
 	private Ssl ssl;
-
 	/**
 	 * Path of the main dispatcher servlet.
 	 */
 	@NotNull
 	private String servletPath = "/";
-
-	private final Tomcat tomcat = new Tomcat();
-
-	private final Undertow undertow = new Undertow();
-
 	@NestedConfigurationProperty
 	private JspServlet jspServlet;
-
-	/**
-	 * ServletContext parameters.
-	 */
-	private final Map<String, String> contextParameters = new HashMap<String, String>();
 
 	@Override
 	public int getOrder() {
@@ -126,6 +111,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		return this.servletPath;
 	}
 
+	public void setServletPath(String servletPath) {
+		this.servletPath = servletPath;
+	}
+
 	public String getServletMapping() {
 		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
 			return "/";
@@ -148,10 +137,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			result = result.substring(0, result.length() - 1);
 		}
 		return result;
-	}
-
-	public void setServletPath(String servletPath) {
-		this.servletPath = servletPath;
 	}
 
 	public Integer getPort() {
@@ -559,6 +544,45 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		private Boolean directBuffers;
 
+		/**
+		 * Format pattern for access logs.
+		 */
+		private String accessLogPattern;
+
+		/**
+		 * Enable access log.
+		 */
+		private boolean accessLogEnabled = false;
+
+		/**
+		 * Undertow base directory. If not specified a temporary directory will be used.
+		 */
+		private File basedir;
+
+		public String getAccessLogPattern() {
+			return accessLogPattern;
+		}
+
+		public void setAccessLogPattern(String accessLogPattern) {
+			this.accessLogPattern = accessLogPattern;
+		}
+
+		public boolean isAccessLogEnabled() {
+			return accessLogEnabled;
+		}
+
+		public void setAccessLogEnabled(boolean accessLogEnabled) {
+			this.accessLogEnabled = accessLogEnabled;
+		}
+
+		public File getBasedir() {
+			return basedir;
+		}
+
+		public void setBasedir(File basedir) {
+			this.basedir = basedir;
+		}
+
 		public Integer getBufferSize() {
 			return this.bufferSize;
 		}
@@ -599,12 +623,18 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.directBuffers = directBuffers;
 		}
 
-		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
+		void customizeUndertow(final UndertowEmbeddedServletContainerFactory factory) {
 			factory.setBufferSize(this.bufferSize);
 			factory.setBuffersPerRegion(this.buffersPerRegion);
 			factory.setIoThreads(this.ioThreads);
 			factory.setWorkerThreads(this.workerThreads);
 			factory.setDirectBuffers(this.directBuffers);
+
+			if (isAccessLogEnabled()) {
+				factory.setBaseDirectory(this.basedir);
+				factory.setAccessLogPattern(this.accessLogPattern);
+				factory.setAccessLogEnabled(this.accessLogEnabled);
+			}
 		}
 
 	}
