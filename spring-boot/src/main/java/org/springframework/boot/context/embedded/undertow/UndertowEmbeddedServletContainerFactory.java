@@ -16,61 +16,42 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
-import io.undertow.Undertow;
-import io.undertow.Undertow.Builder;
-import io.undertow.UndertowMessages;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
-import io.undertow.server.handlers.resource.FileResourceManager;
-import io.undertow.server.handlers.resource.Resource;
-import io.undertow.server.handlers.resource.ResourceChangeListener;
-import io.undertow.server.handlers.resource.ResourceManager;
-import io.undertow.server.handlers.resource.URLResource;
-import io.undertow.server.session.SessionManager;
-import io.undertow.servlet.Servlets;
-import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.servlet.api.MimeMapping;
-import io.undertow.servlet.api.ServletContainerInitializerInfo;
-import io.undertow.servlet.api.ServletStackTraces;
-import io.undertow.servlet.handlers.DefaultServlet;
-import io.undertow.servlet.util.ImmediateInstanceFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.*;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.*;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings.Mapping;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
-import org.xnio.Options;
-import org.xnio.SslClientAuthMode;
+import org.xnio.*;
+
+import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
+import io.undertow.UndertowMessages;
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
+import io.undertow.server.handlers.resource.*;
+import io.undertow.server.session.SessionManager;
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.*;
+import io.undertow.servlet.handlers.DefaultServlet;
+import io.undertow.servlet.util.ImmediateInstanceFactory;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -81,8 +62,9 @@ import org.xnio.SslClientAuthMode;
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
- * @since 1.2.0
+ * @author Marcos Barbero
  * @see UndertowEmbeddedServletContainer
+ * @since 1.2.0
  */
 public class UndertowEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
@@ -105,6 +87,12 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 	private Boolean directBuffers;
 
+	private File baseDirectory;
+
+	private String accessLogPattern;
+
+	private boolean accessLogEnabled = false;
+
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
 	 */
@@ -116,6 +104,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} that listens for
 	 * requests using the specified port.
+	 *
 	 * @param port the port to listen on
 	 */
 	public UndertowEmbeddedServletContainerFactory(int port) {
@@ -126,6 +115,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} with the specified
 	 * context path and port.
+	 *
 	 * @param contextPath root the context path
 	 * @param port the port to listen on
 	 */
@@ -135,8 +125,19 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	/**
+	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
+	 * applied to the Undertow {@link Builder} .
+	 *
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
+		return this.builderCustomizers;
+	}
+
+	/**
 	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
 	 * {@link Builder}. Calling this method will replace any existing customizers.
+	 *
 	 * @param customizers the customizers to set
 	 */
 	public void setBuilderCustomizers(
@@ -146,17 +147,9 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
-	 * applied to the Undertow {@link Builder} .
-	 * @return the customizers that will be applied
-	 */
-	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
-		return this.builderCustomizers;
-	}
-
-	/**
 	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
 	 * Undertow {@link Builder}.
+	 *
 	 * @param customizers the customizers to add
 	 */
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
@@ -165,9 +158,20 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	/**
+	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
+	 * will be applied to the Undertow {@link DeploymentInfo} .
+	 *
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
+		return this.deploymentInfoCustomizers;
+	}
+
+	/**
 	 * Set {@link UndertowDeploymentInfoCustomizer}s that should be applied to the
 	 * Undertow {@link DeploymentInfo}. Calling this method will replace any existing
 	 * customizers.
+	 *
 	 * @param customizers the customizers to set
 	 */
 	public void setDeploymentInfoCustomizers(
@@ -178,17 +182,9 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
-	 * will be applied to the Undertow {@link DeploymentInfo} .
-	 * @return the customizers that will be applied
-	 */
-	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
-		return this.deploymentInfoCustomizers;
-	}
-
-	/**
 	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
 	 * Undertow {@link DeploymentInfo}.
+	 *
 	 * @param customizers the customizers to add
 	 */
 	public void addDeploymentInfoCustomizers(
@@ -233,6 +229,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
 		}
+
 		return builder;
 	}
 
@@ -250,6 +247,30 @@ public class UndertowEmbeddedServletContainerFactory extends
 		catch (KeyManagementException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	// configure access_log
+	private void configureAccessLog(DeploymentInfo deploymentInfo) {
+		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+			@Override
+			public HttpHandler wrap(HttpHandler handler) {
+				try {
+					Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
+					XnioWorker worker = xnio.createWorker(OptionMap.builder().getMap());
+					File baseDir = (baseDirectory != null ? baseDirectory
+							: createTempDir("undertow"));
+					String formatString = (accessLogPattern != null) ? accessLogPattern
+							: "common";
+					DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
+							worker, baseDir, "access_log");
+					return new AccessLogHandler(handler, accessLogReceiver, formatString,
+							Undertow.class.getClassLoader());
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+		});
 	}
 
 	private String getListenAddress() {
@@ -337,6 +358,9 @@ public class UndertowEmbeddedServletContainerFactory extends
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
 		}
+		if (isAccessLogEnabled()) {
+			configureAccessLog(deployment);
+		}
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
@@ -406,6 +430,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 * Subclasses can override this method to return a different
 	 * {@link UndertowEmbeddedServletContainer} or apply additional processing to the
 	 * {@link Builder} and {@link DeploymentManager} used to bootstrap Undertow
+	 *
 	 * @param builder the builder
 	 * @param manager the deployment manager
 	 * @param port the port that Undertow should listen on
@@ -440,6 +465,44 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 	public void setDirectBuffers(Boolean directBuffers) {
 		this.directBuffers = directBuffers;
+	}
+
+	/**
+	 * Set the Undertow base directory. If not specified a temporary directory will be
+	 * used.
+	 *
+	 * @param baseDirectory the tomcat base directory
+	 */
+	public void setBaseDirectory(File baseDirectory) {
+		this.baseDirectory = baseDirectory;
+	}
+
+	/**
+	 * Set the access log pattern.
+	 *
+	 * @param accessLogPattern The pattern for access log
+	 */
+	public void setAccessLogPattern(String accessLogPattern) {
+		this.accessLogPattern = accessLogPattern;
+	}
+
+	/**
+	 * Get access log configuration.
+	 *
+	 * @return Getter for access_log flag.
+	 */
+	public boolean isAccessLogEnabled() {
+		return accessLogEnabled;
+	}
+
+	/**
+	 * Flag to turn on/off the access_log.
+	 *
+	 * @param accessLogEnabled The flag value
+	 */
+	public void setAccessLogEnabled(boolean accessLogEnabled) {
+
+		this.accessLogEnabled = accessLogEnabled;
 	}
 
 	/**
@@ -510,5 +573,4 @@ public class UndertowEmbeddedServletContainerFactory extends
 		}
 
 	}
-
 }

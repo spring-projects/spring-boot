@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Marcos Barbero
  */
 public abstract class AbstractEmbeddedServletContainerFactory extends
 		AbstractConfigurableEmbeddedServletContainer implements
@@ -52,6 +53,25 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 
 	public AbstractEmbeddedServletContainerFactory(String contextPath, int port) {
 		super(contextPath, port);
+	}
+
+	/**
+	 * Create the embedded container temp dir if none is set.
+	 * @param prefix embedded container prefix
+	 * @return the temp dir.
+	 */
+	protected File createTempDir(String prefix) {
+		try {
+			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
+			tempFolder.delete();
+			tempFolder.mkdir();
+			tempFolder.deleteOnExit();
+			return tempFolder;
+		}
+		catch (IOException ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to create Tomcat tempdir", ex);
+		}
 	}
 
 	/**
