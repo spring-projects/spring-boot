@@ -16,40 +16,28 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import org.junit.After;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-import org.springframework.boot.actuate.metrics.CounterService;
-import org.springframework.boot.actuate.metrics.GaugeService;
-import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.buffer.BufferCounterService;
-import org.springframework.boot.actuate.metrics.buffer.BufferGaugeService;
-import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
-import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
-import org.springframework.boot.actuate.metrics.export.MetricExporters;
-import org.springframework.boot.actuate.metrics.reader.MetricReader;
-import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
-import org.springframework.boot.actuate.metrics.writer.MetricWriter;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.channel.FixedSubscriberChannel;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.MessagingException;
-import org.springframework.messaging.SubscribableChannel;
-
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+
+import org.junit.After;
+import org.junit.Test;
+import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.boot.actuate.metrics.buffer.BufferCounterService;
+import org.springframework.boot.actuate.metrics.buffer.BufferGaugeService;
+import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
+import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * Tests for {@link MetricRepositoryAutoConfiguration}.
@@ -82,36 +70,6 @@ public class MetricRepositoryAutoConfigurationTests {
 	}
 
 	@Test
-	public void defaultExporterWhenMessageChannelAvailable() throws Exception {
-		this.context = new AnnotationConfigApplicationContext(
-				MessageChannelConfiguration.class,
-				MetricRepositoryAutoConfiguration.class,
-				MetricsChannelAutoConfiguration.class,
-				MetricExportAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		MetricExporters exporter = this.context.getBean(MetricExporters.class);
-		assertNotNull(exporter);
-	}
-
-	@Test
-	public void provideAdditionalWriter() {
-		this.context = new AnnotationConfigApplicationContext(WriterConfig.class,
-				MetricRepositoryAutoConfiguration.class,
-				MetricExportAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		GaugeService gaugeService = this.context.getBean(GaugeService.class);
-		assertNotNull(gaugeService);
-		gaugeService.submit("foo", 2.7);
-		MetricExporters exporters = this.context.getBean(MetricExporters.class);
-		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters().get(
-				"writer");
-		exporter.setIgnoreTimestamps(true);
-		exporter.export();
-		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);
-		Mockito.verify(writer, Mockito.atLeastOnce()).set(Matchers.any(Metric.class));
-	}
-
-	@Test
 	public void dropwizardInstalledIfPresent() {
 		this.context = new AnnotationConfigApplicationContext(
 				MetricsDropwizardAutoConfiguration.class,
@@ -136,28 +94,6 @@ public class MetricRepositoryAutoConfigurationTests {
 				equalTo(0));
 		assertThat(this.context.getBeansOfType(BufferCounterService.class).size(),
 				equalTo(0));
-	}
-
-	@Configuration
-	public static class MessageChannelConfiguration {
-		@Bean
-		public SubscribableChannel metricsChannel() {
-			return new FixedSubscriberChannel(new MessageHandler() {
-				@Override
-				public void handleMessage(Message<?> message) throws MessagingException {
-				}
-			});
-		}
-	}
-
-	@Configuration
-	public static class WriterConfig {
-
-		@Bean
-		public MetricWriter writer() {
-			return Mockito.mock(MetricWriter.class);
-		}
-
 	}
 
 	@Configuration
