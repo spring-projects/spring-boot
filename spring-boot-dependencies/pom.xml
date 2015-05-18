@@ -84,7 +84,7 @@
 		<httpclient.version>4.4.1</httpclient.version>
 		<infinispan.version>7.2.1.Final</infinispan.version>
 		<jackson.version>2.5.3</jackson.version>
-		<janino.version>2.6.1</janino.version>
+		<janino.version>2.7.8</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
 		<javax-mail.version>1.5.3</javax-mail.version>
