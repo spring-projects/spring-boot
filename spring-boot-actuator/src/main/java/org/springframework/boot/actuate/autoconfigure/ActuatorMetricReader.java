@@ -37,6 +37,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface ActuatorMetricRepository {
+public @interface ActuatorMetricReader {
 
 }

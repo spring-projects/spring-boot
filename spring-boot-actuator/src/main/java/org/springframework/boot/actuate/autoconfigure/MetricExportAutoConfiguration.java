@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,11 +49,11 @@ public class MetricExportAutoConfiguration {
 	private MetricExportProperties metrics;
 
 	@Autowired(required = false)
-	@ActuatorMetricRepository
-	private MetricWriter actuatorMetricRepository;
+	@ActuatorMetricWriter
+	private List<MetricWriter> actuatorMetrics = Collections.emptyList();
 
 	@Autowired(required = false)
-	@ActuatorMetricRepository
+	@ActuatorMetricReader
 	private MetricReader reader;
 
 	@Bean
@@ -61,12 +62,9 @@ public class MetricExportAutoConfiguration {
 		Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>();
 		if (this.reader != null) {
 			writers.putAll(this.writers);
-			if (this.actuatorMetricRepository != null
-					&& writers.containsValue(this.actuatorMetricRepository)) {
-				for (String name : this.writers.keySet()) {
-					if (writers.get(name).equals(this.actuatorMetricRepository)) {
-						writers.remove(name);
-					}
+			for (String name : this.writers.keySet()) {
+				if (this.actuatorMetrics.contains(writers.get(name))) {
+					writers.remove(name);
 				}
 			}
 			MetricExporters exporters = new MetricExporters(this.reader, writers,
@@ -80,5 +78,4 @@ public class MetricExportAutoConfiguration {
 			}
 		};
 	}
-
 }

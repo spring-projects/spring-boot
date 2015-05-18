@@ -90,7 +90,7 @@ public class MetricRepositoryAutoConfiguration {
 	static class LegacyMetricServicesConfiguration {
 
 		@Autowired
-		@ActuatorMetricRepository
+		@ActuatorMetricReader
 		private MetricWriter writer;
 
 		@Bean
@@ -125,7 +125,7 @@ public class MetricRepositoryAutoConfiguration {
 		}
 
 		@Bean
-		@ActuatorMetricRepository
+		@ActuatorMetricReader
 		@ConditionalOnMissingBean
 		public BufferMetricReader actuatorMetricReader(CounterBuffers counters,
 				GaugeBuffers gauges) {
@@ -151,7 +151,7 @@ public class MetricRepositoryAutoConfiguration {
 	static class LegacyMetricRepositoryConfiguration {
 
 		@Bean
-		@ActuatorMetricRepository
+		@ActuatorMetricReader
 		public InMemoryMetricRepository actuatorMetricRepository() {
 			return new InMemoryMetricRepository();
 		}
