@@ -71,7 +71,8 @@ public class MetricExportAutoConfiguration {
 
 		MetricReader reader = this.endpointReader;
 		if (reader == null && this.readers != null && !this.readers.isEmpty()) {
-			reader = new CompositeMetricReader(this.readers.toArray(new MetricReader[0]));
+			reader = new CompositeMetricReader(
+					this.readers.toArray(new MetricReader[this.readers.size()]));
 		}
 
 		if (reader != null) {
