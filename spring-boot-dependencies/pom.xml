@@ -145,7 +145,7 @@
 		<thymeleaf-layout-dialect.version>1.2.8</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>1.3</thymeleaf-extras-data-attribute.version>
 		<tomcat.version>8.0.22</tomcat.version>
-		<undertow.version>1.2.4.Final</undertow.version>
+		<undertow.version>1.2.6.Final</undertow.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
