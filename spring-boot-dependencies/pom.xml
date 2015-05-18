@@ -109,7 +109,7 @@
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>2.13.0</mongodb.version>
 		<mysql.version>5.1.35</mysql.version>
-		<nekohtml.version>1.9.21</nekohtml.version>
+		<nekohtml.version>1.9.22</nekohtml.version>
 		<postgresql.version>9.4-1201-jdbc41</postgresql.version>
 		<reactor.version>2.0.1.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.1.RELEASE</reactor-spring.version>
