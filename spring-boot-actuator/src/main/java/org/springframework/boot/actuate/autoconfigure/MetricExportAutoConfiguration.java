@@ -69,8 +69,8 @@ public class MetricExportAutoConfiguration {
 
 		Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>();
 
-		MetricReader reader = endpointReader;
-		if (reader == null && !this.readers.isEmpty()) {
+		MetricReader reader = this.endpointReader;
+		if (reader == null && this.readers != null && !this.readers.isEmpty()) {
 			reader = new CompositeMetricReader(this.readers.toArray(new MetricReader[0]));
 		}
 
