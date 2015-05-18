@@ -61,7 +61,7 @@
 		<crashub.version>1.3.1</crashub.version>
 		<derby.version>10.10.2.0</derby.version>
 		<dropwizard-metrics.version>3.1.2</dropwizard-metrics.version>
-		<ehcache.version>2.9.1</ehcache.version>
+		<ehcache.version>2.10.0</ehcache.version>
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.22</freemarker.version>
 		<ecj.version>4.4.2</ecj.version>
