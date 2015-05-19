@@ -17,6 +17,7 @@
 package org.test;
 
 import java.lang.management.ManagementFactory;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -47,7 +48,6 @@ public class SampleApplication {
 			}
 			waitAttempts++;
 		}
-		System.out.println("Application has terminated gracefully");
 	}
 
 
@@ -67,6 +67,7 @@ public class SampleApplication {
 
 		@Override
 		public boolean isReady() {
+			System.out.println("isReady: " + this.ready);
 			return this.ready;
 		}
 
