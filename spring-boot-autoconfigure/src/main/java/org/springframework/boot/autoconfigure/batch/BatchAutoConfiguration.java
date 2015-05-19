@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ import org.springframework.util.StringUtils;
  * JobRegistry.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
@@ -102,6 +103,10 @@ public class BatchAutoConfiguration {
 	public JobExplorer jobExplorer(DataSource dataSource) throws Exception {
 		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
 		factory.setDataSource(dataSource);
+		String tablePrefix = this.properties.getTablePrefix();
+		if (StringUtils.hasText(tablePrefix)) {
+			factory.setTablePrefix(tablePrefix);
+		}
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}
@@ -126,6 +131,9 @@ public class BatchAutoConfiguration {
 	@Configuration
 	protected static class JpaBatchConfiguration {
 
+		@Autowired
+		private BatchProperties properties;
+
 		// The EntityManagerFactory may not be discoverable by type when this condition
 		// is evaluated, so we need a well-known bean name. This is the one used by Spring
 		// Boot in the JPA auto configuration.
@@ -133,13 +141,13 @@ public class BatchAutoConfiguration {
 		@ConditionalOnBean(name = "entityManagerFactory")
 		public BatchConfigurer jpaBatchConfigurer(DataSource dataSource,
 				EntityManagerFactory entityManagerFactory) {
-			return new BasicBatchConfigurer(dataSource, entityManagerFactory);
+			return new BasicBatchConfigurer(this.properties, dataSource, entityManagerFactory);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "entityManagerFactory")
 		public BatchConfigurer basicBatchConfigurer(DataSource dataSource) {
-			return new BasicBatchConfigurer(dataSource);
+			return new BasicBatchConfigurer(this.properties, dataSource);
 		}
 
 	}

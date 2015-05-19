@@ -58,10 +58,20 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		AnnotationAwareOrderComparator.sort(this.publicMetrics);
 	}
 
+	public void registerPublicMetrics(PublicMetrics metrics) {
+		this.publicMetrics.add(metrics);
+		AnnotationAwareOrderComparator.sort(this.publicMetrics);
+	}
+
+	public void unregisterPublicMetrics(PublicMetrics metrics) {
+		this.publicMetrics.remove(metrics);
+	}
+
 	@Override
 	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		for (PublicMetrics publicMetric : this.publicMetrics) {
+		List<PublicMetrics> metrics = new ArrayList<PublicMetrics>(this.publicMetrics);
+		for (PublicMetrics publicMetric : metrics) {
 			try {
 				for (Metric<?> metric : publicMetric.metrics()) {
 					result.put(metric.getName(), metric.getValue());

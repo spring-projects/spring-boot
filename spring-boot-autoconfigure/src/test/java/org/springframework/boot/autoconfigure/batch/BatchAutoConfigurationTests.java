@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -209,6 +209,24 @@ public class BatchAutoConfigurationTests {
 		// Ensure the JobRepository can be used (no problem with isolation level)
 		assertNull(this.context.getBean(JobRepository.class).getLastJobExecution("job",
 				new JobParameters()));
+	}
+
+	@Test
+	public void testRenamePrefix() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+			"spring.datasource.name:batchtest",
+			"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
+			"spring.batch.tablePrefix:PREFIX_");
+		this.context.register(TestConfiguration.class,
+			EmbeddedDataSourceConfiguration.class,
+			HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(JobLauncher.class));
+		assertNotNull(this.context.getBean(JobExplorer.class));
+		assertEquals(0, new JdbcTemplate(this.context.getBean(DataSource.class))
+			.queryForList("select * from PREFIX_JOB_EXECUTION").size());
 	}
 
 	@Configuration

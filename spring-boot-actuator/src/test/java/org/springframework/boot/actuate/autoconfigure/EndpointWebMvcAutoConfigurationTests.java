@@ -148,7 +148,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", ports.get().management, "endpointoutput");
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
 				this.applicationContext.getBean(EndpointHandlerMapping.class),
-				"interceptors");
+				"handlerInterceptors");
 		assertEquals(1, interceptors.size());
 		this.applicationContext.close();
 		assertAllClosed();

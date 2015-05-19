@@ -18,15 +18,19 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
 import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.export.MetricExporters;
+import org.springframework.boot.actuate.metrics.reader.CompositeMetricReader;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -39,6 +43,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(value = "spring.metrics.export.enabled", matchIfMissing = true)
+@EnableConfigurationProperties(MetricExportProperties.class)
 public class MetricExportAutoConfiguration {
 
 	@Autowired(required = false)
@@ -48,37 +53,46 @@ public class MetricExportAutoConfiguration {
 	private MetricExportProperties metrics;
 
 	@Autowired(required = false)
-	@ActuatorMetricRepository
-	private MetricWriter actuatorMetricRepository;
+	@ActuatorMetricWriter
+	private List<MetricWriter> actuatorMetrics = Collections.emptyList();
 
 	@Autowired(required = false)
-	@ActuatorMetricRepository
-	private MetricReader reader;
+	@ActuatorMetricReader
+	private List<MetricReader> readers;
+
+	@Autowired(required = false)
+	private MetricsEndpointMetricReader endpointReader;
 
 	@Bean
 	@ConditionalOnMissingBean
 	public SchedulingConfigurer metricWritersMetricExporter() {
+
 		Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>();
-		if (this.reader != null) {
+
+		MetricReader reader = this.endpointReader;
+		if (reader == null && this.readers != null && !this.readers.isEmpty()) {
+			reader = new CompositeMetricReader(
+					this.readers.toArray(new MetricReader[this.readers.size()]));
+		}
+
+		if (reader != null) {
 			writers.putAll(this.writers);
-			if (this.actuatorMetricRepository != null
-					&& writers.containsValue(this.actuatorMetricRepository)) {
-				for (String name : this.writers.keySet()) {
-					if (writers.get(name).equals(this.actuatorMetricRepository)) {
-						writers.remove(name);
-					}
+			for (String name : this.writers.keySet()) {
+				if (this.actuatorMetrics.contains(writers.get(name))) {
+					writers.remove(name);
 				}
 			}
-			MetricExporters exporters = new MetricExporters(this.reader, writers,
-					this.metrics);
+			MetricExporters exporters = new MetricExporters(reader, writers, this.metrics);
 			return exporters;
 		}
+
 		return new SchedulingConfigurer() {
 
 			@Override
 			public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 			}
 		};
+
 	}
 
 }
