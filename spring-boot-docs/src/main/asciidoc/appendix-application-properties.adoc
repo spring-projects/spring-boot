@@ -450,11 +450,12 @@ content into your application; rather pick only the properties that you need.
 	spring.mail.default-encoding=UTF-8 # encoding to use for MimeMessages
 	spring.mail.properties.*= # properties to set on the JavaMail session
 
-	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchDatabaseInitializer.{sc-ext}[BatchDatabaseInitializer])
+	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
 	spring.batch.job.names=job1,job2
 	spring.batch.job.enabled=true
 	spring.batch.initializer.enabled=true
 	spring.batch.schema= # batch schema to load
+	spring.batch.table-prefix= # table prefix for all the batch meta-data tables
 
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
 	spring.cache.type= # generic, ehcache, hazelcast, jcache, redis, guava, simple, none

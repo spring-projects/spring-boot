@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
@@ -43,9 +42,11 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Component
-public class BasicBatchConfigurer implements BatchConfigurer {
+class BasicBatchConfigurer implements BatchConfigurer {
 
 	private static Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
+
+	private final BatchProperties properties;
 
 	private final DataSource dataSource;
 
@@ -59,15 +60,12 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 
 	private JobExplorer jobExplorer;
 
-	@Autowired
-	private BatchProperties properties;
-
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
 	 * @param dataSource the underlying data source
 	 */
-	public BasicBatchConfigurer(DataSource dataSource) {
-		this(dataSource, null);
+	public BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
+		this(properties, dataSource, null);
 	}
 
 	/**
@@ -75,8 +73,9 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	 * @param dataSource the underlying data source
 	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */
-	public BasicBatchConfigurer(DataSource dataSource,
+	public BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
 			EntityManagerFactory entityManagerFactory) {
+		this.properties = properties;
 		this.entityManagerFactory = entityManagerFactory;
 		this.dataSource = dataSource;
 	}
