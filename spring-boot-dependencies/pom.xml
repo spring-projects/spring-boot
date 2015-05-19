@@ -1261,6 +1261,11 @@
 				<version>${hibernate-validator.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator-annotation-processor</artifactId>
+				<version>${hibernate-validator.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.hornetq</groupId>
 				<artifactId>hornetq-jms-client</artifactId>
 				<version>${hornetq.version}</version>
