@@ -29,10 +29,12 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.StringUtils;
 
 /**
  * Basic {@link BatchConfigurer} implementation.
@@ -56,6 +58,9 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	private JobLauncher jobLauncher;
 
 	private JobExplorer jobExplorer;
+
+	@Autowired
+	private BatchProperties properties;
 
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
@@ -112,6 +117,10 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	private JobExplorer createJobExplorer() throws Exception {
 		JobExplorerFactoryBean jobExplorerFactoryBean = new JobExplorerFactoryBean();
 		jobExplorerFactoryBean.setDataSource(this.dataSource);
+		String tablePrefix = this.properties.getTablePrefix();
+		if (StringUtils.hasText(tablePrefix)) {
+			jobExplorerFactoryBean.setTablePrefix(tablePrefix);
+		}
 		jobExplorerFactoryBean.afterPropertiesSet();
 		return jobExplorerFactoryBean.getObject();
 	}
