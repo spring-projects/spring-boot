@@ -369,12 +369,11 @@ public class UndertowEmbeddedServletContainerFactory extends
 				try {
 					Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
 					XnioWorker worker = xnio.createWorker(OptionMap.builder().getMap());
-					File baseDir = (accessLogDirectory != null ? accessLogDirectory
-							: createTempDir("undertow"));
+					File logsDir = getLogsDir();
 					String formatString = (accessLogPattern != null) ? accessLogPattern
 							: "common";
 					DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-							worker, baseDir, "access_log");
+							worker, logsDir, "access_log");
 					return new AccessLogHandler(handler, accessLogReceiver, formatString,
 							Undertow.class.getClassLoader());
 				}
@@ -383,6 +382,19 @@ public class UndertowEmbeddedServletContainerFactory extends
 				}
 			}
 		});
+	}
+
+	private File getLogsDir() {
+		File logsDir;
+		if (accessLogDirectory != null) {
+			logsDir = accessLogDirectory;
+			if (!logsDir.isDirectory() && !logsDir.mkdirs()) {
+				throw new IllegalStateException("Failed to create logs dir '" + logsDir + "'");
+			}
+		} else {
+			logsDir = createTempDir("undertow");
+		}
+		return logsDir;
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
