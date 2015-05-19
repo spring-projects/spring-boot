@@ -75,7 +75,6 @@
 		<hamcrest.version>1.3</hamcrest.version>
 		<hazelcast.version>3.4.2</hazelcast.version>
 		<hibernate.version>4.3.10.Final</hibernate.version>
-		<hibernate-entitymanager.version>${hibernate.version}</hibernate-entitymanager.version>
 		<hibernate-validator.version>5.1.3.Final</hibernate-validator.version>
 		<hikaricp.version>2.3.7</hikaricp.version>
 		<hornetq.version>2.4.7.Final</hornetq.version>
