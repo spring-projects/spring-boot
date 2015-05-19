@@ -102,6 +102,10 @@ public class BatchAutoConfiguration {
 	public JobExplorer jobExplorer(DataSource dataSource) throws Exception {
 		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
 		factory.setDataSource(dataSource);
+		String tablePrefix = this.properties.getTablePrefix();
+		if (StringUtils.hasText(tablePrefix)) {
+			factory.setTablePrefix(tablePrefix);
+		}
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}

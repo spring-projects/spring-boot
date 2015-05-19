@@ -35,6 +35,8 @@ public class BatchProperties {
 	 */
 	private String schema = DEFAULT_SCHEMA_LOCATION;
 
+	private String tablePrefix;
+
 	private final Initializer initializer = new Initializer();
 
 	private final Job job = new Job();
@@ -53,6 +55,14 @@ public class BatchProperties {
 
 	public Job getJob() {
 		return this.job;
+	}
+
+	public void setTablePrefix(String tablePrefix) {
+		this.tablePrefix = tablePrefix;
+	}
+
+	public String getTablePrefix() {
+		return this.tablePrefix;
 	}
 
 	public static class Initializer {
