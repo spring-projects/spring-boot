@@ -587,9 +587,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		private boolean accessLogEnabled = false;
 
 		/**
-		 * Undertow base directory. If not specified a temporary directory will be used.
+		 * Undertow access log directory. If not specified a temporary directory will be used.
 		 */
-		private File basedir;
+		private File accessLogDir;
 
 		public Integer getBufferSize() {
 			return this.bufferSize;
@@ -647,12 +647,12 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.accessLogEnabled = accessLogEnabled;
 		}
 
-		public File getBasedir() {
-			return basedir;
+		public File getAccessLogDir() {
+			return accessLogDir;
 		}
 
-		public void setBasedir(File basedir) {
-			this.basedir = basedir;
+		public void setAccessLogDir(File accessLogDir) {
+			this.accessLogDir = accessLogDir;
 		}
 
 		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
@@ -661,7 +661,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			factory.setIoThreads(this.ioThreads);
 			factory.setWorkerThreads(this.workerThreads);
 			factory.setDirectBuffers(this.directBuffers);
-			factory.setBaseDirectory(this.basedir);
+			factory.setAccessLogDirectory(this.accessLogDir);
 			factory.setAccessLogPattern(this.accessLogPattern);
 			factory.setAccessLogEnabled(this.accessLogEnabled);
 		}

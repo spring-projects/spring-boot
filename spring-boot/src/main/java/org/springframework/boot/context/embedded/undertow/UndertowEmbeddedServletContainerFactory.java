@@ -113,7 +113,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 	private Boolean directBuffers;
 
-	private File baseDirectory;
+	private File accessLogDirectory;
 
 	private String accessLogPattern;
 
@@ -369,7 +369,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 				try {
 					Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
 					XnioWorker worker = xnio.createWorker(OptionMap.builder().getMap());
-					File baseDir = (baseDirectory != null ? baseDirectory
+					File baseDir = (accessLogDirectory != null ? accessLogDirectory
 							: createTempDir("undertow"));
 					String formatString = (accessLogPattern != null) ? accessLogPattern
 							: "common";
@@ -482,8 +482,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 		this.directBuffers = directBuffers;
 	}
 
-	public void setBaseDirectory(File baseDirectory) {
-		this.baseDirectory = baseDirectory;
+	public void setAccessLogDirectory(File accessLogDirectory) {
+		this.accessLogDirectory = accessLogDirectory;
 	}
 
 	public void setAccessLogPattern(String accessLogPattern) {
