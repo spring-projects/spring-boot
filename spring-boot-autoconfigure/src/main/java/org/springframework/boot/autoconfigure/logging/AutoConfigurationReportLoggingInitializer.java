@@ -151,6 +151,17 @@ public class AutoConfigurationReportLoggingInitializer implements
 			}
 		}
 		message.append("\n\n");
+		message.append("Unconditional classes:\n");
+		message.append("----------------------\n");
+		if (report.getUnconditionalClasses().isEmpty()) {
+			message.append("\n    None\n");
+		}
+		else {
+			for (String unconditionalClass : report.getUnconditionalClasses()) {
+				message.append("\n   " + unconditionalClass + "\n");
+			}
+		}
+		message.append("\n\n");
 		return message;
 	}
 

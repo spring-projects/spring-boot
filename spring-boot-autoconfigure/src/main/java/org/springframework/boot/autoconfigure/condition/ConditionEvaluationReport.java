@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -58,6 +59,8 @@ public class ConditionEvaluationReport {
 
 	private List<String> exclusions = Collections.emptyList();
 
+	private Set<String> unconditionalClasses = new HashSet<String>();
+
 	/**
 	 * Private constructor.
 	 * @see #get(ConfigurableListableBeanFactory)
@@ -76,6 +79,7 @@ public class ConditionEvaluationReport {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(condition, "Condition must not be null");
 		Assert.notNull(outcome, "Outcome must not be null");
+		this.unconditionalClasses.remove(source);
 		if (!this.outcomes.containsKey(source)) {
 			this.outcomes.put(source, new ConditionAndOutcomes());
 		}
@@ -90,6 +94,16 @@ public class ConditionEvaluationReport {
 	public void recordExclusions(Collection<String> exclusions) {
 		Assert.notNull(exclusions, "exclusions must not be null");
 		this.exclusions = new ArrayList<String>(exclusions);
+	}
+
+	/**
+	 * Records the names of the classes that are candidates for condition evaluation
+	 * @param evaluationCandidates the names of the classes whose conditions will be
+	 * evaluated
+	 */
+	public void recordEvaluationCandidates(List<String> evaluationCandidates) {
+		Assert.notNull(evaluationCandidates, "evaluationCandidates must not be null");
+		this.unconditionalClasses = new HashSet<String>(evaluationCandidates);
 	}
 
 	/**
@@ -125,6 +139,14 @@ public class ConditionEvaluationReport {
 	 */
 	public List<String> getExclusions() {
 		return Collections.unmodifiableList(this.exclusions);
+	}
+
+	/**
+	 * Returns the name of the classes that were evaluated but were not conditional.
+	 * @return the names of the unconditional classes
+	 */
+	public Set<String> getUnconditionalClasses() {
+		return Collections.unmodifiableSet(this.unconditionalClasses);
 	}
 
 	/**

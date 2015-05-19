@@ -80,6 +80,8 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 			excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
 			factories.removeAll(excluded);
 			ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
+			ConditionEvaluationReport.get(this.beanFactory).recordEvaluationCandidates(
+					factories);
 
 			// Sort
 			factories = new AutoConfigurationSorter(this.resourceLoader)
