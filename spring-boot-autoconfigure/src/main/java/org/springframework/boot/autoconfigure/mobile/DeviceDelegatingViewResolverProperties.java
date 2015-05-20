@@ -56,6 +56,12 @@ public class DeviceDelegatingViewResolverProperties {
 	 * Suffix that gets appended to view names for tablet devices.
 	 */
 	private String tabletSuffix = "";
+	
+	/**
+	 * Using Boolean in order to be able to check if property is there or not, leaving default value to LiteDeviceDelegatingViewResolver
+	 */
+	private Boolean enableFallback;
+
 
 	public String getNormalPrefix() {
 		return this.normalPrefix;
@@ -105,4 +111,11 @@ public class DeviceDelegatingViewResolverProperties {
 		this.tabletSuffix = tabletSuffix;
 	}
 
+	public void setEnableFallback(Boolean enableFallback) {
+        this.enableFallback = enableFallback;
+    }
+
+    public Boolean getEnableFallback() {
+        return enableFallback;
+    }
 }
