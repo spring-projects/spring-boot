@@ -172,14 +172,14 @@ Spring Boot makes `-D` arguments available as properties accessible from a Sprin
 Tomcat, Jetty or Undertow instance which then uses it when it starts up. The `$PORT`
 environment variable is assigned to us by the Heroku PaaS.
 
-Heroku by default will use Java 1.6. This is fine as long as your Maven or Gradle build
-is set to use the same version (Maven users can use the `java.version` property). If you
+Heroku by default will use Java 1.8. This is fine as long as your Maven or Gradle build
+is set to use the same version (Maven users can use the java.version property). If you
 want to use JDK 1.7, create a new file adjacent to your `pom.xml` and `Procfile`,
 called `system.properties`. In this file add the following:
 
-[source,java]
+[indent=0]
 ----
-java.runtime.version=1.7
+	java.runtime.version=1.7
 ----
 
 This should be everything you need. The most common workflow for Heroku deployments is to
@@ -197,13 +197,10 @@ This should be everything you need. The most common workflow for Heroku deployme
 	Total 95 (delta 31), reused 0 (delta 0)
 
 	-----> Java app detected
-	-----> Installing OpenJDK 1.7... *done*
-	-----> Installing Maven 3.2.3... *done*
+	-----> Installing OpenJDK 1.8... *done*
+	-----> Installing Maven 3.3.1... *done*
 	-----> Installing settings.xml... *done*
-	-----> executing /app/tmp/cache/.maven/bin/mvn -B
-	       -Duser.home=/tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229
-	       -Dmaven.repo.local=/app/tmp/cache/.m2/repository
-	       -s /app/tmp/cache/.m2/settings.xml -DskipTests=true clean install
+	-----> Executing: mvn -B -DskipTests=true clean install
 
 	       [INFO] Scanning for projects...
 	       Downloading: http://repo.spring.io/...
