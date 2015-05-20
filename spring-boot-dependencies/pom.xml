@@ -114,7 +114,7 @@
 		<spring.version>4.1.6.RELEASE</spring.version>
 		<spring-amqp.version>1.4.5.RELEASE</spring-amqp.version>
 		<spring-cloud-connectors.version>1.1.1.RELEASE</spring-cloud-connectors.version>
-		<spring-batch.version>3.0.3.RELEASE</spring-batch.version>
+		<spring-batch.version>3.0.4.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Evans-SR2</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.16.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.1.4.RELEASE</spring-integration.version>
