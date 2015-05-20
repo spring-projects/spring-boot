@@ -70,7 +70,9 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 			resolver.setMobileSuffix(this.viewResolverProperties.getMobileSuffix());
 			resolver.setTabletPrefix(this.viewResolverProperties.getTabletPrefix());
 			resolver.setTabletSuffix(this.viewResolverProperties.getTabletSuffix());
-            if (this.viewResolverProperties.getEnableFallback() != null)  resolver.setEnableFallback(this.viewResolverProperties.getEnableFallback());
+            if (this.viewResolverProperties.getEnableFallback() != null) { //leaving enableFallback default value to LiteDeviceDelegatingViewResolver
+            	resolver.setEnableFallback(this.viewResolverProperties.getEnableFallback());
+            }
 			resolver.setOrder(getAdjustedOrder(delegateOrder));
 			return resolver;
 		}

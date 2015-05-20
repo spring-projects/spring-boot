@@ -223,7 +223,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		enableFallBackField.setAccessible(true);
 		Boolean enableFallback = (Boolean) ReflectionUtils.getField(enableFallBackField,
 				liteDeviceDelegatingViewResolver);
-		assertEquals(false, enableFallback);//default value in LiteDeviceDelegatingViewResolver
+		assertEquals(false, enableFallback); //default value in LiteDeviceDelegatingViewResolver
 	}
 
 	@Test

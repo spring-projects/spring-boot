@@ -58,7 +58,7 @@ public class DeviceDelegatingViewResolverProperties {
 	private String tabletSuffix = "";
 
     /**
-     * Using Boolean in order to be able to check if property is setted or not, leaving default value to LiteDeviceDelegatingViewResolver
+     * Using Boolean in order to be able to check if property is there or not, leaving default value to LiteDeviceDelegatingViewResolver
      */
     private Boolean enableFallback;
 
