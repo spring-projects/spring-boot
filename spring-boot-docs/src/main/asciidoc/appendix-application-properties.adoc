@@ -95,6 +95,9 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.max-http-header-size= # maximum size in bytes of the HTTP message header
 	server.tomcat.max-threads = 0 # number of threads in protocol handler
 	server.tomcat.uri-encoding = UTF-8 # character encoding to use for URL decoding
+	server.undertow.access-log-enabled=false # if access logging is enabled
+	server.undertow.access-log-pattern=common # log pattern of the access log
+	server.undertow.access-log-dir=logs # access logs directory
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.locale= # set fixed locale, e.g. en_UK

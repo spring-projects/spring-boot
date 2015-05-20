@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Phillip Webb
  * @author Dave Syer
- * @author Marcos Barbero
  */
 public abstract class AbstractEmbeddedServletContainerFactory extends
 		AbstractConfigurableEmbeddedServletContainer implements
@@ -77,25 +76,6 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 			this.logger.debug("Document root: " + file);
 		}
 		return file;
-	}
-
-	/**
-	 * Returns the absolute temp dir for given web server.
-	 * @param prefix webserver name
-	 * @return The temp dir for given web server.
-	 */
-	protected File createTempDir(String prefix) {
-		try {
-			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
-			tempFolder.delete();
-			tempFolder.mkdir();
-			tempFolder.deleteOnExit();
-			return tempFolder;
-		}
-		catch (IOException ex) {
-			throw new EmbeddedServletContainerException(
-					String.format("Unable to create %s tempdir", prefix), ex);
-		}
 	}
 
 	private File getExplodedWarFileDocumentRoot() {

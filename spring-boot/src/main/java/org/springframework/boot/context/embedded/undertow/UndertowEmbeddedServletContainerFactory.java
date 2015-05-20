@@ -22,6 +22,7 @@ import io.undertow.UndertowMessages;
 import io.undertow.server.HandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.AccessLogReceiver;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.FileResourceManager;
@@ -76,8 +77,8 @@ import org.springframework.util.ResourceUtils;
 import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
-import org.xnio.XnioWorker;
 import org.xnio.Xnio;
+import org.xnio.XnioWorker;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -366,45 +367,38 @@ public class UndertowEmbeddedServletContainerFactory extends
 		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
 			@Override
 			public HttpHandler wrap(HttpHandler handler) {
-				try {
-					String formatString = (accessLogPattern != null) ? accessLogPattern
-							: "common";
-					DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-							createWorker(), getLogsDir(), "access_log");
-					return new AccessLogHandler(handler, accessLogReceiver, formatString,
-							Undertow.class.getClassLoader());
-				}
-				catch (IOException ex) {
-					throw new IllegalStateException(ex);
-				}
+				return createAccessLogHandler(handler);
 			}
 		});
+	}
+
+	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
+		try {
+			createAccessLogDirectoryIfNecessary();
+			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
+					createWorker(), this.accessLogDirectory, "access_log");
+			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
+					: "common";
+			return new AccessLogHandler(handler, accessLogReceiver, formatString,
+					Undertow.class.getClassLoader());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to create AccessLogHandler", ex);
+		}
+	}
+
+	private void createAccessLogDirectoryIfNecessary() {
+		Assert.notNull(this.accessLogDirectory, "accesslogDirectory must not be null");
+		if (!this.accessLogDirectory.isDirectory() && !this.accessLogDirectory.mkdirs()) {
+			throw new IllegalStateException("Failed to create access log directory '"
+					+ this.accessLogDirectory + "'");
+		}
 	}
 
 	private XnioWorker createWorker() throws IOException {
 		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
 		OptionMap.Builder builder = OptionMap.builder();
-		if(this.ioThreads != null && this.ioThreads > 0) {
-			builder.set(Options.WORKER_IO_THREADS, ioThreads);
-		}
-		if(this.workerThreads != null && this.workerThreads > 0) {
-			builder.set(Options.WORKER_TASK_CORE_THREADS, workerThreads);
-			builder.set(Options.WORKER_TASK_MAX_THREADS, workerThreads);
-		}
 		return xnio.createWorker(builder.getMap());
-	}
-
-	private File getLogsDir() {
-		File logsDir;
-		if (accessLogDirectory != null) {
-			logsDir = accessLogDirectory;
-			if (!logsDir.isDirectory() && !logsDir.mkdirs()) {
-				throw new IllegalStateException("Failed to create logs dir '" + logsDir + "'");
-			}
-		} else {
-			logsDir = createTempDir("undertow");
-		}
-		return logsDir;
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
@@ -517,7 +511,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	public boolean isAccessLogEnabled() {
-		return accessLogEnabled;
+		return this.accessLogEnabled;
 	}
 
 	/**

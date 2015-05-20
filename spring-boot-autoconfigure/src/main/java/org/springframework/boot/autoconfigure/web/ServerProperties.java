@@ -582,7 +582,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		/**
 		 * Format pattern for access logs.
 		 */
-		private String accessLogPattern;
+		private String accessLogPattern = "common";
 
 		/**
 		 * Enable access log.
@@ -590,9 +590,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		private boolean accessLogEnabled = false;
 
 		/**
-		 * Undertow access log directory. If not specified a temporary directory will be used.
+		 * Undertow access log directory.
 		 */
-		private File accessLogDir;
+		private File accessLogDir = new File("logs");
 
 		public Integer getBufferSize() {
 			return this.bufferSize;
@@ -635,7 +635,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		}
 
 		public String getAccessLogPattern() {
-			return accessLogPattern;
+			return this.accessLogPattern;
 		}
 
 		public void setAccessLogPattern(String accessLogPattern) {
@@ -643,7 +643,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		}
 
 		public boolean isAccessLogEnabled() {
-			return accessLogEnabled;
+			return this.accessLogEnabled;
 		}
 
 		public void setAccessLogEnabled(boolean accessLogEnabled) {
@@ -651,7 +651,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		}
 
 		public File getAccessLogDir() {
-			return accessLogDir;
+			return this.accessLogDir;
 		}
 
 		public void setAccessLogDir(File accessLogDir) {
