@@ -33,6 +33,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -72,6 +73,13 @@ public class SpringBootServletInitializerTests {
 				equalToSet(Config.class, ErrorPageFilter.class));
 	}
 
+	@Test
+	public void applicationBuilderCanBeCustomized() throws Exception {
+		CustomSpringBootServletInitializer servletInitializer = new CustomSpringBootServletInitializer();
+		servletInitializer.createRootApplicationContext(this.servletContext);
+		assertThat(servletInitializer.applicationBuilder.built, is(true));
+	}
+
 	private Matcher<? super Set<Object>> equalToSet(Object... items) {
 		Set<Object> set = new LinkedHashSet<Object>();
 		Collections.addAll(set, items);
@@ -86,6 +94,22 @@ public class SpringBootServletInitializerTests {
 			return null;
 		};
 
+	}
+
+	private class CustomSpringBootServletInitializer extends
+			MockSpringBootServletInitializer {
+
+		private final CustomSpringApplicationBuilder applicationBuilder = new CustomSpringApplicationBuilder();
+
+		@Override
+		protected SpringApplicationBuilder createSpringApplicationBuilder() {
+			return this.applicationBuilder;
+		}
+
+		@Override
+		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+			return application.sources(Config.class);
+		}
 	}
 
 	@Configuration
@@ -103,6 +127,18 @@ public class SpringBootServletInitializerTests {
 
 	@Configuration
 	public static class Config {
+
+	}
+
+	private static class CustomSpringApplicationBuilder extends SpringApplicationBuilder {
+
+		private boolean built;
+
+		@Override
+		public SpringApplication build() {
+			this.built = true;
+			return super.build();
+		}
 
 	}
 
