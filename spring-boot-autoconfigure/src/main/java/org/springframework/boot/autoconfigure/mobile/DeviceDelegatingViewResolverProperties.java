@@ -57,6 +57,11 @@ public class DeviceDelegatingViewResolverProperties {
 	 */
 	private String tabletSuffix = "";
 
+    /**
+     * Using Boolean in order to be able to check if property is there or not, leaving default value to LiteDeviceDelegatingViewResolver
+     */
+    private Boolean enableFallback;
+
 	public String getNormalPrefix() {
 		return this.normalPrefix;
 	}
@@ -104,5 +109,13 @@ public class DeviceDelegatingViewResolverProperties {
 	public void setTabletSuffix(String tabletSuffix) {
 		this.tabletSuffix = tabletSuffix;
 	}
+    
+    public void setEnableFallback(Boolean enableFallback) {
+        this.enableFallback = enableFallback;
+    }
+
+    public Boolean getEnableFallback() {
+        return enableFallback;
+    }
 
 }

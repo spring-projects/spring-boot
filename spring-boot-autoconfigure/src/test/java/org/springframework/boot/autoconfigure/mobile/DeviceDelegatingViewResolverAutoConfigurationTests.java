@@ -217,6 +217,13 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		String tabletSuffix = (String) ReflectionUtils.getField(tabletSuffixField,
 				liteDeviceDelegatingViewResolver);
 		assertEquals("", tabletSuffix);
+        
+        Field enableFallBackField = ReflectionUtils.findField(
+				LiteDeviceDelegatingViewResolver.class, "enableFallback");
+		enableFallBackField.setAccessible(true);
+		Boolean enableFallback = (Boolean) ReflectionUtils.getField(enableFallBackField,
+				liteDeviceDelegatingViewResolver);
+		assertEquals(false, enableFallback); //default value in LiteDeviceDelegatingViewResolver
 	}
 
 	@Test
@@ -349,6 +356,28 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		String tabletSuffix = (String) ReflectionUtils.getField(tabletSuffixField,
 				liteDeviceDelegatingViewResolver);
 		assertEquals(".tab", tabletSuffix);
+	}
+    
+    @Test
+	public void overrideEnableFallback() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true",
+				"spring.mobile.devicedelegatingviewresolver.enableFallback:true");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				DeviceDelegatingViewResolverConfiguration.class);
+		this.context.refresh();
+		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						LiteDeviceDelegatingViewResolver.class);
+		Field enableFallBackField = ReflectionUtils.findField(
+				LiteDeviceDelegatingViewResolver.class, "enableFallback");
+		enableFallBackField.setAccessible(true);
+		Boolean enableFallback = (Boolean) ReflectionUtils.getField(enableFallBackField,
+				liteDeviceDelegatingViewResolver);
+		assertEquals(true, enableFallback);
 	}
 
 	@Configuration
