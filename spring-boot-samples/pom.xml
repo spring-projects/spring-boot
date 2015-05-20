@@ -62,6 +62,7 @@
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-secure-oauth2</module>
 		<module>spring-boot-sample-servlet</module>
+		<module>spring-boot-sample-session-redis</module>
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-testng</module>
 		<module>spring-boot-sample-tomcat</module>

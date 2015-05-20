@@ -2812,6 +2812,16 @@ class for more details.
 
 
 
+[[boot-features-session]]
+== Spring Session
+Spring Session provides support for managing a user's session information. If you are
+writing a web application and Spring Session and Spring Data Redis are both on the
+classpath, Spring Boot will auto-configure Spring Session through its
+`@EnableRedisHttpSession`. Session data will be stored in Redis and the session timeout
+can be configured using the `server.session-timeout` property.
+
+
+
 [[boot-features-jmx]]
 == Monitoring and management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage
