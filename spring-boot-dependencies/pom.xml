@@ -122,7 +122,7 @@
 		<spring.version>4.2.0.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>1.5.0.M1</spring-amqp.version>
 		<spring-cloud-connectors.version>1.1.1.RELEASE</spring-cloud-connectors.version>
-		<spring-batch.version>3.0.4.BUILD-SNAPSHOT</spring-batch.version>
+		<spring-batch.version>3.0.4.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Fowler-RELEASE</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.17.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.2.0.BUILD-SNAPSHOT</spring-integration.version>
@@ -131,7 +131,7 @@
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-security.version>4.0.1.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.3.RELEASE</spring-security-jwt.version>
-		<spring-social.version>1.1.1.RELEASE</spring-social.version>
+		<spring-social.version>1.1.2.RELEASE</spring-social.version>
 		<spring-social-facebook.version>2.0.1.RELEASE</spring-social-facebook.version>
 		<spring-social-linkedin.version>1.0.1.RELEASE</spring-social-linkedin.version>
 		<spring-social-twitter.version>1.1.0.RELEASE</spring-social-twitter.version>
