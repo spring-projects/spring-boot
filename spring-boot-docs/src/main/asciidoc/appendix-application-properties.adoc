@@ -497,6 +497,7 @@ content into your application; rather pick only the properties that you need.
 
 	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DeviceDelegatingViewResolverAutoConfiguration.{sc-ext}[DeviceDelegatingViewResolverAutoConfiguration])
 	spring.mobile.devicedelegatingviewresolver.enabled=true # disabled by default
+	spring.mobile.devicedelegatingviewresolver.enable-fallback= # enable support for fallback resolution, default to false.
 	spring.mobile.devicedelegatingviewresolver.normal-prefix=
 	spring.mobile.devicedelegatingviewresolver.normal-suffix=
 	spring.mobile.devicedelegatingviewresolver.mobile-prefix=mobile/

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import java.lang.reflect.Field;
-
 import org.junit.After;
 import org.junit.Test;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+
+import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoConfiguration.DeviceDelegatingViewResolverConfiguration;
@@ -35,9 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.view.AbstractDeviceDelegatingViewResolver;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,6 +47,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link DeviceDelegatingViewResolverAutoConfiguration}.
  *
  * @author Roy Clarkson
+ * @author Stephane Nicoll
  */
 public class DeviceDelegatingViewResolverAutoConfigurationTests {
 
@@ -176,165 +177,75 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
 
-		Field normalPrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "normalPrefix");
-		normalPrefixField.setAccessible(true);
-		String normalPrefix = (String) ReflectionUtils.getField(normalPrefixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals("", normalPrefix);
+		DirectFieldAccessor accessor = new DirectFieldAccessor(liteDeviceDelegatingViewResolver);
+		assertEquals(false, accessor.getPropertyValue("enableFallback"));
+		assertEquals("", accessor.getPropertyValue("normalPrefix"));
+		assertEquals("mobile/", accessor.getPropertyValue("mobilePrefix"));
+		assertEquals("tablet/", accessor.getPropertyValue("tabletPrefix"));
+		assertEquals("", accessor.getPropertyValue("normalSuffix"));
+		assertEquals("", accessor.getPropertyValue("mobileSuffix"));
+		assertEquals("", accessor.getPropertyValue("tabletSuffix"));
+	}
 
-		Field mobilePrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "mobilePrefix");
-		mobilePrefixField.setAccessible(true);
-		String mobilePrefix = (String) ReflectionUtils.getField(mobilePrefixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals("mobile/", mobilePrefix);
-
-		Field tabletPrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "tabletPrefix");
-		tabletPrefixField.setAccessible(true);
-		String tabletPrefix = (String) ReflectionUtils.getField(tabletPrefixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals("tablet/", tabletPrefix);
-
-		Field normalSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "normalSuffix");
-		normalSuffixField.setAccessible(true);
-		String normalSuffix = (String) ReflectionUtils.getField(normalSuffixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals("", normalSuffix);
-
-		Field mobileSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "mobileSuffix");
-		mobileSuffixField.setAccessible(true);
-		String mobileSuffix = (String) ReflectionUtils.getField(mobileSuffixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals("", mobileSuffix);
-
-		Field tabletSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "tabletSuffix");
-		tabletSuffixField.setAccessible(true);
-		String tabletSuffix = (String) ReflectionUtils.getField(tabletSuffixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals("", tabletSuffix);
+	@Test
+	public void overrideEnableFallback() throws Exception {
+		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
+				"spring.mobile.devicedelegatingviewresolver.enabled:true",
+				"spring.mobile.devicedelegatingviewresolver.enableFallback:true");
+		assertEquals(true, accessor.getPropertyValue("enableFallback"));
 	}
 
 	@Test
 	public void overrideNormalPrefix() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.normalPrefix:normal/");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				DeviceDelegatingViewResolverConfiguration.class);
-		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
-				.getBean("deviceDelegatingViewResolver",
-						LiteDeviceDelegatingViewResolver.class);
-		Field normalPrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "normalPrefix");
-		normalPrefixField.setAccessible(true);
-		String normalPrefix = (String) ReflectionUtils.getField(normalPrefixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals("normal/", normalPrefix);
+		assertEquals("normal/", accessor.getPropertyValue("normalPrefix"));
 	}
 
 	@Test
 	public void overrideMobilePrefix() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.mobilePrefix:mob/");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				DeviceDelegatingViewResolverConfiguration.class);
-		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
-				.getBean("deviceDelegatingViewResolver",
-						LiteDeviceDelegatingViewResolver.class);
-		Field mobilePrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "mobilePrefix");
-		mobilePrefixField.setAccessible(true);
-		String mobilePrefix = (String) ReflectionUtils.getField(mobilePrefixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals("mob/", mobilePrefix);
+		assertEquals("mob/", accessor.getPropertyValue("mobilePrefix"));
 	}
 
 	@Test
 	public void overrideTabletPrefix() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.tabletPrefix:tab/");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				DeviceDelegatingViewResolverConfiguration.class);
-		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
-				.getBean("deviceDelegatingViewResolver",
-						LiteDeviceDelegatingViewResolver.class);
-		Field tabletPrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "tabletPrefix");
-		tabletPrefixField.setAccessible(true);
-		String tabletPrefix = (String) ReflectionUtils.getField(tabletPrefixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals("tab/", tabletPrefix);
+		assertEquals("tab/", accessor.getPropertyValue("tabletPrefix"));
 	}
 
 	@Test
 	public void overrideNormalSuffix() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.normalSuffix:.nor");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				DeviceDelegatingViewResolverConfiguration.class);
-		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
-				.getBean("deviceDelegatingViewResolver",
-						LiteDeviceDelegatingViewResolver.class);
-		Field normalSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "normalSuffix");
-		normalSuffixField.setAccessible(true);
-		String normalSuffix = (String) ReflectionUtils.getField(normalSuffixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals(".nor", normalSuffix);
+		assertEquals(".nor",  accessor.getPropertyValue("normalSuffix"));
 	}
 
 	@Test
 	public void overrideMobileSuffix() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.mobileSuffix:.mob");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				DeviceDelegatingViewResolverConfiguration.class);
-		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
-				.getBean("deviceDelegatingViewResolver",
-						LiteDeviceDelegatingViewResolver.class);
-		Field mobileSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "mobileSuffix");
-		mobileSuffixField.setAccessible(true);
-		String mobileSuffix = (String) ReflectionUtils.getField(mobileSuffixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals(".mob", mobileSuffix);
+		assertEquals(".mob",  accessor.getPropertyValue("mobileSuffix"));
 	}
 
 	@Test
 	public void overrideTabletSuffix() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
+		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.tabletSuffix:.tab");
+		assertEquals(".tab", accessor.getPropertyValue("tabletSuffix"));
+	}
+
+	private PropertyAccessor getLiteDeviceDelegatingViewResolverAccessor(String... configuration) {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, configuration);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -343,12 +254,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
-		Field tabletSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "tabletSuffix");
-		tabletSuffixField.setAccessible(true);
-		String tabletSuffix = (String) ReflectionUtils.getField(tabletSuffixField,
-				liteDeviceDelegatingViewResolver);
-		assertEquals(".tab", tabletSuffix);
+		return new DirectFieldAccessor(liteDeviceDelegatingViewResolver);
 	}
 
 	@Configuration
