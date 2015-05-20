@@ -56,6 +56,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Ivan Sopov
+ * @author Marcos Barbero
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
@@ -578,6 +579,21 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		private Boolean directBuffers;
 
+		/**
+		 * Format pattern for access logs.
+		 */
+		private String accessLogPattern = "common";
+
+		/**
+		 * Enable access log.
+		 */
+		private boolean accessLogEnabled = false;
+
+		/**
+		 * Undertow access log directory.
+		 */
+		private File accessLogDir = new File("logs");
+
 		public Integer getBufferSize() {
 			return this.bufferSize;
 		}
@@ -618,12 +634,39 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.directBuffers = directBuffers;
 		}
 
+		public String getAccessLogPattern() {
+			return this.accessLogPattern;
+		}
+
+		public void setAccessLogPattern(String accessLogPattern) {
+			this.accessLogPattern = accessLogPattern;
+		}
+
+		public boolean isAccessLogEnabled() {
+			return this.accessLogEnabled;
+		}
+
+		public void setAccessLogEnabled(boolean accessLogEnabled) {
+			this.accessLogEnabled = accessLogEnabled;
+		}
+
+		public File getAccessLogDir() {
+			return this.accessLogDir;
+		}
+
+		public void setAccessLogDir(File accessLogDir) {
+			this.accessLogDir = accessLogDir;
+		}
+
 		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
 			factory.setBufferSize(this.bufferSize);
 			factory.setBuffersPerRegion(this.buffersPerRegion);
 			factory.setIoThreads(this.ioThreads);
 			factory.setWorkerThreads(this.workerThreads);
 			factory.setDirectBuffers(this.directBuffers);
+			factory.setAccessLogDirectory(this.accessLogDir);
+			factory.setAccessLogPattern(this.accessLogPattern);
+			factory.setAccessLogEnabled(this.accessLogEnabled);
 		}
 
 	}
