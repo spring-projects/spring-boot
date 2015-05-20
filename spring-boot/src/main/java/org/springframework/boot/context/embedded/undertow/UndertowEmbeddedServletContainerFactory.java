@@ -19,6 +19,10 @@ package org.springframework.boot.context.embedded.undertow;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowMessages;
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.Resource;
@@ -69,8 +73,11 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
+import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
+import org.xnio.XnioWorker;
+import org.xnio.Xnio;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -81,6 +88,7 @@ import org.xnio.SslClientAuthMode;
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
+ * @author Marcos Barbero
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainer
  */
@@ -104,6 +112,12 @@ public class UndertowEmbeddedServletContainerFactory extends
 	private Integer workerThreads;
 
 	private Boolean directBuffers;
+
+	private File accessLogDirectory;
+
+	private String accessLogPattern;
+
+	private boolean accessLogEnabled = false;
 
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
@@ -337,12 +351,60 @@ public class UndertowEmbeddedServletContainerFactory extends
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
 		}
+		if (isAccessLogEnabled()) {
+			configureAccessLog(deployment);
+		}
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
+	}
+
+	private void configureAccessLog(DeploymentInfo deploymentInfo) {
+		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+			@Override
+			public HttpHandler wrap(HttpHandler handler) {
+				try {
+					String formatString = (accessLogPattern != null) ? accessLogPattern
+							: "common";
+					DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
+							createWorker(), getLogsDir(), "access_log");
+					return new AccessLogHandler(handler, accessLogReceiver, formatString,
+							Undertow.class.getClassLoader());
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
+		});
+	}
+
+	private XnioWorker createWorker() throws IOException {
+		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
+		OptionMap.Builder builder = OptionMap.builder();
+		if(this.ioThreads != null && this.ioThreads > 0) {
+			builder.set(Options.WORKER_IO_THREADS, ioThreads);
+		}
+		if(this.workerThreads != null && this.workerThreads > 0) {
+			builder.set(Options.WORKER_TASK_CORE_THREADS, workerThreads);
+			builder.set(Options.WORKER_TASK_MAX_THREADS, workerThreads);
+		}
+		return xnio.createWorker(builder.getMap());
+	}
+
+	private File getLogsDir() {
+		File logsDir;
+		if (accessLogDirectory != null) {
+			logsDir = accessLogDirectory;
+			if (!logsDir.isDirectory() && !logsDir.mkdirs()) {
+				throw new IllegalStateException("Failed to create logs dir '" + logsDir + "'");
+			}
+		} else {
+			logsDir = createTempDir("undertow");
+		}
+		return logsDir;
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
@@ -440,6 +502,22 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 	public void setDirectBuffers(Boolean directBuffers) {
 		this.directBuffers = directBuffers;
+	}
+
+	public void setAccessLogDirectory(File accessLogDirectory) {
+		this.accessLogDirectory = accessLogDirectory;
+	}
+
+	public void setAccessLogPattern(String accessLogPattern) {
+		this.accessLogPattern = accessLogPattern;
+	}
+
+	public void setAccessLogEnabled(boolean accessLogEnabled) {
+		this.accessLogEnabled = accessLogEnabled;
+	}
+
+	public boolean isAccessLogEnabled() {
+		return accessLogEnabled;
 	}
 
 	/**
