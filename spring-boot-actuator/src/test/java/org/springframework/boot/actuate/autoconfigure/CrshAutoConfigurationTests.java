@@ -373,7 +373,7 @@ public class CrshAutoConfigurationTests {
 
 		@Bean
 		public AccessDecisionManager shellAccessDecisionManager() {
-			List<AccessDecisionVoter<? extends Object>> voters = new ArrayList<AccessDecisionVoter<? extends Object>>();
+			List<AccessDecisionVoter> voters = new ArrayList<AccessDecisionVoter>();
 			RoleVoter voter = new RoleVoter();
 			voter.setRolePrefix("");
 			voters.add(voter);

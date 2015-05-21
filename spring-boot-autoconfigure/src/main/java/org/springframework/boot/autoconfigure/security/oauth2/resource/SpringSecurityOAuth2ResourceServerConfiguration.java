@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.OnBeanCondition;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.ClientCredentialsProperties;
@@ -36,7 +35,6 @@ import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -111,11 +109,6 @@ public class SpringSecurityOAuth2ResourceServerConfiguration {
 	protected static class ResourceServerCondition extends SpringBootCondition implements
 			ConfigurationCondition {
 
-		private OnBeanCondition condition = new OnBeanCondition();
-
-		private StandardAnnotationMetadata beanMetaData = new StandardAnnotationMetadata(
-				ResourceServerCondition.class);
-
 		@Override
 		public ConfigurationPhase getConfigurationPhase() {
 			return ConfigurationPhase.REGISTER_BEAN;
@@ -143,9 +136,9 @@ public class SpringSecurityOAuth2ResourceServerConfiguration {
 					.isPresent(
 							"org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration",
 							null)) {
-				if (this.condition.matches(context, this.beanMetaData)) {
+				if (SpringBootCondition.evaluateForClass(ResourceServerCondition.class, context)) {
 					return ConditionOutcome
-							.match("found authorization server configuration");
+							.match("found authorization server endpoints configuration");
 				}
 			}
 			return ConditionOutcome

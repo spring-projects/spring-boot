@@ -18,12 +18,16 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.MethodMetadata;
+import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -37,6 +41,18 @@ import org.springframework.util.StringUtils;
 public abstract class SpringBootCondition implements Condition {
 
 	private final Log logger = LogFactory.getLog(getClass());
+	
+	public static boolean evaluateForClass(Class<?> annotated, ConditionContext context) {
+		Conditional conditional = AnnotationUtils.findAnnotation(annotated, Conditional.class);
+		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(annotated);
+		for (Class<? extends Condition> type  : conditional.value()) {
+			Condition condition = BeanUtils.instantiateClass(type);
+			if (condition.matches(context, metadata)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
