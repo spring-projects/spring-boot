@@ -5,8 +5,8 @@
 [partintro]
 --
 This section goes into more detail about how you should use Spring Boot. It covers topics
-such as build systems, auto-configuration and run/deployment options. We also cover some
-Spring Boot best practices. Although there is nothing particularly special about
+such as build systems, auto-configuration and how to run your applications. We also cover
+some Spring Boot best practices. Although there is nothing particularly special about
 Spring Boot (it is just another library that you can consume), there are a few
 recommendations that, when followed, will make your development process just a
 little easier.
@@ -162,11 +162,12 @@ endif::[]
 	}
 ----
 
-The <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, `spring-boot-gradle-plugin`>>
-is also available and provides tasks to create executable jars and run projects from
-source. It also adds a `ResolutionStrategy` that enables you to
-<<build-tool-plugins-gradle-dependencies-without-versions, omit the version number
-for "`blessed`" dependencies>>:
+The <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin,
+`spring-boot-gradle-plugin`>> is also available and provides tasks to create executable
+jars and run projects from source. It also provides
+<<build-tool-plugins-gradle-dependency-management, dependency management>> that, among
+other capabilities, allows you to omit the version number for any dependencies that are
+managed by Spring Boot:
 
 [source,groovy,indent=0,subs="attributes"]
 ----

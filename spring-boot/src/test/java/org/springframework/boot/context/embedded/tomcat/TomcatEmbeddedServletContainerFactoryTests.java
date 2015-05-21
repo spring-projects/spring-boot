@@ -21,15 +21,18 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Service;
 import org.apache.catalina.Valve;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
@@ -40,6 +43,7 @@ import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -308,6 +312,24 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 
 		});
 
+	}
+
+	@Test
+	public void jspServletInitParameters() {
+		Map<String, String> initParameters = new HashMap<String, String>();
+		initParameters.put("a", "alpha");
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.getJspServlet().setInitParameters(initParameters);
+		this.container = factory.getEmbeddedServletContainer();
+		Wrapper jspServlet = getJspServlet();
+		assertThat(jspServlet.findInitParameter("a"), is(equalTo("alpha")));
+	}
+
+	@Override
+	protected Wrapper getJspServlet() {
+		Container context = ((TomcatEmbeddedServletContainer) this.container).getTomcat()
+				.getHost().findChildren()[0];
+		return (Wrapper) context.findChild("jsp");
 	}
 
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {

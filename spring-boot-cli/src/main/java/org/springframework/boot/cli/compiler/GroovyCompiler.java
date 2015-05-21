@@ -105,7 +105,7 @@ public class GroovyCompiler {
 		}
 
 		this.transformations = new ArrayList<ASTTransformation>();
-		this.transformations.add(new GrabMetadataTransformation(resolutionContext));
+		this.transformations.add(new DependencyManagementBomTransformation(resolutionContext));
 		this.transformations.add(new DependencyAutoConfigurationTransformation(
 				this.loader, resolutionContext, this.compilerAutoConfigurations));
 		this.transformations.add(new GroovyBeansTransformation());

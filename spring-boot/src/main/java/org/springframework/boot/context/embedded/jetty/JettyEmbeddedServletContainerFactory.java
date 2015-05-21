@@ -231,13 +231,12 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 		String contextPath = getContextPath();
 		context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
+		context.setDisplayName(getDisplayName());
 		configureDocumentRoot(context);
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
-		if (isRegisterJspServlet()
-				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
-						.getClassLoader())) {
+		if (shouldRegisterJspServlet()) {
 			addJspServlet(context);
 		}
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
@@ -297,8 +296,9 @@ public class JettyEmbeddedServletContainerFactory extends
 		Assert.notNull(context, "Context must not be null");
 		ServletHolder holder = new ServletHolder();
 		holder.setName("jsp");
-		holder.setClassName(getJspServletClassName());
+		holder.setClassName(getJspServlet().getClassName());
 		holder.setInitParameter("fork", "false");
+		holder.setInitParameters(getJspServlet().getInitParameters());
 		holder.setInitOrder(3);
 		context.getServletHandler().addServlet(holder);
 		ServletMapping mapping = new ServletMapping();
@@ -378,7 +378,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Factory method called to create the {@link JettyEmbeddedServletContainer}.
+	 * Factory method called to create the {@link JettyEmbeddedServletContainer} .
 	 * Subclasses can override this method to return a different
 	 * {@link JettyEmbeddedServletContainer} or apply additional processing to the Jetty
 	 * server.

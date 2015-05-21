@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
  * {@link Command} that initializes a project using Spring initializr.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 public class InitCommand extends OptionParsingCommand {
@@ -78,19 +79,31 @@ public class InitCommand extends OptionParsingCommand {
 
 		private OptionSpec<Void> listCapabilities;
 
-		private OptionSpec<String> bootVersion;
+		private OptionSpec<String> groupId;
 
-		private OptionSpec<String> dependencies;
+		private OptionSpec<String> artifactId;
 
-		private OptionSpec<String> javaVersion;
+		private OptionSpec<String> version;
+
+		private OptionSpec<String> name;
+
+		private OptionSpec<String> description;
 
 		private OptionSpec<String> packaging;
+
+		private OptionSpec<String> type;
 
 		private OptionSpec<String> build;
 
 		private OptionSpec<String> format;
 
-		private OptionSpec<String> type;
+		private OptionSpec<String> javaVersion;
+
+		private OptionSpec<String> language;
+
+		private OptionSpec<String> bootVersion;
+
+		private OptionSpec<String> dependencies;
 
 		private OptionSpec<Void> extract;
 
@@ -116,30 +129,48 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		private void projectGenerationOptions() {
-			this.bootVersion = option(Arrays.asList("boot-version", "b"),
-					"Spring Boot version to use (for example '1.2.0.RELEASE')")
+			this.groupId = option(Arrays.asList("groupId", "g"),
+					"Project coordinates (for example 'org.test')")
 					.withRequiredArg();
-			this.dependencies = option(
-					Arrays.asList("dependencies", "d"),
-					"Comma separated list of dependencies to include in the "
-							+ "generated project").withRequiredArg();
-			this.javaVersion = option(Arrays.asList("java-version", "j"),
-					"Java version to use (for example '1.8')").withRequiredArg();
+			this.artifactId = option(Arrays.asList("artifactId", "a"),
+					"Project coordinates; infer archive name (for example 'test')")
+					.withRequiredArg();
+			this.version = option(Arrays.asList("version", "v"),
+					"Project version (for example '0.0.1-SNAPSHOT')")
+					.withRequiredArg();
+			this.name = option(Arrays.asList("name", "n"),
+					"Project name; infer application name")
+					.withRequiredArg();
+			this.description = option("description",
+					"Project description")
+					.withRequiredArg();
 			this.packaging = option(Arrays.asList("packaging", "p"),
-					"Packaging type to use (for example 'jar')").withRequiredArg();
+					"Project packaging (for example 'jar')").withRequiredArg();
+			this.type = option(
+					Arrays.asList("type", "t"),
+					"Project type. Not normally needed if you use --build "
+							+ "and/or --format. Check the capabilities of the service "
+							+ "(--list) for more details").withRequiredArg();
 			this.build = option("build",
-					"The build system to use (for example 'maven' or 'gradle')")
+					"Build system to use (for example 'maven' or 'gradle')")
 					.withRequiredArg().defaultsTo("maven");
 			this.format = option(
 					"format",
-					"The format of the generated content (for example 'build' for a build file, "
+					"Format of the generated content (for example 'build' for a build file, "
 							+ "'project' for a project archive)").withRequiredArg()
 					.defaultsTo("project");
-			this.type = option(
-					Arrays.asList("type", "t"),
-					"The project type to use. Not normally needed if you use --build "
-							+ "and/or --format. Check the capabilities of the service "
-							+ "(--list) for more details").withRequiredArg();
+			this.javaVersion = option(Arrays.asList("java-version", "j"),
+					"Language level (for example '1.8')").withRequiredArg();
+			this.language = option(Arrays.asList("language", "l"),
+					"Programming language  (for example 'java')")
+					.withRequiredArg();
+			this.bootVersion = option(Arrays.asList("boot-version", "b"),
+					"Spring Boot version (for example '1.2.0.RELEASE')")
+					.withRequiredArg();
+			this.dependencies = option(
+					Arrays.asList("dependencies", "d"),
+					"Comma-separated list of dependency identifiers to include in the "
+							+ "generated project").withRequiredArg();
 		}
 
 		private void otherOptions() {
@@ -208,6 +239,24 @@ public class InitCommand extends OptionParsingCommand {
 			request.setDetectType(options.has(this.build) || options.has(this.format));
 			if (options.has(this.type)) {
 				request.setType(options.valueOf(this.type));
+			}
+			if(options.has(this.language)) {
+				request.setLanguage(options.valueOf(this.language));
+			}
+			if(options.has(this.groupId)) {
+				request.setGroupId(options.valueOf(this.groupId));
+			}
+			if (options.has(this.artifactId)) {
+				request.setArtifactId(options.valueOf(this.artifactId));
+			}
+			if(options.has(this.name)) {
+				request.setName(options.valueOf(this.name));
+			}
+			if(options.has(this.version)) {
+				request.setVersion(options.valueOf(this.version));
+			}
+			if(options.has(this.description)) {
+				request.setDescription(options.valueOf(this.description));
 			}
 			request.setExtract(options.has(this.extract));
 			if (nonOptionArguments.size() == 1) {

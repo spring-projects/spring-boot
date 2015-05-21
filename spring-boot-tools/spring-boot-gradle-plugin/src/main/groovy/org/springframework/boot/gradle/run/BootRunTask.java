@@ -54,6 +54,10 @@ public class BootRunTask extends JavaExec {
 
 	@Override
 	public void exec() {
+		if(System.console() != null) {
+			// Record that the console is available here for AnsiOutput to detect later
+			this.getEnvironment().put("spring.output.ansi.console-available", true);
+		}
 		addResourcesIfNecessary();
 		super.exec();
 	}

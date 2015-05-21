@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +36,8 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractMetricExporter implements Exporter {
 
+	private static final Log logger = LogFactory.getLog(AbstractMetricExporter.class);
+
 	private volatile AtomicBoolean processing = new AtomicBoolean(false);
 
 	private Date earliestTimestamp = new Date();
@@ -41,6 +45,10 @@ public abstract class AbstractMetricExporter implements Exporter {
 	private boolean ignoreTimestamps = false;
 
 	private final String prefix;
+
+	private Date latestTimestamp = new Date(0L);
+
+	private boolean sendLatest = true;
 
 	public AbstractMetricExporter(String prefix) {
 		this.prefix = !StringUtils.hasText(prefix) ? "" : (prefix.endsWith(".") ? prefix
@@ -63,13 +71,24 @@ public abstract class AbstractMetricExporter implements Exporter {
 		this.ignoreTimestamps = ignoreTimestamps;
 	}
 
+	/**
+	 * Send only the data that changed since the last export.
+	 *
+	 * @param sendLatest the flag to set
+	 */
+	public void setSendLatest(boolean sendLatest) {
+		this.sendLatest = sendLatest;
+	}
+
 	@Override
 	public void export() {
 		if (!this.processing.compareAndSet(false, true)) {
 			// skip a tick
 			return;
 		}
+		long latestTimestamp = 0;
 		try {
+			latestTimestamp = System.currentTimeMillis();
 			for (String group : groups()) {
 				Collection<Metric<?>> values = new ArrayList<Metric<?>>();
 				for (Metric<?> metric : next(group)) {
@@ -79,6 +98,10 @@ public abstract class AbstractMetricExporter implements Exporter {
 					if (!this.ignoreTimestamps && this.earliestTimestamp.after(timestamp)) {
 						continue;
 					}
+					if (!this.ignoreTimestamps && this.sendLatest
+							&& this.latestTimestamp.after(timestamp)) {
+						continue;
+					}
 					values.add(value);
 				}
 				if (!values.isEmpty()) {
@@ -86,9 +109,24 @@ public abstract class AbstractMetricExporter implements Exporter {
 				}
 			}
 		}
+		catch (Exception e) {
+			logger.warn("Could not write to MetricWriter: " + e.getClass() + ": "
+					+ e.getMessage());
+		}
 		finally {
+			try {
+				this.latestTimestamp = new Date(latestTimestamp);
+				flush();
+			}
+			catch (Exception e) {
+				logger.warn("Could not flush MetricWriter: " + e.getClass() + ": "
+						+ e.getMessage());
+			}
 			this.processing.set(false);
 		}
+	}
+
+	public void flush() {
 	}
 
 	/**

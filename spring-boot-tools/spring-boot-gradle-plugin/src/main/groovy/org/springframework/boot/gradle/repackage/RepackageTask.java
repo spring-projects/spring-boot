@@ -28,6 +28,8 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.boot.loader.tools.DefaultLaunchScript;
+import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.util.FileCopyUtils;
 
@@ -78,6 +80,10 @@ public class RepackageTask extends DefaultTask {
 
 	public void setClassifier(String classifier) {
 		this.classifier = classifier;
+	}
+
+	void setOutputFile(File file) {
+		this.outputFile = file;
 	}
 
 	@TaskAction
@@ -170,7 +176,8 @@ public class RepackageTask extends DefaultTask {
 			}
 			repackager.setBackupSource(this.extension.isBackupSource());
 			try {
-				repackager.repackage(file, this.libraries);
+				LaunchScript launchScript = getLaunchScript();
+				repackager.repackage(file, this.libraries, launchScript);
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex.getMessage(), ex);
@@ -201,6 +208,15 @@ public class RepackageTask extends DefaultTask {
 			getLogger().info("Setting mainClass: " + mainClass);
 			repackager.setMainClass(mainClass);
 		}
+
+		private LaunchScript getLaunchScript() throws IOException {
+			if (this.extension.isExecutable()) {
+				return new DefaultLaunchScript(this.extension.getEmbeddedLaunchScript(),
+						this.extension.getEmbeddedLaunchScriptProperties());
+			}
+			return null;
+		}
+
 	}
 
 	/**
@@ -228,10 +244,7 @@ public class RepackageTask extends DefaultTask {
 				}
 			}
 		}
-	}
 
-	void setOutputFile(File file) {
-		this.outputFile = file;
 	}
 
 }

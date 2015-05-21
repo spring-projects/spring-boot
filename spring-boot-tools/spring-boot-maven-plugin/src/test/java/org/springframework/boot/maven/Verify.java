@@ -26,8 +26,12 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.springframework.util.FileCopyUtils;
+
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -44,8 +48,14 @@ public class Verify {
 		new JarArchiveVerification(file, SAMPLE_APP).verify();
 	}
 
-	public static void verifyJar(File file, String main) throws Exception {
-		new JarArchiveVerification(file, main).verify();
+	public static void verifyJar(File file, String main, String... scriptContents)
+			throws Exception {
+		verifyJar(file, main, true, scriptContents);
+	}
+
+	public static void verifyJar(File file, String main, boolean executable,
+			String... scriptContents) throws Exception {
+		new JarArchiveVerification(file, main).verify(executable, scriptContents);
 	}
 
 	public static void verifyWar(File file) throws Exception {
@@ -149,8 +159,29 @@ public class Verify {
 		}
 
 		public void verify() throws Exception {
+			verify(true);
+		}
+
+		public void verify(boolean executable, String... scriptContents) throws Exception {
 			assertTrue("Archive missing", this.file.exists());
 			assertTrue("Archive not a file", this.file.isFile());
+
+			if (scriptContents.length > 0 && executable) {
+				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
+				contents = contents.substring(0, contents.indexOf(new String(new byte[] {
+						0x50, 0x4b, 0x03, 0x04 })));
+				for (String content : scriptContents) {
+					assertThat(contents, containsString(content));
+				}
+			}
+
+			if (!executable) {
+				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
+				assertTrue(
+						"Is executable",
+						contents.startsWith(new String(new byte[] { 0x50, 0x4b, 0x03,
+								0x04 })));
+			}
 
 			ZipFile zipFile = new ZipFile(this.file);
 			try {

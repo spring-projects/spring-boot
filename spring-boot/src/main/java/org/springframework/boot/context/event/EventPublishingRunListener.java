@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,11 +89,16 @@ public class EventPublishingRunListener implements SpringApplicationRunListener 
 
 	@Override
 	public void finished(ConfigurableApplicationContext context, Throwable exception) {
+		publishEvent(getFinishedEvent(context, exception));
+	}
+
+	private SpringApplicationEvent getFinishedEvent(
+			ConfigurableApplicationContext context, Throwable exception) {
 		if (exception != null) {
-			ApplicationFailedEvent event = new ApplicationFailedEvent(this.application,
-					this.args, context, exception);
-			publishEvent(event);
+			return new ApplicationFailedEvent(this.application, this.args, context,
+					exception);
 		}
+		return new ApplicationReadyEvent(this.application, this.args, context);
 	}
 
 	private void publishEvent(SpringApplicationEvent event) {

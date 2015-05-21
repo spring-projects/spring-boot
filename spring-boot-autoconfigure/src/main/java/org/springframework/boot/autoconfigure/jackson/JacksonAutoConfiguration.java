@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -35,7 +33,6 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.HttpMapperProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -50,10 +47,9 @@ import org.springframework.util.ReflectionUtils;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.joda.cfg.JacksonJodaDateFormat;
 import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
-import com.fasterxml.jackson.datatype.joda.ser.JacksonJodaFormat;
 
 /**
  * Auto configuration for Jackson. The following auto-configuration will get applied:
@@ -72,24 +68,10 @@ import com.fasterxml.jackson.datatype.joda.ser.JacksonJodaFormat;
  */
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
-@SuppressWarnings("deprecation")
 public class JacksonAutoConfiguration {
 
 	@Autowired
 	private ListableBeanFactory beanFactory;
-
-	@PostConstruct
-	private void registerModulesWithObjectMappers() {
-		Collection<Module> modules = getBeans(this.beanFactory, Module.class);
-		for (ObjectMapper objectMapper : getBeans(this.beanFactory, ObjectMapper.class)) {
-			objectMapper.registerModules(modules);
-		}
-	}
-
-	private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
-			Class<T> type) {
-		return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type).values();
-	}
 
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
@@ -106,7 +88,7 @@ public class JacksonAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class,
-			DateTimeSerializer.class, JacksonJodaFormat.class })
+			DateTimeSerializer.class, JacksonJodaDateFormat.class })
 	static class JodaDateTimeJacksonConfiguration {
 
 		private final Log log = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
@@ -117,7 +99,7 @@ public class JacksonAutoConfiguration {
 		@Bean
 		public Module jodaDateTimeSerializationModule() {
 			SimpleModule module = new SimpleModule();
-			JacksonJodaFormat jacksonJodaFormat = getJacksonJodaFormat();
+			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
 			if (jacksonJodaFormat != null) {
 				module.addSerializer(DateTime.class, new DateTimeSerializer(
 						jacksonJodaFormat));
@@ -125,14 +107,14 @@ public class JacksonAutoConfiguration {
 			return module;
 		}
 
-		private JacksonJodaFormat getJacksonJodaFormat() {
+		private JacksonJodaDateFormat getJacksonJodaDateFormat() {
 			if (this.jacksonProperties.getJodaDateTimeFormat() != null) {
-				return new JacksonJodaFormat(DateTimeFormat.forPattern(
+				return new JacksonJodaDateFormat(DateTimeFormat.forPattern(
 						this.jacksonProperties.getJodaDateTimeFormat()).withZoneUTC());
 			}
 			if (this.jacksonProperties.getDateFormat() != null) {
 				try {
-					return new JacksonJodaFormat(DateTimeFormat.forPattern(
+					return new JacksonJodaDateFormat(DateTimeFormat.forPattern(
 							this.jacksonProperties.getDateFormat()).withZoneUTC());
 				}
 				catch (IllegalArgumentException ex) {
@@ -151,7 +133,7 @@ public class JacksonAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
-	@EnableConfigurationProperties({ HttpMapperProperties.class, JacksonProperties.class })
+	@EnableConfigurationProperties(JacksonProperties.class)
 	static class JacksonObjectMapperBuilderConfiguration implements
 			ApplicationContextAware {
 
@@ -160,21 +142,14 @@ public class JacksonAutoConfiguration {
 		@Autowired
 		private JacksonProperties jacksonProperties;
 
-		@Autowired
-		private HttpMapperProperties httpMapperProperties;
-
 		@Bean
 		@ConditionalOnMissingBean(Jackson2ObjectMapperBuilder.class)
 		public Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder() {
 			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
 			builder.applicationContext(this.applicationContext);
-			Boolean isJsonSortKeys = this.httpMapperProperties.isJsonSortKeys();
-			if (isJsonSortKeys != null && isJsonSortKeys) {
-				builder.featuresToEnable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
-			}
-			Boolean isJsonPrettyPrint = this.httpMapperProperties.isJsonPrettyPrint();
-			if (isJsonPrettyPrint != null && isJsonPrettyPrint) {
-				builder.featuresToEnable(SerializationFeature.INDENT_OUTPUT);
+			if (this.jacksonProperties.getSerializationInclusion() != null) {
+				builder.serializationInclusion(this.jacksonProperties
+						.getSerializationInclusion());
 			}
 			configureFeatures(builder, this.jacksonProperties.getDeserialization());
 			configureFeatures(builder, this.jacksonProperties.getSerialization());
@@ -257,6 +232,12 @@ public class JacksonAutoConfiguration {
 			Collection<Module> moduleBeans = getBeans(this.applicationContext,
 					Module.class);
 			builder.modulesToInstall(moduleBeans.toArray(new Module[moduleBeans.size()]));
+		}
+
+		private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
+				Class<T> type) {
+			return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type)
+					.values();
 		}
 
 		@Override

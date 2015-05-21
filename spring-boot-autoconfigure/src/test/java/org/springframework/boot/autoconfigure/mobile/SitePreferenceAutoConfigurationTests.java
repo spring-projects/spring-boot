@@ -16,39 +16,37 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor;
 import org.springframework.mobile.device.site.SitePreferenceHandlerMethodArgumentResolver;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import static org.hamcrest.Matchers.hasItemInArray;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link SitePreferenceAutoConfiguration}.
  *
  * @author Roy Clarkson
+ * @author Andy Wilkinson
  */
 public class SitePreferenceAutoConfigurationTests {
-
-	private static final MockEmbeddedServletContainerFactory containerFactory = new MockEmbeddedServletContainerFactory();
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -118,41 +116,38 @@ public class SitePreferenceAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void sitePreferenceHandlerInterceptorRegistered() throws Exception {
-		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
-		context.register(Config.class, WebMvcAutoConfiguration.class,
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				SitePreferenceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		context.refresh();
-		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context
-				.getBean("requestMappingHandlerMapping");
-		Field interceptorsField = ReflectionUtils.findField(
-				RequestMappingHandlerMapping.class, "interceptors");
-		interceptorsField.setAccessible(true);
-		List<Object> interceptors = (List<Object>) ReflectionUtils.getField(
-				interceptorsField, mapping);
-		context.close();
-		for (Object o : interceptors) {
-			if (o instanceof SitePreferenceHandlerInterceptor) {
-				return;
-			}
-		}
-		fail("SitePreferenceHandlerInterceptor was not registered.");
+		this.context.refresh();
+		RequestMappingHandlerMapping mapping = this.context
+				.getBean(RequestMappingHandlerMapping.class);
+		HandlerInterceptor[] interceptors = mapping.getHandler(
+				new MockHttpServletRequest()).getInterceptors();
+		assertThat(interceptors,
+				hasItemInArray(instanceOf(SitePreferenceHandlerInterceptor.class)));
 	}
 
 	@Configuration
 	protected static class Config {
 
 		@Bean
-		public EmbeddedServletContainerFactory containerFactory() {
-			return containerFactory;
+		public MyController controller() {
+			return new MyController();
 		}
 
-		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
-			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+	}
+
+	@Controller
+	protected static class MyController {
+
+		@RequestMapping("/")
+		public void test() {
+
 		}
 
 	}

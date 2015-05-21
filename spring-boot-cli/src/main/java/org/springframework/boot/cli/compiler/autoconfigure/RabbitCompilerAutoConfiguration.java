@@ -45,7 +45,6 @@ public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 		imports.addStarImports("org.springframework.amqp.rabbit.annotation",
 				"org.springframework.amqp.rabbit.core",
@@ -53,8 +52,6 @@ public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 				"org.springframework.amqp.rabbit.connection",
 				"org.springframework.amqp.rabbit.listener",
 				"org.springframework.amqp.rabbit.listener.adapter",
-				"org.springframework.amqp.core").addImports(
-				org.springframework.boot.groovy.EnableRabbitMessaging.class.getName());
+				"org.springframework.amqp.core");
 	}
-
 }

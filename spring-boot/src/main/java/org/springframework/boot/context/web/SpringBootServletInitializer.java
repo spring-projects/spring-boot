@@ -83,7 +83,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	protected WebApplicationContext createRootApplicationContext(
 			ServletContext servletContext) {
-		SpringApplicationBuilder builder = new SpringApplicationBuilder();
+		SpringApplicationBuilder builder = createSpringApplicationBuilder();
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
 		if (parent != null) {
 			this.logger.info("Root context already created (using as parent).");
@@ -106,6 +106,18 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		// Ensure error pages are registered
 		application.getSources().add(ErrorPageFilter.class);
 		return run(application);
+	}
+
+	/**
+	 * Returns the {@code SpringApplicationBuilder} that is used to configure and create
+	 * the {@link SpringApplication}. The default implementation returns a new
+	 * {@code SpringApplicationBuilder} in its default state.
+	 *
+	 * @return the {@code SpringApplicationBuilder}.
+	 * @since 1.3.0
+	 */
+	protected SpringApplicationBuilder createSpringApplicationBuilder() {
+		return new SpringApplicationBuilder();
 	}
 
 	/**

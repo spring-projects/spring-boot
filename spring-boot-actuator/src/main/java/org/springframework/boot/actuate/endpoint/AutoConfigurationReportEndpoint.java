@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author Greg Turnquist
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.autoconfig", ignoreUnknownFields = false)
 public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
@@ -61,7 +62,7 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	/**
 	 * Adapts {@link ConditionEvaluationReport} to a JSON friendly structure.
 	 */
-	@JsonPropertyOrder({ "positiveMatches", "negativeMatches" })
+	@JsonPropertyOrder({ "positiveMatches", "negativeMatches", "exclusions" })
 	@JsonInclude(Include.NON_EMPTY)
 	public static class Report {
 
@@ -69,11 +70,14 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 		private MultiValueMap<String, MessageAndCondition> negativeMatches;
 
+		private List<String> exclusions;
+
 		private Report parent;
 
 		public Report(ConditionEvaluationReport report) {
 			this.positiveMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
 			this.negativeMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
+			this.exclusions = report.getExclusions();
 			for (Map.Entry<String, ConditionAndOutcomes> entry : report
 					.getConditionAndOutcomesBySource().entrySet()) {
 				add(entry.getValue().isFullMatch() ? this.positiveMatches
@@ -99,6 +103,10 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 		public Map<String, List<MessageAndCondition>> getNegativeMatches() {
 			return this.negativeMatches;
+		}
+
+		public List<String> getExclusions() {
+			return this.exclusions;
 		}
 
 		public Report getParent() {

@@ -158,7 +158,7 @@ public class EndpointWebMvcChildContextConfiguration {
 	 * configures the security filter.
 	 */
 	@Configuration
-	@ConditionalOnMissingClass(name = "org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter")
+	@ConditionalOnMissingClass("org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter")
 	protected static class EndpointHandlerMappingConfiguration {
 
 		@Autowired(required = false)

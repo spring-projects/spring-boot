@@ -18,7 +18,6 @@ package org.springframework.boot.context.embedded.jetty;
 
 import javax.servlet.ServletException;
 
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
@@ -35,19 +34,6 @@ import org.springframework.util.Assert;
 public class ServletContextInitializerConfiguration extends AbstractConfiguration {
 
 	private final ServletContextInitializer[] initializers;
-
-	/**
-	 * Create a new {@link ServletContextInitializerConfiguration}.
-	 * @param contextHandler the Jetty ContextHandler
-	 * @param initializers the initializers that should be invoked
-	 * @deprecated since 1.2.1 in favor of
-	 * {@link #ServletContextInitializerConfiguration(ServletContextInitializer...)}
-	 */
-	@Deprecated
-	public ServletContextInitializerConfiguration(ContextHandler contextHandler,
-			ServletContextInitializer... initializers) {
-		this(initializers);
-	}
 
 	/**
 	 * Create a new {@link ServletContextInitializerConfiguration}.

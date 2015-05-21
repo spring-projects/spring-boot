@@ -69,21 +69,21 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void testWithCustomBaseUri() throws Exception {
-		load(TestConfiguration.class, "spring.data.rest.baseUri:foo");
+	public void testWithCustomBasePath() throws Exception {
+		load(TestConfiguration.class, "spring.data.rest.base-path:foo");
 		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
-		URI expectedUri = URI.create("foo");
-		assertEquals("Custom baseURI not set", expectedUri, bean.getBaseUri());
+		URI expectedUri = URI.create("/foo");
+		assertEquals("Custom basePath not set", expectedUri, bean.getBaseUri());
 		BaseUri baseUri = this.context.getBean(BaseUri.class);
-		assertEquals("Custom baseUri has not been applied to BaseUri bean", expectedUri,
+		assertEquals("Custom basePath has not been applied to BaseUri bean", expectedUri,
 				baseUri.getUri());
 	}
 
 	@Test
 	public void backOffWithCustomConfiguration() {
-		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.baseUri:foo");
+		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.base-path:foo");
 		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
@@ -93,11 +93,12 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	@Test
 	public void propertiesStillAppliedWithCustomBootConfig() {
-		load(TestConfigurationWithRestMvcBootConfig.class, "spring.data.rest.baseUri:foo");
+		load(TestConfigurationWithRestMvcBootConfig.class,
+				"spring.data.rest.base-path:foo");
 		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
-		assertEquals("Custom base URI should have been set", URI.create("foo"),
+		assertEquals("Custom base URI should have been set", URI.create("/foo"),
 				bean.getBaseUri());
 	}
 

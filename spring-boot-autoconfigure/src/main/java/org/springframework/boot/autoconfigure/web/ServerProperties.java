@@ -36,6 +36,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.InitParameterConfiguringServletContextInitializer;
+import org.springframework.boot.context.embedded.JspServlet;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
@@ -55,6 +56,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Ivan Sopov
+ * @author Marcos Barbero
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
@@ -79,6 +81,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 */
 	private String contextPath;
 
+	/**
+	 * Display name of the application.
+	 */
+	private String displayName = "application";
+
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
@@ -91,6 +98,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	private final Tomcat tomcat = new Tomcat();
 
 	private final Undertow undertow = new Undertow();
+
+	@NestedConfigurationProperty
+	private JspServlet jspServlet;
 
 	/**
 	 * ServletContext parameters.
@@ -116,6 +126,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
+	}
+
+	public String getDisplayName() {
+		return this.displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	public String getServletPath() {
@@ -182,6 +200,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		this.ssl = ssl;
 	}
 
+	public JspServlet getJspServlet() {
+		return this.jspServlet;
+	}
+
+	public void setJspServlet(JspServlet jspServlet) {
+		this.jspServlet = jspServlet;
+	}
+
 	public Map<String, String> getContextParameters() {
 		return this.contextParameters;
 	}
@@ -201,11 +227,17 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		if (getContextPath() != null) {
 			container.setContextPath(getContextPath());
 		}
+		if (getDisplayName() != null) {
+			container.setDisplayName(getDisplayName());
+		}
 		if (getSessionTimeout() != null) {
 			container.setSessionTimeout(getSessionTimeout());
 		}
 		if (getSsl() != null) {
 			container.setSsl(getSsl());
+		}
+		if (getJspServlet() != null) {
+			container.setJspServlet(getJspServlet());
 		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat()
@@ -263,7 +295,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
-				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"; // 127/8
+				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
+				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
+				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
@@ -544,6 +579,21 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		private Boolean directBuffers;
 
+		/**
+		 * Format pattern for access logs.
+		 */
+		private String accessLogPattern = "common";
+
+		/**
+		 * Enable access log.
+		 */
+		private boolean accessLogEnabled = false;
+
+		/**
+		 * Undertow access log directory.
+		 */
+		private File accessLogDir = new File("logs");
+
 		public Integer getBufferSize() {
 			return this.bufferSize;
 		}
@@ -584,12 +634,39 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.directBuffers = directBuffers;
 		}
 
+		public String getAccessLogPattern() {
+			return this.accessLogPattern;
+		}
+
+		public void setAccessLogPattern(String accessLogPattern) {
+			this.accessLogPattern = accessLogPattern;
+		}
+
+		public boolean isAccessLogEnabled() {
+			return this.accessLogEnabled;
+		}
+
+		public void setAccessLogEnabled(boolean accessLogEnabled) {
+			this.accessLogEnabled = accessLogEnabled;
+		}
+
+		public File getAccessLogDir() {
+			return this.accessLogDir;
+		}
+
+		public void setAccessLogDir(File accessLogDir) {
+			this.accessLogDir = accessLogDir;
+		}
+
 		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
 			factory.setBufferSize(this.bufferSize);
 			factory.setBuffersPerRegion(this.buffersPerRegion);
 			factory.setIoThreads(this.ioThreads);
 			factory.setWorkerThreads(this.workerThreads);
 			factory.setDirectBuffers(this.directBuffers);
+			factory.setAccessLogDirectory(this.accessLogDir);
+			factory.setAccessLogPattern(this.accessLogPattern);
+			factory.setAccessLogEnabled(this.accessLogEnabled);
 		}
 
 	}

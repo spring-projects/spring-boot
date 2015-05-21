@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.gradle;
 
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
-import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**
  * Tests for using the Gradle plugin's support for installing artifacts
@@ -29,29 +28,21 @@ public class InstallTests {
 
 	private ProjectConnection project;
 
-	private static final String BOOT_VERSION = ManagedDependencies.get()
-			.find("spring-boot").getVersion();
+	private static final String BOOT_VERSION = Versions.getBootVersion();
 
 	@Test
 	public void cleanInstall() throws Exception {
-		project = new ProjectCreator().createProject("installer");
-		project.newBuild().forTasks("install")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
-	}
-
-	@Test
-	public void cleanInstallVersionManagement() throws Exception {
-		project = new ProjectCreator().createProject("installer-io");
-		project.newBuild().forTasks("install")
+		this.project = new ProjectCreator().createProject("installer");
+		this.project.newBuild().forTasks("install")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}
 
 	@Test
 	public void cleanInstallApp() throws Exception {
-		project = new ProjectCreator().createProject("install-app");
+		this.project = new ProjectCreator().createProject("install-app");
 		// "install" from the application plugin was renamed "installApp" in Gradle
 		// 1.0
-		project.newBuild().forTasks("installApp")
+		this.project.newBuild().forTasks("installApp")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info")
 				.run();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -95,7 +96,13 @@ public class FlywayAutoConfiguration {
 			return false;
 		}
 
-		@Bean(initMethod = "migrate")
+		@Bean
+		@ConditionalOnMissingBean
+		public FlywayMigrationStrategy flywayMigrationStrategy() {
+			return new FlywayMigrationStrategy();
+		}
+
+		@Bean
 		@ConfigurationProperties(prefix = "flyway")
 		public Flyway flyway() {
 			Flyway flyway = new Flyway();
@@ -113,6 +120,13 @@ public class FlywayAutoConfiguration {
 			return flyway;
 		}
 
+		@Bean
+		public FlywayMigrationInitializer flywayInitializer(Flyway flyway,
+				FlywayMigrationStrategy migrationStrategy) {
+			return new FlywayMigrationInitializer(flyway, migrationStrategy);
+
+		}
+
 	}
 
 	/**
@@ -126,7 +140,30 @@ public class FlywayAutoConfiguration {
 			EntityManagerFactoryDependsOnPostProcessor {
 
 		public FlywayJpaDependencyConfiguration() {
-			super("flyway");
+			super("flywayInitializer", "flyway");
+		}
+
+	}
+
+	/**
+	 * {@link InitializingBean} used to trigger {@link Flyway} migration via the
+	 * {@link FlywayMigrationStrategy}.
+	 */
+	private static class FlywayMigrationInitializer implements InitializingBean {
+
+		private final Flyway flyway;
+
+		private final FlywayMigrationStrategy migrationStrategy;
+
+		public FlywayMigrationInitializer(Flyway flyway,
+				FlywayMigrationStrategy migrationStrategy) {
+			this.flyway = flyway;
+			this.migrationStrategy = migrationStrategy;
+		}
+
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			this.migrationStrategy.migrate(this.flyway);
 		}
 
 	}

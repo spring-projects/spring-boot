@@ -149,4 +149,9 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 		assertEquals("/", contextPath.get());
 	}
 
+	@Override
+	protected Object getJspServlet() {
+		return null; // Undertow does not support JSPs
+	}
+
 }

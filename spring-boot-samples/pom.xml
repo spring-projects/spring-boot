@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.4.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-starters/spring-boot-starter-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-samples</artifactId>
@@ -20,6 +20,7 @@
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<modules>
+		<module>spring-boot-sample-activemq</module>
 		<module>spring-boot-sample-actuator</module>
 		<module>spring-boot-sample-actuator-log4j</module>
 		<module>spring-boot-sample-actuator-log4j2</module>
@@ -51,6 +52,9 @@
 		<module>spring-boot-sample-jta-bitronix</module>
 		<module>spring-boot-sample-jta-jndi</module>
 		<module>spring-boot-sample-liquibase</module>
+		<module>spring-boot-sample-metrics-dropwizard</module>
+		<module>spring-boot-sample-metrics-opentsdb</module>
+		<module>spring-boot-sample-metrics-redis</module>
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-secure</module>

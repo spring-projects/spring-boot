@@ -17,6 +17,10 @@ subprojects {
 
 apply plugin: 'spring-boot'
 
+repositories {
+	mavenLocal()
+}
+
 springBoot {
 	mainClass = 'foo.bar.Baz'
 }

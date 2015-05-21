@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import java.util.jar.JarFile;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -52,12 +51,9 @@ public class WarPackagingTests {
 					"tomcat-embed-websocket-"));
 
 	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
-			Arrays.asList("spring-boot-starter-jetty-", "jetty-util-", "jetty-xml-",
-					"jetty-schemas-", "javax.servlet-", "jetty-io-", "jetty-http-",
-					"jetty-server-", "jetty-security-", "jetty-servlet-",
-					"jetty-webapp-", "javax.servlet.jsp-2", "javax.servlet.jsp-api-",
-					"javax.servlet.jsp.jstl-1.2.2", "javax.servlet.jsp.jstl-1.2.0",
-					"javax.el-", "org.eclipse.jdt.core-", "jetty-jsp-", "websocket-api",
+			Arrays.asList("spring-boot-starter-jetty-", "jetty-util-", "javax.servlet-",
+					"jetty-io-", "jetty-http-", "jetty-server-", "jetty-security-",
+					"jetty-servlet-", "jetty-webapp-", "websocket-api",
 					"javax.annotation-api", "jetty-plus", "javax-websocket-server-impl-",
 					"asm-", "javax.websocket-api-", "asm-tree-", "asm-commons-",
 					"websocket-common-", "jetty-annotations-",
@@ -65,8 +61,7 @@ public class WarPackagingTests {
 					"websocket-server-", "jetty-jndi-", "jetty-xml-",
 					"websocket-servlet-"));
 
-	private static final String BOOT_VERSION = ManagedDependencies.get()
-			.find("spring-boot").getVersion();
+	private static final String BOOT_VERSION = Versions.getBootVersion();
 
 	private static ProjectConnection project;
 

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.2.4.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-docs</artifactId>
@@ -335,6 +335,7 @@
 								<goals>
 									<goal>jar</goal>
 								</goals>
+								<phase>prepare-package</phase>
 								<configuration>
 									<includeDependencySources>true</includeDependencySources>
 									<dependencySourceIncludes>
@@ -383,7 +384,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>copy-versions-effective-pom</id>
+								<id>copy-dependencies-effective-pom</id>
 								<phase>generate-resources</phase>
 								<goals>
 									<goal>copy</goal>
@@ -392,7 +393,7 @@
 									<artifactItems>
 										<artifactItem>
 											<groupId>org.springframework.boot</groupId>
-											<artifactId>spring-boot-versions</artifactId>
+											<artifactId>spring-boot-dependencies</artifactId>
 											<version>${project.version}</version>
 											<type>effective-pom</type>
 											<overWrite>true</overWrite>

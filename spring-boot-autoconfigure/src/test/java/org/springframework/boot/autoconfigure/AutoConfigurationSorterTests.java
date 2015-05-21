@@ -28,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.io.DefaultResourceLoader;
 
 import static org.junit.Assert.assertThat;
@@ -157,11 +156,11 @@ public class AutoConfigurationSorterTests {
 
 	}
 
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 	public static class OrderLowest {
 	}
 
-	@Order(Ordered.HIGHEST_PRECEDENCE)
+	@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 	public static class OrderHighest {
 	}
 

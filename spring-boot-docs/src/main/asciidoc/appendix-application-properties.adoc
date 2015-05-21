@@ -57,7 +57,11 @@ content into your application; rather pick only the properties that you need.
 	server.session-timeout= # session timeout in seconds
 	server.context-parameters.*= # Servlet context init parameters, e.g. server.context-parameters.a=alpha
 	server.context-path= # the context path, defaults to '/'
+	server.jsp-servlet.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet
+	server.jsp-servlet.init-parameters.*= # Init parameters used to configure the JSP servlet
+	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.servlet-path= # the servlet path, defaults to '/'
+	server.display-name= # the display name of the application
 	server.ssl.enabled=true # if SSL support is enabled
 	server.ssl.client-auth= # want or need
 	server.ssl.key-alias=
@@ -79,7 +83,10 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
 			169\\.254\\.\\d{1,3}\\.\\d{1,3}|\\
-			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3} # regular expression matching trusted IP addresses
+			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
+			172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
+			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
+			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # regular expression matching trusted IP addresses
 	server.tomcat.protocol-header=x-forwarded-proto # front end proxy forward header
 	server.tomcat.port-header= # front end proxy port header
 	server.tomcat.remote-ip-header=x-forwarded-for
@@ -88,6 +95,9 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.max-http-header-size= # maximum size in bytes of the HTTP message header
 	server.tomcat.max-threads = 0 # number of threads in protocol handler
 	server.tomcat.uri-encoding = UTF-8 # character encoding to use for URL decoding
+	server.undertow.access-log-enabled=false # if access logging is enabled
+	server.undertow.access-log-pattern=common # log pattern of the access log
+	server.undertow.access-log-dir=logs # access logs directory
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.locale= # set fixed locale, e.g. en_UK
@@ -142,6 +152,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jackson.mapper.*= # see Jackson's MapperFeature
 	spring.jackson.parser.*= # see Jackson's JsonParser.Feature
 	spring.jackson.serialization.*= # see Jackson's SerializationFeature
+	spring.jackson.serialization-inclusion= # Controls the inclusion of properties during serialization (see Jackson's JsonInclude.Include)
 
 	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
 	spring.thymeleaf.check-template-location=true
@@ -347,7 +358,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.datasource.prepared-statement-cache-size=0 # The target size of the prepared statement cache. 0 disables the cache
 	spring.jta.bitronix.datasource.share-transaction-connections=false #  Whether or not connections in the ACCESSIBLE state can be shared within the context of a transaction
 	spring.jta.bitronix.datasource.test-query # SQL query or statement used to validate a connection before returning it
-	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The postion that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE)
+	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE)
 	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery
 	spring.jta.bitronix.datasource.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources
 
@@ -366,6 +377,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.rest.base-uri= # base URI against which the exporter should calculate its links
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
+	flyway.*= # Any public property available on the auto-configured `Flyway` object
 	flyway.check-location=false # check that migration scripts location exists
 	flyway.locations=classpath:db/migration # locations of migrations scripts
 	flyway.schemas= # schemas to update
@@ -444,18 +456,26 @@ content into your application; rather pick only the properties that you need.
 	spring.mail.default-encoding=UTF-8 # encoding to use for MimeMessages
 	spring.mail.properties.*= # properties to set on the JavaMail session
 
-	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchDatabaseInitializer.{sc-ext}[BatchDatabaseInitializer])
+	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
 	spring.batch.job.names=job1,job2
 	spring.batch.job.enabled=true
 	spring.batch.initializer.enabled=true
 	spring.batch.schema= # batch schema to load
+	spring.batch.table-prefix= # table prefix for all the batch meta-data tables
+
+	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
+	spring.cache.type= # generic, ehcache, hazelcast, jcache, redis, guava, simple, none
+	spring.cache.config= #
+	spring.cache.cache-names= # cache names to create on startup
+	spring.cache.jcache.provider= # fully qualified name of the CachingProvider implementation to use
+	spring.cache.guava.spec= # link:http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilderSpec.html[guava specs]
 
 	# AOP
 	spring.aop.auto=
 	spring.aop.proxy-target-class=
 
 	# FILE ENCODING ({sc-spring-boot}/context/FileEncodingApplicationListener.{sc-ext}[FileEncodingApplicationListener])
-	spring.mandatory-file-encoding=false
+	spring.mandatory-file-encoding= # Expected character encoding the application must use
 
 	# SPRING SOCIAL ({sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration])
 	spring.social.auto-connection-views=true # Set to true for default connection views or false if you provide your own
@@ -539,15 +559,24 @@ content into your application; rather pick only the properties that you need.
 	endpoints.trace.sensitive=true
 	endpoints.trace.enabled=true
 
+	# ENDPOINTS CORS CONFIGURATION ({sc-spring-boot-actuator}/autoconfigure/MvcEndpointCorsProperties.{sc-ext}[MvcEndpointCorsProperties])
+	endpoints.cors.allow-credentials= # set whether user credentials are support. When not set, credentials are not supported.
+	endpoints.cors.allowed-origins= # comma-separated list of origins to allow. * allows all origins. When not set, CORS support is disabled.
+	endpoints.cors.allowed-methods= # comma-separated list of methods to allow. * allows all methods. When not set, defaults to GET.
+	endpoints.cors.allowed-headers= # comma-separated list of headers to allow in a request. * allows all headers.
+	endpoints.cors.exposed-headers= # comma-separated list of headers to include in a response.
+
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true
+	management.health.elasticsearch.enabled=true
+	management.health.elasticsearch.response-timeout=100 # the time, in milliseconds, to wait for a response from the cluster
 	management.health.diskspace.enabled=true
+	management.health.diskspace.path=.
+	management.health.diskspace.threshold=10485760
 	management.health.mongo.enabled=true
 	management.health.rabbit.enabled=true
 	management.health.redis.enabled=true
 	management.health.solr.enabled=true
-	management.health.diskspace.path=.
-	management.health.diskspace.threshold=10485760
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 
 	# MVC ONLY ENDPOINTS
@@ -581,6 +610,12 @@ content into your application; rather pick only the properties that you need.
 	shell.auth.simple.user.name=
 	shell.auth.simple.user.password=
 	shell.auth.spring.roles=
+
+	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
+	spring.sendgrid.username= # SendGrid account username
+	spring.sendgrid.password= # SendGrid account password
+	spring.sendgrid.proxy.host= # SendGrid proxy host
+	spring.sendgrid.proxy.port= # SendGrid proxy port
 
 	# GIT INFO
 	spring.git.properties= # resource ref to generated git info properties file

@@ -1,0 +1,128 @@
+/*
+ * Copyright 2012-2015 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.autoconfigure.context;
+
+import java.lang.management.ManagementFactory;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
+/**
+ * Tests for {@link SpringApplicationLifecycleAutoConfiguration}.
+ *
+ * @author Stephane Nicoll
+ */
+public class SpringApplicationLifecycleAutoConfigurationTests {
+
+	public static final String ENABLE_LIFECYCLE_PROP = "spring.context.lifecycle.enabled=true";
+
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
+
+	private AnnotationConfigApplicationContext context;
+
+	private MBeanServer mBeanServer;
+
+	@Before
+	public void setup() throws MalformedObjectNameException {
+		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
+	}
+
+	@After
+	public void tearDown() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
+	@Test
+	public void notRegisteredByDefault() throws MalformedObjectNameException, InstanceNotFoundException {
+		load();
+
+		thrown.expect(InstanceNotFoundException.class);
+		this.mBeanServer.getObjectInstance(createDefaultObjectName());
+	}
+
+	@Test
+	public void registeredWithProperty() throws Exception {
+		load(ENABLE_LIFECYCLE_PROP);
+
+		ObjectName objectName = createDefaultObjectName();
+		ObjectInstance objectInstance = this.mBeanServer.getObjectInstance(objectName);
+		assertNotNull("Lifecycle bean should have been registered", objectInstance);
+	}
+
+	@Test
+	public void registerWithCustomJmxName() throws InstanceNotFoundException {
+		String customJmxName = "org.acme:name=FooBar";
+		System.setProperty(SpringApplicationLifecycleAutoConfiguration.JMX_NAME_PROPERTY, customJmxName);
+		try {
+			load(ENABLE_LIFECYCLE_PROP);
+
+			try {
+				this.mBeanServer.getObjectInstance(createObjectName(customJmxName));
+			}
+			catch (InstanceNotFoundException e) {
+				fail("lifecycle MBean should have been exposed with custom name");
+			}
+
+			thrown.expect(InstanceNotFoundException.class); // Should not be exposed
+			this.mBeanServer.getObjectInstance(createDefaultObjectName());
+		}
+		finally {
+			System.clearProperty(SpringApplicationLifecycleAutoConfiguration.JMX_NAME_PROPERTY);
+		}
+	}
+
+	private ObjectName createDefaultObjectName() {
+		return createObjectName(SpringApplicationLifecycleAutoConfiguration.DEFAULT_JMX_NAME);
+	}
+
+	private ObjectName createObjectName(String jmxName) {
+		try {
+			return new ObjectName(jmxName);
+		}
+		catch (MalformedObjectNameException e) {
+			throw new IllegalStateException("Invalid jmx name " + jmxName, e);
+		}
+	}
+
+	private void load(String... environment) {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+		applicationContext.register(JmxAutoConfiguration.class, SpringApplicationLifecycleAutoConfiguration.class);
+		applicationContext.refresh();
+		this.context = applicationContext;
+	}
+
+}
+

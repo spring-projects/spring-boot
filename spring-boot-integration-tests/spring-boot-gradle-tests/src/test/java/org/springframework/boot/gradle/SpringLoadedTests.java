@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
-import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 import static org.junit.Assert.fail;
 
@@ -36,11 +35,9 @@ import static org.junit.Assert.fail;
  */
 public class SpringLoadedTests {
 
-	private static final String BOOT_VERSION = ManagedDependencies.get()
-			.find("spring-boot").getVersion();
+	private static final String BOOT_VERSION = Versions.getBootVersion();
 
-	private static final String SPRING_LOADED_VERSION = ManagedDependencies.get()
-			.find("springloaded").getVersion();
+	private static final String SPRING_LOADED_VERSION = Versions.getSpringLoadedVersion();
 
 	@Test
 	public void defaultJvmArgsArePreservedWhenLoadedAgentIsConfigured()
@@ -56,21 +53,6 @@ public class SpringLoadedTests {
 		List<String> output = getOutput();
 		assertOutputContains("-DSOME_ARG=someValue", output);
 		assertOutputContains("-Xverify:none", output);
-		assertOutputMatches(
-				"-javaagent:.*springloaded-" + SPRING_LOADED_VERSION + ".jar", output);
-	}
-
-	@Test
-	public void springLoadedCanBeUsedWithGradle16() throws IOException {
-		ProjectConnection project = new ProjectCreator("1.6")
-				.createProject("spring-loaded-old-gradle");
-		project.newBuild()
-				.forTasks("bootRun")
-				.withArguments("-PbootVersion=" + BOOT_VERSION,
-						"-PspringLoadedVersion=" + SPRING_LOADED_VERSION, "--stacktrace")
-				.run();
-
-		List<String> output = getOutput();
 		assertOutputMatches(
 				"-javaagent:.*springloaded-" + SPRING_LOADED_VERSION + ".jar", output);
 	}

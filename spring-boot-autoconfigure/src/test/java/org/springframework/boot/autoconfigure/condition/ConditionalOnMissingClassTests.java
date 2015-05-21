@@ -51,7 +51,7 @@ public class ConditionalOnMissingClassTests {
 	}
 
 	@Configuration
-	@ConditionalOnMissingClass(ConditionalOnMissingClassTests.class)
+	@ConditionalOnMissingClass("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClassTests")
 	protected static class BasicConfiguration {
 		@Bean
 		public String bar() {

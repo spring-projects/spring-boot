@@ -1,0 +1,46 @@
+Spring Boot sample with Redis export for metrics.
+
+Start redis, e.g. with [Docker Compose]()
+
+[source,indent=0]
+----
+	$ docker-compose up
+----
+
+Run the app and ping the home page (http://localhost:8080) a few times. Go and look at
+the result in Redis, e.g.
+
+[source,indent=0]
+----
+	$ redis-cli
+	127.0.0.1:6379> keys *
+	1) "keys.spring.metrics"
+	2) "spring.metrics.counter.status.200.root"
+	3) "spring.metrics.gauge.response.root"
+	127.0.0.1:6379> zrange keys.spring.metrics 0 0 WITHSCORES
+	1) "spring.metrics.counter.status.200.root"
+	2) "4"
+----
+
+There is also an `AggregateMetricReader` with public metrics in the application context,
+and you can see the result in the "/metrics" (metrics with names in "aggregate.*").
+The way the Redis repository was set up (with a random key in the metric names) makes the
+aggregates work across restarts of the same application, or across a scaled up application
+running in multiple processes. E.g.
+
+[source,indent=0]
+----
+	$ curl localhost:8080/metrics
+	{
+		...
+		"aggregate.application.counter.status.200.metrics": 12,
+		"aggregate.application.counter.status.200.root": 29,
+		"aggregate.application.gauge.response.metrics": 43,
+		"aggregate.application.gauge.response.root": 5,
+		"counter.status.200.root": 2,
+		"counter.status.200.metrics": 1,
+		"gauge.response.metrics": 43,
+		"gauge.response.root": 5
+	}
+----
+

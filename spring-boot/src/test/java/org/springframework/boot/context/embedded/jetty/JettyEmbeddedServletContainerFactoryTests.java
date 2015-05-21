@@ -17,6 +17,8 @@
 package org.springframework.boot.context.embedded.jetty;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Handler;
@@ -25,6 +27,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
@@ -33,6 +36,7 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.boot.context.embedded.Ssl;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
@@ -157,6 +161,23 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 	@Test
 	public void basicSslClasspathKeyStore() throws Exception {
 		testBasicSslWithKeyStore("classpath:test.jks");
+	}
+
+	@Test
+	public void jspServletInitParameters() {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		Map<String, String> initParameters = new HashMap<String, String>();
+		initParameters.put("a", "alpha");
+		factory.getJspServlet().setInitParameters(initParameters);
+		this.container = factory.getEmbeddedServletContainer();
+		assertThat(getJspServlet().getInitParameters(), is(equalTo(initParameters)));
+	}
+
+	@Override
+	protected ServletHolder getJspServlet() {
+		WebAppContext context = (WebAppContext) ((JettyEmbeddedServletContainer) this.container)
+				.getServer().getHandler();
+		return context.getServletHandler().getServlet("jsp");
 	}
 
 }

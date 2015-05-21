@@ -39,7 +39,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextLoader;
@@ -263,9 +262,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		private void addMockServletContext(
 				List<ApplicationContextInitializer<?>> initializers,
 				WebMergedContextConfiguration webConfiguration) {
-			MockServletContext servletContext = new MockServletContext(
-					webConfiguration.getResourceBasePath(),
-					new FileSystemResourceLoader());
+			SpringBootMockServletContext servletContext = new SpringBootMockServletContext(
+					webConfiguration.getResourceBasePath());
 			initializers.add(0, new ServletContextApplicationContextInitializer(
 					servletContext));
 		}

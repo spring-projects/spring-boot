@@ -21,6 +21,7 @@ jar {
 }
 
 repositories {
+	mavenLocal()
 	flatDir( dirs:'lib' )
 }
 

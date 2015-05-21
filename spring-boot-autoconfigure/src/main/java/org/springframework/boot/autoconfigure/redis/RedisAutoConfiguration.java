@@ -123,7 +123,7 @@ public class RedisAutoConfiguration {
 	 * Redis connection configuration.
 	 */
 	@Configuration
-	@ConditionalOnMissingClass(name = "org.apache.commons.pool2.impl.GenericObjectPool")
+	@ConditionalOnMissingClass("org.apache.commons.pool2.impl.GenericObjectPool")
 	protected static class RedisConnectionConfiguration extends
 			AbstractRedisConfiguration {
 
