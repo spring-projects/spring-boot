@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * {@link DataSourceTransactionManager}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
@@ -51,7 +52,7 @@ public class DataSourceTransactionManagerAutoConfiguration implements Ordered {
 	private DataSource dataSource;
 
 	@Bean
-	@ConditionalOnMissingBean(name = "transactionManager")
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(DataSource.class)
 	public PlatformTransactionManager transactionManager() {
 		return new DataSourceTransactionManager(this.dataSource);

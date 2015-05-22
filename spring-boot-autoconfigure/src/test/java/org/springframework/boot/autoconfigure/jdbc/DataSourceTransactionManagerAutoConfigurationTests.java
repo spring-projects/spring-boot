@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,22 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DataSourceTransactionManagerAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class DataSourceTransactionManagerAutoConfigurationTests {
 
@@ -67,8 +72,31 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		assertNotNull(this.context.getBean(DataSourceTransactionManager.class));
 	}
 
+	@Test
+	public void testExistingTransactionManager() {
+		this.context.register(SwitchTransactionsOn.class,
+				TransactionManagerConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals("No transaction manager should be been created", 1,
+				this.context.getBeansOfType(PlatformTransactionManager.class).size());
+		assertEquals("Wrong transaction manager", this.context.getBean("myTransactionManager"),
+				this.context.getBean(PlatformTransactionManager.class));
+	}
+
 	@EnableTransactionManagement
 	protected static class SwitchTransactionsOn {
+
+	}
+
+	@Configuration
+	protected static class TransactionManagerConfiguration {
+
+		@Bean
+		public PlatformTransactionManager myTransactionManager() {
+			return mock(PlatformTransactionManager.class);
+		}
 
 	}
 
