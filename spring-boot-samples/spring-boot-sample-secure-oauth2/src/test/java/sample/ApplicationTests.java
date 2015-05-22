@@ -1,5 +1,14 @@
 package sample;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+
 import java.util.Map;
 
 import org.junit.Before;
@@ -20,14 +29,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * Series of automated integration tests to verify proper behavior of auto-configured,
@@ -103,20 +104,20 @@ public class ApplicationTests {
 	@Test
 	public void useAppSecretsPlusUserAccountToGetBearerToken() throws Exception {
 
+		// @formatter:off	
 		MvcResult result = this.mvc
 				.perform(
-						get("/oauth/token").//
+						post("/oauth/token").
 								header("Authorization",
-										"Basic "
-												+ new String(Base64.encode("foo:bar"
-														.getBytes()))).//
-								param("grant_type", "password").//
-								param("scope", "read").//
-								param("username", "greg").//
-								param("password", "turnquist")).//
-				andExpect(status().isOk()).//
-				andDo(print()).//
+										"Basic " + new String(Base64.encode("foo:bar".getBytes()))).
+								param("grant_type", "password").
+								param("scope", "read").
+								param("username", "greg").
+								param("password", "turnquist")).
+				andExpect(status().isOk()).
+				andDo(print()).
 				andReturn();
+		// @formatter:on
 
 		Object accessToken = this.objectMapper.readValue(
 				result.getResponse().getContentAsString(), Map.class).get("access_token");

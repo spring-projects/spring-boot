@@ -15,32 +15,48 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.autoconfigure.security.oauth2.ClientCredentialsProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.client.SpringSecurityOAuth2ClientConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.client.SpringSecurityOAuth2ClientConfiguration.ClientAuthenticationFilterConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.core.OrderComparator;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.security.crypto.codec.Base64;
+import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
+import org.springframework.security.oauth2.client.token.AccessTokenRequest;
+import org.springframework.security.oauth2.client.token.RequestEnhancer;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
@@ -49,6 +65,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -65,28 +82,87 @@ public class ResourceServerTokenServicesConfiguration {
 			.getLog(ResourceServerTokenServicesConfiguration.class);
 
 	@Configuration
+	protected static class UserInfoRestTemplateConfiguration {
+
+		private static final AuthorizationCodeResourceDetails DEFAULT_RESOURCE_DETAILS = new AuthorizationCodeResourceDetails();
+
+		static {
+			DEFAULT_RESOURCE_DETAILS.setClientId("<N/A>");
+			DEFAULT_RESOURCE_DETAILS
+					.setUserAuthorizationUri("Not a URI because there is no client");
+			DEFAULT_RESOURCE_DETAILS
+					.setAccessTokenUri("Not a URI because there is no client");
+		}
+
+		@Autowired(required = false)
+		private List<UserInfoRestTemplateCustomizer> customizers = Collections
+				.emptyList();
+
+		@Autowired(required = false)
+		private OAuth2ProtectedResourceDetails details;
+
+		@Autowired(required = false)
+		private OAuth2ClientContext oauth2ClientContext;
+
+		@Bean(name = "userInfoRestTemplate")
+		public OAuth2RestTemplate userInfoRestTemplate() {
+			OAuth2RestTemplate template;
+			if (details == null) {
+				details = DEFAULT_RESOURCE_DETAILS;
+			}
+			if (oauth2ClientContext == null) {
+				template = new OAuth2RestTemplate(details);
+			}
+			else {
+				template = new OAuth2RestTemplate(details, oauth2ClientContext);
+			}
+			template.setInterceptors(Arrays
+					.<ClientHttpRequestInterceptor> asList(new ClientHttpRequestInterceptor() {
+						@Override
+						public ClientHttpResponse intercept(HttpRequest request,
+								byte[] body, ClientHttpRequestExecution execution)
+								throws IOException {
+							request.getHeaders().setAccept(
+									Arrays.asList(MediaType.APPLICATION_JSON));
+							return execution.execute(request, body);
+						}
+					}));
+			AuthorizationCodeAccessTokenProvider accessTokenProvider = new AuthorizationCodeAccessTokenProvider();
+			accessTokenProvider.setTokenRequestEnhancer(new RequestEnhancer() {
+				@Override
+				public void enhance(AccessTokenRequest request,
+						OAuth2ProtectedResourceDetails resource,
+						MultiValueMap<String, String> form, HttpHeaders headers) {
+					headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+				}
+			});
+			template.setAccessTokenProvider(accessTokenProvider);
+			OrderComparator.sort(customizers);
+			for (UserInfoRestTemplateCustomizer customizer : customizers) {
+				customizer.customize(template);
+			}
+			return template;
+		}
+
+	}
+
+	@Configuration
 	@Conditional(NotJwtToken.class)
-	@EnableOAuth2Client
-	@Import(ClientAuthenticationFilterConfiguration.class)
 	protected static class RemoteTokenServicesConfiguration {
 
 		@Configuration
-		@Import(SpringSecurityOAuth2ClientConfiguration.class)
 		@Conditional(TokenInfo.class)
 		protected static class TokenInfoServicesConfiguration {
 
 			@Autowired
 			private ResourceServerProperties resource;
 
-			@Autowired
-			private AuthorizationCodeResourceDetails client;
-
 			@Bean
 			public ResourceServerTokenServices remoteTokenServices() {
 				RemoteTokenServices services = new RemoteTokenServices();
 				services.setCheckTokenEndpointUrl(this.resource.getTokenInfoUri());
-				services.setClientId(this.client.getClientId());
-				services.setClientSecret(this.client.getClientSecret());
+				services.setClientId(this.resource.getClientId());
+				services.setClientSecret(this.resource.getClientSecret());
 				return services;
 			}
 
@@ -100,21 +176,19 @@ public class ResourceServerTokenServicesConfiguration {
 			@Autowired
 			private ResourceServerProperties sso;
 
-			@Autowired
-			private ClientCredentialsProperties client;
-
 			@Autowired(required = false)
 			private OAuth2ConnectionFactory<?> connectionFactory;
 
 			@Autowired(required = false)
-			private Map<String, OAuth2RestOperations> resources = Collections.emptyMap();
+			@Qualifier("userInfoRestTemplate")
+			private OAuth2RestOperations restTemplate;
 
 			@Bean
 			@ConditionalOnBean(ConnectionFactoryLocator.class)
 			@ConditionalOnMissingBean(ResourceServerTokenServices.class)
 			public SpringSocialTokenServices socialTokenServices() {
 				return new SpringSocialTokenServices(this.connectionFactory,
-						this.client.getClientId());
+						this.sso.getClientId());
 			}
 
 			@Bean
@@ -122,33 +196,33 @@ public class ResourceServerTokenServicesConfiguration {
 					ResourceServerTokenServices.class })
 			public ResourceServerTokenServices userInfoTokenServices() {
 				UserInfoTokenServices services = new UserInfoTokenServices(
-						this.sso.getUserInfoUri(), this.client.getClientId());
-				services.setResources(this.resources);
+						this.sso.getUserInfoUri(), this.sso.getClientId());
+				services.setTokenType(sso.getTokenType());
+				services.setRestTemplate(restTemplate);
 				return services;
 			}
 
 		}
 
 		@Configuration
-		@ConditionalOnMissingClass(name = "org.springframework.social.connect.support.OAuth2ConnectionFactory")
+		@ConditionalOnMissingClass("org.springframework.social.connect.support.OAuth2ConnectionFactory")
 		@Conditional(NotTokenInfo.class)
 		protected static class UserInfoTokenServicesConfiguration {
 
 			@Autowired
 			private ResourceServerProperties sso;
 
-			@Autowired
-			private ClientCredentialsProperties client;
-
 			@Autowired(required = false)
-			private Map<String, OAuth2RestOperations> resources = Collections.emptyMap();
+			@Qualifier("userInfoRestTemplate")
+			private OAuth2RestOperations restTemplate;
 
 			@Bean
 			@ConditionalOnMissingBean(ResourceServerTokenServices.class)
 			public ResourceServerTokenServices userInfoTokenServices() {
 				UserInfoTokenServices services = new UserInfoTokenServices(
-						this.sso.getUserInfoUri(), this.client.getClientId());
-				services.setResources(this.resources);
+						this.sso.getUserInfoUri(), this.sso.getClientId());
+				services.setRestTemplate(restTemplate);
+				services.setTokenType(sso.getTokenType());
 				return services;
 			}
 
@@ -160,8 +234,14 @@ public class ResourceServerTokenServicesConfiguration {
 	@Conditional(JwtToken.class)
 	protected static class JwtTokenServicesConfiguration {
 
+		private RestTemplate keyUriRestTemplate = new RestTemplate();
+
 		@Autowired
 		private ResourceServerProperties resource;
+
+		@Autowired(required = false)
+		private List<JwtAccessTokenConverterConfigurer> configurers = Collections
+				.emptyList();
 
 		@Bean
 		@ConditionalOnMissingBean(ResourceServerTokenServices.class)
@@ -182,21 +262,33 @@ public class ResourceServerTokenServicesConfiguration {
 			String keyValue = this.resource.getJwt().getKeyValue();
 			if (!StringUtils.hasText(keyValue)) {
 				try {
-					keyValue = (String) new RestTemplate().getForObject(
-							this.resource.getJwt().getKeyUri(), Map.class).get("value");
+					HttpHeaders headers = new HttpHeaders();
+					if (resource.getClientId() != null
+							&& resource.getClientSecret() != null) {
+						byte[] token = Base64
+								.encode((resource.getClientId() + ":" + resource
+										.getClientSecret()).getBytes());
+						headers.add("Authorization", "Basic " + new String(token));
+					}
+					HttpEntity<Void> requestEntity = new HttpEntity<Void>(headers);
+					keyValue = (String) keyUriRestTemplate
+							.exchange(resource.getJwt().getKeyUri(), HttpMethod.GET,
+									requestEntity, Map.class).getBody().get("value");
 				}
 				catch (ResourceAccessException e) {
 					// ignore
 					logger.warn("Failed to fetch token key (you may need to refresh when the auth server is back)");
 				}
 			}
-			else {
-				if (StringUtils.hasText(keyValue) && !keyValue.startsWith("-----BEGIN")) {
-					converter.setSigningKey(keyValue);
-				}
+			if (StringUtils.hasText(keyValue) && !keyValue.startsWith("-----BEGIN")) {
+				converter.setSigningKey(keyValue);
 			}
 			if (keyValue != null) {
 				converter.setVerifierKey(keyValue);
+			}
+			AnnotationAwareOrderComparator.sort(configurers);
+			for (JwtAccessTokenConverterConfigurer configurer : configurers) {
+				configurer.configure(converter);
 			}
 			return converter;
 		}

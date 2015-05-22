@@ -21,6 +21,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
@@ -66,6 +67,11 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	 */
 	private boolean preferTokenInfo = true;
 
+	/**
+	 * The token type to send when using the userInfoUri.
+	 */
+	private String tokenType = DefaultOAuth2AccessToken.BEARER_TYPE;
+	
 	private Jwt jwt = new Jwt();
 
 	public ResourceServerProperties() {
@@ -124,6 +130,14 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 
 	public void setPreferTokenInfo(boolean preferTokenInfo) {
 		this.preferTokenInfo = preferTokenInfo;
+	}
+
+	public String getTokenType() {
+		return tokenType;
+	}
+
+	public void setTokenType(String tokenType) {
+		this.tokenType = tokenType;
 	}
 
 	public Jwt getJwt() {

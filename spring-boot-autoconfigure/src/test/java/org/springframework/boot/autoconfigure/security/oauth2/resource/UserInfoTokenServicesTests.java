@@ -17,7 +17,6 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -58,14 +57,14 @@ public class UserInfoTokenServicesTests {
 
 	@Test
 	public void sunnyDay() {
-		services.setResources(Collections.singletonMap("foo", template));
+		services.setRestTemplate(template);
 		assertEquals("unknown", services.loadAuthentication("FOO").getName());
 	}
 
 	@Test
 	public void userId() {
 		map.put("userid", "spencer");
-		services.setResources(Collections.singletonMap("foo", template));
+		services.setRestTemplate(template);
 		assertEquals("spencer", services.loadAuthentication("FOO").getName());
 	}
 

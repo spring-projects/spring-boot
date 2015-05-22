@@ -136,7 +136,7 @@
 		<spring-social-linkedin.version>1.0.1.RELEASE</spring-social-linkedin.version>
 		<spring-social-twitter.version>1.1.0.RELEASE</spring-social-twitter.version>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
-		<spring-security-oauth2.version>2.0.5.RELEASE</spring-security-oauth2.version>
+		<spring-security-oauth2.version>2.0.7.RELEASE</spring-security-oauth2.version>
 		<spring-security-jwt.version>1.0.2.RELEASE</spring-security-jwt.version>
 		<spring-ws.version>2.2.1.RELEASE</spring-ws.version>
 		<statsd-client.version>3.1.0</statsd-client.version>

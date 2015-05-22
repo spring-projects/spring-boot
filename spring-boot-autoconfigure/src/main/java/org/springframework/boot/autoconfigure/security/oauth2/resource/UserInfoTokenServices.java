@@ -15,11 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,22 +40,21 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 
 	private String clientId;
 
-	private Collection<OAuth2RestOperations> resources = Collections.emptySet();
+	private OAuth2RestOperations restTemplate;
+
+	private String tokenType = DefaultOAuth2AccessToken.BEARER_TYPE;
 
 	public UserInfoTokenServices(String userInfoEndpointUrl, String clientId) {
 		this.userInfoEndpointUrl = userInfoEndpointUrl;
 		this.clientId = clientId;
 	}
+	
+	public void setTokenType(String tokenType) {
+		this.tokenType = tokenType;
+	}
 
-	public void setResources(Map<String, OAuth2RestOperations> resources) {
-		this.resources = new ArrayList<OAuth2RestOperations>();
-		for (Entry<String, OAuth2RestOperations> key : resources.entrySet()) {
-			OAuth2RestOperations value = key.getValue();
-			String clientIdForTemplate = value.getResource().getClientId();
-			if (clientIdForTemplate!=null && clientIdForTemplate.equals(clientId)) {
-				this.resources.add(value);
-			}
-		}
+	public void setRestTemplate(OAuth2RestOperations restTemplate) {
+		this.restTemplate = restTemplate;
 	}
 
 	@Override
@@ -87,8 +82,8 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 	}
 
 	private Object getPrincipal(Map<String, Object> map) {
-		String[] keys = new String[] { "user", "username", "userid", "user_id", "login",
-				"id" };
+		String[] keys = new String[] { "user", "username", "userid", "user_id", "login", 
+				"id", "name" };
 		for (String key : keys) {
 			if (map.containsKey(key)) {
 				return map.get(key);
@@ -104,23 +99,15 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 
 	private Map<String, Object> getMap(String path, String accessToken) {
 		logger.info("Getting user info from: " + path);
-		OAuth2RestOperations restTemplate = null;
-		for (OAuth2RestOperations candidate : resources) {
-			try {
-				if (accessToken.equals(candidate.getAccessToken().getValue())) {
-					restTemplate = candidate;
-				}
-			}
-			catch (Exception e) {
-			}
-		}
+		OAuth2RestOperations restTemplate = this.restTemplate;
 		if (restTemplate == null) {
 			BaseOAuth2ProtectedResourceDetails resource = new BaseOAuth2ProtectedResourceDetails();
 			resource.setClientId(clientId);
 			restTemplate = new OAuth2RestTemplate(resource);
-			restTemplate.getOAuth2ClientContext().setAccessToken(
-					new DefaultOAuth2AccessToken(accessToken));
 		}
+		DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(accessToken);
+		token.setTokenType(tokenType);
+		restTemplate.getOAuth2ClientContext().setAccessToken(token);
 		@SuppressWarnings("rawtypes")
 		Map map = restTemplate.getForEntity(path, Map.class).getBody();
 		@SuppressWarnings("unchecked")
