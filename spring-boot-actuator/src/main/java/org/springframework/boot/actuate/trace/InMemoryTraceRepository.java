@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.trace;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -29,9 +30,9 @@ import java.util.Map;
  */
 public class InMemoryTraceRepository implements TraceRepository {
 
-	private int capacity = 100;
+	private volatile int capacity = 100;
 
-	private boolean reverse = true;
+	private volatile boolean reverse = true;
 
 	private final List<Trace> traces = new LinkedList<Trace>();
 
@@ -53,7 +54,7 @@ public class InMemoryTraceRepository implements TraceRepository {
 	@Override
 	public List<Trace> findAll() {
 		synchronized (this.traces) {
-			return Collections.unmodifiableList(this.traces);
+			return Collections.unmodifiableList(new ArrayList<Trace>(this.traces));
 		}
 	}
 
@@ -61,10 +62,12 @@ public class InMemoryTraceRepository implements TraceRepository {
 	public void add(Map<String, Object> map) {
 		Trace trace = new Trace(new Date(), map);
 		synchronized (this.traces) {
-			while (this.traces.size() >= this.capacity) {
-				this.traces.remove(this.reverse ? this.capacity - 1 : 0);
+			int capacity = this.capacity;
+			boolean reverse = this.reverse;
+			while (this.traces.size() >= capacity) {
+				this.traces.remove(reverse ? capacity - 1 : 0);
 			}
-			if (this.reverse) {
+			if (reverse) {
 				this.traces.add(0, trace);
 			}
 			else {
