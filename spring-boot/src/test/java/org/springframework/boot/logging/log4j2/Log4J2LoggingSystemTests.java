@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.FileConfigurationMonitor;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -41,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -108,7 +110,8 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertTrue("Wrong output:\n" + output, output.contains(tmpDir() + "/tmp.log"));
 		assertFalse(new File(tmpDir() + "/tmp.log").exists());
 		assertThat(this.loggingSystem.getConfiguration().getConfigurationSource().getFile().getAbsolutePath(), containsString("log4j2-nondefault.xml"));
-		assertThat(this.loggingSystem.getConfiguration().getConfigurationMonitor(), is(notNullValue()));
+        // we assume that "log4j2-nondefault.xml" contains the 'monitorInterval' attribute, so we check that a monitor is created
+		assertThat(this.loggingSystem.getConfiguration().getConfigurationMonitor(), is(instanceOf(FileConfigurationMonitor.class)));
 	}
 
 	@Test
