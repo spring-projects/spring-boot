@@ -149,7 +149,13 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		try {
 			LoggerContext ctx = getLoggerContext();
 			URL url = ResourceUtils.getURL(location);
-			ConfigurationSource source = new ConfigurationSource(url.openStream(), url);
+			ConfigurationSource source;
+			if (ResourceUtils.isFileURL(url)) {
+				source = new ConfigurationSource(url.openStream(),
+						    ResourceUtils.getFile(url));
+			} else {
+				source = new ConfigurationSource(url.openStream(), url);
+			}
 			ctx.start(ConfigurationFactory.getInstance().getConfiguration(source));
 		}
 		catch (Exception ex) {
