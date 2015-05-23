@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2;
+package org.springframework.boot.autoconfigure.security.oauth2.method;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -38,7 +38,7 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
 @Configuration
 @ConditionalOnClass({ OAuth2AccessToken.class })
 @ConditionalOnBean(GlobalMethodSecurityConfiguration.class)
-public class SpringSecurityOAuth2MethodSecurityConfiguration implements
+public class OAuth2MethodSecurityConfiguration implements
 		BeanFactoryPostProcessor {
 
 	@Override

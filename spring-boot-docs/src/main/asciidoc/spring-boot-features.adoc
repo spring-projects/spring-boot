@@ -1471,11 +1471,9 @@ configuring some property values in the `Environment`.
 To create an Authorization Server and grant access tokens you need to
 `@EnableAuthorizationServer` and provide
 `spring.oauth2.client.[clientId,clientSecret]`. The client will be
-registered for you in an in-memory repository. To switch off the
-autoconfiguration and configure the Authorization Server features
-yourself just add a `@Bean` of type
-`AuthorizationServerConfigurer`. Having done that you will be able to
-usethe client credentials to create an access token, e.g.
+registered for you in an in-memory repository. Having done that you
+will be able to use the client credentials to create an access token,
+e.g.
 
 ----
 $ curl client:secret@localhost:8080/oauth/token -d grant_type=password -d username=user -d password=pwd
@@ -1485,6 +1483,10 @@ The basic auth credentials for the `/token` endpoint are the client id
 and secret, and the user credentials are the normal Spring Security
 user details (which default in Spring Boot to "user" and a random
 password).
+
+To switch off the autoconfiguration and configure the Authorization
+Server features yourself just add a `@Bean` of type
+`AuthorizationServerConfigurer`.
 
 ==== Resource Server
 
@@ -1588,9 +1590,6 @@ spring:
       accessTokenUri: https://github.com/login/oauth/access_token
       userAuthorizationUri: https://github.com/login/oauth/authorize
       clientAuthenticationScheme: form
-    resource:
-      userInfoUri: https://api.github.com/user
-      preferTokenInfo: false
 ----
 
 An app with this configuration will redirect to github for
@@ -1613,6 +1612,69 @@ instance, your OAuth2 provider doesn't like header authentication). In
 fact, the `spring.oauth2.client.*` properties are bound to an instance
 of `AuthorizationCodeResourceDetails` so all its properties can be
 specified.
+
+TIP: In a non-web application you can still `@Autowired` an
+`OAuth2RestOperations` and it is still wired into the
+`spring.oauth2.client.*` configuration, but in this case it is a
+client credentials token grant you will be asking for if you use it
+(and there is no need to use `@EnableOAuth2Client` or
+`@EnableOAuth2Sso`). To switch it off, just remove the
+`spring.oauth2.client.clientId` from your configuration (or make it
+the empty string).
+
+==== Single Sign On
+
+An OAuth2 Client can be used to fetch user details from the provider
+if such features are provided (e.g. by using the `userInfoUri` that
+the Resource Server supports as above), and then the user details can
+be converted to an `Authentication` token for Spring Security. This is
+the basis for a Single Sign On (SSO) protocol based on OAuth2, and
+Spring Boot makes it easy to participate by providing an annotation
+`@EnableOAuth2Sso`. The Github client above can protect all its
+resources and authenticate using the Github `/user/` endpoint, by
+adding that annotation and declaring where to find the endpoint (in
+addition to the `spring.oauth2.client.*` configuration already listed
+above):
+
+.application.yml
+[source,yaml]
+----
+spring:
+  oauth2:
+...
+    resource:
+      userInfoUri: https://api.github.com/user
+      preferTokenInfo: false
+----
+
+Since all paths are secure by default, there is no "home" page that
+you can show to unauthenticated users and invite them to login (by
+visiting the `/login` path, or the path specified by
+`spring.oauth2.sso.loginPath`).
+
+To customize the access rules or paths to protect, so you can add a
+"home" page for instance, `@EnableOAuth2Sso` can be added to a
+`WebSecurityConfigurerAdapter` and the annotation will cause it to be
+decorated and enhanced with the necessary pieces to get the `/login`
+path working. For example, here we simply allow unauthenticated access
+to the home page at "/" and keep the default for everything else:
+
+[source,java] ---- 
+@Configuration
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+  @Override
+  public void init(WebSecurity web) {
+    web.ignore("/");
+  }
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
+  }
+
+}
+----
 
 === Actuator Security
 

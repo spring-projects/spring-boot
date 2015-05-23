@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  */
 @ConfigurationProperties("spring.oauth2.client")
-public class ClientCredentialsProperties {
+public class OAuth2ClientProperties {
 
 	private String clientId;
 

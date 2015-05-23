@@ -15,12 +15,8 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -28,7 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.oauth2.ClientCredentialsProperties;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -60,23 +55,7 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 @Configuration
 @ConditionalOnClass(EnableOAuth2Client.class)
 @ConditionalOnExpression("'${spring.oauth2.client.clientId:}'!=''")
-public class SpringSecurityOAuth2ClientConfiguration {
-
-	private static final Log logger = LogFactory
-			.getLog(SpringSecurityOAuth2ClientConfiguration.class);
-
-	@Autowired
-	private ClientCredentialsProperties credentials;
-
-	@PostConstruct
-	public void init() {
-		String prefix = "spring.oauth2.client";
-		boolean defaultSecret = this.credentials.isDefaultSecret();
-		logger.info(String.format(
-				"Initialized OAuth2 Client\n\n%s.clientId = %s\n%s.secret = %s\n\n",
-				prefix, this.credentials.getClientId(), prefix,
-				defaultSecret ? this.credentials.getClientSecret() : "****"));
-	}
+public class OAuth2RestOperationsConfiguration {
 
 	@Bean
 	@Primary

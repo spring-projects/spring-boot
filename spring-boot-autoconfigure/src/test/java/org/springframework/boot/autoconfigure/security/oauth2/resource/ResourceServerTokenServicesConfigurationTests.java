@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.ClientCredentialsProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProperties;
 import org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration;
 import org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -139,7 +139,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Import({ ResourceServerTokenServicesConfiguration.class,
 			ResourceServerPropertiesConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	@EnableConfigurationProperties(ClientCredentialsProperties.class)
+	@EnableConfigurationProperties(OAuth2ClientProperties.class)
 	protected static class ResourceConfiguration {
 	}
 
@@ -147,7 +147,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	protected static class ResourceServerPropertiesConfiguration {
 
 		@Autowired
-		private ClientCredentialsProperties credentials;
+		private OAuth2ClientProperties credentials;
 
 		@Bean
 		public ResourceServerProperties resourceServerProperties() {

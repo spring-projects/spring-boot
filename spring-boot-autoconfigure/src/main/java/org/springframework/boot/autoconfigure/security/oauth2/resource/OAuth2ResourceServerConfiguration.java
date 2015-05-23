@@ -24,8 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.ClientCredentialsProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.SpringSecurityOAuth2ResourceServerConfiguration.ResourceServerCondition;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration.ResourceServerCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -58,7 +57,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnWebApplication
 @ConditionalOnBean(ResourceServerConfiguration.class)
 @Import(ResourceServerTokenServicesConfiguration.class)
-public class SpringSecurityOAuth2ResourceServerConfiguration {
+public class OAuth2ResourceServerConfiguration {
 
 	@Autowired
 	private ResourceServerProperties resource;
@@ -67,19 +66,6 @@ public class SpringSecurityOAuth2ResourceServerConfiguration {
 	@ConditionalOnMissingBean(ResourceServerConfigurer.class)
 	public ResourceServerConfigurer resourceServer() {
 		return new ResourceSecurityConfigurer(this.resource);
-	}
-
-	@Configuration
-	protected static class ResourceServerPropertiesConfiguration {
-
-		@Autowired
-		private ClientCredentialsProperties credentials;
-
-		@Bean
-		public ResourceServerProperties resourceServerProperties() {
-			return new ResourceServerProperties(this.credentials.getClientId(),
-					this.credentials.getClientSecret());
-		}
 	}
 
 	protected static class ResourceSecurityConfigurer extends

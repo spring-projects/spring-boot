@@ -16,17 +16,17 @@
 
 package org.springframework.boot.cli;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URI;
 
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests to exercise the samples.
@@ -70,15 +70,10 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	@Ignore("Spring Security Oauth2 autoconfiguration reports bean creation issue with methodSecurityInterceptor")
 	public void oauth2Sample() throws Exception {
 		String output = this.cli.run("oauth2.groovy");
-		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.clientId"));
-		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.secret = ****"));
-		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.resourceId"));
-		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.authorizationTypes"));
-		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.scopes"));
-		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.redirectUris"));
+		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.client.clientId"));
+		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.client.secret ="));
 	}
 
 	@Test

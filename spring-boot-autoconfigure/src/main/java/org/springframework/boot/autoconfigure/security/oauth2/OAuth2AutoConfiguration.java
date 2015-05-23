@@ -17,15 +17,19 @@
 package org.springframework.boot.autoconfigure.security.oauth2;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.authserver.SpringSecurityOAuth2AuthorizationServerConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.client.SpringSecurityOAuth2ClientConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.SpringSecurityOAuth2ResourceServerConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.method.OAuth2MethodSecurityConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -40,16 +44,25 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 @Configuration
 @ConditionalOnClass({ OAuth2AccessToken.class, WebMvcConfigurerAdapter.class })
-@ConditionalOnWebApplication
 @Import({ SpringSecurityOAuth2AuthorizationServerConfiguration.class,
-		SpringSecurityOAuth2MethodSecurityConfiguration.class,
-		SpringSecurityOAuth2ResourceServerConfiguration.class,
-		SpringSecurityOAuth2ClientConfiguration.class })
+		OAuth2MethodSecurityConfiguration.class,
+		OAuth2ResourceServerConfiguration.class,
+		OAuth2RestOperationsConfiguration.class })
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(ClientCredentialsProperties.class)
-public class SpringSecurityOAuth2AutoConfiguration {
+@EnableConfigurationProperties(OAuth2ClientProperties.class)
+public class OAuth2AutoConfiguration {
+
+	@Autowired
+	private OAuth2ClientProperties credentials;
+
+	@Bean
+	public ResourceServerProperties resourceServerProperties() {
+		return new ResourceServerProperties(this.credentials.getClientId(),
+				this.credentials.getClientSecret());
+	}
 
 	@Configuration
+	@ConditionalOnWebApplication
 	protected static class ResourceServerOrderProcessor implements BeanPostProcessor {
 
 		@Override

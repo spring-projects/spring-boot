@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
  * Copyright 2012-2014 the original author or authors.
-=======
- * Copyright 2012-2013 the original author or authors.
->>>>>>> 12b17e3... Add Spring Security OAuth2 support to Spring Boot CLI
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +27,14 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * {@link CompilerAutoConfiguration} for Spring Security OAuth2.
  *
  * @author Greg Turnquist
+ * @author Dave Syer
  */
 public class SpringSecurityOAuth2CompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
 		return AstUtils.hasAtLeastOneAnnotation(classNode,
-				"EnableAuthorizationServer", "EnableResourceServer");
+				"EnableAuthorizationServer", "EnableResourceServer", "EnableOAuth2Client", "EnableOAuth2Sso");
 	}
 
 	@Override
@@ -50,7 +47,7 @@ public class SpringSecurityOAuth2CompilerAutoConfiguration extends CompilerAutoC
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 		imports
 			.addImports(
-					"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity")
+					"org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso")
 			.addStarImports(
 					"org.springframework.security.oauth2.config.annotation.web.configuration",
 					"org.springframework.security.access.prepost");

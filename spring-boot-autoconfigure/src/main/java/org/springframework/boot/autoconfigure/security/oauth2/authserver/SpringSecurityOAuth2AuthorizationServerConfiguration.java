@@ -20,11 +20,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.oauth2.ClientCredentialsProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -66,13 +70,34 @@ public class SpringSecurityOAuth2AuthorizationServerConfiguration extends
 
 	@Autowired(required = false)
 	private TokenStore tokenStore;
+	
+	@Configuration
+	protected static class ClientDetailsLogger {
+
+		private static final Log logger = LogFactory
+				.getLog(SpringSecurityOAuth2AuthorizationServerConfiguration.class);
+
+		@Autowired
+		private OAuth2ClientProperties credentials;
+
+		@PostConstruct
+		public void init() {
+			String prefix = "spring.oauth2.client";
+			boolean defaultSecret = this.credentials.isDefaultSecret();
+			logger.info(String.format(
+					"Initialized OAuth2 Client\n\n%s.clientId = %s\n%s.secret = %s\n\n",
+					prefix, this.credentials.getClientId(), prefix,
+					defaultSecret ? this.credentials.getClientSecret() : "****"));
+		}
+
+	}
 
 	@Configuration
 	@ConditionalOnMissingBean(BaseClientDetails.class)
 	protected static class BaseClientDetailsConfiguration {
 
 		@Autowired
-		private ClientCredentialsProperties client;
+		private OAuth2ClientProperties client;
 
 		@Bean
 		@ConfigurationProperties("spring.oauth2.client")
