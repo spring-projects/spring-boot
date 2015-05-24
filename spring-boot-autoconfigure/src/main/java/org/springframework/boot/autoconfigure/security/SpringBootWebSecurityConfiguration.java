@@ -92,7 +92,7 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
 public class SpringBootWebSecurityConfiguration {
 
 	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
-			"/images/**", "/**/favicon.ico");
+			"/images/**", "/**/favicon.ico", "/webjars/**");
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
