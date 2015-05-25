@@ -393,7 +393,7 @@ public class ConfigFileApplicationListener implements
 			msg.append("config file ");
 			msg.append("'" + location + "' ");
 			msg.append(StringUtils.hasLength(profile) ? "for profile " + profile : "");
-			msg.append(resource == null || !resource.exists() ? "resource not found" : "");
+			msg.append(resource == null || !resource.exists() ? " resource not found" : "");
 			this.debug.add(msg);
 
 			return propertySource;
