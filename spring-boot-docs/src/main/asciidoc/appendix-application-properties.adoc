@@ -428,13 +428,19 @@ content into your application; rather pick only the properties that you need.
 	spring.jmx.enabled=true # Expose MBeans from Spring
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
+	spring.rabbitmq.addresses= # connection addresses (e.g. myhost:9999,otherhost:1111)
+	spring.rabbitmq.dynamic=true # create an AmqpAdmin bean
 	spring.rabbitmq.host= # connection host
 	spring.rabbitmq.port= # connection port
-	spring.rabbitmq.addresses= # connection addresses (e.g. myhost:9999,otherhost:1111)
-	spring.rabbitmq.username= # login user
 	spring.rabbitmq.password= # login password
-	spring.rabbitmq.virtual-host=
-	spring.rabbitmq.dynamic=
+	spring.rabbitmq.requested-heartbeat= # requested heartbeat timeout, in seconds; zero for none
+	spring.rabbitmq.ssl.enabled=false # enable SSL support
+	spring.rabbitmq.ssl.key-store= # path to the key store that holds the SSL certificate
+	spring.rabbitmq.ssl.key-store-password= # password used to access the key store
+	spring.rabbitmq.ssl.trust-store= # trust store that holds SSL certificates
+	spring.rabbitmq.ssl.trust-store-password= # password used to access the trust store
+	spring.rabbitmq.username= # login user
+	spring.rabbitmq.virtual-host= # virtual host to use when connecting to the broker
 
 	# REDIS ({sc-spring-boot-autoconfigure}/redis/RedisProperties.{sc-ext}[RedisProperties])
 	spring.redis.database= # database name

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.util.LinkedHashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -27,6 +28,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Greg Turnquist
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -52,6 +54,11 @@ public class RabbitProperties {
 	private String password;
 
 	/**
+	 * SSL configuration.
+	 */
+	private final Ssl ssl = new Ssl();
+
+	/**
 	 * Virtual host to use when connecting to the broker.
 	 */
 	private String virtualHost;
@@ -60,6 +67,12 @@ public class RabbitProperties {
 	 * Comma-separated list of addresses to which the client should connect to.
 	 */
 	private String addresses;
+
+	/**
+	 * Requested heartbeat timeout, in seconds; zero for none.
+	 */
+	private Integer requestedHeartbeat;
+
 
 	public String getHost() {
 		if (this.addresses == null) {
@@ -147,6 +160,10 @@ public class RabbitProperties {
 		this.password = password;
 	}
 
+	public Ssl getSsl() {
+		return ssl;
+	}
+
 	public String getVirtualHost() {
 		return this.virtualHost;
 	}
@@ -155,4 +172,102 @@ public class RabbitProperties {
 		this.virtualHost = ("".equals(virtualHost) ? "/" : virtualHost);
 	}
 
+	public Integer getRequestedHeartbeat() {
+		return requestedHeartbeat;
+	}
+
+	public void setRequestedHeartbeat(Integer requestedHeartbeat) {
+		this.requestedHeartbeat = requestedHeartbeat;
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Enable SSL support.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Path to the key store that holds the SSL certificate.
+		 */
+		private String keyStore;
+
+		/**
+		 * Password used to access the key store.
+		 */
+		private String keyStorePassword;
+
+		/**
+		 * Trust store that holds SSL certificates.
+		 */
+		private String trustStore;
+
+		/**
+		 * Password used to access the trust store.
+		 */
+		private String trustStorePassword;
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getKeyStore() {
+			return keyStore;
+		}
+
+		public void setKeyStore(String keyStore) {
+			this.keyStore = keyStore;
+		}
+
+		public String getKeyStorePassword() {
+			return keyStorePassword;
+		}
+
+		public void setKeyStorePassword(String keyStorePassword) {
+			this.keyStorePassword = keyStorePassword;
+		}
+
+		public String getTrustStore() {
+			return trustStore;
+		}
+
+		public void setTrustStore(String trustStore) {
+			this.trustStore = trustStore;
+		}
+
+		public String getTrustStorePassword() {
+			return trustStorePassword;
+		}
+
+		public void setTrustStorePassword(String trustStorePassword) {
+			this.trustStorePassword = trustStorePassword;
+		}
+
+		/**
+		 * Create the ssl configuration as expected by the
+		 * {@link org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean RabbitConnectionFactoryBean}.
+		 * @return the ssl configuration
+		 */
+		public Properties createSslProperties() {
+			Properties properties = new Properties();
+			if (getKeyStore() != null) {
+				properties.put("keyStore", getKeyStore());
+			}
+			if (getKeyStorePassword() != null) {
+				properties.put("keyStore.passPhrase", getKeyStorePassword());
+			}
+			if (getTrustStore() != null) {
+				properties.put("trustStore", getTrustStore());
+			}
+			if (getTrustStorePassword() != null) {
+				properties.put("trustStore.passPhrase", getTrustStorePassword());
+			}
+			return properties;
+		}
+
+	}
 }

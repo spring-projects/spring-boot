@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Properties;
+
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -31,6 +35,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ByteArrayResource;
 
 import com.rabbitmq.client.Channel;
 
@@ -72,6 +77,7 @@ import com.rabbitmq.client.Channel;
  * </ul>
  * @author Greg Turnquist
  * @author Josh Long
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -100,10 +106,8 @@ public class RabbitAutoConfiguration {
 	protected static class RabbitConnectionFactoryCreator {
 
 		@Bean
-		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config) {
-			CachingConnectionFactory factory = new CachingConnectionFactory();
-			String addresses = config.getAddresses();
-			factory.setAddresses(addresses);
+		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config) throws Exception {
+			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
 			if (config.getHost() != null) {
 				factory.setHost(config.getHost());
 				factory.setPort(config.getPort());
@@ -117,7 +121,24 @@ public class RabbitAutoConfiguration {
 			if (config.getVirtualHost() != null) {
 				factory.setVirtualHost(config.getVirtualHost());
 			}
-			return factory;
+			if (config.getRequestedHeartbeat() != null) {
+				factory.setRequestedHeartbeat(config.getRequestedHeartbeat());
+			}
+			RabbitProperties.Ssl ssl = config.getSsl();
+			if (ssl.isEnabled()) {
+				factory.setUseSSL(true);
+				if (ssl.getKeyStore() != null || ssl.getTrustStore() != null) {
+					Properties properties = ssl.createSslProperties();
+					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+					properties.store(outputStream, "SSL config");
+					factory.setSslPropertiesLocation(
+							new ByteArrayResource(outputStream.toByteArray()));
+				}
+			}
+			factory.afterPropertiesSet();
+			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(factory.getObject());
+			connectionFactory.setAddresses(config.getAddresses());
+			return connectionFactory;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +34,7 @@ import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -47,6 +51,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link RabbitAutoConfiguration}.
  *
  * @author Greg Turnquist
+ * @author Stephane Nicoll
  */
 public class RabbitAutoConfigurationTests {
 
@@ -186,6 +191,46 @@ public class RabbitAutoConfigurationTests {
 		AnnotationConfigApplicationContext ctx = this.context;
 		ctx.getBean(RabbitListenerConfigUtils.RABBIT_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME);
 		ctx.getBean(RabbitListenerConfigUtils.RABBIT_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
+	}
+
+	@Test
+	public void customizeRequestedHeartBeat() {
+		load(TestConfiguration.class, "spring.rabbitmq.requestedHeartbeat:20");
+		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
+		assertEquals(20, rabbitConnectionFactory.getRequestedHeartbeat());
+	}
+
+	@Test
+	public void noSslByDefault() {
+		load(TestConfiguration.class);
+		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
+		assertEquals("Must use default SocketFactory", SocketFactory.getDefault(),
+				rabbitConnectionFactory.getSocketFactory());
+	}
+
+	@Test
+	public void enableSsl() {
+		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true");
+		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
+		assertTrue("SocketFactory must use SSL", rabbitConnectionFactory.getSocketFactory() instanceof SSLSocketFactory);
+	}
+
+	@Test // Make sure that we at least attempt to load the store
+	public void enableSslWithExtraConfig() {
+		thrown.expectMessage("foo");
+		thrown.expectMessage("does not exist");
+		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true",
+				"spring.rabbitmq.ssl.keyStore=foo",
+				"spring.rabbitmq.ssl.keyStorePassword=secret",
+				"spring.rabbitmq.ssl.trustStore=bar",
+				"spring.rabbitmq.ssl.trustStorePassword=secret");
+	}
+
+	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory() {
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		return (com.rabbitmq.client.ConnectionFactory)
+				new DirectFieldAccessor(connectionFactory).getPropertyValue("rabbitConnectionFactory");
 	}
 
 	private void load(Class<?> config, String... environment) {
