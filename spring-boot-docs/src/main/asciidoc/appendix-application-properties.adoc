@@ -292,7 +292,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
 	spring.data.jpa.repositories.enabled=true # if spring data repository support is enabled
 
-	# JTA ({sc-spring-boot-autoconfigure}/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
+	# JTA ({sc-spring-boot-autoconfigure}/transaction/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
 	spring.jta.log-dir= # transaction log dir
 	spring.jta.*= # technology specific configuration
 
