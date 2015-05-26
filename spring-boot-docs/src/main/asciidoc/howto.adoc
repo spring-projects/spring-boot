@@ -2458,20 +2458,20 @@ rather than the version that pre-installed with the server. You can do this by a
 
 [source,xml,indent=0]
 ----
-<?xml version="1.0" encoding="UTF-8"?>
-<wls:weblogic-web-app
-	xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-		http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
-		http://xmlns.oracle.com/weblogic/weblogic-web-app
-		http://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
-	<wls:container-descriptor>
-		<wls:prefer-application-packages>
-			<wls:package-name>org.slf4j</wls:package-name>
-		</wls:prefer-application-packages>
-	</wls:container-descriptor>
-</wls:weblogic-web-app>
+	<?xml version="1.0" encoding="UTF-8"?>
+	<wls:weblogic-web-app
+		xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+			http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd
+			http://xmlns.oracle.com/weblogic/weblogic-web-app
+			http://xmlns.oracle.com/weblogic/weblogic-web-app/1.4/weblogic-web-app.xsd">
+		<wls:container-descriptor>
+			<wls:prefer-application-packages>
+				<wls:package-name>org.slf4j</wls:package-name>
+			</wls:prefer-application-packages>
+		</wls:container-descriptor>
+	</wls:weblogic-web-app>
 ----
 
 
