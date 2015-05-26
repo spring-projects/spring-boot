@@ -126,11 +126,12 @@ content into your application; rather pick only the properties that you need.
 	spring.http.gzip.deflate-no-wrap= # noWrap setting for deflate compression (true or false)
 	spring.http.gzip.enabled=true # enable gzip filter support
 	spring.http.gzip.excluded-agents= # comma-separated list of user agents to exclude from compression
-	spring.http.gzip.excluded-agent-patterns= # comma-separated list of regular expression patterns to control user agents excluded from compression
-	spring.http.gzip.excluded-paths= # comma-separated list of paths to exclude from compression
-	spring.http.gzip.excluded-path-patterns= # comma-separated list of regular expression patterns to control the paths that are excluded from compression
+	spring.http.gzip.exclude-agent-patterns= # comma-separated list of regular expression patterns to control user agents excluded from compression
+	spring.http.gzip.exclude-paths= # comma-separated list of paths to exclude from compression
+	spring.http.gzip.exclude-path-patterns= # comma-separated list of regular expression patterns to control the paths that are excluded from compression
 	spring.http.gzip.methods= # comma-separated list of HTTP methods for which compression is enabled
 	spring.http.gzip.mime-types= # comma-separated list of MIME types which should be compressed
+	spring.http.gzip.excluded-mime-types= # comma-separated list of MIME types to exclude from compression
 	spring.http.gzip.min-gzip-size= # minimum content length required for compression to occur
 	spring.http.gzip.vary= # Vary header to be sent on responses that may be compressed
 
