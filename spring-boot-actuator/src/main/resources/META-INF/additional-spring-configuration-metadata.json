@@ -35,6 +35,12 @@
     "defaultValue": true
   },
   {
+    "name": "management.health.elasticsearch.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable elasticsearch health check.",
+    "defaultValue": true
+  },
+  {
     "name": "management.health.jms.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable JMS health check.",

@@ -1,5 +1,11 @@
 {"properties": [
   {
+    "name": "multipart.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable support of multi-part uploads.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.aop.auto",
     "type": "java.lang.Boolean",
     "description": "Add @EnableAspectJAutoProxy.",
@@ -97,6 +103,12 @@
     "name": "spring.mobile.sitepreference.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable SitePreferenceHandler.",
+    "defaultValue": true
+  },
+  {
+    "name": "spring.mvc.favicon.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable resolution of favicon.ico.",
     "defaultValue": true
   },
   {

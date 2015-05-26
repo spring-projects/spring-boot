@@ -27,6 +27,10 @@ content into your application; rather pick only the properties that you need.
 	# CORE PROPERTIES
 	# ----------------------------------------
 
+    # BANNER
+    banner.charset=UTF-8 # banner file encoding
+    banner.location=classpath:banner.txt # banner file location
+
 	# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
 	spring.config.name= # config file name (default to 'application')
 	spring.config.location= # location of config file
@@ -40,6 +44,9 @@ content into your application; rather pick only the properties that you need.
 	spring.main.web-environment= # detect by default
 	spring.main.show-banner=true
 	spring.main....= # see class for all properties
+
+	# OUTPUT
+	spring.output.ansi.enabled=detect # Configure the ANSI output ("detect", "always", "never")
 
 	# LOGGING
 	logging.path=/var/logs
@@ -150,6 +157,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jackson.property-naming-strategy= # One of the constants on Jackson's PropertyNamingStrategy (e.g. CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES) or the fully-qualified class name of a PropertyNamingStrategy subclass
 	spring.jackson.deserialization.*= # see Jackson's DeserializationFeature
 	spring.jackson.generator.*= # see Jackson's JsonGenerator.Feature
+	spring.jackson.joda-date-time-format= # Joda date time format string
 	spring.jackson.mapper.*= # see Jackson's MapperFeature
 	spring.jackson.parser.*= # see Jackson's JsonParser.Feature
 	spring.jackson.serialization.*= # see Jackson's SerializationFeature
@@ -162,6 +170,7 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.view-names= # comma-separated list of view names that can be resolved
 	spring.thymeleaf.suffix=.html
 	spring.thymeleaf.mode=HTML5
+	spring.thymeleaf.enabled=true # enable MVC view resolution
 	spring.thymeleaf.encoding=UTF-8
 	spring.thymeleaf.content-type=text/html # ;charset=<encoding> is added
 	spring.thymeleaf.cache=true # set to false for hot refresh
@@ -172,6 +181,7 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.check-template-location=true
 	spring.freemarker.charset=UTF-8
 	spring.freemarker.content-type=text/html
+	spring.freemarker.enabled=true # enable MVC view resolution
 	spring.freemarker.expose-request-attributes=false
 	spring.freemarker.expose-session-attributes=false
 	spring.freemarker.expose-spring-macro-helpers=false
@@ -187,6 +197,7 @@ content into your application; rather pick only the properties that you need.
 	spring.groovy.template.charset=UTF-8
 	spring.groovy.template.configuration.*= # See Groovy's TemplateConfiguration
 	spring.groovy.template.content-type=text/html
+	spring.groovy.template.enabled=true # enable MVC view resolution
 	spring.groovy.template.prefix=classpath:/templates/
 	spring.groovy.template.suffix=.tpl
 	spring.groovy.template.view-names= # whitelist of view names that can be resolved
@@ -198,6 +209,7 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.charset=UTF-8
 	spring.velocity.content-type=text/html
 	spring.velocity.date-tool-attribute=
+	spring.velocity.enabled=true # enable MVC view resolution
 	spring.velocity.expose-request-attributes=false
 	spring.velocity.expose-session-attributes=false
 	spring.velocity.expose-spring-macro-helpers=false
@@ -210,6 +222,16 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.suffix=.vm
 	spring.velocity.toolbox-config-location= # velocity Toolbox config location, for example "/WEB-INF/toolbox.xml"
 	spring.velocity.view-names= # whitelist of view names that can be resolved
+
+	# MUSTACHE TEMPLATES ({sc-spring-boot-autoconfigure}/mustache/MustacheAutoConfiguration.{sc-ext}[MustacheAutoConfiguration])
+	spring.mustache.cache=true
+    spring.mustache.charset=UTF-8
+    spring.mustache.check-template-location=true
+    spring.mustache.content-type=UTF-8
+    spring.mustache.enabled=true # enable MVC view resolution
+    spring.mustache.prefix
+    spring.mustache.suffix=.html
+    spring.mustache.view-names= # whitelist of view names that can be resolved
 
 	# JERSEY ({sc-spring-boot-autoconfigure}}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
 	spring.jersey.type=servlet # servlet or filter
@@ -536,6 +558,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.dump.id=dump
 	endpoints.dump.sensitive=true
 	endpoints.dump.enabled=true
+	endpoints.enabled=true # enable all endpoints
 	endpoints.env.id=env
 	endpoints.env.sensitive=true
 	endpoints.env.enabled=true
@@ -567,14 +590,18 @@ content into your application; rather pick only the properties that you need.
 	endpoints.cors.allowed-methods= # comma-separated list of methods to allow. * allows all methods. When not set, defaults to GET.
 	endpoints.cors.allowed-headers= # comma-separated list of headers to allow in a request. * allows all headers.
 	endpoints.cors.exposed-headers= # comma-separated list of headers to include in a response.
+	endpoints.cors.max-age= # how long, in seconds, the response from a pre-flight request can be cached by clients.
 
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true
 	management.health.elasticsearch.enabled=true
+	management.health.elasticsearch.indices=  # comma-separated index names
 	management.health.elasticsearch.response-timeout=100 # the time, in milliseconds, to wait for a response from the cluster
 	management.health.diskspace.enabled=true
 	management.health.diskspace.path=.
 	management.health.diskspace.threshold=10485760
+	management.health.jms.enabled=true
+	management.health.mail.enabled=true
 	management.health.mongo.enabled=true
 	management.health.rabbit.enabled=true
 	management.health.redis.enabled=true
