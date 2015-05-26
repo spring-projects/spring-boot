@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  * Properties for configuring {@link GzipFilter}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @since 1.2.2
  */
 @ConfigurationProperties(prefix = "spring.http.gzip")
@@ -68,6 +69,11 @@ public class GzipFilterProperties {
 	private List<MimeType> mimeTypes;
 
 	/**
+	 * Comma-separated list of MIME types to exclude from compression.
+	 */
+	private List<MimeType> excludedMimeTypes;
+
+	/**
 	 * Comma-separated list of user agents to exclude from compression. String.contains is
 	 * used to determine a match against the request's User-Agent header.
 	 */
@@ -77,19 +83,19 @@ public class GzipFilterProperties {
 	 * Comma-separated list of regular expression patterns to control user agents excluded
 	 * from compression.
 	 */
-	private String excludedAgentPatterns;
+	private String excludeAgentPatterns;
 
 	/**
 	 * Comma-separated list of paths to exclude from compression. Uses String.startsWith
 	 * to determine a match against the request's path.
 	 */
-	private String excludedPaths;
+	private String excludePaths;
 
 	/**
 	 * Comma-separated list of regular expression patterns to control the paths that are
 	 * excluded from compression.
 	 */
-	private String excludedPathPatterns;
+	private String excludePathPatterns;
 
 	/**
 	 * Vary header sent on responses that may be compressed.
@@ -156,6 +162,16 @@ public class GzipFilterProperties {
 		this.mimeTypes = mimeTypes;
 	}
 
+	public List<MimeType> getExcludedMimeTypes() {
+		return excludedMimeTypes;
+	}
+
+	public void setExcludedMimeTypes(List<MimeType> excludedMimeTypes) {
+		this.addInitParameter("excludedMimeTypes",
+				StringUtils.collectionToCommaDelimitedString(excludedMimeTypes));
+		this.excludedMimeTypes = excludedMimeTypes;
+	}
+
 	public String getExcludedAgents() {
 		return this.excludedAgents;
 	}
@@ -165,31 +181,31 @@ public class GzipFilterProperties {
 		this.excludedAgents = excludedAgents;
 	}
 
-	public String getExcludedAgentPatterns() {
-		return this.excludedAgentPatterns;
+	public String getExcludeAgentPatterns() {
+		return this.excludeAgentPatterns;
 	}
 
-	public void setExcludedAgentPatterns(String excludedAgentPatterns) {
-		this.addInitParameter("excludedAgentPatterns", excludedAgentPatterns);
-		this.excludedAgentPatterns = excludedAgentPatterns;
+	public void setExcludeAgentPatterns(String excludeAgentPatterns) {
+		this.addInitParameter("excludeAgentPatterns", excludeAgentPatterns);
+		this.excludeAgentPatterns = excludeAgentPatterns;
 	}
 
-	public String getExcludedPaths() {
-		return this.excludedPaths;
+	public String getExcludePaths() {
+		return this.excludePaths;
 	}
 
-	public void setExcludedPaths(String excludedPaths) {
-		this.addInitParameter("excludedPaths", excludedPaths);
-		this.excludedPaths = excludedPaths;
+	public void setExcludePaths(String excludePaths) {
+		this.addInitParameter("excludePaths", excludePaths);
+		this.excludePaths = excludePaths;
 	}
 
-	public String getExcludedPathPatterns() {
-		return this.excludedPathPatterns;
+	public String getExcludePathPatterns() {
+		return this.excludePathPatterns;
 	}
 
-	public void setExcludedPathPatterns(String excludedPathPatterns) {
-		this.addInitParameter("excludedPathPatterns", excludedPathPatterns);
-		this.excludedPathPatterns = excludedPathPatterns;
+	public void setExcludePathPatterns(String excludePathPatterns) {
+		this.addInitParameter("excludePathPatterns", excludePathPatterns);
+		this.excludePathPatterns = excludePathPatterns;
 	}
 
 	public String getVary() {
