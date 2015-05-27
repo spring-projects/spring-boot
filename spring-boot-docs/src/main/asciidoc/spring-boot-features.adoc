@@ -1659,21 +1659,22 @@ decorated and enhanced with the necessary pieces to get the `/login`
 path working. For example, here we simply allow unauthenticated access
 to the home page at "/" and keep the default for everything else:
 
-[source,java] ---- 
-@Configuration
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+[source,java,indent=0]
+----
+	@Configuration
+	public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-  @Override
-  public void init(WebSecurity web) {
-    web.ignore("/");
-  }
+		@Override
+		public void init(WebSecurity web) {
+			web.ignore("/");
+		}
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
-  }
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
+		}
 
-}
+	}
 ----
 
 === Actuator Security
