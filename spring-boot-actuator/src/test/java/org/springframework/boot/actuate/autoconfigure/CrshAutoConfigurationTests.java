@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link CrshAutoConfiguration}.
  *
  * @author Christian Dupuis
+ * @author Andreas Ahlenstorf
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CrshAutoConfigurationTests {
@@ -373,12 +374,11 @@ public class CrshAutoConfigurationTests {
 
 		@Bean
 		public AccessDecisionManager shellAccessDecisionManager() {
-			List<AccessDecisionVoter> voters = new ArrayList<AccessDecisionVoter>();
+			List<AccessDecisionVoter<?>> voters = new ArrayList<AccessDecisionVoter<?>>();
 			RoleVoter voter = new RoleVoter();
 			voter.setRolePrefix("");
 			voters.add(voter);
-			AccessDecisionManager result = new UnanimousBased(voters);
-			return result;
+			return new UnanimousBased(voters);
 		}
 
 	}
