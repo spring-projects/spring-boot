@@ -544,12 +544,12 @@ example `application.properties`:
 
 [[production-ready-disable-jmx-endpoints]]
 === Disabling JMX endpoints
-If you don't want to expose endpoints over JMX you can set the `spring.jmx.enabled`
+If you don't want to expose endpoints over JMX you can set the `endpoints.jmx.enabled`
 property to `false`:
 
 [source,properties,indent=0]
 ----
-	spring.jmx.enabled=false
+	endpoints.jmx.enabled=false
 ----
 
 

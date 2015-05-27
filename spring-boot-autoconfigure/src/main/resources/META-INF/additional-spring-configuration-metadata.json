@@ -76,10 +76,21 @@
   	"description": "Enable gzip filter support."
   },
   {
+    "name": "spring.jmx.default-domain",
+    "type": "java.lang.String",
+    "description": "JMX domain name."
+  },
+  {
     "name": "spring.jmx.enabled",
     "type": "java.lang.Boolean",
     "description": "Expose management beans to the JMX domain.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.jmx.mbean-server",
+    "type": "java.lang.String",
+    "description": "MBeanServer bean name.",
+    "defaultValue": "mBeanServer"
   },
   {
     "name": "spring.jpa.open-in-view",

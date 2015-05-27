@@ -18,6 +18,12 @@
     "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions."
   },
   {
+    "name": "endpoints.jmx.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable JMX export of all endpoints.",
+    "defaultValue": true
+  },
+  {
     "name": "info",
     "type": "java.util.Map<java.lang.String,java.lang.Object>",
     "description": "Arbitrary properties to add to the info endpoint."
