@@ -53,7 +53,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * can be searched.
  * <p>
  * Auto-configuration classes are regular Spring {@link Configuration} beans. They are
- * located using the {@link SpringFactoriesLoader} mechanism (keyed against this class).
+ * located using the {@link SpringFactoriesLoader} mechanism (keyed against {@link #factoryName()}).
  * Generally auto-configuration beans are {@link Conditional @Conditional} beans (most
  * often using {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
@@ -78,4 +78,9 @@ public @interface EnableAutoConfiguration {
 	 */
 	Class<?>[] exclude() default {};
 
+	/**
+	 * Set the factory name used as key by {@link SpringFactoriesLoader} mechanism.
+	 * @return the factory name in spring.properties files
+	 */
+	Class<?> factoryName() default EnableAutoConfiguration.class;
 }
