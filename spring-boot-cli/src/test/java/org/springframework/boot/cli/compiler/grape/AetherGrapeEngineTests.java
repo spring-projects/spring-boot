@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,9 @@ public class AetherGrapeEngineTests {
 	private AetherGrapeEngine createGrapeEngine() {
 		return AetherGrapeEngineFactory.create(this.groovyClassLoader, Arrays
 				.asList(new RepositoryConfiguration("central", URI
-						.create("http://repo1.maven.org/maven2"), false)),
+							.create("http://repo1.maven.org/maven2"), false),
+						new RepositoryConfiguration("spring-milestone", URI
+							.create("http://repo.spring.io/milestone"), false)),
 				new DependencyResolutionContext());
 	}
 
@@ -92,7 +94,7 @@ public class AetherGrapeEngineTests {
 
 				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
 						.getField(grapeEngine, "repositories");
-				assertEquals(1, repositories.size());
+				assertEquals(2, repositories.size());
 				assertEquals("central-mirror", repositories.get(0).getId());
 			}
 		});
@@ -109,7 +111,7 @@ public class AetherGrapeEngineTests {
 
 				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
 						.getField(grapeEngine, "repositories");
-				assertEquals(1, repositories.size());
+				assertEquals(2, repositories.size());
 				Authentication authentication = repositories.get(0).getAuthentication();
 				assertNotNull(authentication);
 			}
