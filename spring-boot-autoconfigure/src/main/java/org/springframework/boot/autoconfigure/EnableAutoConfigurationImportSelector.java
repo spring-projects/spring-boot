@@ -74,8 +74,11 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 							this.beanClassLoader)));
 
 			// Remove those specifically disabled
-			exclude(Arrays.asList(attributes.getStringArray("exclude")), factories);
-			exclude(Arrays.asList(attributes.getStringArray("excludeName")), factories);
+			List<String> excluded = new ArrayList<String>();
+			excluded.addAll(Arrays.asList(attributes.getStringArray("exclude")));
+			excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
+			factories.removeAll(excluded);
+			ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
 
 			// Sort
 			factories = new AutoConfigurationSorter(this.resourceLoader)
@@ -86,11 +89,6 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
-	}
-
-	private void exclude(List<String> excluded, List<String> factories) {
-		factories.removeAll(excluded);
-		ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
 	}
 
 	@Override
