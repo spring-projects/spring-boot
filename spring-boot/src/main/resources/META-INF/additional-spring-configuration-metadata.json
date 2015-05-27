@@ -89,7 +89,7 @@
     "name": "spring.main.sources",
     "type": "java.util.Set<java.lang.Object>",
     "sourceType": "org.springframework.boot.SpringApplication",
-    "description": "Sources (class name, package name or XML resource location) used to create the ApplicationContext."
+    "description": "Sources (class name, package name or XML resource location) to include in the ApplicationContext."
   },
   {
     "name": "spring.main.web-environment",

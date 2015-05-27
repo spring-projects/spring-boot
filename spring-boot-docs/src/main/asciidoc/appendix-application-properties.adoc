@@ -40,7 +40,7 @@ content into your application; rather pick only the properties that you need.
 	spring.profiles.include= # unconditionally activate the specified comma separated profiles
 
 	# APPLICATION SETTINGS ({sc-spring-boot}/SpringApplication.{sc-ext}[SpringApplication])
-	spring.main.sources=
+	spring.main.sources= # sources (class name, package name or XML resource location) to include
 	spring.main.web-environment= # detect by default
 	spring.main.show-banner=true
 	spring.main....= # see class for all properties

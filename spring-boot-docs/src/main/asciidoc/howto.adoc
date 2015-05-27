@@ -132,6 +132,30 @@ not be a web application.
 NOTE: The example above also demonstrates how flexible binding allows the use of
 underscores (`_`) as well as dashes (`-`) in property names.
 
+Properties defined in external configuration overrides the values specified via the Java
+API with the notable exception of the sources used to create the `ApplicationContext`. Let's
+consider this application
+
+[source,java,indent=0]
+----
+	new SpringApplicationBuilder()
+		.showBanner(false)
+		.sources(demo.MyApp.class)
+		.run(args);
+----
+
+used with the following configuration:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
+	spring.main.show-banner=true
+----
+
+The actual application will _not_ show the banner and use three sources for the
+`ApplicationContext` (in that order): `demo.MyApp`, `com.acme.Config`,
+`com.acme.ExtraConfig`.
+
 [[howto-change-the-location-of-external-properties]]
 === Change the location of external properties of an application
 By default properties from different sources are added to the Spring `Environment` in a
