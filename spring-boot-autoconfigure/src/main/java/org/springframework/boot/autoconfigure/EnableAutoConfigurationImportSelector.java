@@ -44,6 +44,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @see EnableAutoConfiguration
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -73,9 +74,8 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 							this.beanClassLoader)));
 
 			// Remove those specifically disabled
-			List<String> excluded = Arrays.asList(attributes.getStringArray("exclude"));
-			factories.removeAll(excluded);
-			ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
+			exclude(Arrays.asList(attributes.getStringArray("exclude")), factories);
+			exclude(Arrays.asList(attributes.getStringArray("excludeName")), factories);
 
 			// Sort
 			factories = new AutoConfigurationSorter(this.resourceLoader)
@@ -86,6 +86,11 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private void exclude(List<String> excluded, List<String> factories) {
+		factories.removeAll(excluded);
+		ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
 	}
 
 	@Override

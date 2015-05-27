@@ -43,8 +43,9 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * <p>
  * Auto-configuration tries to be as intelligent as possible and will back-away as you
  * define more of your own configuration. You can always manually {@link #exclude()} any
- * configuration that you never want to apply. Auto-configuration is always applied after
- * user-defined beans have been registered.
+ * configuration that you never want to apply (use {@link #excludeName()} if you don't
+ * have access to them). Auto-configuration is always applied after user-defined beans
+ * have been registered.
  * <p>
  * The package of the class that is annotated with {@code @EnableAutoConfiguration} has
  * specific significance and is often used as a 'default'. For example, it will be used
@@ -59,6 +60,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @see ConditionalOnBean
  * @see ConditionalOnMissingBean
  * @see ConditionalOnClass
@@ -77,5 +79,12 @@ public @interface EnableAutoConfiguration {
 	 * @return the classes to exclude
 	 */
 	Class<?>[] exclude() default {};
+
+	/**
+	 * Exclude specific auto-configuration class names such that they will never be
+	 * applied.
+	 * @return the class names to exclude
+	 */
+	String[] excludeName() default {};
 
 }

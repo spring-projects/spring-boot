@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * {@code @EnableAutoConfiguration} and {@code @ComponentScan}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.2.0
  */
 @Target(ElementType.TYPE)
@@ -51,5 +52,12 @@ public @interface SpringBootApplication {
 	 * @return the classes to exclude
 	 */
 	Class<?>[] exclude() default {};
+
+	/**
+	 * Exclude specific auto-configuration class names such that they will never be
+	 * applied.
+	 * @return the class names to exclude
+	 */
+	String[] excludeName() default {};
 
 }

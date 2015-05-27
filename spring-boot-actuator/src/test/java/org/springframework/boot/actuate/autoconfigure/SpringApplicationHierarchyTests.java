@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.ApplicationContextTestUtils;
@@ -53,17 +52,18 @@ public class SpringApplicationHierarchyTests {
 				"--server.port=0");
 	}
 
-	@EnableAutoConfiguration(exclude = { ElasticsearchAutoConfiguration.class,
+	@EnableAutoConfiguration(exclude = {
 			ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class })
+			ElasticsearchRepositoriesAutoConfiguration.class},
+			excludeName = {"org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration"})
 	public static class Child {
 	}
 
-	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class,
+	@EnableAutoConfiguration(exclude = {JolokiaAutoConfiguration.class,
 			EndpointMBeanExportAutoConfiguration.class,
-			ElasticsearchAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class })
+			ElasticsearchRepositoriesAutoConfiguration.class},
+			excludeName = {"org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration"})
 	public static class Parent {
 	}
 
