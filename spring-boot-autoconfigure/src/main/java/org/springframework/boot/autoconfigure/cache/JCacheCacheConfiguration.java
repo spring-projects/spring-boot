@@ -91,7 +91,8 @@ class JCacheCacheConfiguration {
 	private CacheManager createCacheManager() throws IOException {
 		CachingProvider cachingProvider = getCachingProvider(this.cacheProperties
 				.getJcache().getProvider());
-		Resource configLocation = this.cacheProperties.resolveConfigLocation();
+		Resource configLocation = this.cacheProperties.resolveConfigLocation(
+				this.cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
 			return cachingProvider.getCacheManager(configLocation.getURI(),
 					cachingProvider.getDefaultClassLoader(),

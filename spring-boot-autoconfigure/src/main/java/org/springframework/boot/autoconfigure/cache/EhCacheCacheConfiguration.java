@@ -45,7 +45,7 @@ import org.springframework.core.io.Resource;
 class EhCacheCacheConfiguration {
 
 	@Autowired
-	private CacheProperties properties;
+	private CacheProperties cacheProperties;
 
 	@Bean
 	public EhCacheCacheManager cacheManager(CacheManager ehCacheCacheManager) {
@@ -55,7 +55,8 @@ class EhCacheCacheConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CacheManager ehCacheCacheManager() {
-		Resource location = this.properties.resolveConfigLocation();
+		Resource location = this.cacheProperties.resolveConfigLocation(
+				this.cacheProperties.getEhcache().getConfig());
 		if (location != null) {
 			return EhCacheManagerUtils.buildCacheManager(location);
 		}
@@ -70,7 +71,7 @@ class EhCacheCacheConfiguration {
 	static class ConfigAvailableCondition extends CacheConfigFileCondition {
 
 		public ConfigAvailableCondition() {
-			super("EhCache", "classpath:/ehcache.xml");
+			super("EhCache", "spring.config.ehcache", "classpath:/ehcache.xml");
 		}
 
 	}

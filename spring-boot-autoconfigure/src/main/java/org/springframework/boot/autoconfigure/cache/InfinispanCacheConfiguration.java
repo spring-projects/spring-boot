@@ -73,9 +73,10 @@ public class InfinispanCacheConfiguration {
 	}
 
 	private EmbeddedCacheManager createEmbeddedCacheManager() throws IOException {
-		Resource location = this.cacheProperties.resolveConfigLocation();
+		Resource location = this.cacheProperties.resolveConfigLocation(
+				this.cacheProperties.getInfinispan().getConfig());
 		if (location != null) {
-			InputStream in = this.cacheProperties.getConfig().getInputStream();
+			InputStream in = location.getInputStream();
 			try {
 				return new DefaultCacheManager(in);
 			}

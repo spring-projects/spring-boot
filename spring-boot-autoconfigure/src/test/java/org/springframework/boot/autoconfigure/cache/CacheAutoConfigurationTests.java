@@ -275,7 +275,7 @@ public class CacheAutoConfigurationTests {
 		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
 		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
 				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.config=" + configLocation);
+				"spring.cache.jcache.config=" + configLocation);
 		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
 		Resource configResource = new ClassPathResource(configLocation);
 		assertThat(cacheManager.getCacheManager().getURI(), is(configResource.getURI()));
@@ -286,11 +286,11 @@ public class CacheAutoConfigurationTests {
 		String cachingProviderFqn = MockCachingProvider.class.getName();
 		String configLocation = "org/springframework/boot/autoconfigure/cache/does-not-exist.xml";
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("spring.cache.config");
+		this.thrown.expectMessage("does not exist");
 		this.thrown.expectMessage(configLocation);
 		load(JCacheCustomConfiguration.class, "spring.cache.type=jcache",
 				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.config=" + configLocation);
+				"spring.cache.jcache.config=" + configLocation);
 	}
 
 	@Test
@@ -307,7 +307,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void ehCacheCacheWithConfig() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=ehcache",
-				"spring.cache.config=cache/ehcache-override.xml");
+				"spring.cache.ehcache.config=cache/ehcache-override.xml");
 		EhCacheCacheManager cacheManager = validateCacheManager(EhCacheCacheManager.class);
 		assertThat(cacheManager.getCacheNames(),
 				containsInAnyOrder("cacheOverrideTest1", "cacheOverrideTest2"));
@@ -336,7 +336,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void hazelcastCacheWithConfig() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
-				"spring.cache.config=org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml");
+				"spring.cache.hazelcast.config=org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml");
 		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
 		cacheManager.getCache("foobar");
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foobar"));
@@ -348,7 +348,7 @@ public class CacheAutoConfigurationTests {
 		this.thrown.expect(BeanCreationException.class);
 		this.thrown.expectMessage("foo/bar/unknown.xml");
 		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
-				"spring.cache.config=foo/bar/unknown.xml");
+				"spring.cache.hazelcast.config=foo/bar/unknown.xml");
 	}
 
 	@Test
@@ -376,7 +376,7 @@ public class CacheAutoConfigurationTests {
 		String configLocation = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
 		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
 				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.config=" + configLocation);
+				"spring.cache.jcache.config=" + configLocation);
 		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
 
 		Resource configResource = new ClassPathResource(configLocation);
@@ -387,7 +387,7 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void infinispanCacheWithConfig() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
-				"spring.cache.config=infinispan.xml");
+				"spring.cache.infinispan.config=infinispan.xml");
 		SpringEmbeddedCacheManager cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
 	}
@@ -431,7 +431,7 @@ public class CacheAutoConfigurationTests {
 		String configLocation = "infinispan.xml";
 		load(DefaultCacheConfiguration.class, "spring.cache.type=jcache",
 				"spring.cache.jcache.provider=" + cachingProviderFqn,
-				"spring.cache.config=" + configLocation);
+				"spring.cache.jcache.config=" + configLocation);
 		JCacheCacheManager cacheManager = validateCacheManager(JCacheCacheManager.class);
 
 		Resource configResource = new ClassPathResource(configLocation);

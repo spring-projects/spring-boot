@@ -39,15 +39,16 @@ public class CacheProperties {
 	private CacheType type;
 
 	/**
-	 * The location of the configuration file to use to initialize the cache library.
-	 */
-	private Resource config;
-
-	/**
 	 * Comma-separated list of cache names to create if supported by the underlying cache
 	 * manager. Usually, this disables the ability to create additional caches on-the-fly.
 	 */
 	private List<String> cacheNames = new ArrayList<String>();
+
+	private final EhCache ehcache = new EhCache();
+
+	private final Hazelcast hazelcast = new Hazelcast();
+
+	private final Infinispan infinispan = new Infinispan();
 
 	private final JCache jcache = new JCache();
 
@@ -61,20 +62,24 @@ public class CacheProperties {
 		this.type = mode;
 	}
 
-	public Resource getConfig() {
-		return this.config;
-	}
-
-	public void setConfig(Resource config) {
-		this.config = config;
-	}
-
 	public List<String> getCacheNames() {
 		return this.cacheNames;
 	}
 
 	public void setCacheNames(List<String> cacheNames) {
 		this.cacheNames = cacheNames;
+	}
+
+	public EhCache getEhcache() {
+		return this.ehcache;
+	}
+
+	public Hazelcast getHazelcast() {
+		return this.hazelcast;
+	}
+
+	public Infinispan getInfinispan() {
+		return this.infinispan;
 	}
 
 	public JCache getJcache() {
@@ -91,19 +96,84 @@ public class CacheProperties {
 	 * @throws IllegalArgumentException if the config attribute is set to a unknown
 	 * location
 	 */
-	public Resource resolveConfigLocation() {
-		if (this.config != null) {
-			Assert.isTrue(this.config.exists(), "Cache configuration field defined by "
-					+ "'spring.cache.config' does not exist " + this.config);
-			return this.config;
+	public Resource resolveConfigLocation(Resource config) {
+		if (config != null) {
+			Assert.isTrue(config.exists(), "Cache configuration does not " +
+					"exist '" + config.getDescription() + "'");
+			return config;
 		}
 		return null;
+	}
+
+	/**
+	 * EhCache specific cache properties.
+	 */
+	public static class EhCache {
+
+		/**
+		 * The location of the configuration file to use to initialize EhCache.
+		 */
+		private Resource config;
+
+		public Resource getConfig() {
+			return config;
+		}
+
+		public void setConfig(Resource config) {
+			this.config = config;
+		}
+	}
+
+	/**
+	 * Hazelcast specific cache properties.
+	 */
+	public static class Hazelcast {
+
+		/**
+		 * The location of the configuration file to use to initialize Hazelcast.
+		 */
+		private Resource config;
+
+		public Resource getConfig() {
+			return config;
+		}
+
+		public void setConfig(Resource config) {
+			this.config = config;
+		}
+
+	}
+
+	/**
+	 * Infinispan specific cache properties.
+	 */
+	public static class Infinispan {
+
+		/**
+		 * The location of the configuration file to use to initialize Infinispan.
+		 */
+		private Resource config;
+
+		public Resource getConfig() {
+			return config;
+		}
+
+		public void setConfig(Resource config) {
+			this.config = config;
+		}
+
 	}
 
 	/**
 	 * JCache (JSR-107) specific cache properties.
 	 */
 	public static class JCache {
+
+		/**
+		 * The location of the configuration file to use to initialize the cache manager. The
+		 * configuration file is dependent of the underlying cache implementation.
+		 */
+		private Resource config;
 
 		/**
 		 * Fully qualified name of the CachingProvider implementation to use to retrieve
@@ -120,6 +190,13 @@ public class CacheProperties {
 			this.provider = provider;
 		}
 
+		public Resource getConfig() {
+			return config;
+		}
+
+		public void setConfig(Resource config) {
+			this.config = config;
+		}
 	}
 
 	/**

@@ -34,10 +34,14 @@ abstract class CacheConfigFileCondition extends SpringBootCondition {
 
 	private final String name;
 
+	private final String configPrefix;
+
 	private final String[] resourceLocations;
 
-	public CacheConfigFileCondition(String name, String... resourceLocations) {
+	public CacheConfigFileCondition(String name, String configPrefix,
+			String... resourceLocations) {
 		this.name = name;
+		this.configPrefix = configPrefix;
 		this.resourceLocations = resourceLocations;
 	}
 
@@ -45,9 +49,10 @@ abstract class CacheConfigFileCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.cache.");
+				context.getEnvironment(), this.configPrefix);
 		if (resolver.containsProperty("config")) {
-			return ConditionOutcome.match("A spring.cache.config property is specified");
+			return ConditionOutcome.match("A '" + this.configPrefix + ".config' " +
+					"property is specified");
 		}
 		return getResourceOutcome(context, metadata);
 	}
