@@ -133,7 +133,7 @@ public class MvcEndpointCorsProperties {
 			corsConfiguration.setMaxAge(this.maxAge);
 		}
 		if (this.allowCredentials != null) {
-			corsConfiguration.setAllowCredentials(true);
+			corsConfiguration.setAllowCredentials(this.allowCredentials);
 		}
 		return corsConfiguration;
 	}
