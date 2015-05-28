@@ -837,6 +837,8 @@ messages to the console you can start your application with a `--debug` flag.
 	$ java -jar myapp.jar --debug
 ----
 
+NOTE: you can also specify `debug=true` in your `application.properties`.
+
 If your terminal supports ANSI, color output will be used to aid readability. You can set
 `spring.output.ansi.enabled` to a
 {dc-spring-boot}/ansi/AnsiOutput.Enabled.{dc-ext}[supported value] to override the auto
