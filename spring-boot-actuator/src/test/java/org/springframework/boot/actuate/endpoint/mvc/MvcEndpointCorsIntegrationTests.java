@@ -161,6 +161,15 @@ public class MvcEndpointCorsIntegrationTests {
 	}
 
 	@Test
+	public void credentialsCanBeDisabled() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.cors.allowed-origins:foo.example.com",
+				"endpoints.cors.allow-credentials:false");
+		performAcceptedCorsRequest().andExpect(
+				header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS));
+	}
+
+	@Test
 	public void jolokiaEndpointUsesGlobalCorsConfiguration() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
