@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +50,7 @@ import org.springframework.util.ResourceUtils;
  *
  * @author Daniel Fullarton
  * @author Andy Wilkinson
+ * @author Alexander Heusingfeld
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
@@ -149,12 +152,22 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		try {
 			LoggerContext ctx = getLoggerContext();
 			URL url = ResourceUtils.getURL(location);
-			ConfigurationSource source = new ConfigurationSource(url.openStream(), url);
+			ConfigurationSource source = getConfigurationSource(url);
 			ctx.start(ConfigurationFactory.getInstance().getConfiguration(source));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Log4J2 logging from "
 					+ location, ex);
+		}
+	}
+
+	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
+		InputStream stream = url.openStream();
+		if (ResourceUtils.isFileURL(url)) {
+			return new ConfigurationSource(stream,
+						ResourceUtils.getFile(url));
+		} else {
+			return new ConfigurationSource(stream, url);
 		}
 	}
 
