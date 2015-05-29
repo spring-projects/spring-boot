@@ -16,16 +16,19 @@
 
 package sample;
 
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import javax.cache.annotation.CacheDefaults;
+import javax.cache.annotation.CacheResult;
 
-/**
- * @author Eddú Meléndez
- * @since 1.3.0
- */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {SampleEhCacheCacheApplication.class})
-public class SampleEhCacheCacheApplicationTests extends AbstractEhCacheCacheTests {
+import org.springframework.stereotype.Component;
+
+@Component
+@CacheDefaults(cacheName = "countries")
+public class CountryRepository {
+
+	@CacheResult
+	public Country findByCode(String code) {
+		System.out.println("---> Loading country with code '" + code + "'");
+		return new Country(code);
+	}
 
 }

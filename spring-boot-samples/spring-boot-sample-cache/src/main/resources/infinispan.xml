@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<infinispan xmlns="urn:infinispan:config:7.2">
+
+	<cache-container default-cache="default">
+		<local-cache name="countries">
+			<eviction max-entries="200"/>
+			<expiration lifespan="600000"/>
+		</local-cache>
+	</cache-container>
+
+</infinispan>
