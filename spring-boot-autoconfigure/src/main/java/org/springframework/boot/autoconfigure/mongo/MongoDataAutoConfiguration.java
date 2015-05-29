@@ -22,6 +22,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.mongodb.DB;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -42,6 +46,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.annotation.Persistent;
+import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
@@ -56,10 +61,6 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-
-import com.mongodb.DB;
-import com.mongodb.Mongo;
-import com.mongodb.MongoClient;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's mongo support.
@@ -136,6 +137,21 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 			throws ClassNotFoundException {
 		MongoMappingContext context = new MongoMappingContext();
 		context.setInitialEntitySet(getInitialEntitySet(beanFactory));
+		Class<? extends FieldNamingStrategy> fieldNamingStrategyClass = this.properties.
+				getFieldNamingStrategy();
+		if (fieldNamingStrategyClass != null) {
+			try {
+				context.setFieldNamingStrategy(fieldNamingStrategyClass.newInstance());
+			}
+			catch (InstantiationException e) {
+				throw new IllegalArgumentException("Invalid custom FieldNamingStrategy " +
+						"(is it abstract?) '" + fieldNamingStrategyClass.getName() + "'", e);
+			}
+			catch (IllegalAccessException e) {
+				throw new IllegalArgumentException("Invalid custom FieldNamingStrategy " +
+						"(is the constructor accessible?)'" + fieldNamingStrategyClass.getName() + "'", e);
+			}
+		}
 		return context;
 	}
 

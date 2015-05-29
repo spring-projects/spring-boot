@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.mapping.model.FieldNamingStrategy;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -36,6 +37,7 @@ import com.mongodb.ServerAddress;
  * @author Phillip Webb
  * @author Josh Long
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
@@ -82,6 +84,11 @@ public class MongoProperties {
 	 */
 	private char[] password;
 
+	/**
+	 * Fully qualified name of the FieldNamingStrategy to use.
+	 */
+	private Class<? extends FieldNamingStrategy> fieldNamingStrategy;
+
 	public String getHost() {
 		return this.host;
 	}
@@ -120,6 +127,14 @@ public class MongoProperties {
 
 	public void setPassword(char[] password) {
 		this.password = password;
+	}
+
+	public Class<? extends FieldNamingStrategy> getFieldNamingStrategy() {
+		return this.fieldNamingStrategy;
+	}
+
+	public void setFieldNamingStrategy(Class<? extends FieldNamingStrategy> fieldNamingStrategy) {
+		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
 	public void clearPassword() {
