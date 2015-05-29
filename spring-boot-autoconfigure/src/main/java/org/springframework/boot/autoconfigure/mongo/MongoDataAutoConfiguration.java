@@ -42,6 +42,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.annotation.Persistent;
 import org.springframework.data.authentication.UserCredentials;
+import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
@@ -73,6 +74,7 @@ import com.mongodb.Mongo;
  * @author Oliver Gierke
  * @author Josh Long
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
@@ -134,6 +136,17 @@ public class MongoDataAutoConfiguration {
 			throws ClassNotFoundException {
 		MongoMappingContext context = new MongoMappingContext();
 		context.setInitialEntitySet(getInitialEntitySet(beanFactory));
+		if (this.properties.getNamingStrategy() != null) {
+			try {
+				context.setFieldNamingStrategy(
+					ClassUtils.forName(this.properties.getNamingStrategy().getName(), null)
+						.asSubclass(FieldNamingStrategy.class).newInstance());
+			} catch (InstantiationException e) {
+				//ignore
+			} catch (IllegalAccessException e) {
+				//ignore
+			}
+		}
 		return context;
 	}
 
