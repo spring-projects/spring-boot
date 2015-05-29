@@ -63,6 +63,28 @@ public class BindingPreparationTests {
 	}
 
 	@Test
+	public void testListOfBeansWithList() throws Exception {
+		TargetWithNestedListOfBeansWithList target = new TargetWithNestedListOfBeansWithList();
+		BeanWrapperImpl wrapper = new BeanWrapperImpl(target);
+		wrapper.setAutoGrowNestedPaths(true);
+		RelaxedDataBinder binder = new RelaxedDataBinder(target);
+		binder.normalizePath(wrapper, "nested[0].list[1]");
+		assertNotNull(wrapper.getPropertyValue("nested"));
+		assertNotNull(wrapper.getPropertyValue("nested[0].list[1]"));
+	}
+
+	@Test
+	public void testListOfBeansWithListAndNoPeriod() throws Exception {
+		TargetWithNestedListOfBeansWithList target = new TargetWithNestedListOfBeansWithList();
+		BeanWrapperImpl wrapper = new BeanWrapperImpl(target);
+		wrapper.setAutoGrowNestedPaths(true);
+		RelaxedDataBinder binder = new RelaxedDataBinder(target);
+		binder.normalizePath(wrapper, "nested[0]list[1]");
+		assertNotNull(wrapper.getPropertyValue("nested"));
+		assertNotNull(wrapper.getPropertyValue("nested[0].list[1]"));
+	}
+
+	@Test
 	public void testAutoGrowWithFuzzyNameCapitals() throws Exception {
 		TargetWithNestedMap target = new TargetWithNestedMap();
 		BeanWrapperImpl wrapper = new BeanWrapperImpl(target);
@@ -257,6 +279,31 @@ public class BindingPreparationTests {
 		public void setNested(List<List<String>> nested) {
 			this.nested = nested;
 		}
+	}
+
+	public static class TargetWithNestedListOfBeansWithList {
+		private List<TargetWithList> nested;
+
+		public List<TargetWithList> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(List<TargetWithList> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithList {
+		private List<VanillaTarget> list;
+
+		public List<VanillaTarget> getList() {
+			return this.list;
+		}
+
+		public void setList(List<VanillaTarget> list) {
+			this.list = list;
+		}
+
 	}
 
 	public static class TargetWithNestedMapOfBean {

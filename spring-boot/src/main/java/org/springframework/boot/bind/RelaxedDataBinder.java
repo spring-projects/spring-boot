@@ -461,12 +461,11 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 
 		private String extractIndexedPaths(String path, List<PathNode> nodes) {
-			int begin = 0;
 			int startRef = path.indexOf("[");
 			String current = path;
 			while (startRef >= 0) {
-				if (startRef > begin) {
-					nodes.addAll(splitPath(current.substring(begin, startRef)));
+				if (startRef > 0) {
+					nodes.addAll(splitPath(current.substring(0, startRef)));
 				}
 				int endRef = current.indexOf("]", startRef);
 				if (endRef > 0) {
@@ -478,8 +477,7 @@ public class RelaxedDataBinder extends DataBinder {
 						nodes.add(new MapIndexNode(sub));
 					}
 				}
-				begin = endRef + 1;
-				current = current.substring(begin);
+				current = current.substring(endRef + 1);
 				startRef = current.indexOf("[");
 			}
 			return current;
