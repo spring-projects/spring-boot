@@ -64,7 +64,7 @@ public class MetricExportAutoConfiguration {
 	private MetricsEndpointMetricReader endpointReader;
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(name = "metricWritersMetricExporter")
 	public SchedulingConfigurer metricWritersMetricExporter() {
 
 		Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>();

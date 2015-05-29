@@ -90,7 +90,7 @@ public class MetricRepositoryAutoConfiguration {
 	static class LegacyMetricServicesConfiguration {
 
 		@Autowired
-		@ActuatorMetricReader
+		@ActuatorMetricWriter
 		private MetricWriter writer;
 
 		@Bean
@@ -147,11 +147,12 @@ public class MetricRepositoryAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnJava(value = JavaVersion.EIGHT, range = Range.OLDER_THAN)
-	@ConditionalOnMissingBean(MetricRepository.class)
+	@ConditionalOnMissingBean(name = "actuatorMetricRepository")
 	static class LegacyMetricRepositoryConfiguration {
 
 		@Bean
 		@ActuatorMetricReader
+		@ActuatorMetricWriter
 		public InMemoryMetricRepository actuatorMetricRepository() {
 			return new InMemoryMetricRepository();
 		}
