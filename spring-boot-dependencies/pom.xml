@@ -81,7 +81,7 @@
 		<hsqldb.version>2.3.2</hsqldb.version>
 		<httpasyncclient.version>4.0.2</httpasyncclient.version>
 		<httpclient.version>4.4.1</httpclient.version>
-		<infinispan.version>7.2.1.Final</infinispan.version>
+		<infinispan.version>7.2.2.Final</infinispan.version>
 		<jackson.version>2.5.3</jackson.version>
 		<janino.version>2.7.8</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
