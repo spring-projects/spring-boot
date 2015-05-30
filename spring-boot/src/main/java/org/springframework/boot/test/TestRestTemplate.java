@@ -123,9 +123,8 @@ public class TestRestTemplate extends RestTemplate {
 		@Override
 		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
 				ClientHttpRequestExecution execution) throws IOException {
-			byte[] token = Base64
-					.encode((this.username + ":" + this.password).getBytes());
-			request.getHeaders().add("Authorization", "Basic " + new String(token));
+			String token = Base64Encoder.encode(this.username + ":" + this.password);
+			request.getHeaders().add("Authorization", "Basic " + token);
 			return execution.execute(request, body);
 		}
 
