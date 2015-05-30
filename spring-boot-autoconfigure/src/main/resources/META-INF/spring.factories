@@ -40,6 +40,7 @@ org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfigu
 org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration,\
+org.springframework.boot.autoconfigure.mail.JndiMailAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.DeviceResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.SitePreferenceAutoConfiguration,\

@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Oliver Gierke
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.mail")
@@ -60,6 +61,11 @@ public class MailProperties {
 	 * Additional JavaMail session properties.
 	 */
 	private Map<String, String> properties = new HashMap<String, String>();
+
+	/**
+	 * JNDI location of the session. Host, port, username, password are ignored when set.
+	 */
+	private String jndiName;
 
 	public String getHost() {
 		return this.host;
@@ -105,4 +111,11 @@ public class MailProperties {
 		return this.properties;
 	}
 
+	public void setJndiName(String jndiName) {
+		this.jndiName = jndiName;
+	}
+
+	public String getJndiName() {
+		return this.jndiName;
+	}
 }
