@@ -62,7 +62,7 @@ public class PropertySourcesLoader {
 		Assert.notNull(propertySources, "PropertySources must not be null");
 		this.propertySources = propertySources;
 		this.loaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
-				null);
+				getClass().getClassLoader());
 	}
 
 	/**

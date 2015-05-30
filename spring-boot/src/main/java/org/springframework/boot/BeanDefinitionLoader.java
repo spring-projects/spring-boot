@@ -54,8 +54,6 @@ import org.springframework.util.StringUtils;
  */
 class BeanDefinitionLoader {
 
-	private static final ResourceLoader DEFAULT_RESOURCE_LOADER = new PathMatchingResourcePatternResolver();
-
 	private final Object[] sources;
 
 	private final AnnotatedBeanDefinitionReader annotatedReader;
@@ -228,8 +226,8 @@ class BeanDefinitionLoader {
 	}
 
 	private Resource[] findResources(String source) {
-		ResourceLoader loader = this.resourceLoader != null ? this.resourceLoader
-				: DEFAULT_RESOURCE_LOADER;
+		ResourceLoader loader = (this.resourceLoader != null ? this.resourceLoader
+				: new PathMatchingResourcePatternResolver());
 		try {
 			if (loader instanceof ResourcePatternResolver) {
 				return ((ResourcePatternResolver) loader).getResources(source);
