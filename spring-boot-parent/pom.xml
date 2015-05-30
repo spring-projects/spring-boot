@@ -513,6 +513,7 @@
 					<annotations>
 						<annotation>org.springframework.lang.UsesJava8</annotation>
 						<annotation>org.springframework.lang.UsesJava7</annotation>
+						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
 					</annotations>
 				</configuration>
 				<executions>
