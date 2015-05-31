@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.boot.actuate.metrics.export.MetricExportProperties.Export;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
@@ -56,7 +55,7 @@ public class MetricExporters implements SchedulingConfigurer {
 
 		for (Entry<String, MetricWriter> entry : this.writers.entrySet()) {
 			String name = entry.getKey();
-			Export trigger = this.export.findExport(name);
+			Trigger trigger = this.export.findTrigger(name);
 
 			if (trigger != null) {
 
@@ -67,7 +66,6 @@ public class MetricExporters implements SchedulingConfigurer {
 					exporter.setIncludes(trigger.getIncludes());
 					exporter.setExcludes(trigger.getExcludes());
 				}
-				exporter.setIgnoreTimestamps(trigger.isIgnoreTimestamps());
 				exporter.setSendLatest(trigger.isSendLatest());
 
 				this.exporters.put(name, exporter);

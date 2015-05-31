@@ -910,7 +910,7 @@ used by default if you are on Java 8 or if you are using Dropwizard metrics.
 
 
 [[production-ready-metric-writers]]
-=== Metric writers and aggregation
+=== Metric writers, exporters and aggregation
 
 Spring Boot provides a couple of implementations of a marker interface called `Exporter`
 which can be used to copy metric readings from the in-memory buffers to a place where they
@@ -919,11 +919,20 @@ can be analysed and displayed. Indeed, if you provide a `@Bean` that implements 
 metric updates every 5 seconds (configured via `spring.metrics.export.delayMillis`) via a
 `@Scheduled` annotation in `MetricRepositoryAutoConfiguration`.
 
-The default exporter is a `MetricCopyExporter` which tries to optimize itself by not
-copying values that haven't changed since it was last called. The optimization can be
-switched off using a flag (`spring.metrics.export.ignoreTimestamps`). Note also that the
-`MetricRegistry` has no support for timestamps, so the optimization is not available if
-you are using Dropwizard metrics (all metrics will be copied on every tick).
+The default exporter is a `MetricCopyExporter` which tries to optimize
+itself by not copying values that haven't changed since it was last
+called (the optimization can be switched off using a flag
+`spring.metrics.export.sendLatest`). Note also that the Dropwizard
+`MetricRegistry` has no support for timestamps, so the optimization is
+not available if you are using Dropwizard metrics (all metrics will be
+copied on every tick).
+
+The default values for the export trigger (`delayMillis`, `includes`,
+`excludes`, `ignoreTimestamps` and `sendLatest`) can be set as
+`spring.metrics.export.*`. Individual values for specific
+`MetricWriters` can be set as
+`spring.metrics.export.triggers.<name>.*` where `<name>` is a bean
+name (or pattern for matching bean names).
 
 
 
@@ -942,17 +951,18 @@ Example:
 
 [source,java,indent=0]
 ----
-
-@Value("metrics.mysystem.${random.value:0000}.${spring.application.name:application}")
-private String prefix = "metrics.mysystem";
-
-@Value("${metrics.key:keys.mysystem}")
-private String key = "METRICSKEY";
-
 @Bean
-MetricWriter metricWriter() {
-	return new RedisMetricRepository(connectionFactory, prefix, key);
+MetricWriter metricWriter(MetricExportProperties export) {
+	return new RedisMetricRepository(connectionFactory, 
+      export.getRedis().getPrefix(), export.getRedis().getKey());
 }
+----
+
+.application.properties
+[source,properties]
+----
+spring.metrics.export.redis.prefix: metrics.mysystem.${random.value:0000}.${spring.application.name:application}
+spring.metrics.export.redis.key: keys.mysystem
 ----
 
 The prefix is constructed with the application name at the end, so it can easily be used
@@ -967,6 +977,11 @@ start with the master prefix (like `metrics.mysystem.*` in the example above). I
 efficient to read all the keys from a "master" repository like that, but inefficient to
 read a subset with a longer prefix (e.g. using one of the writing repositories).
 
+NOTE: the example above uses `MetricExportProperties` to inject and
+extract the key and prefix. This is provided to you as a convenience
+by Spring Boot, and the defaults for that will be sensible, but there
+is nothing to stop you using your own values as long as they follow
+the recommendations.
 
 
 [[production-ready-metric-writers-export-to-open-tdsb]]
@@ -1064,25 +1079,31 @@ results to the "/metrics" endpoint. Example:
 
 [source,java,indent=0]
 ----
-	@Bean
-	public PublicMetrics metricsAggregate() {
-		return new MetricReaderPublicMetrics(aggregates());
-	}
+  @Autowired
+  private MetricExportProperties export;
 
-	@Bean
-	protected MetricReader repository(RedisConnectionFactory connectionFactory) {
-		RedisMetricRepository repository = new RedisMetricRepository(connectionFactory,
-				"mysystem", "myorg.keys");
-		return repository;
-	}
+  @Bean
+  public PublicMetrics metricsAggregate() {
+    return new MetricReaderPublicMetrics(aggregates());
+  }
 
-	@Bean
-	protected MetricReader aggregates() {
-		AggregateMetricReader repository = new AggregateMetricReader(repository());
-		return repository;
-	}
+  @Bean
+  protected MetricReader repository(RedisConnectionFactory connectionFactory) {
+    RedisMetricRepository repository = new RedisMetricRepository(connectionFactory,
+        this.export.getRedis().getAggregatePrefix(), this.export.getRedis().getKey());
+    return repository;
+  }
+
+  @Bean
+  protected MetricReader aggregates() {
+    AggregateMetricReader repository = new AggregateMetricReader(repository());
+    return repository;
+  }
 ----
 
+NOTE: the example above uses `MetricExportProperties` to inject and
+extract the key and prefix. This is provided to you as a convenience
+by Spring Boot, and the defaults for that will be sensible.
 
 
 [[production-ready-dropwizard-metrics]]
@@ -1134,33 +1155,33 @@ and obtain basic information about the last few requests:
 
 [source,json,indent=0]
 ----
-	[{
-		"timestamp": 1394343677415,
-		"info": {
-			"method": "GET",
-			"path": "/trace",
-			"headers": {
-				"request": {
-					"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-					"Connection": "keep-alive",
-					"Accept-Encoding": "gzip, deflate",
-					"User-Agent": "Mozilla/5.0 Gecko/Firefox",
-					"Accept-Language": "en-US,en;q=0.5",
-					"Cookie": "_ga=GA1.1.827067509.1390890128; ..."
-					"Authorization": "Basic ...",
-					"Host": "localhost:8080"
-				},
-				"response": {
-					"Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
-					"X-Application-Context": "application:8080",
-					"Content-Type": "application/json;charset=UTF-8",
-					"status": "200"
-				}
-			}
-		}
-	},{
-		"timestamp": 1394343684465,
-		...
+  [{
+    "timestamp": 1394343677415,
+    "info": {
+      "method": "GET",
+      "path": "/trace",
+      "headers": {
+        "request": {
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Connection": "keep-alive",
+          "Accept-Encoding": "gzip, deflate",
+          "User-Agent": "Mozilla/5.0 Gecko/Firefox",
+          "Accept-Language": "en-US,en;q=0.5",
+          "Cookie": "_ga=GA1.1.827067509.1390890128; ..."
+          "Authorization": "Basic ...",
+          "Host": "localhost:8080"
+        },
+        "response": {
+          "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
+          "X-Application-Context": "application:8080",
+          "Content-Type": "application/json;charset=UTF-8",
+          "status": "200"
+        }
+      }
+    }
+  },{
+    "timestamp": 1394343684465,
+    ...
     }]
 ----
 
@@ -1201,9 +1222,9 @@ In `META-INF/spring.factories` file you have to activate the listener(s):
 
 [indent=0]
 ----
-	org.springframework.context.ApplicationListener=\
-	org.springframework.boot.actuate.system.ApplicationPidFileWriter,
-	org.springframework.boot.actuate.system.EmbeddedServerPortFileWriter
+  org.springframework.context.ApplicationListener=\
+  org.springframework.boot.actuate.system.ApplicationPidFileWriter,
+  org.springframework.boot.actuate.system.EmbeddedServerPortFileWriter
 ----
 
 
