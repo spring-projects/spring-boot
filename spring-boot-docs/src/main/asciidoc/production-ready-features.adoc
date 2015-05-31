@@ -912,12 +912,18 @@ used by default if you are on Java 8 or if you are using Dropwizard metrics.
 [[production-ready-metric-writers]]
 === Metric writers, exporters and aggregation
 
-Spring Boot provides a couple of implementations of a marker interface called `Exporter`
-which can be used to copy metric readings from the in-memory buffers to a place where they
-can be analysed and displayed. Indeed, if you provide a `@Bean` that implements the
-`MetricWriter` interface, then it will automatically be hooked up to an `Exporter` and fed
-metric updates every 5 seconds (configured via `spring.metrics.export.delayMillis`) via a
-`@Scheduled` annotation in `MetricRepositoryAutoConfiguration`.
+Spring Boot provides a couple of implementations of a marker interface
+called `Exporter` which can be used to copy metric readings from the
+in-memory buffers to a place where they can be analysed and
+displayed. Indeed, if you provide a `@Bean` that implements the
+`MetricWriter` interface and mark it `@ExportMetricWriter`, then it
+will automatically be hooked up to an `Exporter` and fed metric
+updates every 5 seconds (configured via
+`spring.metrics.export.delayMillis`) via a `@Scheduled` annotation in
+`MetricRepositoryAutoConfiguration`. In addition, any `MetricReader`
+that you define and mark as `@ExportMetricReader` will have its values
+exported by the default exporter.
+
 
 The default exporter is a `MetricCopyExporter` which tries to optimize
 itself by not copying values that haven't changed since it was last
@@ -939,19 +945,23 @@ name (or pattern for matching bean names).
 [[production-ready-metric-writers-export-to-redis]]
 ==== Example: Export to Redis
 
-If you provide a `@Bean` of type `RedisMetricRepository` the metrics are exported to a
-Redis cache for aggregation. The `RedisMetricRepository` has 2 important parameters to
-configure it for this purpose: `prefix` and `key` (passed into its constructor). It is
-best to use a prefix that is unique to the application instance (e.g. using a random value
-and maybe the logical name of the application to make it possible to correlate with other
-instances of the same application).  The "key" is used to keep a global index of all
-metric names, so it should be unique "globally", whatever that means for your system (e.g.
-2 instances of the same system could share a Redis cache if they have distinct keys).
+If you provide a `@Bean` of type `RedisMetricRepository` and mark it
+`@ExportMetricWriter` the metrics are exported to a Redis cache for
+aggregation. The `RedisMetricRepository` has 2 important parameters to
+configure it for this purpose: `prefix` and `key` (passed into its
+constructor). It is best to use a prefix that is unique to the
+application instance (e.g. using a random value and maybe the logical
+name of the application to make it possible to correlate with other
+instances of the same application).  The "key" is used to keep a
+global index of all metric names, so it should be unique "globally",
+whatever that means for your system (e.g.  2 instances of the same
+system could share a Redis cache if they have distinct keys).
 Example:
 
 [source,java,indent=0]
 ----
 @Bean
+@ExportMetricWriter
 MetricWriter metricWriter(MetricExportProperties export) {
 	return new RedisMetricRepository(connectionFactory, 
       export.getRedis().getPrefix(), export.getRedis().getKey());
@@ -987,15 +997,19 @@ the recommendations.
 [[production-ready-metric-writers-export-to-open-tdsb]]
 ==== Example: Export to Open TSDB
 
-If you provide a `@Bean` of type `OpenTsdbHttpMetricWriter` the metrics are exported to
-http://opentsdb.net/[Open TSDB] for aggregation. The `OpenTsdbHttpMetricWriter` has a
-`url` property that you need to set to the Open TSDB "/put" endpoint, e.g.
-`http://localhost:4242/api/put`). It also has a `namingStrategy` that you can customize or
-configure to make the metrics match the data structure you need on the server. By default
-it just passes through the metric name as an Open TSDB metric name and adds a tag "domain"
-with value "org.springframework.metrics" and another tag "process" with value equals to
-the object hash of the naming strategy. Thus, after running the application and generating
-some metrics (e.g. by pinging the home page) you can inspect the metrics in the TDB UI
+If you provide a `@Bean` of type `OpenTsdbHttpMetricWriter` and mark
+it `@ExportMetricWriter` the metrics are exported to
+http://opentsdb.net/[Open TSDB] for aggregation. The
+`OpenTsdbHttpMetricWriter` has a `url` property that you need to set
+to the Open TSDB "/put" endpoint, e.g.
+`http://localhost:4242/api/put`). It also has a `namingStrategy` that
+you can customize or configure to make the metrics match the data
+structure you need on the server. By default it just passes through
+the metric name as an Open TSDB metric name and adds a tag "domain"
+with value "org.springframework.metrics" and another tag "process"
+with value equals to the object hash of the naming strategy. Thus,
+after running the application and generating some metrics (e.g. by
+pinging the home page) you can inspect the metrics in the TDB UI
 (http://localhost:4242 by default). Example:
 
 [source,indent=0]
@@ -1021,7 +1035,7 @@ curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
 
 [[production-ready-metric-writers-export-to-statsd]]
 ==== Example: Export to Statsd
-If you provide a `@Bean` of type `StatsdMetricWriter`  the metrics are exported to a
+If you provide a `@Bean` of type `StatsdMetricWriter` and mark it `@ExportMetricWriter` the metrics are exported to a
 statsd server:
 
 [source,java,indent=0]
@@ -1036,6 +1050,7 @@ private String host = "localhost";
 private int port;
 
 @Bean
+@ExportMetricWriter
 MetricWriter metricWriter() {
 	return new StatsdMetricWriter(prefix, host, port);
 }
@@ -1044,7 +1059,7 @@ MetricWriter metricWriter() {
 
 [[production-ready-metric-writers-export-to-jmx]]
 ==== Example: Export to JMX
-If you provide a `@Bean` of type `JmxMetricWriter` the metrics are exported as MBeans to
+If you provide a `@Bean` of type `JmxMetricWriter` marked `@ExportMetricWriter` the metrics are exported as MBeans to
 the local server (the `MBeanExporter` is provided by Spring Boot JMX autoconfiguration as
 long as it is switched on). Metrics can then be inspected, graphed, alerted etc. using any
 tool that understands JMX (e.g. JConsole or JVisualVM). Example:
@@ -1052,6 +1067,7 @@ tool that understands JMX (e.g. JConsole or JVisualVM). Example:
 [source,java,indent=0]
 ----
 @Bean
+@ExportMetricWriter
 MetricWriter metricWriter(MBeanExporter exporter) {
 	return new JmxMetricWriter(exporter);
 }
@@ -1084,19 +1100,17 @@ results to the "/metrics" endpoint. Example:
 
   @Bean
   public PublicMetrics metricsAggregate() {
-    return new MetricReaderPublicMetrics(aggregates());
+    return new MetricReaderPublicMetrics(aggregatesMetricReader());
   }
 
-  @Bean
-  protected MetricReader repository(RedisConnectionFactory connectionFactory) {
-    RedisMetricRepository repository = new RedisMetricRepository(connectionFactory,
+  private MetricReader globalMetricsForAggregation() {
+    return new RedisMetricRepository(this.connectionFactory,
         this.export.getRedis().getAggregatePrefix(), this.export.getRedis().getKey());
-    return repository;
   }
 
-  @Bean
-  protected MetricReader aggregates() {
-    AggregateMetricReader repository = new AggregateMetricReader(repository());
+  private MetricReader aggregatesMetricReader() {
+    AggregateMetricReader repository = new AggregateMetricReader(
+        globalMetricsForAggregation());
     return repository;
   }
 ----
@@ -1104,6 +1118,10 @@ results to the "/metrics" endpoint. Example:
 NOTE: the example above uses `MetricExportProperties` to inject and
 extract the key and prefix. This is provided to you as a convenience
 by Spring Boot, and the defaults for that will be sensible.
+
+NOTE: the `MetricReaders` above are not `@Beans` and are not marked as
+`@ExportMetricReader` because they are just collecting and analysing
+data from other repositories, and don't want to export their values.
 
 
 [[production-ready-dropwizard-metrics]]

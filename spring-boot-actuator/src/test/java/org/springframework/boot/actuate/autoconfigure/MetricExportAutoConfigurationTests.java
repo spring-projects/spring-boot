@@ -116,6 +116,7 @@ public class MetricExportAutoConfigurationTests {
 	public static class WriterConfig {
 
 		@Bean
+		@ExportMetricWriter
 		public MetricWriter writer() {
 			return Mockito.mock(MetricWriter.class);
 		}
@@ -126,6 +127,7 @@ public class MetricExportAutoConfigurationTests {
 	public static class MetricEndpointConfiguration {
 
 		@Bean
+		@ExportMetricReader
 		public MetricsEndpointMetricReader endpointReader() {
 			return Mockito.mock(MetricsEndpointMetricReader.class);
 		}

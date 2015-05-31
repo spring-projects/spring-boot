@@ -70,7 +70,7 @@ import org.springframework.lang.UsesJava7;
 public class PublicMetricsAutoConfiguration {
 
 	@Autowired(required = false)
-	@ActuatorMetricReader
+	@ExportMetricReader
 	private List<MetricReader> metricReaders = Collections.emptyList();
 
 	@Bean

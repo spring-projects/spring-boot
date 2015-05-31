@@ -47,17 +47,14 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 public class MetricExportAutoConfiguration {
 
 	@Autowired(required = false)
+	@ExportMetricWriter
 	private Map<String, MetricWriter> writers = Collections.emptyMap();
 
 	@Autowired
 	private MetricExportProperties metrics;
 
 	@Autowired(required = false)
-	@ActuatorMetricWriter
-	private List<MetricWriter> actuatorMetrics = Collections.emptyList();
-
-	@Autowired(required = false)
-	@ActuatorMetricReader
+	@ExportMetricReader
 	private List<MetricReader> readers;
 
 	@Autowired(required = false)
@@ -77,11 +74,6 @@ public class MetricExportAutoConfiguration {
 
 		if (reader != null) {
 			writers.putAll(this.writers);
-			for (String name : this.writers.keySet()) {
-				if (this.actuatorMetrics.contains(writers.get(name))) {
-					writers.remove(name);
-				}
-			}
 			MetricExporters exporters = new MetricExporters(reader, writers, this.metrics);
 			return exporters;
 		}

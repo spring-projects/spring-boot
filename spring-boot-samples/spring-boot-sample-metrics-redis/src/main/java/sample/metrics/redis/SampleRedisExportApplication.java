@@ -19,6 +19,7 @@ package sample.metrics.redis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
 import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.jmx.JmxMetricWriter;
 import org.springframework.boot.actuate.metrics.repository.redis.RedisMetricRepository;
@@ -38,6 +39,7 @@ public class SampleRedisExportApplication {
 	}
 
 	@Bean
+	@ExportMetricWriter
 	public RedisMetricRepository redisMetricWriter(
 			RedisConnectionFactory connectionFactory) {
 		return new RedisMetricRepository(connectionFactory, this.export.getRedis().getPrefix(),
@@ -45,6 +47,7 @@ public class SampleRedisExportApplication {
 	}
 
 	@Bean
+	@ExportMetricWriter
 	public JmxMetricWriter jmxMetricWriter(
 			@Qualifier("mbeanExporter") MBeanExporter exporter) {
 		return new JmxMetricWriter(exporter);

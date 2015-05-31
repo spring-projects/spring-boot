@@ -26,8 +26,8 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * Qualifier annotation for a metric repository that is used by the actuator (to
- * distinguish it from others that might be installed by the user).
+ * Qualifier annotation for a metric repository that is to be used to export metrics from
+ * the {@link ExportMetricReader} readers.
  *
  * @author Dave Syer
  */
@@ -37,6 +37,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface ActuatorMetricReader {
+public @interface ExportMetricWriter {
 
 }

@@ -208,8 +208,14 @@ class Trigger {
 	 */
 	private Boolean sendLatest;
 
+	/**
+	 * List of patterns for metric names to include.
+	 */
 	private String[] includes;
 
+	/**
+	 * List of patterns for metric names to exclude. Applied after the includes.
+	 */
 	private String[] excludes;
 
 	public String[] getIncludes() {
