@@ -2954,23 +2954,6 @@ If you wish to use Spock to test a Spring Boot application you should add a depe
 on Spock's `spock-spring` module to your application's build. `spock-spring` integrates
 Spring's test framework into Spock.
 
-Please note that you cannot use the `@SpringApplicationConfiguration` annotation that was
-<<boot-features-testing-spring-boot-applications,described above>> as Spock
-https://code.google.com/p/spock/issues/detail?id=349[does not find the
-`@ContextConfiguration` meta-annotation]. To work around this limitation, you should use
-the `@ContextConfiguration` annotation directly and configure it to use the Spring
-Boot specific context loader:
-
-[source,groovy,indent=0]
-----
-	@ContextConfiguration(loader = SpringApplicationContextLoader.class)
-	class ExampleSpec extends Specification {
-
-		// ...
-
-	}
-----
-
 NOTE: The annotations <<boot-features-testing-spring-boot-applications,described above>>
 can be used with Spock, i.e. you can annotate your `Specification` with
 `@WebIntegrationTest` to suit the needs of your tests.
