@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
@@ -66,6 +67,8 @@ public class RestartClassLoaderTests {
 
 	private URLClassLoader parentClassLoader;
 
+	private ClassLoaderFiles updatedFiles;
+
 	private RestartClassLoader reloadClassLoader;
 
 	@Before
@@ -75,7 +78,9 @@ public class RestartClassLoaderTests {
 		ClassLoader classLoader = getClass().getClassLoader();
 		URL[] urls = new URL[] { url };
 		this.parentClassLoader = new URLClassLoader(urls, classLoader);
-		this.reloadClassLoader = new RestartClassLoader(this.parentClassLoader, urls);
+		this.updatedFiles = new ClassLoaderFiles();
+		this.reloadClassLoader = new RestartClassLoader(this.parentClassLoader, urls,
+				this.updatedFiles);
 	}
 
 	private File createSampleJarFile() throws IOException {
@@ -96,6 +101,13 @@ public class RestartClassLoaderTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Parent must not be null");
 		new RestartClassLoader(null, new URL[] {});
+	}
+
+	@Test
+	public void updatedFilesMustNotBeNull() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("UpdatedFiles must not be null");
+		new RestartClassLoader(this.parentClassLoader, new URL[] {}, null);
 	}
 
 	@Test
@@ -129,6 +141,73 @@ public class RestartClassLoaderTests {
 	public void loadClassFromParent() throws Exception {
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
 		assertThat(loaded.getClassLoader(), equalTo(getClass().getClassLoader()));
+	}
+
+	@Test
+	public void getDeletedResource() throws Exception {
+		String name = PACKAGE_PATH + "/Sample.txt";
+		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
+		assertThat(this.reloadClassLoader.getResource(name), equalTo(null));
+	}
+
+	@Test
+	public void getDeletedResourceAsStream() throws Exception {
+		String name = PACKAGE_PATH + "/Sample.txt";
+		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
+		assertThat(this.reloadClassLoader.getResourceAsStream(name), equalTo(null));
+	}
+
+	@Test
+	public void getUpdatedResource() throws Exception {
+		String name = PACKAGE_PATH + "/Sample.txt";
+		byte[] bytes = "abc".getBytes();
+		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, bytes));
+		URL resource = this.reloadClassLoader.getResource(name);
+		assertThat(FileCopyUtils.copyToByteArray(resource.openStream()), equalTo(bytes));
+	}
+
+	@Test
+	public void getResourcesWithDeleted() throws Exception {
+		String name = PACKAGE_PATH + "/Sample.txt";
+		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
+		List<URL> resources = toList(this.reloadClassLoader.getResources(name));
+		assertThat(resources.size(), equalTo(0));
+	}
+
+	@Test
+	public void getResourcesWithUpdated() throws Exception {
+		String name = PACKAGE_PATH + "/Sample.txt";
+		byte[] bytes = "abc".getBytes();
+		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, bytes));
+		List<URL> resources = toList(this.reloadClassLoader.getResources(name));
+		assertThat(FileCopyUtils.copyToByteArray(resources.get(0).openStream()),
+				equalTo(bytes));
+	}
+
+	@Test
+	public void getDeletedClass() throws Exception {
+		String name = PACKAGE_PATH + "/Sample.class";
+		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
+		this.thrown.expect(ClassNotFoundException.class);
+		this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
+	}
+
+	@Test
+	public void getUpdatedClass() throws Exception {
+		String name = PACKAGE_PATH + "/Sample.class";
+		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, new byte[10]));
+		this.thrown.expect(ClassFormatError.class);
+		this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
+	}
+
+	@Test
+	public void getAddedClass() throws Exception {
+		String name = PACKAGE_PATH + "/SampleParent.class";
+		byte[] bytes = FileCopyUtils.copyToByteArray(getClass().getResourceAsStream(
+				"SampleParent.class"));
+		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.ADDED, bytes));
+		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
+		assertThat(loaded.getClassLoader(), equalTo((ClassLoader) this.reloadClassLoader));
 	}
 
 	private String readString(InputStream in) throws IOException {

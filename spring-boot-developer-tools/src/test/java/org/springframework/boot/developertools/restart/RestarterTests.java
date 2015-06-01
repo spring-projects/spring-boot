@@ -18,6 +18,8 @@ package org.springframework.boot.developertools.restart;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ThreadFactory;
 
 import org.junit.After;
@@ -27,11 +29,15 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile.Kind;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -98,6 +104,44 @@ public class RestarterTests {
 		given(objectFactory.getObject()).willReturn("abc");
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
 		assertThat(attribute, equalTo((Object) "abc"));
+	}
+
+	public void addUrlsMustNotBeNull() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Urls must not be null");
+		Restarter.getInstance().addUrls(null);
+	}
+
+	@Test
+	public void addUrls() throws Exception {
+		URL url = new URL("file:/proj/module-a.jar!/");
+		Collection<URL> urls = Collections.singleton(url);
+		Restarter restarter = Restarter.getInstance();
+		restarter.addUrls(urls);
+		restarter.restart();
+		ClassLoader classLoader = ((TestableRestarter) restarter)
+				.getRelaunchClassLoader();
+		assertThat(((URLClassLoader) classLoader).getURLs()[0], equalTo(url));
+	}
+
+	@Test
+	public void addClassLoaderFilesMustNotBeNull() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("ClassLoaderFiles must not be null");
+		Restarter.getInstance().addClassLoaderFiles(null);
+	}
+
+	@Test
+	public void addClassLoaderFiles() throws Exception {
+		ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
+		classLoaderFiles.addFile("f", new ClassLoaderFile(Kind.ADDED, "abc".getBytes()));
+		Restarter restarter = Restarter.getInstance();
+		restarter.addClassLoaderFiles(classLoaderFiles);
+		restarter.restart();
+		ClassLoader classLoader = ((TestableRestarter) restarter)
+				.getRelaunchClassLoader();
+		assertThat(FileCopyUtils.copyToByteArray(classLoader.getResourceAsStream("f")),
+				equalTo("abc".getBytes()));
 	}
 
 	@Test
@@ -191,6 +235,8 @@ public class RestarterTests {
 
 	private static class TestableRestarter extends Restarter {
 
+		private ClassLoader relaunchClassLoader;
+
 		public TestableRestarter() {
 			this(Thread.currentThread(), new String[] {}, false,
 					new MockRestartInitializer());
@@ -213,7 +259,16 @@ public class RestarterTests {
 		}
 
 		@Override
+		protected void relaunch(ClassLoader classLoader) throws Exception {
+			this.relaunchClassLoader = classLoader;
+		}
+
+		@Override
 		protected void stop() throws Exception {
+		}
+
+		public ClassLoader getRelaunchClassLoader() {
+			return this.relaunchClassLoader;
 		}
 
 	}

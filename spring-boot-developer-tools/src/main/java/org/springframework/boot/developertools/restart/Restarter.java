@@ -22,9 +22,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.developertools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.cglib.core.ClassNameReader;
@@ -81,7 +84,7 @@ public class Restarter {
 
 	private final boolean forceReferenceCleanup;
 
-	private URL[] urls;
+	private URL[] initialUrls;
 
 	private final String mainClassName;
 
@@ -90,6 +93,10 @@ public class Restarter {
 	private final String[] args;
 
 	private final UncaughtExceptionHandler exceptionHandler;
+
+	private final Set<URL> urls = new LinkedHashSet<URL>();
+
+	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
 
 	private final Map<String, Object> attributes = new HashMap<String, Object>();
 
@@ -115,7 +122,7 @@ public class Restarter {
 		this.logger.debug("Creating new Restarter for thread " + thread);
 		SilentExitExceptionHandler.setup(thread);
 		this.forceReferenceCleanup = forceReferenceCleanup;
-		this.urls = initializer.getInitialUrls(thread);
+		this.initialUrls = initializer.getInitialUrls(thread);
 		this.mainClassName = getMainClassName(thread);
 		this.applicationClassLoader = thread.getContextClassLoader();
 		this.args = args;
@@ -134,7 +141,8 @@ public class Restarter {
 
 	protected void initialize(boolean restartOnInitialize) {
 		preInitializeLeakyClasses();
-		if (this.urls != null) {
+		if (this.initialUrls != null) {
+			this.urls.addAll(Arrays.asList(this.initialUrls));
 			if (restartOnInitialize) {
 				this.logger.debug("Immediately restarting application");
 				immediateRestart();
@@ -177,6 +185,24 @@ public class Restarter {
 	}
 
 	/**
+	 * Add additional URLs to be includes in the next restart.
+	 * @param urls the urls to add
+	 */
+	public void addUrls(Collection<URL> urls) {
+		Assert.notNull(urls, "Urls must not be null");
+		this.urls.addAll(ChangeableUrls.fromUrls(urls).toList());
+	}
+
+	/**
+	 * Add additional {@link ClassLoaderFiles} to be included in the next restart.
+	 * @param classLoaderFiles the files to add
+	 */
+	public void addClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
+		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
+		this.classLoaderFiles.addAll(classLoaderFiles);
+	}
+
+	/**
 	 * Return a {@link ThreadFactory} that can be used to create leak safe threads.
 	 * @return a leak safe thread factory
 	 */
@@ -208,10 +234,13 @@ public class Restarter {
 	protected void start() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		ClassLoader parent = this.applicationClassLoader;
-		ClassLoader classLoader = new RestartClassLoader(parent, this.urls, this.logger);
+		URL[] urls = this.urls.toArray(new URL[this.urls.size()]);
+		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
+		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles,
+				this.logger);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Starting application " + this.mainClassName
-					+ " with URLs " + Arrays.asList(this.urls));
+					+ " with URLs " + Arrays.asList(urls));
 		}
 		relaunch(classLoader);
 	}
@@ -369,7 +398,7 @@ public class Restarter {
 	 * @return the initial URLs or {@code null}
 	 */
 	public URL[] getInitialUrls() {
-		return this.urls;
+		return this.initialUrls;
 	}
 
 	/**
