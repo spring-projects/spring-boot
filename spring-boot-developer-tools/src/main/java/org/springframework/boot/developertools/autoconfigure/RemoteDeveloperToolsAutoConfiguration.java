@@ -23,6 +23,7 @@ import javax.servlet.Filter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,6 +40,10 @@ import org.springframework.boot.developertools.restart.server.DefaultSourceFolde
 import org.springframework.boot.developertools.restart.server.HttpRestartServer;
 import org.springframework.boot.developertools.restart.server.HttpRestartServerHandler;
 import org.springframework.boot.developertools.restart.server.SourceFolderUrlFilter;
+import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer;
+import org.springframework.boot.developertools.tunnel.server.HttpTunnelServerHandler;
+import org.springframework.boot.developertools.tunnel.server.RemoteDebugPortProvider;
+import org.springframework.boot.developertools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -105,6 +110,34 @@ public class RemoteDeveloperToolsAutoConfiguration {
 			logger.warn("Listening for remote restart updates on " + url);
 			Handler handler = new HttpRestartServerHandler(server);
 			return new UrlHandlerMapper(url, handler);
+		}
+
+	}
+
+	/**
+	 * Configuration for remote debug HTTP tunneling.
+	 */
+	@ConditionalOnProperty(prefix = "spring.developertools.remote.debug", name = "enabled", matchIfMissing = true)
+	static class RemoteDebugTunnelConfiguration {
+
+		@Autowired
+		private DeveloperToolsProperties properties;
+
+		@Bean
+		@ConditionalOnMissingBean(name = "remoteDebugHanderMapper")
+		public UrlHandlerMapper remoteDebugHanderMapper(
+				@Qualifier("remoteDebugHttpTunnelServer") HttpTunnelServer server) {
+			String url = this.properties.getRemote().getContextPath() + "/debug";
+			logger.warn("Listening for remote debug traffic on " + url);
+			Handler handler = new HttpTunnelServerHandler(server);
+			return new UrlHandlerMapper(url, handler);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "remoteDebugHttpTunnelServer")
+		public HttpTunnelServer remoteDebugHttpTunnelServer() {
+			return new HttpTunnelServer(new SocketTargetServerConnection(
+					new RemoteDebugPortProvider()));
 		}
 
 	}

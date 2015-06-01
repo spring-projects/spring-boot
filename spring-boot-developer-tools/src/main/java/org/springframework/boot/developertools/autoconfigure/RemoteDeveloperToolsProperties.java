@@ -35,6 +35,8 @@ public class RemoteDeveloperToolsProperties {
 
 	private Restart restart = new Restart();
 
+	private Debug debug = new Debug();
+
 	public String getContextPath() {
 		return this.contextPath;
 	}
@@ -45,6 +47,10 @@ public class RemoteDeveloperToolsProperties {
 
 	public Restart getRestart() {
 		return this.restart;
+	}
+
+	public Debug getDebug() {
+		return this.debug;
 	}
 
 	public static class Restart {
@@ -60,6 +66,38 @@ public class RemoteDeveloperToolsProperties {
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
+		}
+
+	}
+
+	public static class Debug {
+
+		public static final Integer DEFAULT_LOCAL_PORT = 8000;
+
+		/**
+		 * Enable remote debug support.
+		 */
+		private boolean enabled = true;
+
+		/**
+		 * Local remote debug server port.
+		 */
+		private int localPort = DEFAULT_LOCAL_PORT;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public int getLocalPort() {
+			return this.localPort;
+		}
+
+		public void setLocalPort(int localPort) {
+			this.localPort = localPort;
 		}
 
 	}

@@ -30,6 +30,10 @@ import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.restart.MockRestarter;
 import org.springframework.boot.developertools.restart.server.HttpRestartServer;
 import org.springframework.boot.developertools.restart.server.SourceFolderUrlFilter;
+import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer;
+import org.springframework.boot.developertools.tunnel.server.RemoteDebugPortProvider;
+import org.springframework.boot.developertools.tunnel.server.SocketTargetServerConnection;
+import org.springframework.boot.developertools.tunnel.server.TargetServerConnection;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -111,6 +115,23 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 	}
 
 	@Test
+	public void invokeTunnelWithDefaultSetup() throws Exception {
+		loadContext("spring.developertools.remote.enabled:true");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/debug");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertTunnelInvoked(true);
+	}
+
+	@Test
+	public void disableRemoteDebug() throws Exception {
+		loadContext("spring.developertools.remote.enabled:true",
+				"spring.developertools.remote.debug.enabled:false");
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean("remoteDebugHanderMapper");
+	}
+
+	@Test
 	public void developerToolsHealthReturns200() throws Exception {
 		loadContext("spring.developertools.remote.enabled:true");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
@@ -118,6 +139,11 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 		this.response.setStatus(500);
 		filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.response.getStatus(), equalTo(200));
+	}
+
+	private void assertTunnelInvoked(boolean value) {
+		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked,
+				equalTo(value));
 	}
 
 	private void assertRestartInvoked(boolean value) {
@@ -139,9 +165,34 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 	static class Config {
 
 		@Bean
+		public HttpTunnelServer remoteDebugHttpTunnelServer() {
+			return new MockHttpTunnelServer(new SocketTargetServerConnection(
+					new RemoteDebugPortProvider()));
+		}
+
+		@Bean
 		public HttpRestartServer remoteRestartHttpRestartServer() {
 			SourceFolderUrlFilter sourceFolderUrlFilter = mock(SourceFolderUrlFilter.class);
 			return new MockHttpRestartServer(sourceFolderUrlFilter);
+		}
+
+	}
+
+	/**
+	 * Mock {@link HttpTunnelServer} implementation.
+	 */
+	static class MockHttpTunnelServer extends HttpTunnelServer {
+
+		private boolean invoked;
+
+		public MockHttpTunnelServer(TargetServerConnection serverConnection) {
+			super(serverConnection);
+		}
+
+		@Override
+		public void handle(ServerHttpRequest request, ServerHttpResponse response)
+				throws IOException {
+			this.invoked = true;
 		}
 
 	}

@@ -38,6 +38,7 @@ import org.springframework.boot.developertools.remote.server.Dispatcher;
 import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.restart.MockRestarter;
 import org.springframework.boot.developertools.restart.RestartScopeInitializer;
+import org.springframework.boot.developertools.tunnel.client.TunnelClient;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.Bean;
@@ -82,10 +83,11 @@ public class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	public void warnIfRestartDisabled() throws Exception {
-		configure("spring.developertools.remote.restart.enabled:false");
+	public void warnIfDebugAndRestartDisabled() throws Exception {
+		configure("spring.developertools.remote.debug.enabled:false",
+				"spring.developertools.remote.restart.enabled:false");
 		assertThat(this.output.toString(),
-				containsString("Remote restart is not enabled"));
+				containsString("Remote restart and debug are both disabled"));
 	}
 
 	@Test
@@ -120,6 +122,13 @@ public class RemoteClientConfigurationTests {
 		configure("spring.developertools.remote.restart.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(ClassPathFileSystemWatcher.class);
+	}
+
+	@Test
+	public void remoteDebugDisabled() throws Exception {
+		configure("spring.developertools.remote.debug.enabled:false");
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(TunnelClient.class);
 	}
 
 	private void configure(String... pairs) {
