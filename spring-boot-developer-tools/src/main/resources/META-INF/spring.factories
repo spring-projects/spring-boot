@@ -1,3 +1,7 @@
+# Application Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.developertools.restart.RestartScopeInitializer
+
 # Application Listeners
 org.springframework.context.ApplicationListener=\
 org.springframework.boot.developertools.restart.RestartApplicationListener

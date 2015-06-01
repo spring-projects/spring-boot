@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,6 +39,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.CachedIntrospectionResults;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.developertools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
@@ -88,6 +90,8 @@ public class Restarter {
 	private final String[] args;
 
 	private final UncaughtExceptionHandler exceptionHandler;
+
+	private final Map<String, Object> attributes = new HashMap<String, Object>();
 
 	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
 
@@ -341,6 +345,22 @@ public class Restarter {
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException(ex);
+		}
+	}
+
+	public Object getOrAddAttribute(final String name,
+			final ObjectFactory<?> objectFactory) {
+		synchronized (this.attributes) {
+			if (!this.attributes.containsKey(name)) {
+				this.attributes.put(name, objectFactory.getObject());
+			}
+			return this.attributes.get(name);
+		}
+	}
+
+	public Object removeAttribute(String name) {
+		synchronized (this.attributes) {
+			return this.attributes.remove(name);
 		}
 	}
 

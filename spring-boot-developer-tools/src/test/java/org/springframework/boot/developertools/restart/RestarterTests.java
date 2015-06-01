@@ -25,6 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -38,6 +40,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link Restarter}.
@@ -86,6 +89,30 @@ public class RestarterTests {
 		String output = this.out.toString();
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0"), greaterThan(2));
 		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1"), greaterThan(2));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void getOrAddAttributeWithNewAttribute() throws Exception {
+		ObjectFactory objectFactory = mock(ObjectFactory.class);
+		given(objectFactory.getObject()).willReturn("abc");
+		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
+		assertThat(attribute, equalTo((Object) "abc"));
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void getOrAddAttributeWithExistingAttribute() throws Exception {
+		Restarter.getInstance().getOrAddAttribute("x", new ObjectFactory<String>() {
+			@Override
+			public String getObject() throws BeansException {
+				return "abc";
+			}
+		});
+		ObjectFactory objectFactory = mock(ObjectFactory.class);
+		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
+		assertThat(attribute, equalTo((Object) "abc"));
+		verifyZeroInteractions(objectFactory);
 	}
 
 	@Test
