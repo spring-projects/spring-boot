@@ -91,6 +91,12 @@ public class RemoteClientConfigurationTests {
 	}
 
 	@Test
+	public void warnIfNotHttps() throws Exception {
+		configureWithRemoteUrl("http://localhost");
+		assertThat(this.output.toString(), containsString("is insecure"));
+	}
+
+	@Test
 	public void doesntWarnIfUsingHttps() throws Exception {
 		configureWithRemoteUrl("https://localhost");
 		assertThat(this.output.toString(), not(containsString("is insecure")));

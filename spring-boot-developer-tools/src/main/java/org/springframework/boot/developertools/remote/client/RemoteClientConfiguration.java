@@ -89,6 +89,10 @@ public class RemoteClientConfiguration {
 				&& !remoteProperties.getRestart().isEnabled()) {
 			logger.warn("Remote restart and debug are both disabled.");
 		}
+		if (!this.remoteUrl.startsWith("https://")) {
+			logger.warn("The connection to " + this.remoteUrl
+					+ " is insecure. You should use a URL starting with 'https://'.");
+		}
 	}
 
 	/**
