@@ -935,7 +935,7 @@ copied on every tick).
 
 The default values for the export trigger (`delayMillis`, `includes`,
 `excludes`, `ignoreTimestamps` and `sendLatest`) can be set as
-`spring.metrics.export.*`. Individual values for specific
+`spring.metrics.export.\*`. Individual values for specific
 `MetricWriters` can be set as
 `spring.metrics.export.triggers.<name>.*` where `<name>` is a bean
 name (or pattern for matching bean names).
