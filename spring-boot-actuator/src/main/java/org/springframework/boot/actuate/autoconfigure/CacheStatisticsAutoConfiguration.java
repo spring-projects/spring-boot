@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import javax.cache.Caching;
 
+import com.hazelcast.core.IMap;
+import com.hazelcast.spring.cache.HazelcastCache;
 import net.sf.ehcache.Ehcache;
 
 import org.springframework.boot.actuate.cache.CacheStatistics;
@@ -40,8 +42,6 @@ import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.hazelcast.core.IMap;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CacheStatisticsProvider}
@@ -79,7 +79,7 @@ public class CacheStatisticsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(IMap.class)
+	@ConditionalOnClass({ IMap.class, HazelcastCache.class} )
 	static class HazelcastCacheStatisticsConfiguration {
 
 		@Bean
