@@ -24,8 +24,12 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
+import org.springframework.boot.developertools.classpath.ClassPathFileSystemWatcher;
+import org.springframework.boot.developertools.filewatch.ChangedFiles;
 import org.springframework.boot.developertools.restart.MockRestartInitializer;
 import org.springframework.boot.developertools.restart.MockRestarter;
 import org.springframework.boot.developertools.restart.Restarter;
@@ -36,7 +40,10 @@ import org.springframework.util.SocketUtils;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LocalDeveloperToolsAutoConfiguration}.
@@ -68,6 +75,41 @@ public class LocalDeveloperToolsAutoConfigurationTests {
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
 		assertThat(resolver.isCacheable(), equalTo(false));
+	}
+
+	@Test
+	public void restartTriggerdOnClassPathChangeWithRestart() throws Exception {
+		this.context = initializeAndRun(Config.class);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
+				Collections.<ChangedFiles> emptySet(), true);
+		this.context.publishEvent(event);
+		verify(this.mockRestarter.getMock()).restart();
+	}
+
+	@Test
+	public void restartNotTriggerdOnClassPathChangeWithRestart() throws Exception {
+		this.context = initializeAndRun(Config.class);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
+				Collections.<ChangedFiles> emptySet(), false);
+		this.context.publishEvent(event);
+		verify(this.mockRestarter.getMock(), never()).restart();
+	}
+
+	@Test
+	public void restartWatchingClassPath() throws Exception {
+		this.context = initializeAndRun(Config.class);
+		ClassPathFileSystemWatcher watcher = this.context
+				.getBean(ClassPathFileSystemWatcher.class);
+		assertThat(watcher, notNullValue());
+	}
+
+	@Test
+	public void restartDisabled() throws Exception {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("spring.developertools.restart.enabled", false);
+		this.context = initializeAndRun(Config.class, properties);
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(ClassPathFileSystemWatcher.class);
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config) {
