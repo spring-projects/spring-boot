@@ -16,7 +16,6 @@
 
 package org.springframework.boot.developertools.autoconfigure;
 
-
 /**
  * Configuration properties for remote Spring Boot applications.
  *
@@ -34,12 +33,35 @@ public class RemoteDeveloperToolsProperties {
 	 */
 	private String contextPath = DEFAULT_CONTEXT_PATH;
 
+	private Restart restart = new Restart();
+
 	public String getContextPath() {
 		return this.contextPath;
 	}
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
+	}
+
+	public Restart getRestart() {
+		return this.restart;
+	}
+
+	public static class Restart {
+
+		/**
+		 * Enable remote restart
+		 */
+		private boolean enabled = true;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
 	}
 
 }

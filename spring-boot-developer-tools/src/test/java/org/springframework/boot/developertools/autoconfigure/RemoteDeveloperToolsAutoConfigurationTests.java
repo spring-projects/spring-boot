@@ -16,18 +16,26 @@
 
 package org.springframework.boot.developertools.autoconfigure;
 
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.restart.MockRestarter;
+import org.springframework.boot.developertools.restart.server.HttpRestartServer;
+import org.springframework.boot.developertools.restart.server.SourceFolderUrlFilter;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -36,6 +44,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link RemoteDeveloperToolsAutoConfiguration}.
@@ -76,6 +85,32 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 	}
 
 	@Test
+	public void ignoresUnmappedUrl() throws Exception {
+		loadContext("spring.developertools.remote.enabled:true");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI("/restart");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertRestartInvoked(false);
+	}
+
+	@Test
+	public void invokeRestartWithDefaultSetup() throws Exception {
+		loadContext("spring.developertools.remote.enabled:true");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertRestartInvoked(true);
+	}
+
+	@Test
+	public void disableRestart() throws Exception {
+		loadContext("spring.developertools.remote.enabled:true",
+				"spring.developertools.remote.restart.enabled:false");
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean("remoteRestartHanderMapper");
+	}
+
+	@Test
 	public void developerToolsHealthReturns200() throws Exception {
 		loadContext("spring.developertools.remote.enabled:true");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
@@ -83,6 +118,11 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 		this.response.setStatus(500);
 		filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.response.getStatus(), equalTo(200));
+	}
+
+	private void assertRestartInvoked(boolean value) {
+		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked,
+				equalTo(value));
 	}
 
 	private void loadContext(String... properties) {
@@ -98,5 +138,31 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 	@Import(RemoteDeveloperToolsAutoConfiguration.class)
 	static class Config {
 
+		@Bean
+		public HttpRestartServer remoteRestartHttpRestartServer() {
+			SourceFolderUrlFilter sourceFolderUrlFilter = mock(SourceFolderUrlFilter.class);
+			return new MockHttpRestartServer(sourceFolderUrlFilter);
+		}
+
 	}
+
+	/**
+	 * Mock {@link HttpRestartServer} implementation.
+	 */
+	static class MockHttpRestartServer extends HttpRestartServer {
+
+		private boolean invoked;
+
+		public MockHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
+			super(sourceFolderUrlFilter);
+		}
+
+		@Override
+		public void handle(ServerHttpRequest request, ServerHttpResponse response)
+				throws IOException {
+			this.invoked = true;
+		}
+
+	}
+
 }

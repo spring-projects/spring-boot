@@ -73,6 +73,13 @@ public class RemoteClientConfigurationTests {
 	}
 
 	@Test
+	public void warnIfRestartDisabled() throws Exception {
+		configure("spring.developertools.remote.restart.enabled:false");
+		assertThat(this.output.toString(),
+				containsString("Remote restart is not enabled"));
+	}
+
+	@Test
 	public void doesntWarnIfUsingHttps() throws Exception {
 		configureWithRemoteUrl("https://localhost");
 		assertThat(this.output.toString(), not(containsString("is insecure")));
