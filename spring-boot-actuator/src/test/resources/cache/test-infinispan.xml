@@ -2,10 +2,8 @@
 <infinispan xmlns="urn:infinispan:config:7.2">
 
 	<cache-container default-cache="default">
-		<local-cache name="countries" statistics="true">
-			<eviction max-entries="200"/>
-			<expiration lifespan="600000"/>
-		</local-cache>
+		<local-cache name="books" statistics="true"/>
+		<local-cache name="players" statistics="true"/>
 	</cache-container>
 
 </infinispan>

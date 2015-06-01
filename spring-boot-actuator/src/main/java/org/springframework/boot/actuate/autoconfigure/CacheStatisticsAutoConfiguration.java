@@ -21,6 +21,7 @@ import javax.cache.Caching;
 import com.hazelcast.core.IMap;
 import com.hazelcast.spring.cache.HazelcastCache;
 import net.sf.ehcache.Ehcache;
+import org.infinispan.spring.provider.SpringCache;
 
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
@@ -29,7 +30,8 @@ import org.springframework.boot.actuate.cache.DefaultCacheStatistics;
 import org.springframework.boot.actuate.cache.EhCacheStatisticsProvider;
 import org.springframework.boot.actuate.cache.GuavaCacheStatisticsProvider;
 import org.springframework.boot.actuate.cache.HazelcastCacheStatisticsProvider;
-import org.springframework.boot.actuate.cache.JCacheStatisticsProvider;
+import org.springframework.boot.actuate.cache.InfinispanCacheStatisticsProvider;
+import org.springframework.boot.actuate.cache.JCacheCacheStatisticsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
@@ -61,8 +63,8 @@ public class CacheStatisticsAutoConfiguration {
 	static class JCacheCacheStatisticsProviderConfiguration {
 
 		@Bean
-		public JCacheStatisticsProvider jCacheStatisticsProvider() {
-			return new JCacheStatisticsProvider();
+		public JCacheCacheStatisticsProvider jCacheCacheStatisticsProvider() {
+			return new JCacheCacheStatisticsProvider();
 		}
 
 	}
@@ -86,6 +88,17 @@ public class CacheStatisticsAutoConfiguration {
 		public HazelcastCacheStatisticsProvider hazelcastCacheStatisticsProvider() {
 			return new HazelcastCacheStatisticsProvider();
 		}
+	}
+
+	@Configuration
+	@ConditionalOnClass({ SpringCache.class })
+	static class InfinispanCacheStatisticsProviderConfiguration {
+
+		@Bean
+		public InfinispanCacheStatisticsProvider infinispanCacheStatisticsProvider() {
+			return new InfinispanCacheStatisticsProvider();
+		}
+
 	}
 
 	@Configuration
