@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
 import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.export.MetricExporters;
@@ -43,7 +44,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(value = "spring.metrics.export.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(MetricExportProperties.class)
+@EnableConfigurationProperties
 public class MetricExportAutoConfiguration {
 
 	@Autowired(required = false)
@@ -59,6 +60,20 @@ public class MetricExportAutoConfiguration {
 
 	@Autowired(required = false)
 	private MetricsEndpointMetricReader endpointReader;
+
+	@Configuration
+	protected static class MetricExportPropertiesConfiguration {
+		@Value("spring.metrics.${random.value:0000}.${spring.application.name:application}")
+		private String prefix = "spring.metrics";
+
+		@Bean(name = "spring.metrics.export.CONFIGURATION_PROPERTIES")
+		@ConditionalOnMissingBean
+		public MetricExportProperties metricExportProperties() {
+			MetricExportProperties export = new MetricExportProperties();
+			export.getRedis().setPrefix(prefix);
+			return export;
+		}
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "metricWritersMetricExporter")

@@ -22,7 +22,6 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
@@ -149,7 +148,6 @@ public class MetricExportProperties extends Trigger {
 		 * set spring.application.name elsewhere, then the default will be in the right
 		 * form.
 		 */
-		@Value("spring.metrics.${random.value:0000}.${spring.application.name:application}")
 		private String prefix = "spring.metrics";
 
 		/**
@@ -157,7 +155,7 @@ public class MetricExportProperties extends Trigger {
 		 * system sharing a redis repository.
 		 */
 		private String key = "keys.spring.metrics";
-
+		
 		public String getPrefix() {
 			return prefix;
 		}
@@ -179,6 +177,7 @@ public class MetricExportProperties extends Trigger {
 			if (tokens.length > 1) {
 				if (StringUtils.hasText(tokens[1])) {
 					// If the prefix has 2 or more non-trivial parts, use the first 1
+					// (the aggregator strips a further 2 by default).
 					return tokens[0];
 				}
 			}
