@@ -34,6 +34,7 @@ import org.springframework.boot.developertools.remote.server.Dispatcher;
 import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.remote.server.Handler;
 import org.springframework.boot.developertools.remote.server.HandlerMapper;
+import org.springframework.boot.developertools.remote.server.HttpHeaderAccessManager;
 import org.springframework.boot.developertools.remote.server.HttpStatusHandler;
 import org.springframework.boot.developertools.remote.server.UrlHandlerMapper;
 import org.springframework.boot.developertools.restart.server.DefaultSourceFolderUrlFilter;
@@ -56,7 +57,7 @@ import org.springframework.http.server.ServerHttpRequest;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnProperty(prefix = "spring.developertools.remote", name = "enabled")
+@ConditionalOnProperty(prefix = "spring.developertools.remote", name = "secret")
 @ConditionalOnClass({ Filter.class, ServerHttpRequest.class })
 @EnableConfigurationProperties(DeveloperToolsProperties.class)
 public class RemoteDeveloperToolsAutoConfiguration {
@@ -68,6 +69,14 @@ public class RemoteDeveloperToolsAutoConfiguration {
 	private DeveloperToolsProperties properties;
 
 	@Bean
+	@ConditionalOnMissingBean
+	public AccessManager remoteDeveloperToolsAccessManager() {
+		RemoteDeveloperToolsProperties remoteProperties = this.properties.getRemote();
+		return new HttpHeaderAccessManager(remoteProperties.getSecretHeaderName(),
+				remoteProperties.getSecret());
+	}
+
+	@Bean
 	public HandlerMapper remoteDeveloperToolsHealthCheckHandlerMapper() {
 		Handler handler = new HttpStatusHandler();
 		return new UrlHandlerMapper(this.properties.getRemote().getContextPath(), handler);
@@ -76,8 +85,8 @@ public class RemoteDeveloperToolsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public DispatcherFilter remoteDeveloperToolsDispatcherFilter(
-			Collection<HandlerMapper> mappers) {
-		Dispatcher dispatcher = new Dispatcher(AccessManager.PERMIT_ALL, mappers);
+			AccessManager accessManager, Collection<HandlerMapper> mappers) {
+		Dispatcher dispatcher = new Dispatcher(accessManager, mappers);
 		return new DispatcherFilter(dispatcher);
 	}
 

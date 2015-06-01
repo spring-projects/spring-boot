@@ -17,6 +17,8 @@
 package org.springframework.boot.developertools.remote.client;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,7 +53,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.util.Assert;
 
 /**
  * Configuration used to connect to remote Spring Boot applications.
@@ -79,7 +84,20 @@ public class RemoteClientConfiguration {
 
 	@Bean
 	public ClientHttpRequestFactory clientHttpRequestFactory() {
-		return new SimpleClientHttpRequestFactory();
+		List<ClientHttpRequestInterceptor> interceptors = Arrays
+				.asList(getSecurityInterceptor());
+		return new InterceptingClientHttpRequestFactory(
+				new SimpleClientHttpRequestFactory(), interceptors);
+	}
+
+	private ClientHttpRequestInterceptor getSecurityInterceptor() {
+		RemoteDeveloperToolsProperties remoteProperties = this.properties.getRemote();
+		String secretHeaderName = remoteProperties.getSecretHeaderName();
+		String secret = remoteProperties.getSecret();
+		Assert.state(secret != null,
+				"The environment value 'spring.developertools.remote.secret' "
+						+ "is required to secure your connection.");
+		return new HttpHeaderInterceptor(secretHeaderName, secret);
 	}
 
 	@PostConstruct

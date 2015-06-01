@@ -28,10 +28,23 @@ public class RemoteDeveloperToolsProperties {
 
 	public static final String DEFAULT_CONTEXT_PATH = "/.~~spring-boot!~";
 
+	public static final String DEFAULT_SECRET_HEADER_NAME = "X-AUTH-TOKEN";
+
 	/**
 	 * Context path used to handle the remote connection.
 	 */
 	private String contextPath = DEFAULT_CONTEXT_PATH;
+
+	/**
+	 * A shared secret required to establish a connection (required to enable remote
+	 * support).
+	 */
+	private String secret;
+
+	/**
+	 * HTTP header used to transfer the shared secret.
+	 */
+	private String secretHeaderName = DEFAULT_SECRET_HEADER_NAME;
 
 	private Restart restart = new Restart();
 
@@ -43,6 +56,22 @@ public class RemoteDeveloperToolsProperties {
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
+	}
+
+	public String getSecret() {
+		return this.secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
+	}
+
+	public String getSecretHeaderName() {
+		return this.secretHeaderName;
+	}
+
+	public void setSecretHeaderName(String secretHeaderName) {
+		this.secretHeaderName = secretHeaderName;
 	}
 
 	public Restart getRestart() {

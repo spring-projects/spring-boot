@@ -25,6 +25,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -92,14 +93,21 @@ public class RemoteClientConfigurationTests {
 
 	@Test
 	public void warnIfNotHttps() throws Exception {
-		configureWithRemoteUrl("http://localhost");
+		configure("http://localhost", true);
 		assertThat(this.output.toString(), containsString("is insecure"));
 	}
 
 	@Test
 	public void doesntWarnIfUsingHttps() throws Exception {
-		configureWithRemoteUrl("https://localhost");
+		configure("https://localhost", true);
 		assertThat(this.output.toString(), not(containsString("is insecure")));
+	}
+
+	@Test
+	public void failIfNoSecret() throws Exception {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("required to secure your connection");
+		configure("http://localhost", false);
 	}
 
 	@Test
@@ -138,10 +146,10 @@ public class RemoteClientConfigurationTests {
 	}
 
 	private void configure(String... pairs) {
-		configureWithRemoteUrl("http://localhost", pairs);
+		configure("http://localhost", true, pairs);
 	}
 
-	private void configureWithRemoteUrl(String remoteUrl, String... pairs) {
+	private void configure(String remoteUrl, boolean setSecret, String... pairs) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		new RestartScopeInitializer().initialize(this.context);
 		this.context.register(Config.class, RemoteClientConfiguration.class);
@@ -149,6 +157,10 @@ public class RemoteClientConfigurationTests {
 				+ RemoteClientConfigurationTests.remotePort;
 		EnvironmentTestUtils.addEnvironment(this.context, remoteUrlProperty);
 		EnvironmentTestUtils.addEnvironment(this.context, pairs);
+		if (setSecret) {
+			EnvironmentTestUtils.addEnvironment(this.context,
+					"spring.developertools.remote.secret:secret");
+		}
 		this.context.refresh();
 	}
 

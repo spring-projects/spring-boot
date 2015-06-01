@@ -60,6 +60,8 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 
 	private static final String DEFAULT_CONTEXT_PATH = RemoteDeveloperToolsProperties.DEFAULT_CONTEXT_PATH;
 
+	private static final String DEFAULT_SECRET_HEADER_NAME = RemoteDeveloperToolsProperties.DEFAULT_SECRET_HEADER_NAME;
+
 	@Rule
 	public MockRestarter mockRestarter = new MockRestarter();
 
@@ -89,26 +91,54 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 	}
 
 	@Test
+	public void disabledIfRemoteSecretIsMissing() throws Exception {
+		loadContext("a:b");
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(DispatcherFilter.class);
+	}
+
+	@Test
 	public void ignoresUnmappedUrl() throws Exception {
-		loadContext("spring.developertools.remote.enabled:true");
+		loadContext("spring.developertools.remote.secret:supersecret");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI("/restart");
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertRestartInvoked(false);
+	}
+
+	@Test
+	public void ignoresIfMissingSecretFromRequest() throws Exception {
+		loadContext("spring.developertools.remote.secret:supersecret");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertRestartInvoked(false);
+	}
+
+	@Test
+	public void ignoresInvalidSecretInRequest() throws Exception {
+		loadContext("spring.developertools.remote.secret:supersecret");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "invalid");
 		filter.doFilter(this.request, this.response, this.chain);
 		assertRestartInvoked(false);
 	}
 
 	@Test
 	public void invokeRestartWithDefaultSetup() throws Exception {
-		loadContext("spring.developertools.remote.enabled:true");
+		loadContext("spring.developertools.remote.secret:supersecret");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/restart");
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
 		filter.doFilter(this.request, this.response, this.chain);
 		assertRestartInvoked(true);
 	}
 
 	@Test
 	public void disableRestart() throws Exception {
-		loadContext("spring.developertools.remote.enabled:true",
+		loadContext("spring.developertools.remote.secret:supersecret",
 				"spring.developertools.remote.restart.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean("remoteRestartHanderMapper");
@@ -116,16 +146,28 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 
 	@Test
 	public void invokeTunnelWithDefaultSetup() throws Exception {
-		loadContext("spring.developertools.remote.enabled:true");
+		loadContext("spring.developertools.remote.secret:supersecret");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/debug");
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
+		filter.doFilter(this.request, this.response, this.chain);
+		assertTunnelInvoked(true);
+	}
+
+	@Test
+	public void invokeTunnelWithCustomHeaderName() throws Exception {
+		loadContext("spring.developertools.remote.secret:supersecret",
+				"spring.developertools.remote.secretHeaderName:customheader");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI(DEFAULT_CONTEXT_PATH + "/debug");
+		this.request.addHeader("customheader", "supersecret");
 		filter.doFilter(this.request, this.response, this.chain);
 		assertTunnelInvoked(true);
 	}
 
 	@Test
 	public void disableRemoteDebug() throws Exception {
-		loadContext("spring.developertools.remote.enabled:true",
+		loadContext("spring.developertools.remote.secret:supersecret",
 				"spring.developertools.remote.debug.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean("remoteDebugHanderMapper");
@@ -133,9 +175,10 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 
 	@Test
 	public void developerToolsHealthReturns200() throws Exception {
-		loadContext("spring.developertools.remote.enabled:true");
+		loadContext("spring.developertools.remote.secret:supersecret");
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		this.request.setRequestURI(DEFAULT_CONTEXT_PATH);
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
 		this.response.setStatus(500);
 		filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.response.getStatus(), equalTo(200));
