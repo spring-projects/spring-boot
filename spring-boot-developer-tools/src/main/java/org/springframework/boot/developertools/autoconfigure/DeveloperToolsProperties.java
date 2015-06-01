@@ -33,12 +33,18 @@ public class DeveloperToolsProperties {
 
 	private Livereload livereload = new Livereload();
 
+	private RemoteDeveloperToolsProperties remote = new RemoteDeveloperToolsProperties();
+
 	public Restart getRestart() {
 		return this.restart;
 	}
 
 	public Livereload getLivereload() {
 		return this.livereload;
+	}
+
+	public RemoteDeveloperToolsProperties getRemote() {
+		return this.remote;
 	}
 
 	/**

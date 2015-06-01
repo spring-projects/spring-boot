@@ -8,4 +8,5 @@ org.springframework.boot.developertools.restart.RestartApplicationListener
 
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.springframework.boot.developertools.autoconfigure.LocalDeveloperToolsAutoConfiguration
+org.springframework.boot.developertools.autoconfigure.LocalDeveloperToolsAutoConfiguration,\
+org.springframework.boot.developertools.autoconfigure.RemoteDeveloperToolsAutoConfiguration
