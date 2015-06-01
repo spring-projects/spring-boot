@@ -17,6 +17,7 @@
 package org.springframework.boot.developertools.autoconfigure;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.developertools.restart.ConditionalOnInitializedRestarter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.3.0
  */
 @Configuration
+@ConditionalOnInitializedRestarter
 public class LocalDeveloperToolsAutoConfiguration {
 
 	@Bean

@@ -26,6 +26,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.developertools.restart.MockRestartInitializer;
+import org.springframework.boot.developertools.restart.MockRestarter;
+import org.springframework.boot.developertools.restart.Restarter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -44,6 +47,9 @@ public class LocalDeveloperToolsAutoConfigurationTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Rule
+	public MockRestarter mockRestarter = new MockRestarter();
 
 	private int liveReloadPort = SocketUtils.findAvailableTcpPort();
 
@@ -70,6 +76,7 @@ public class LocalDeveloperToolsAutoConfigurationTests {
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,
 			Map<String, Object> properties) {
+		Restarter.initialize(new String[0], false, new MockRestartInitializer(), false);
 		SpringApplication application = new SpringApplication(config);
 		application.setDefaultProperties(getDefaultProperties(properties));
 		application.setWebEnvironment(false);
