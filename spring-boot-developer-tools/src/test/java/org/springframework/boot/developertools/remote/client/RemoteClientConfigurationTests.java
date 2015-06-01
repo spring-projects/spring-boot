@@ -17,6 +17,9 @@
 package org.springframework.boot.developertools.remote.client;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -25,7 +28,12 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.developertools.autoconfigure.OptionalLiveReloadServer;
+import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.classpath.ClassPathFileSystemWatcher;
+import org.springframework.boot.developertools.filewatch.ChangedFiles;
+import org.springframework.boot.developertools.livereload.LiveReloadServer;
+import org.springframework.boot.developertools.remote.client.RemoteClientConfiguration.LiveReloadConfiguration;
 import org.springframework.boot.developertools.remote.server.Dispatcher;
 import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.restart.MockRestarter;
@@ -44,6 +52,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RemoteClientConfiguration}.
@@ -86,6 +95,27 @@ public class RemoteClientConfigurationTests {
 	}
 
 	@Test
+	public void liveReloadOnClassPathChanged() throws Exception {
+		configure();
+		Set<ChangedFiles> changeSet = new HashSet<ChangedFiles>();
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
+		this.context.publishEvent(event);
+		LiveReloadConfiguration configuration = this.context
+				.getBean(LiveReloadConfiguration.class);
+		configuration.getExecutor().shutdown();
+		configuration.getExecutor().awaitTermination(2, TimeUnit.SECONDS);
+		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
+		verify(server).triggerReload();
+	}
+
+	@Test
+	public void liveReloadDisabled() throws Exception {
+		configure("spring.developertools.livereload.enabled:false");
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(OptionalLiveReloadServer.class);
+	}
+
+	@Test
 	public void remoteRestartDisabled() throws Exception {
 		configure("spring.developertools.remote.restart.enabled:false");
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
@@ -113,6 +143,11 @@ public class RemoteClientConfigurationTests {
 		@Bean
 		public TomcatEmbeddedServletContainerFactory tomcat() {
 			return new TomcatEmbeddedServletContainerFactory(remotePort);
+		}
+
+		@Bean
+		public LiveReloadServer liveReloadServer() {
+			return mock(LiveReloadServer.class);
 		}
 
 		@Bean
