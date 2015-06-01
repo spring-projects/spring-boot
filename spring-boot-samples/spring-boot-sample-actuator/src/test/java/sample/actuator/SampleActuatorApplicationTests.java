@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for service demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -130,7 +130,8 @@ public class SampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"status\":\"UP\""));
 	}
 
 	@Test

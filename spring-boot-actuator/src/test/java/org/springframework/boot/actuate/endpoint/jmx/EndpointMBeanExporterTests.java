@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link EndpointMBeanExporter}
- * 
+ *
  * @author Christian Dupuis
  */
 public class EndpointMBeanExporterTests {

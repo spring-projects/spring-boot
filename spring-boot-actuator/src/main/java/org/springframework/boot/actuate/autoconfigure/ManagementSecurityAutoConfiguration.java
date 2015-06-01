@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
-import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -41,11 +40,11 @@ import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
 import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration;
+import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -63,12 +62,12 @@ import org.springframework.util.StringUtils;
  * Many aspects of the behavior can be controller with {@link ManagementServerProperties}
  * via externalized application properties (or via an bean definition of that type to set
  * the defaults).
- * 
+ *
  * <p>
  * The framework {@link Endpoint}s (used to expose application information to operations)
  * include a {@link Endpoint#isSensitive() sensitive} configuration option which will be
  * used as a security hint by the filter created here.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
@@ -82,7 +81,7 @@ public class ManagementSecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
-	public WebSecurityConfigurer<WebSecurity> ignoredPathsWebSecurityConfigurerAdapter() {
+	public IgnoredPathsWebSecurityConfigurerAdapter ignoredPathsWebSecurityConfigurerAdapter() {
 		return new IgnoredPathsWebSecurityConfigurerAdapter();
 	}
 
@@ -107,7 +106,7 @@ public class ManagementSecurityAutoConfiguration {
 	}
 
 	// Get the ignored paths in early
-	@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+	@Order(SecurityProperties.IGNORED_ORDER + 1)
 	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
 			WebSecurityConfigurer<WebSecurity> {
 
@@ -123,7 +122,7 @@ public class ManagementSecurityAutoConfiguration {
 		@Autowired
 		private SecurityProperties security;
 
-		@Autowired
+		@Autowired(required = false)
 		private ServerProperties server;
 
 		@Override
@@ -149,8 +148,10 @@ public class ManagementSecurityAutoConfiguration {
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
-			String[] paths = this.server.getPathsArray(ignored);
-			ignoring.antMatchers(paths);
+			if (this.server != null) {
+				String[] paths = this.server.getPathsArray(ignored);
+				ignoring.antMatchers(paths);
+			}
 		}
 
 		private String normalizePath(String errorPath) {
@@ -166,6 +167,7 @@ public class ManagementSecurityAutoConfiguration {
 	@Configuration
 	@ConditionalOnExpression("${management.security.enabled:true} && !${security.basic.enabled:true}")
 	@ConditionalOnMissingBean(WebSecurityConfiguration.class)
+	@ConditionalOnWebApplication
 	@EnableWebSecurity
 	protected static class WebSecurityEnabler extends AuthenticationManagerConfiguration {
 	}
@@ -174,8 +176,7 @@ public class ManagementSecurityAutoConfiguration {
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnExpression("${management.security.enabled:true}")
 	@ConditionalOnWebApplication
-	// Give user-supplied filters a chance to be last in line
-	@Order(Ordered.LOWEST_PRECEDENCE - 10)
+	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
 	protected static class ManagementWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
 

@@ -39,10 +39,11 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 
 import org.springframework.boot.cli.command.OptionParsingCommand;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * Delegate used by {@link OptionParsingCommand} to parse options and run the command.
- * 
+ *
  * @author Dave Syer
  * @see OptionParsingCommand
  * @see #run(OptionSet)
@@ -80,7 +81,7 @@ public class OptionHandler {
 		this.closure = closure;
 	}
 
-	public final void run(String... args) throws Exception {
+	public final ExitStatus run(String... args) throws Exception {
 		String[] argsToUse = args.clone();
 		for (int i = 0; i < argsToUse.length; i++) {
 			if ("-cp".equals(argsToUse[i])) {
@@ -88,18 +89,29 @@ public class OptionHandler {
 			}
 		}
 		OptionSet options = getParser().parse(args);
-		run(options);
+		return run(options);
 	}
 
 	/**
 	 * Run the command using the specified parsed {@link OptionSet}.
 	 * @param options the parsed option set
+	 * @return an ExitStatus
 	 * @throws Exception
 	 */
-	protected void run(OptionSet options) throws Exception {
+	protected ExitStatus run(OptionSet options) throws Exception {
 		if (this.closure != null) {
-			this.closure.call(options);
+			Object result = this.closure.call(options);
+			if (result instanceof ExitStatus) {
+				return (ExitStatus) result;
+			}
+			if (result instanceof Boolean) {
+				return (Boolean) result ? ExitStatus.OK : ExitStatus.ERROR;
+			}
+			if (result instanceof Integer) {
+				return new ExitStatus((Integer) result, "Finished");
+			}
 		}
+		return ExitStatus.OK;
 	}
 
 	public String getHelp() {

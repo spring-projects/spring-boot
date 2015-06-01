@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -56,7 +57,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * Generally auto-configuration beans are {@link Conditional @Conditional} beans (most
  * often using {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
- * 
+ *
  * @author Phillip Webb
  * @see ConditionalOnBean
  * @see ConditionalOnMissingBean
@@ -66,6 +67,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Inherited
 @Import({ EnableAutoConfigurationImportSelector.class,
 		AutoConfigurationPackages.Registrar.class })
 public @interface EnableAutoConfiguration {

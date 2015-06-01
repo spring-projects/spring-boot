@@ -22,34 +22,12 @@ package org.springframework.boot.context.embedded;
  * <p>
  * Instances of this class are usually obtained via a
  * {@link EmbeddedServletContainerFactory}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see EmbeddedServletContainerFactory
  */
 public interface EmbeddedServletContainer {
-
-	/**
-	 * An empty {@link EmbeddedServletContainer} that does nothing.
-	 */
-	public static final EmbeddedServletContainer NONE = new EmbeddedServletContainer() {
-
-		@Override
-		public void start() throws EmbeddedServletContainerException {
-			// Do nothing
-		};
-
-		@Override
-		public void stop() throws EmbeddedServletContainerException {
-			// Do nothing
-		}
-
-		@Override
-		public int getPort() {
-			return 0;
-		}
-
-	};
 
 	/**
 	 * Starts the embedded servlet container. Calling this method on an already started

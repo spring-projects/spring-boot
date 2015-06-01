@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link EndpointHandlerMapping}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

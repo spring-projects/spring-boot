@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link XmlEmbeddedWebApplicationContext}.
- * 
+ *
  * @author Phillip Webb
  */
 public class XmlEmbeddedWebApplicationContextTests {

@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
 
 /**
  * Jetty {@link Configuration} that calls {@link ServletContextInitializer}s.
- * 
+ *
  * @author Phillip Webb
  */
 public class ServletContextInitializerConfiguration extends AbstractConfiguration {

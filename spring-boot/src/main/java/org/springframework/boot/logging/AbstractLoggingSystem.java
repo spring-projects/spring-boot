@@ -21,7 +21,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Abstract base class for {@link LoggingSystem} implementations.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

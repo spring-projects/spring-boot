@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Adapter to expose {@link MetricsEndpoint} as an {@link MvcEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class MetricsMvcEndpoint extends EndpointMvcAdapter {

@@ -17,29 +17,44 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.mongodb.DBPort;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientOptions.Builder;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
 /**
  * Configuration properties for Mongo.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Josh Long
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
 
+	private static final int DEFAULT_PORT = 27017;
+
 	private String host;
 
-	private int port = DBPort.PORT;
+	private Integer port = null;
 
 	private String uri = "mongodb://localhost/test";
 
 	private String database;
+
+	private String gridFsDatabase;
+
+	private String username;
+
+	private char[] password;
 
 	public String getHost() {
 		return this.host;
@@ -57,6 +72,31 @@ public class MongoProperties {
 		this.database = database;
 	}
 
+	public String getUsername() {
+		return this.username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public char[] getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
+
+	public void clearPassword() {
+		if (this.password == null) {
+			return;
+		}
+		for (int i = 0; i < this.password.length; i++) {
+			this.password[i] = 0;
+		}
+	}
+
 	public String getUri() {
 		return this.uri;
 	}
@@ -65,12 +105,20 @@ public class MongoProperties {
 		this.uri = uri;
 	}
 
-	public int getPort() {
+	public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(int port) {
+	public void setPort(Integer port) {
 		this.port = port;
+	}
+
+	public String getGridFsDatabase() {
+		return this.gridFsDatabase;
+	}
+
+	public void setGridFsDatabase(String gridFsDatabase) {
+		this.gridFsDatabase = gridFsDatabase;
 	}
 
 	public String getMongoClientDatabase() {
@@ -80,11 +128,59 @@ public class MongoProperties {
 		return new MongoClientURI(this.uri).getDatabase();
 	}
 
-	public MongoClient createMongoClient() throws UnknownHostException {
-		if (this.host != null) {
-			return new MongoClient(this.host, this.port);
+	public MongoClient createMongoClient(MongoClientOptions options)
+			throws UnknownHostException {
+		try {
+			if (customAddress() || customCredentials()) {
+				if (options == null) {
+					options = MongoClientOptions.builder().build();
+				}
+				List<MongoCredential> credentials = null;
+				if (customCredentials()) {
+					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
+							this.username, getMongoClientDatabase(), this.password));
+				}
+				String host = this.host == null ? "localhost" : this.host;
+				int port = this.port == null ? DEFAULT_PORT : this.port;
+				return new MongoClient(Arrays.asList(new ServerAddress(host, port)),
+						credentials, options);
+			}
+			// The options and credentials are in the URI
+			return new MongoClient(new MongoClientURI(this.uri, builder(options)));
 		}
-		return new MongoClient(new MongoClientURI(this.uri));
+		finally {
+			clearPassword();
+		}
+	}
+
+	private boolean customAddress() {
+		return this.host != null || this.port != null;
+	}
+
+	private boolean customCredentials() {
+		return this.username != null && this.password != null;
+	}
+
+	private Builder builder(MongoClientOptions options) {
+		Builder builder = MongoClientOptions.builder();
+		if (options != null) {
+			builder.alwaysUseMBeans(options.isAlwaysUseMBeans());
+			builder.connectionsPerHost(options.getConnectionsPerHost());
+			builder.connectTimeout(options.getConnectTimeout());
+			builder.cursorFinalizerEnabled(options.isCursorFinalizerEnabled());
+			builder.dbDecoderFactory(options.getDbDecoderFactory());
+			builder.dbEncoderFactory(options.getDbEncoderFactory());
+			builder.description(options.getDescription());
+			builder.maxWaitTime(options.getMaxWaitTime());
+			builder.readPreference(options.getReadPreference());
+			builder.socketFactory(options.getSocketFactory());
+			builder.socketKeepAlive(options.isSocketKeepAlive());
+			builder.socketTimeout(options.getSocketTimeout());
+			builder.threadsAllowedToBlockForConnectionMultiplier(options
+					.getThreadsAllowedToBlockForConnectionMultiplier());
+			builder.writeConcern(options.getWriteConcern());
+		}
+		return builder;
 	}
 
 }

@@ -1,11 +1,12 @@
 = Spring Boot Reference Guide
-Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch;
+Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson; Marcel Overdijk; Christian Dupuis;
 :doctype: book
 :toc:
 :toclevels: 4
 :source-highlighter: prettify
 :numbered:
 :icons: font
+:hide-uri-scheme:
 :spring-boot-repo: snapshot
 :github-tag: master
 :spring-boot-docs-version: current
@@ -14,6 +15,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch;
 :github-repo: spring-projects/spring-boot
 :github-raw: http://raw.github.com/{github-repo}/{github-tag}
 :github-code: http://github.com/{github-repo}/tree/{github-tag}
+:github-wiki: http://github.com/{github-repo}/wiki
 :github-master-code: http://github.com/{github-repo}/tree/master
 :sc-ext: java
 :sc-spring-boot: {github-code}/spring-boot/src/main/java/org/springframework/boot
@@ -25,12 +27,14 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch;
 :dc-spring-boot: {dc-root}/org/springframework/boot
 :dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
 :dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
-:spring-reference: http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle
-:spring-security-reference: http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle
-:spring-javadoc: http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework
+:spring-boot-maven-plugin-site: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin
+:spring-reference: http://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/htmlsingle
+:spring-security-reference: http://docs.spring.io/spring-security/site/docs/{spring-security-docs-version}/reference/htmlsingle
+:spring-javadoc: http://docs.spring.io/spring/docs/{spring-docs-version}/javadoc-api/org/springframework
 :spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
 :spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
 :spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
+:gradle-userguide: http://www.gradle.org/docs/current/userguide
 // ======================================================================================
 
 include::documentation-overview.adoc[]

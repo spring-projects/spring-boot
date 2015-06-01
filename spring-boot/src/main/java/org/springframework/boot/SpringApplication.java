@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Constructor;
+import java.nio.charset.Charset;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +67,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -75,38 +77,38 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * Classes that can be used to bootstrap and launch a Spring application from a Java main
  * method. By default class will perform the following steps to bootstrap your
  * application:
- * 
+ *
  * <ul>
  * <li>Create an appropriate {@link ApplicationContext} instance (depending on your
  * classpath)</li>
- * 
+ *
  * <li>Register a {@link CommandLinePropertySource} to expose command line arguments as
  * Spring properties</li>
- * 
+ *
  * <li>Refresh the application context, loading all singleton beans</li>
- * 
+ *
  * <li>Trigger any {@link CommandLineRunner} beans</li>
  * </ul>
- * 
+ *
  * In most circumstances the static {@link #run(Object, String[])} method can be called
  * directly from your {@literal main} method to bootstrap your application:
- * 
+ *
  * <pre class="code">
  * &#064;Configuration
  * &#064;EnableAutoConfiguration
  * public class MyApplication  {
- * 
+ *
  * // ... Bean definitions
- * 
+ *
  * public static void main(String[] args) throws Exception {
  *   SpringApplication.run(MyApplication.class, args);
  * }
  * </pre>
- * 
+ *
  * <p>
  * For more advanced configuration a {@link SpringApplication} instance can be created and
  * customized before being run:
- * 
+ *
  * <pre class="code">
  * public static void main(String[] args) throws Exception {
  *   SpringApplication app = new SpringApplication(MyApplication.class);
@@ -114,28 +116,30 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  *   app.run(args)
  * }
  * </pre>
- * 
+ *
  * {@link SpringApplication}s can read beans from a variety of different sources. It is
  * generally recommended that a single {@code @Configuration} class is used to bootstrap
  * your application, however, any of the following sources can also be used:
- * 
+ *
  * <p>
  * <ul>
  * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}</li>
- * 
+ *
  * <li>{@link Resource} - An XML resource to be loaded by {@link XmlBeanDefinitionReader},
  * or a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
- * 
+ *
  * <li>{@link Package} - A Java package to be scanned by
  * {@link ClassPathBeanDefinitionScanner}</li>
- * 
+ *
  * <li>{@link CharSequence} - A class name, resource handle or package name to loaded as
  * appropriate. If the {@link CharSequence} cannot be resolved to class and does not
  * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
  * </ul>
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Christian Dupuis
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -150,6 +154,8 @@ public class SpringApplication {
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
+
+	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
 	private final Log log = LogFactory.getLog(getClass());
 
@@ -186,7 +192,7 @@ public class SpringApplication {
 	private Set<String> profiles = new HashSet<String>();
 
 	/**
-	 * Crate a new {@link SpringApplication} instance. The application context will load
+	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
@@ -199,7 +205,7 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Crate a new {@link SpringApplication} instance. The application context will load
+	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
 	 * {@link #run(String...)}.
@@ -260,7 +266,10 @@ public class SpringApplication {
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 
-		System.setProperty("java.awt.headless", Boolean.toString(this.headless));
+		System.setProperty(
+				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
+				System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
+						Boolean.toString(this.headless)));
 
 		Collection<SpringApplicationRunListener> runListeners = getRunListeners(args);
 		for (SpringApplicationRunListener runListener : runListeners) {
@@ -276,7 +285,7 @@ public class SpringApplication {
 			}
 
 			if (this.showBanner) {
-				printBanner();
+				printBanner(environment);
 			}
 
 			// Create, load, refresh and run the ApplicationContext
@@ -321,17 +330,20 @@ public class SpringApplication {
 			}
 			return context;
 		}
-		catch (Exception ex) {
-			for (SpringApplicationRunListener runListener : runListeners) {
-				finishWithException(runListener, context, ex);
+		catch (Throwable ex) {
+			try {
+				for (SpringApplicationRunListener runListener : runListeners) {
+					finishWithException(runListener, context, ex);
+				}
+				this.log.error("Application startup failed", ex);
 			}
-			if (context != null) {
-				context.close();
+			finally {
+				if (context != null) {
+					context.close();
+				}
 			}
 			ReflectionUtils.rethrowRuntimeException(ex);
 			return context;
-		}
-		finally {
 		}
 	}
 
@@ -453,9 +465,40 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Print a custom banner message to the console, optionally extracting its location or
+	 * content from the Environment (banner.location and banner.charset). The defaults are
+	 * banner.location=classpath:banner.txt, banner.charest=UTF-8. If the banner file does
+	 * not exist or cannot be printed, a simple default is created.
+	 * @see #setShowBanner(boolean)
+	 * @see #printBanner()
+	 */
+	protected void printBanner(Environment environment) {
+		String location = environment.getProperty("banner.location", "banner.txt");
+		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
+				: new DefaultResourceLoader(getClassLoader());
+		Resource resource = resourceLoader.getResource(location);
+		if (resource.exists()) {
+			try {
+				String banner = StreamUtils.copyToString(
+						resource.getInputStream(),
+						environment.getProperty("banner.charset", Charset.class,
+								Charset.forName("UTF-8")));
+				System.out.println(environment.resolvePlaceholders(banner));
+				return;
+			}
+			catch (Exception ex) {
+				this.log.warn("Banner not printable: " + resource + " (" + ex.getClass()
+						+ ": '" + ex.getMessage() + "')", ex);
+			}
+		}
+		printBanner();
+	}
+
+	/**
 	 * Print a simple banner message to the console. Subclasses can override this method
 	 * to provide additional or alternative banners.
 	 * @see #setShowBanner(boolean)
+	 * @see #printBanner(Environment)
 	 */
 	protected void printBanner() {
 		Banner.write(System.out);
@@ -653,7 +696,7 @@ public class SpringApplication {
 	}
 
 	private void finishWithException(SpringApplicationRunListener runListener,
-			ConfigurableApplicationContext context, Exception exception) {
+			ConfigurableApplicationContext context, Throwable exception) {
 		try {
 			runListener.finished(context, exception);
 		}
@@ -982,9 +1025,9 @@ public class SpringApplication {
 		}
 	}
 
-	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elemements) {
+	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elements) {
 		List<E> list = new ArrayList<E>();
-		list.addAll(elemements);
+		list.addAll(elements);
 		Collections.sort(list, AnnotationAwareOrderComparator.INSTANCE);
 		return new LinkedHashSet<E>(list);
 	}

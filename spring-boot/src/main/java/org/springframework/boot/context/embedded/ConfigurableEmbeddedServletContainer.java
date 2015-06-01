@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Simple interface that represents customizations to an
  * {@link EmbeddedServletContainerFactory}.
- * 
+ *
  * @author Dave Syer
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
@@ -49,8 +49,8 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setPort(int port);
 
 	/**
-	 * The session timeout in seconds (default 30). If 0 or negative then sessions never
-	 * expire.
+	 * The session timeout in seconds (default 30 minutes). If 0 or negative then sessions
+	 * never expire.
 	 * @param sessionTimeout the session timeout
 	 */
 	void setSessionTimeout(int sessionTimeout);
@@ -138,5 +138,12 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @see #setInitializers
 	 */
 	void addInitializers(ServletContextInitializer... initializers);
+
+	/**
+	 * Sets the SSL configuration that will be applied to the container's default
+	 * connector.
+	 * @param ssl the SSL configuration
+	 */
+	void setSsl(Ssl ssl);
 
 }

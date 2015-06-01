@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Factory used to create {@link RepositoryConfiguration}s.
- * 
+ *
  * @author Andy Wilkinson
  * @author Dave Syer
  */

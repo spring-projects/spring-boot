@@ -27,7 +27,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 /**
  * {@link Condition} that checks for a the presence or absence of
  * {@link WebApplicationContext}.
- * 
+ *
  * @author Dave Syer
  * @see ConditionalOnWebApplication
  * @see ConditionalOnNotWebApplication
@@ -72,6 +72,10 @@ class OnWebApplicationCondition extends SpringBootCondition {
 		if (context.getEnvironment() instanceof StandardServletEnvironment) {
 			return ConditionOutcome
 					.match("found web application StandardServletEnvironment");
+		}
+
+		if (context.getResourceLoader() instanceof WebApplicationContext) {
+			return ConditionOutcome.match("found web application WebApplicationContext");
 		}
 
 		return ConditionOutcome.noMatch("not a web application");

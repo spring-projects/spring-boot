@@ -16,22 +16,35 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.LifecycleState;
+import org.apache.catalina.Service;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
@@ -41,7 +54,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests for {@link TomcatEmbeddedServletContainerFactory} and
  * {@link TomcatEmbeddedServletContainer}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
@@ -125,11 +138,16 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		Connector[] listeners = new Connector[4];
 		for (int i = 0; i < listeners.length; i++) {
-			listeners[i] = mock(Connector.class);
+			Connector connector = mock(Connector.class);
+			given(connector.getState()).willReturn(LifecycleState.STOPPED);
+			listeners[i] = connector;
 		}
 		factory.addAdditionalTomcatConnectors(listeners);
 		this.container = factory.getEmbeddedServletContainer();
-		assertEquals(listeners.length, factory.getAdditionalTomcatConnectors().size());
+		Map<Service, Connector[]> connectors = ((TomcatEmbeddedServletContainer) this.container)
+				.getServiceConnectors();
+		assertThat(connectors.values().iterator().next().length,
+				equalTo(listeners.length + 1));
 	}
 
 	@Test
@@ -144,14 +162,21 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	public void sessionTimeout() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionTimeout(10);
-		assertTimeout(factory, 10);
+		assertTimeout(factory, 1);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionTimeout(1, TimeUnit.MINUTES);
-		assertTimeout(factory, 60);
+		assertTimeout(factory, 1);
+	}
+
+	@Test
+	public void noSessionTimeout() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionTimeout(0);
+		assertTimeout(factory, -1);
 	}
 
 	@Test
@@ -210,6 +235,81 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		assertEquals("UTF-8", tomcat.getConnector().getURIEncoding());
 	}
 
+	@Test
+	public void sslCiphersConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		Tomcat tomcat = getTomcat(factory);
+		Connector connector = tomcat.getConnector();
+
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
+				.getProtocolHandler();
+		assertThat(jsseProtocol.getCiphers(), equalTo("ALPHA,BRAVO,CHARLIE"));
+	}
+
+	@Test
+	public void primaryConnectorPortClashThrowsIllegalStateException()
+			throws InterruptedException, UnknownHostException, IOException {
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				TomcatEmbeddedServletContainerFactory factory = getFactory();
+				factory.setPort(port);
+
+				try {
+					TomcatEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
+					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (IllegalStateException ex) {
+
+				}
+			}
+
+		});
+
+	}
+
+	@Test
+	public void additionalConnectorPortClashThrowsIllegalStateException()
+			throws InterruptedException, UnknownHostException, IOException {
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				TomcatEmbeddedServletContainerFactory factory = getFactory();
+				Connector connector = new Connector(
+						"org.apache.coyote.http11.Http11NioProtocol");
+				connector.setPort(port);
+				factory.addAdditionalTomcatConnectors(connector);
+
+				try {
+					TomcatEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
+					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (IllegalStateException ex) {
+
+				}
+			}
+
+		});
+
+	}
+
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
 		Tomcat tomcat = getTomcat(factory);
 		Context context = (Context) tomcat.getHost().findChildren()[0];
@@ -219,6 +319,18 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	private Tomcat getTomcat(TomcatEmbeddedServletContainerFactory factory) {
 		this.container = factory.getEmbeddedServletContainer();
 		return ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+	}
+
+	private void doWithBlockedPort(final int port, Runnable action) throws IOException {
+		ServerSocket serverSocket = new ServerSocket();
+		serverSocket.bind(new InetSocketAddress(port));
+
+		try {
+			action.run();
+		}
+		finally {
+			serverSocket.close();
+		}
 	}
 
 }

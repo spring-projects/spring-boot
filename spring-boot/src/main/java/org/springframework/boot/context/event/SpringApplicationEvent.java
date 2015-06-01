@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Base class for {@link ApplicationEvent} related to a {@link SpringApplication}.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class SpringApplicationEvent extends ApplicationEvent {

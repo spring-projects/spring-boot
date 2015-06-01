@@ -41,7 +41,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * NOTE: The default converters used are the same as standard Spring MVC (see
  * {@link WebMvcConfigurationSupport#getMessageConverters} with some slight re-ordering to
  * put XML converters at the back of the list.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @see #HttpMessageConverters(HttpMessageConverter...)
@@ -67,33 +67,62 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	/**
 	 * Create a new {@link HttpMessageConverters} instance with the specified additional
 	 * converters.
-	 * @param additionalConverters additional converters to be added. New converters will
-	 * be added to the front of the list, overrides will replace existing items without
-	 * changing the order. The {@link #getConverters()} methods can be used for further
-	 * converter manipulation.
+	 * @param additionalConverters additional converters to be added. Items are added just
+	 * before any default converter of the same type (or at the front of the list if no
+	 * default converter is found) The {@link #postProcessConverters(List)} method can be
+	 * used for further converter manipulation.
 	 */
 	public HttpMessageConverters(Collection<HttpMessageConverter<?>> additionalConverters) {
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
-		List<HttpMessageConverter<?>> defaultConverters = getDefaultConverters();
-		for (HttpMessageConverter<?> converter : additionalConverters) {
-			int defaultConverterIndex = indexOfItemClass(defaultConverters, converter);
-			if (defaultConverterIndex == -1) {
-				converters.add(converter);
-			}
-			else {
-				defaultConverters.set(defaultConverterIndex, converter);
+		this(true, additionalConverters);
+	}
+
+	/**
+	 * Create a new {@link HttpMessageConverters} instance with the specified converters.
+	 * @param addDefaultConverters if default converters should be added
+	 * @param converters converters to be added. Items are added just before any default
+	 * converter of the same type (or at the front of the list if no default converter is
+	 * found) The {@link #postProcessConverters(List)} method can be used for further
+	 * converter manipulation.
+	 */
+	public HttpMessageConverters(boolean addDefaultConverters,
+			Collection<HttpMessageConverter<?>> converters) {
+		List<HttpMessageConverter<?>> combined = new ArrayList<HttpMessageConverter<?>>();
+		List<HttpMessageConverter<?>> processing = new ArrayList<HttpMessageConverter<?>>(
+				converters);
+		if (addDefaultConverters) {
+			for (HttpMessageConverter<?> defaultConverter : getDefaultConverters()) {
+				Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
+				while (iterator.hasNext()) {
+					HttpMessageConverter<?> candidate = iterator.next();
+					if (ClassUtils.isAssignableValue(defaultConverter.getClass(),
+							candidate)) {
+						combined.add(candidate);
+						iterator.remove();
+					}
+				}
+				combined.add(defaultConverter);
 			}
 		}
-		converters.addAll(defaultConverters);
-		this.converters = Collections.unmodifiableList(converters);
+		combined.addAll(0, processing);
+		combined = postProcessConverters(combined);
+		this.converters = Collections.unmodifiableList(combined);
+	}
+
+	/**
+	 * Method that can be used to post-process the {@link HttpMessageConverter} list
+	 * before it is used.
+	 * @param converters a mutable list of the converters that will be used.
+	 * @return the final converts list to use
+	 */
+	protected List<HttpMessageConverter<?>> postProcessConverters(
+			List<HttpMessageConverter<?>> converters) {
+		return converters;
 	}
 
 	private List<HttpMessageConverter<?>> getDefaultConverters() {
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
-		if (ClassUtils
-				.isPresent(
-						"org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport",
-						null)) {
+		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation."
+				+ "WebMvcConfigurationSupport", null)) {
 			converters.addAll(new WebMvcConfigurationSupport() {
 				public List<HttpMessageConverter<?>> defaultMessageConverters() {
 					return super.getMessageConverters();
@@ -120,24 +149,14 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		converters.addAll(xml);
 	}
 
-	private <E> int indexOfItemClass(List<E> list, E item) {
-		Class<? extends Object> itemClass = item.getClass();
-		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).getClass().isAssignableFrom(itemClass)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	@Override
 	public Iterator<HttpMessageConverter<?>> iterator() {
 		return getConverters().iterator();
 	}
 
 	/**
-	 * Return a mutable list of the converters in the order that they will be registered.
-	 * Values in the list cannot be modified once the bean has been initialized.
+	 * Return an immutable list of the converters in the order that they will be
+	 * registered.
 	 * @return the converters
 	 */
 	public List<HttpMessageConverter<?>> getConverters() {

@@ -30,6 +30,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
@@ -57,7 +58,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Base for JPA tests and tests for {@link JpaBaseConfiguration}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -139,7 +140,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	@Test
 	public void customJpaProperties() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.jpa.properties.a:b",
-				"spring.jpa.properties.c:d");
+				"spring.jpa.properties.a.b:c", "spring.jpa.properties.c:d");
 		setupTestConfiguration();
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
@@ -147,10 +148,13 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		Map<String, Object> map = bean.getJpaPropertyMap();
 		assertThat(map.get("a"), equalTo((Object) "b"));
 		assertThat(map.get("c"), equalTo((Object) "d"));
+		assertThat(map.get("a.b"), equalTo((Object) "c"));
 	}
 
 	@Test
 	public void usesManuallyDefinedEntityManagerFactoryBeanIfAvailable() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:false");
 		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean factoryBean = this.context
@@ -187,6 +191,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	protected void setupTestConfiguration(Class<?> configClass) {
 		this.context.register(configClass, EmbeddedDataSourceConfiguration.class,
+				DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 	}
 
@@ -257,6 +262,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
+	@SuppressWarnings("serial")
 	static class CustomJpaTransactionManager extends JpaTransactionManager {
 	}
 

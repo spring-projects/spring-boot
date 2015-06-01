@@ -16,84 +16,59 @@
 
 package org.springframework.boot.dependency.tools;
 
-import java.util.Iterator;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ManagedDependencies}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesTests {
 
-	private ManagedDependencies dependencies;
+	private ManagedDependencies managedDependencies;
+
+	private Dependencies delegate;
 
 	@Before
 	public void setup() {
-		this.dependencies = new ManagedDependencies("test-dependencies-pom.xml",
-				"test-effective-pom.xml");
+		this.delegate = mock(Dependencies.class);
+		this.managedDependencies = new ManagedDependencies(this.delegate) {
+		};
 	}
 
 	@Test
-	public void version() throws Exception {
-		assertThat(this.dependencies.getVersion(), equalTo("1.0.0.BUILD-SNAPSHOT"));
+	@Deprecated
+	public void getVersion() throws Exception {
+		this.managedDependencies.getVersion();
+		verify(this.delegate).find("org.springframework.boot", "spring-boot");
 	}
 
 	@Test
-	public void iterate() throws Exception {
-		Iterator<Dependency> iterator = this.dependencies.iterator();
-		assertThat(iterator.next().toString(), equalTo("org.sample:sample01:1.0.0"));
-		assertThat(iterator.next().toString(), equalTo("org.sample:sample02:1.0.0"));
-		assertThat(iterator.hasNext(), equalTo(false));
+	public void getSpringBootVersion() throws Exception {
+		this.managedDependencies.getSpringBootVersion();
+		verify(this.delegate).find("org.springframework.boot", "spring-boot");
 	}
 
 	@Test
-	public void findByArtifactAndGroupId() throws Exception {
-		assertThat(this.dependencies.find("org.sample", "sample02").toString(),
-				equalTo("org.sample:sample02:1.0.0"));
+	public void findGroupIdArtifactId() throws Exception {
+		this.managedDependencies.find("groupId", "artifactId");
+		verify(this.delegate).find("groupId", "artifactId");
 	}
 
 	@Test
-	public void findByArtifactAndGroupIdMissing() throws Exception {
-		assertThat(this.dependencies.find("org.sample", "missing"), nullValue());
+	public void findArtifactId() throws Exception {
+		this.managedDependencies.find("artifactId");
+		verify(this.delegate).find("artifactId");
 	}
 
 	@Test
-	public void findByArtifactAndGroupIdOnlyInEffectivePom() throws Exception {
-		assertThat(this.dependencies.find("org.extra", "extra01"), nullValue());
-	}
-
-	@Test
-	public void findByArtifactId() throws Exception {
-		assertThat(this.dependencies.find("sample02").toString(),
-				equalTo("org.sample:sample02:1.0.0"));
-	}
-
-	@Test
-	public void findByArtifactIdMissing() throws Exception {
-		assertThat(this.dependencies.find("missing"), nullValue());
-	}
-
-	@Test
-	public void exludes() throws Exception {
-		Dependency dependency = this.dependencies.find("org.sample", "sample01");
-		assertThat(dependency.getExclusions().toString(),
-				equalTo("[org.exclude:exclude01]"));
-	}
-
-	@Test
-	public void get() throws Exception {
-		ManagedDependencies dependencies = ManagedDependencies.get();
-		assertThat(dependencies.iterator().hasNext(), equalTo(true));
-		assertThat(dependencies.find("org.springframework", "spring-core"),
-				notNullValue());
+	public void iterator() throws Exception {
+		this.managedDependencies.iterator();
+		verify(this.delegate).iterator();
 	}
 
 }

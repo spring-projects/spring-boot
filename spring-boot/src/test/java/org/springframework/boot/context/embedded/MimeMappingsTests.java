@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MimeMappings}.
- * 
+ *
  * @author Phillip Webb
  */
 public class MimeMappingsTests {

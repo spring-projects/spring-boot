@@ -43,7 +43,7 @@ import org.springframework.util.Assert;
  * {@link #setServletNames name} or via a {@link #setServletRegistrationBeans
  * ServletRegistrationBean}s. When no URL pattern or servlets are specified the filter
  * will be associated to '/*'. The filter name will be deduced if not specified.
- * 
+ *
  * @author Phillip Webb
  * @see ServletContextInitializer
  * @see ServletContext#addFilter(String, Filter)

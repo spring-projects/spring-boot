@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 /**
  * An endpoint that can be used to expose useful information to operations. Usually
  * exposed via Spring MVC but could also be exposed using some other technique.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Christian Dupuis

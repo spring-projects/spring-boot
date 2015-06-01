@@ -40,7 +40,7 @@ import org.springframework.util.ClassUtils;
  * 3.0+ container. Similar to the {@link ServletContext#addListener(EventListener)
  * registration} features provided by {@link ServletContext} but with a Spring Bean
  * friendly design.
- * 
+ *
  * This bean can be used to register the following types of listener:
  * <ul>
  * <li>{@link ServletContextAttributeListener}</li>
@@ -105,7 +105,13 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends
 			logger.info("Listener " + this.listener + " was not registered (disabled)");
 			return;
 		}
-		servletContext.addListener(this.listener);
+		try {
+			servletContext.addListener(this.listener);
+		}
+		catch (RuntimeException ex) {
+			throw new IllegalStateException("Failed to add listener '" + this.listener
+					+ "' to servlet context", ex);
+		}
 	}
 
 	public T getListener() {

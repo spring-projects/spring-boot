@@ -19,6 +19,7 @@ package org.springframework.boot.gradle
 import org.springframework.boot.loader.tools.Layout
 import org.springframework.boot.loader.tools.Layouts
 
+
 /**
  * Gradle DSL Extension for 'Spring Boot'.  Most of the time Spring Boot can guess the
  * settings in this extension, but occasionally you might need to explicitly set one
@@ -57,11 +58,19 @@ public class SpringBootPluginExtension {
 	}
 
 	/**
-	 * The main class that should be run. If not specified the value from the
-	 * MANIFEST will be used, or if no manifest entry is the archive will be
+	 * The main class that should be run. Instead of setting this explicitly you can use the
+	 * 'mainClassName' of the project or the 'main' of the 'run' task. If not specified the
+	 * value from the MANIFEST will be used, or if no manifest entry is the archive will be
 	 * searched for a suitable class.
 	 */
 	String mainClass
+
+	/**
+	 * The classifier (file name part before the extension). Instead of setting this explicitly
+	 * you can use the 'classifier' property of the 'bootRepackage' task. If not specified the archive
+	 * will be replaced instead of renamed.
+	 */
+	String classifier
 
 	/**
 	 * The name of the ivy configuration name to treat as 'provided' (when packaging
@@ -99,6 +108,12 @@ public class SpringBootPluginExtension {
 	}
 
 	/**
+	 * Libraries that must be unpacked from fat jars in order to run. Use Strings in the
+	 * form {@literal groupId:artifactId}.
+	 */
+	Set<String> requiresUnpack;
+
+	/**
 	 * Location of an agent jar to attach to the VM when running the application with runJar task.
 	 */
 	File agent;
@@ -107,4 +122,10 @@ public class SpringBootPluginExtension {
 	 * Flag to indicate that the agent requires -noverify (and the plugin will refuse to start if it is not set)
 	 */
 	Boolean noverify;
+
+	/**
+	 * If exclude rules should be applied to dependencies based on the spring-dependencies-bom
+	 */
+	boolean applyExcludeRules = true;
+
 }

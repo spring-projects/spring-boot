@@ -28,7 +28,7 @@ import org.springframework.core.env.Environment;
  * {@link DocumentMatcher} backed by {@link Environment#getActiveProfiles()}. A YAML
  * document matches if it contains an element "spring.profiles" (a comma-separated list)
  * and one of the profiles is in the active list.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {

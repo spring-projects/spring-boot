@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.0.3.BUILD-SNAPSHOT</version>
+		<version>1.1.11.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-redis</artifactId>
 	<name>Spring Boot Redis Starter</name>
@@ -19,17 +19,34 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
-			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.lambdaworks</groupId>
-			<artifactId>lettuce</artifactId>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
 		</dependency>
 	</dependencies>
 </project>

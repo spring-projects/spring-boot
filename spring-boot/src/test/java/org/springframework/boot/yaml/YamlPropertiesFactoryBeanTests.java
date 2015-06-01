@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link YamlPropertiesFactoryBean}.
- * 
+ *
  * @author Dave Syer
  */
 public class YamlPropertiesFactoryBeanTests {

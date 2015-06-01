@@ -43,7 +43,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 /**
  * Validate some YAML by binding it to an object of a specified type and then optionally
  * running a {@link Validator} over it.
- * 
+ *
  * @author Luke Taylor
  * @author Dave Syer
  */

@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.0.3.BUILD-SNAPSHOT</version>
+		<version>1.1.11.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-integration-tests</artifactId>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 	<name>Spring Boot Integration Tests</name>
 	<description>Spring Boot Integration Tests</description>
 	<url>http://projects.spring.io/spring-boot/</url>
@@ -19,6 +19,19 @@
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.gradle</groupId>
+			<artifactId>gradle-tooling-api</artifactId>
+			<version>${gradle.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-dependency-tools</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<profiles>
 		<profile>
 			<id>default</id>
@@ -30,6 +43,7 @@
 					<plugin>
 						<!-- Invoke integration tests in the install phase, after the maven-plugin
 							is available -->
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-invoker-plugin</artifactId>
 						<configuration>
 							<settingsFile>src/it/settings.xml</settingsFile>
@@ -49,6 +63,39 @@
 							</execution>
 						</executions>
 					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>clean-samples</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<delete includeemptydirs="true">
+											<fileset dir="${main.basedir}/spring-boot-samples" includes="**/target/" />
+										</delete>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-clean-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>clean-samples</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>clean</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -56,4 +103,16 @@
 			<id>full</id>
 		</profile>
 	</profiles>
+	<repositories>
+		<repository>
+			<id>gradle</id>
+			<url>http://repo.gradle.org/gradle/libs-releases-local</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>

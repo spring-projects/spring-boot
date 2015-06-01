@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link ArrayDocumentMatcher}.
- * 
+ *
  * @author Dave Syer
  */
 public class ArrayDocumentMatcherTests {

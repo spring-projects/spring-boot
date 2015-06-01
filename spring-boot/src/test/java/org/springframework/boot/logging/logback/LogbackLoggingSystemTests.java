@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.File;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
@@ -25,6 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.ILoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.OutputCapture;
@@ -34,6 +37,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -41,8 +45,9 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link LogbackLoggingSystem}.
- * 
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class LogbackLoggingSystemTests {
 
@@ -61,11 +66,16 @@ public class LogbackLoggingSystemTests {
 	}
 
 	private String tmpDir() {
-		return System.getProperty("java.io.tmpdir");
+		String path = StringUtils.cleanPath(System.getProperty("java.io.tmpdir"));
+		if (path.endsWith("/")) {
+			path = path.substring(0, path.length() - 1);
+		}
+		return path;
 	}
 
 	@After
 	public void clear() {
+		this.loggingSystem.cleanUp();
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
@@ -113,6 +123,32 @@ public class LogbackLoggingSystemTests {
 		this.logger.debug("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
 				equalTo(1));
+	}
+
+	@Test
+	public void jbossLoggingIsConfiguredToUseSlf4j() {
+		this.loggingSystem.beforeInitialize();
+		assertEquals("slf4j", System.getProperty("org.jboss.logging.provider"));
+	}
+
+	@Test
+	public void bridgeHandlerLifecycle() {
+		assertFalse(bridgeHandlerInstalled());
+		this.loggingSystem.beforeInitialize();
+		assertTrue(bridgeHandlerInstalled());
+		this.loggingSystem.cleanUp();
+		assertFalse(bridgeHandlerInstalled());
+	}
+
+	private boolean bridgeHandlerInstalled() {
+		java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		for (Handler handler : handlers) {
+			if (handler instanceof SLF4JBridgeHandler) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

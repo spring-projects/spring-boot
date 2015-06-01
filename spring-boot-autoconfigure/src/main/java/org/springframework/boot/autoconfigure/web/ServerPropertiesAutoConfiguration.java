@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that configures the
  * {@link ConfigurableEmbeddedServletContainer} from a {@link ServerProperties} bean.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

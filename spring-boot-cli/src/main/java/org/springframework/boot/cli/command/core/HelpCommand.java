@@ -28,11 +28,12 @@ import org.springframework.boot.cli.command.CommandRunner;
 import org.springframework.boot.cli.command.NoHelpCommandArgumentsException;
 import org.springframework.boot.cli.command.NoSuchCommandException;
 import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 
 /**
  * Internal {@link Command} used for 'help' requests.
- * 
+ *
  * @author Phillip Webb
  */
 public class HelpCommand extends AbstractCommand {
@@ -85,7 +86,7 @@ public class HelpCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public ExitStatus run(String... args) throws Exception {
 		if (args.length == 0) {
 			throw new NoHelpCommandArgumentsException();
 		}
@@ -103,7 +104,7 @@ public class HelpCommand extends AbstractCommand {
 				if (command.getHelp() != null) {
 					Log.info(command.getHelp());
 				}
-				return;
+				return ExitStatus.OK;
 			}
 		}
 		throw new NoSuchCommandException(commandName);

@@ -46,7 +46,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Integration tests for {@link EmbeddedWebApplicationContext} and
  * {@link EmbeddedServletContainer}s running Spring MVC.
- * 
+ *
  * @author Phillip Webb
  */
 public class EmbeddedServletContainerMvcIntegrationTests {

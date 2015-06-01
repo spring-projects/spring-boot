@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.0.3.BUILD-SNAPSHOT</version>
+		<version>1.1.11.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-starters/spring-boot-starter-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-samples</artifactId>
@@ -27,26 +27,42 @@
 		<module>spring-boot-sample-amqp</module>
 		<module>spring-boot-sample-aop</module>
 		<module>spring-boot-sample-batch</module>
+		<module>spring-boot-sample-data-elasticsearch</module>
+		<module>spring-boot-sample-data-gemfire</module>
 		<module>spring-boot-sample-data-jpa</module>
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-redis</module>
 		<module>spring-boot-sample-data-rest</module>
+		<module>spring-boot-sample-data-solr</module>
+		<module>spring-boot-sample-flyway</module>
+		<module>spring-boot-sample-hateoas</module>
+		<module>spring-boot-sample-hornetq</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jetty</module>
+		<module>spring-boot-sample-liquibase</module>
+		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-simple</module>
+		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
 		<module>spring-boot-sample-tomcat8-jsp</module>
 		<module>spring-boot-sample-traditional</module>
+		<module>spring-boot-sample-velocity</module>
+		<module>spring-boot-sample-web-freemarker</module>
+		<module>spring-boot-sample-web-groovy-templates</module>
 		<module>spring-boot-sample-web-method-security</module>
 		<module>spring-boot-sample-web-secure</module>
+		<module>spring-boot-sample-web-secure-custom</module>
+		<module>spring-boot-sample-web-secure-jdbc</module>
 		<module>spring-boot-sample-web-static</module>
 		<module>spring-boot-sample-web-jsp</module>
 		<module>spring-boot-sample-web-ui</module>
+		<module>spring-boot-sample-web-velocity</module>
 		<module>spring-boot-sample-websocket</module>
+		<module>spring-boot-sample-ws</module>
 		<module>spring-boot-sample-xml</module>
 	</modules>
 	<!-- No dependencies - otherwise the samples won't work if you change the
@@ -54,6 +70,7 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<configuration>
 					<useProjectReferences>false</useProjectReferences>
@@ -70,6 +87,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>

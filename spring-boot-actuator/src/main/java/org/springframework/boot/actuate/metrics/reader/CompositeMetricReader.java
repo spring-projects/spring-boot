@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * Composite implementation of {@link MetricReader}.
- * 
+ *
  * @author Dave Syer
  */
 public class CompositeMetricReader implements MetricReader {

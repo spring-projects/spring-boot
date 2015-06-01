@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ConditionalOnBean}.
- * 
+ *
  * @author Dave Syer
  */
 public class ConditionalOnBeanTests {

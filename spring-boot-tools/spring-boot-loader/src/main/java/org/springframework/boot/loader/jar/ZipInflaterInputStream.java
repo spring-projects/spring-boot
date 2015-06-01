@@ -25,7 +25,7 @@ import java.util.zip.InflaterInputStream;
 /**
  * {@link InflaterInputStream} that supports the writing of an extra "dummy" byte (which
  * is required with JDK 6) and returns accurate available() results.
- * 
+ *
  * @author Phillip Webb
  */
 class ZipInflaterInputStream extends InflaterInputStream {

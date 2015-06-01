@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -33,6 +36,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextLoader;
@@ -42,6 +48,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoaderUti
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
 /**
@@ -60,21 +67,33 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * <p>
  * If <code>@ActiveProfiles</code> are provided in the test class they will be used to
  * create the application context.
- * 
+ *
  * @author Dave Syer
  * @see IntegrationTest
  */
 public class SpringApplicationContextLoader extends AbstractContextLoader {
+
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config)
 			throws Exception {
 		SpringApplication application = getSpringApplication();
 		application.setSources(getSources(config));
+		ConfigurableEnvironment environment = new StandardEnvironment();
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
-			application.setAdditionalProfiles(config.getActiveProfiles());
+			String profiles = StringUtils.arrayToCommaDelimitedString(config
+					.getActiveProfiles());
+			EnvironmentTestUtils.addEnvironment(environment, "spring.profiles.active="
+					+ profiles);
 		}
-		application.setDefaultProperties(getEnvironmentProperties(config));
+		// Ensure @IntegrationTest properties go before external config and after system
+		environment.getPropertySources()
+				.addAfter(
+						StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+						new MapPropertySource("integrationTest",
+								getEnvironmentProperties(config)));
+		application.setEnvironment(environment);
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(config,
 				application);
 		if (config instanceof WebMergedContextConfiguration) {
@@ -134,7 +153,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				.detectDefaultConfigurationClasses(declaringClass);
 	}
 
-	private Map<String, Object> getEnvironmentProperties(MergedContextConfiguration config) {
+	protected Map<String, Object> getEnvironmentProperties(
+			MergedContextConfiguration config) {
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
@@ -159,14 +179,25 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		return Collections.singletonMap("server.port", "-1");
 	}
 
+	// Instead of parsing the keys ourselves, we rely on standard handling
 	private Map<String, String> extractEnvironmentProperties(String[] values) {
+		StringBuilder sb = new StringBuilder();
+		for (String value : values) {
+			sb.append(value).append(LINE_SEPARATOR);
+		}
+		String content = sb.toString();
+		Properties props = new Properties();
+		try {
+			props.load(new StringReader(content));
+		}
+		catch (IOException e) {
+			throw new IllegalStateException("Unexpected could not load properties from '"
+					+ content + "'", e);
+		}
+
 		Map<String, String> properties = new HashMap<String, String>();
-		for (String pair : values) {
-			int index = pair.indexOf(":");
-			index = (index < 0 ? index = pair.indexOf("=") : index);
-			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = (index > 0 ? pair.substring(index + 1) : "");
-			properties.put(key.trim(), value.trim());
+		for (String name : props.stringPropertyNames()) {
+			properties.put(name, props.getProperty(name));
 		}
 		return properties;
 	}

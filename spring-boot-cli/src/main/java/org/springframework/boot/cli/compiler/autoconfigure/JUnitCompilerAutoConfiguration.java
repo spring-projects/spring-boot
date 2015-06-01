@@ -25,7 +25,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for JUnit
- * 
+ *
  * @author Greg Turnquist
  */
 public class JUnitCompilerAutoConfiguration extends CompilerAutoConfiguration {
@@ -38,7 +38,7 @@ public class JUnitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("junit").add("spring-test", "hamcrest-library");
+		dependencies.add("spring-boot-starter-test");
 	}
 
 	@Override

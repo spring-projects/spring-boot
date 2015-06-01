@@ -23,7 +23,7 @@ import org.springframework.boot.cli.command.options.OptionHelp;
 
 /**
  * Abstract {@link Command} implementation.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

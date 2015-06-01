@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Adapter class to expose {@link Endpoint}s as {@link MvcEndpoint}s.
- * 
+ *
  * @author Dave Syer
  */
 public class EndpointMvcAdapter implements MvcEndpoint {

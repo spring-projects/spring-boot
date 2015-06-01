@@ -31,7 +31,7 @@ import org.springframework.util.ReflectionUtils;
  * {@link EmbeddedServletContainer} that can be used to control an embedded Jetty server.
  * Usually this class should be created using the
  * {@link JettyEmbeddedServletContainerFactory} and not directly.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see JettyEmbeddedServletContainerFactory
@@ -43,6 +43,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	private final Server server;
 
 	private final boolean autoStart;
+
+	private Connector[] connectors;
 
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainer} instance.
@@ -65,23 +67,34 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	private synchronized void initialize() {
 		try {
+			// Cache and clear the connectors to prevent requests being handled before
+			// the application context is ready
+			this.connectors = this.server.getConnectors();
+			this.server.setConnectors(null);
+
+			// Start the server so that the ServletContext is available
 			this.server.start();
-			// Start the server so the ServletContext is available, but stop the
-			// connectors to prevent requests from being handled before the Spring context
-			// is ready:
-			Connector[] connectors = this.server.getConnectors();
-			for (Connector connector : connectors) {
-				connector.stop();
-			}
 		}
 		catch (Exception ex) {
+			// Ensure process isn't left running
+			stopSilently();
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Jetty servlet container", ex);
 		}
 	}
 
+	private void stopSilently() {
+		try {
+			this.server.stop();
+		}
+		catch (Exception ex) {
+		}
+	}
+
 	@Override
 	public void start() throws EmbeddedServletContainerException {
+		this.server.setConnectors(this.connectors);
+
 		if (!this.autoStart) {
 			return;
 		}

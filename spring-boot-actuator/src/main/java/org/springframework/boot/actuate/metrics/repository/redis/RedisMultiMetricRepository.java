@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.MultiMetricRepository;
+import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.BoundZSetOperations;
 import org.springframework.data.redis.core.RedisOperations;
@@ -32,44 +33,45 @@ import org.springframework.util.Assert;
 
 /**
  * {@link MultiMetricRepository} implementation backed by a redis store. Metric values are
- * stored as regular values against a key composed of the group name prefixed with a
- * constant prefix (default "spring.groups."). The group names are stored as a zset under
- * <code>[prefix]</code> + "keys".
- * 
+ * stored as zset values and the timestamps as regular values, both against a key composed
+ * of the group name prefixed with a constant prefix (default "spring.groups."). The group
+ * names are stored as a zset under "keys." + <code>[prefix]</code>.
+ *
  * @author Dave Syer
  */
 public class RedisMultiMetricRepository implements MultiMetricRepository {
 
 	private static final String DEFAULT_METRICS_PREFIX = "spring.groups.";
 
-	private String prefix = DEFAULT_METRICS_PREFIX;
+	private final String prefix;
 
-	private String keys = this.prefix + "keys";
+	private final String keys;
 
 	private final BoundZSetOperations<String, String> zSetOperations;
 
 	private final RedisOperations<String, String> redisOperations;
 
 	public RedisMultiMetricRepository(RedisConnectionFactory redisConnectionFactory) {
+		this(redisConnectionFactory, DEFAULT_METRICS_PREFIX);
+	}
+
+	public RedisMultiMetricRepository(RedisConnectionFactory redisConnectionFactory,
+			String prefix) {
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
+		if (!prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
+		this.prefix = prefix;
+		this.keys = "keys." + this.prefix.substring(0, prefix.length() - 1);
 		this.zSetOperations = this.redisOperations.boundZSetOps(this.keys);
 	}
 
-	/**
-	 * The prefix for all metrics keys.
-	 * @param prefix the prefix to set for all metrics keys
-	 */
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-		this.keys = this.prefix + "keys";
-	}
-
 	@Override
-	public Iterable<Metric<?>> findAll(String metricNamePrefix) {
+	public Iterable<Metric<?>> findAll(String group) {
 
 		BoundZSetOperations<String, String> zSetOperations = this.redisOperations
-				.boundZSetOps(keyFor(metricNamePrefix));
+				.boundZSetOps(keyFor(group));
 
 		Set<String> keys = zSetOperations.range(0, -1);
 		Iterator<String> keysIt = keys.iterator();
@@ -77,14 +79,15 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 		List<Metric<?>> result = new ArrayList<Metric<?>>(keys.size());
 		List<String> values = this.redisOperations.opsForValue().multiGet(keys);
 		for (String v : values) {
-			result.add(deserialize(keysIt.next(), v));
+			String key = keysIt.next();
+			result.add(deserialize(group, key, v, zSetOperations.score(key)));
 		}
 		return result;
 
 	}
 
 	@Override
-	public void save(String group, Collection<Metric<?>> values) {
+	public void set(String group, Collection<Metric<?>> values) {
 		String groupKey = keyFor(group);
 		trackMembership(groupKey);
 		BoundZSetOperations<String, String> zSetOperations = this.redisOperations
@@ -92,9 +95,22 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 		for (Metric<?> metric : values) {
 			String raw = serialize(metric);
 			String key = keyFor(metric.getName());
-			zSetOperations.add(key, 0.0D);
+			zSetOperations.add(key, metric.getValue().doubleValue());
 			this.redisOperations.opsForValue().set(key, raw);
 		}
+	}
+
+	@Override
+	public void increment(String group, Delta<?> delta) {
+		String groupKey = keyFor(group);
+		trackMembership(groupKey);
+		BoundZSetOperations<String, String> zSetOperations = this.redisOperations
+				.boundZSetOps(groupKey);
+		String key = keyFor(delta.getName());
+		double value = zSetOperations.incrementScore(key, delta.getValue().doubleValue());
+		String raw = serialize(new Metric<Double>(delta.getName(), value,
+				delta.getTimestamp()));
+		this.redisOperations.opsForValue().set(key, raw);
 	}
 
 	@Override
@@ -102,13 +118,13 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 		Set<String> range = this.zSetOperations.range(0, -1);
 		Collection<String> result = new ArrayList<String>();
 		for (String key : range) {
-			result.add(nameFor(key));
+			result.add(key.substring(this.prefix.length()));
 		}
-		return range;
+		return result;
 	}
 
 	@Override
-	public long count() {
+	public long countGroups() {
 		return this.zSetOperations.size();
 	}
 
@@ -127,15 +143,13 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 		this.zSetOperations.remove(groupKey);
 	}
 
-	private Metric<?> deserialize(String redisKey, String v) {
-		String[] vals = v.split("@");
-		Double value = Double.valueOf(vals[0]);
-		Date timestamp = vals.length > 1 ? new Date(Long.valueOf(vals[1])) : new Date();
+	private Metric<?> deserialize(String group, String redisKey, String v, Double value) {
+		Date timestamp = new Date(Long.valueOf(v));
 		return new Metric<Double>(nameFor(redisKey), value, timestamp);
 	}
 
 	private String serialize(Metric<?> entity) {
-		return String.valueOf(entity.getValue() + "@" + entity.getTimestamp().getTime());
+		return String.valueOf(entity.getTimestamp().getTime());
 	}
 
 	private String keyFor(String name) {
@@ -149,7 +163,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	}
 
 	private void trackMembership(String redisKey) {
-		this.zSetOperations.add(redisKey, 0.0D);
+		this.zSetOperations.incrementScore(redisKey, 0.0D);
 	}
 
 }

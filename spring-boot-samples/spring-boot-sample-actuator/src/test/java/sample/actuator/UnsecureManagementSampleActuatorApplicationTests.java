@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
  * classpath).
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -79,7 +79,7 @@ public class UnsecureManagementSampleActuatorApplicationTests {
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.root"));
+		assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.unmapped"));
 	}
 
 }

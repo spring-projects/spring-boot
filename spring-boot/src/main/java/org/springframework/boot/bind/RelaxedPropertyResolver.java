@@ -27,7 +27,7 @@ import static java.lang.String.format;
 
 /**
  * {@link PropertyResolver} that attempts to resolve values using {@link RelaxedNames}.
- * 
+ *
  * @author Phillip Webb
  * @see RelaxedNames
  */

@@ -27,14 +27,14 @@ import org.springframework.core.env.Environment;
  * available, but after the {@link ApplicationListener}s have been registered. The source
  * of the event is the {@link SpringApplication} itself, but beware of using its internal
  * state too much at this early stage since it might be modified later in the lifecycle.
- * 
+ *
  * @author Dave Syer
  */
 public class ApplicationStartedEvent extends SpringApplicationEvent {
 
 	/**
 	 * @param application the current application
-	 * @param args the argumemts the application is running with
+	 * @param args the arguments the application is running with
 	 */
 	public ApplicationStartedEvent(SpringApplication application, String[] args) {
 		super(application, args);

@@ -33,7 +33,7 @@ import org.springframework.web.WebApplicationInitializer;
  * managed by Spring and not the Servlet container.
  * <p>
  * For configuration examples see {@link WebApplicationInitializer}.
- * 
+ *
  * @author Phillip Webb
  * @see WebApplicationInitializer
  */

@@ -33,10 +33,12 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
@@ -54,6 +56,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -62,6 +65,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -72,9 +77,10 @@ import org.springframework.web.servlet.DispatcherServlet;
  * different port to {@link ServerProperties} a new child context is created, otherwise it
  * is assumed that endpoint requests will be mapped and handled via an already registered
  * {@link DispatcherServlet}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Christian Dupuis
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
@@ -82,12 +88,16 @@ import org.springframework.web.servlet.DispatcherServlet;
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
 		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
 		ManagementServerPropertiesAutoConfiguration.class })
+@EnableConfigurationProperties(HealthMvcEndpointProperties.class)
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		ApplicationListener<ContextRefreshedEvent> {
 
 	private static Log logger = LogFactory.getLog(EndpointWebMvcAutoConfiguration.class);
 
 	private ApplicationContext applicationContext;
+
+	@Autowired
+	private HealthMvcEndpointProperties healthMvcEndpointProperties;
 
 	@Autowired
 	private ManagementServerProperties managementServerProperties;
@@ -114,29 +124,17 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		if (event.getApplicationContext() == this.applicationContext) {
-			if (ManagementServerPort.get(this.applicationContext) == ManagementServerPort.DIFFERENT
+			ManagementServerPort managementPort = ManagementServerPort
+					.get(this.applicationContext);
+			if (managementPort == ManagementServerPort.DIFFERENT
 					&& this.applicationContext instanceof WebApplicationContext) {
 				createChildManagementContext();
 			}
-		}
-	}
-
-	// Put Servlets and Filters in their own nested class so they don't force early
-	// instantiation of ManagementServerProperties.
-	@Configuration
-	protected static class ApplicationContextFilterConfiguration {
-		@Bean
-		public Filter applicationContextIdFilter(ApplicationContext context) {
-			final String id = context.getId();
-			return new OncePerRequestFilter() {
-				@Override
-				protected void doFilterInternal(HttpServletRequest request,
-						HttpServletResponse response, FilterChain filterChain)
-						throws ServletException, IOException {
-					response.addHeader("X-Application-Context", id);
-					filterChain.doFilter(request, response);
-				}
-			};
+			if (managementPort == ManagementServerPort.SAME
+					&& this.applicationContext.getEnvironment() instanceof ConfigurableEnvironment) {
+				addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.applicationContext
+						.getEnvironment());
+			}
 		}
 	}
 
@@ -151,6 +149,18 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnExpression("${endpoints.env.enabled:true}")
 	public EnvironmentMvcEndpoint environmentMvcEndpoint(EnvironmentEndpoint delegate) {
 		return new EnvironmentMvcEndpoint(delegate);
+	}
+
+	@Bean
+	@ConditionalOnBean(HealthEndpoint.class)
+	@ConditionalOnExpression("${endpoints.health.enabled:true}")
+	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
+		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
+		if (this.healthMvcEndpointProperties.getMapping() != null) {
+			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
+					.getMapping());
+		}
+		return healthMvcEndpoint;
 	}
 
 	@Bean
@@ -209,6 +219,68 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			}
 		}
 	};
+
+	/**
+	 * Add an alias for 'local.management.port' that actually resolves using
+	 * 'local.server.port'.
+	 * @param environment the environment
+	 */
+	private void addLocalManagementPortPropertyAlias(
+			final ConfigurableEnvironment environment) {
+		environment.getPropertySources().addLast(
+				new PropertySource<Object>("Management Server") {
+					@Override
+					public Object getProperty(String name) {
+						if ("local.management.port".equals(name)) {
+							return environment.getProperty("local.server.port");
+						}
+						return null;
+					}
+				});
+	}
+
+	// Put Servlets and Filters in their own nested class so they don't force early
+	// instantiation of ManagementServerProperties.
+	@Configuration
+	protected static class ApplicationContextFilterConfiguration {
+
+		@Bean
+		public Filter applicationContextIdFilter(ApplicationContext context) {
+			return new ApplicationContextHeaderFilter(context);
+		}
+
+	}
+
+	/**
+	 * {@link OncePerRequestFilter} to add the {@literal X-Application-Context} if
+	 * required.
+	 */
+	private static class ApplicationContextHeaderFilter extends OncePerRequestFilter {
+
+		private final ApplicationContext applicationContext;
+
+		private ManagementServerProperties properties;
+
+		public ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		protected void doFilterInternal(HttpServletRequest request,
+				HttpServletResponse response, FilterChain filterChain)
+				throws ServletException, IOException {
+			if (this.properties == null) {
+				this.properties = this.applicationContext
+						.getBean(ManagementServerProperties.class);
+			}
+			if (this.properties.getAddApplicationContextHeader()) {
+				response.addHeader("X-Application-Context",
+						this.applicationContext.getId());
+			}
+			filterChain.doFilter(request, response);
+		}
+
+	}
 
 	protected static enum ManagementServerPort {
 

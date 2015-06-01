@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RelaxedNames}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests to reproduce reported issues.
- * 
+ *
  * @author Phillip Webb
  */
 public class AutoConfigurationReproTests {

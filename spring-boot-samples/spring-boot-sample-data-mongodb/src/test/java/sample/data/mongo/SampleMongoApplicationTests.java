@@ -16,21 +16,27 @@
 
 package sample.data.mongo;
 
-import java.net.ConnectException;
+import java.util.regex.Pattern;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
+import com.mongodb.MongoServerSelectionException;
+import com.mongodb.MongoTimeoutException;
+
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleMongoApplication}.
- * 
+ *
  * @author Dave Syer
  */
 public class SampleMongoApplicationTests {
+
+	private static final Pattern TIMEOUT_MESSAGE_PATTERN = Pattern
+			.compile("Timed out after [0-9]+ ms while waiting for a server.*");
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
@@ -54,9 +60,13 @@ public class SampleMongoApplicationTests {
 		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
-		if (nested.contains(ConnectException.class)) {
-			Throwable root = nested.getRootCause();
-			if (root.getMessage().contains("Connection refused")) {
+		Throwable root = nested.getRootCause();
+		if (root instanceof MongoServerSelectionException
+				|| root instanceof MongoTimeoutException) {
+			if (root.getMessage().contains("Unable to connect to any server")) {
+				return true;
+			}
+			if (TIMEOUT_MESSAGE_PATTERN.matcher(root.getMessage()).matches()) {
 				return true;
 			}
 		}

@@ -44,7 +44,7 @@ import org.springframework.validation.Validator;
  * Validate some {@link Properties} (or optionally {@link PropertySources}) by binding
  * them to an object of a specified type and then optionally running a {@link Validator}
  * over it.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
@@ -176,7 +176,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	/**
 	 * Flag to indicate that an exception should be raised if a Validator is available and
 	 * validation fails.
-	 * 
+	 *
 	 * @param exceptionIfInvalid the flag to set
 	 */
 	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {

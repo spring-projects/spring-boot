@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for separate management and main service ports.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -75,7 +75,7 @@ public class SampleActuatorUiApplicationPortTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
+		assertEquals("{\"status\":\"UP\"}", entity.getBody());
 	}
 
 }

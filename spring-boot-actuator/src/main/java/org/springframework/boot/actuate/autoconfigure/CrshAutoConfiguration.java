@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.crsh.vfs.spi.AbstractFSDriver;
 import org.crsh.vfs.spi.FSDriver;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellAuthenticationProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.JaasAuthenticationProperties;
@@ -70,6 +71,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -78,16 +80,14 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedding an extensible shell
  * into a Spring Boot enabled application. By default a SSH daemon is started on port
- * 2000. If the CRaSH Telnet plugin is available on the classpath, Telnet deamon will be
+ * 2000. If the CRaSH Telnet plugin is available on the classpath, Telnet daemon will be
  * launched on port 5000.
- * 
  * <p>
  * The default shell authentication method uses a username and password combination. If no
  * configuration is provided the default username is 'user' and the password will be
  * printed to console during application startup. Those default values can be overridden
  * by using <code>shell.auth.simple.username</code> and
  * <code>shell.auth.simple.password</code>.
- * 
  * <p>
  * If a Spring Security {@link AuthenticationManager} is detected, this configuration will
  * create a {@link CRaSHPlugin} to forward shell authentication requests to Spring
@@ -97,21 +97,19 @@ import org.springframework.util.StringUtils;
  * restricted to users having roles that match those configured in
  * {@link ManagementServerProperties}. Required roles can be overridden by
  * <code>shell.auth.spring.roles</code>.
- * 
  * <p>
  * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
  * the application context. Those beans will get auto detected during startup and
  * registered with the underlying shell infrastructure. To configure plugins and the CRaSH
  * infrastructure add beans of type {@link CrshShellProperties} to the application
  * context.
- * 
  * <p>
  * Additional shell commands can be implemented using the guide and documentation at <a
  * href="http://www.crashub.org">crashub.org</a>. By default Boot will search for commands
  * using the following classpath scanning pattern <code>classpath*:/commands/**</code>. To
  * add different locations or override the default use
  * <code>shell.command_path_patterns</code> in your application configuration.
- * 
+ *
  * @author Christian Dupuis
  * @see ShellProperties
  */
@@ -158,6 +156,7 @@ public class CrshAutoConfiguration {
 	 * Class to configure CRaSH to authenticate against Spring Security.
 	 */
 	@Configuration
+	@ConditionalOnExpression("'${shell.auth:spring}' == 'spring'")
 	@ConditionalOnBean({ AuthenticationManager.class })
 	@AutoConfigureAfter(CrshAutoConfiguration.class)
 	public static class AuthenticationManagerAdapterAutoConfiguration {
@@ -171,7 +170,6 @@ public class CrshAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnExpression("'${shell.auth:spring}' == 'spring'")
 		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
 		public CrshShellAuthenticationProperties springAuthenticationProperties() {
 			// In case no shell.auth property is provided fall back to Spring Security
@@ -214,10 +212,11 @@ public class CrshAutoConfiguration {
 
 		@PostConstruct
 		public void init() {
-			FS commandFileSystem = createFileSystem(this.properties
-					.getCommandPathPatterns());
-			FS configurationFileSystem = createFileSystem(this.properties
-					.getConfigPathPatterns());
+			FS commandFileSystem = createFileSystem(
+					this.properties.getCommandPathPatterns(),
+					this.properties.getDisabledCommands());
+			FS configurationFileSystem = createFileSystem(
+					this.properties.getConfigPathPatterns(), new String[0]);
 
 			PluginDiscovery discovery = new BeanFactoryFilteringPluginDiscovery(
 					this.resourceLoader.getClassLoader(), this.beanFactory,
@@ -231,12 +230,19 @@ public class CrshAutoConfiguration {
 			start(context);
 		}
 
-		protected FS createFileSystem(String[] pathPatterns) {
+		protected FS createFileSystem(String[] pathPatterns, String[] filterPatterns) {
 			Assert.notNull(pathPatterns, "PathPatterns must not be null");
+			Assert.notNull(filterPatterns, "FilterPatterns must not be null");
 			FS fileSystem = new FS();
 			for (String pathPattern : pathPatterns) {
-				fileSystem.mount(new SimpleFileSystemDriver(new DirectoryHandle(
-						pathPattern, this.resourceLoader)));
+				try {
+					fileSystem.mount(new SimpleFileSystemDriver(new DirectoryHandle(
+							pathPattern, this.resourceLoader, filterPatterns)));
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException("Failed to mount file system for '"
+							+ pathPattern + "'", ex);
+				}
 			}
 			return fileSystem;
 		}
@@ -275,6 +281,7 @@ public class CrshAutoConfiguration {
 		private AuthenticationManager authenticationManager;
 
 		@Autowired(required = false)
+		@Qualifier("shellAccessDecisionManager")
 		private AccessDecisionManager accessDecisionManager;
 
 		private String[] roles = new String[] { "ADMIN" };
@@ -485,22 +492,36 @@ public class CrshAutoConfiguration {
 
 		private final ResourcePatternResolver resourceLoader;
 
-		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader) {
+		private final String[] filterPatterns;
+
+		private final AntPathMatcher matcher = new AntPathMatcher();
+
+		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader,
+				String[] filterPatterns) {
 			super(name);
 			this.resourceLoader = resourceLoader;
+			this.filterPatterns = filterPatterns;
 		}
 
 		public List<ResourceHandle> members() throws IOException {
 			Resource[] resources = this.resourceLoader.getResources(getName());
 			List<ResourceHandle> files = new ArrayList<ResourceHandle>();
 			for (Resource resource : resources) {
-				if (!resource.getURL().getPath().endsWith("/")) {
+				if (!resource.getURL().getPath().endsWith("/") && !shouldFilter(resource)) {
 					files.add(new FileHandle(resource.getFilename(), resource));
 				}
 			}
 			return files;
 		}
 
+		private boolean shouldFilter(Resource resource) {
+			for (String filterPattern : this.filterPatterns) {
+				if (this.matcher.match(filterPattern, resource.getFilename())) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
 	/**

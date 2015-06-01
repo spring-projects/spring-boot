@@ -22,7 +22,7 @@ import java.util.ServiceLoader;
 /**
  * Factory used to create CLI {@link Command}s. Intended for use with a Java
  * {@link ServiceLoader}.
- * 
+ *
  * @author Dave Syer
  */
 public interface CommandFactory {

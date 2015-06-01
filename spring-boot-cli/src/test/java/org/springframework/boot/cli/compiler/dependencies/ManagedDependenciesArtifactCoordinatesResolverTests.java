@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ManagedDependenciesArtifactCoordinatesResolver}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesArtifactCoordinatesResolverTests {
@@ -45,7 +45,7 @@ public class ManagedDependenciesArtifactCoordinatesResolverTests {
 	public void setup() {
 		this.dependencies = mock(ManagedDependencies.class);
 		given(this.dependencies.find("a1")).willReturn(new Dependency("g1", "a1", "0"));
-		given(this.dependencies.getVersion()).willReturn("1");
+		given(this.dependencies.getSpringBootVersion()).willReturn("1");
 		this.resolver = new ManagedDependenciesArtifactCoordinatesResolver(
 				this.dependencies);
 	}

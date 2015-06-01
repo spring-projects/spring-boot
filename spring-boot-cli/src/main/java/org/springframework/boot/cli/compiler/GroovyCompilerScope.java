@@ -18,7 +18,7 @@ package org.springframework.boot.cli.compiler;
 
 /**
  * The scope in which a groovy compiler operates.
- * 
+ *
  * @author Phillip Webb
  */
 public enum GroovyCompilerScope {

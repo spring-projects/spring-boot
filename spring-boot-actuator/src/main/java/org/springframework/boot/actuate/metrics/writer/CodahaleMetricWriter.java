@@ -32,7 +32,7 @@ import com.codahale.metrics.Timer;
 /**
  * A {@link MetricWriter} that send data to a Codahale {@link MetricRegistry} based on a
  * naming convention:
- * 
+ *
  * <ul>
  * <li>Updates to {@link #increment(Delta)} with names in "meter.*" are treated as
  * {@link Meter} events</li>
@@ -44,7 +44,7 @@ import com.codahale.metrics.Timer;
  * <li>Other metrics are treated as simple {@link Gauge} values (single valued
  * measurements of type double)</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  */
 public class CodahaleMetricWriter implements MetricWriter {
@@ -90,23 +90,24 @@ public class CodahaleMetricWriter implements MetricWriter {
 		}
 		else {
 			final double gauge = value.getValue().doubleValue();
-			Object lock = null;
-			if (this.gaugeLocks.containsKey(name)) {
-				lock = this.gaugeLocks.get(name);
-			}
-			else {
-				this.gaugeLocks.putIfAbsent(name, new Object());
-				lock = this.gaugeLocks.get(name);
-			}
-
 			// Ensure we synchronize to avoid another thread pre-empting this thread after
 			// remove causing an error in CodaHale metrics
 			// NOTE: CodaHale provides no way to do this atomically
-			synchronized (lock) {
+			synchronized (getGuageLock(name)) {
 				this.registry.remove(name);
 				this.registry.register(name, new SimpleGauge(gauge));
 			}
 		}
+	}
+
+	private Object getGuageLock(String name) {
+		Object lock = this.gaugeLocks.get(name);
+		if (lock == null) {
+			Object newLock = new Object();
+			lock = this.gaugeLocks.putIfAbsent(name, newLock);
+			lock = (lock == null ? newLock : lock);
+		}
+		return lock;
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for CLI Classloader issues.
- * 
+ *
  * @author Phillip Webb
  */
 public class ClassLoaderIntegrationTests {

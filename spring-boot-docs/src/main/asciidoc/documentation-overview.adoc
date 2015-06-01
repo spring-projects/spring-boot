@@ -30,7 +30,7 @@ Having trouble with Spring Boot, We'd like to help!
 
 * Try the <<howto.adoc#howto, How-to's>> -- they provide solutions to the most common
   questions.
-* Learn the Spring basics -- Spring Boot is builds on many other Spring projects, check
+* Learn the Spring basics -- Spring Boot builds on many other Spring projects, check
   the http://spring.io[spring.io] web-site for a wealth of reference documentation. If
   you are just starting out with Spring, try one of the http://spring.io/guides[guides].
 * Ask a question - we monitor http://stackoverflow.com[stackoverflow.com] for questions
@@ -96,6 +96,9 @@ Need more details about Spring Boot's core features?
 * *Working with data:*
   <<spring-boot-features.adoc#boot-features-sql, SQL>> |
   <<spring-boot-features.adoc#boot-features-nosql, NO-SQL>>
+* *Messaging:*
+  <<spring-boot-features.adoc#boot-features-messaging, Overview>> |
+  <<spring-boot-features.adoc#boot-features-jms, JMS>>
 * *Testing:*
   <<spring-boot-features.adoc#boot-features-testing, Overview>> |
   <<spring-boot-features.adoc#boot-features-testing-spring-boot-applications, Boot Applications>> |

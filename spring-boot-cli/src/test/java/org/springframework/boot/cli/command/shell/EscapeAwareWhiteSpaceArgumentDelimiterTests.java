@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link EscapeAwareWhiteSpaceArgumentDelimiter}.
- * 
+ *
  * @author Phillip Webb
  */
 public class EscapeAwareWhiteSpaceArgumentDelimiterTests {

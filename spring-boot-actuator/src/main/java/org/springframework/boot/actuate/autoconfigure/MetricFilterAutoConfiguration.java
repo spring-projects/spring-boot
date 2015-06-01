@@ -37,24 +37,29 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StopWatch;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that records Servlet interactions
  * with a {@link CounterService} and {@link GaugeService}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 @Configuration
 @ConditionalOnBean({ CounterService.class, GaugeService.class })
-@ConditionalOnClass({ Servlet.class, ServletRegistration.class })
+@ConditionalOnClass({ Servlet.class, ServletRegistration.class,
+		OncePerRequestFilter.class })
 @AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
 public class MetricFilterAutoConfiguration {
 
 	private static final int UNDEFINED_HTTP_STATUS = 999;
+
+	private static final String UNKNOWN_PATH_SUFFIX = "/unmapped";
 
 	@Autowired
 	private CounterService counterService;
@@ -86,12 +91,43 @@ public class MetricFilterAutoConfiguration {
 			}
 			finally {
 				stopWatch.stop();
+				int status = getStatus(response);
+				Object bestMatchingPattern = request
+						.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+				HttpStatus httpStatus = HttpStatus.OK;
+				try {
+					httpStatus = HttpStatus.valueOf(status);
+				}
+				catch (Exception ex) {
+					// not convertible
+				}
+				if (bestMatchingPattern != null) {
+					suffix = fixSpecialCharacters(bestMatchingPattern.toString());
+				}
+				else if (httpStatus.is4xxClientError()) {
+					suffix = UNKNOWN_PATH_SUFFIX;
+				}
 				String gaugeKey = getKey("response" + suffix);
 				MetricFilterAutoConfiguration.this.gaugeService.submit(gaugeKey,
 						stopWatch.getTotalTimeMillis());
-				String counterKey = getKey("status." + getStatus(response) + suffix);
+				String counterKey = getKey("status." + status + suffix);
 				MetricFilterAutoConfiguration.this.counterService.increment(counterKey);
 			}
+		}
+
+		private String fixSpecialCharacters(String value) {
+			String result = value.replaceAll("[{}]", "-");
+			result = result.replace("**", "-star-star-");
+			result = result.replace("*", "-star-");
+			result = result.replace("/-", "/");
+			result = result.replace("-/", "/");
+			if (result.endsWith("-")) {
+				result = result.substring(0, result.length() - 1);
+			}
+			if (result.startsWith("-")) {
+				result = result.substring(1);
+			}
+			return result;
 		}
 
 		private int getStatus(HttpServletResponse response) {

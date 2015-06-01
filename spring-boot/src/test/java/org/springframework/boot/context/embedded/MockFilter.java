@@ -27,7 +27,7 @@ import javax.servlet.ServletResponse;
 
 /**
  * Simple mock Filter that does nothing.
- * 
+ *
  * @author Phillip Webb
  */
 public class MockFilter implements Filter {

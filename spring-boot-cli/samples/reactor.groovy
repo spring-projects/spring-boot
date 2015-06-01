@@ -1,6 +1,6 @@
 package org.test
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CountDownLatch
 
 @EnableReactor
 @Log
@@ -22,9 +22,27 @@ class Runner implements CommandLineRunner {
 		latch.await()
 	}
 
-	@Selector(reactor="reactor", value="hello")
+	@Bean
+	CountDownLatch latch() {
+		latch
+	}
+
+}
+
+@Consumer
+@Log
+class Greeter {
+
+	@Autowired
+	Reactor reactor
+
+	@Autowired
+	private CountDownLatch latch
+
+	@Selector(value="hello")
 	void receive(String data) {
 		log.info "Hello ${data}"
 		latch.countDown()
 	}
+
 }

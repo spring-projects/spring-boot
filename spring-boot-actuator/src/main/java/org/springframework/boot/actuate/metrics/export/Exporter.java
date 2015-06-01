@@ -23,7 +23,7 @@ package org.springframework.boot.actuate.metrics.export;
  * an export operation might be periodic or even driven, but it remains outside the scope
  * of this interface. You might for instance create an instance of an Exporter and trigger
  * it using a {@code @Scheduled} annotation in a Spring ApplicationContext.
- * 
+ *
  * @author Dave Syer
  */
 public interface Exporter {

@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EntityScan}.
- * 
+ *
  * @author Phillip Webb
  */
 public class EntityScanTests {

@@ -34,7 +34,7 @@ import org.springframework.boot.loader.jar.JarFile;
 /**
  * Base class for launchers that can start an application with a fully configured
  * classpath backed by one or more {@link Archive}s.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -142,7 +142,7 @@ public abstract class Launcher {
 		ProtectionDomain protectionDomain = getClass().getProtectionDomain();
 		CodeSource codeSource = protectionDomain.getCodeSource();
 		URI location = (codeSource == null ? null : codeSource.getLocation().toURI());
-		String path = (location == null ? null : location.getPath());
+		String path = (location == null ? null : location.getSchemeSpecificPart());
 		if (path == null) {
 			throw new IllegalStateException("Unable to determine code source archive");
 		}

@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link AnnotationConfigEmbeddedWebApplicationContext}.
- * 
+ *
  * @author Phillip Webb
  */
 public class AnnotationConfigEmbeddedWebApplicationContextTests {

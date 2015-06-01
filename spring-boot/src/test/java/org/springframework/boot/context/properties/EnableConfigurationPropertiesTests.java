@@ -44,7 +44,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link EnableConfigurationProperties}.
- * 
+ *
  * @author Dave Syer
  */
 public class EnableConfigurationPropertiesTests {
@@ -368,6 +368,27 @@ public class EnableConfigurationPropertiesTests {
 		// this should not fail!!!
 		// mymap looks to contain - {key1=, key3=value3}
 		assertEquals("value12", bean.mymap.get("key1.key2"));
+	}
+
+	@Test
+	public void testAnnotatedBean() {
+		EnvironmentTestUtils.addEnvironment(this.context, "external.name:bar",
+				"spam.name:foo");
+		this.context.register(TestConfigurationWithAnnotatedBean.class);
+		this.context.refresh();
+		assertEquals("foo", this.context.getBean(External.class).getName());
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class TestConfigurationWithAnnotatedBean {
+
+		@Bean
+		@ConfigurationProperties(prefix = "spam")
+		public External testProperties() {
+			return new External();
+		}
+
 	}
 
 	/**

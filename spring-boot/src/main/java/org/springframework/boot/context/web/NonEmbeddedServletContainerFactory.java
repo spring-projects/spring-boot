@@ -21,7 +21,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 /**
  * Marker interface for {@link EmbeddedServletContainerFactory} types that are actually
  * safe to run in a non-embedded container.
- * 
+ *
  * @author Dave Syer
  */
 public interface NonEmbeddedServletContainerFactory {

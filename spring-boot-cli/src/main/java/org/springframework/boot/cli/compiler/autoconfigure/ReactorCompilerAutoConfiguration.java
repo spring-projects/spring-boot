@@ -24,30 +24,37 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for the Reactor.
- * 
+ *
  * @author Dave Syer
  */
 public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableReactor");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableReactor")
+				|| AstUtils.hasAtLeastOneFieldOrMethod(classNode, "Reactor");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("reactor.core.Reactor")
-				.add("reactor-spring", false).add("reactor-core");
+				.add("reactor-spring-context", false).add("reactor-spring-core", false)
+				.add("reactor-core");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("reactor.core.Reactor", "reactor.event.Event",
-				"reactor.function.Consumer", "reactor.function.Functions",
-				"reactor.event.selector.Selectors", "reactor.spring.annotation.Selector",
-				"reactor.spring.annotation.ReplyTo",
-				"reactor.spring.context.config.EnableReactor").addStarImports(
-				"reactor.event.Selectors");
+		imports.addImports("reactor.core.Reactor", "reactor.core.spec.Reactors",
+				"reactor.core.Observable", "reactor.event.Event",
+				"reactor.function.Functions", "reactor.function.Predicates",
+				"reactor.function.Suppliers",
+				"reactor.spring.context.annotation.Consumer",
+				"reactor.spring.context.annotation.Selector",
+				"reactor.spring.context.annotation.SelectorType",
+				"reactor.spring.context.annotation.ReplyTo",
+				"reactor.spring.context.config.EnableReactor")
+				.addStarImports("reactor.event.selector.Selectors")
+				.addImport("ReactorEnvironment", "reactor.core.Environment");
 	}
 
 }

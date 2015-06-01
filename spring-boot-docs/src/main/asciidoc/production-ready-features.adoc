@@ -1,5 +1,5 @@
 [[production-ready]]
-= Production-ready features
+= Spring Boot Actuator: Production-ready features
 
 [partintro]
 --
@@ -13,9 +13,9 @@ Auditing, health and metrics gathering can be automatically applied to your appl
 
 [[production-ready-enabling]]
 == Enabling production-ready features.
-The `spring-boot-actuator` module provides all of Spring Boot's production-ready
-features. The simplest way to enable the features is to add a dependency to the
-`spring-boot-starter-actuator` ``Starter POM''.
+The {github-code}/spring-boot-actuator[`spring-boot-actuator`] module provides all of
+Spring Boot's production-ready features. The simplest way to enable the features is to add
+a dependency to the `spring-boot-starter-actuator` '`Starter POM`'.
 
 .Definition of Actuator
 ****
@@ -24,7 +24,7 @@ controlling something. Actuators can generate a large amount of motion from a sm
 change.
 ****
 
-To add the actuator to a Maven based project, add the following ``starter''
+To add the actuator to a Maven based project, add the following '`starter`'
 dependency:
 
 [source,xml,indent=0]
@@ -66,7 +66,7 @@ The following endpoints are available:
 
 |`autoconfig`
 |Displays an auto-configuration report showing all auto-configuration candidates and the
- reason why they ``were'' or ``were not'' applied.
+ reason why they '`were`' or '`were not`' applied.
 |true
 
 |`beans`
@@ -86,7 +86,7 @@ The following endpoints are available:
 |true
 
 |`health`
-|Shows application health information (defaulting to a simple ``OK'' message).
+|Shows application health information (defaulting to a simple '`OK`' message).
 |false
 
 |`info`
@@ -94,7 +94,7 @@ The following endpoints are available:
 |false
 
 |`metrics`
-|Shows ``metrics'' information for the current application.
+|Shows '`metrics`' information for the current application.
 |true
 
 |`mappings`
@@ -131,14 +131,14 @@ of the `beans` endpoint and also enables `shutdown`.
 	endpoints.shutdown.enabled=true
 ----
 
-NOTE: The prefix "`endpoints` + `.` + `name`" is used to uniquely identify the endpoint
+NOTE: The prefix ‟`endpoints` + `.` + `name`” is used to uniquely identify the endpoint
 that is being configured.
 
 
 
 [[production-ready-health]]
 === Custom health information
-The default information exposed by the `health` endpoint is a simple ``OK'' message. It
+The default information exposed by the `health` endpoint is a simple '`OK`' message. It
 is often useful to perform some additional health checks, for example you might check
 that a database connection works, or that a remote REST endpoint is functioning.
 
@@ -151,10 +151,10 @@ To provide custom health information you can register a Spring bean that impleme
 	import org.springframework.stereotype.Component;
 
 	@Component
-	public class MyHealth implements HealthIndicator<String> {
+	public class MyHealth implements HealthIndicator {
 
 		@Override
-		public String health() {
+		public Health health() {
 			// perform some specific health check
 			return ...
 		}
@@ -162,15 +162,29 @@ To provide custom health information you can register a Spring bean that impleme
 	}
 ----
 
-Spring Boot also provides a
-{sc-spring-boot-actuator}/health/SimpleHealthIndicator.{sc-ext}[`SimpleHealthIndicator`]
-implementation that attempts a simple database test.
+Spring Boot provides a
+{sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
+implementation that attempts a simple database test as well as implementations for
+Redis, MongoDB and RabbitMQ.
+
+Spring Boot adds the `HealthIndicator` instances automatically if beans of type `DataSource`,
+`MongoTemplate`, `RedisConnectionFactory`, `RabbitTemplate` are present in the `ApplicationContext`.
+
+Besides implementing custom a `HealthIndicator` type and using out-of-box {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
+types, it is also possible to introduce custom `Status` types for different or more complex system
+states. In that case a custom implementation of the {sc-spring-boot-actuator}/health/HealthAggregator.{sc-ext}[`HealthAggregator`]
+interface needs to be provided or the default implementation has to be configured using the
+`health.status.order` configuration property.
+
+Assuming a new `Status` with code `FATAL` is being used in one of your `HealthIndicator`
+implementations. To configure the severity or order add the following to your application properties:
+`health.status.order: FATAL, DOWN, UNKNOWN, UP`.
 
 
 
 [[production-ready-application-info]]
 === Custom application info information
-You can customize the data exposed by the `info` endpoint by setting `info.*` Spring
+You can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring
 properties. All `Environment` properties under the info key will be automatically
 exposed. For example, you could add the following to your `application.properties`:
 
@@ -181,9 +195,20 @@ exposed. For example, you could add the following to your `application.propertie
 	info.app.version=1.0.0
 ----
 
-If you are using Maven, you can automatically expand info properties from the Maven
-project using resource filtering. In your `pom.xml` you have (inside the `<build/>`
-element):
+
+
+[[production-ready-application-info-automatic-expansion]]
+==== Automatically expand info properties at build time
+Rather than hardcoding some properties that are also specified in your project's build
+configuration, you can automatically expand info properties using the existing build
+configuration instead. This is possible in both Maven and Gradle.
+
+
+
+[[production-ready-application-info-automatic-expansion-maven]]
+===== Automatic property expansion using Maven
+You can automatically expand info properties from the Maven project using resource
+filtering. In your `pom.xml` you have (inside the `<build/>` element):
 
 [source,xml,indent=0]
 ----
@@ -195,7 +220,7 @@ element):
     </resources>
 ----
 
-You can then refer to your Maven ``project properties'' via placeholders, e.g.
+You can then refer to your Maven '`project properties`' via placeholders, e.g.
 
 [source,properties,indent=0]
 ----
@@ -209,8 +234,31 @@ You can then refer to your Maven ``project properties'' via placeholders, e.g.
 	info.build.version=${project.version}
 ----
 
-NOTE: In the above example we used `project.*` to set some values to be used as
+NOTE: In the above example we used `+project.*+` to set some values to be used as
 fallbacks if the Maven resource filtering has not been switched on for some reason.
+
+
+
+[[production-ready-application-info-automatic-expansion-gradle]]
+===== Automatic property expansion using Gradle
+You can automatically expand info properties from the Gradle project by configuring
+the Java plugin's `processResources` task to do so:
+
+[source,groovy,indent=0]
+----
+	processResources {
+		expand(project.properties)
+	}
+----
+
+You can then refer to your Gradle project's properties via placeholders, e.g.
+
+[source,properties,indent=0]
+----
+	info.build.name=${name}
+	info.build.description=${description}
+	info.build.version=${version}
+----
 
 
 
@@ -251,14 +299,14 @@ all non-sensitive endpoints to be exposed over HTTP. The default convention is t
 
 [[production-ready-sensitive-endpoints]]
 === Exposing sensitive endpoints
-If you use ``Spring Security'' sensitive endpoints will be exposed over HTTP, but also
-protected. By default ``basic'' authentication will be used with the username `user`
+If you use '`Spring Security`' sensitive endpoints will be exposed over HTTP, but also
+protected. By default '`basic`' authentication will be used with the username `user`
 and a generated password (which is printed on the console when the application starts).
 
-TIP: Generated passwords are logged as the application starts. Search for ``Using default
-password for application endpoints''.
+TIP: Generated passwords are logged as the application starts. Search for '`Using default
+security password`'.
 
-You can use Spring properties to change the username and passsword and to change the
+You can use Spring properties to change the username and password and to change the
 security role required to access the endpoints. For example, you might set the following
 in your `application.properties`:
 
@@ -275,7 +323,7 @@ in your `application.properties`:
 === Customizing the management server context path
 Sometimes it is useful to group all management endpoints under a single path. For example,
 your application might already use `/info` for another purpose. You can use the
-`management.contextPath` property to set a prefix for your manangement endpoint:
+`management.contextPath` property to set a prefix for your management endpoint:
 
 [source,properties,indent=0]
 ----
@@ -432,7 +480,7 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 
 [[production-ready-remote-shell]]
 == Monitoring and management using a remote shell
-Spring Boot supports an integrated Java shell called ``CRaSH''. You can use CRaSH to
+Spring Boot supports an integrated Java shell called '`CRaSH`'. You can use CRaSH to
 `ssh` or `telnet` into your running application. To enable remote shell support add a
 dependency to `spring-boot-starter-remote-shell`:
 
@@ -453,7 +501,9 @@ on `org.crsh:crsh.shell.telnet`.
 === Connecting to the remote shell
 By default the remote shell will listen for connections on port `2000`. The default user
 is `user` and the default password will be randomly generated and displayed in the log
-output, you should see a message like this:
+output. If your application is using Spring Security, the shell will use
+<<boot-features-security, the same configuration>> by default. If not, a simple
+authentication will be applied and you should see a message like this:
 
 [indent=0]
 ----
@@ -484,9 +534,9 @@ and `endpoint` commands.
 
 [[production-ready-remote-shell-credentials]]
 ==== Remote shell credentials
-You can use the `shell.auth.simple.username` and `shell.auth.simple.password` properties
+You can use the `shell.auth.simple.user.name` and `shell.auth.simple.user.password` properties
 to configure custom connection credentials. It is also possible to use a
-``Spring Security'' `AuthenticationManager` to handle login duties. See the
+'`Spring Security`' `AuthenticationManager` to handle login duties. See the
 {dc-spring-boot-actuator}/autoconfigure/CrshAutoConfiguration.{dc-ext}[`CrshAutoConfiguration`]
 and {dc-spring-boot-actuator}/autoconfigure/ShellProperties.{dc-ext}[`ShellProperties`]
 Javadoc for full details.
@@ -504,12 +554,12 @@ The remote shell can be extended in a number of interesting ways.
 You can write additional shell commands using Groovy or Java (see the CRaSH documentation
 for details). By default Spring Boot will search for commands in the following locations:
 
-* `classpath*:/commands/**`
-* `classpath*:/crash/commands/**`
+* `+classpath*:/commands/**+`
+* `+classpath*:/crash/commands/**+`
 
 TIP: You can change the search path by settings a `shell.commandPathPatterns` property.
 
-Here is a simple ``hello world'' command that could be loaded from
+Here is a simple '`hello world`' command that could be loaded from
 `src/main/resources/commands/hello.groovy`
 
 [source,groovy,indent=0]
@@ -555,7 +605,7 @@ from your command:
 [[production-ready-remote-shell-plugins]]
 ==== Remote shell plugins
 In addition to new commands, it is also possible to extend other CRaSH shell features.
-All Spring Beans that extends `org.crsh.plugin.CRaSHPlugin` will be automatically
+All Spring Beans that extend `org.crsh.plugin.CRaSHPlugin` will be automatically
 registered with the shell.
 
 For more information please refer to the http://www.crashub.org/[CRaSH reference
@@ -565,8 +615,8 @@ documentation].
 
 [[production-ready-metrics]]
 == Metrics
-Spring Boot Actuator includes a metrics service with ``gauge'' and ``counter'' support.
-A ``gauge'' records a single value; and a ``counter'' records a delta (an increment or
+Spring Boot Actuator includes a metrics service with '`gauge`' and '`counter`' support.
+A '`gauge`' records a single value; and a '`counter`' records a delta (an increment or
 decrement). Metrics for all HTTP requests are automatically recorded, so if you hit the
 `metrics` endpoint should should see a response similar to this:
 
@@ -575,19 +625,33 @@ decrement). Metrics for all HTTP requests are automatically recorded, so if you 
 	{
 		"counter.status.200.root": 20,
 		"counter.status.200.metrics": 3,
+		"counter.status.200.star-star": 5,
 		"counter.status.401.root": 4,
+		"gauge.response.star-star": 6,
 		"gauge.response.root": 2,
 		"gauge.response.metrics": 3,
-		"mem": 466944,
-		"mem.free": 410117,
-		"processors": 8
+		"classes": 5808,
+		"classes.loaded": 5808,
+		"classes.unloaded": 0,
+		"heap": 3728384,
+		"heap.committed": 986624,
+		"heap.init": 262144,
+		"heap.used": 52765,
+		"mem": 986624,
+		"mem.free": 933858,
+		"processors": 8,
+		"threads": 15,
+		"threads.daemon": 11,
+		"threads.peak": 15,
+		"uptime": 494836
 	}
 ----
 
-Here we can see basic `memory` and `processor` information along with some HTTP metrics.
-In this instance the `root` (``/'') and `/metrics` URLs have returned `HTTP 200` responses
-`20` and `3` times respectively. It also appears that the `root` URL returned `HTTP 401`
-(unauthorized) `4` times.
+Here we can see basic `memory`, `heap`, `class loading`, `processor` and `thread pool`
+information along with some HTTP metrics. In this instance the `root` ('`/`') and `/metrics`
+URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears
+that the `root` URL returned `HTTP 401` (unauthorized) `4` times. The double asterix (`star-star`)
+comes from a request matched by Spring MVC as `+/**+` (normally a static resource).
 
 The `gauge` shows the last response time for a request. So the last request to `root` took
 `2ms` to respond and the last to `/metrics` took `3ms`.
@@ -641,32 +705,39 @@ http://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitorin
 Metric service implementations are usually bound to a
 {sc-spring-boot-actuator}/metrics/repository/MetricRepository.{sc-ext}[`MetricRepository`].
 A `MetricRepository` is responsible for storing and retrieving metric information. Spring
-Boot provides an `InMemoryMessageRespository` and a `RedisMetricRepository` out of the
+Boot provides an `InMemoryMetricRepository` and a `RedisMetricRepository` out of the
 box (the in-memory repository is the default) but you can also write your own. The
 `MetricRepository` interface is actually composed of higher level `MetricReader` and
 `MetricWriter` interfaces. For full details refer to the
 {dc-spring-boot-actuator}/metrics/repository/MetricRepository.{dc-ext}[Javadoc].
 
+There's nothing to stop you hooking a `MetricRepository` with back-end storage directly
+into your app, but we recommend using the default `InMemoryMetricRepository`
+(possibly with a custom `Map` instance if you are worried about heap usage) and
+populating a back-end repository through a scheduled export job. In that way you get
+some buffering in memory of the metric values and you can reduce the network
+chatter by exporting less frequently or in batches. Spring Boot provides
+an `Exporter` interface and a few basic implementations for you to get started with that.
 
 
 [[production-ready-code-hale-metrics]]
 === Coda Hale Metrics
-User of the http://metrics.codahale.com/[Coda Hale ``Metrics'' library] will automatically
+User of the http://metrics.codahale.com/[Coda Hale '`Metrics`' library] will automatically
 find that Spring Boot metrics are published to `com.codahale.metrics.MetricRegistry`. A
 default `com.codahale.metrics.MetricRegistry` Spring bean will be created when you declare
 a dependency to the `com.codahale.metrics:metrics-core` library; you can also register you
 own `@Bean` instance if you need customizations.
 
 Users can create Coda Hale metrics by prefixing their metric names with the appropriate
-type (e.g. `histogram.*`, `meter.*`).
+type (e.g. `+histogram.*+`, `+meter.*+`).
 
 
 
 [[production-ready-metrics-message-channel-integration]]
 === Message channel integration
-If the ``Spring Messaging'' jar is on your classpath a `MessageChannel` called
+If the '`Spring Messaging`' jar is on your classpath a `MessageChannel` called
 `metricsChannel` is automatically created (unless one already exists). All metric update
-events are additionally published as ``messages'' on that channel. Additional analysis or
+events are additionally published as '`messages`' on that channel. Additional analysis or
 actions can be taken by clients subscribing to that channel.
 
 
@@ -674,7 +745,7 @@ actions can be taken by clients subscribing to that channel.
 [[production-ready-auditing]]
 == Auditing
 Spring Boot Actuator has a flexible audit framework that will publish events once Spring
-Security is in play (``authentication success'', ``failure'' and ``access denied''
+Security is in play ('`authentication success`', '`failure`' and '`access denied`'
 exceptions by default). This can be very useful for reporting, and also to implement a
 lock-out policy based on authentication failures.
 
@@ -737,43 +808,6 @@ the capacity. You can also create your own alternative `TraceRepository` impleme
 if needed.
 
 
-
-[[production-ready-error-handling]]
-== Error Handling
-Spring Boot Actuator provides an `/error` mapping by default that handles all errors in a
-sensible way, and it is registered as a ``global'' error page in the servlet container.
-For machine clients it will produce a JSON response with details of the error, the HTTP
-status and the exception message. For browser clients there is a ``whitelabel'' error
-view that renders the same data in HTML format (to customize it just add a `View` that
-resolves to ``error'').
-
-If you want more specific error pages for some conditions, the embedded servlet containers
-support a uniform Java DSL for customizing the error handling. For example:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Bean
-	public EmbeddedServletContainerCustomizer containerCustomizer(){
-		return new MyCustomizer();
-	}
-
-	// ...
-
-	private static class MyCustomizer implements EmbeddedServletContainerCustomizer {
-
-		@Override
-		public void customize(ConfigurableEmbeddedServletContainer factory) {
-            factory.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
-		}
-
-	}
-----
-
-You can also use regular Spring MVC features like http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-exception-handlers[`@ExceptionHandler`
-methods] and http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-controller-advice[`@ControllerAdvice`].
-
-
-
 [[production-ready-process-monitoring]]
 == Process monitoring
 In Spring Boot Actuator you can find `ApplicationPidListener` which creates file
@@ -798,8 +832,8 @@ In `META-INF/spring.factories` file you have to activate the listener:
 [[production-ready-process-monitoring-programmatically]]
 === Programmatically
 You can also activate this listener by invoking `SpringApplication.addListeners(...)`
-method and passing `ApplicationPidListener` object. You can also customize file name
-and path through constructor.
+method and passing `ApplicationPidListener` object. You can also customize the file
+name and path through its constructor.
 
 
 
@@ -810,6 +844,6 @@ look at the actuator {github-code}/spring-boot-samples[sample applications]. You
 might want to read about graphing tools such as http://graphite.wikidot.com/[Graphite].
 
 Otherwise, you can continue on, to read about <<cloud-deployment.adoc#cloud-deployment,
-``cloud deployment options''>> or jump ahead
-for some in depth information about Spring Boot's
-'<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>'.
+'`cloud deployment options`'>> or jump ahead
+for some in-depth information about Spring Boot's
+_<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.

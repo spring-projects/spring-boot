@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link PropertySourcesLoader}.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertySourcesLoaderTests {

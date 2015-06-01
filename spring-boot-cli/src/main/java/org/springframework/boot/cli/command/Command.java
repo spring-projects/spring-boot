@@ -19,10 +19,11 @@ package org.springframework.boot.cli.command;
 import java.util.Collection;
 
 import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * A single command that can be run from the CLI.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see #run(String...)
@@ -62,6 +63,6 @@ public interface Command {
 	 * @param args command arguments (this will not include the command itself)
 	 * @throws Exception
 	 */
-	void run(String... args) throws Exception;
+	ExitStatus run(String... args) throws Exception;
 
 }

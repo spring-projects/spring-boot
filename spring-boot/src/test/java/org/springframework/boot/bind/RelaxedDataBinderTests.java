@@ -52,13 +52,17 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RelaxedDataBinder}.
- * 
+ *
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class RelaxedDataBinderTests {
 
@@ -72,6 +76,13 @@ public class RelaxedDataBinderTests {
 		VanillaTarget target = new VanillaTarget();
 		bind(target, "foo: bar");
 		assertEquals("bar", target.getFoo());
+	}
+
+	@Test
+	public void testBindChars() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "bar: foo");
+		assertEquals("foo", new String(target.getBar()));
 	}
 
 	@Test
@@ -178,7 +189,7 @@ public class RelaxedDataBinderTests {
 		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n"
 				+ "bar: spam");
 		assertEquals(123, target.getValue());
-		assertEquals(null, target.getFoo());
+		assertNull(target.getFoo());
 		assertEquals(0, result.getErrorCount());
 	}
 
@@ -271,6 +282,15 @@ public class RelaxedDataBinderTests {
 		bind(target, "nested.foo: bar\n" + "nested.value.foo: 123");
 		assertEquals("bar", target.getNested().get("foo"));
 		assertEquals("123", target.getNested().get("value.foo"));
+	}
+
+	@Test
+	public void testBindNestedMapOfEnum() throws Exception {
+		this.conversionService = new DefaultConversionService();
+		TargetWithNestedMapOfEnum target = new TargetWithNestedMapOfEnum();
+		bind(target, "nested.this: bar\n" + "nested.ThAt: 123");
+		assertEquals("bar", target.getNested().get(Bingo.THIS));
+		assertEquals("123", target.getNested().get(Bingo.THAT));
 	}
 
 	@Test
@@ -411,6 +431,33 @@ public class RelaxedDataBinderTests {
 		assertEquals("efg", c1.get("d1"));
 	}
 
+	@Test
+	public void testBindCaseInsensitiveEnumsWithoutConverter() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		doTestBindCaseInsensitiveEnums(target);
+	}
+
+	@Test
+	public void testBindCaseInsensitiveEnumsWithConverter() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		this.conversionService = new DefaultConversionService();
+		doTestBindCaseInsensitiveEnums(target);
+	}
+
+	private void doTestBindCaseInsensitiveEnums(VanillaTarget target) throws Exception {
+		BindingResult result = bind(target, "bingo: THIS");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingo(), equalTo(Bingo.THIS));
+
+		result = bind(target, "bingo: oR");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingo(), equalTo(Bingo.or));
+
+		result = bind(target, "bingo: that");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingo(), equalTo(Bingo.THAT));
+	}
+
 	private BindingResult bind(Object target, String values) throws Exception {
 		return bind(target, values, null);
 	}
@@ -540,6 +587,19 @@ public class RelaxedDataBinderTests {
 
 	}
 
+	public static class TargetWithNestedMapOfEnum {
+
+		private Map<Bingo, Object> nested;
+
+		public Map<Bingo, Object> getNested() {
+			return nested;
+		}
+
+		public void setNested(Map<Bingo, Object> nested) {
+			this.nested = nested;
+		}
+	}
+
 	public static class TargetWithNestedMapOfListOfString {
 
 		private Map<String, List<String>> nested;
@@ -656,11 +716,23 @@ public class RelaxedDataBinderTests {
 
 		private String foo;
 
+		private char[] bar;
+
 		private int value;
 
 		private String foo_bar;
 
 		private String fooBaz;
+
+		private Bingo bingo;
+
+		public char[] getBar() {
+			return this.bar;
+		}
+
+		public void setBar(char[] bar) {
+			this.bar = bar;
+		}
 
 		public int getValue() {
 			return this.value;
@@ -694,6 +766,18 @@ public class RelaxedDataBinderTests {
 			this.fooBaz = fooBaz;
 		}
 
+		public Bingo getBingo() {
+			return this.bingo;
+		}
+
+		public void setBingo(Bingo bingo) {
+			this.bingo = bingo;
+		}
+
+	}
+
+	static enum Bingo {
+		THIS, or, THAT
 	}
 
 	public static class ValidatedTarget {

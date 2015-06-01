@@ -47,22 +47,21 @@ import org.eclipse.aether.util.repository.DefaultProxySelector;
 import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
 import org.sonatype.plexus.components.cipher.PlexusCipherException;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
+import org.springframework.boot.cli.util.Log;
 
 /**
  * Auto-configuration for a RepositorySystemSession that uses Maven's settings.xml to
  * determine the configuration settings
- * 
+ *
  * @author Andy Wilkinson
  */
 public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		RepositorySystemSessionAutoConfiguration {
 
-	private static final String DEFAULT_HOME_DIR = System.getProperty("user.home");
-
 	private final String homeDir;
 
 	public SettingsXmlRepositorySystemSessionAutoConfiguration() {
-		this(DEFAULT_HOME_DIR);
+		this(System.getProperty("user.home"));
 	}
 
 	SettingsXmlRepositorySystemSessionAutoConfiguration(String homeDir) {
@@ -76,8 +75,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		Settings settings = loadSettings();
 		SettingsDecryptionResult decryptionResult = decryptSettings(settings);
 		if (!decryptionResult.getProblems().isEmpty()) {
-			throw new IllegalStateException("Settings decryption failed: "
-					+ decryptionResult.getProblems());
+			Log.error("Maven settings decryption failed. Some Maven repositories may be inaccessible");
+			// Continue - the encrypted credentials may not be used
 		}
 
 		session.setOffline(settings.isOffline());

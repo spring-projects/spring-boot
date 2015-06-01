@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.Servlet;
@@ -34,23 +35,28 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.DefaultMessageCodesResolver;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -58,6 +64,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -65,6 +72,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
@@ -72,9 +80,10 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -110,6 +119,7 @@ public class WebMvcAutoConfiguration {
 	}
 
 	public static String DEFAULT_PREFIX = "";
+
 	public static String DEFAULT_SUFFIX = "";
 
 	@Bean
@@ -118,19 +128,11 @@ public class WebMvcAutoConfiguration {
 		return new HiddenHttpMethodFilter();
 	}
 
-	public static boolean templateExists(Environment environment,
-			ResourceLoader resourceLoader, String view) {
-		String prefix = environment.getProperty("spring.view.prefix",
-				WebMvcAutoConfiguration.DEFAULT_PREFIX);
-		String suffix = environment.getProperty("spring.view.suffix",
-				WebMvcAutoConfiguration.DEFAULT_SUFFIX);
-		return resourceLoader.getResource(prefix + view + suffix).exists();
-	}
-
-	// Defined as a nested config to ensure WebMvcConfigurerAdapter it not read when not
+	// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when not
 	// on the classpath
 	@Configuration
-	@EnableWebMvc
+	@Import(EnableWebMvcConfiguration.class)
+	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
 	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
 		private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
@@ -141,11 +143,11 @@ public class WebMvcAutoConfiguration {
 		@Value("${spring.view.suffix:}")
 		private String suffix = "";
 
-		@Value("${spring.resources.cachePeriod:}")
-		private Integer cachePeriod;
+		@Autowired
+		private ResourceProperties resourceProperties = new ResourceProperties();
 
-		@Value("${spring.mvc.locale:}")
-		private String locale = "";
+		@Autowired
+		private WebMvcProperties mvcProperties = new WebMvcProperties();
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -186,7 +188,7 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(ViewResolver.class)
-		@ConditionalOnMissingBean(name = "viewResolver")
+		@ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class)
 		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
 			resolver.setContentNegotiationManager(beanFactory
@@ -199,9 +201,27 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(LocaleResolver.class)
-		@ConditionalOnExpression("'${spring.mvc.locale:}' != ''")
+		@ConditionalOnProperty(prefix = "spring.mvc.", value = "locale")
 		public LocaleResolver localeResolver() {
-			return new FixedLocaleResolver(StringUtils.parseLocaleString(this.locale));
+			return new FixedLocaleResolver(
+					StringUtils.parseLocaleString(this.mvcProperties.getLocale()));
+		}
+
+		@Bean
+		@ConditionalOnProperty(prefix = "spring.mvc.", value = "date-format")
+		public Formatter<Date> dateFormatter() {
+			return new DateFormatter(this.mvcProperties.getDateFormat());
+		}
+
+		@Override
+		public MessageCodesResolver getMessageCodesResolver() {
+			if (this.mvcProperties.getMessageCodesResolverFormat() != null) {
+				DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
+				resolver.setMessageCodeFormatter(this.mvcProperties
+						.getMessageCodesResolverFormat());
+				return resolver;
+			}
+			return null;
 		}
 
 		@Override
@@ -225,15 +245,21 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			if (!this.resourceProperties.isAddMappings()) {
+				logger.debug("Default resource handling disabled");
+				return;
+			}
+
+			Integer cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				registry.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/")
-						.setCachePeriod(this.cachePeriod);
+						.setCachePeriod(cachePeriod);
 			}
 			if (!registry.hasMappingForPattern("/**")) {
 				registry.addResourceHandler("/**")
 						.addResourceLocations(RESOURCE_LOCATIONS)
-						.setCachePeriod(this.cachePeriod);
+						.setCachePeriod(cachePeriod);
 			}
 		}
 
@@ -272,12 +298,28 @@ public class WebMvcAutoConfiguration {
 			}
 
 			@Bean
-			protected ResourceHttpRequestHandler faviconRequestHandler() {
+			public ResourceHttpRequestHandler faviconRequestHandler() {
 				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
 				requestHandler.setLocations(Arrays
 						.<Resource> asList(new ClassPathResource("/")));
 				return requestHandler;
 			}
+		}
+
+	}
+
+	/**
+	 * Configuration equivalent to {@code @EnableWebMvc}.
+	 */
+	@Configuration
+	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration {
+
+		@Bean
+		@Primary
+		@Override
+		public RequestMappingHandlerMapping requestMappingHandlerMapping() {
+			// Must be @Primary for MvcUriComponentsBuilder to work
+			return super.requestMappingHandlerMapping();
 		}
 
 	}

@@ -23,7 +23,7 @@ import static java.util.Arrays.asList;
 /**
  * An {@link OptionHandler} for commands that result in the compilation of one or more
  * Groovy scripts
- * 
+ *
  * @author Andy Wilkinson
  * @author Dave Syer
  */

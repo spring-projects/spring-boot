@@ -18,10 +18,13 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 
-import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -37,39 +40,43 @@ import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
 
 /**
- * MOJO that can can be used to repackage existing JAR and WAR archives so that they can
- * be executed from the command line using {@literal java -jar}. With
- * <code>layout=NONE</code> can also be used simply to package a JAR with nested
- * dependencies (and no main class, so not executable).
- * 
+ * Repackages existing JAR and WAR archives so that they can be executed from the command
+ * line using {@literal java -jar}. With <code>layout=NONE</code> can also be used simply
+ * to package a JAR with nested dependencies (and no main class, so not executable).
+ *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class RepackageMojo extends AbstractMojo {
+public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	/**
 	 * The Maven project.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
 
 	/**
 	 * Maven project helper utils.
+	 * @since 1.0
 	 */
 	@Component
 	private MavenProjectHelper projectHelper;
 
 	/**
 	 * Directory containing the generated archive.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project.build.directory}", required = true)
 	private File outputDirectory;
 
 	/**
 	 * Name of the generated archive.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project.build.finalName}", required = true)
 	private String finalName;
@@ -77,7 +84,11 @@ public class RepackageMojo extends AbstractMojo {
 	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
 	 * attached. If this is not given, it will merely be written to the output directory
-	 * according to the finalName.
+	 * according to the finalName. Attaching the artifact allows to deploy it alongside to
+	 * the original one, see <a href=
+	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
+	 * > the maven documentation for more details</a>.
+	 * @since 1.0
 	 */
 	@Parameter
 	private String classifier;
@@ -85,18 +96,34 @@ public class RepackageMojo extends AbstractMojo {
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
 	 * contains a 'main' method will be used.
+	 * @since 1.0
 	 */
 	@Parameter
 	private String mainClass;
 
 	/**
-	 * The layout to use (JAR, WAR, ZIP, DIR, NONE) in case it cannot be inferred.
+	 * The type of archive (which corresponds to how the dependencies are laid out inside
+	 * it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
+	 * archive type.
+	 * @since 1.0
 	 */
 	@Parameter
 	private LayoutType layout;
 
+	/**
+	 * A list of the libraries that must be unpacked from fat jars in order to run.
+	 * @since 1.1
+	 */
+	@Parameter
+	private List<Dependency> requiresUnpack;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.project.getPackaging().equals("pom")) {
+			getLog().debug("repackage goal could not be applied to pom project.");
+			return;
+		}
+
 		File source = this.project.getArtifact().getFile();
 		File target = getTargetFile();
 		Repackager repackager = new Repackager(source) {
@@ -122,7 +149,12 @@ public class RepackageMojo extends AbstractMojo {
 			getLog().info("Layout: " + this.layout);
 			repackager.setLayout(this.layout.layout());
 		}
-		Libraries libraries = new ArtifactsLibraries(this.project.getArtifacts());
+
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
+				getFilters());
+
+		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
+				getLog());
 		try {
 			repackager.repackage(target, libraries);
 		}

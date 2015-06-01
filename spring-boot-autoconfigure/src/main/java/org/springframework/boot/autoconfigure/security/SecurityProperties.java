@@ -22,16 +22,38 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.Ordered;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.util.StringUtils;
 
 /**
  * Properties for the security aspects of an application.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "security", ignoreUnknownFields = false)
 public class SecurityProperties implements SecurityPrequisite {
+
+	/**
+	 * Order before the basic authentication access control provided by Boot. This is a
+	 * useful place to put user-defined access rules if you want to override the default
+	 * access rules.
+	 */
+	public static final int ACCESS_OVERRIDE_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 2;
+
+	/**
+	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
+	 * authentication for application endpoints. If you want to add your own
+	 * authentication for all or some of those endpoints the best thing to do is add your
+	 * own WebSecurityConfigurerAdapter with lower order.
+	 */
+	public static final int BASIC_AUTH_ORDER = Ordered.LOWEST_PRECEDENCE - 5;
+
+	/**
+	 * Order applied to the WebSecurityConfigurer that ignores standard static resource
+	 * paths.
+	 */
+	public static final int IGNORED_ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 	private boolean requireSsl;
 
@@ -99,7 +121,7 @@ public class SecurityProperties implements SecurityPrequisite {
 	public static class Headers {
 
 		public static enum HSTS {
-			none, domain, all
+			NONE, DOMAIN, ALL
 		}
 
 		private boolean xss;
@@ -110,7 +132,7 @@ public class SecurityProperties implements SecurityPrequisite {
 
 		private boolean contentType;
 
-		private HSTS hsts = HSTS.all;
+		private HSTS hsts = HSTS.ALL;
 
 		public boolean isXss() {
 			return this.xss;

@@ -25,7 +25,7 @@ import javax.servlet.ServletResponse;
 
 /**
  * Simple example Servlet used for testing.
- * 
+ *
  * @author Phillip Webb
  */
 public class ExampleServlet extends GenericServlet {

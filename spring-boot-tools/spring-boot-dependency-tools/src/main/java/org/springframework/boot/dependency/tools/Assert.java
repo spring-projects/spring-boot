@@ -18,7 +18,7 @@ package org.springframework.boot.dependency.tools;
 
 /**
  * Simple subset of the Spring Assert utility.
- * 
+ *
  * @author Phillip Webb
  */
 class Assert {

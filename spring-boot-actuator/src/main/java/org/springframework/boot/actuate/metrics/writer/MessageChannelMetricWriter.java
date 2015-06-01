@@ -24,7 +24,7 @@ import org.springframework.messaging.support.MessageBuilder;
  * A {@link MetricWriter} that publishes the metric updates on a {@link MessageChannel}.
  * The messages have the writer input ({@link Delta} or {@link Metric}) as payload, and
  * carry an additional header "metricName" with the name of the metric in it.
- * 
+ *
  * @author Dave Syer
  */
 public class MessageChannelMetricWriter implements MetricWriter {

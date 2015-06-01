@@ -16,11 +16,14 @@
 
 package org.springframework.boot.groovy;
 
+import groovy.lang.Writable;
 import groovy.text.GStringTemplateEngine;
 import groovy.text.Template;
+import groovy.text.TemplateEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
@@ -29,7 +32,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 
 /**
  * Helpful utilties for working with Groovy {@link Template}s.
- * 
+ *
  * @author Dave Syer
  */
 public abstract class GroovyTemplate {
@@ -41,12 +44,19 @@ public abstract class GroovyTemplate {
 
 	public static String template(String name, Map<String, ?> model) throws IOException,
 			CompilationFailedException, ClassNotFoundException {
-		return getTemplate(name).make(model).toString();
+		return template(new GStringTemplateEngine(), name, model);
 	}
 
-	private static Template getTemplate(String name) throws CompilationFailedException,
-			ClassNotFoundException, IOException {
-		GStringTemplateEngine engine = new GStringTemplateEngine();
+	public static String template(TemplateEngine engine, String name, Map<String, ?> model)
+			throws IOException, CompilationFailedException, ClassNotFoundException {
+		Writable writable = getTemplate(engine, name).make(model);
+		StringWriter result = new StringWriter();
+		writable.writeTo(result);
+		return result.toString();
+	}
+
+	private static Template getTemplate(TemplateEngine engine, String name)
+			throws CompilationFailedException, ClassNotFoundException, IOException {
 
 		File file = new File("templates", name);
 		if (file.exists()) {

@@ -27,7 +27,7 @@ import org.junit.runners.model.Statement;
 
 /**
  * Capture output from System.out and System.err.
- * 
+ *
  * @author Phillip Webb
  */
 public class OutputCapture implements TestRule {

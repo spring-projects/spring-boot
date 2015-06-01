@@ -21,7 +21,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * Default implementation of {@link GaugeService}.
- * 
+ *
  * @author Dave Syer
  */
 public class DefaultGaugeService implements GaugeService {
@@ -29,7 +29,7 @@ public class DefaultGaugeService implements GaugeService {
 	private final MetricWriter writer;
 
 	/**
-	 * Create a {@link DefaultCounterService} instance.
+	 * Create a {@link DefaultGaugeService} instance.
 	 * @param writer the underlying writer used to manage metrics
 	 */
 	public DefaultGaugeService(MetricWriter writer) {

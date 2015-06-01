@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -43,10 +42,11 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist
+ * @author Christian Dupuis
  */
 public class EndpointAutoConfigurationTests {
 
@@ -82,16 +82,26 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void healthEndpoint() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class,
-				EmbeddedDataSourceConfiguration.class);
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
-		HealthEndpoint<?> bean = this.context.getBean(HealthEndpoint.class);
+		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
 		assertNotNull(bean);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> result = (Map<String, Object>) bean.invoke();
+		Health result = bean.invoke();
 		assertNotNull(result);
-		assertTrue("Wrong result: " + result, result.containsKey("status"));
-		assertTrue("Wrong result: " + result, result.containsKey("database"));
+		assertTrue("Wrong result: " + result, result.getDetails().containsKey("database"));
+	}
+
+	@Test
+	public void healthEndpointWithDefaultHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EndpointAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
+		assertNotNull(bean);
+		Health result = bean.invoke();
+		assertNotNull(result);
 	}
 
 	@Test

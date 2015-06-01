@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  * Help for a specific option.
- * 
+ *
  * @author Phillip Webb
  */
 public interface OptionHelp {

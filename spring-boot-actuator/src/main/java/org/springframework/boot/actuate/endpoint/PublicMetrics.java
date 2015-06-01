@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
- * 
+ *
  * @author Dave Syer
  * @see VanillaPublicMetrics
  */

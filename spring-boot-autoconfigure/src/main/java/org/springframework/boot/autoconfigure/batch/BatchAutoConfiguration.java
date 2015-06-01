@@ -53,7 +53,7 @@ import org.springframework.util.StringUtils;
  * with a comma-delimited list: {@literal spring.batch.job.names=job1,job2}. In this case
  * the Runner will first find jobs registered as Beans, then those in the existing
  * JobRegistry.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

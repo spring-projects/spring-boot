@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link EmbeddedServletContainerAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class EmbeddedServletContainerAutoConfigurationTests {

@@ -16,34 +16,65 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Map;
+
+import org.springframework.boot.actuate.health.CompositeHealthIndicator;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose application health.
- * 
+ *
  * @author Dave Syer
+ * @author Christian Dupuis
  */
-@ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = false)
-public class HealthEndpoint<T> extends AbstractEndpoint<T> {
+@ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = true)
+public class HealthEndpoint extends AbstractEndpoint<Health> {
 
-	private final HealthIndicator<? extends T> indicator;
+	private final HealthIndicator healthIndicator;
 
 	/**
 	 * Create a new {@link HealthIndicator} instance.
-	 * 
-	 * @param indicator the health indicator
 	 */
-	public HealthEndpoint(HealthIndicator<? extends T> indicator) {
+	public HealthEndpoint(HealthAggregator healthAggregator,
+			Map<String, HealthIndicator> healthIndicators) {
 		super("health", false, true);
-		Assert.notNull(indicator, "Indicator must not be null");
-		this.indicator = indicator;
+
+		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
+		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
+
+		if (healthIndicators.size() == 1) {
+			this.healthIndicator = healthIndicators.values().iterator().next();
+		}
+		else {
+			CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
+					healthAggregator);
+			for (Map.Entry<String, HealthIndicator> h : healthIndicators.entrySet()) {
+				healthIndicator.addHealthIndicator(getKey(h.getKey()), h.getValue());
+			}
+			this.healthIndicator = healthIndicator;
+		}
 	}
 
+	/**
+	 * Invoke all {@link HealthIndicator} delegates and collect their health information.
+	 */
 	@Override
-	public T invoke() {
-		return this.indicator.health();
+	public Health invoke() {
+		return this.healthIndicator.health();
 	}
 
+	/**
+	 * Turns the bean name into a key that can be used in the map of health information.
+	 */
+	private String getKey(String name) {
+		int index = name.toLowerCase().indexOf("healthindicator");
+		if (index > 0) {
+			return name.substring(0, index);
+		}
+		return name;
+	}
 }

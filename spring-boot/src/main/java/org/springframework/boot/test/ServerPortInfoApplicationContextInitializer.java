@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * will have the property name {@literal "local.management.port"}.
  * <p>
  * Properties are automatically propagated up to any parent context.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

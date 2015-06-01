@@ -36,8 +36,9 @@ import org.springframework.validation.DataBinder;
  * Binder implementation that allows caller to bind to maps and also allows property names
  * to match a bit loosely (if underscores or dashes are removed and replaced with camel
  * case for example).
- * 
+ *
  * @author Dave Syer
+ * @author Phillip Webb
  * @see RelaxedNames
  */
 public class RelaxedDataBinder extends DataBinder {
@@ -76,6 +77,14 @@ public class RelaxedDataBinder extends DataBinder {
 	}
 
 	@Override
+	public void initBeanPropertyAccess() {
+		super.initBeanPropertyAccess();
+		// Hook in the RelaxedConversionService
+		getInternalBindingResult().initConversion(
+				new RelaxedConversionService(getConversionService()));
+	}
+
+	@Override
 	protected void doBind(MutablePropertyValues propertyValues) {
 		propertyValues = modifyProperties(propertyValues, getTarget());
 		// Harmless additional property editor comes in very handy sometimes...
@@ -101,12 +110,13 @@ public class RelaxedDataBinder extends DataBinder {
 			propertyValues = addMapPrefix(propertyValues);
 		}
 
-		BeanWrapper targetWrapper = new BeanWrapperImpl(target);
-		targetWrapper.setAutoGrowNestedPaths(true);
+		BeanWrapper wrapper = new BeanWrapperImpl(target);
+		wrapper.setConversionService(new RelaxedConversionService(getConversionService()));
+		wrapper.setAutoGrowNestedPaths(true);
 
 		List<PropertyValue> list = propertyValues.getPropertyValueList();
 		for (int i = 0; i < list.size(); i++) {
-			modifyProperty(propertyValues, targetWrapper, list.get(i), i);
+			modifyProperty(propertyValues, wrapper, list.get(i), i);
 		}
 		return propertyValues;
 	}
@@ -180,7 +190,6 @@ public class RelaxedDataBinder extends DataBinder {
 		TypeDescriptor descriptor = wrapper.getPropertyTypeDescriptor(name);
 		if (descriptor == null || descriptor.isMap()) {
 			if (descriptor != null) {
-				wrapper.getPropertyValue(name + "[foo]");
 				TypeDescriptor valueDescriptor = descriptor.getMapValueTypeDescriptor();
 				if (valueDescriptor != null) {
 					Class<?> valueType = valueDescriptor.getObjectType();

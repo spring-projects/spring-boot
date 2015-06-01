@@ -1,0 +1,28 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}"
+	}
+}
+
+subprojects {
+	apply plugin: 'java'
+
+	dependencies {
+		compile rootProject.files {'lib/foo.jar'}
+	}
+}
+
+apply plugin: 'spring-boot'
+
+springBoot {
+	mainClass = 'foo.bar.Baz'
+}
+
+dependencies {
+	compile project(':one')
+	compile project(':two')
+}
+

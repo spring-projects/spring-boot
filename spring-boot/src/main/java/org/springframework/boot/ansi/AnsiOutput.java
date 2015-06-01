@@ -21,7 +21,7 @@ import org.springframework.util.Assert;
 /**
  * Generates ANSI encoded output, automatically attempting to detect if the terminal
  * supports ANSI.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class AnsiOutput {
@@ -37,7 +37,7 @@ public abstract class AnsiOutput {
 
 	private static final String ENCODE_END = "m";
 
-	private final static String RESET = "0;" + AnsiElement.DEFAULT;
+	private static final String RESET = "0;" + AnsiElement.DEFAULT;
 
 	/**
 	 * Sets if ANSI output is enabled.

@@ -36,18 +36,18 @@ import org.springframework.context.annotation.Configuration;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedding Jolokia, a JMX-HTTP
  * bridge giving an alternative to JSR-160 connectors.
- * 
+ *
  * <p>
  * This configuration will get automatically enabled as soon as the Jolokia
  * {@link AgentServlet} is on the classpath. To disable set
  * <code>endpoints.jolokia.enabled: false</code>.
- * 
+ *
  * <p>
  * Additional configuration parameters for Jolokia can be provided by specifying
  * <code>jolokia.config.*</code> properties. See the <a
  * href="http://jolokia.org">http://jolokia.org</a> web site for more information on
  * supported configuration parameters.
- * 
+ *
  * @author Christian Dupuis
  * @author Dave Syer
  */

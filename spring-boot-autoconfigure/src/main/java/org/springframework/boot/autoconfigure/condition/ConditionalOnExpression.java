@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Conditional;
 /**
  * Configuration annotation for a conditional element that depends on the value of a SpEL
  * expression.
- * 
+ *
  * @author Dave Syer
  */
 @Conditional(OnExpressionCondition.class)

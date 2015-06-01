@@ -26,7 +26,7 @@ import org.springframework.boot.groovy.EnableDeviceResolver;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Mobile.
- * 
+ *
  * @author Roy Clarkson
  * @author Dave Syer
  */

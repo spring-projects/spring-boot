@@ -1,3 +1,4 @@
+
 [[using-boot]]
 = Using Spring Boot
 
@@ -11,7 +12,7 @@ recommendations that, when followed, will make your development process just a
 little easier.
 
 If you're just starting out with Spring Boot, you should probably read the
-'<<getting-started.adoc#getting-started, Getting Started>>' guide before diving into
+_<<getting-started.adoc#getting-started, Getting Started>>_ guide before diving into
 this section.
 --
 
@@ -20,7 +21,7 @@ this section.
 [[using-boot-build-systems]]
 == Build systems
 It is strongly recommended that you choose a build system that supports _dependency
-management_, and one that can consume artifacts published to the ``Maven Central''
+management_, and one that can consume artifacts published to the "`Maven Central`"
 repository. We would recommend that you choose Maven or Gradle. It is possible to get
 Spring Boot to work with other build systems (Ant for example), but they will not be
 particularly well supported.
@@ -35,10 +36,7 @@ defaults. The parent project provides the following features:
 * Java 1.6 as the default compiler level.
 * UTF-8 source encoding.
 * A Dependency Management section, allowing you to omit `<version>` tags for common
-  dependencies.
-* Generally useful test dependencies (http://junit.org/[JUnit],
-  https://code.google.com/p/hamcrest/[Hamcrest],
-  https://code.google.com/p/mockito/[Mockito]).
+  dependencies, inherited from the `spring-boot-dependencies` POM.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
 * Sensible plugin configuration (http://mojo.codehaus.org/exec-maven-plugin/[exec plugin],
   http://maven.apache.org/surefire/maven-surefire-plugin/[surefire],
@@ -67,11 +65,15 @@ If you import additional starters, you can safely omit the version number.
 
 
 
-[[using-boot-maven-your-own-parent]]
-==== Using your own parent POM
-If you don't want to use the Spring Boot starter parent, you can use your own and still
-keep the benefit of the dependency management (but not the plugin management) using a
-`scope=import` dependency:
+[[using-boot-maven-without-a-parent]]
+==== Using Spring Boot without the parent POM
+Not everyone likes inheriting from the `spring-boot-starter-parent` POM. You may have your
+own corporate standard parent that you need to use, or you may just prefer to explicitly
+declare all your Maven configuration.
+
+If you don't want to use the `spring-boot-starter-parent`, you can still keep the benefit
+of the dependency management (but not the plugin management) by using a `scope=import`
+dependency:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -80,7 +82,7 @@ keep the benefit of the dependency management (but not the plugin management) us
 			<dependency>
 				<!-- Import dependency management from Spring Boot -->
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-parent</artifactId>
+				<artifactId>spring-boot-dependencies</artifactId>
 				<version>{spring-boot-version}</version>
 				<type>pom</type>
 		        <scope>import</scope>
@@ -124,15 +126,16 @@ section if you want to use it:
 	</build>
 ----
 
-NOTE: You only need to add the plugin, there is no need for to configure it unless you
-want to change the settings defined in the parent.
+NOTE: If you use the Spring Boot starter parent pom, you only need to add the plugin,
+there is no need for to configure it unless you want to change the settings defined in
+the parent.
 
 
 
 [[using-boot-gradle]]
 === Gradle
-Gradle users can directly import ``starter POMs'' in their `dependencies` section. Unlike
-Maven, there is no ``super parent'' to import to share some configuration.
+Gradle users can directly import "`starter POMs`" in their `dependencies` section. Unlike
+Maven, there is no "`super parent`" to import to share some configuration.
 
 [source,groovy,indent=0,subs="attributes"]
 ----
@@ -148,7 +151,7 @@ The <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, `spring-boot-gra
 is also available and provides tasks to create executable jars and run projects from
 source. It also adds a `ResolutionStrategy` that enables you to
 <<build-tool-plugins-gradle-dependencies-without-versions, omit the version number
-for ``blessed'' dependencies>>:
+for "`blessed`" dependencies>>:
 
 [source,groovy,indent=0,subs="attributes"]
 ----
@@ -177,7 +180,7 @@ It is possible to build a Spring Boot project using Apache Ant, however, no spec
 support or plugins are provided. Ant scripts can use the Ivy dependency system to import
 starter POMs.
 
-See the '<<howto.adoc#howto-build-an-executable-archive-with-ant>>' ``How-to'' for more
+See the _<<howto.adoc#howto-build-an-executable-archive-with-ant>>_ "`How-to`" for more
 complete instructions.
 
 
@@ -196,7 +199,7 @@ running quickly and with a consistent, supported set of managed transitive depen
 
 .What's in a name
 ****
-All starters follow a similar naming pattern; `spring-boot-starter-*`, where `*` is
+All starters follow a similar naming pattern; `+spring-boot-starter-*+`, where `+*+` is
 a particular type of application. This naming structure is intended to help when you need
 to find a starter. The Maven integration in many IDEs allow you to search dependencies by
 name. For example, with the appropriate Eclipse or STS plugin installed, you can simply
@@ -214,16 +217,23 @@ The following application starters are provided by Spring Boot under the
 |The core Spring Boot starter, including auto-configuration support, logging and YAML.
 
 |`spring-boot-starter-amqp`
-|Support for the ``Advanced Message Queuing Protocol'' via `spring-rabbit`.
+|Support for the "`Advanced Message Queuing Protocol`" via `spring-rabbit`.
 
 |`spring-boot-starter-aop`
-|Full AOP programming support including `spring-aop` and AspectJ.
+|Support for aspect-oriented programming including `spring-aop` and AspectJ.
 
 |`spring-boot-starter-batch`
-|Support for ``Spring Batch'' including HSQLDB database.
+|Support for "`Spring Batch`" including HSQLDB database.
+
+|`spring-boot-starter-data-elasticsearch`
+|Support for the Elasticsearch search and analytics engine including
+`spring-data-elasticsearch`.
+
+|`spring-boot-starter-data-gemfire`
+|Support for the GemFire distributed data store including `spring-data-gemfire`.
 
 |`spring-boot-starter-data-jpa`
-|Full support for the ``Java Persistence API'' including `spring-data-jpa`, `spring-orm`
+|Support for the "`Java Persistence API`" including `spring-data-jpa`, `spring-orm`
 and Hibernate.
 
 |`spring-boot-starter-data-mongodb`
@@ -231,6 +241,18 @@ and Hibernate.
 
 |`spring-boot-starter-data-rest`
 |Support for exposing Spring Data repositories over REST via `spring-data-rest-webmvc`.
+
+|`spring-boot-starter-data-solr`
+|Support for the Apache Solr search platform, including `spring-data-solr`.
+
+|`spring-boot-starter-freemarker`
+|Support for the FreeMarker templating engine
+
+|`spring-boot-starter-groovy-templates`
+|Support for the Groovy templating engine
+
+|`spring-boot-starter-hornetq`
+|Support for "`Java Message Service API`" via HornetQ.
 
 |`spring-boot-starter-integration`
 |Support for common `spring-integration` modules.
@@ -247,6 +269,15 @@ and Hibernate.
 |`spring-boot-starter-security`
 |Support for `spring-security`.
 
+|`spring-boot-starter-social-facebook`
+|Support for `spring-social-facebook`.
+
+|`spring-boot-starter-social-linkedin`
+|Support for `spring-social-linkedin`.
+
+|`spring-boot-starter-social-twitter`
+|Support for `spring-social-twitter`.
+
 |`spring-boot-starter-test`
 |Support for common test dependencies, including JUnit, Hamcrest and Mockito along with
  the `spring-test` module.
@@ -254,15 +285,21 @@ and Hibernate.
 |`spring-boot-starter-thymeleaf`
 |Support for the Thymeleaf templating engine, including integration with Spring.
 
+|`spring-boot-starter-velocity`
+|Support for the Velocity templating engine
+
 |`spring-boot-starter-web`
 |Support for full-stack web development, including Tomcat and `spring-webmvc`.
 
 |`spring-boot-starter-websocket`
 |Support for websocket development with Tomcat.
+
+|`spring-boot-starter-ws`
+|Support for Spring Web Services
 |===
 
 In addition to the application starters, the following starters can be used to
-add '<<production-ready-features.adoc#production-ready, production ready>>' features.
+add _<<production-ready-features.adoc#production-ready, production ready>>_ features.
 
 .Spring Boot production ready starters
 |===
@@ -309,9 +346,9 @@ best practices that help.
 
 
 [[using-boot-using-the-default-package]]
-=== Using the ``default'' package
+=== Using the "`default`" package
 When a class doesn't include a `package` declaration it is considered to be in the
-``default package''. The use of the ``default package'' is generally discouraged, and
+"`default package`". The use of the "`default package`" is generally discouraged, and
 should be avoided. It can cause particular problems for Spring Boot applications that
 use `@ComponentScan` or `@EntityScan` annotations, since every class from every jar,
 will be read.
@@ -325,7 +362,7 @@ and use a reversed domain name (for example, `com.example.project`).
 === Locating the main application class
 We generally recommend that you locate your main application class in a root package
 above other classes. The `@EnableAutoConfiguration` annotation is often placed on your
-main class, and it implicitly defines a base ``search package'' for certain items. For
+main class, and it implicitly defines a base "`search package`" for certain items. For
 example, if you are writing a JPA application, the package of the
 `@EnableAutoConfiguration` annotated class will be used to search for `@Entity` items.
 
@@ -387,7 +424,7 @@ is also a good candidate as the primary `@Configuration`.
 
 TIP: Many Spring configuration examples have been published on the Internet that use XML
 configuration. Always try to use the equivalent Java-base configuration if possible.
-Searching for `enable*` annotations can be a good starting point.
+Searching for `+enable*+` annotations can be a good starting point.
 
 
 
@@ -447,7 +484,7 @@ you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
 	import org.springframework.context.annotation.*;
 
 	@Configuration
-	@EnableAutoConfiguration(exclude={EmbeddedDatabaseConfiguration.class})
+	@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 	public class MyConfiguration {
 	}
 ----
@@ -512,13 +549,13 @@ and build system. Most IDEs can import Maven projects directly, for example Ecli
 can select `Import...` -> `Existing Maven Projects` from the `File` menu.
 
 If you can't directly import your project into your IDE, you may be able to generate IDE
-meta-data using a build plugin. Maven includes plugins for
+metadata using a build plugin. Maven includes plugins for
 http://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and
 http://maven.apache.org/plugins/maven-idea-plugin/[IDEA]; Gradle offers plugins
 for http://www.gradle.org/docs/current/userguide/ide_support.html[various IDEs].
 
-TIP: If you accidentally run a web application twice you will see a ``Port already in
-use'' error. STS users can use the `Relauch` button rather than `Run` to ensure that
+TIP: If you accidentally run a web application twice you will see a "`Port already in
+use`" error. STS users can use the `Relaunch` button rather than `Run` to ensure that
 any existing instance is closed.
 
 
@@ -548,12 +585,22 @@ This allows you to attach a debugger to your packaged application:
 === Using the Maven plugin
 The Spring Boot Maven plugin includes a `run` goal which can be used to quickly compile
 and run your application. Applications run in an exploded form, and you can edit
-resources for instant ``hot'' reload.
+resources for instant "`hot`" reload.
 
 [indent=0,subs="attributes"]
 ----
 	$ mvn spring-boot:run
 ----
+
+Useful operating system environment variable:
+
+[indent=0,subs="attributes"]
+----
+	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+----
+
+(The "`egd`" setting is to speed up Tomcat startup by giving it a faster source of
+entropy for session keys.)
 
 
 
@@ -568,6 +615,13 @@ the `spring-boot-plugin`
 	$ gradle bootRun
 ----
 
+Useful operating system environment variable:
+
+[indent=0,subs="attributes"]
+----
+	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+----
+
 
 
 [[using-boot-hot-swapping]]
@@ -578,18 +632,18 @@ replace, for a more complete solution the
 https://github.com/spring-projects/spring-loaded[Spring Loaded] project, or
 http://zeroturnaround.com/software/jrebel/[JRebel] can be used.
 
-See the <<howto.adoc#howto-hotswapping, Hot swapping ``How-to''>> section for details.
+See the <<howto.adoc#howto-hotswapping, Hot swapping "`How-to`">> section for details.
 
 
 
 [[using-boot-packaging-for-production]]
 == Packaging your application for production
-Executable jars can be used for production deployment. As they are self contained, they
+Executable jars can be used for production deployment. As they are self-contained, they
 are also ideally suited for cloud-based deployment.
 
-For additional ``production ready'' features, such as health, auditing and metric REST
+For additional "`production ready`" features, such as health, auditing and metric REST
 or JMX end-points; consider adding `spring-boot-actuator`. See
-'<<production-ready-features.adoc#production-ready>>' for details.
+_<<production-ready-features.adoc#production-ready>>_ for details.
 
 
 
@@ -597,7 +651,7 @@ or JMX end-points; consider adding `spring-boot-actuator`. See
 == What to read next
 You should now have good understanding of how you can use Spring Boot along with some best
 practices that you should follow. You can now go on to learn about specific
-'<<spring-boot-features#boot-features, Spring Boot features>>' in depth, or you
+_<<spring-boot-features#boot-features, Spring Boot features>>_ in depth, or you
 could skip ahead and read about the
-``<<production-ready-features#production-ready, production ready>>'' aspects of Spring
+"`<<production-ready-features#production-ready, production ready>>`" aspects of Spring
 Boot.

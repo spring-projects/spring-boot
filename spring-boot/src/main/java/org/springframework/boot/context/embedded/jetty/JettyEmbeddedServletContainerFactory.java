@@ -17,32 +17,42 @@
 package org.springframework.boot.context.embedded.jetty;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.handler.ErrorHandler;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
 import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -52,9 +62,10 @@ import org.springframework.util.StringUtils;
  * <p>
  * Unless explicitly configured otherwise this factory will created containers that
  * listens for HTTP requests on port 8080.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andrey Hihlovskiy
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -100,7 +111,109 @@ public class JettyEmbeddedServletContainerFactory extends
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
 		int port = (getPort() >= 0 ? getPort() : 0);
 		Server server = new Server(new InetSocketAddress(getAddress(), port));
+		configureWebAppContext(context, initializers);
+		server.setHandler(context);
+		this.logger.info("Server initialized with port: " + port);
 
+		if (getSsl() != null) {
+			SslContextFactory sslContextFactory = new SslContextFactory();
+			configureSsl(sslContextFactory, getSsl());
+
+			SslSocketConnector sslConnector = new SslSocketConnector(sslContextFactory);
+			sslConnector.setPort(port);
+			server.setConnectors(new Connector[] { sslConnector });
+		}
+
+		for (JettyServerCustomizer customizer : getServerCustomizers()) {
+			customizer.customize(server);
+		}
+
+		return getJettyEmbeddedServletContainer(server);
+	}
+
+	/**
+	 * Configure the SSL connection.
+	 * @param factory the Jetty {@link SslContextFactory}.
+	 * @param ssl the ssl details.
+	 */
+	protected void configureSsl(SslContextFactory factory, Ssl ssl) {
+		factory.setProtocol(ssl.getProtocol());
+		configureSslClientAuth(factory, ssl);
+		configureSslPasswords(factory, ssl);
+		factory.setCertAlias(ssl.getKeyAlias());
+		configureSslKeyStore(factory, ssl);
+		if (ssl.getCiphers() != null) {
+			factory.setIncludeCipherSuites(ssl.getCiphers());
+		}
+		configureSslTrustStore(factory, ssl);
+	}
+
+	private void configureSslClientAuth(SslContextFactory factory, Ssl ssl) {
+		if (ssl.getClientAuth() == ClientAuth.NEED) {
+			factory.setNeedClientAuth(true);
+			factory.setWantClientAuth(true);
+		}
+		else if (ssl.getClientAuth() == ClientAuth.WANT) {
+			factory.setWantClientAuth(true);
+		}
+	}
+
+	private void configureSslPasswords(SslContextFactory factory, Ssl ssl) {
+		if (ssl.getKeyStorePassword() != null) {
+			factory.setKeyStorePassword(ssl.getKeyStorePassword());
+		}
+		if (ssl.getKeyPassword() != null) {
+			factory.setKeyManagerPassword(ssl.getKeyPassword());
+		}
+	}
+
+	private void configureSslKeyStore(SslContextFactory factory, Ssl ssl) {
+		try {
+			URL url = ResourceUtils.getURL(ssl.getKeyStore());
+			factory.setKeyStoreResource(Resource.newResource(url));
+		}
+		catch (IOException ex) {
+			throw new EmbeddedServletContainerException("Could not find key store '"
+					+ ssl.getKeyStore() + "'", ex);
+		}
+		if (ssl.getKeyStoreType() != null) {
+			factory.setKeyStoreType(ssl.getKeyStoreType());
+		}
+		if (ssl.getKeyStoreProvider() != null) {
+			factory.setKeyStoreProvider(ssl.getKeyStoreProvider());
+		}
+	}
+
+	private void configureSslTrustStore(SslContextFactory factory, Ssl ssl) {
+		if (ssl.getTrustStorePassword() != null) {
+			factory.setTrustStorePassword(ssl.getTrustStorePassword());
+		}
+		if (ssl.getTrustStore() != null) {
+			try {
+				URL url = ResourceUtils.getURL(ssl.getTrustStore());
+				factory.setTrustStoreResource(Resource.newResource(url));
+			}
+			catch (IOException ex) {
+				throw new EmbeddedServletContainerException(
+						"Could not find trust store '" + ssl.getTrustStore() + "'", ex);
+			}
+		}
+		if (ssl.getTrustStoreType() != null) {
+			factory.setTrustStoreType(ssl.getTrustStoreType());
+		}
+		if (ssl.getTrustStoreProvider() != null) {
+			factory.setTrustStoreProvider(ssl.getTrustStoreProvider());
+		}
+	}
+
+	/**
+	 * Configure the given Jetty {@link WebAppContext} for use.
+	 * @param context the context to configure
+	 * @param initializers the set of initializers to apply
+	 */
+	protected final void configureWebAppContext(WebAppContext context,
+			ServletContextInitializer... initializers) {
+		Assert.notNull(context, "Context must not be null");
 		if (this.resourceLoader != null) {
 			context.setClassLoader(this.resourceLoader.getClassLoader());
 		}
@@ -115,22 +228,14 @@ public class JettyEmbeddedServletContainerFactory extends
 						.getClassLoader())) {
 			addJspServlet(context);
 		}
-
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		Configuration[] configurations = getWebAppContextConfigurations(context,
 				initializersToUse);
 		context.setConfigurations(configurations);
-		context.getSessionHandler().getSessionManager()
-				.setMaxInactiveInterval(getSessionTimeout());
+		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
+		SessionManager sessionManager = context.getSessionHandler().getSessionManager();
+		sessionManager.setMaxInactiveInterval(sessionTimeout);
 		postProcessWebAppContext(context);
-
-		server.setHandler(context);
-		this.logger.info("Server initialized with port: " + port);
-		for (JettyServerCustomizer customizer : getServerCustomizers()) {
-			customizer.customize(server);
-		}
-
-		return getJettyEmbeddedServletContainer(server);
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
@@ -151,7 +256,12 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 	}
 
-	private void addDefaultServlet(WebAppContext context) {
+	/**
+	 * Add Jetty's {@code DefaultServlet} to the given {@link WebAppContext}.
+	 * @param context the jetty {@link WebAppContext}
+	 */
+	protected final void addDefaultServlet(WebAppContext context) {
+		Assert.notNull(context, "Context must not be null");
 		ServletHolder holder = new ServletHolder();
 		holder.setName("default");
 		holder.setClassName("org.eclipse.jetty.servlet.DefaultServlet");
@@ -161,7 +271,12 @@ public class JettyEmbeddedServletContainerFactory extends
 		context.getServletHandler().getServletMapping("/").setDefault(true);
 	}
 
-	private void addJspServlet(WebAppContext context) {
+	/**
+	 * Add Jetty's {@code JspServlet} to the given {@link WebAppContext}.
+	 * @param context the jetty {@link WebAppContext}
+	 */
+	protected final void addJspServlet(WebAppContext context) {
+		Assert.notNull(context, "Context must not be null");
 		ServletHolder holder = new ServletHolder();
 		holder.setName("jsp");
 		holder.setClassName(getJspServletClassName());

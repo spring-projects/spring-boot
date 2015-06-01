@@ -18,7 +18,7 @@ package org.springframework.boot.context.embedded;
 
 /**
  * Exceptions thrown by an embedded servlet container.
- * 
+ *
  * @author Phillip Webb
  */
 @SuppressWarnings("serial")

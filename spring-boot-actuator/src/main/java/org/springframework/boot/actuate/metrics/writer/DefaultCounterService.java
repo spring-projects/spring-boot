@@ -20,7 +20,7 @@ import org.springframework.boot.actuate.metrics.CounterService;
 
 /**
  * Default implementation of {@link CounterService}.
- * 
+ *
  * @author Dave Syer
  */
 public class DefaultCounterService implements CounterService {
@@ -47,7 +47,7 @@ public class DefaultCounterService implements CounterService {
 
 	@Override
 	public void reset(String metricName) {
-		this.writer.increment(new Delta<Long>(wrap(metricName), 0L));
+		this.writer.reset(wrap(metricName));
 	}
 
 	private String wrap(String metricName) {

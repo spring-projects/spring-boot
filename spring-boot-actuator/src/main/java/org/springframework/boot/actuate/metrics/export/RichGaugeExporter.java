@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.metrics.repository.MultiMetricRepository
 import org.springframework.boot.actuate.metrics.rich.RichGauge;
 import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
+import org.springframework.boot.actuate.metrics.writer.PrefixMetricWriter;
 
 /**
  * Exporter or converter for {@link RichGauge} data to a metric-based back end. Each gauge
@@ -35,7 +36,7 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
  * {@link MetricWriter} provided is a {@link MultiMetricRepository} then the values for a
  * gauge will be stored as a group, and hence will be retrievable from the repository in a
  * single query (or optionally individually).
- * 
+ *
  * @author Dave Syer
  */
 public class RichGaugeExporter extends AbstractMetricExporter {
@@ -53,13 +54,14 @@ public class RichGaugeExporter extends AbstractMetricExporter {
 	private static final String ALPHA = ".alpha";
 
 	private final RichGaugeReader reader;
-	private final MetricWriter writer;
+	private final PrefixMetricWriter writer;
 
-	public RichGaugeExporter(RichGaugeReader reader, MetricWriter writer) {
+	public RichGaugeExporter(RichGaugeReader reader, PrefixMetricWriter writer) {
 		this(reader, writer, "");
 	}
 
-	public RichGaugeExporter(RichGaugeReader reader, MetricWriter writer, String prefix) {
+	public RichGaugeExporter(RichGaugeReader reader, PrefixMetricWriter writer,
+			String prefix) {
 		super(prefix);
 		this.reader = reader;
 		this.writer = writer;
@@ -89,14 +91,7 @@ public class RichGaugeExporter extends AbstractMetricExporter {
 
 	@Override
 	protected void write(String group, Collection<Metric<?>> values) {
-		if (this.writer instanceof MultiMetricRepository) {
-			((MultiMetricRepository) this.writer).save(group, values);
-		}
-		else {
-			for (Metric<?> value : values) {
-				this.writer.set(value);
-			}
-		}
+		this.writer.set(group, values);
 	}
 
 }

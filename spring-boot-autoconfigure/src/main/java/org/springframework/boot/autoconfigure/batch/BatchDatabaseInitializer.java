@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Initialize the Spring Batch schema (ignoring errors, so should be idempotent).
- * 
+ *
  * @author Dave Syer
  */
 @Component
@@ -67,6 +67,9 @@ public class BatchDatabaseInitializer implements EnvironmentAware {
 			}
 			if ("postgres".equals(platform)) {
 				platform = "postgresql";
+			}
+			if ("oracle".equals(platform)) {
+				platform = "oracle10g";
 			}
 			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 			String schemaLocation = this.environment.getProperty("schema",

@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import org.crsh.auth.AuthenticationPlugin;
 import org.crsh.auth.JaasAuthenticationPlugin;
-import org.crsh.lang.groovy.GroovyRepl;
+import org.crsh.lang.impl.groovy.GroovyRepl;
 import org.crsh.plugin.PluginContext;
 import org.crsh.plugin.PluginLifeCycle;
 import org.crsh.plugin.ResourceKind;
@@ -58,7 +58,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link CrshAutoConfiguration}.
- * 
+ *
  * @author Christian Dupuis
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -117,7 +117,7 @@ public class CrshAutoConfigurationTests {
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
-		assertEquals(lifeCycle.getConfig().getProperty("crash.ssh.port"), "3333");
+		assertEquals("3333", lifeCycle.getConfig().getProperty("crash.ssh.port"));
 	}
 
 	@Test
@@ -132,8 +132,8 @@ public class CrshAutoConfigurationTests {
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
-		assertEquals(lifeCycle.getConfig().getProperty("crash.ssh.keypath"),
-				"~/.ssh/id.pem");
+		assertEquals("~/.ssh/id.pem",
+				lifeCycle.getConfig().getProperty("crash.ssh.keypath"));
 	}
 
 	@Test
@@ -161,6 +161,24 @@ public class CrshAutoConfigurationTests {
 			resources.next();
 		}
 		assertEquals(1, count);
+	}
+
+	@Test
+	public void testDisabledCommandResolution() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(CrshAutoConfiguration.class);
+		this.context.refresh();
+
+		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
+
+		int count = 0;
+		Iterator<Resource> resources = lifeCycle.getContext()
+				.loadResources("jdbc.groovy", ResourceKind.COMMAND).iterator();
+		while (resources.hasNext()) {
+			count++;
+			resources.next();
+		}
+		assertEquals(0, count);
 	}
 
 	@Test
@@ -194,7 +212,7 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals(lifeCycle.getConfig().get("crash.auth"), "simple");
+		assertEquals("simple", lifeCycle.getConfig().get("crash.auth"));
 	}
 
 	@Test
@@ -210,9 +228,9 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals(lifeCycle.getConfig().get("crash.auth"), "jaas");
-		assertEquals(lifeCycle.getConfig().get("crash.auth.jaas.domain"),
-				"my-test-domain");
+		assertEquals("jaas", lifeCycle.getConfig().get("crash.auth"));
+		assertEquals("my-test-domain", lifeCycle.getConfig()
+				.get("crash.auth.jaas.domain"));
 	}
 
 	@Test
@@ -228,8 +246,8 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals(lifeCycle.getConfig().get("crash.auth"), "key");
-		assertEquals(lifeCycle.getConfig().get("crash.auth.key.path"), "~/test.pem");
+		assertEquals("key", lifeCycle.getConfig().get("crash.auth"));
+		assertEquals("~/test.pem", lifeCycle.getConfig().get("crash.auth.key.path"));
 	}
 
 	@Test
@@ -246,7 +264,7 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals(lifeCycle.getConfig().get("crash.auth"), "simple");
+		assertEquals("simple", lifeCycle.getConfig().get("crash.auth"));
 
 		AuthenticationPlugin<String> authenticationPlugin = null;
 		String authentication = lifeCycle.getConfig().getProperty("crash.auth");
@@ -354,7 +372,7 @@ public class CrshAutoConfigurationTests {
 		}
 
 		@Bean
-		public AccessDecisionManager accessDecisionManager() {
+		public AccessDecisionManager shellAccessDecisionManager() {
 			List<AccessDecisionVoter> voters = new ArrayList<AccessDecisionVoter>();
 			RoleVoter voter = new RoleVoter();
 			voter.setRolePrefix("");
@@ -362,6 +380,7 @@ public class CrshAutoConfigurationTests {
 			AccessDecisionManager result = new UnanimousBased(voters);
 			return result;
 		}
+
 	}
 
 }

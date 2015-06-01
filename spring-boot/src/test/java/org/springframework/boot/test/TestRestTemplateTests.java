@@ -16,16 +16,22 @@
 
 package org.springframework.boot.test;
 
+import org.apache.http.client.config.RequestConfig;
 import org.junit.Test;
+import org.springframework.boot.test.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
+import org.springframework.boot.test.TestRestTemplate.HttpClientOption;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link TestRestTemplate}.
- * 
+ *
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class TestRestTemplateTests {
 
@@ -38,6 +44,16 @@ public class TestRestTemplateTests {
 	@Test
 	public void authenticated() {
 		assertTrue(new TestRestTemplate("user", "password").getRequestFactory() instanceof InterceptingClientHttpRequestFactory);
+	}
+
+	@Test
+	public void options() throws Exception {
+		TestRestTemplate template = new TestRestTemplate(
+				HttpClientOption.ENABLE_REDIRECTS);
+		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
+				.getRequestFactory();
+		RequestConfig config = factory.getRequestConfig();
+		assertThat(config.isRedirectsEnabled(), equalTo(true));
 	}
 
 }

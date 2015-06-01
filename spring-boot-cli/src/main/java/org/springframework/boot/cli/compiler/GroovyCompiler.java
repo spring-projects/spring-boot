@@ -20,7 +20,6 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyClassLoader.ClassCollector;
 import groovy.lang.GroovyCodeSource;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -43,12 +42,12 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.ASTTransformationVisitor;
-import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
-import org.springframework.boot.cli.compiler.dependencies.ManagedDependenciesArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngineFactory;
+import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.util.ResourceUtils;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 /**
  * Compiler for Groovy sources. Primarily a simple Facade for
@@ -58,20 +57,18 @@ import org.springframework.boot.cli.util.ResourceUtils;
  * <li>{@link CompilerAutoConfiguration} strategies will be read from
  * <code>META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration</code>
  * (per the standard java {@link ServiceLoader} contract) and applied during compilation</li>
- * 
+ *
  * <li>Multiple classes can be returned if the Groovy source defines more than one Class</li>
- * 
+ *
  * <li>Generated class files can also be loaded using
  * {@link ClassLoader#getResource(String)}</li>
  * </ul>
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
  */
 public class GroovyCompiler {
-
-	private final ArtifactCoordinatesResolver coordinatesResolver;
 
 	private final GroovyCompilerConfiguration configuration;
 
@@ -90,10 +87,10 @@ public class GroovyCompiler {
 		this.configuration = configuration;
 		this.loader = createLoader(configuration);
 
-		this.coordinatesResolver = new ManagedDependenciesArtifactCoordinatesResolver();
+		DependencyResolutionContext resolutionContext = new DependencyResolutionContext();
 
 		AetherGrapeEngine grapeEngine = AetherGrapeEngineFactory.create(this.loader,
-				configuration.getRepositoryConfiguration());
+				configuration.getRepositoryConfiguration(), resolutionContext);
 
 		GrapeEngineInstaller.install(grapeEngine);
 
@@ -108,13 +105,19 @@ public class GroovyCompiler {
 		}
 
 		this.transformations = new ArrayList<ASTTransformation>();
+		this.transformations.add(new GrabMetadataTransformation(resolutionContext));
 		this.transformations.add(new DependencyAutoConfigurationTransformation(
-				this.loader, this.coordinatesResolver, this.compilerAutoConfigurations));
+				this.loader, resolutionContext, this.compilerAutoConfigurations));
 		this.transformations.add(new GroovyBeansTransformation());
 		if (this.configuration.isGuessDependencies()) {
 			this.transformations.add(new ResolveDependencyCoordinatesTransformation(
-					this.coordinatesResolver));
+					resolutionContext));
 		}
+		for (ASTTransformation transformation : ServiceLoader
+				.load(SpringBootAstTransformation.class)) {
+			this.transformations.add(transformation);
+		}
+		Collections.sort(this.transformations, AnnotationAwareOrderComparator.INSTANCE);
 	}
 
 	/**
@@ -185,13 +188,7 @@ public class GroovyCompiler {
 		for (String source : sources) {
 			List<String> paths = ResourceUtils.getUrls(source, this.loader);
 			for (String path : paths) {
-				URL url = new URL(path);
-				if ("file".equals(url.getProtocol())) {
-					compilationUnit.addSource(new File(url.getFile()));
-				}
-				else {
-					compilationUnit.addSource(url);
-				}
+				compilationUnit.addSource(new URL(path));
 			}
 		}
 
@@ -201,8 +198,8 @@ public class GroovyCompiler {
 		for (Object loadedClass : collector.getLoadedClasses()) {
 			classes.add((Class<?>) loadedClass);
 		}
-		ClassNode mainClassNode = (ClassNode) compilationUnit.getAST().getClasses()
-				.get(0);
+		ClassNode mainClassNode = getMainClass(compilationUnit);
+
 		Class<?> mainClass = null;
 		for (Class<?> loadedClass : classes) {
 			if (mainClassNode.getName().equals(loadedClass.getName())) {
@@ -274,7 +271,9 @@ public class GroovyCompiler {
 		public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
 				throws CompilationFailedException {
 
-			ImportCustomizer importCustomizer = new ImportCustomizer();
+			ImportCustomizer importCustomizer = new SmartImportCustomizer(source,
+					context, classNode);
+			ClassNode mainClassNode = getMainClass(source.getAST().getClasses());
 
 			// Additional auto configuration
 			for (CompilerAutoConfiguration autoConfiguration : GroovyCompiler.this.compilerAutoConfigurations) {
@@ -283,8 +282,7 @@ public class GroovyCompiler {
 						autoConfiguration.applyImports(importCustomizer);
 						importCustomizer.call(source, context, classNode);
 					}
-					if (source.getAST().getClasses().size() > 0
-							&& classNode.equals(source.getAST().getClasses().get(0))) {
+					if (classNode.equals(mainClassNode)) {
 						autoConfiguration.applyToMainClass(GroovyCompiler.this.loader,
 								GroovyCompiler.this.configuration, context, source,
 								classNode);
@@ -298,6 +296,24 @@ public class GroovyCompiler {
 			importCustomizer.call(source, context, classNode);
 		}
 
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ClassNode getMainClass(CompilationUnit source) {
+		return getMainClass(source.getAST().getClasses());
+	}
+
+	private static ClassNode getMainClass(List<ClassNode> classes) {
+		for (ClassNode node : classes) {
+			if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
+				return null; // No need to enhance this
+			}
+			if (AstUtils.hasAtLeastOneAnnotation(node, "*Controller", "Configuration",
+					"Component", "*Service", "Repository", "Enable*")) {
+				return node;
+			}
+		}
+		return (classes.isEmpty() ? null : classes.get(0));
 	}
 
 }

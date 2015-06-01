@@ -17,6 +17,7 @@
 package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
@@ -41,6 +43,7 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -49,12 +52,16 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -63,7 +70,7 @@ import org.springframework.util.StreamUtils;
  * <p>
  * Unless explicitly configured otherwise this factory will created containers that
  * listens for HTTP requests on port 8080.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Brock Mills
@@ -75,7 +82,7 @@ import org.springframework.util.StreamUtils;
 public class TomcatEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
-	private static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
+	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 
 	private File baseDirectory;
 
@@ -219,7 +226,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		connector.setPort(port);
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			if (getAddress() != null) {
-				((AbstractProtocol) connector.getProtocolHandler())
+				((AbstractProtocol<?>) connector.getProtocolHandler())
 						.setAddress(getAddress());
 			}
 		}
@@ -230,8 +237,84 @@ public class TomcatEmbeddedServletContainerFactory extends
 		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
+
+		if (getSsl() != null) {
+			Assert.state(
+					connector.getProtocolHandler() instanceof AbstractHttp11JsseProtocol,
+					"To use SSL, the connector's protocol handler must be an "
+							+ "AbstractHttp11JsseProtocol subclass");
+			configureSsl((AbstractHttp11JsseProtocol<?>) connector.getProtocolHandler(),
+					getSsl());
+			connector.setScheme("https");
+			connector.setSecure(true);
+		}
+
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
+		}
+	}
+
+	/**
+	 * Configure Tomcat's {@link AbstractHttp11JsseProtocol} for SSL.
+	 * @param protocol the protocol
+	 * @param ssl the ssl details
+	 */
+	protected void configureSsl(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
+		protocol.setSSLEnabled(true);
+		protocol.setSslProtocol(ssl.getProtocol());
+		configureSslClientAuth(protocol, ssl);
+		protocol.setKeystorePass(ssl.getKeyStorePassword());
+		protocol.setKeyPass(ssl.getKeyPassword());
+		protocol.setKeyAlias(ssl.getKeyAlias());
+		configureSslKeyStore(protocol, ssl);
+		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
+		protocol.setCiphers(ciphers);
+		configureSslTrustStore(protocol, ssl);
+	}
+
+	private void configureSslClientAuth(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
+		if (ssl.getClientAuth() == ClientAuth.NEED) {
+			protocol.setClientAuth(Boolean.TRUE.toString());
+		}
+		else if (ssl.getClientAuth() == ClientAuth.WANT) {
+			protocol.setClientAuth("want");
+		}
+	}
+
+	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
+		try {
+			File file = ResourceUtils.getFile(ssl.getKeyStore());
+			protocol.setKeystoreFile(file.getAbsolutePath());
+		}
+		catch (FileNotFoundException ex) {
+			throw new EmbeddedServletContainerException("Could not find key store "
+					+ ssl.getKeyStore(), ex);
+		}
+		if (ssl.getKeyStoreType() != null) {
+			protocol.setKeystoreType(ssl.getKeyStoreType());
+		}
+		if (ssl.getKeyStoreProvider() != null) {
+			protocol.setKeystoreProvider(ssl.getKeyStoreProvider());
+		}
+	}
+
+	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
+		if (ssl.getTrustStore() != null) {
+			try {
+				File file = ResourceUtils.getFile(ssl.getTrustStore());
+				protocol.setTruststoreFile(file.getAbsolutePath());
+			}
+			catch (FileNotFoundException ex) {
+				throw new EmbeddedServletContainerException("Could not find trust store "
+						+ ssl.getTrustStore(), ex);
+			}
+		}
+		protocol.setTruststorePass(ssl.getTrustStorePassword());
+		if (ssl.getTrustStoreType() != null) {
+			protocol.setTruststoreType(ssl.getTrustStoreType());
+		}
+		if (ssl.getTrustStoreProvider() != null) {
+			protocol.setTruststoreProvider(ssl.getTrustStoreProvider());
 		}
 	}
 
@@ -242,8 +325,13 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	protected void configureContext(Context context,
 			ServletContextInitializer[] initializers) {
-		context.addLifecycleListener(new ServletContextInitializerLifecycleListener(
-				initializers));
+		ServletContextInitializerLifecycleListener starter = new ServletContextInitializerLifecycleListener(
+				initializers);
+		if (context instanceof TomcatEmbeddedContext) {
+			// Should be true
+			((TomcatEmbeddedContext) context).setStarter(starter);
+		}
+		context.addLifecycleListener(starter);
 		for (LifecycleListener lifecycleListener : this.contextLifecycleListeners) {
 			context.addLifecycleListener(lifecycleListener);
 		}
@@ -256,7 +344,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
-		context.setSessionTimeout(getSessionTimeout());
+		long sessionTimeout = getSessionTimeout();
+		if (sessionTimeout > 0) {
+			// Tomcat timeouts are in minutes
+			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
+		}
+		context.setSessionTimeout((int) sessionTimeout);
 		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
 			customizer.customize(context);
 		}
@@ -579,6 +672,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 			if (servletContext.getAttribute(this.MERGED_WEB_XML) == null) {
 				servletContext.setAttribute(this.MERGED_WEB_XML, getEmptyWebXml());
 			}
+			TomcatResources.get(context).addClasspathResources();
 		}
 
 		private String getEmptyWebXml() {

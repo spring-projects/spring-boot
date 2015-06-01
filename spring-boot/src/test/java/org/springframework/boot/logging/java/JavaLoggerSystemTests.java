@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link JavaLoggingSystem}.
- * 
+ *
  * @author Dave Syer
  */
 public class JavaLoggerSystemTests {

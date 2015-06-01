@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration Tests for the command line application.
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */

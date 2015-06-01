@@ -32,7 +32,7 @@ import org.springframework.test.context.ContextConfiguration;
  * ApplicationContext for integration tests. Similar to the standard
  * {@link ContextConfiguration} but uses Spring Boot's
  * {@link SpringApplicationContextLoader}.
- * 
+ *
  * @author Dave Syer
  * @see SpringApplicationContextLoader
  */

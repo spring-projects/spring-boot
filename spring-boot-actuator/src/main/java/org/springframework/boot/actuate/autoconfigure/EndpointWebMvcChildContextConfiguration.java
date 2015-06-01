@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,11 +32,12 @@ import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementErrorEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
-import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -51,7 +53,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 /**
  * Configuration triggered from {@link EndpointWebMvcAutoConfiguration} when a new
  * {@link EmbeddedServletContainer} running on a different port is required.
- * 
+ *
  * @author Dave Syer
  * @see EndpointWebMvcAutoConfiguration
  */
@@ -75,13 +77,23 @@ public class EndpointWebMvcChildContextConfiguration {
 		// instances get their callback very early in the context lifecycle.
 		private ManagementServerProperties managementServerProperties;
 
+		private ServerProperties server;
+
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer container) {
 			if (this.managementServerProperties == null) {
 				this.managementServerProperties = BeanFactoryUtils
 						.beanOfTypeIncludingAncestors(this.beanFactory,
 								ManagementServerProperties.class);
+				this.server = BeanFactoryUtils.beanOfTypeIncludingAncestors(
+						this.beanFactory, ServerProperties.class);
 			}
+			// Customize as per the parent context first (so e.g. the access logs go to
+			// the same place)
+			server.customize(container);
+			// Then reset the error pages
+			container.setErrorPages(Collections.<ErrorPage> emptySet());
+			// and add the management-specific bits
 			container.setPort(this.managementServerProperties.getPort());
 			container.setAddress(this.managementServerProperties.getAddress());
 			container.setContextPath(this.managementServerProperties.getContextPath());
@@ -105,7 +117,6 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	@Bean
 	public HandlerAdapter handlerAdapter(HttpMessageConverters converters) {
-		// TODO: maybe this needs more configuration for non-basic response use cases
 		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
 		adapter.setMessageConverters(converters.getConverters());
 		return adapter;
@@ -125,12 +136,11 @@ public class EndpointWebMvcChildContextConfiguration {
 	/*
 	 * The error controller is present but not mapped as an endpoint in this context
 	 * because of the DispatcherServlet having had it's HandlerMapping explicitly
-	 * disabled. So this tiny shim exposes the same feature but only for machine
-	 * endpoints.
+	 * disabled. So we expose the same feature but only for machine endpoints.
 	 */
 	@Bean
-	public ManagementErrorEndpoint errorEndpoint(final ErrorController controller) {
-		return new ManagementErrorEndpoint(this.errorPath, controller);
+	public ManagementErrorEndpoint errorEndpoint(final ErrorAttributes errorAttributes) {
+		return new ManagementErrorEndpoint(this.errorPath, errorAttributes);
 	}
 
 	@Configuration

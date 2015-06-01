@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link FilterRegistrationBean}.
- * 
+ *
  * @author Phillip Webb
  */
 public class FilterRegistrationBeanTests {

@@ -26,7 +26,7 @@ import org.springframework.boot.groovy.EnableRabbitMessaging;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Rabbit.
- * 
+ *
  * @author Greg Turnquist
  */
 public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {

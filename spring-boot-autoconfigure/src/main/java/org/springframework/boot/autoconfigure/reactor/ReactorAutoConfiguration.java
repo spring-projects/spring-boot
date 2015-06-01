@@ -30,16 +30,16 @@ import reactor.spring.context.config.EnableReactor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass(EnableReactor.class)
-@ConditionalOnMissingBean(Reactor.class)
+@ConditionalOnClass({ EnableReactor.class, Environment.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ReactorAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(Reactor.class)
 	public Reactor rootReactor(Environment environment) {
 		return environment.getRootReactor();
 	}

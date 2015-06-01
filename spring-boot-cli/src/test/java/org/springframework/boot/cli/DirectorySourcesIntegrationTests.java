@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests for code in directories.
- * 
+ *
  * @author Dave Syer
  */
 public class DirectorySourcesIntegrationTests {

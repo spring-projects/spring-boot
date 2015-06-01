@@ -16,39 +16,34 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
-import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpMessageConverter}s.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Piotr Maj
+ * @author Oliver Gierke
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)
+@Import(JacksonAutoConfiguration.class)
 public class HttpMessageConvertersAutoConfiguration {
 
 	@Autowired(required = false)
@@ -57,9 +52,7 @@ public class HttpMessageConvertersAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HttpMessageConverters messageConverters() {
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(
-				this.converters);
-		return new HttpMessageConverters(converters);
+		return new HttpMessageConverters(this.converters);
 	}
 
 	@Configuration
@@ -69,33 +62,6 @@ public class HttpMessageConvertersAutoConfiguration {
 
 		@Autowired
 		private HttpMapperProperties properties = new HttpMapperProperties();
-
-		@Autowired
-		private ListableBeanFactory beanFactory;
-
-		@PostConstruct
-		public void init() {
-			Collection<ObjectMapper> mappers = BeanFactoryUtils
-					.beansOfTypeIncludingAncestors(this.beanFactory, ObjectMapper.class)
-					.values();
-			Collection<Module> modules = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-					this.beanFactory, Module.class).values();
-			for (ObjectMapper mapper : mappers) {
-				mapper.registerModules(modules);
-			}
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		@Primary
-		public ObjectMapper jacksonObjectMapper() {
-			ObjectMapper objectMapper = new ObjectMapper();
-			if (this.properties.isJsonSortKeys()) {
-				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
-						true);
-			}
-			return objectMapper;
-		}
 
 		@Bean
 		@ConditionalOnMissingBean

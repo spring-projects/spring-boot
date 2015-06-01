@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
  * The {@link #setServlet(Servlet) servlet} must be specified before calling
  * {@link #onStartup}. URL mapping can be configured used {@link #setUrlMappings} or
  * omitted when mapping to '/*'. The servlet name will be deduced if not specified.
- * 
+ *
  * @author Phillip Webb
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)

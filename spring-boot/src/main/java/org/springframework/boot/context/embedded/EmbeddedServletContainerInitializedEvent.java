@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationEvent;
  * {@link EmbeddedServletContainer} is ready. Useful for obtaining the local port of a
  * running server. Normally it will have been started, but listeners are free to inspect
  * the server and stop and start it if they want to.
- * 
+ *
  * @author Dave Syer
  */
 public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {

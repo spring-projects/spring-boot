@@ -16,12 +16,16 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import javax.management.MBeanServer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,12 +34,12 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable JMX export for
  * {@link Endpoint}s.
- * 
+ *
  * @author Christian Dupuis
  */
 @Configuration
 @ConditionalOnExpression("${endpoints.jmx.enabled:true} && ${spring.jmx.enabled:true}")
-@AutoConfigureAfter({ EndpointAutoConfiguration.class })
+@AutoConfigureAfter({ EndpointAutoConfiguration.class, JmxAutoConfiguration.class })
 @EnableConfigurationProperties(EndpointMBeanExportProperties.class)
 public class EndpointMBeanExportAutoConfiguration {
 
@@ -43,13 +47,14 @@ public class EndpointMBeanExportAutoConfiguration {
 	EndpointMBeanExportProperties properties = new EndpointMBeanExportProperties();
 
 	@Bean
-	public EndpointMBeanExporter endpointMBeanExporter() {
+	public EndpointMBeanExporter endpointMBeanExporter(MBeanServer server) {
 		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter();
 
 		String domain = this.properties.getDomain();
 		if (StringUtils.hasText(domain)) {
 			mbeanExporter.setDomain(domain);
 		}
+		mbeanExporter.setServer(server);
 
 		mbeanExporter.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
 		mbeanExporter.setObjectNameStaticProperties(this.properties.getStaticNames());
@@ -57,4 +62,9 @@ public class EndpointMBeanExportAutoConfiguration {
 		return mbeanExporter;
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(MBeanServer.class)
+	public MBeanServer mbeanServer() {
+		return new JmxAutoConfiguration().mbeanServer();
+	}
 }

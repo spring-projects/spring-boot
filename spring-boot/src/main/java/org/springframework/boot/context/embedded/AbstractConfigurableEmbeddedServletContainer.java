@@ -29,13 +29,16 @@ import org.springframework.util.Assert;
 
 /**
  * Abstract base class for {@link ConfigurableEmbeddedServletContainer} implementations.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		ConfigurableEmbeddedServletContainer {
+
+	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
+			.toSeconds(30);
 
 	private String contextPath = "";
 
@@ -57,7 +60,9 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	private InetAddress address;
 
-	private int sessionTimeout;
+	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
+
+	private Ssl ssl;
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -245,6 +250,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	@Override
 	public void setJspServletClassName(String jspServletClassName) {
 		this.jspServletClassName = jspServletClassName;
+	}
+
+	@Override
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
 	/**

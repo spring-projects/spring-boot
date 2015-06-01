@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
@@ -50,8 +51,9 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
- * 
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnClass(SpringTemplateEngine.class)
@@ -105,19 +107,9 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Bean
-		protected SpringResourceResourceResolver thymeleafResourceResolver() {
+		public SpringResourceResourceResolver thymeleafResourceResolver() {
 			return new SpringResourceResourceResolver();
 		}
-
-		public static boolean templateExists(Environment environment,
-				ResourceLoader resourceLoader, String view) {
-			String prefix = environment.getProperty("spring.thymeleaf.prefix",
-					ThymeleafAutoConfiguration.DEFAULT_PREFIX);
-			String suffix = environment.getProperty("spring.thymeleaf.suffix",
-					ThymeleafAutoConfiguration.DEFAULT_SUFFIX);
-			return resourceLoader.getResource(prefix + view + suffix).exists();
-		}
-
 	}
 
 	@Configuration
@@ -158,18 +150,19 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class })
+	@ConditionalOnWebApplication
 	protected static class ThymeleafViewResolverConfiguration implements EnvironmentAware {
 
 		private RelaxedPropertyResolver environment;
+
+		@Autowired
+		private SpringTemplateEngine templateEngine;
 
 		@Override
 		public void setEnvironment(Environment environment) {
 			this.environment = new RelaxedPropertyResolver(environment,
 					"spring.thymeleaf.");
 		}
-
-		@Autowired
-		private SpringTemplateEngine templateEngine;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "thymeleafViewResolver")

@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
  * simple facade over {@link AnnotatedBeanDefinitionReader},
  * {@link XmlBeanDefinitionReader} and {@link ClassPathBeanDefinitionScanner}. See
  * {@link SpringApplication} for the types of sources that are supported.
- * 
+ *
  * @author Phillip Webb
  * @see #setBeanNameGenerator(BeanNameGenerator)
  */
@@ -273,7 +273,7 @@ class BeanDefinitionLoader {
 		}
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
-		if (type.isAnonymousClass() || type.getName().matches(".*\\$_.*closure.*")
+		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass()
 				|| type.getConstructors() == null || type.getConstructors().length == 0) {
 			return false;
 		}

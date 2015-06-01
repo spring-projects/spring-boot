@@ -32,7 +32,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * Records condition evaluation details for reporting and logging.
- * 
+ *
  * @author Greg Turnquist
  * @author Dave Syer
  * @author Phillip Webb

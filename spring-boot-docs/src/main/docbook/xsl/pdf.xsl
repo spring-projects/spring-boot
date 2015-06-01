@@ -23,11 +23,13 @@ under the License.
 				xmlns:d="http://docbook.org/ns/docbook"
 				xmlns:fo="http://www.w3.org/1999/XSL/Format"
 				xmlns:xslthl="http://xslthl.sf.net"
-				exclude-result-prefixes="xslthl d"
+				xmlns:xlink='http://www.w3.org/1999/xlink'
+				xmlns:exsl="http://exslt.org/common"
+				exclude-result-prefixes="exsl xslthl d xlink"
 				version='1.0'>
 
-	<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/docbook.xsl"/>
-	<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/highlight.xsl"/>
+	<xsl:import href="urn:docbkx:stylesheet"/>
+	<xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/>
 	<xsl:import href="common.xsl"/>
 
 	<!-- Extensions -->
@@ -48,6 +50,14 @@ under the License.
 		<xsl:attribute name="keep-together.within-column">auto</xsl:attribute>
 	</xsl:attribute-set>
 
+	<!-- use color links and sensible rendering -->
+	<xsl:attribute-set name="xref.properties">
+		<xsl:attribute name="text-decoration">underline</xsl:attribute>
+		<xsl:attribute name="color">#204060</xsl:attribute>
+	</xsl:attribute-set>
+	<xsl:param name="ulink.show" select="0"></xsl:param>
+	<xsl:param name="ulink.footnotes" select="0"></xsl:param>
+
 	<!-- TITLE PAGE -->
 
 	<xsl:template name="book.titlepage.recto">
@@ -65,27 +75,27 @@ under the License.
 								/>
 							</fo:block>
 							<fo:block font-family="Helvetica" font-size="20pt" font-weight="bold" padding="10mm">
-								<xsl:value-of select="bookinfo/title"/>
+								<xsl:value-of select="d:info/d:title"/>
 							</fo:block>
 							<fo:block font-family="Helvetica" font-size="14pt" padding-before="2mm">
-								<xsl:value-of select="bookinfo/subtitle"/>
+								<xsl:value-of select="d:info/d:subtitle"/>
 							</fo:block>
 							<fo:block font-family="Helvetica" font-size="14pt" padding="2mm">
-								<xsl:value-of select="bookinfo/releaseinfo"/>
+								<xsl:value-of select="d:info/d:releaseinfo"/>
 							</fo:block>
 						</fo:table-cell>
 					</fo:table-row>
 					<fo:table-row>
 						<fo:table-cell text-align="center">
 							<fo:block font-family="Helvetica" font-size="14pt" padding="5mm">
-								<xsl:value-of select="bookinfo/pubdate"/>
+								<xsl:value-of select="d:info/d:pubdate"/>
 							</fo:block>
 						</fo:table-cell>
 					</fo:table-row>
 					<fo:table-row>
 						<fo:table-cell text-align="center">
 							<fo:block font-family="Helvetica" font-size="10pt" padding="10mm">
-								<xsl:for-each select="bookinfo/authorgroup/author">
+								<xsl:for-each select="d:info/d:authorgroup/d:author">
 									<xsl:if test="position() > 1">
 										<xsl:text>, </xsl:text>
 									</xsl:if>
@@ -94,15 +104,15 @@ under the License.
 							</fo:block>
 
 							<fo:block font-family="Helvetica" font-size="10pt" padding="5mm">
-								<xsl:value-of select="bookinfo/pubdate"/>
+								<xsl:value-of select="d:info/d:pubdate"/>
 							</fo:block>
 
 							<fo:block font-family="Helvetica" font-size="10pt" padding="5mm" padding-before="25em">
-								<xsl:text>Copyright &#xA9; </xsl:text><xsl:value-of select="bookinfo/copyright"/>
+								<xsl:text>Copyright &#xA9; </xsl:text><xsl:value-of select="d:info/d:copyright"/>
 							</fo:block>
 
 							<fo:block font-family="Helvetica" font-size="8pt" padding="1mm">
-								<xsl:value-of select="bookinfo/legalnotice"/>
+								<xsl:value-of select="d:info/d:legalnotice"/>
 							</fo:block>
 						</fo:table-cell>
 					</fo:table-row>
@@ -139,8 +149,8 @@ under the License.
 
 		<xsl:variable name="Version">
 			<xsl:choose>
-				<xsl:when test="//title">
-					<xsl:value-of select="//title"/><xsl:text> </xsl:text>
+				<xsl:when test="//d:title">
+					<xsl:value-of select="//d:title"/><xsl:text> </xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:text>please define title in your docbook file!</xsl:text>
@@ -188,8 +198,8 @@ under the License.
 
 		<xsl:variable name="Version">
 			<xsl:choose>
-				<xsl:when test="//releaseinfo">
-					<xsl:value-of select="//releaseinfo"/>
+				<xsl:when test="//d:releaseinfo">
+					<xsl:value-of select="//d:releaseinfo"/>
 				</xsl:when>
 				<xsl:otherwise>
 				</xsl:otherwise>
@@ -198,8 +208,8 @@ under the License.
 
 		<xsl:variable name="Title">
 			<xsl:choose>
-				<xsl:when test="//productname">
-					<xsl:value-of select="//productname"/><xsl:text> </xsl:text>
+				<xsl:when test="//d:productname">
+					<xsl:value-of select="//d:productname"/><xsl:text> </xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:text>please define title in your docbook file!</xsl:text>
@@ -296,7 +306,7 @@ under the License.
 
 	<!-- Why is the font-size for chapters hardcoded in the XSL FO templates?
 	Let's remove it, so this sucker can use our attribute-set only... -->
-	<xsl:template match="title" mode="chapter.titlepage.recto.auto.mode">
+	<xsl:template match="d:title" mode="chapter.titlepage.recto.auto.mode">
 		<fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format"
 				xsl:use-attribute-sets="chapter.titlepage.recto.style">
 			<xsl:call-template name="component.title">
@@ -495,42 +505,6 @@ under the License.
 			</l:context>
 		</l:l10n>
 	</l:i18n>
-
-	<xsl:param name="ulink.footnotes">true</xsl:param>
-
-	<!-- COLORED AND HYPHENATED LINKS -->
-
-	<xsl:template match="ulink">
-		<fo:basic-link external-destination="{@url}"
-				xsl:use-attribute-sets="xref.properties"
-				text-decoration="underline"
-				color="blue">
-			<xsl:choose>
-				<xsl:when test="count(child::node())=0">
-					<xsl:value-of select="@url"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:apply-templates/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</fo:basic-link>
-	</xsl:template>
-
-	<xsl:template match="link">
-		<fo:basic-link internal-destination="{@linkend}"
-				xsl:use-attribute-sets="xref.properties"
-				text-decoration="underline"
-				color="blue">
-			<xsl:choose>
-				<xsl:when test="count(child::node())=0">
-					<xsl:value-of select="@linkend"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:apply-templates/>
-				</xsl:otherwise>
-			</xsl:choose>
-		</fo:basic-link>
-	</xsl:template>
 
 	<!-- admon -->
 	<xsl:param name="admon.graphics" select="0"/>

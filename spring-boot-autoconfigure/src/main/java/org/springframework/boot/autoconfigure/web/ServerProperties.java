@@ -28,10 +28,12 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -42,9 +44,10 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurationProperties properties} for a web server (e.g. port and path
  * settings). Will be used to customize an {@link EmbeddedServletContainerFactory} when an
  * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} is active.
- * 
+ *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer {
@@ -56,6 +59,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	private Integer sessionTimeout;
 
 	private String contextPath;
+
+	private Ssl ssl;
 
 	@NotNull
 	private String servletPath = "/";
@@ -76,6 +81,30 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	public String getServletPath() {
 		return this.servletPath;
+	}
+
+	public String getServletMapping() {
+		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
+			return "/";
+		}
+		if (this.servletPath.contains("*")) {
+			return this.servletPath;
+		}
+		if (this.servletPath.endsWith("/")) {
+			return this.servletPath + "*";
+		}
+		return this.servletPath + "/*";
+	}
+
+	public String getServletPrefix() {
+		String result = this.servletPath;
+		if (result.contains("*")) {
+			result = result.substring(0, result.indexOf("*"));
+		}
+		if (result.endsWith("/")) {
+			result = result.substring(0, result.length() - 1);
+		}
+		return result;
 	}
 
 	public void setServletPath(String servletPath) {
@@ -106,6 +135,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.sessionTimeout = sessionTimeout;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
 	public void setLoader(String value) {
 		// no op to support Tomcat running as a traditional container (not embedded)
 	}
@@ -124,10 +161,39 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		if (getSessionTimeout() != null) {
 			container.setSessionTimeout(getSessionTimeout());
 		}
+		if (getSsl() != null) {
+			container.setSsl(getSsl());
+		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat()
 					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
 		}
+	}
+
+	public String[] getPathsArray(Collection<String> paths) {
+		String[] result = new String[paths.size()];
+		int i = 0;
+		for (String path : paths) {
+			result[i++] = getPath(path);
+		}
+		return result;
+	}
+
+	public String[] getPathsArray(String[] paths) {
+		String[] result = new String[paths.length];
+		int i = 0;
+		for (String path : paths) {
+			result[i++] = getPath(path);
+		}
+		return result;
+	}
+
+	public String getPath(String path) {
+		String prefix = getServletPrefix();
+		if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
+		return prefix + path;
 	}
 
 	public static class Tomcat {
@@ -136,15 +202,24 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 		private boolean accessLogEnabled = false;
 
-		private String protocolHeader = "x-forwarded-proto";
+		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
+				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
+				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
+				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"; // 127/8
 
-		private String remoteIpHeader = "x-forwarded-for";
+		private String protocolHeader;
+
+		private String portHeader;
+
+		private String remoteIpHeader;
 
 		private File basedir;
 
 		private int backgroundProcessorDelay = 30; // seconds
 
 		private int maxThreads = 0; // Number of threads in protocol handler
+
+		private int maxHttpHeaderSize = 0; // bytes
 
 		private String uriEncoding;
 
@@ -154,6 +229,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 		public void setMaxThreads(int maxThreads) {
 			this.maxThreads = maxThreads;
+		}
+
+		public int getMaxHttpHeaderSize() {
+			return this.maxHttpHeaderSize;
+		}
+
+		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+			this.maxHttpHeaderSize = maxHttpHeaderSize;
 		}
 
 		public boolean getAccessLogEnabled() {
@@ -188,12 +271,28 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			this.accessLogPattern = accessLogPattern;
 		}
 
+		public String getInternalProxies() {
+			return this.internalProxies;
+		}
+
+		public void setInternalProxies(String internalProxies) {
+			this.internalProxies = internalProxies;
+		}
+
 		public String getProtocolHeader() {
 			return this.protocolHeader;
 		}
 
 		public void setProtocolHeader(String protocolHeader) {
 			this.protocolHeader = protocolHeader;
+		}
+
+		public String getPortHeader() {
+			return this.portHeader;
+		}
+
+		public void setPortHeader(String portHeader) {
+			this.portHeader = portHeader;
 		}
 
 		public String getRemoteIpHeader() {
@@ -231,6 +330,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				RemoteIpValve valve = new RemoteIpValve();
 				valve.setRemoteIpHeader(remoteIpHeader);
 				valve.setProtocolHeader(protocolHeader);
+				valve.setInternalProxies(getInternalProxies());
+				valve.setPortHeader(getPortHeader());
 				factory.addContextValves(valve);
 			}
 
@@ -240,8 +341,23 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 					public void customize(Connector connector) {
 						ProtocolHandler handler = connector.getProtocolHandler();
 						if (handler instanceof AbstractProtocol) {
+							@SuppressWarnings("rawtypes")
 							AbstractProtocol protocol = (AbstractProtocol) handler;
 							protocol.setMaxThreads(Tomcat.this.maxThreads);
+						}
+					}
+				});
+			}
+
+			if (this.maxHttpHeaderSize > 0) {
+				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+					@Override
+					public void customize(Connector connector) {
+						ProtocolHandler handler = connector.getProtocolHandler();
+						if (handler instanceof AbstractHttp11Protocol) {
+							@SuppressWarnings("rawtypes")
+							AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+							protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
 						}
 					}
 				});
@@ -265,42 +381,4 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		}
 
 	}
-
-	public String getServletPrefix() {
-		String result = this.servletPath;
-		if (result.contains("*")) {
-			result = result.substring(0, result.indexOf("*"));
-		}
-		if (result.endsWith("/")) {
-			result = result.substring(0, result.length() - 1);
-		}
-		return result;
-	}
-
-	public String[] getPathsArray(Collection<String> paths) {
-		String[] result = new String[paths.size()];
-		int i = 0;
-		for (String path : paths) {
-			result[i++] = getPath(path);
-		}
-		return result;
-	}
-
-	public String[] getPathsArray(String[] paths) {
-		String[] result = new String[paths.length];
-		int i = 0;
-		for (String path : paths) {
-			result[i++] = getPath(path);
-		}
-		return result;
-	}
-
-	public String getPath(String path) {
-		String prefix = getServletPrefix();
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
-		return prefix + path;
-	}
-
 }

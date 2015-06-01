@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Simple wrapper around {@link Endpoint} implementations to enable JMX export.
- * 
+ *
  * @author Christian Dupuis
  */
 @ManagedResource

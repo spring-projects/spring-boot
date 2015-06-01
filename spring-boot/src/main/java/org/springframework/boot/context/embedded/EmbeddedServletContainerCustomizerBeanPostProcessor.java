@@ -30,7 +30,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 /**
  * {@link BeanPostProcessor} that apply all {@link EmbeddedServletContainerCustomizer}s
  * from the bean factory to {@link ConfigurableEmbeddedServletContainer} beans.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -73,7 +73,8 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor implements
 			// Look up does not include the parent context
 			this.customizers = new ArrayList<EmbeddedServletContainerCustomizer>(
 					this.applicationContext.getBeansOfType(
-							EmbeddedServletContainerCustomizer.class).values());
+							EmbeddedServletContainerCustomizer.class, false, false)
+							.values());
 			Collections.sort(this.customizers, AnnotationAwareOrderComparator.INSTANCE);
 			this.customizers = Collections.unmodifiableList(this.customizers);
 		}

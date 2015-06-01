@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for the shell subsystem.
- * 
+ *
  * @author Christian Dupuis
  * @author Phillip Webb
  */
@@ -54,6 +54,8 @@ public class ShellProperties {
 			"classpath*:/crash/commands/**" };
 
 	private String[] configPathPatterns = new String[] { "classpath*:/crash/*" };
+
+	private String[] disabledCommands = new String[] { "jpa*", "jdbc*", "jndi*" };
 
 	private String[] disabledPlugins = new String[0];
 
@@ -104,6 +106,15 @@ public class ShellProperties {
 
 	public String[] getConfigPathPatterns() {
 		return this.configPathPatterns;
+	}
+
+	public void setDisabledCommands(String[] disabledCommands) {
+		Assert.notEmpty(disabledCommands);
+		this.disabledCommands = disabledCommands;
+	}
+
+	public String[] getDisabledCommands() {
+		return this.disabledCommands;
 	}
 
 	public void setDisabledPlugins(String[] disabledPlugins) {
@@ -416,9 +427,8 @@ public class ShellProperties {
 		}
 
 		public void setRoles(String[] roles) {
-			// 'roles' can be empty. This means no special to access right to connect to
+			// 'roles' can be null. This means no special to access right to connect to
 			// shell is required.
-			Assert.notNull(roles, "roles must not be null");
 			this.roles = roles;
 		}
 

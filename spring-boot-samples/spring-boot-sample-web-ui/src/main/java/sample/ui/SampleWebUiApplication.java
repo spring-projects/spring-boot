@@ -30,7 +30,7 @@ public class SampleWebUiApplication {
 
 	@Bean
 	public MessageRepository messageRepository() {
-		return new InMemoryMessageRespository();
+		return new InMemoryMessageRepository();
 	}
 
 	@Bean

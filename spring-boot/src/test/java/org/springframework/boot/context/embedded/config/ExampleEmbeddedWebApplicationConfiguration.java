@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Example {@code @Configuration} for use with
  * {@link AnnotationConfigEmbeddedWebApplicationContextTests}.
- * 
+ *
  * @author Phillip Webb
  */
 @Configuration

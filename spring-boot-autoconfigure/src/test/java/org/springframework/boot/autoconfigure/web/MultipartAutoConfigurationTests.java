@@ -28,6 +28,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,16 +38,23 @@ import org.springframework.web.multipart.support.StandardServletMultipartResolve
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MultipartAutoConfiguration}. Tests an empty configuration, no
  * multipart configuration, and a multipart configuration (with both Jetty and Tomcat).
- * 
+ *
  * @author Greg Turnquist
  * @author Dave Syer
+ * @author Josh Long
  */
 public class MultipartAutoConfigurationTests {
 
@@ -67,11 +75,11 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithNothing.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
-		assertNull(servlet.getMultipartResolver());
-		assertEquals(0,
-				this.context.getBeansOfType(StandardServletMultipartResolver.class)
-						.size());
-		assertEquals(0, this.context.getBeansOfType(MultipartResolver.class).size());
+		assertNotNull(servlet.getMultipartResolver());
+		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)
+				.size(), equalTo(1));
+		assertThat(this.context.getBeansOfType(MultipartResolver.class).size(),
+				equalTo(1));
 	}
 
 	@Configuration
@@ -83,11 +91,11 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithNoMultipartJetty.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
-		assertNull(servlet.getMultipartResolver());
-		assertEquals(0,
-				this.context.getBeansOfType(StandardServletMultipartResolver.class)
-						.size());
-		assertEquals(0, this.context.getBeansOfType(MultipartResolver.class).size());
+		assertNotNull(servlet.getMultipartResolver());
+		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)
+				.size(), equalTo(1));
+		assertThat(this.context.getBeansOfType(MultipartResolver.class).size(),
+				equalTo(1));
 		verifyServletWorks();
 	}
 
@@ -110,10 +118,10 @@ public class MultipartAutoConfigurationTests {
 				ContainerWithNoMultipartTomcat.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
 		assertNull(servlet.getMultipartResolver());
-		assertEquals(0,
-				this.context.getBeansOfType(StandardServletMultipartResolver.class)
-						.size());
-		assertEquals(0, this.context.getBeansOfType(MultipartResolver.class).size());
+		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)
+				.size(), equalTo(1));
+		assertThat(this.context.getBeansOfType(MultipartResolver.class).size(),
+				equalTo(1));
 		verifyServletWorks();
 	}
 
@@ -140,11 +148,41 @@ public class MultipartAutoConfigurationTests {
 		verifyServletWorks();
 	}
 
+	@Test
+	public void containerWithMultipartConfigDisabled() {
+
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.getEnvironment().getPropertySources()
+				.addFirst(new PropertySource<Object>("test") {
+					@Override
+					public Object getProperty(String name) {
+						if (name.toLowerCase().contains("multipart.enabled")) {
+							return "false";
+						}
+						return null;
+					}
+				});
+		this.context.register(ContainerWithNoMultipartTomcat.class,
+				BaseConfiguration.class);
+		this.context.refresh();
+		assertEquals(0, this.context.getBeansOfType(MultipartConfigElement.class).size());
+	}
+
+	@Test
+	public void containerWithCustomMulipartResolver() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				ContainerWithCustomMultipartResolver.class, BaseConfiguration.class);
+		MultipartResolver multipartResolver = this.context
+				.getBean(MultipartResolver.class);
+		assertThat(multipartResolver,
+				not(instanceOf(StandardServletMultipartResolver.class)));
+	}
+
 	private void verifyServletWorks() {
 		RestTemplate restTemplate = new RestTemplate();
-		assertEquals(restTemplate.getForObject("http://localhost:"
+		assertEquals("Hello", restTemplate.getForObject("http://localhost:"
 				+ this.context.getEmbeddedServletContainer().getPort() + "/",
-				String.class), "Hello");
+				String.class));
 	}
 
 	@Configuration
@@ -174,10 +212,12 @@ public class MultipartAutoConfigurationTests {
 		WebController controller() {
 			return new WebController();
 		}
+
 	}
 
 	@Configuration
 	public static class ContainerWithEverythingJetty {
+
 		@Bean
 		MultipartConfigElement multipartConfigElement() {
 			return new MultipartConfigElement("");
@@ -192,11 +232,13 @@ public class MultipartAutoConfigurationTests {
 		WebController webController() {
 			return new WebController();
 		}
+
 	}
 
 	@Configuration
 	@EnableWebMvc
 	public static class ContainerWithEverythingTomcat {
+
 		@Bean
 		MultipartConfigElement multipartConfigElement() {
 			return new MultipartConfigElement("");
@@ -211,15 +253,27 @@ public class MultipartAutoConfigurationTests {
 		WebController webController() {
 			return new WebController();
 		}
+
+	}
+
+	public static class ContainerWithCustomMultipartResolver {
+
+		@Bean
+		MultipartResolver multipartResolver() {
+			return mock(MultipartResolver.class);
+		}
+
 	}
 
 	@Controller
 	public static class WebController {
+
 		@RequestMapping("/")
-		public @ResponseBody
-		String index() {
+		@ResponseBody
+		public String index() {
 			return "Hello";
 		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.codehaus.groovy.transform.ASTTransformation;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
+import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -50,7 +51,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ResolveDependencyCoordinatesTransformation}
- * 
+ *
  * @author Andy Wilkinson
  */
 public final class ResolveDependencyCoordinatesTransformationTests {
@@ -64,8 +65,11 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 	private final ArtifactCoordinatesResolver coordinatesResolver = mock(ArtifactCoordinatesResolver.class);
 
-	private final ASTTransformation transformation = new ResolveDependencyCoordinatesTransformation(
+	private final DependencyResolutionContext resolutionContext = new DependencyResolutionContext(
 			this.coordinatesResolver);
+
+	private final ASTTransformation transformation = new ResolveDependencyCoordinatesTransformation(
+			this.resolutionContext);
 
 	@Before
 	public void setupExpectations() {

@@ -33,10 +33,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for separate management and main service ports.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -71,7 +72,8 @@ public class ManagementAddressActuatorApplicationTests {
 						"http://localhost:" + this.managementPort + "/admin/health",
 						String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"status\":\"UP\""));
 	}
 
 }

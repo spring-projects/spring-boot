@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ConditionalOnResource}.
- * 
+ *
  * @author Dave Syer
  */
 public class ConditionalOnResourceTests {

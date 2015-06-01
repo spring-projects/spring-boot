@@ -32,7 +32,7 @@ import org.springframework.util.ClassUtils;
 /**
  * {@link ApplicationListener} expose Spring Security {@link AbstractAuthenticationEvent
  * authentication events} as {@link AuditEvent}s.
- * 
+ *
  * @author Dave Syer
  */
 public class AuthenticationAuditListener implements

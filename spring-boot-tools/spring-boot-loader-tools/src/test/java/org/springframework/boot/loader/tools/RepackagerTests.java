@@ -19,6 +19,7 @@ package org.springframework.boot.loader.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -33,6 +34,7 @@ import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
@@ -41,7 +43,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link Repackager}.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -124,6 +126,22 @@ public class RepackagerTests {
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(NO_LIBRARIES);
+		Manifest actualManifest = getManifest(file);
+		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"),
+				equalTo("org.springframework.boot.loader.JarLauncher"));
+		assertThat(actualManifest.getMainAttributes().getValue("Start-Class"),
+				equalTo("a.b.C"));
+		assertThat(hasLauncherClasses(file), equalTo(true));
+	}
+
+	@Test
+	public void jarIsOnlyRepackagedOnce() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		repackager.repackage(NO_LIBRARIES);
+		repackager.repackage(NO_LIBRARIES);
+
 		Manifest actualManifest = getManifest(file);
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"),
 				equalTo("org.springframework.boot.loader.JarLauncher"));
@@ -258,6 +276,7 @@ public class RepackagerTests {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		final File libJarFile = libJar.getFile();
+		final File libJarFileToUnpack = libJar.getFile();
 		final File libNonJarFile = this.temporaryFolder.newFile();
 		FileCopyUtils.copy(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, libNonJarFile);
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
@@ -266,12 +285,37 @@ public class RepackagerTests {
 		repackager.repackage(new Libraries() {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(libJarFile, LibraryScope.COMPILE);
-				callback.library(libNonJarFile, LibraryScope.COMPILE);
+				callback.library(new Library(libJarFile, LibraryScope.COMPILE));
+				callback.library(new Library(libJarFileToUnpack, LibraryScope.COMPILE,
+						true));
+				callback.library(new Library(libNonJarFile, LibraryScope.COMPILE));
 			}
 		});
 		assertThat(hasEntry(file, "lib/" + libJarFile.getName()), equalTo(true));
+		assertThat(hasEntry(file, "lib/" + libJarFileToUnpack.getName()), equalTo(true));
 		assertThat(hasEntry(file, "lib/" + libNonJarFile.getName()), equalTo(false));
+		JarEntry entry = getEntry(file, "lib/" + libJarFileToUnpack.getName());
+		assertThat(entry.getComment(), startsWith("UNPACK:"));
+		assertThat(entry.getComment().length(), equalTo(47));
+	}
+
+	@Test
+	public void duplicateLibraries() throws Exception {
+		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		final File libJarFile = libJar.getFile();
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Duplicate library");
+		repackager.repackage(new Libraries() {
+			@Override
+			public void doWithLibraries(LibraryCallback callback) throws IOException {
+				callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
+				callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
+			}
+		});
 	}
 
 	@Test
@@ -290,7 +334,7 @@ public class RepackagerTests {
 		repackager.repackage(new Libraries() {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(libJarFile, scope);
+				callback.library(new Library(libJarFile, scope));
 			}
 		});
 		assertThat(hasEntry(file, "test/" + libJarFile.getName()), equalTo(true));
@@ -331,7 +375,7 @@ public class RepackagerTests {
 		repackager.repackage(new Libraries() {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(nestedFile, LibraryScope.COMPILE);
+				callback.library(new Library(nestedFile, LibraryScope.COMPILE));
 			}
 		});
 
@@ -345,7 +389,6 @@ public class RepackagerTests {
 		finally {
 			jarFile.close();
 		}
-
 	}
 
 	private boolean hasLauncherClasses(File file) throws IOException {
@@ -354,9 +397,13 @@ public class RepackagerTests {
 	}
 
 	private boolean hasEntry(File file, String name) throws IOException {
+		return getEntry(file, name) != null;
+	}
+
+	private JarEntry getEntry(File file, String name) throws IOException {
 		JarFile jarFile = new JarFile(file);
 		try {
-			return jarFile.getEntry(name) != null;
+			return jarFile.getJarEntry(name);
 		}
 		finally {
 			jarFile.close();

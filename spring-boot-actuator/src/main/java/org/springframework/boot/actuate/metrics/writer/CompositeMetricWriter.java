@@ -24,7 +24,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 /**
  * Composite implementation of {@link MetricWriter} that just sends its input to all of
  * the delegates that have been registered.
- * 
+ *
  * @author Dave Syer
  */
 public class CompositeMetricWriter implements MetricWriter {

@@ -26,7 +26,7 @@ import static org.springframework.boot.ansi.AnsiElement.GREEN;
 
 /**
  * Writes the 'Spring' banner.
- * 
+ *
  * @author Phillip Webb
  */
 abstract class Banner {

@@ -24,13 +24,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
  * Main class used to run {@link Command}s.
- * 
+ *
  * @see #addCommand(Command)
  * @see CommandRunner#runAndHandleErrors(String[])
  * @author Phillip Webb
@@ -166,7 +167,11 @@ public class CommandRunner implements Iterable<Command> {
 			System.setProperty("debug", "true");
 		}
 		try {
-			run(argsWithoutDebugFlags);
+			ExitStatus result = run(argsWithoutDebugFlags);
+			// The caller will hang up if it gets a non-zero status
+			if (result != null && result.isHangup()) {
+				return (result.getCode() > 0 ? result.getCode() : 0);
+			}
 			return 0;
 		}
 		catch (NoArgumentsException ex) {
@@ -197,7 +202,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @param args the arguments
 	 * @throws Exception
 	 */
-	protected void run(String... args) throws Exception {
+	protected ExitStatus run(String... args) throws Exception {
 		if (args.length == 0) {
 			throw new NoArgumentsException();
 		}
@@ -209,7 +214,7 @@ public class CommandRunner implements Iterable<Command> {
 		}
 		beforeRun(command);
 		try {
-			command.run(commandArguments);
+			return command.run(commandArguments);
 		}
 		finally {
 			afterRun(command);

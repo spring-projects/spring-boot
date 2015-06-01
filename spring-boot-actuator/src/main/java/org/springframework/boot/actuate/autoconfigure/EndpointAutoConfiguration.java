@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +37,9 @@ import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.SimpleHealthIndicator;
-import org.springframework.boot.actuate.health.VanillaHealthIndicator;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
@@ -52,6 +51,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -63,31 +63,35 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
  * {@link Endpoint}s.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist
+ * @author Christian Dupuis
  */
 @Configuration
 public class EndpointAutoConfiguration {
-
-	@Autowired(required = false)
-	private HealthIndicator<? extends Object> healthIndicator;
-
-	@Autowired(required = false)
-	private DataSource dataSource;
 
 	@Autowired
 	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
-	private final MetricReader metricRepository = new InMemoryMetricRepository();
+	private HealthAggregator healthAggregator = new OrderedHealthAggregator();
+
+	@Autowired(required = false)
+	Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
+
+	@Autowired(required = false)
+	private MetricReader metricRepository = new InMemoryMetricRepository();
 
 	@Autowired(required = false)
 	private PublicMetrics metrics;
 
 	@Autowired(required = false)
-	private final TraceRepository traceRepository = new InMemoryTraceRepository();
+	private TraceRepository traceRepository = new InMemoryTraceRepository();
+
+	@Autowired(required = false)
+	private ConfigurationBeanFactoryMetaData beanFactoryMetaData;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -97,18 +101,8 @@ public class EndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HealthEndpoint<Object> healthEndpoint() {
-		if (this.healthIndicator == null) {
-			if (this.dataSource == null) {
-				this.healthIndicator = new VanillaHealthIndicator();
-			}
-			else {
-				SimpleHealthIndicator healthIndicator = new SimpleHealthIndicator();
-				healthIndicator.setDataSource(this.dataSource);
-				this.healthIndicator = healthIndicator;
-			}
-		}
-		return new HealthEndpoint<Object>(this.healthIndicator);
+	public HealthEndpoint healthEndpoint() {
+		return new HealthEndpoint(this.healthAggregator, this.healthIndicators);
 	}
 
 	@Bean
@@ -179,7 +173,9 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
-		return new ConfigurationPropertiesReportEndpoint();
+		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
+		endpoint.setConfigurationBeanFactoryMetaData(this.beanFactoryMetaData);
+		return endpoint;
 	}
 
 	@Configuration

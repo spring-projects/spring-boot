@@ -32,7 +32,7 @@ import org.springframework.util.SystemPropertyUtils;
 
 /**
  * {@link LoggingSystem} for {@link Logger java.util.logging}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -47,6 +47,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		levels.put(LogLevel.WARN, Level.WARNING);
 		levels.put(LogLevel.ERROR, Level.SEVERE);
 		levels.put(LogLevel.FATAL, Level.SEVERE);
+		levels.put(LogLevel.OFF, Level.OFF);
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 

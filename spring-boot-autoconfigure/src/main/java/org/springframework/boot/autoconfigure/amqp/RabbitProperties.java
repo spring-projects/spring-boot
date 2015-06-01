@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Rabbit.
- * 
+ *
  * @author Greg Turnquist
  * @author Dave Syer
  */
@@ -70,11 +73,42 @@ public class RabbitProperties {
 	}
 
 	public void setAddresses(String addresses) {
-		this.addresses = addresses;
+		this.addresses = parseAddresses(addresses);
 	}
 
 	public String getAddresses() {
 		return (this.addresses == null ? this.host + ":" + this.port : this.addresses);
+	}
+
+	private String parseAddresses(String addresses) {
+		Set<String> result = new LinkedHashSet<String>();
+		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
+			address = address.trim();
+			if (address.startsWith("amqp://")) {
+				address = address.substring("amqp://".length());
+			}
+			if (address.contains("@")) {
+				String[] split = StringUtils.split(address, "@");
+				String creds = split[0];
+				address = split[1];
+				split = StringUtils.split(creds, ":");
+				this.username = split[0];
+				if (split.length > 0) {
+					this.password = split[1];
+				}
+			}
+			int index = address.indexOf("/");
+			if (index >= 0 && index < address.length()) {
+				this.virtualHost = address.substring(index + 1);
+				address = address.substring(0, index);
+			}
+			if (!address.contains(":")) {
+				address = address + ":" + this.port;
+			}
+			result.add(address);
+		}
+		return (result.isEmpty() ? null : StringUtils
+				.collectionToCommaDelimitedString(result));
 	}
 
 	public void setPort(int port) {
@@ -110,10 +144,7 @@ public class RabbitProperties {
 	}
 
 	public void setVirtualHost(String virtualHost) {
-		while (virtualHost.startsWith("/") && virtualHost.length() > 0) {
-			virtualHost = virtualHost.substring(1);
-		}
-		this.virtualHost = "/" + virtualHost;
+		this.virtualHost = ("".equals(virtualHost) ? "/" : virtualHost);
 	}
 
 }

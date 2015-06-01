@@ -21,7 +21,7 @@ import java.util.Map;
 
 /**
  * Parser that can read JSON formatted strings into {@link Map}s or {@link List}s.
- * 
+ *
  * @author Dave Syer
  * @see JsonParserFactory
  * @see SimpleJsonParser

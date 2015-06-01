@@ -17,6 +17,7 @@
 package samples.websocket.client;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,11 +34,14 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 
 	private final CountDownLatch latch;
 
+	private final AtomicReference<String> messagePayload;
+
 	@Autowired
 	public SimpleClientWebSocketHandler(GreetingService greetingService,
-			CountDownLatch latch) {
+			CountDownLatch latch, AtomicReference<String> message) {
 		this.greetingService = greetingService;
 		this.latch = latch;
+		this.messagePayload = message;
 	}
 
 	@Override
@@ -51,6 +55,7 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 			throws Exception {
 		this.logger.info("Received: " + message + " (" + this.latch.getCount() + ")");
 		session.close();
+		this.messagePayload.set(message.getPayload());
 		this.latch.countDown();
 	}
 

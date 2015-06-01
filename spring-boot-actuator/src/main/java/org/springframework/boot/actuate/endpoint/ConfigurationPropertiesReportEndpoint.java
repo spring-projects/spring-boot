@@ -16,37 +16,48 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
+import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 /**
  * {@link Endpoint} to expose application properties from {@link ConfigurationProperties}
  * annotated beans.
- * 
+ *
  * <p>
  * To protect sensitive information from being exposed, certain property values are masked
  * if their names end with a set of configurable values (default "password" and "secret").
  * Configure property names by using <code>endpoints.configprops.keys_to_sanitize</code>
  * in your Spring Boot application configuration.
- * 
+ *
  * @author Christian Dupuis
+ * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.configprops", ignoreUnknownFields = false)
 public class ConfigurationPropertiesReportEndpoint extends
@@ -54,21 +65,24 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
-	private String[] keysToSanitize = new String[] { "password", "secret" };
+	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
 
 	private ApplicationContext context;
+
+	private ConfigurationBeanFactoryMetaData beanFactoryMetaData;
 
 	public ConfigurationPropertiesReportEndpoint() {
 		super("configprops");
 	}
 
-	public String[] getKeysToSanitize() {
-		return this.keysToSanitize;
-	}
-
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.context = context;
+	}
+
+	public void setConfigurationBeanFactoryMetaData(
+			ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
+		this.beanFactoryMetaData = beanFactoryMetaData;
 	}
 
 	public void setKeysToSanitize(String... keysToSanitize) {
@@ -87,9 +101,14 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 */
 	@SuppressWarnings("unchecked")
 	protected Map<String, Object> extract(ApplicationContext context) {
+
 		Map<String, Object> result = new HashMap<String, Object>();
-		Map<String, Object> beans = context
-				.getBeansWithAnnotation(ConfigurationProperties.class);
+		Map<String, Object> beans = new HashMap<String, Object>(
+				context.getBeansWithAnnotation(ConfigurationProperties.class));
+		if (this.beanFactoryMetaData != null) {
+			beans.putAll(this.beanFactoryMetaData
+					.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
+		}
 
 		// Serialize beans into map structure and sanitize values
 		ObjectMapper mapper = new ObjectMapper();
@@ -98,9 +117,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
-
 			Map<String, Object> root = new HashMap<String, Object>();
-			root.put("prefix", extractPrefix(bean));
+			root.put("prefix", extractPrefix(context, beanName, bean));
 			root.put("properties", sanitize(mapper.convertValue(bean, Map.class)));
 			result.put(beanName, root);
 		}
@@ -119,6 +137,16 @@ public class ConfigurationPropertiesReportEndpoint extends
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		applyCglibFilters(mapper);
+		applySerializationModifier(mapper);
+	}
+
+	/**
+	 * Ensure only bindable and non-cyclic bean properties are reported.
+	 */
+	private void applySerializationModifier(ObjectMapper mapper) {
+		SerializerFactory factory = BeanSerializerFactory.instance
+				.withSerializerModifier(new GenericSerializerModifier());
+		mapper.setSerializerFactory(factory);
 	}
 
 	/**
@@ -134,9 +162,19 @@ public class ConfigurationPropertiesReportEndpoint extends
 	/**
 	 * Extract configuration prefix from {@link ConfigurationProperties} annotation.
 	 */
-	private String extractPrefix(Object bean) {
-		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
-				bean.getClass(), ConfigurationProperties.class);
+	private String extractPrefix(ApplicationContext context, String beanName, Object bean) {
+		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
+				ConfigurationProperties.class);
+		if (this.beanFactoryMetaData != null) {
+			ConfigurationProperties override = this.beanFactoryMetaData
+					.findFactoryAnnotation(beanName, ConfigurationProperties.class);
+			if (override != null) {
+				// The @Bean-level @ConfigurationProperties overrides the one at type
+				// level when binding. Arguably we should render them both, but this one
+				// might be the most relevant for a starting point.
+				annotation = override;
+			}
+		}
 		return (StringUtils.hasLength(annotation.value()) ? annotation.value()
 				: annotation.prefix());
 	}
@@ -203,6 +241,29 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 		private boolean include(String name) {
 			return !name.startsWith("$$");
+		}
+
+	}
+
+	protected static class GenericSerializerModifier extends BeanSerializerModifier {
+
+		private ConversionService conversionService = new DefaultConversionService();
+
+		@Override
+		public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
+				BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
+			List<BeanPropertyWriter> result = new ArrayList<BeanPropertyWriter>();
+			for (BeanPropertyWriter writer : beanProperties) {
+				AnnotatedMethod setter = beanDesc.findMethod(
+						"set" + StringUtils.capitalize(writer.getName()),
+						new Class<?>[] { writer.getPropertyType() });
+				if (setter != null
+						&& this.conversionService.canConvert(String.class,
+								writer.getPropertyType())) {
+					result.add(writer);
+				}
+			}
+			return result;
 		}
 
 	}

@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ColorConverter}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ColorConverterTests {

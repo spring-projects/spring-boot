@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * Repository for {@link AuditEvent}s.
- * 
+ *
  * @author Dave Syer
  */
 public interface AuditEventRepository {

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-full-build</artifactId>
-	<version>1.0.3.BUILD-SNAPSHOT</version>
+	<version>1.1.11.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Full Build</name>
 	<description>Spring Boot Full Build</description>
@@ -25,7 +25,7 @@
 		<developer>
 			<id>pwebb</id>
 			<name>Phillip Webb</name>
-			<email>pwebb at gopivotal.com</email>
+			<email>pwebb at pivotal.io</email>
 			<organization>Pivotal Software, Inc.</organization>
 			<organizationUrl>http://www.spring.io</organizationUrl>
 			<roles>
@@ -35,7 +35,7 @@
 		<developer>
 			<id>dsyer</id>
 			<name>Dave Syer</name>
-			<email>dsyer at gopivotal.com</email>
+			<email>dsyer at pivotal.io</email>
 			<organization>Pivotal Software, Inc.</organization>
 			<organizationUrl>http://www.spring.io</organizationUrl>
 			<roles>
@@ -45,6 +45,7 @@
 	</developers>
 	<modules>
 		<module>../</module>
+		<module>../spring-boot-versions</module>
 		<module>../spring-boot-dependencies</module>
 		<module>../spring-boot-parent</module>
 		<module>../spring-boot-tools</module>

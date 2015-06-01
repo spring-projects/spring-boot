@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigurationReportEndpoint}.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  */

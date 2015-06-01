@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.redis;
 
 import java.net.UnknownHostException;
 
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,30 +27,30 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClas
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.PoolConfig;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
-import org.springframework.data.redis.connection.lettuce.LettuceConnection;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettucePool;
+import org.springframework.data.redis.connection.jedis.JedisConnection;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import com.lambdaworks.redis.RedisClient;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis support.
- * 
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Christian Dupuis
  */
 @Configuration
-@ConditionalOnClass({ LettuceConnection.class, RedisOperations.class, RedisClient.class })
+@ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
 @EnableConfigurationProperties
 public class RedisAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnMissingClass(name = "org.apache.commons.pool.impl.GenericObjectPool")
+	@ConditionalOnMissingClass(name = "org.apache.commons.pool2.impl.GenericObjectPool")
 	protected static class RedisConnectionConfiguration {
 
 		@Autowired
@@ -58,9 +58,11 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
-			LettuceConnectionFactory factory = new LettuceConnectionFactory(
-					this.properties.getHost(), this.properties.getPort());
+		public RedisConnectionFactory redisConnectionFactory()
+				throws UnknownHostException {
+			JedisConnectionFactory factory = new JedisConnectionFactory();
+			factory.setHostName(this.properties.getHost());
+			factory.setPort(this.properties.getPort());
 			if (this.properties.getPassword() != null) {
 				factory.setPassword(this.properties.getPassword());
 			}
@@ -78,37 +80,32 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
-			if (this.properties.getPool() != null) {
-				LettuceConnectionFactory factory = new LettuceConnectionFactory(
-						lettucePool());
-				return factory;
-			}
-			LettuceConnectionFactory factory = new LettuceConnectionFactory(
-					this.properties.getHost(), this.properties.getPort());
+		public RedisConnectionFactory redisConnectionFactory()
+				throws UnknownHostException {
+			JedisConnectionFactory factory = createJedisConnectionFactory();
+			factory.setHostName(this.properties.getHost());
+			factory.setPort(this.properties.getPort());
 			if (this.properties.getPassword() != null) {
 				factory.setPassword(this.properties.getPassword());
 			}
 			return factory;
 		}
 
-		@Bean
-		@ConditionalOnMissingBean
-		public LettucePool lettucePool() {
-			return new DefaultLettucePool(this.properties.getHost(),
-					this.properties.getPort(), poolConfig());
+		private JedisConnectionFactory createJedisConnectionFactory() {
+			if (this.properties.getPool() != null) {
+				return new JedisConnectionFactory(jedisPoolConfig());
+			}
+			return new JedisConnectionFactory();
 		}
 
-		private PoolConfig poolConfig() {
-			PoolConfig pool = new PoolConfig();
+		private JedisPoolConfig jedisPoolConfig() {
+			JedisPoolConfig config = new JedisPoolConfig();
 			RedisProperties.Pool props = this.properties.getPool();
-			if (props != null) {
-				pool.setMaxActive(props.getMaxActive());
-				pool.setMaxIdle(props.getMaxIdle());
-				pool.setMinIdle(props.getMinIdle());
-				pool.setMaxWait(props.getMaxWait());
-			}
-			return pool;
+			config.setMaxTotal(props.getMaxActive());
+			config.setMaxIdle(props.getMaxIdle());
+			config.setMinIdle(props.getMinIdle());
+			config.setMaxWaitMillis(props.getMaxWait());
+			return config;
 		}
 
 	}
@@ -129,7 +126,7 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "redisTemplate")
-		RedisOperations<Object, Object> redisTemplate(
+		public RedisOperations<Object, Object> redisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
 				throws UnknownHostException {
 			RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();
@@ -139,7 +136,7 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(StringRedisTemplate.class)
-		StringRedisTemplate stringRedisTemplate(
+		public StringRedisTemplate stringRedisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
 				throws UnknownHostException {
 			StringRedisTemplate template = new StringRedisTemplate();

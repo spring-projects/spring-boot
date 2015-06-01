@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  * configuration. If one is declared then it a bean definition is registered with id equal
  * to the class name (thus an application context usually only contains one
  * {@link ConfigurationProperties} bean of each unique type).
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  */

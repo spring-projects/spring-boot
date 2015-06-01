@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link StartupInfoLogger}.
- * 
+ *
  * @author Dave Syer
  */
 public class StartUpLoggerTests {

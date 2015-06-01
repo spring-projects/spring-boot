@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 
 /**
  * Spring {@link ApplicationEvent} to encapsulate {@link AuditEvent}s.
- * 
+ *
  * @author Dave Syer
  */
 public class AuditApplicationEvent extends ApplicationEvent {

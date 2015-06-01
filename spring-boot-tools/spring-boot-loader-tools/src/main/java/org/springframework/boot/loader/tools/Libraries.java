@@ -20,7 +20,7 @@ import java.io.IOException;
 
 /**
  * Encapsulates information about libraries that may be packed into the archive.
- * 
+ *
  * @author Phillip Webb
  */
 public interface Libraries {

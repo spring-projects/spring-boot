@@ -29,8 +29,10 @@ import org.springframework.util.Assert;
 
 /**
  * An {@link org.springframework.context.ApplicationListener} that saves application PID
- * into file. This application listener will be triggered exactly once per JVM.
- * 
+ * into file. This application listener will be triggered exactly once per JVM, and the
+ * file name can be overridden at runtime with a System property or environment variable
+ * named "PIDFILE" (or "pidfile").
+ *
  * @author Jakub Kubrynski
  * @author Dave Syer
  * @author Phillip Webb
@@ -42,6 +44,8 @@ public class ApplicationPidListener implements
 	private static final Log logger = LogFactory.getLog(ApplicationPidListener.class);
 
 	private static final String DEFAULT_FILE_NAME = "application.pid";
+
+	private static final String[] PROPERTY_VARIABLES = { "PIDFILE", "pidfile" };
 
 	private static final AtomicBoolean created = new AtomicBoolean(false);
 
@@ -62,8 +66,7 @@ public class ApplicationPidListener implements
 	 * @param filename the name of file containing pid
 	 */
 	public ApplicationPidListener(String filename) {
-		Assert.notNull(filename, "Filename must not be null");
-		this.file = new File(filename);
+		this(new File(filename));
 	}
 
 	/**
@@ -72,7 +75,30 @@ public class ApplicationPidListener implements
 	 */
 	public ApplicationPidListener(File file) {
 		Assert.notNull(file, "File must not be null");
-		this.file = file;
+		String override = getOverride();
+		if (override != null) {
+			this.file = new File(override);
+		}
+		else {
+			this.file = file;
+		}
+	}
+
+	private String getOverride() {
+		for (String property : PROPERTY_VARIABLES) {
+			try {
+				String override = System.getProperty(property);
+				override = (override != null ? override : System.getenv(property));
+				if (override != null) {
+					return override;
+				}
+			}
+			catch (Throwable ex) {
+				System.err.println("Could not resolve '" + property
+						+ "' as system property: " + ex);
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -80,6 +106,7 @@ public class ApplicationPidListener implements
 		if (created.compareAndSet(false, true)) {
 			try {
 				new ApplicationPid().write(this.file);
+				this.file.deleteOnExit();
 			}
 			catch (Exception ex) {
 				logger.warn(String.format("Cannot create pid file %s", this.file));

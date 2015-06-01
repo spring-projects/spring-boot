@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -28,16 +30,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
+import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -51,6 +50,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
 
 /**
@@ -76,7 +77,7 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
  * <li>Add form login for user facing resources: add a
  * {@link WebSecurityConfigurerAdapter} and use {@link HttpSecurity#formLogin()}</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
@@ -90,12 +91,6 @@ public class SpringBootWebSecurityConfiguration {
 			"/images/**", "/**/favicon.ico");
 
 	@Bean
-	@ConditionalOnMissingBean
-	public AuthenticationEventPublisher authenticationEventPublisher() {
-		return new DefaultAuthenticationEventPublisher();
-	}
-
-	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
 	public WebSecurityConfigurer<WebSecurity> ignoredPathsWebSecurityConfigurerAdapter() {
 		return new IgnoredPathsWebSecurityConfigurerAdapter();
@@ -103,8 +98,8 @@ public class SpringBootWebSecurityConfiguration {
 
 	public static void configureHeaders(HeadersConfigurer<?> configurer,
 			SecurityProperties.Headers headers) throws Exception {
-		if (headers.getHsts() != Headers.HSTS.none) {
-			boolean includeSubdomains = headers.getHsts() == Headers.HSTS.all;
+		if (headers.getHsts() != Headers.HSTS.NONE) {
+			boolean includeSubdomains = headers.getHsts() == Headers.HSTS.ALL;
 			HstsHeaderWriter writer = new HstsHeaderWriter(includeSubdomains);
 			writer.setRequestMatcher(AnyRequestMatcher.INSTANCE);
 			configurer.addHeaderWriter(writer);
@@ -135,9 +130,12 @@ public class SpringBootWebSecurityConfiguration {
 	}
 
 	// Get the ignored paths in early
-	@Order(Ordered.HIGHEST_PRECEDENCE)
+	@Order(SecurityProperties.IGNORED_ORDER)
 	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
 			WebSecurityConfigurer<WebSecurity> {
+
+		@Autowired(required = false)
+		private ErrorController errorController;
 
 		@Autowired
 		private SecurityProperties security;
@@ -153,8 +151,19 @@ public class SpringBootWebSecurityConfiguration {
 		public void init(WebSecurity builder) throws Exception {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			List<String> ignored = getIgnored(this.security);
+			if (this.errorController != null) {
+				ignored.add(normalizePath(this.errorController.getErrorPath()));
+			}
 			String[] paths = this.server.getPathsArray(ignored);
 			ignoring.antMatchers(paths);
+		}
+
+		private String normalizePath(String errorPath) {
+			String result = StringUtils.cleanPath(errorPath);
+			if (!result.startsWith("/")) {
+				result = "/" + result;
+			}
+			return result;
 		}
 
 	}
@@ -163,7 +172,6 @@ public class SpringBootWebSecurityConfiguration {
 	// RequestDataValueProcessor
 	@ConditionalOnClass(RequestDataValueProcessor.class)
 	@ConditionalOnMissingBean(RequestDataValueProcessor.class)
-	@ConditionalOnExpression("${security.basic.enabled:true}")
 	@Configuration
 	protected static class WebMvcSecurityConfigurationConditions {
 
@@ -178,24 +186,36 @@ public class SpringBootWebSecurityConfiguration {
 	// Pull in a plain @EnableWebSecurity if Spring MVC is not available
 	@ConditionalOnMissingBean(WebMvcSecurityConfigurationConditions.class)
 	@ConditionalOnMissingClass(name = "org.springframework.web.servlet.support.RequestDataValueProcessor")
-	@ConditionalOnExpression("${security.basic.enabled:true}")
 	@Configuration
 	@EnableWebSecurity
 	protected static class DefaultWebSecurityConfiguration {
 
 	}
 
+	@ConditionalOnExpression("!${security.basic.enabled:true}")
+	@Configuration
+	@Order(SecurityProperties.BASIC_AUTH_ORDER)
+	protected static class ApplicationNoWebSecurityConfigurerAdapter extends
+			WebSecurityConfigurerAdapter {
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.requestMatcher(new RequestMatcher() {
+				@Override
+				public boolean matches(HttpServletRequest request) {
+					return false;
+				}
+			});
+		}
+	}
+
 	@ConditionalOnExpression("${security.basic.enabled:true}")
 	@Configuration
-	@Order(Ordered.LOWEST_PRECEDENCE - 5)
+	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private SecurityProperties security;
-
-		@Autowired
-		private AuthenticationEventPublisher authenticationEventPublisher;
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
@@ -204,17 +224,6 @@ public class SpringBootWebSecurityConfiguration {
 				http.requiresChannel().anyRequest().requiresSecure();
 			}
 
-			String[] paths = getSecureApplicationPaths();
-			if (this.security.getBasic().isEnabled() && paths.length > 0) {
-				http.exceptionHandling().authenticationEntryPoint(entryPoint());
-				http.requestMatchers().antMatchers(paths);
-				http.authorizeRequests()
-						.anyRequest()
-						.hasAnyRole(
-								this.security.getUser().getRole().toArray(new String[0])) //
-						.and().httpBasic() //
-						.and().anonymous().disable();
-			}
 			if (!this.security.isEnableCsrf()) {
 				http.csrf().disable();
 			}
@@ -223,6 +232,18 @@ public class SpringBootWebSecurityConfiguration {
 
 			SpringBootWebSecurityConfiguration.configureHeaders(http.headers(),
 					this.security.getHeaders());
+
+			String[] paths = getSecureApplicationPaths();
+
+			if (paths.length > 0) {
+				http.exceptionHandling().authenticationEntryPoint(entryPoint());
+				http.httpBasic();
+				http.requestMatchers().antMatchers(paths);
+				http.authorizeRequests()
+						.anyRequest()
+						.hasAnyRole(
+								this.security.getUser().getRole().toArray(new String[0]));
+			}
 
 		}
 
@@ -244,16 +265,6 @@ public class SpringBootWebSecurityConfiguration {
 			BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
 			entryPoint.setRealmName(this.security.getBasic().getRealm());
 			return entryPoint;
-		}
-
-		@Override
-		protected AuthenticationManager authenticationManager() throws Exception {
-			AuthenticationManager manager = super.authenticationManager();
-			if (manager instanceof ProviderManager) {
-				((ProviderManager) manager)
-						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
-			}
-			return manager;
 		}
 
 	}

@@ -16,23 +16,62 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.lang.reflect.Method;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardContext;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Tomcat {@link StandardContext} used by {@link TomcatEmbeddedServletContainer} to
  * support deferred initialization.
- * 
+ *
  * @author Phillip Webb
  */
 class TomcatEmbeddedContext extends StandardContext {
 
+	private ServletContextInitializerLifecycleListener starter;
+
 	@Override
-	public void loadOnStartup(Container[] children) {
+	public boolean loadOnStartup(Container[] children) {
+		return true;
 	}
 
 	public void deferredLoadOnStartup() {
-		super.loadOnStartup(findChildren());
+		// Some older Servlet frameworks (e.g. Struts, BIRT) use the Thread context class
+		// loader to create servlet instances in this phase. If they do that and then try
+		// to initialize them later the class loader may have changed, so wrap the call to
+		// loadOnStartup in what we think its going to be the main webapp classloader at
+		// runtime.
+		ClassLoader classLoader = getLoader().getClassLoader();
+		ClassLoader existingLoader = null;
+		if (classLoader != null) {
+			existingLoader = ClassUtils.overrideThreadContextClassLoader(classLoader);
+		}
+		if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage", null)) {
+			super.loadOnStartup(findChildren());
+		}
+		else {
+			callSuper(this, "loadOnStartup", findChildren(), Container[].class);
+		}
+		if (existingLoader != null) {
+			ClassUtils.overrideThreadContextClassLoader(existingLoader);
+		}
+	}
+
+	public void setStarter(ServletContextInitializerLifecycleListener starter) {
+		this.starter = starter;
+	}
+
+	public ServletContextInitializerLifecycleListener getStarter() {
+		return this.starter;
+	}
+
+	private void callSuper(Object target, String name, Object value, Class<?> type) {
+		Method method = ReflectionUtils.findMethod(target.getClass().getSuperclass(),
+				name, type);
+		ReflectionUtils.invokeMethod(method, target, value);
 	}
 
 }
