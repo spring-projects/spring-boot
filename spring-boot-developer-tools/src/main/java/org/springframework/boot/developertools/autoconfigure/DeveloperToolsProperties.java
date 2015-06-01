@@ -31,8 +31,14 @@ public class DeveloperToolsProperties {
 
 	private Restart restart = new Restart();
 
+	private Livereload livereload = new Livereload();
+
 	public Restart getRestart() {
 		return this.restart;
+	}
+
+	public Livereload getLivereload() {
+		return this.livereload;
 	}
 
 	/**
@@ -64,6 +70,39 @@ public class DeveloperToolsProperties {
 
 		public void setExclude(String exclude) {
 			this.exclude = exclude;
+		}
+
+	}
+
+	/**
+	 * LiveReload properties
+	 */
+	public static class Livereload {
+
+		/**
+		 * Enable a livereload.com compatible server.
+		 */
+		private boolean enabled = true;
+
+		/**
+		 * Server port.
+		 */
+		private int port = 35729;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public int getPort() {
+			return this.port;
+		}
+
+		public void setPort(int port) {
+			this.port = port;
 		}
 
 	}

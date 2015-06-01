@@ -30,19 +30,24 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.developertools.filewatch.ChangedFiles;
+import org.springframework.boot.developertools.livereload.LiveReloadServer;
 import org.springframework.boot.developertools.restart.MockRestartInitializer;
 import org.springframework.boot.developertools.restart.MockRestarter;
 import org.springframework.boot.developertools.restart.Restarter;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.SocketUtils;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -75,6 +80,53 @@ public class LocalDeveloperToolsAutoConfigurationTests {
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
 		assertThat(resolver.isCacheable(), equalTo(false));
+	}
+
+	@Test
+	public void liveReloadServer() throws Exception {
+		this.context = initializeAndRun(Config.class);
+		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
+		assertThat(server.isStarted(), equalTo(true));
+	}
+
+	@Test
+	public void liveReloadTriggeredOnContextRefresh() throws Exception {
+		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
+		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
+		reset(server);
+		this.context.publishEvent(new ContextRefreshedEvent(this.context));
+		verify(server).triggerReload();
+	}
+
+	@Test
+	public void liveReloadTriggerdOnClassPathChangeWithoutRestart() throws Exception {
+		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
+		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
+		reset(server);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
+				Collections.<ChangedFiles> emptySet(), false);
+		this.context.publishEvent(event);
+		verify(server).triggerReload();
+	}
+
+	@Test
+	public void liveReloadNotTriggerdOnClassPathChangeWithRestart() throws Exception {
+		this.context = initializeAndRun(ConfigWithMockLiveReload.class);
+		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
+		reset(server);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
+				Collections.<ChangedFiles> emptySet(), true);
+		this.context.publishEvent(event);
+		verify(server, never()).triggerReload();
+	}
+
+	@Test
+	public void liveReloadDisabled() throws Exception {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("spring.developertools.livereload.enabled", false);
+		this.context = initializeAndRun(Config.class, properties);
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(OptionalLiveReloadServer.class);
 	}
 
 	@Test
@@ -139,6 +191,18 @@ public class LocalDeveloperToolsAutoConfigurationTests {
 	@Import({ LocalDeveloperToolsAutoConfiguration.class,
 			ThymeleafAutoConfiguration.class })
 	public static class Config {
+
+	}
+
+	@Configuration
+	@Import({ LocalDeveloperToolsAutoConfiguration.class,
+			ThymeleafAutoConfiguration.class })
+	public static class ConfigWithMockLiveReload {
+
+		@Bean
+		public LiveReloadServer liveReloadServer() {
+			return mock(LiveReloadServer.class);
+		}
 
 	}
 

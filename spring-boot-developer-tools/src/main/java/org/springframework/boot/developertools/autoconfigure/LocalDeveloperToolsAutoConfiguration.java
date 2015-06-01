@@ -27,10 +27,13 @@ import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.developertools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.developertools.classpath.PatternClassPathRestartStrategy;
+import org.springframework.boot.developertools.livereload.LiveReloadServer;
 import org.springframework.boot.developertools.restart.ConditionalOnInitializedRestarter;
+import org.springframework.boot.developertools.restart.RestartScope;
 import org.springframework.boot.developertools.restart.Restarter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 /**
@@ -50,6 +53,45 @@ public class LocalDeveloperToolsAutoConfiguration {
 	@Bean
 	public static LocalDeveloperPropertyDefaultsPostProcessor localDeveloperPropertyDefaultsPostProcessor() {
 		return new LocalDeveloperPropertyDefaultsPostProcessor();
+	}
+
+	/**
+	 * Local LiveReload configuration.
+	 */
+	@ConditionalOnProperty(prefix = "spring.developertools.livereload", name = "enabled", matchIfMissing = true)
+	static class LiveReloadConfiguration {
+
+		@Autowired
+		private DeveloperToolsProperties properties;
+
+		@Autowired(required = false)
+		private LiveReloadServer liveReloadServer;
+
+		@Bean
+		@RestartScope
+		@ConditionalOnMissingBean
+		public LiveReloadServer liveReloadServer() {
+			return new LiveReloadServer(this.properties.getLivereload().getPort(),
+					Restarter.getInstance().getThreadFactory());
+		}
+
+		@EventListener
+		public void onContextRefreshed(ContextRefreshedEvent event) {
+			optionalLiveReloadServer().triggerReload();
+		}
+
+		@EventListener
+		public void onClassPathChanged(ClassPathChangedEvent event) {
+			if (!event.isRestartRequired()) {
+				optionalLiveReloadServer().triggerReload();
+			}
+		}
+
+		@Bean
+		public OptionalLiveReloadServer optionalLiveReloadServer() {
+			return new OptionalLiveReloadServer(this.liveReloadServer);
+		}
+
 	}
 
 	/**
