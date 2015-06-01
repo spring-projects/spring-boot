@@ -1,0 +1,3 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.springframework.boot.developertools.autoconfigure.LocalDeveloperToolsAutoConfiguration
