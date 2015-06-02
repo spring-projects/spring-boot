@@ -42,7 +42,9 @@ import org.springframework.web.util.NestedServletException;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -89,7 +91,6 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		mvc.perform(get("/templateVarTest/foo")).andExpect(status().isOk());
-
 		verify(context.getBean(CounterService.class)).increment(
 				"status.200.templateVarTest.someVariable");
 		verify(context.getBean(GaugeService.class)).submit(
@@ -106,7 +107,6 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		mvc.perform(get("/knownPath/foo")).andExpect(status().isNotFound());
-
 		verify(context.getBean(CounterService.class)).increment(
 				"status.404.knownPath.someVariable");
 		verify(context.getBean(GaugeService.class)).submit(
@@ -122,9 +122,7 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		mvc.perform(get("/unknownPath/1")).andExpect(status().isNotFound());
-
 		mvc.perform(get("/unknownPath/2")).andExpect(status().isNotFound());
-
 		verify(context.getBean(CounterService.class), times(2)).increment(
 				"status.404.unmapped");
 		verify(context.getBean(GaugeService.class), times(2)).submit(
@@ -147,7 +145,6 @@ public class MetricFilterAutoConfigurationTests {
 		Filter filter = context.getBean(Filter.class);
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
-
 		try {
 			mvc.perform(get("/unhandledException")).andExpect(
 					status().isInternalServerError());
@@ -155,11 +152,28 @@ public class MetricFilterAutoConfigurationTests {
 		catch (NestedServletException ex) {
 			// Expected
 		}
-
 		verify(context.getBean(CounterService.class)).increment(
 				"status.500.unhandledException");
 		verify(context.getBean(GaugeService.class)).submit(
 				eq("response.unhandledException"), anyDouble());
+		context.close();
+	}
+
+	@Test
+	public void gaugeServiceThatThrows() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		GaugeService gaugeService = context.getBean(GaugeService.class);
+		willThrow(new IllegalStateException()).given(gaugeService).submit(anyString(),
+				anyDouble());
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter).build();
+		mvc.perform(get("/templateVarTest/foo")).andExpect(status().isOk());
+		verify(context.getBean(CounterService.class)).increment(
+				"status.200.templateVarTest.someVariable");
+		verify(context.getBean(GaugeService.class)).submit(
+				eq("response.templateVarTest.someVariable"), anyDouble());
 		context.close();
 	}
 
@@ -178,26 +192,26 @@ public class MetricFilterAutoConfigurationTests {
 
 	}
 
-}
+	@RestController
+	class MetricFilterTestController {
 
-@RestController
-class MetricFilterTestController {
+		@RequestMapping("templateVarTest/{someVariable}")
+		public String testTemplateVariableResolution(@PathVariable String someVariable) {
+			return someVariable;
+		}
 
-	@RequestMapping("templateVarTest/{someVariable}")
-	public String testTemplateVariableResolution(@PathVariable String someVariable) {
-		return someVariable;
+		@RequestMapping("knownPath/{someVariable}")
+		@ResponseStatus(HttpStatus.NOT_FOUND)
+		@ResponseBody
+		public String testKnownPathWith404Response(@PathVariable String someVariable) {
+			return someVariable;
+		}
+
+		@ResponseBody
+		@RequestMapping("unhandledException")
+		public String testException() {
+			throw new RuntimeException();
+		}
 	}
 
-	@RequestMapping("knownPath/{someVariable}")
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	@ResponseBody
-	public String testKnownPathWith404Response(@PathVariable String someVariable) {
-		return someVariable;
-	}
-
-	@ResponseBody
-	@RequestMapping("unhandledException")
-	public String testException() {
-		throw new RuntimeException();
-	}
 }
