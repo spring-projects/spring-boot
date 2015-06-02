@@ -486,6 +486,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mail.password=
 	spring.mail.default-encoding=UTF-8 # encoding to use for MimeMessages
 	spring.mail.properties.*= # properties to set on the JavaMail session
+	spring.mail.jndi-name= # JNDI location of a Mail Session
 
 	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
 	spring.batch.job.names=job1,job2

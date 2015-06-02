@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Oliver Gierke
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.mail")
@@ -60,6 +61,11 @@ public class MailProperties {
 	 * Additional JavaMail session properties.
 	 */
 	private Map<String, String> properties = new HashMap<String, String>();
+
+	/**
+	 * Session JNDI name. When set, takes precedence to others mail settings.
+	 */
+	private String jndiName;
 
 	public String getHost() {
 		return this.host;
@@ -105,4 +111,11 @@ public class MailProperties {
 		return this.properties;
 	}
 
+	public void setJndiName(String jndiName) {
+		this.jndiName = jndiName;
+	}
+
+	public String getJndiName() {
+		return this.jndiName;
+	}
 }
