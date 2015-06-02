@@ -135,14 +135,12 @@ public class MetricFilterAutoConfiguration {
 		}
 
 		private boolean is4xxClientError(int status) {
-			HttpStatus httpStatus = HttpStatus.OK;
 			try {
-				httpStatus = HttpStatus.valueOf(status);
+				return HttpStatus.valueOf(status).is4xxClientError();
 			}
 			catch (Exception ex) {
-				// not convertible
+				return false;
 			}
-			return httpStatus.is4xxClientError();
 		}
 
 		private String getKey(String string) {

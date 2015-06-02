@@ -163,7 +163,7 @@ public class GzipFilterProperties {
 	}
 
 	public List<MimeType> getExcludedMimeTypes() {
-		return excludedMimeTypes;
+		return this.excludedMimeTypes;
 	}
 
 	public void setExcludedMimeTypes(List<MimeType> excludedMimeTypes) {
