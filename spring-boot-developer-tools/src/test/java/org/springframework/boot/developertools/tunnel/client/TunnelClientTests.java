@@ -84,6 +84,7 @@ public class TunnelClientTests {
 		client.start();
 		SocketChannel channel = SocketChannel
 				.open(new InetSocketAddress(this.listenPort));
+		Thread.sleep(200);
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
 		client.getServerThread().join(2000);
@@ -97,6 +98,7 @@ public class TunnelClientTests {
 		client.start();
 		SocketChannel channel = SocketChannel
 				.open(new InetSocketAddress(this.listenPort));
+		Thread.sleep(200);
 		client.stop();
 		assertThat(this.tunnelConnection.getOpenedTimes(), equalTo(1));
 		assertThat(this.tunnelConnection.isOpen(), equalTo(false));
@@ -111,6 +113,7 @@ public class TunnelClientTests {
 		client.start();
 		SocketChannel channel = SocketChannel
 				.open(new InetSocketAddress(this.listenPort));
+		Thread.sleep(200);
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
 		client.getServerThread().join(2000);

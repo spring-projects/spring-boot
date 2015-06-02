@@ -91,10 +91,10 @@ public class RestarterTests {
 
 		};
 		thread.start();
-		Thread.sleep(1600);
+		Thread.sleep(2600);
 		String output = this.out.toString();
-		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0"), greaterThan(2));
-		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1"), greaterThan(2));
+		assertThat(StringUtils.countOccurrencesOf(output, "Tick 0"), greaterThan(1));
+		assertThat(StringUtils.countOccurrencesOf(output, "Tick 1"), greaterThan(1));
 	}
 
 	@Test
@@ -199,12 +199,12 @@ public class RestarterTests {
 
 		private static volatile boolean quit = false;
 
-		@Scheduled(fixedDelay = 100)
+		@Scheduled(fixedDelay = 200)
 		public void tickBean() {
 			System.out.println("Tick " + this.count++ + " " + Thread.currentThread());
 		}
 
-		@Scheduled(initialDelay = 350, fixedDelay = 350)
+		@Scheduled(initialDelay = 500, fixedDelay = 500)
 		public void restart() {
 			System.out.println("Restart " + Thread.currentThread());
 			if (!SampleApplication.quit) {
