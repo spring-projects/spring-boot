@@ -40,6 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -127,7 +128,7 @@ public class WebMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
-		return new HiddenHttpMethodFilter();
+		return new OrderedHiddenHttpMethodFilter();
 	}
 
 	// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when not
