@@ -16,35 +16,30 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
+import javax.mail.Session;
+import javax.naming.NamingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jndi.JndiLocatorDelegate;
 
-import javax.mail.Session;
-import javax.naming.NamingException;
-
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Mail provided from JNDI.
+ * Auto-configure a {@link Session} available on JNDI.
  *
  * @author Eddú Meléndez
+ * @author Stephane Nicoll
  * @since 1.3.0
  */
 @Configuration
-@AutoConfigureBefore(MailSenderAutoConfiguration.class)
 @ConditionalOnClass(Session.class)
-@ConditionalOnMissingBean(Session.class)
 @ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
-@EnableConfigurationProperties(MailProperties.class)
 @ConditionalOnJndi
-public class JndiMailAutoConfiguration {
+class JndiSessionConfiguration {
 
 	@Autowired
 	private MailProperties properties;
@@ -54,13 +49,12 @@ public class JndiMailAutoConfiguration {
 	public Session session() {
 		try {
 			return new JndiLocatorDelegate()
-				.lookup(this.properties.getJndiName(), Session.class);
-		} catch (NamingException e) {
-
+					.lookup(this.properties.getJndiName(), Session.class);
 		}
-
-		throw new IllegalStateException(String
-			.format("Unable to find Session in JNDI location %s", this.properties.getJndiName()));
+		catch (NamingException e) {
+			throw new IllegalStateException(String.format(
+					"Unable to find Session in JNDI location %s", this.properties.getJndiName()));
+		}
 	}
 
 }

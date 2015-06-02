@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class MailProperties {
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	/**
-	 * JNDI location of the session. Host, port, username, password are ignored when set.
+	 * Session JNDI name. When set, takes precedence to others mail settings.
 	 */
 	private String jndiName;
 
