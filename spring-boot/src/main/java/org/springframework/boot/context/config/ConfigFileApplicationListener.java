@@ -387,15 +387,17 @@ public class ConfigFileApplicationListener implements
 							.getProperty(INCLUDE_PROFILES_PROPERTY));
 				}
 			}
-
 			StringBuilder msg = new StringBuilder();
 			msg.append(propertySource == null ? "Skipped " : "Loaded ");
 			msg.append("config file ");
-			msg.append("'").append(location).append("' ");
-			msg.append(StringUtils.hasLength(profile) ? "for profile " + profile : " ");
-			msg.append(resource == null || !resource.exists() ? "resource not found" : "");
+			msg.append("'").append(location).append("'");
+			if (StringUtils.hasLength(profile)) {
+				msg.append(" for profile" + profile);
+			}
+			if (resource == null || !resource.exists()) {
+				msg.append(" resource not found");
+			}
 			this.debug.add(msg);
-
 			return propertySource;
 		}
 

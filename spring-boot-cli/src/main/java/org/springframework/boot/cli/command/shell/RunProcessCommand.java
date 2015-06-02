@@ -34,6 +34,7 @@ import org.springframework.boot.loader.tools.RunProcess;
 class RunProcessCommand extends AbstractCommand {
 
 	private final String[] command;
+
 	private volatile RunProcess process;
 
 	public RunProcessCommand(String... command) {

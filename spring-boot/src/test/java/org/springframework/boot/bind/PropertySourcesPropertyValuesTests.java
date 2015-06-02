@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,7 @@ public class PropertySourcesPropertyValuesTests {
 	@Before
 	public void init() {
 		this.propertySources.addFirst(new PropertySource<String>("static", "foo") {
+
 			@Override
 			public Object getProperty(String name) {
 				if (name.equals(getSource())) {
@@ -59,10 +61,8 @@ public class PropertySourcesPropertyValuesTests {
 
 	@Test
 	public void testTypesPreserved() {
-		this.propertySources.replace(
-				"map",
-				new MapPropertySource("map", Collections.<String, Object> singletonMap(
-						"name", 123)));
+		Map<String, Object> map = Collections.<String, Object> singletonMap("name", 123);
+		this.propertySources.replace("map", new MapPropertySource("map", map));
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
 		assertEquals(123, propertyValues.getPropertyValues()[0].getValue());
@@ -123,6 +123,7 @@ public class PropertySourcesPropertyValuesTests {
 	@Test
 	public void testNonEnumeratedPlaceholder() {
 		this.propertySources.addFirst(new PropertySource<String>("another", "baz") {
+
 			@Override
 			public Object getProperty(String name) {
 				if (name.equals(getSource())) {
@@ -179,10 +180,12 @@ public class PropertySourcesPropertyValuesTests {
 		TestBean target = new TestBean();
 		DataBinder binder = new DataBinder(target);
 		this.propertySources.addFirst(new PropertySource<Object>("application", "STUFF") {
+
 			@Override
 			public Object getProperty(String name) {
 				return new Object();
 			}
+
 		});
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources,
 				(Collection<String>) null, Collections.singleton("name")));
