@@ -324,9 +324,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			String parentType = beanDesc.getType().getRawClass().getName();
 			String type = writer.getPropertyType().getName();
-			AnnotatedMethod setter = beanDesc.findMethod(
-					"set" + StringUtils.capitalize(writer.getName()),
-					new Class<?>[] { writer.getPropertyType() });
+			AnnotatedMethod setter = findSetter(beanDesc, writer);
 			// If there's a setter, we assume it's OK to report on the value,
 			// similarly, if there's no setter but the package names match, we assume
 			// that its a nested class used solely for binding to config props, so it
@@ -335,6 +333,19 @@ public class ConfigurationPropertiesReportEndpoint extends
 			return (setter != null)
 					|| ClassUtils.getPackageName(parentType).equals(
 							ClassUtils.getPackageName(type));
+		}
+
+		private AnnotatedMethod findSetter(BeanDescription beanDesc,
+				BeanPropertyWriter writer) {
+			String name = "set" + StringUtils.capitalize(writer.getName());
+			Class<?> type = writer.getPropertyType();
+			AnnotatedMethod setter = beanDesc.findMethod(name, new Class<?>[] { type });
+			// The enabled property of endpoints returns a boolean primitive but is set
+			// using a Boolean class
+			if (setter == null && type.equals(Boolean.TYPE)) {
+				setter = beanDesc.findMethod(name, new Class<?>[] { Boolean.class });
+			}
+			return setter;
 		}
 	}
 

@@ -26,6 +26,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -151,6 +152,17 @@ public class ConfigurationPropertiesReportEndpointTests extends
 		assertEquals("******", nestedProperties.get("myTestProperty"));
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void mixedBoolean() throws Exception {
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
+		System.out.println(nestedProperties);
+		assertThat(nestedProperties.get("mixedBoolean"), equalTo((Object) true));
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Parent {
@@ -183,6 +195,8 @@ public class ConfigurationPropertiesReportEndpointTests extends
 
 		private String myTestProperty = "654321";
 
+		private Boolean mixedBoolean = true;
+
 		public String getDbPassword() {
 			return this.dbPassword;
 		}
@@ -197,6 +211,14 @@ public class ConfigurationPropertiesReportEndpointTests extends
 
 		public void setMyTestProperty(String myTestProperty) {
 			this.myTestProperty = myTestProperty;
+		}
+
+		public boolean isMixedBoolean() {
+			return (this.mixedBoolean == null ? false : this.mixedBoolean);
+		}
+
+		public void setMixedBoolean(Boolean mixedBoolean) {
+			this.mixedBoolean = mixedBoolean;
 		}
 
 	}
