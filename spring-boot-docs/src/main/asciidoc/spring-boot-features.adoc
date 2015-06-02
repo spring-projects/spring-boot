@@ -2293,6 +2293,178 @@ TIP: For complete details of Spring Data Elasticsearch, refer to their
 http://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
 
 
+[[boot-features-caching]]
+== Caching
+
+The Spring Framework provides support for transparently adding caching into an
+application. At its core, the abstraction applies caching to methods, reducing thus the
+number of executions based on the information available in the cache. The caching logic
+is applied transparently without any interference to the invoker.
+
+NOTE: Check the {spring-reference}/#cache[relevant section] of the Spring Framework
+reference for more details.
+
+In a nutshell, adding caching to an operation of your service is as easy as adding the
+relevant annotation to its method:
+
+[source,java,indent=0]
+----
+	import javax.cache.annotation.CacheResult;
+
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MathService {
+
+		@CacheResult
+		public int computePiDecimal(int i) { ... }
+
+	}
+----
+
+NOTE: You can either use the standard JSR-107 (JCache) annotations or Spring's own
+caching annotations transparently. We strongly advice you however to not mix and match
+them.
+
+TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
+{spring-reference}/#cache-annotations-evict[evict] data from the cache transparently.
+
+=== Supported cache providers
+
+The cache abstraction does not provide an actual store and relies on a abstraction
+materialized by the `org.springframework.cache.Cache` and
+`org.springframework.cache.CacheManager` interfaces. Spring Boot auto-configures a
+suitable `CacheManager` according to the implementation as long as the caching support is
+enabled via the `@EnableCaching` annotation.
+
+Spring Boot tries to detect the following providers (in that order):
+
+* <<boot-features-caching-provider-generic,Generic>>
+* <<boot-features-caching-provider-ehcache2,EhCache 2.x>>
+* <<boot-features-caching-provider-hazelcast,Hazelcast>>
+* <<boot-features-caching-provider-infinispan,Infinispan>>
+* <<boot-features-caching-provider-jcache,JCache (JSR-107)>>
+* <<boot-features-caching-provider-redis,Redis>>
+* <<boot-features-caching-provider-guava,Guava>>
+* <<boot-features-caching-provider-simple,Simple>>
+
+It is also possible to _force_ the cache provider to use via the `spring.cache.type`
+property.
+
+[[boot-features-caching-provider-generic]]
+==== Generic
+
+If the context defines _at least_ one `org.springframework.cache.Cache` bean, a
+`CacheManager` wrapping them is configured.
+
+[[boot-features-caching-provider-ehcache2]]
+==== EhCache 2.x
+
+EhCache 2.x tries to locate a configuration file named `ehcache.xml` at the root of the
+classpath. If EhCache 2.x and such file is present it is used to bootstrap the cache
+manager. An alternate configuration file can be provide a well:
+
+[source,properties,indent=0]
+----
+	spring.cache.ehcache.config=classpath:config/another-config.xml
+----
+
+[[boot-features-caching-provider-hazelcast]]
+==== Hazelcast
+
+Hazelcast tries to locate its configuration file as follows: An `hazelcast.xml` file
+stored either in the current working directory or at the root of the classpath, or a
+location specified via the `hazelcast.config` system property. Spring Boot detects all
+of these and allow for explicit location as well:
+
+[source,properties,indent=0]
+----
+	spring.cache.hazelcast.config=classpath:config/my-hazelcast.xml
+----
+
+[[boot-features-caching-provider-infinispan]]
+==== Infinispan
+
+Infinispan has no default configuration file location so it must be specified explicitly
+(or the default bootstrap is used).
+
+[source,properties,indent=0]
+----
+	spring.cache.infinispan.config=infinispan.xml
+----
+
+Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
+`ConfigurationBuilder` bean is defined, it is used to customize them.
+
+[[boot-features-caching-provider-jcache]]
+==== JCache
+
+JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
+classpath (i.e. a JSR-107 compliant caching library). It might happen than more that one
+provider is present, in which case the provider must be explicitly specified. Even if the
+JSR-107 standard does not enforce a standardized way to define the location of the
+configuration file, Spring Boot does its best to accommodate with implementation details.
+
+[source,properties,indent=0]
+----
+    # Only necessary if more than one provider is present
+	spring.cache.jcache.provider=com.acme.MyCachingProvider
+
+	spring.cache.jcache.config=classpath:acme.xml
+----
+
+NOTE: Since a cache library may offer both a native implementation and JSR-107 support
+it is advised to set the `spring.cache.type` to `jcache` to force that mode if that's
+what you want.
+
+There are several ways to customize the underlying `javax.cache.cacheManager`:
+
+* Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
+`javax.cache.configuration.Configuration` bean is defined, it is used to customize them.
+* `org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer` beans are
+invoked with the reference of the `CacheManager` for full customization.
+
+TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped
+automatically in a `org.springframework.cache.CacheManager` implementation that the
+abstraction expects. No further customization is applied on it.
+
+[[boot-features-caching-provider-redis]]
+==== Redis
+
+If Redis is available and configured, the `RedisCacheManager` is auto-configured. It is
+also possible to create additional caches on startup using the `spring.cache.cache-names`
+property.
+
+[[boot-features-caching-provider-guava]]
+==== Guava
+
+If Guava is present, a `GuavaCacheManager` is auto-configured. Caches can be created
+on startup using the `spring.cache.cache-names` property and customized by one of the
+following (in that order):
+
+1. A cache spec defined by `spring.cache.guava.spec`
+2. A `com.google.common.cache.CacheBuilderSpec` bean is defined
+3. A `com.google.common.cache.CacheBuilder` bean is defined
+
+For instance, the following configuration creates a `foo` and `bar` caches with a maximum
+size of 500 and a _time to live_ of 10 minutes
+
+[source,properties,indent=0]
+----
+    spring.cache.cache-names=foo,bar
+	spring.cache.guava.spec=maximumSize=500,expireAfterAccess=600s
+----
+
+Besides, if a `com.google.common.cache.CacheLoader` bean is defined, it is automatically
+associated to the `GuavaCacheManager`.
+
+[[boot-features-caching-provider-simple]]
+==== Simple
+
+If none of these options worked out, a simple implementation using `ConcurrentHashMap`
+as cache store is configured. This is the default if no caching library is present in
+your application.
+
 
 [[boot-features-messaging]]
 == Messaging

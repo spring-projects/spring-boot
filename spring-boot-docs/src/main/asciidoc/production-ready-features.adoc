@@ -832,6 +832,27 @@ for all supported data sources; you can add additional `DataSourcePoolMetadataPr
 beans if your favorite data source isn't supported out of the box. See
 `DataSourcePoolMetadataProvidersConfiguration` for examples.
 
+[[production-ready-datasource-cache]]
+=== Cache metrics
+The following metrics are exposed for each supported cache defined in your application:
+
+* The current size of the cache (`cache.xxx.size`)
+* Hit ratio (`cache.xxx.hit.ratio`)
+* Miss ratio (`cache.xxx.miss.ratio`)
+
+NOTE: Cache providers do not expose the hit/miss ratio in a consistent way. While some
+expose an **aggregated** value (i.e. the hit ratio since the last time the stats were
+cleared), others expose a **temporal** value (i.e. the hit ratio of the last second).
+Check your caching provider documentation for more details.
+
+If two different cache managers happen to define the same cache, the name of the cache
+is prefixed by the name of the `CacheManager` bean.
+
+It is possible to override part or all of those defaults by registering a bean with a
+customized version of `CachePublicMetrics`. By default, Spring Boot provides cache
+statistics for EhCache, Hazelcast, Infinispan, JCache and Guava. You can add additional
+`CacheStatisticsProvider` beans if your favorite caching library isn't supported out of
+the box. See `CacheStatisticsAutoConfiguration` for examples.
 
 
 [[production-ready-session-metrics]]
