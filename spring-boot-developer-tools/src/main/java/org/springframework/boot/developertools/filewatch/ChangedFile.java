@@ -19,6 +19,7 @@ package org.springframework.boot.developertools.filewatch;
 import java.io.File;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * A single file that has changed.
@@ -71,8 +72,10 @@ public final class ChangedFile {
 	 * @return the relative name
 	 */
 	public String getRelativeName() {
-		String folderName = this.sourceFolder.getAbsoluteFile().getPath();
-		String fileName = this.file.getAbsoluteFile().getPath();
+		File folder = this.sourceFolder.getAbsoluteFile();
+		File file = this.file.getAbsoluteFile();
+		String folderName = StringUtils.cleanPath(folder.getPath());
+		String fileName = StringUtils.cleanPath(file.getPath());
 		Assert.state(fileName.startsWith(folderName), "The file " + fileName
 				+ " is not contained in the source folder " + folderName);
 		return fileName.substring(folderName.length() + 1);
