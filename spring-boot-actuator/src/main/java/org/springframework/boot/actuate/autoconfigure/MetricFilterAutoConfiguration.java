@@ -16,15 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.io.IOException;
-
 import javax.servlet.Filter;
-import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
@@ -35,13 +29,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
-import org.springframework.util.StopWatch;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.util.UrlPathHelper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that records Servlet interactions
@@ -58,10 +47,6 @@ import org.springframework.web.util.UrlPathHelper;
 @AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
 public class MetricFilterAutoConfiguration {
 
-	private static final int UNDEFINED_HTTP_STATUS = 999;
-
-	private static final String UNKNOWN_PATH_SUFFIX = "/unmapped";
-
 	@Autowired
 	private CounterService counterService;
 
@@ -70,91 +55,6 @@ public class MetricFilterAutoConfiguration {
 
 	@Bean
 	public Filter metricFilter() {
-		return new MetricsFilter();
+		return new MetricsFilter(this.counterService, this.gaugeService);
 	}
-
-	/**
-	 * Filter that counts requests and measures processing times.
-	 */
-	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private final class MetricsFilter extends OncePerRequestFilter {
-
-		@Override
-		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain chain) throws ServletException,
-				IOException {
-			UrlPathHelper helper = new UrlPathHelper();
-			String suffix = helper.getPathWithinApplication(request);
-			StopWatch stopWatch = new StopWatch();
-			stopWatch.start();
-			int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
-			try {
-				chain.doFilter(request, response);
-				status = getStatus(response);
-			}
-			finally {
-				stopWatch.stop();
-				Object bestMatchingPattern = request
-						.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-				if (bestMatchingPattern != null) {
-					suffix = fixSpecialCharacters(bestMatchingPattern.toString());
-				}
-				else if (is4xxClientError(status)) {
-					suffix = UNKNOWN_PATH_SUFFIX;
-				}
-				String gaugeKey = getKey("response" + suffix);
-				MetricFilterAutoConfiguration.this.gaugeService.submit(gaugeKey,
-						stopWatch.getTotalTimeMillis());
-				String counterKey = getKey("status." + status + suffix);
-				MetricFilterAutoConfiguration.this.counterService.increment(counterKey);
-			}
-		}
-
-		private String fixSpecialCharacters(String value) {
-			String result = value.replaceAll("[{}]", "-");
-			result = result.replace("**", "-star-star-");
-			result = result.replace("*", "-star-");
-			result = result.replace("/-", "/");
-			result = result.replace("-/", "/");
-			if (result.endsWith("-")) {
-				result = result.substring(0, result.length() - 1);
-			}
-			if (result.startsWith("-")) {
-				result = result.substring(1);
-			}
-			return result;
-		}
-
-		private int getStatus(HttpServletResponse response) {
-			try {
-				return response.getStatus();
-			}
-			catch (Exception ex) {
-				return UNDEFINED_HTTP_STATUS;
-			}
-		}
-
-		private boolean is4xxClientError(int status) {
-			try {
-				return HttpStatus.valueOf(status).is4xxClientError();
-			}
-			catch (Exception ex) {
-				return false;
-			}
-		}
-
-		private String getKey(String string) {
-			// graphite compatible metric names
-			String value = string.replace("/", ".");
-			value = value.replace("..", ".");
-			if (value.endsWith(".")) {
-				value = value + "root";
-			}
-			if (value.startsWith("_")) {
-				value = value.substring(1);
-			}
-			return value;
-		}
-	}
-
 }
