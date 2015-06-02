@@ -111,7 +111,7 @@ public class Restarter {
 	 * @param thread the source thread
 	 * @param args the application arguments
 	 * @param forceReferenceCleanup if soft/weak reference cleanup should be forced
-	 * @param initializer
+	 * @param initializer the restart initializer
 	 * @see #initialize(String[])
 	 */
 	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup,

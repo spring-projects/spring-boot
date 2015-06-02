@@ -46,16 +46,16 @@ import org.springframework.util.Assert;
  * <pre>
  * [ CLIENT ]                      [ SERVER ]
  *     | (a) Initial empty request     |
- *     |------------------------------}|
+ *     |------------------------------&gt;|
  *     | (b) Data I                    |
- *  --}|------------------------------}|---}
+ *  --&gt;|------------------------------&gt;|---&gt;
  *     | Response I (a)                |
- *  {--|<------------------------------|{---
+ *  &lt;--|&lt;------------------------------|&lt;---
  *     |                               |
  *     | (c) Data II                   |
- *  --}|------------------------------}|---}
+ *  --&gt;|------------------------------&gt;|---&gt;
  *     | Response II (b)               |
- *  {--|{------------------------------|{---
+ *  &lt;--|&lt;------------------------------|&lt;---
  *     .                               .
  *     .                               .
  * </pre>
@@ -66,8 +66,7 @@ import org.springframework.util.Assert;
  * Requests should be made using HTTP GET or POST (depending if there is a payload), with
  * any payload contained in the body. The following response codes can be returned from
  * the server:
- * <p>
- * <table>
+ * <table summary="Response Codes">
  * <tr>
  * <th>Status</th>
  * <th>Meaning</th>
