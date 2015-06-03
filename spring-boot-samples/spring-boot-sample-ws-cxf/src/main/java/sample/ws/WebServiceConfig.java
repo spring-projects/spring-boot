@@ -30,33 +30,40 @@ import sample.ws.service.Hello;
 import sample.ws.service.HelloPortImpl;
 import javax.xml.ws.Endpoint;
 import org.apache.cxf.transport.servlet.CXFServlet;
-import org.apache.cxf.jaxws.EndpointImpl
-;
+import org.apache.cxf.jaxws.EndpointImpl;
+
+
+/**
+ * CXF JAX webservice spring boot configuration example.
+ *
+ * @author Elan Thangamani
+ */
+
 
 @EnableWs
 @Configuration
 public class WebServiceConfig extends WsConfigurerAdapter {
 
-	@Bean 
-	public ServletRegistrationBean dispatcherServlet() { 
-	    CXFServlet cxfServlet = new CXFServlet(); 
-	    return new ServletRegistrationBean(cxfServlet, "/Service/*"); 
-	} 
+	@Bean
+	public ServletRegistrationBean dispatcherServlet() {
+	    CXFServlet cxfServlet = new CXFServlet();
+	    return new ServletRegistrationBean(cxfServlet, "/Service/*");
+	}
 
-	@Bean(name="cxf") 
-	public SpringBus springBus() { 
-	    return new SpringBus(); 
-	} 
+	@Bean(name="cxf")
+	public SpringBus springBus() {
+	    return new SpringBus();
+	}
 
-	@Bean 
-	public Hello myService() { 
-	    return new HelloPortImpl(); 
-	} 
+	@Bean
+	public Hello myService() {
+	    return new HelloPortImpl();
+	}
 
-	@Bean 
-	public Endpoint endpoint() { 
-	    EndpointImpl endpoint = new EndpointImpl(springBus(), myService()); 
-	    endpoint.publish("/Hello"); 
-	    return endpoint; 
-	} 
+	@Bean
+	public Endpoint endpoint() {
+	    EndpointImpl endpoint = new EndpointImpl(springBus(), myService());
+	    endpoint.publish("/Hello");
+	    return endpoint;
+	}
 }

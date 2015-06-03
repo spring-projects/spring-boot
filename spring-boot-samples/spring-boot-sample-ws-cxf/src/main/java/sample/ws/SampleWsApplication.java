@@ -19,13 +19,19 @@ package sample.ws;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * CXF JAX webservice spring boot example.
+ *
+ * @author Elan Thangamani
+ */
+
 @SpringBootApplication
 public class SampleWsApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleWsApplication.class, args);
 	}
-	
-	
+
+
 
 }

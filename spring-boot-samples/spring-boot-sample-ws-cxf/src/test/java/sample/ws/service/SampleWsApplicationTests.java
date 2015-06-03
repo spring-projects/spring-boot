@@ -36,6 +36,13 @@ import sample.ws.SampleWsApplication;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 
+/**
+ * CXF JAX webservice integration test samples.
+ *
+ * @author Elan Thangamani
+ */
+
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleWsApplication.class)
 @WebAppConfiguration
@@ -60,7 +67,7 @@ public class SampleWsApplicationTests {
 	public void testHelloRequest() {
 		//final String request = "<q0:sayHello xmlns:q0=\"http://service.ws.sample\">Elan</q0:sayHello>";
 		final String request = "<q0:sayHello xmlns:q0=\"http://service.ws.sample/\"><myname>Elan</myname></q0:sayHello>";
-				
+
 
 		StreamSource source = new StreamSource(new StringReader(request));
 		StreamResult result = new StreamResult(System.out);
