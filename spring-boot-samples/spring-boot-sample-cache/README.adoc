@@ -16,6 +16,15 @@ the application starts a client invokes the service with a random code every 500
 can look at the `/metrics` endpoint to review the cache statistics if your chosen
 caching provider is supported.
 
+== Using the JSR-107 annotations
+
+The sample uses Spring's cache annotation. If you want to use the JSR-107 annotations
+instead, simply add the `javax.cache:cache-api` dependency to the project. No further
+configuration is necessary.
+
+NOTE: You can use the JSR-107 annotations with _any_ cache provider; a JSR-107 compliant
+cache provider is not necessary.
+
 == Using a different cache provider
 
 Initially, the project does not define any caching library so the abstraction works
@@ -45,11 +54,8 @@ can set the `spring.cache.infinispan.config` property to use the provided
 
 === JCache (JSR-107)
 
-You do not need to use a JSR-107 compliant `CacheManager` to use the standard
-annotations. As a matter of a fact, this sample uses by default the standard annotations
-with a simple map-based `CacheManager` by default. If you want to configure your cache
-infrastructure via the standard, you need a compliant implementation. You could try
-the following:
+If you want to configure your cache infrastructure via the standard, you need a compliant
+implementation. You could try the following:
 
 * `Hazelcast`: add `com.hazelcast:hazelcast`
 * `Infinispan`: add `org.infinispan:infinispan-jcache`

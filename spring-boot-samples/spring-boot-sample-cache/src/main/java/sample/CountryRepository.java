@@ -16,16 +16,15 @@
 
 package sample;
 
-import javax.cache.annotation.CacheDefaults;
-import javax.cache.annotation.CacheResult;
-
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
-@CacheDefaults(cacheName = "countries")
+@CacheConfig(cacheNames = "countries")
 public class CountryRepository {
 
-	@CacheResult
+	@Cacheable
 	public Country findByCode(String code) {
 		System.out.println("---> Loading country with code '" + code + "'");
 		return new Country(code);

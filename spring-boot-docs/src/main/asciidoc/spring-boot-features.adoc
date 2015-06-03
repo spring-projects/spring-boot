@@ -2331,6 +2331,9 @@ TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
 
 === Supported cache providers
 
+NOTE: To easily get started, just add `spring-boot-starter-cache` to the dependencies of
+your application.
+
 The cache abstraction does not provide an actual store and relies on a abstraction
 materialized by the `org.springframework.cache.Cache` and
 `org.springframework.cache.CacheManager` interfaces. Spring Boot auto-configures a
