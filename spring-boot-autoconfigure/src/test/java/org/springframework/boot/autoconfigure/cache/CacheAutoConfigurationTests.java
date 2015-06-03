@@ -325,7 +325,7 @@ public class CacheAutoConfigurationTests {
 	public void hazelcastCacheExplicit() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast");
 		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
-		// NOTE: the hazelcast implementation know about a cache in a lazy manner.
+		// NOTE: the hazelcast implementation knows about a cache in a lazy manner.
 		cacheManager.getCache("defaultCache");
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("defaultCache"));
 		assertThat(cacheManager.getCacheNames(), hasSize(1));
