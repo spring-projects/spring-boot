@@ -1,0 +1,16 @@
+== Spring Boot - Samples - CXF Rest Web Services 
+
+This sample project demonstrates how to use http://projects.spring.io/spring-rs-cxf/[CXF Rest Web Services]
+with Spring Boot. 
+
+The sample uses Maven. It can be built and run from the command line:
+
+----
+$ mvn spring-boot:run
+----
+
+http://localhost:8080/services/helloservice/sayHello/txt/Elan  will now display the output in the browser
+like "Hello Elan, Welcome to CXF RS Spring Boot World!!!" - for plain text
+
+http://localhost:8080/services/helloservice/sayHello/json/Elan  will now display the output in the browser
+like "{hello='Elan, Welcome to CXF RS Spring Boot World!!!'}" - for json format.
