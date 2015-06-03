@@ -134,7 +134,7 @@ class JCacheCacheConfiguration {
 	}
 
 	/**
-	 * Determine if JCache is available. This either kick in if a provider is available
+	 * Determine if JCache is available. This either kicks in if a provider is available
 	 * as defined per {@link JCacheProviderAvailableCondition} or if a {@link CacheManager}
 	 * has already been defined.
 	 */
@@ -154,7 +154,7 @@ class JCacheCacheConfiguration {
 	}
 
 	/**
-	 * Determine if a JCache provider is available. This either kick in if a default
+	 * Determine if a JCache provider is available. This either kicks in if a default
 	 * {@link CachingProvider} has been found or if the property referring to the provider
 	 * to use has been set.
 	 */

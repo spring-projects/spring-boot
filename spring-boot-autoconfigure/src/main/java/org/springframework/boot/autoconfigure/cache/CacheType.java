@@ -27,7 +27,7 @@ package org.springframework.boot.autoconfigure.cache;
 public enum CacheType {
 
 	/**
-	 * Generic caching using 'Cache 'beans from the context.
+	 * Generic caching using 'Cache' beans from the context.
 	 */
 	GENERIC(GenericCacheConfiguration.class),
 

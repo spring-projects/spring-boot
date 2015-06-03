@@ -74,7 +74,7 @@ class HazelcastCacheConfiguration {
 	}
 
 	/**
-	 * Determines if the Hazelcast configuration is available. This either kick in if a
+	 * Determines if the Hazelcast configuration is available. This either kicks in if a
 	 * default configuration has been found or if property referring to the file to use
 	 * has been set.
 	 */
