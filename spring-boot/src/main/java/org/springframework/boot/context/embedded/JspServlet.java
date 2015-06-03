@@ -62,7 +62,7 @@ public class JspServlet {
 		this.initParameters = initParameters;
 	}
 
-	public boolean getRegistered() {
+	public boolean isRegistered() {
 		return this.registered;
 	}
 
