@@ -156,6 +156,8 @@ The actual application will _not_ show the banner and use three sources for the
 `ApplicationContext` (in that order): `demo.MyApp`, `com.acme.Config`,
 `com.acme.ExtraConfig`.
 
+
+
 [[howto-change-the-location-of-external-properties]]
 === Change the location of external properties of an application
 By default properties from different sources are added to the Spring `Environment` in a

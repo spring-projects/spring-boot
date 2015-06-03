@@ -14,7 +14,6 @@ This section covers some of the more common deployment scenarios.
 
 [[cloud-deployment]]
 == Deploying to the cloud
-
 Spring Boot's executable jars are ready-made for most popular cloud PaaS
 (platform-as-a-service) providers. These providers tend to require that you
 "`bring your own container`"; they manage application processes (not Java applications
@@ -302,6 +301,7 @@ there without some modifications. See the <<howto.adoc#howto-servlet-2-5, Servle
 of this guide.
 
 
+
 [[deployment-service]]
 == Installing Spring Boot applications
 In additional to running Spring Boot applications using `java -jar` it is also possible
@@ -347,33 +347,47 @@ if you use Debian:
 	$ update-rc.d myapp defaults <priority>
 ----
 
+
+
 === Running a JAR as a regular (not service) script
+The script accepts the following parameters as environment variables, so you can change
+the default behavior in a script or on the command line:
 
-The script accepts the following parameters as environment variables, so you can change the
-default behaviour in a script or on the command line:
+[cols="1,6"]
+|===
+|Variable |Description
 
-* `MODE` - the "mode" of operation. The default depends on the way the jar was built, but
-will usually be "auto" (meaning it tries to guess if it is an init script by checking if
-it is a symlink in a directory called "init.d"). You can explicitly set it to "service"
-so that the "stop|start|status|restart" commands work, or to "run" if you just want to
-run the script and not in the background.
+|`MODE`
+|The "mode" of operation. The default depends on the way the jar was built, but will
+ usually be "auto" (meaning it tries to guess if it is an init script by checking if it
+ is a symlink in a directory called "init.d"). You can explicitly set it to "service" so
+ that the "stop|start|status|restart" commands work, or to "run" if you just want to run
+ the script and not in the background.
 
-* `PID_FOLDER` - the root name of the pid folder (`/var/run` by default).
+|`PID_FOLDER`
+|The root name of the pid folder (`/var/run` by default).
 
-* `LOG_FOLDER` - the name of the folder to put log files in (`/var/log` by default).
+|`LOG_FOLDER`
+|The name of the folder to put log files in (`/var/log` by default).
 
-* `APP_NAME` - the name of the app. If the jar is run from a symlink the script guesses the 
-app name, but if it is not a symlink, or you want to explicitly set the app name this can be
-useful.
+|`APP_NAME`
+|The name of the app. If the jar is run from a symlink the script guesses the app name,
+ but if it is not a symlink, or you want to explicitly set the app name this can be
+ useful.
 
-* `JAVA_HOME` - the location of the `java` executable is discovered by using the `PATH` by 
-default, but you can set it explicitly if there is an executable file at `$JAVA_HOME/bin/java`.
+|`JAVA_HOME`
+|The location of the `java` executable is discovered by using the `PATH` by default, but
+ you can set it explicitly if there is an executable file at `$JAVA_HOME/bin/java`.
 
-* `JARFILE` - the explicit location of the jar file, in case the script is being used to launch
-a jar that it is not actually embedded in.
+|`JARFILE`
+|The explicit location of the jar file, in case the script is being used to launch a jar
+ that it is not actually embedded in.
 
-* `DEBUG` - if not empty will set the `-x` flag on the shell process, making it easy to
-see the logic in the script.
+|`DEBUG`
+|if not empty will set the `-x` flag on the shell process, making it easy to see the logic
+ in the script.
+|===
+
 
 
 ==== Installation as a systemd service

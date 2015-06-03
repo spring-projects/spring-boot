@@ -1462,14 +1462,16 @@ All of the above can be switched on and off or modified using external propertie
 features add a `@Bean` of type `WebSecurityConfigurerAdapter` with
 `@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)`.
 
-=== OAuth2
 
+
+=== OAuth2
 If you have `spring-security-oauth2` on your classpath you can take advantage of some
 autoconfiguration to make it easy to set up Authorization or Resource Server features by
 configuring some property values in the `Environment`.
 
-==== Authorization Server
 
+
+==== Authorization Server
 To create an Authorization Server and grant access tokens you need to
 `@EnableAuthorizationServer` and provide
 `spring.oauth2.client.[clientId,clientSecret]`. The client will be
@@ -1490,8 +1492,9 @@ To switch off the autoconfiguration and configure the Authorization
 Server features yourself just add a `@Bean` of type
 `AuthorizationServerConfigurer`.
 
-==== Resource Server
 
+
+==== Resource Server
 To use the access token you need a Resource Server (which can be the
 same as the Authorization Server). Creating a Resource Server is easy:
 just add `@EnableResourceServer` and provide some configuration to
@@ -1507,8 +1510,8 @@ the following:
 * `spring.oauth2.resource.tokenInfoUri` to use the token decoding endpoint
 (e.g. "https://uaa.run.pivotal.io/check_token" on PWS).
 
-If you specify both the `userInfoUri` and the `tokenInfoUri` then 
-you can set a flag to say that one is preferred over the other 
+If you specify both the `userInfoUri` and the `tokenInfoUri` then
+you can set a flag to say that one is preferred over the other
 (`preferTokenInfo=true` is the default).
 
 Alternatively (instead of `userInfoUri` or `tokenInfoUri`) if the
@@ -1530,16 +1533,18 @@ authorization server needs to be running when your application starts
 up. It will log a warning if it can't find the key, and tell you what
 to do to fix it.
 
-=== Token Type in User Info
 
+
+=== Token Type in User Info
 Google (and certain other 3rd party identity providers) is more strict
 about the token type name that is sent in the headers to the user info
 endpoint. The default is "Bearer" which suits most providers and
 matches the spec, but if you need to change it you can set
 `spring.oauth2.resource.tokenType`.
 
-=== Customizing the User Info RestTemplate
 
+
+=== Customizing the User Info RestTemplate
 If you have a `userInfoUri`, the Resource Server features use an
 `OAuth2RestTemplate` internally to fetch user details for
 authentication. This is provided as a qualified `@Bean` with id
@@ -1571,8 +1576,9 @@ the key value (it's a standard YAML language feature). Example:
 ----
 ====
 
-==== Client
 
+
+==== Client
 To make your webapp into an OAuth2 client you can simply
 `@EnableOAuth2Client` and Spring Boot will create an
 `OAuth2RestTemplate` for you to autowire. It uses the
@@ -1603,7 +1609,7 @@ other provider for more flexibility).
 
 To limit the scope that the client asks for when it obtains an access token
 you can set `spring.oauth2.client.scope` (comma separated or an array in YAML). By
-default the scope is empty and it is up to to Authorization Server to 
+default the scope is empty and it is up to to Authorization Server to
 decide what the defaults should be, usually depending on the settings in
 the client registration that it holds.
 
@@ -1624,8 +1630,9 @@ client credentials token grant you will be asking for if you use it
 `spring.oauth2.client.clientId` from your configuration (or make it
 the empty string).
 
-==== Single Sign On
 
+
+==== Single Sign On
 An OAuth2 Client can be used to fetch user details from the provider
 if such features are provided (e.g. by using the `userInfoUri` that
 the Resource Server supports as above), and then the user details can
@@ -1679,8 +1686,9 @@ to the home page at "/" and keep the default for everything else:
 	}
 ----
 
-=== Actuator Security
 
+
+=== Actuator Security
 If the Actuator is also in use, you will find:
 
 * The management endpoints are secure even if the application endpoints are unsecure.
@@ -2295,7 +2303,6 @@ http://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
 
 [[boot-features-caching]]
 == Caching
-
 The Spring Framework provides support for transparently adding caching into an
 application. At its core, the abstraction applies caching to methods, reducing thus the
 number of executions based on the information available in the cache. The caching logic
@@ -2329,8 +2336,9 @@ them.
 TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
 {spring-reference}/#cache-annotations-evict[evict] data from the cache transparently.
 
-=== Supported cache providers
 
+
+=== Supported cache providers
 NOTE: To easily get started, just add `spring-boot-starter-cache` to the dependencies of
 your application.
 
@@ -2354,15 +2362,17 @@ Spring Boot tries to detect the following providers (in that order):
 It is also possible to _force_ the cache provider to use via the `spring.cache.type`
 property.
 
+
+
 [[boot-features-caching-provider-generic]]
 ==== Generic
-
 If the context defines _at least_ one `org.springframework.cache.Cache` bean, a
 `CacheManager` wrapping them is configured.
 
+
+
 [[boot-features-caching-provider-ehcache2]]
 ==== EhCache 2.x
-
 EhCache 2.x tries to locate a configuration file named `ehcache.xml` at the root of the
 classpath. If EhCache 2.x and such file is present it is used to bootstrap the cache
 manager. An alternate configuration file can be provide a well:
@@ -2399,9 +2409,10 @@ Infinispan has no default configuration file location so it must be specified ex
 Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
 `ConfigurationBuilder` bean is defined, it is used to customize them.
 
+
+
 [[boot-features-caching-provider-jcache]]
 ==== JCache
-
 JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
 classpath (i.e. a JSR-107 compliant caching library). It might happen than more that one
 provider is present, in which case the provider must be explicitly specified. Even if the
@@ -2431,16 +2442,18 @@ TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped
 automatically in a `org.springframework.cache.CacheManager` implementation that the
 abstraction expects. No further customization is applied on it.
 
+
+
 [[boot-features-caching-provider-redis]]
 ==== Redis
-
 If Redis is available and configured, the `RedisCacheManager` is auto-configured. It is
 also possible to create additional caches on startup using the `spring.cache.cache-names`
 property.
 
+
+
 [[boot-features-caching-provider-guava]]
 ==== Guava
-
 If Guava is present, a `GuavaCacheManager` is auto-configured. Caches can be created
 on startup using the `spring.cache.cache-names` property and customized by one of the
 following (in that order):
@@ -2461,12 +2474,14 @@ size of 500 and a _time to live_ of 10 minutes
 Besides, if a `com.google.common.cache.CacheLoader` bean is defined, it is automatically
 associated to the `GuavaCacheManager`.
 
+
+
 [[boot-features-caching-provider-simple]]
 ==== Simple
-
 If none of these options worked out, a simple implementation using `ConcurrentHashMap`
 as cache store is configured. This is the default if no caching library is present in
 your application.
+
 
 
 [[boot-features-messaging]]
