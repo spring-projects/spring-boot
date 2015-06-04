@@ -652,7 +652,7 @@ content into your application; rather pick only the properties that you need.
 	shell.auth.simple.user.name=
 	shell.auth.simple.user.password=
 	shell.auth.spring.roles=
-	
+
 	# METRICS EXPORT ({sc-spring-boot-actuator}/metrics/export/MetricExportProperties.{sc-ext}[MetricExportProperties])
 	spring.metrics.export.enabled=true # flag to disable all metric exports (assuming any MetricWriters are available)
 	spring.metrics.export.delay-millis=5000 # delay in milliseconds between export ticks
