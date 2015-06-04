@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.cache;
 
 import java.util.Set;
+
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
@@ -29,27 +30,28 @@ import org.springframework.cache.jcache.JCacheCache;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class JCacheCacheStatisticsProvider extends AbstractJmxCacheStatisticsProvider<JCacheCache> {
+public class JCacheCacheStatisticsProvider extends
+		AbstractJmxCacheStatisticsProvider<JCacheCache> {
 
-
+	@Override
 	protected ObjectName getObjectName(JCacheCache cache)
 			throws MalformedObjectNameException {
-
-		Set<ObjectInstance> instances = getMBeanServer().queryMBeans(
-				new ObjectName("javax.cache:type=CacheStatistics,Cache="
-						+ cache.getName() + ",*"), null);
+		ObjectName name = new ObjectName("javax.cache:type=CacheStatistics,Cache="
+				+ cache.getName() + ",*");
+		Set<ObjectInstance> instances = getMBeanServer().queryMBeans(name, null);
 		if (instances.size() == 1) {
 			return instances.iterator().next().getObjectName();
 		}
-		return null; // None or more than one
+		// None or more than one
+		return null;
 	}
 
+	@Override
 	protected CacheStatistics getCacheStatistics(ObjectName objectName) {
 		DefaultCacheStatistics statistics = new DefaultCacheStatistics();
-		Float hitPercentage = getAttribute(objectName, "CacheHitPercentage",
+		Float hitPercentage = getAttribute(objectName, "CacheHitPercentage", Float.class);
+		Float missPercentage = getAttribute(objectName, "CacheMissPercentage",
 				Float.class);
-		Float missPercentage = getAttribute(objectName,
-				"CacheMissPercentage", Float.class);
 		if ((hitPercentage != null && missPercentage != null)
 				&& (hitPercentage > 0 || missPercentage > 0)) {
 			statistics.setHitRatio(hitPercentage / (double) 100);

@@ -92,14 +92,15 @@ public class CacheProperties {
 
 	/**
 	 * Resolve the config location if set.
+	 * @param config the config resource
 	 * @return the location or {@code null} if it is not set
 	 * @throws IllegalArgumentException if the config attribute is set to a unknown
 	 * location
 	 */
 	public Resource resolveConfigLocation(Resource config) {
 		if (config != null) {
-			Assert.isTrue(config.exists(), "Cache configuration does not " +
-					"exist '" + config.getDescription() + "'");
+			Assert.isTrue(config.exists(), "Cache configuration does not " + "exist '"
+					+ config.getDescription() + "'");
 			return config;
 		}
 		return null;
@@ -116,12 +117,13 @@ public class CacheProperties {
 		private Resource config;
 
 		public Resource getConfig() {
-			return config;
+			return this.config;
 		}
 
 		public void setConfig(Resource config) {
 			this.config = config;
 		}
+
 	}
 
 	/**
@@ -135,7 +137,7 @@ public class CacheProperties {
 		private Resource config;
 
 		public Resource getConfig() {
-			return config;
+			return this.config;
 		}
 
 		public void setConfig(Resource config) {
@@ -155,7 +157,7 @@ public class CacheProperties {
 		private Resource config;
 
 		public Resource getConfig() {
-			return config;
+			return this.config;
 		}
 
 		public void setConfig(Resource config) {
@@ -170,8 +172,8 @@ public class CacheProperties {
 	public static class JCache {
 
 		/**
-		 * The location of the configuration file to use to initialize the cache manager. The
-		 * configuration file is dependent of the underlying cache implementation.
+		 * The location of the configuration file to use to initialize the cache manager.
+		 * The configuration file is dependent of the underlying cache implementation.
 		 */
 		private Resource config;
 
@@ -191,12 +193,13 @@ public class CacheProperties {
 		}
 
 		public Resource getConfig() {
-			return config;
+			return this.config;
 		}
 
 		public void setConfig(Resource config) {
 			this.config = config;
 		}
+
 	}
 
 	/**

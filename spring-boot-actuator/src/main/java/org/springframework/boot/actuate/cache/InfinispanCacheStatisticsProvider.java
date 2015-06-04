@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.cache;
 
 import java.util.Set;
+
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
@@ -29,35 +30,43 @@ import org.infinispan.spring.provider.SpringCache;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class InfinispanCacheStatisticsProvider extends AbstractJmxCacheStatisticsProvider<SpringCache> {
+public class InfinispanCacheStatisticsProvider extends
+		AbstractJmxCacheStatisticsProvider<SpringCache> {
 
 	@Override
-	protected ObjectName getObjectName(SpringCache cache) throws MalformedObjectNameException {
-		Set<ObjectInstance> instances = getMBeanServer().queryMBeans(
-				new ObjectName("org.infinispan:component=Statistics,type=Cache," +
-						"name=\"" + cache.getName() + "(local)\",*"), null);
+	protected ObjectName getObjectName(SpringCache cache)
+			throws MalformedObjectNameException {
+		ObjectName name = new ObjectName(
+				"org.infinispan:component=Statistics,type=Cache,name=\""
+						+ cache.getName() + "(local)\",*");
+		Set<ObjectInstance> instances = getMBeanServer().queryMBeans(name, null);
 		if (instances.size() == 1) {
 			return instances.iterator().next().getObjectName();
 		}
-		return null; // None or more than one
+		// None or more than one
+		return null;
 	}
 
+	@Override
 	protected CacheStatistics getCacheStatistics(ObjectName objectName) {
 		DefaultCacheStatistics statistics = new DefaultCacheStatistics();
-		Integer size = getAttribute(objectName, "numberOfEntries",
-				Integer.class);
+		Integer size = getAttribute(objectName, "numberOfEntries", Integer.class);
 		if (size != null) {
 			statistics.setSize((long) size);
-			if (size > 0) { // Let's initialize the stats if we have some data
-				Double hitRatio = getAttribute(objectName, "hitRatio",
-						Double.class);
-				if ((hitRatio != null)) {
-					statistics.setHitRatio(hitRatio);
-					statistics.setMissRatio(1 - hitRatio);
-				}
+			if (size > 0) {
+				// Let's initialize the stats if we have some data
+				initalizeStats(objectName, statistics);
 			}
 		}
 		return statistics;
+	}
+
+	private void initalizeStats(ObjectName objectName, DefaultCacheStatistics statistics) {
+		Double hitRatio = getAttribute(objectName, "hitRatio", Double.class);
+		if ((hitRatio != null)) {
+			statistics.setHitRatio(hitRatio);
+			statistics.setMissRatio(1 - hitRatio);
+		}
 	}
 
 }

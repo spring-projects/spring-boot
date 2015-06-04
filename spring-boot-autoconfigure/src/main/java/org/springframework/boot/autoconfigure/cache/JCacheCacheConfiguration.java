@@ -91,8 +91,8 @@ class JCacheCacheConfiguration {
 	private CacheManager createCacheManager() throws IOException {
 		CachingProvider cachingProvider = getCachingProvider(this.cacheProperties
 				.getJcache().getProvider());
-		Resource configLocation = this.cacheProperties.resolveConfigLocation(
-				this.cacheProperties.getJcache().getConfig());
+		Resource configLocation = this.cacheProperties
+				.resolveConfigLocation(this.cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
 			return cachingProvider.getCacheManager(configLocation.getURI(),
 					cachingProvider.getDefaultClassLoader(),
@@ -135,8 +135,8 @@ class JCacheCacheConfiguration {
 
 	/**
 	 * Determine if JCache is available. This either kicks in if a provider is available
-	 * as defined per {@link JCacheProviderAvailableCondition} or if a {@link CacheManager}
-	 * has already been defined.
+	 * as defined per {@link JCacheProviderAvailableCondition} or if a
+	 * {@link CacheManager} has already been defined.
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	static class JCacheAvailableCondition extends AnyNestedCondition {
@@ -146,10 +146,12 @@ class JCacheCacheConfiguration {
 		}
 
 		@Conditional(JCacheProviderAvailableCondition.class)
-		static class JCacheProvider {}
+		static class JCacheProvider {
+		}
 
 		@ConditionalOnSingleCandidate(CacheManager.class)
-		static class CustomJCacheCacheManager {}
+		static class CustomJCacheCacheManager {
+		}
 
 	}
 

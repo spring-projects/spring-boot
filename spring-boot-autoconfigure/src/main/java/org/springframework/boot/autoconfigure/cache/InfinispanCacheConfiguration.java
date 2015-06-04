@@ -24,7 +24,6 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -62,19 +61,20 @@ public class InfinispanCacheConfiguration {
 	@Bean(destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public EmbeddedCacheManager infinispanCacheManager() throws IOException {
-		EmbeddedCacheManager infinispanCacheManager = createEmbeddedCacheManager();
+		EmbeddedCacheManager cacheManager = createEmbeddedCacheManager();
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			for (String cacheName : cacheNames) {
-				infinispanCacheManager.defineConfiguration(cacheName, getDefaultCacheConfiguration());
+				cacheManager.defineConfiguration(cacheName,
+						getDefaultCacheConfiguration());
 			}
 		}
-		return infinispanCacheManager;
+		return cacheManager;
 	}
 
 	private EmbeddedCacheManager createEmbeddedCacheManager() throws IOException {
-		Resource location = this.cacheProperties.resolveConfigLocation(
-				this.cacheProperties.getInfinispan().getConfig());
+		Resource location = this.cacheProperties
+				.resolveConfigLocation(this.cacheProperties.getInfinispan().getConfig());
 		if (location != null) {
 			InputStream in = location.getInputStream();
 			try {
@@ -89,7 +89,7 @@ public class InfinispanCacheConfiguration {
 
 	private org.infinispan.configuration.cache.Configuration getDefaultCacheConfiguration() {
 		if (this.defaultConfigurationBuilder != null) {
-			return defaultConfigurationBuilder.build();
+			return this.defaultConfigurationBuilder.build();
 		}
 		return new ConfigurationBuilder().build();
 	}

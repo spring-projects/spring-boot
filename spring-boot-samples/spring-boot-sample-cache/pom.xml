@@ -24,7 +24,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
-
 		<!-- Only used to expose cache metrics  -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -34,12 +33,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-
-		<!-- Additional cache providers
+		<!-- Additional cache providers (uncomment to try them) -->
+		<!--
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
 		</dependency>
+		-->
+		<!--
 		<dependency>
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
@@ -48,6 +49,8 @@
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast-spring</artifactId>
 		</dependency>
+		-->
+		<!--
 		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-spring4</artifactId>
@@ -56,17 +59,20 @@
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-jcache</artifactId>
 		</dependency>
-			<dependency>
+		-->
+		<!--
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-redis</artifactId>
 		</dependency>
+		-->
+		<!--
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>18.0</version>
 		</dependency>
 		-->
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

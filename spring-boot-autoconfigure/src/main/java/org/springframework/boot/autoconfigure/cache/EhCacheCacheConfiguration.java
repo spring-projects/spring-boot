@@ -55,8 +55,8 @@ class EhCacheCacheConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CacheManager ehCacheCacheManager() {
-		Resource location = this.cacheProperties.resolveConfigLocation(
-				this.cacheProperties.getEhcache().getConfig());
+		Resource location = this.cacheProperties
+				.resolveConfigLocation(this.cacheProperties.getEhcache().getConfig());
 		if (location != null) {
 			return EhCacheManagerUtils.buildCacheManager(location);
 		}

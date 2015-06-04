@@ -28,22 +28,26 @@ public class Country implements Serializable {
 	}
 
 	public String getCode() {
-		return code;
+		return this.code;
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
 		Country country = (Country) o;
 
-		return code.equals(country.code);
+		return this.code.equals(country.code);
 	}
 
 	@Override
 	public int hashCode() {
-		return code.hashCode();
+		return this.code.hashCode();
 	}
 
 }

@@ -16,8 +16,9 @@ the application starts a client invokes the service with a random code every 500
 can look at the `/metrics` endpoint to review the cache statistics if your chosen
 caching provider is supported.
 
-== Using the JSR-107 annotations
 
+
+== Using the JSR-107 annotations
 The sample uses Spring's cache annotation. If you want to use the JSR-107 annotations
 instead, simply add the `javax.cache:cache-api` dependency to the project. No further
 configuration is necessary.
@@ -25,35 +26,40 @@ configuration is necessary.
 NOTE: You can use the JSR-107 annotations with _any_ cache provider; a JSR-107 compliant
 cache provider is not necessary.
 
-== Using a different cache provider
 
+
+== Using a different cache provider
 Initially, the project does not define any caching library so the abstraction works
 on simple `ConcurrentHashMap`-based caches. You can try out your favorite caching library
 as explained below.
 
-=== EhCache 2.x
 
+
+=== EhCache 2.x
 Simply add the `net.sf.ehcache:ehcache` dependency to the project. Since there is a
 default `ehcache.xml` configuration file at the root of the classpath, it is automatically
 used to configure the underlying `CacheManager`.
 
-=== Hazelcast
 
+
+=== Hazelcast
 Both `com.hazelcast:hazelcast` and `com.hazelcast:hazelcast-spring` should be added to
 the project to enable support for Hazelcast.  Since there is a default `hazelcast.xml`
 configuration file at the root of the classpath, it is used to automatically configure
 the underlying `HazelcastInstance`.
 
-=== Infinispan
 
+
+=== Infinispan
 Simply add the `org.infinispan:infinispan-spring4` dependency to enable support for
 Infinispan. There is no default location that Infinispan uses to look for a config
 file so if you don't specify anything it will bootstrap on a hardcoded default. You
 can set the `spring.cache.infinispan.config` property to use the provided
 `infinispan.xml` configuration instead.
 
-=== JCache (JSR-107)
 
+
+=== JCache (JSR-107)
 If you want to configure your cache infrastructure via the standard, you need a compliant
 implementation. You could try the following:
 
@@ -65,13 +71,15 @@ Since Spring Boot supports the native cache library and the JCache wrapper, you
 should set the `spring.cache.type` property to `jcache` to specify that you want the
 cache manager to be auto-configured that way.
 
-=== Redis
 
+
+=== Redis
 Add the `spring-boot-starter-redis` and make sure it is configured properly (by default,
 a redis instance with the default settings is expected on your local box).
 
-=== Guava
 
+
+=== Guava
 Spring Boot does not provide any dependency management for _Guava_ so you'll have to add
 the `com.google.guava:guava` dependency with a version. You can customize how caches are
 created in different ways, see `application.properties` for an example and the

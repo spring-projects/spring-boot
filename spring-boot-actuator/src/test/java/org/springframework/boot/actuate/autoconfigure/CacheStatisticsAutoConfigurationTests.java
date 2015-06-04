@@ -19,22 +19,15 @@ package org.springframework.boot.actuate.autoconfigure;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 
-import com.google.common.cache.CacheBuilder;
-import com.hazelcast.cache.HazelcastCachingProvider;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.spring.cache.HazelcastCacheManager;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.cache.Cache;
@@ -51,6 +44,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+
+import com.google.common.cache.CacheBuilder;
+import com.hazelcast.cache.HazelcastCachingProvider;
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.spring.cache.HazelcastCacheManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -18,7 +18,6 @@ package sample;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.cache.Cache;
@@ -31,9 +30,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {SampleCacheApplication.class})
+@SpringApplicationConfiguration(classes = { SampleCacheApplication.class })
 public class SampleCacheApplicationTests {
-
 
 	@Autowired
 	private CacheManager cacheManager;

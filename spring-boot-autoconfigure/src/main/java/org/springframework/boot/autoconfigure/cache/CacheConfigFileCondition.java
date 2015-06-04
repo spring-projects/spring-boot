@@ -51,8 +51,8 @@ abstract class CacheConfigFileCondition extends SpringBootCondition {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), this.configPrefix);
 		if (resolver.containsProperty("config")) {
-			return ConditionOutcome.match("A '" + this.configPrefix + ".config' " +
-					"property is specified");
+			return ConditionOutcome.match("A '" + this.configPrefix + ".config' "
+					+ "property is specified");
 		}
 		return getResourceOutcome(context, metadata);
 	}
