@@ -99,15 +99,6 @@ public class MetricExportProperties extends TriggerProperties {
 	}
 
 	/**
-	 * Default values for trigger configuration for all writers. Can also be set by
-	 * including a writer with {@code name="*"}.
-	 * @return the default trigger configuration
-	 */
-	public TriggerProperties getDefault() {
-		return this;
-	}
-
-	/**
 	 * Find a matching trigger configuration.
 	 * @param name the bean name to match
 	 * @return a matching configuration if there is one
