@@ -8,6 +8,8 @@
 #   =========|_|==============|___/=/_/_/_/
 #   :: Spring Boot Startup Script ::
 #
+# chkconfig: 345 99 01
+# description: Spring Boot Startup Script
 
 [[ -n "$DEBUG" ]] && set -x
 
