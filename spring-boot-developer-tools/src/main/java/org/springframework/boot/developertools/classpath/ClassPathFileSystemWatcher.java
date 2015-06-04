@@ -72,11 +72,11 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 	 * @param restartStrategy the classpath restart strategy
 	 * @param urls the URLs to watch
 	 */
-	protected ClassPathFileSystemWatcher(FileSystemWatcher fileSystemWatcher,
+	public ClassPathFileSystemWatcher(FileSystemWatcher fileSystemWatcher,
 			ClassPathRestartStrategy restartStrategy, URL[] urls) {
 		Assert.notNull(fileSystemWatcher, "FileSystemWatcher must not be null");
 		Assert.notNull(urls, "Urls must not be null");
-		this.fileSystemWatcher = new FileSystemWatcher();
+		this.fileSystemWatcher = fileSystemWatcher;
 		this.restartStrategy = restartStrategy;
 		addUrls(urls);
 	}

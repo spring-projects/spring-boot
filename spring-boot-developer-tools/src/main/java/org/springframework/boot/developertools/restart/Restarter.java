@@ -462,8 +462,10 @@ public class Restarter {
 			RestartInitializer initializer, boolean restartOnInitialize) {
 		if (instance == null) {
 			synchronized (Restarter.class) {
-				instance = new Restarter(Thread.currentThread(), args,
-						forceReferenceCleanup, initializer);
+				if (instance == null) {
+					instance = new Restarter(Thread.currentThread(), args,
+							forceReferenceCleanup, initializer);
+				}
 			}
 			instance.initialize(restartOnInitialize);
 		}
