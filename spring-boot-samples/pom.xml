@@ -38,7 +38,7 @@
 		<module>spring-boot-sample-data-redis</module>
 		<module>spring-boot-sample-data-rest</module>
 		<module>spring-boot-sample-data-solr</module>
-		<module>spring-boot-sample-developer-tools</module>
+		<module>spring-boot-sample-devtools</module>
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
 		<module>spring-boot-sample-hornetq</module>

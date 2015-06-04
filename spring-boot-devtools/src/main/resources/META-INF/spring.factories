@@ -1,0 +1,12 @@
+# Application Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.devtools.restart.RestartScopeInitializer
+
+# Application Listeners
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.devtools.restart.RestartApplicationListener
+
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration,\
+org.springframework.boot.devtools.autoconfigure.RemoteDevToolsAutoConfiguration
