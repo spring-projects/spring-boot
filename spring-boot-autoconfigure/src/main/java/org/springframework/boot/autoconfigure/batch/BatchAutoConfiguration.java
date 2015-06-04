@@ -141,7 +141,8 @@ public class BatchAutoConfiguration {
 		@ConditionalOnBean(name = "entityManagerFactory")
 		public BatchConfigurer jpaBatchConfigurer(DataSource dataSource,
 				EntityManagerFactory entityManagerFactory) {
-			return new BasicBatchConfigurer(this.properties, dataSource, entityManagerFactory);
+			return new BasicBatchConfigurer(this.properties, dataSource,
+					entityManagerFactory);
 		}
 
 		@Bean

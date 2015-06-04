@@ -388,7 +388,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	}
 
 	private void createAccessLogDirectoryIfNecessary() {
-		Assert.notNull(this.accessLogDirectory, "accesslogDirectory must not be null");
+		Assert.state(this.accessLogDirectory != null, "Access log directory is not set");
 		if (!this.accessLogDirectory.isDirectory() && !this.accessLogDirectory.mkdirs()) {
 			throw new IllegalStateException("Failed to create access log directory '"
 					+ this.accessLogDirectory + "'");

@@ -19,7 +19,8 @@ package org.springframework.boot.cli.compiler.dependencies;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ArtifactCoordinatesResolver} backed by {@link SpringBootDependenciesDependencyManagement}.
+ * {@link ArtifactCoordinatesResolver} backed by
+ * {@link SpringBootDependenciesDependencyManagement}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -70,4 +71,5 @@ public class DependencyManagementArtifactCoordinatesResolver implements
 		Dependency dependency = find(module);
 		return dependency == null ? null : dependency.getVersion();
 	}
+
 }

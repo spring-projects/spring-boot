@@ -84,6 +84,7 @@ public @interface EnableAutoConfiguration {
 	 * Exclude specific auto-configuration class names such that they will never be
 	 * applied.
 	 * @return the class names to exclude
+	 * @since 1.3.0
 	 */
 	String[] excludeName() default {};
 

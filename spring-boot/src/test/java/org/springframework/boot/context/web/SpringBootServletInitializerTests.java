@@ -33,7 +33,6 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -77,7 +76,7 @@ public class SpringBootServletInitializerTests {
 	public void applicationBuilderCanBeCustomized() throws Exception {
 		CustomSpringBootServletInitializer servletInitializer = new CustomSpringBootServletInitializer();
 		servletInitializer.createRootApplicationContext(this.servletContext);
-		assertThat(servletInitializer.applicationBuilder.built, is(true));
+		assertThat(servletInitializer.applicationBuilder.built, equalTo(true));
 	}
 
 	private Matcher<? super Set<Object>> equalToSet(Object... items) {

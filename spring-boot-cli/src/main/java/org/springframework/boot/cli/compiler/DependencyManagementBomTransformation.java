@@ -100,11 +100,9 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 
 	private List<Map<String, String>> createDependencyMaps(Expression valueExpression) {
 		Map<String, String> dependency = null;
-
 		List<ConstantExpression> constantExpressions = getConstantExpressions(valueExpression);
 		List<Map<String, String>> dependencies = new ArrayList<Map<String, String>>(
 				constantExpressions.size());
-
 		for (ConstantExpression expression : constantExpressions) {
 			Object value = expression.getValue();
 			if (value instanceof String) {
@@ -122,7 +120,6 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 				}
 			}
 		}
-
 		return dependencies;
 	}
 
@@ -130,12 +127,10 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 		if (valueExpression instanceof ListExpression) {
 			return getConstantExpressions((ListExpression) valueExpression);
 		}
-
 		if (valueExpression instanceof ConstantExpression
 				&& ((ConstantExpression) valueExpression).getValue() instanceof String) {
 			return Arrays.asList((ConstantExpression) valueExpression);
 		}
-
 		reportError("@DependencyManagementBom requires an inline constant that is a "
 				+ "string or a string array", valueExpression);
 		return Collections.emptyList();
@@ -166,16 +161,13 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 			List<Map<String, String>> bomDependencies) {
 		URI[] uris = Grape.getInstance().resolve(null,
 				bomDependencies.toArray(new Map[bomDependencies.size()]));
-
 		DefaultModelBuilder modelBuilder = new DefaultModelBuilderFactory().newInstance();
-
 		for (URI uri : uris) {
 			try {
 				DefaultModelBuildingRequest request = new DefaultModelBuildingRequest();
 				request.setModelResolver(new GrapeModelResolver());
 				request.setModelSource(new UrlModelSource(uri.toURL()));
 				Model model = modelBuilder.build(request).getEffectiveModel();
-
 				this.resolutionContext
 						.addDependencyManagement(new MavenModelDependencyManagement(model));
 			}
@@ -236,4 +228,5 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 		}
 
 	}
+
 }

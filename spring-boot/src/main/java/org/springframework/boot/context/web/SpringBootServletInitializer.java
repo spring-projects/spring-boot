@@ -112,7 +112,6 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	 * Returns the {@code SpringApplicationBuilder} that is used to configure and create
 	 * the {@link SpringApplication}. The default implementation returns a new
 	 * {@code SpringApplicationBuilder} in its default state.
-	 *
 	 * @return the {@code SpringApplicationBuilder}.
 	 * @since 1.3.0
 	 */

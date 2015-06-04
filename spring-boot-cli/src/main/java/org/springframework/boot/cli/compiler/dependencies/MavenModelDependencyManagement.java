@@ -75,4 +75,5 @@ public class MavenModelDependencyManagement implements DependencyManagement {
 	public Dependency find(String artifactId) {
 		return this.byArtifactId.get(artifactId);
 	}
+
 }

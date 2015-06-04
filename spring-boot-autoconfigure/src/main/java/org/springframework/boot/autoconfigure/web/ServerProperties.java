@@ -463,14 +463,36 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
 			}
+			customizeBackgroundProcessorDelay(factory);
+			customizeHeaders(factory);
+			if (this.maxThreads > 0) {
+				customizeMaxThreads(factory);
+			}
+			if (this.maxHttpHeaderSize > 0) {
+				customizeMaxHttpHeaderSize(factory);
+			}
+			customizeCompression(factory);
+			if (this.accessLogEnabled) {
+				customizeAccessLog(factory);
+			}
+			if (getUriEncoding() != null) {
+				factory.setUriEncoding(getUriEncoding());
+			}
+		}
 
+		private void customizeBackgroundProcessorDelay(
+				TomcatEmbeddedServletContainerFactory factory) {
 			factory.addContextCustomizers(new TomcatContextCustomizer() {
+
 				@Override
 				public void customize(Context context) {
 					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
 				}
-			});
 
+			});
+		}
+
+		private void customizeHeaders(TomcatEmbeddedServletContainerFactory factory) {
 			String remoteIpHeader = getRemoteIpHeader();
 			String protocolHeader = getProtocolHeader();
 			if (StringUtils.hasText(remoteIpHeader)
@@ -482,35 +504,42 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 				valve.setPortHeader(getPortHeader());
 				factory.addContextValves(valve);
 			}
+		}
 
-			if (this.maxThreads > 0) {
-				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-					@Override
-					public void customize(Connector connector) {
-						ProtocolHandler handler = connector.getProtocolHandler();
-						if (handler instanceof AbstractProtocol) {
-							@SuppressWarnings("rawtypes")
-							AbstractProtocol protocol = (AbstractProtocol) handler;
-							protocol.setMaxThreads(Tomcat.this.maxThreads);
-						}
+		@SuppressWarnings("rawtypes")
+		private void customizeMaxThreads(TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+				@Override
+				public void customize(Connector connector) {
+
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractProtocol) {
+						AbstractProtocol protocol = (AbstractProtocol) handler;
+						protocol.setMaxThreads(Tomcat.this.maxThreads);
 					}
-				});
-			}
 
-			if (this.maxHttpHeaderSize > 0) {
-				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-					@Override
-					public void customize(Connector connector) {
-						ProtocolHandler handler = connector.getProtocolHandler();
-						if (handler instanceof AbstractHttp11Protocol) {
-							@SuppressWarnings("rawtypes")
-							AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-							protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
-						}
+				}
+			});
+		}
+
+		@SuppressWarnings("rawtypes")
+		private void customizeMaxHttpHeaderSize(
+				TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+
+				@Override
+				public void customize(Connector connector) {
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractHttp11Protocol) {
+						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+						protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
 					}
-				});
-			}
+				}
 
+			});
+		}
+
+		private void customizeCompression(TomcatEmbeddedServletContainerFactory factory) {
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
 
 				@Override
@@ -535,22 +564,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 				}
 
 			});
+		}
 
-			if (this.accessLogEnabled) {
-				AccessLogValve valve = new AccessLogValve();
-				String accessLogPattern = getAccessLogPattern();
-				if (accessLogPattern != null) {
-					valve.setPattern(accessLogPattern);
-				}
-				else {
-					valve.setPattern("common");
-				}
-				valve.setSuffix(".log");
-				factory.addContextValves(valve);
-			}
-			if (getUriEncoding() != null) {
-				factory.setUriEncoding(getUriEncoding());
-			}
+		private void customizeAccessLog(TomcatEmbeddedServletContainerFactory factory) {
+			AccessLogValve valve = new AccessLogValve();
+			String accessLogPattern = getAccessLogPattern();
+			valve.setPattern(accessLogPattern == null ? "common" : accessLogPattern);
+			valve.setSuffix(".log");
+			factory.addContextValves(valve);
 		}
 
 	}

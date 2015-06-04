@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,6 @@
 
 package sample.ui.github;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +30,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+
 /**
  * Basic integration tests for github sso application.
  *
@@ -47,20 +47,20 @@ import org.springframework.web.context.WebApplicationContext;
 public class SampleGithubApplicationTests {
 
 	@Autowired
-	WebApplicationContext context;
+	private WebApplicationContext context;
 
 	@Autowired
-	FilterChainProxy filterChain;
+	private FilterChainProxy filterChain;
 
 	@Autowired
-	OAuth2ClientContextFilter filter;
+	private OAuth2ClientContextFilter filter;
 
 	private MockMvc mvc;
 
 	@Before
 	public void setUp() {
-		this.mvc = webAppContextSetup(this.context).addFilters(this.filter, this.filterChain)
-				.build();
+		this.mvc = webAppContextSetup(this.context).addFilters(this.filter,
+				this.filterChain).build();
 		SecurityContextHolder.clearContext();
 	}
 

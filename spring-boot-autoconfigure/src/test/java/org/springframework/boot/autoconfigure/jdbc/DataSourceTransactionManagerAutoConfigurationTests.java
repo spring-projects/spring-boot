@@ -79,9 +79,10 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals("No transaction manager should be been created", 1,
-				this.context.getBeansOfType(PlatformTransactionManager.class).size());
-		assertEquals("Wrong transaction manager", this.context.getBean("myTransactionManager"),
+		assertEquals("No transaction manager should be been created", 1, this.context
+				.getBeansOfType(PlatformTransactionManager.class).size());
+		assertEquals("Wrong transaction manager",
+				this.context.getBean("myTransactionManager"),
 				this.context.getBean(PlatformTransactionManager.class));
 	}
 

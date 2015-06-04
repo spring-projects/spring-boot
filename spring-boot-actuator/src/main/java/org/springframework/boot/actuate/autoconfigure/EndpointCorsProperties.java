@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.cors.CorsConfiguration;
 
 /**
  * Configuration properties for MVC endpoints' CORS support.
@@ -30,23 +28,22 @@ import org.springframework.web.cors.CorsConfiguration;
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "endpoints.cors")
-public class MvcEndpointCorsProperties {
+public class EndpointCorsProperties {
 
 	/**
-	 * Comma-separated list of origins to allow. '*' allows all origins. When
-	 * not set, CORS support is disabled.
+	 * Comma-separated list of origins to allow. '*' allows all origins. When not set,
+	 * CORS support is disabled.
 	 */
 	private List<String> allowedOrigins = new ArrayList<String>();
 
 	/**
-	 * Comma-separated list of methods to allow. '*' allows all methods. When
-	 * not set, defaults to GET.
+	 * Comma-separated list of methods to allow. '*' allows all methods. When not set,
+	 * defaults to GET.
 	 */
 	private List<String> allowedMethods = new ArrayList<String>();
 
 	/**
-	 * Comma-separated list of headers to allow in a request. '*' allows all
-	 * headers.
+	 * Comma-separated list of headers to allow in a request. '*' allows all headers.
 	 */
 	private List<String> allowedHeaders = new ArrayList<String>();
 
@@ -112,30 +109,6 @@ public class MvcEndpointCorsProperties {
 
 	public void setMaxAge(Long maxAge) {
 		this.maxAge = maxAge;
-	}
-
-	CorsConfiguration toCorsConfiguration() {
-		if (CollectionUtils.isEmpty(this.allowedOrigins)) {
-			return null;
-		}
-		CorsConfiguration corsConfiguration = new CorsConfiguration();
-		corsConfiguration.setAllowedOrigins(this.allowedOrigins);
-		if (!CollectionUtils.isEmpty(this.allowedHeaders)) {
-			corsConfiguration.setAllowedHeaders(this.allowedHeaders);
-		}
-		if (!CollectionUtils.isEmpty(this.allowedMethods)) {
-			corsConfiguration.setAllowedMethods(this.allowedMethods);
-		}
-		if (!CollectionUtils.isEmpty(this.exposedHeaders)) {
-			corsConfiguration.setExposedHeaders(this.exposedHeaders);
-		}
-		if (this.maxAge != null) {
-			corsConfiguration.setMaxAge(this.maxAge);
-		}
-		if (this.allowCredentials != null) {
-			corsConfiguration.setAllowCredentials(this.allowCredentials);
-		}
-		return corsConfiguration;
 	}
 
 }

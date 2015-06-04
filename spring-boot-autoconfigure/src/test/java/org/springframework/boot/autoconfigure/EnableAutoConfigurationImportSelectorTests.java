@@ -81,7 +81,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 
 	@Test
 	public void classExclusionsAreApplied() {
-		configureExclusions(new String[]{FreeMarkerAutoConfiguration.class.getName()}, new String[0]);
+		configureExclusions(new String[] { FreeMarkerAutoConfiguration.class.getName() },
+				new String[0]);
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
 				is(equalTo(getAutoConfigurationClassNames().size() - 1)));
@@ -91,7 +92,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 
 	@Test
 	public void classNamesExclusionsAreApplied() {
-		configureExclusions(new String[0], new String[]{VelocityAutoConfiguration.class.getName()});
+		configureExclusions(new String[0],
+				new String[] { VelocityAutoConfiguration.class.getName() });
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
 				is(equalTo(getAutoConfigurationClassNames().size() - 1)));
@@ -101,12 +103,13 @@ public class EnableAutoConfigurationImportSelectorTests {
 
 	@Test
 	public void bothExclusionsAreApplied() {
-		configureExclusions(new String[]{VelocityAutoConfiguration.class.getName()},
-				new String[]{FreeMarkerAutoConfiguration.class.getName()});
+		configureExclusions(new String[] { VelocityAutoConfiguration.class.getName() },
+				new String[] { FreeMarkerAutoConfiguration.class.getName() });
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
 				is(equalTo(getAutoConfigurationClassNames().size() - 2)));
-		assertThat(ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
+		assertThat(
+				ConditionEvaluationReport.get(this.beanFactory).getExclusions(),
 				containsInAnyOrder(FreeMarkerAutoConfiguration.class.getName(),
 						VelocityAutoConfiguration.class.getName()));
 	}
@@ -116,8 +119,10 @@ public class EnableAutoConfigurationImportSelectorTests {
 				this.annotationMetadata.getAnnotationAttributes(
 						EnableAutoConfiguration.class.getName(), true)).willReturn(
 				this.annotationAttributes);
-		given(this.annotationAttributes.getStringArray("exclude")).willReturn(classExclusion);
-		given(this.annotationAttributes.getStringArray("excludeName")).willReturn(nameExclusion);
+		given(this.annotationAttributes.getStringArray("exclude")).willReturn(
+				classExclusion);
+		given(this.annotationAttributes.getStringArray("excludeName")).willReturn(
+				nameExclusion);
 	}
 
 	private List<String> getAutoConfigurationClassNames() {

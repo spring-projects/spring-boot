@@ -118,4 +118,5 @@ public class MailProperties {
 	public String getJndiName() {
 		return this.jndiName;
 	}
+
 }

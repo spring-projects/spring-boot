@@ -212,13 +212,15 @@ public class RabbitAutoConfigurationTests {
 	public void enableSsl() {
 		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true");
 		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
-		assertTrue("SocketFactory must use SSL", rabbitConnectionFactory.getSocketFactory() instanceof SSLSocketFactory);
+		assertTrue("SocketFactory must use SSL",
+				rabbitConnectionFactory.getSocketFactory() instanceof SSLSocketFactory);
 	}
 
-	@Test // Make sure that we at least attempt to load the store
+	@Test
+	// Make sure that we at least attempt to load the store
 	public void enableSslWithExtraConfig() {
-		thrown.expectMessage("foo");
-		thrown.expectMessage("does not exist");
+		this.thrown.expectMessage("foo");
+		this.thrown.expectMessage("does not exist");
 		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true",
 				"spring.rabbitmq.ssl.keyStore=foo",
 				"spring.rabbitmq.ssl.keyStorePassword=secret",
@@ -229,8 +231,8 @@ public class RabbitAutoConfigurationTests {
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory() {
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		return (com.rabbitmq.client.ConnectionFactory)
-				new DirectFieldAccessor(connectionFactory).getPropertyValue("rabbitConnectionFactory");
+		return (com.rabbitmq.client.ConnectionFactory) new DirectFieldAccessor(
+				connectionFactory).getPropertyValue("rabbitConnectionFactory");
 	}
 
 	private void load(Class<?> config, String... environment) {

@@ -52,18 +52,15 @@ public class SpringApplicationHierarchyTests {
 				"--server.port=0");
 	}
 
-	@EnableAutoConfiguration(exclude = {
-			ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class},
-			excludeName = {"org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration"})
+	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
+			ElasticsearchRepositoriesAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 	}
 
-	@EnableAutoConfiguration(exclude = {JolokiaAutoConfiguration.class,
+	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class,
 			EndpointMBeanExportAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class},
-			excludeName = {"org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration"})
+			ElasticsearchRepositoriesAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {
 	}
 

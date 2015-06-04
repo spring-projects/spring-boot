@@ -47,7 +47,6 @@ public class CompositeDependencyManagementTests {
 	public void unknownSpringBootVersion() {
 		given(this.dependencyManagement1.getSpringBootVersion()).willReturn(null);
 		given(this.dependencyManagement2.getSpringBootVersion()).willReturn(null);
-
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1,
 				this.dependencyManagement2).getSpringBootVersion(), is(nullValue()));
 	}
@@ -56,7 +55,6 @@ public class CompositeDependencyManagementTests {
 	public void knownSpringBootVersion() {
 		given(this.dependencyManagement1.getSpringBootVersion()).willReturn("1.2.3");
 		given(this.dependencyManagement2.getSpringBootVersion()).willReturn("1.2.4");
-
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1,
 				this.dependencyManagement2).getSpringBootVersion(), is("1.2.3"));
 	}
@@ -65,7 +63,6 @@ public class CompositeDependencyManagementTests {
 	public void unknownDependency() {
 		given(this.dependencyManagement1.find("artifact")).willReturn(null);
 		given(this.dependencyManagement2.find("artifact")).willReturn(null);
-
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1,
 				this.dependencyManagement2).find("artifact"), is(nullValue()));
 	}
@@ -76,7 +73,6 @@ public class CompositeDependencyManagementTests {
 				new Dependency("test", "artifact", "1.2.3"));
 		given(this.dependencyManagement2.find("artifact")).willReturn(
 				new Dependency("test", "artifact", "1.2.4"));
-
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1,
 				this.dependencyManagement2).find("artifact"), is(new Dependency("test",
 				"artifact", "1.2.3")));
@@ -88,11 +84,11 @@ public class CompositeDependencyManagementTests {
 				Arrays.asList(new Dependency("test", "artifact", "1.2.3")));
 		given(this.dependencyManagement2.getDependencies()).willReturn(
 				Arrays.asList(new Dependency("test", "artifact", "1.2.4")));
-
 		assertThat(
 				new CompositeDependencyManagement(this.dependencyManagement1,
 						this.dependencyManagement2).getDependencies(),
 				contains(new Dependency("test", "artifact", "1.2.3"), new Dependency(
 						"test", "artifact", "1.2.4")));
 	}
+
 }

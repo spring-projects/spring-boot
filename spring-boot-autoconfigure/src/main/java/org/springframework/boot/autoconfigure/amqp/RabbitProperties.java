@@ -73,7 +73,6 @@ public class RabbitProperties {
 	 */
 	private Integer requestedHeartbeat;
 
-
 	public String getHost() {
 		if (this.addresses == null) {
 			return this.host;
@@ -161,7 +160,7 @@ public class RabbitProperties {
 	}
 
 	public Ssl getSsl() {
-		return ssl;
+		return this.ssl;
 	}
 
 	public String getVirtualHost() {
@@ -173,7 +172,7 @@ public class RabbitProperties {
 	}
 
 	public Integer getRequestedHeartbeat() {
-		return requestedHeartbeat;
+		return this.requestedHeartbeat;
 	}
 
 	public void setRequestedHeartbeat(Integer requestedHeartbeat) {
@@ -208,7 +207,7 @@ public class RabbitProperties {
 		private String trustStorePassword;
 
 		public boolean isEnabled() {
-			return enabled;
+			return this.enabled;
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -216,7 +215,7 @@ public class RabbitProperties {
 		}
 
 		public String getKeyStore() {
-			return keyStore;
+			return this.keyStore;
 		}
 
 		public void setKeyStore(String keyStore) {
@@ -224,7 +223,7 @@ public class RabbitProperties {
 		}
 
 		public String getKeyStorePassword() {
-			return keyStorePassword;
+			return this.keyStorePassword;
 		}
 
 		public void setKeyStorePassword(String keyStorePassword) {
@@ -232,7 +231,7 @@ public class RabbitProperties {
 		}
 
 		public String getTrustStore() {
-			return trustStore;
+			return this.trustStore;
 		}
 
 		public void setTrustStore(String trustStore) {
@@ -240,7 +239,7 @@ public class RabbitProperties {
 		}
 
 		public String getTrustStorePassword() {
-			return trustStorePassword;
+			return this.trustStorePassword;
 		}
 
 		public void setTrustStorePassword(String trustStorePassword) {
@@ -249,7 +248,8 @@ public class RabbitProperties {
 
 		/**
 		 * Create the ssl configuration as expected by the
-		 * {@link org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean RabbitConnectionFactoryBean}.
+		 * {@link org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean
+		 * RabbitConnectionFactoryBean}.
 		 * @return the ssl configuration
 		 */
 		public Properties createSslProperties() {

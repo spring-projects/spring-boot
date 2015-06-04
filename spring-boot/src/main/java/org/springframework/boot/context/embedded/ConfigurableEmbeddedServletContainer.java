@@ -43,8 +43,10 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setContextPath(String contextPath);
 
 	/**
-	 * Sets the display name of the application deployed in the embedded servlet container.
+	 * Sets the display name of the application deployed in the embedded servlet
+	 * container.
 	 * @param displayName the displayName to set
+	 * @since 1.3.0
 	 */
 	void setDisplayName(String displayName);
 

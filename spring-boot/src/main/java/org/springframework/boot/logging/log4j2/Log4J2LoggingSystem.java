@@ -164,11 +164,9 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
 		InputStream stream = url.openStream();
 		if (ResourceUtils.isFileURL(url)) {
-			return new ConfigurationSource(stream,
-						ResourceUtils.getFile(url));
-		} else {
-			return new ConfigurationSource(stream, url);
+			return new ConfigurationSource(stream, ResourceUtils.getFile(url));
 		}
+		return new ConfigurationSource(stream, url);
 	}
 
 	@Override

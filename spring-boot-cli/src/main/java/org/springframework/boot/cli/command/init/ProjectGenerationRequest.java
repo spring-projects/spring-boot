@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
-
 import org.springframework.util.StringUtils;
 
 /**
@@ -392,7 +391,7 @@ class ProjectGenerationRequest {
 	private static void filter(Map<String, ProjectType> projects, String tag,
 			String tagValue) {
 		for (Iterator<Map.Entry<String, ProjectType>> it = projects.entrySet().iterator(); it
-				.hasNext(); ) {
+				.hasNext();) {
 			Map.Entry<String, ProjectType> entry = it.next();
 			String value = entry.getValue().getTags().get(tag);
 			if (!tagValue.equals(value)) {

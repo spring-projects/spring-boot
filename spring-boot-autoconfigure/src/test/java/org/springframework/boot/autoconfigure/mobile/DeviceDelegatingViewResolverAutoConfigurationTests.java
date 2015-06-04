@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.mobile;
 
 import org.junit.After;
 import org.junit.Test;
-import org.thymeleaf.spring4.view.ThymeleafViewResolver;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -38,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.view.AbstractDeviceDelegatingViewResolver;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -93,7 +92,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		try {
 			this.context.getBean(ThymeleafViewResolver.class);
 		}
-		catch (NoSuchBeanDefinitionException e) {
+		catch (NoSuchBeanDefinitionException ex) {
 			// expected. ThymeleafViewResolver shouldn't be defined.
 		}
 		assertTrue(deviceDelegatingViewResolver.getOrder() == internalResourceViewResolver
@@ -114,7 +113,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		try {
 			this.context.getBean(ThymeleafViewResolver.class);
 		}
-		catch (NoSuchBeanDefinitionException e) {
+		catch (NoSuchBeanDefinitionException ex) {
 			// expected. ThymeleafViewResolver shouldn't be defined.
 		}
 		this.context.getBean("deviceDelegatingViewResolver",
@@ -177,7 +176,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
 
-		DirectFieldAccessor accessor = new DirectFieldAccessor(liteDeviceDelegatingViewResolver);
+		DirectFieldAccessor accessor = new DirectFieldAccessor(
+				liteDeviceDelegatingViewResolver);
 		assertEquals(false, accessor.getPropertyValue("enableFallback"));
 		assertEquals("", accessor.getPropertyValue("normalPrefix"));
 		assertEquals("mobile/", accessor.getPropertyValue("mobilePrefix"));
@@ -224,7 +224,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.normalSuffix:.nor");
-		assertEquals(".nor",  accessor.getPropertyValue("normalSuffix"));
+		assertEquals(".nor", accessor.getPropertyValue("normalSuffix"));
 	}
 
 	@Test
@@ -232,7 +232,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.mobileSuffix:.mob");
-		assertEquals(".mob",  accessor.getPropertyValue("mobileSuffix"));
+		assertEquals(".mob", accessor.getPropertyValue("mobileSuffix"));
 	}
 
 	@Test
@@ -243,7 +243,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		assertEquals(".tab", accessor.getPropertyValue("tabletSuffix"));
 	}
 
-	private PropertyAccessor getLiteDeviceDelegatingViewResolverAccessor(String... configuration) {
+	private PropertyAccessor getLiteDeviceDelegatingViewResolverAccessor(
+			String... configuration) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, configuration);
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -45,6 +46,7 @@ import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCusto
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -71,7 +73,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -94,7 +98,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
 		ManagementServerPropertiesAutoConfiguration.class })
 @EnableConfigurationProperties({ HealthMvcEndpointProperties.class,
-		MvcEndpointCorsProperties.class })
+		EndpointCorsProperties.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		SmartInitializingSingleton {
 
@@ -109,7 +113,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	private ManagementServerProperties managementServerProperties;
 
 	@Autowired
-	private MvcEndpointCorsProperties corsMvcEndpointProperties;
+	private EndpointCorsProperties corsProperties;
 
 	@Autowired(required = false)
 	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
@@ -123,8 +127,10 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointHandlerMapping endpointHandlerMapping() {
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(mvcEndpoints()
-				.getEndpoints(), this.corsMvcEndpointProperties.toCorsConfiguration());
+		Set<? extends MvcEndpoint> endpoints = mvcEndpoints().getEndpoints();
+		CorsConfiguration corsConfiguration = getCorsConfiguration(this.corsProperties);
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
+				corsConfiguration);
 		boolean disabled = ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME;
 		mapping.setDisabled(disabled);
 		if (!disabled) {
@@ -136,6 +142,30 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			}
 		}
 		return mapping;
+	}
+
+	private CorsConfiguration getCorsConfiguration(EndpointCorsProperties properties) {
+		if (CollectionUtils.isEmpty(properties.getAllowedOrigins())) {
+			return null;
+		}
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(properties.getAllowedOrigins());
+		if (!CollectionUtils.isEmpty(properties.getAllowedHeaders())) {
+			configuration.setAllowedHeaders(properties.getAllowedHeaders());
+		}
+		if (!CollectionUtils.isEmpty(properties.getAllowedMethods())) {
+			configuration.setAllowedMethods(properties.getAllowedMethods());
+		}
+		if (!CollectionUtils.isEmpty(properties.getExposedHeaders())) {
+			configuration.setExposedHeaders(properties.getExposedHeaders());
+		}
+		if (properties.getMaxAge() != null) {
+			configuration.setMaxAge(properties.getMaxAge());
+		}
+		if (properties.getAllowCredentials() != null) {
+			configuration.setAllowCredentials(properties.getAllowCredentials());
+		}
+		return configuration;
 	}
 
 	@Override

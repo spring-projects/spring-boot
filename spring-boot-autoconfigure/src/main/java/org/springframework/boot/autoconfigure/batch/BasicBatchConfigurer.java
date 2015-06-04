@@ -62,6 +62,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
+	 * @param properties the batch properties
 	 * @param dataSource the underlying data source
 	 */
 	public BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
@@ -70,6 +71,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
+	 * @param properties the batch properties
 	 * @param dataSource the underlying data source
 	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */

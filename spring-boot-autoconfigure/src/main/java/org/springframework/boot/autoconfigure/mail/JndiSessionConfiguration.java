@@ -47,13 +47,13 @@ class JndiSessionConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Session session() {
+		String jndiName = this.properties.getJndiName();
 		try {
-			return new JndiLocatorDelegate()
-					.lookup(this.properties.getJndiName(), Session.class);
+			return new JndiLocatorDelegate().lookup(jndiName, Session.class);
 		}
-		catch (NamingException e) {
+		catch (NamingException ex) {
 			throw new IllegalStateException(String.format(
-					"Unable to find Session in JNDI location %s", this.properties.getJndiName()));
+					"Unable to find Session in JNDI location %s", jndiName), ex);
 		}
 	}
 

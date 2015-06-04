@@ -106,7 +106,8 @@ public class RabbitAutoConfiguration {
 	protected static class RabbitConnectionFactoryCreator {
 
 		@Bean
-		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config) throws Exception {
+		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config)
+				throws Exception {
 			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
 			if (config.getHost() != null) {
 				factory.setHost(config.getHost());
@@ -131,12 +132,13 @@ public class RabbitAutoConfiguration {
 					Properties properties = ssl.createSslProperties();
 					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 					properties.store(outputStream, "SSL config");
-					factory.setSslPropertiesLocation(
-							new ByteArrayResource(outputStream.toByteArray()));
+					factory.setSslPropertiesLocation(new ByteArrayResource(outputStream
+							.toByteArray()));
 				}
 			}
 			factory.afterPropertiesSet();
-			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(factory.getObject());
+			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
+					factory.getObject());
 			connectionFactory.setAddresses(config.getAddresses());
 			return connectionFactory;
 		}

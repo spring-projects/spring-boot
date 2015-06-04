@@ -16,6 +16,12 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
+import java.util.Properties;
+
+import javax.mail.Session;
+import javax.naming.Context;
+import javax.naming.NamingException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,12 +36,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-
-import javax.mail.Session;
-import javax.naming.Context;
-import javax.naming.NamingException;
-
-import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -78,7 +78,8 @@ public class MailSenderAutoConfigurationTests {
 		if (this.initialContextFactory != null) {
 			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
 					this.initialContextFactory);
-		} else {
+		}
+		else {
 			System.clearProperty(Context.INITIAL_CONTEXT_FACTORY);
 		}
 		if (this.context != null) {
@@ -138,20 +139,18 @@ public class MailSenderAutoConfigurationTests {
 
 	@Test
 	public void jndiSessionAvailable() throws NamingException {
-		Session session =  configureJndiSession("foo");
+		Session session = configureJndiSession("foo");
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
-
 		Session sessionBean = this.context.getBean(Session.class);
 		assertEquals(session, sessionBean);
-		assertEquals(sessionBean, this.context.getBean(JavaMailSenderImpl.class).getSession());
+		assertEquals(sessionBean, this.context.getBean(JavaMailSenderImpl.class)
+				.getSession());
 	}
 
 	@Test
 	public void jndiSessionIgnoredIfJndiNameNotSet() throws NamingException {
 		configureJndiSession("foo");
-
 		load(EmptyConfig.class, "spring.mail.host:smtp.acme.org");
-
 		assertEquals(0, this.context.getBeanNamesForType(Session.class).length);
 		assertNotNull(this.context.getBean(JavaMailSender.class));
 	}
@@ -159,23 +158,20 @@ public class MailSenderAutoConfigurationTests {
 	@Test
 	public void jndiSessionNotUsedIfJndiNameNotSet() throws NamingException {
 		configureJndiSession("foo");
-
 		load(EmptyConfig.class);
-
 		assertEquals(0, this.context.getBeanNamesForType(Session.class).length);
-		assertEquals(0,  this.context.getBeanNamesForType(JavaMailSender.class).length);
+		assertEquals(0, this.context.getBeanNamesForType(JavaMailSender.class).length);
 	}
 
 	@Test
 	public void jndiSessionNotAvailableWithJndiName() throws NamingException {
-		thrown.expect(BeanCreationException.class);
-		thrown.expectMessage("Unable to find Session in JNDI location foo");
-
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("Unable to find Session in JNDI location foo");
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
 	}
 
-	private Session configureJndiSession(String name)
-			throws IllegalStateException, NamingException {
+	private Session configureJndiSession(String name) throws IllegalStateException,
+			NamingException {
 		Properties properties = new Properties();
 		Session session = Session.getDefaultInstance(properties);
 		TestableInitialContextFactory.bind(name, session);

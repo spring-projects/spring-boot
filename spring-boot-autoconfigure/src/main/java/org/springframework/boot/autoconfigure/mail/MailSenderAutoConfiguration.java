@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
+import java.util.Map;
 import java.util.Properties;
+
 import javax.activation.MimeType;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -65,25 +67,33 @@ public class MailSenderAutoConfiguration {
 			sender.setSession(this.session);
 		}
 		else {
-			sender.setHost(this.properties.getHost());
-			if (this.properties.getPort() != null) {
-				sender.setPort(this.properties.getPort());
-			}
-			sender.setUsername(this.properties.getUsername());
-			sender.setPassword(this.properties.getPassword());
-			sender.setDefaultEncoding(this.properties.getDefaultEncoding());
-			if (!this.properties.getProperties().isEmpty()) {
-				Properties properties = new Properties();
-				properties.putAll(this.properties.getProperties());
-				sender.setJavaMailProperties(properties);
-			}
+			applyProperties(sender);
 		}
 		return sender;
 	}
 
+	private void applyProperties(JavaMailSenderImpl sender) {
+		sender.setHost(this.properties.getHost());
+		if (this.properties.getPort() != null) {
+			sender.setPort(this.properties.getPort());
+		}
+		sender.setUsername(this.properties.getUsername());
+		sender.setPassword(this.properties.getPassword());
+		sender.setDefaultEncoding(this.properties.getDefaultEncoding());
+		if (!this.properties.getProperties().isEmpty()) {
+			sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
+		}
+	}
+
+	private Properties asProperties(Map<String, String> source) {
+		Properties properties = new Properties();
+		properties.putAll(source);
+		return properties;
+	}
+
 	/**
-	 * Condition to trigger the creation of a {@link JavaMailSenderImpl}. This kicks in
-	 * if either the host or jndi name property is set.
+	 * Condition to trigger the creation of a {@link JavaMailSenderImpl}. This kicks in if
+	 * either the host or jndi name property is set.
 	 */
 	static class MailSenderCondition extends AnyNestedCondition {
 

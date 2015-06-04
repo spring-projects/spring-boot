@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
@@ -118,7 +117,7 @@ public class ProjectGenerationRequestTests {
 	public void customLanguage() {
 		this.request.setLanguage("groovy");
 		assertEquals(createDefaultUrl("?type=test-type&language=groovy"),
-			this.request.generateUrl(createDefaultMetadata()));
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
@@ -127,8 +126,9 @@ public class ProjectGenerationRequestTests {
 		this.request.setArtifactId("sample");
 		this.request.setVersion("1.0.1-SNAPSHOT");
 		this.request.setDescription("Spring Boot Test");
-		assertEquals(createDefaultUrl("?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT" +
-						"&description=Spring+Boot+Test&type=test-type"),
+		assertEquals(
+				createDefaultUrl("?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
+						+ "&description=Spring+Boot+Test&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
