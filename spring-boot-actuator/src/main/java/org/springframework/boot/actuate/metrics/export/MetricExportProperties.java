@@ -35,6 +35,9 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties("spring.metrics.export")
 public class MetricExportProperties extends TriggerProperties {
 
+	/**
+	 * Specific trigger properties per MetricWriter bean name.
+	 */
 	private Map<String, SpecificTriggerProperties> triggers
 			= new LinkedHashMap<String, SpecificTriggerProperties>();
 

@@ -654,19 +654,14 @@ content into your application; rather pick only the properties that you need.
 	shell.auth.spring.roles=
 	
 	# METRICS EXPORT ({sc-spring-boot-actuator}/metrics/export/MetricExportProperties.{sc-ext}[MetricExportProperties])
-	spring.metrics.export.enabled=true # Flag to disable all metric exports (assuming any MetricWriters are available).
-	spring.metrics.export.delay-millis=5000 # Delay in milliseconds between export ticks.
-	spring.metrics.export.send-latest=true # Flag to switch off any available optimizations based on not exporting unchanged metric values.
-	spring.metrics.export.includes= # List of patterns for metric names to include.
-	spring.metrics.export.excludes= # List of patterns for metric names to exclude. Applied after the includes.
-	spring.metrics.export.redis.prefix=spring.metrics # Prefix for redis repository if active.
-	spring.metrics.export.redis.key=keys.spring.metrics # Key for redis repository export (if active).
-	spring.metrics.export.triggers.<name>.names= # Names (or patterns) for bean names that this configuration applies to.
-	spring.metrics.export.triggers.<name>.enabled=true
-	spring.metrics.export.triggers.<name>.delay-millis=5000
-	spring.metrics.export.triggers.<name>.send-latest=true
-	spring.metrics.export.triggers.<name>.includes=
-	spring.metrics.export.triggers.<name>.excludes=
+	spring.metrics.export.enabled=true # flag to disable all metric exports (assuming any MetricWriters are available)
+	spring.metrics.export.delay-millis=5000 # delay in milliseconds between export ticks
+	spring.metrics.export.send-latest=true # flag to switch off any available optimizations based on not exporting unchanged metric values
+	spring.metrics.export.includes= # list of patterns for metric names to include
+	spring.metrics.export.excludes= # list of patterns for metric names to exclude. Applied after the includes
+	spring.metrics.export.redis.prefix=spring.metrics # prefix for redis repository if active
+	spring.metrics.export.redis.key=keys.spring.metrics # key for redis repository export (if active)
+	spring.metrics.export.triggers.*= # specific trigger properties per MetricWriter bean name
 
 	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
 	spring.sendgrid.username= # SendGrid account username
