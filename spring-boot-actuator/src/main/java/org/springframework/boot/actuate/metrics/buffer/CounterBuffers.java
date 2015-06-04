@@ -52,12 +52,7 @@ public class CounterBuffers {
 	}
 
 	public void get(final String name, final Consumer<LongBuffer> consumer) {
-		read(name, new Consumer<LongBuffer>() {
-			@Override
-			public void accept(LongBuffer adder) {
-				consumer.accept(adder);
-			}
-		});
+		read(name, consumer);
 	}
 
 	public void increment(final String name, final long delta) {
@@ -83,12 +78,7 @@ public class CounterBuffers {
 	}
 
 	private void read(final String name, final Consumer<LongBuffer> consumer) {
-		acceptInternal(name, new Consumer<LongBuffer>() {
-			@Override
-			public void accept(LongBuffer adder) {
-				consumer.accept(adder);
-			}
-		});
+		acceptInternal(name, consumer);
 	}
 
 	private void write(final String name, final Consumer<LongBuffer> consumer) {
