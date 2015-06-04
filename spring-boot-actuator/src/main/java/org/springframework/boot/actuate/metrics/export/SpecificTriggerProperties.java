@@ -14,39 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.buffer;
+package org.springframework.boot.actuate.metrics.export;
 
 /**
- * Mutable buffer containing a double value and a timestamp.
+ * Trigger for specific names or patterns.
  *
  * @author Dave Syer
  * @since 1.3.0
  */
-public class DoubleBuffer {
+public class SpecificTriggerProperties extends TriggerProperties {
 
-	private volatile double value;
+	/**
+	 * Names (or patterns) for bean names that this configuration applies to.
+	 */
+	private String[] names;
 
-	private volatile long timestamp;
-
-	public DoubleBuffer(long timestamp) {
-		this.value = 0;
-		this.timestamp = timestamp;
+	public String[] getNames() {
+		return this.names;
 	}
 
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public double getValue() {
-		return this.value;
-	}
-
-	public void setValue(double value) {
-		this.value = value;
-	}
-
-	public long getTimestamp() {
-		return this.timestamp;
+	public void setNames(String[] names) {
+		this.names = names;
 	}
 
 }

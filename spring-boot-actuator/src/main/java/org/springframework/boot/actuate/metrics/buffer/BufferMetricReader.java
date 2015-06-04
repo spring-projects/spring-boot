@@ -33,6 +33,7 @@ import org.springframework.lang.UsesJava8;
  * {@link GaugeBuffers}.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @UsesJava8
 public class BufferMetricReader implements MetricReader, PrefixMetricReader {

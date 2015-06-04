@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
@@ -114,13 +113,15 @@ public class DropwizardMetricServicesTests {
 	}
 
 	public static class WriterThread extends Thread {
+
 		private int index;
+
 		private boolean failed;
+
 		private DropwizardMetricServices writer;
 
 		public WriterThread(ThreadGroup group, int index, DropwizardMetricServices writer) {
 			super(group, "Writer-" + index);
-
 			this.index = index;
 			this.writer = writer;
 		}
@@ -143,5 +144,7 @@ public class DropwizardMetricServicesTests {
 				}
 			}
 		}
+
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,26 +33,27 @@ import org.springframework.util.StringUtils;
  * export).
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public abstract class AbstractMetricExporter implements Exporter {
 
 	private static final Log logger = LogFactory.getLog(AbstractMetricExporter.class);
 
-	private volatile AtomicBoolean processing = new AtomicBoolean(false);
+	private final String prefix;
 
 	private Date earliestTimestamp = new Date();
 
 	private boolean ignoreTimestamps = false;
 
-	private final String prefix;
+	private boolean sendLatest = true;
+
+	private volatile AtomicBoolean processing = new AtomicBoolean(false);
 
 	private Date latestTimestamp = new Date(0L);
 
-	private boolean sendLatest = true;
-
 	public AbstractMetricExporter(String prefix) {
-		this.prefix = !StringUtils.hasText(prefix) ? "" : (prefix.endsWith(".") ? prefix
-				: prefix + ".");
+		this.prefix = (!StringUtils.hasText(prefix) ? "" : (prefix.endsWith(".") ? prefix
+				: prefix + "."));
 	}
 
 	/**
@@ -73,7 +74,6 @@ public abstract class AbstractMetricExporter implements Exporter {
 
 	/**
 	 * Send only the data that changed since the last export.
-	 *
 	 * @param sendLatest the flag to set
 	 */
 	public void setSendLatest(boolean sendLatest) {
@@ -82,47 +82,63 @@ public abstract class AbstractMetricExporter implements Exporter {
 
 	@Override
 	public void export() {
-		if (!this.processing.compareAndSet(false, true)) {
-			// skip a tick
-			return;
-		}
-		long latestTimestamp = 0;
-		try {
-			latestTimestamp = System.currentTimeMillis();
-			for (String group : groups()) {
-				Collection<Metric<?>> values = new ArrayList<Metric<?>>();
-				for (Metric<?> metric : next(group)) {
-					Metric<?> value = new Metric<Number>(this.prefix + metric.getName(),
-							metric.getValue(), metric.getTimestamp());
-					Date timestamp = metric.getTimestamp();
-					if (!this.ignoreTimestamps && this.earliestTimestamp.after(timestamp)) {
-						continue;
-					}
-					if (!this.ignoreTimestamps && this.sendLatest
-							&& this.latestTimestamp.after(timestamp)) {
-						continue;
-					}
-					values.add(value);
-				}
-				if (!values.isEmpty()) {
-					write(group, values);
-				}
-			}
-		}
-		catch (Exception e) {
-			logger.warn("Could not write to MetricWriter: " + e.getClass() + ": "
-					+ e.getMessage());
-		}
-		finally {
+		if (this.processing.compareAndSet(false, true)) {
+			long latestTimestamp = System.currentTimeMillis();
 			try {
+				exportGroups();
+			}
+			catch (Exception ex) {
+				logger.warn("Could not write to MetricWriter: " + ex.getClass() + ": "
+						+ ex.getMessage());
+			}
+			finally {
 				this.latestTimestamp = new Date(latestTimestamp);
-				flush();
+				flushQuietly();
+				this.processing.set(false);
 			}
-			catch (Exception e) {
-				logger.warn("Could not flush MetricWriter: " + e.getClass() + ": "
-						+ e.getMessage());
+		}
+	}
+
+	private void exportGroups() {
+		for (String group : groups()) {
+			Collection<Metric<?>> values = new ArrayList<Metric<?>>();
+			for (Metric<?> metric : next(group)) {
+				Date timestamp = metric.getTimestamp();
+				if (canExportTimestamp(timestamp)) {
+					values.add(getPrefixedMetric(metric));
+				}
 			}
-			this.processing.set(false);
+			if (!values.isEmpty()) {
+				write(group, values);
+			}
+		}
+	}
+
+	private Metric<?> getPrefixedMetric(Metric<?> metric) {
+		String name = this.prefix + metric.getName();
+		return new Metric<Number>(name, metric.getValue(), metric.getTimestamp());
+	}
+
+	private boolean canExportTimestamp(Date timestamp) {
+		if (this.ignoreTimestamps) {
+			return true;
+		}
+		if (this.earliestTimestamp.after(timestamp)) {
+			return false;
+		}
+		if (this.sendLatest && this.latestTimestamp.after(timestamp)) {
+			return false;
+		}
+		return true;
+	}
+
+	private void flushQuietly() {
+		try {
+			flush();
+		}
+		catch (Exception ex) {
+			logger.warn("Could not flush MetricWriter: " + ex.getClass() + ": "
+					+ ex.getMessage());
 		}
 	}
 

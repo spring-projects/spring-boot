@@ -27,6 +27,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
+ * Tests for {@link AggregateMetricReader}.
+ *
  * @author Dave Syer
  */
 public class AggregateMetricReaderTests {

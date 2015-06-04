@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
  * domain is copied from the input key and the type in the input key is discarded.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class DefaultMetricNamingStrategy implements ObjectNamingStrategy {
 

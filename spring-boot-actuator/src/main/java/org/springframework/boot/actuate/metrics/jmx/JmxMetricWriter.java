@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +42,7 @@ import org.springframework.jmx.export.naming.ObjectNamingStrategy;
  * and <code>value</code> keys by splitting up the metric name on periods.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @ManagedResource(description = "MetricWriter for pushing metrics to JMX MBeans.")
 public class JmxMetricWriter implements MetricWriter {
@@ -97,10 +99,9 @@ public class JmxMetricWriter implements MetricWriter {
 			try {
 				// We can unregister the MBean, but if this writer is on the end of an
 				// Exporter the chances are it will be re-registered almost immediately.
-				this.exporter.unregisterManagedResource(this.namingStrategy
-						.getObjectName(value, getKey(name)));
+				this.exporter.unregisterManagedResource(getName(name, value));
 			}
-			catch (MalformedObjectNameException e) {
+			catch (MalformedObjectNameException ex) {
 				logger.warn("Could not unregister MBean for " + name);
 			}
 		}
@@ -111,18 +112,19 @@ public class JmxMetricWriter implements MetricWriter {
 			this.values.putIfAbsent(name, new MetricValue());
 			MetricValue value = this.values.get(name);
 			try {
-				this.exporter.registerManagedResource(value,
-						this.namingStrategy.getObjectName(value, getKey(name)));
+				this.exporter.registerManagedResource(value, getName(name, value));
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 				// Could not register mbean, maybe just a race condition
 			}
 		}
 		return this.values.get(name);
 	}
 
-	private String getKey(String name) {
-		return String.format(this.domain + ":type=MetricValue,name=%s", name);
+	private ObjectName getName(String name, MetricValue value)
+			throws MalformedObjectNameException {
+		String key = String.format(this.domain + ":type=MetricValue,name=%s", name);
+		return this.namingStrategy.getObjectName(value, key);
 	}
 
 	@ManagedResource

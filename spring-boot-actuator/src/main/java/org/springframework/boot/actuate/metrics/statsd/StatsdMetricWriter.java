@@ -37,16 +37,16 @@ import com.timgroup.statsd.StatsDClientErrorHandler;
  * a gauge.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class StatsdMetricWriter implements MetricWriter, Closeable {
 
-	private static Log logger = LogFactory.getLog(StatsdMetricWriter.class);
+	private static final Log logger = LogFactory.getLog(StatsdMetricWriter.class);
 
 	private final NonBlockingStatsDClient client;
 
 	/**
-	 * Create a new writer with the given parameters.
-	 *
+	 * Create a new writer instance with the given parameters.
 	 * @param host the hostname for the statsd server
 	 * @param port the port for the statsd server
 	 */
@@ -56,7 +56,6 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 
 	/**
 	 * Create a new writer with the given parameters.
-	 *
 	 * @param prefix the prefix to apply to all metric names (can be null)
 	 * @param host the hostname for the statsd server
 	 * @param port the port for the statsd server
@@ -101,11 +100,13 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 
 	private static final class LoggingStatsdErrorHandler implements
 			StatsDClientErrorHandler {
+
 		@Override
 		public void handle(Exception e) {
 			logger.debug("Failed to write metric. Exception: " + e.getClass()
 					+ ", message: " + e.getMessage());
 		}
+
 	}
 
 }

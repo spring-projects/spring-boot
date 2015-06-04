@@ -1,4 +1,4 @@
-Spring Boot sample with Redis export for metrics.
+= Spring Boot sample with Redis export for metrics.
 
 Start redis, e.g. with [Docker Compose]()
 

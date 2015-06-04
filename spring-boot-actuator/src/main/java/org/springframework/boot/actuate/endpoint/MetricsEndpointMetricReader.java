@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.ArrayList;
@@ -25,12 +26,12 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 
 /**
- * A {@link MetricReader} that pulls all current values out of the {@link MetricsEndpoint}
- * . No timestamp information is available, so there is no way to check if the values are
+ * {@link MetricReader} that pulls all current values out of the {@link MetricsEndpoint}.
+ * No timestamp information is available, so there is no way to check if the values are
  * recent, and they all come out with the default (current time).
- * 
- * @author Dave Syer
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 public class MetricsEndpointMetricReader implements MetricReader {
 
@@ -43,7 +44,7 @@ public class MetricsEndpointMetricReader implements MetricReader {
 	@Override
 	public Metric<?> findOne(String metricName) {
 		Metric<Number> metric = null;
-		Object value = endpoint.invoke().get(metricName);
+		Object value = this.endpoint.invoke().get(metricName);
 		if (value != null) {
 			metric = new Metric<Number>(metricName, (Number) value);
 		}
@@ -53,7 +54,7 @@ public class MetricsEndpointMetricReader implements MetricReader {
 	@Override
 	public Iterable<Metric<?>> findAll() {
 		List<Metric<?>> metrics = new ArrayList<Metric<?>>();
-		Map<String, Object> values = endpoint.invoke();
+		Map<String, Object> values = this.endpoint.invoke();
 		Date timestamp = new Date();
 		for (Entry<String, Object> entry : values.entrySet()) {
 			String name = entry.getKey();
@@ -65,7 +66,7 @@ public class MetricsEndpointMetricReader implements MetricReader {
 
 	@Override
 	public long count() {
-		return endpoint.invoke().size();
+		return this.endpoint.invoke().size();
 	}
 
 }

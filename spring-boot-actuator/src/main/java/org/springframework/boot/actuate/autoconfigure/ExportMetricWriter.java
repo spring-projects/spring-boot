@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * the {@link ExportMetricReader} readers.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @Qualifier
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,

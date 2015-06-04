@@ -43,6 +43,7 @@ import org.springframework.web.client.RestTemplate;
  * <code>@Scheduled</code>} task to flush periodically.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class OpenTsdbMetricWriter implements MetricWriter {
 

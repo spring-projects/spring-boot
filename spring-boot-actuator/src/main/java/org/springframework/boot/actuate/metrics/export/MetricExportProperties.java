@@ -27,55 +27,29 @@ import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * Configuration properties for metrics export.
+ *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @ConfigurationProperties("spring.metrics.export")
-public class MetricExportProperties extends Trigger {
+public class MetricExportProperties extends TriggerProperties {
 
 	/**
 	 * Flag to disable all metric exports (assuming any MetricWriters are available).
 	 */
 	private boolean enabled = true;
 
-	private Map<String, SpecificTrigger> triggers = new LinkedHashMap<String, SpecificTrigger>();
+	private Map<String, SpecificTriggerProperties> triggers = new LinkedHashMap<String, SpecificTriggerProperties>();
 
 	private Redis redis = new Redis();
 
-	/**
-	 * Default values for trigger configuration for all writers. Can also be set by
-	 * including a writer with <code>name="*"</code>.
-	 *
-	 * @return the default trigger configuration
-	 */
-	public Trigger getDefault() {
-		return this;
-	}
-
-	/**
-	 * Configuration for triggers on individual named writers. Each value can individually
-	 * specify a name pattern explicitly, or else the map key will be used if the name is
-	 * not set.
-	 *
-	 * @return the writers
-	 */
-	public Map<String, SpecificTrigger> getTriggers() {
-		return this.triggers;
-	}
-
-	public Redis getRedis() {
-		return redis;
-	}
-
-	public void setRedis(Redis redis) {
-		this.redis = redis;
-	}
-
 	@PostConstruct
 	public void setUpDefaults() {
-		Trigger defaults = this;
-		for (Entry<String, SpecificTrigger> entry : this.triggers.entrySet()) {
+		TriggerProperties defaults = this;
+		for (Entry<String, SpecificTriggerProperties> entry : this.triggers.entrySet()) {
 			String key = entry.getKey();
-			SpecificTrigger value = entry.getValue();
+			SpecificTriggerProperties value = entry.getValue();
 			if (value.getNames() == null || value.getNames().length == 0) {
 				value.setNames(new String[] { key });
 			}
@@ -86,7 +60,7 @@ public class MetricExportProperties extends Trigger {
 		if (defaults.getDelayMillis() == null) {
 			defaults.setDelayMillis(5000);
 		}
-		for (Trigger value : this.triggers.values()) {
+		for (TriggerProperties value : this.triggers.values()) {
 			if (value.isSendLatest() == null) {
 				value.setSendLatest(defaults.isSendLatest());
 			}
@@ -96,12 +70,41 @@ public class MetricExportProperties extends Trigger {
 		}
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return this.enabled;
 	}
 
+	@Override
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	/**
+	 * Configuration for triggers on individual named writers. Each value can individually
+	 * specify a name pattern explicitly, or else the map key will be used if the name is
+	 * not set.
+	 * @return the writers
+	 */
+	public Map<String, SpecificTriggerProperties> getTriggers() {
+		return this.triggers;
+	}
+
+	public Redis getRedis() {
+		return this.redis;
+	}
+
+	public void setRedis(Redis redis) {
+		this.redis = redis;
+	}
+
+	/**
+	 * Default values for trigger configuration for all writers. Can also be set by
+	 * including a writer with {@code name="*"}.
+	 * @return the default trigger configuration
+	 */
+	public TriggerProperties getDefault() {
+		return this;
 	}
 
 	/**
@@ -109,33 +112,13 @@ public class MetricExportProperties extends Trigger {
 	 * @param name the bean name to match
 	 * @return a matching configuration if there is one
 	 */
-	public Trigger findTrigger(String name) {
-		for (SpecificTrigger value : this.triggers.values()) {
+	public TriggerProperties findTrigger(String name) {
+		for (SpecificTriggerProperties value : this.triggers.values()) {
 			if (PatternMatchUtils.simpleMatch(value.getNames(), name)) {
 				return value;
 			}
 		}
 		return this;
-	}
-	
-	/**
-	 * Trigger for specific bean names.
-	 */
-	public static class SpecificTrigger extends Trigger {
-
-		/**
-		 * Names (or patterns) for bean names that this configuration applies to.
-		 */
-		private String[] names;
-
-		public String[] getNames() {
-			return this.names;
-		}
-
-		public void setNames(String[] names) {
-			this.names = names;
-		}
-
 	}
 
 	public static class Redis {
@@ -155,9 +138,9 @@ public class MetricExportProperties extends Trigger {
 		 * system sharing a redis repository.
 		 */
 		private String key = "keys.spring.metrics";
-		
+
 		public String getPrefix() {
-			return prefix;
+			return this.prefix;
 		}
 
 		public void setPrefix(String prefix) {
@@ -165,7 +148,7 @@ public class MetricExportProperties extends Trigger {
 		}
 
 		public String getKey() {
-			return key;
+			return this.key;
 		}
 
 		public void setKey(String key) {
@@ -184,77 +167,6 @@ public class MetricExportProperties extends Trigger {
 			return this.prefix;
 		}
 
-	}
-
-}
-
-class Trigger {
-
-	/**
-	 * Delay in milliseconds between export ticks. Metrics are exported to external
-	 * sources on a schedule with this delay.
-	 */
-	private Long delayMillis;
-
-	/**
-	 * Flag to enable metric export (assuming a MetricWriter is available).
-	 */
-	private boolean enabled = true;
-
-	/**
-	 * Flag to switch off any available optimizations based on not exporting unchanged
-	 * metric values.
-	 */
-	private Boolean sendLatest;
-
-	/**
-	 * List of patterns for metric names to include.
-	 */
-	private String[] includes;
-
-	/**
-	 * List of patterns for metric names to exclude. Applied after the includes.
-	 */
-	private String[] excludes;
-
-	public String[] getIncludes() {
-		return this.includes;
-	}
-
-	public void setIncludes(String[] includes) {
-		this.includes = includes;
-	}
-
-	public void setExcludes(String[] excludes) {
-		this.excludes = excludes;
-	}
-
-	public String[] getExcludes() {
-		return this.excludes;
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public Long getDelayMillis() {
-		return this.delayMillis;
-	}
-
-	public void setDelayMillis(long delayMillis) {
-		this.delayMillis = delayMillis;
-	}
-
-	public Boolean isSendLatest() {
-		return this.sendLatest;
-	}
-
-	public void setSendLatest(boolean sendLatest) {
-		this.sendLatest = sendLatest;
 	}
 
 }

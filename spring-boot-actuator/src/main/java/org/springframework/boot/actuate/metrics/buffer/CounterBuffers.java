@@ -28,6 +28,7 @@ import org.springframework.lang.UsesJava8;
  * Fast writes to in-memory metrics store using {@link LongBuffer}.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @UsesJava8
 public class CounterBuffers {
@@ -113,4 +114,5 @@ public class CounterBuffers {
 		}
 		consumer.accept(adder);
 	}
+
 }

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -38,8 +36,10 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.SubscribableChannel;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
- * Tests for {@link MetricRepositoryAutoConfiguration}.
+ * Tests for {@link MetricExportAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -88,15 +88,15 @@ public class MetricExportAutoConfigurationTests {
 	@Test
 	public void exportMetricsEndpoint() {
 		this.context = new AnnotationConfigApplicationContext(WriterConfig.class,
-				MetricEndpointConfiguration.class,
-				MetricExportAutoConfiguration.class,
+				MetricEndpointConfiguration.class, MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporters = this.context.getBean(MetricExporters.class);
 		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters().get(
 				"writer");
 		exporter.setIgnoreTimestamps(true);
 		exporter.export();
-		MetricsEndpointMetricReader reader = this.context.getBean("endpointReader", MetricsEndpointMetricReader.class);
+		MetricsEndpointMetricReader reader = this.context.getBean("endpointReader",
+				MetricsEndpointMetricReader.class);
 		Mockito.verify(reader, Mockito.atLeastOnce()).findAll();
 	}
 

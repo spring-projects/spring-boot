@@ -30,14 +30,14 @@ import org.springframework.boot.actuate.metrics.writer.PrefixMetricWriter;
 /**
  * Exporter or converter for {@link RichGauge} data to a metric-based back end. Each gauge
  * measurement is stored as a set of related metrics with a common prefix (the name of the
- * gauge), and suffixes that describe the data. For example, a gauge called
- * <code>foo</code> is stored as
- * <code>[foo.min, foo.max. foo.val, foo.count, foo.avg, foo.alpha]</code>. If the
+ * gauge), and suffixes that describe the data. For example, a gauge called {@code foo} is
+ * stored as {@code[foo.min, foo.max. foo.val, foo.count, foo.avg, foo.alpha]}. If the
  * {@link MetricWriter} provided is a {@link MultiMetricRepository} then the values for a
  * gauge will be stored as a group, and hence will be retrievable from the repository in a
  * single query (or optionally individually).
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class RichGaugeExporter extends AbstractMetricExporter {
 
@@ -54,6 +54,7 @@ public class RichGaugeExporter extends AbstractMetricExporter {
 	private static final String ALPHA = ".alpha";
 
 	private final RichGaugeReader reader;
+
 	private final PrefixMetricWriter writer;
 
 	public RichGaugeExporter(RichGaugeReader reader, PrefixMetricWriter writer) {

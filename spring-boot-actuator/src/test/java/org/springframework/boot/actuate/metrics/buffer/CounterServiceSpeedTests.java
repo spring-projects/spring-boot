@@ -44,6 +44,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Speed tests for {@link CounterService}.
+ *
  * @author Dave Syer
  */
 @RunWith(Theories.class)
@@ -162,4 +163,5 @@ public class CounterServiceSpeedTests {
 		}
 		watch.stop();
 	}
+
 }

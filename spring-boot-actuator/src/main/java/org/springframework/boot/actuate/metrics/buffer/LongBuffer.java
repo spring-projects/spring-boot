@@ -24,6 +24,7 @@ import org.springframework.lang.UsesJava8;
  * Mutable buffer containing a long adder (Java 8) and a timestamp.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @UsesJava8
 public class LongBuffer {
@@ -56,4 +57,5 @@ public class LongBuffer {
 	public void add(long delta) {
 		this.adder.add(delta);
 	}
+
 }

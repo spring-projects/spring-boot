@@ -27,58 +27,68 @@ import org.springframework.scheduling.config.IntervalTask;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 /**
+ * {@link SchedulingConfigurer} to handle metrics {@link MetricCopyExporter export}.
+ *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class MetricExporters implements SchedulingConfigurer {
 
-	private MetricExportProperties export;
+	private final MetricReader reader;
 
-	private Map<String, MetricWriter> writers;
+	private final Map<String, MetricWriter> writers;
 
-	private Map<String, Exporter> exporters = new HashMap<String, Exporter>();
+	private final MetricExportProperties properties;
 
-	private MetricReader reader;
+	private final Map<String, Exporter> exporters = new HashMap<String, Exporter>();
 
 	public MetricExporters(MetricReader reader, Map<String, MetricWriter> writers,
-			MetricExportProperties export) {
+			MetricExportProperties properties) {
 		this.reader = reader;
-		this.export = export;
 		this.writers = writers;
+		this.properties = properties;
+	}
+
+	@Override
+	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+		for (Entry<String, MetricWriter> entry : this.writers.entrySet()) {
+			String name = entry.getKey();
+			MetricWriter writer = entry.getValue();
+			TriggerProperties trigger = this.properties.findTrigger(name);
+			if (trigger != null) {
+				MetricCopyExporter exporter = getExporter(writer, trigger);
+				this.exporters.put(name, exporter);
+				ExportRunner runner = new ExportRunner(exporter);
+				IntervalTask task = new IntervalTask(runner, trigger.getDelayMillis(),
+						trigger.getDelayMillis());
+				taskRegistrar.addFixedDelayTask(task);
+			}
+		}
+	}
+
+	private MetricCopyExporter getExporter(MetricWriter writer, TriggerProperties trigger) {
+		MetricCopyExporter exporter = new MetricCopyExporter(this.reader, writer);
+		exporter.setIncludes(trigger.getIncludes());
+		exporter.setExcludes(trigger.getExcludes());
+		exporter.setSendLatest(trigger.isSendLatest());
+		return exporter;
 	}
 
 	public Map<String, Exporter> getExporters() {
 		return this.exporters;
 	}
 
-	@Override
-	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+	private static class ExportRunner implements Runnable {
 
-		for (Entry<String, MetricWriter> entry : this.writers.entrySet()) {
-			String name = entry.getKey();
-			Trigger trigger = this.export.findTrigger(name);
+		private final MetricCopyExporter exporter;
 
-			if (trigger != null) {
+		public ExportRunner(MetricCopyExporter exporter) {
+			this.exporter = exporter;
+		}
 
-				MetricWriter writer = entry.getValue();
-				final MetricCopyExporter exporter = new MetricCopyExporter(this.reader,
-						writer);
-				if (trigger.getIncludes() != null || trigger.getExcludes() != null) {
-					exporter.setIncludes(trigger.getIncludes());
-					exporter.setExcludes(trigger.getExcludes());
-				}
-				exporter.setSendLatest(trigger.isSendLatest());
-
-				this.exporters.put(name, exporter);
-
-				taskRegistrar.addFixedDelayTask(new IntervalTask(new Runnable() {
-					@Override
-					public void run() {
-						exporter.export();
-					}
-				}, trigger.getDelayMillis(), trigger.getDelayMillis()));
-
-			}
-
+		@Override
+		public void run() {
+			this.exporter.export();
 		}
 
 	}

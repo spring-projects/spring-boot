@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.http.HttpStatus;
@@ -29,9 +28,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestOperations;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 
 /**
+ * Tests for {@link OpenTsdbMetricWriter}.
+ *
  * @author Dave Syer
  */
 public class OpenTsdbMetricWriterTests {
@@ -48,25 +51,19 @@ public class OpenTsdbMetricWriterTests {
 	@Test
 	public void postSuccessfullyOnFlush() {
 		this.writer.set(new Metric<Double>("foo", 2.4));
-		given(
-				this.restTemplate.postForEntity(Matchers.anyString(),
-						Matchers.any(Object.class), anyMap()))
+		given(this.restTemplate.postForEntity(anyString(), any(Object.class), anyMap()))
 				.willReturn(emptyResponse());
 		this.writer.flush();
-		verify(this.restTemplate).postForEntity(Matchers.anyString(),
-				Matchers.any(Object.class), anyMap());
+		verify(this.restTemplate).postForEntity(anyString(), any(Object.class), anyMap());
 	}
 
 	@Test
 	public void flushAutomaticlly() {
-		given(
-				this.restTemplate.postForEntity(Matchers.anyString(),
-						Matchers.any(Object.class), anyMap()))
+		given(this.restTemplate.postForEntity(anyString(), any(Object.class), anyMap()))
 				.willReturn(emptyResponse());
 		this.writer.setBufferSize(0);
 		this.writer.set(new Metric<Double>("foo", 2.4));
-		verify(this.restTemplate).postForEntity(Matchers.anyString(),
-				Matchers.any(Object.class), anyMap());
+		verify(this.restTemplate).postForEntity(anyString(), any(Object.class), anyMap());
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -76,7 +73,7 @@ public class OpenTsdbMetricWriterTests {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Class<Map> anyMap() {
-		return Matchers.any(Class.class);
+		return any(Class.class);
 	}
 
 }

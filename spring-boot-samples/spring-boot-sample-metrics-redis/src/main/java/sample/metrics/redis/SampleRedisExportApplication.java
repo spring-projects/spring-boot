@@ -42,8 +42,8 @@ public class SampleRedisExportApplication {
 	@ExportMetricWriter
 	public RedisMetricRepository redisMetricWriter(
 			RedisConnectionFactory connectionFactory) {
-		return new RedisMetricRepository(connectionFactory, this.export.getRedis().getPrefix(),
-				this.export.getRedis().getKey());
+		return new RedisMetricRepository(connectionFactory, this.export.getRedis()
+				.getPrefix(), this.export.getRedis().getKey());
 	}
 
 	@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.metrics.aggregate;
 
 import java.util.HashSet;
@@ -35,7 +36,7 @@ import org.springframework.util.StringUtils;
  * value.
  *
  * @author Dave Syer
- *
+ * @since 1.3.0
  */
 public class AggregateMetricReader implements MetricReader {
 
@@ -52,7 +53,6 @@ public class AggregateMetricReader implements MetricReader {
 	/**
 	 * The number of period-separated keys to remove from the start of the input metric
 	 * names before aggregating.
-	 *
 	 * @param truncate length of source metric prefixes
 	 */
 	public void setTruncateKeyLength(int truncate) {
@@ -62,7 +62,6 @@ public class AggregateMetricReader implements MetricReader {
 	/**
 	 * Prefix to apply to all output metrics. A period will be appended if no present in
 	 * the provided value.
-	 *
 	 * @param prefix the prefix to use default "aggregator.")
 	 */
 	public void setPrefix(String prefix) {

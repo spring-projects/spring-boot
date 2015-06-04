@@ -25,12 +25,16 @@ import org.springframework.boot.actuate.metrics.repository.InMemoryMetricReposit
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link MetricCopyExporter}.
+ *
  * @author Dave Syer
  */
 public class MetricCopyExporterTests {
 
 	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
+
 	private final InMemoryMetricRepository reader = new InMemoryMetricRepository();
+
 	private final MetricCopyExporter exporter = new MetricCopyExporter(this.reader,
 			this.writer);
 

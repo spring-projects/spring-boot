@@ -27,9 +27,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
-/**
- * @author Dave Syer
- */
 @Configuration
 public class AggregateMetricsConfiguration {
 
@@ -45,8 +42,8 @@ public class AggregateMetricsConfiguration {
 	}
 
 	private MetricReader globalMetricsForAggregation() {
-		return new RedisMetricRepository(this.connectionFactory,
-				this.export.getRedis().getAggregatePrefix(), this.export.getRedis().getKey());
+		return new RedisMetricRepository(this.connectionFactory, this.export.getRedis()
+				.getAggregatePrefix(), this.export.getRedis().getKey());
 	}
 
 	private MetricReader aggregatesMetricReader() {
