@@ -31,7 +31,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 /**
- * A {@link MetricWriter} that send data to a Codahale {@link MetricRegistry} based on a
+ * A {@link MetricWriter} that send data to a Dropwizard {@link MetricRegistry} based on a
  * naming convention:
  *
  * <ul>
