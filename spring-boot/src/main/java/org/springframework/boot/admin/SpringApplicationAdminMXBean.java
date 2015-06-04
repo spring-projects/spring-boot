@@ -33,6 +33,23 @@ public interface SpringApplicationAdminMXBean {
 	boolean isReady();
 
 	/**
+	 * Specify if the application runs in an embedded web container. Can return
+	 * {@code null} if that information is not yet available. It is preferable to
+	 * wait for the application to be {@link #isReady() ready}.
+	 * @return {@code true} if the application runs in an embedded web container
+	 * @see #isReady()
+	 */
+	boolean isEmbeddedWebApplication();
+
+	/**
+	 * Return the value of the specified key from the application
+	 * {@link org.springframework.core.env.Environment Environment}.
+	 * @param key the property key
+	 * @return the property value or {@code null} if it does not exist
+	 */
+	String getProperty(String key);
+
+	/**
 	 * Shutdown the application.
 	 * @see org.springframework.context.ConfigurableApplicationContext#close()
 	 */

@@ -27,11 +27,15 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.Assert;
 
 /**
@@ -42,11 +46,13 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware,
-		InitializingBean, DisposableBean, ApplicationListener<ApplicationReadyEvent> {
+		EnvironmentAware, InitializingBean, DisposableBean, ApplicationListener<ApplicationReadyEvent> {
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationAdmin.class);
 
 	private ConfigurableApplicationContext applicationContext;
+
+	private Environment environment = new StandardEnvironment();
 
 	private final ObjectName objectName;
 
@@ -63,6 +69,11 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		Assert.state(applicationContext instanceof ConfigurableApplicationContext,
 				"ApplicationContext does not implement ConfigurableApplicationContext");
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	@Override
@@ -90,6 +101,17 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		@Override
 		public boolean isReady() {
 			return SpringApplicationAdminMXBeanRegistrar.this.ready;
+		}
+
+		@Override
+		public boolean isEmbeddedWebApplication() {
+			return (applicationContext != null
+					&& applicationContext instanceof EmbeddedWebApplicationContext);
+		}
+
+		@Override
+		public String getProperty(String key) {
+			return environment.getProperty(key);
 		}
 
 		@Override

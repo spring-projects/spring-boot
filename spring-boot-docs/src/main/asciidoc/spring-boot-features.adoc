@@ -228,6 +228,9 @@ It is possible to enable admin-related features for the application by specifyin
 on the platform `MBeanServer`. You could use this feature to administer your Spring Boot
 application remotely. This could also be useful for any service wrapper implementation.
 
+TIP: If you want to know on which HTTP port the application is running, get the property
+with key `local.server.port`.
+
 NOTE: Take care when enabling this feature as the MBean exposes a method to shutdown the
 application.
 
