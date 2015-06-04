@@ -400,6 +400,9 @@ code.
 === Use a random unassigned HTTP port
 To scan for a free port (using OS natives to prevent clashes) use `server.port=0`.
 
+TIP: You can know what port got allocated at runtime by looking at the `local.server.port`
+property in the `Environment`.
+
 
 
 [[howto-discover-the-http-port-at-runtime]]

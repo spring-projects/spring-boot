@@ -198,7 +198,6 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
 		initializers.add(new PropertySourceLocationsInitializer(mergedConfig
 				.getPropertySourceLocations()));
-		initializers.add(new ServerPortInfoApplicationContextInitializer());
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
 				.getContextInitializerClasses()) {
