@@ -32,11 +32,6 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties("spring.metrics.export")
 public class MetricExportProperties extends Trigger {
 
-	/**
-	 * Flag to disable all metric exports (assuming any MetricWriters are available).
-	 */
-	private boolean enabled = true;
-
 	private Map<String, SpecificTrigger> triggers = new LinkedHashMap<String, SpecificTrigger>();
 
 	private Redis redis = new Redis();
@@ -94,14 +89,6 @@ public class MetricExportProperties extends Trigger {
 				value.setDelayMillis(defaults.getDelayMillis());
 			}
 		}
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	/**
