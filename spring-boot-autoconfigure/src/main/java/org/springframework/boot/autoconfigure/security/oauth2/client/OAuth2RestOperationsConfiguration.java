@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import javax.annotation.Resource;
@@ -49,8 +50,10 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 
 /**
- * @author Dave Syer
+ * Configuration for OAuth2 Single Sign On REST operations.
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass(EnableOAuth2Client.class)
@@ -109,7 +112,7 @@ public class OAuth2RestOperationsConfiguration {
 		@Bean
 		@Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
 		public OAuth2ClientContext oauth2ClientContext() {
-			return new DefaultOAuth2ClientContext(accessTokenRequest);
+			return new DefaultOAuth2ClientContext(this.accessTokenRequest);
 		}
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
@@ -32,13 +35,22 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
+/**
+ * {@link ResourceServerTokenServices} that uses a user info REST service.
+ *
+ * @author Dave Syer
+ * @since 1.3.0
+ */
 public class UserInfoTokenServices implements ResourceServerTokenServices {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	private String userInfoEndpointUrl;
+	private static final String[] PRINCIPAL_KEYS = new String[] { "user", "username",
+			"userid", "user_id", "login", "id", "name" };
 
-	private String clientId;
+	private final String userInfoEndpointUrl;
+
+	private final String clientId;
 
 	private OAuth2RestOperations restTemplate;
 
@@ -48,7 +60,7 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 		this.userInfoEndpointUrl = userInfoEndpointUrl;
 		this.clientId = clientId;
 	}
-	
+
 	public void setTokenType(String tokenType) {
 		this.tokenType = tokenType;
 	}
@@ -60,31 +72,28 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 	@Override
 	public OAuth2Authentication loadAuthentication(String accessToken)
 			throws AuthenticationException, InvalidTokenException {
-
-		Map<String, Object> map = getMap(userInfoEndpointUrl, accessToken);
-
+		Map<String, Object> map = getMap(this.userInfoEndpointUrl, accessToken);
 		if (map.containsKey("error")) {
-			logger.debug("userinfo returned error: " + map.get("error"));
+			this.logger.debug("userinfo returned error: " + map.get("error"));
 			throw new InvalidTokenException(accessToken);
 		}
-
 		return extractAuthentication(map);
 	}
 
 	private OAuth2Authentication extractAuthentication(Map<String, Object> map) {
-		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
-				getPrincipal(map), "N/A",
-				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
-		user.setDetails(map);
-		OAuth2Request request = new OAuth2Request(null, clientId, null, true, null, null,
-				null, null, null);
-		return new OAuth2Authentication(request, user);
+		Object principal = getPrincipal(map);
+		List<GrantedAuthority> authorities = AuthorityUtils
+				.commaSeparatedStringToAuthorityList("ROLE_USER");
+		OAuth2Request request = new OAuth2Request(null, this.clientId, null, true, null,
+				null, null, null, null);
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+				principal, "N/A", authorities);
+		token.setDetails(map);
+		return new OAuth2Authentication(request, token);
 	}
 
 	private Object getPrincipal(Map<String, Object> map) {
-		String[] keys = new String[] { "user", "username", "userid", "user_id", "login", 
-				"id", "name" };
-		for (String key : keys) {
+		for (String key : PRINCIPAL_KEYS) {
 			if (map.containsKey(key)) {
 				return map.get(key);
 			}
@@ -97,22 +106,19 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 		throw new UnsupportedOperationException("Not supported: read access token");
 	}
 
+	@SuppressWarnings({ "unchecked" })
 	private Map<String, Object> getMap(String path, String accessToken) {
-		logger.info("Getting user info from: " + path);
+		this.logger.info("Getting user info from: " + path);
 		OAuth2RestOperations restTemplate = this.restTemplate;
 		if (restTemplate == null) {
 			BaseOAuth2ProtectedResourceDetails resource = new BaseOAuth2ProtectedResourceDetails();
-			resource.setClientId(clientId);
+			resource.setClientId(this.clientId);
 			restTemplate = new OAuth2RestTemplate(resource);
 		}
 		DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(accessToken);
-		token.setTokenType(tokenType);
+		token.setTokenType(this.tokenType);
 		restTemplate.getOAuth2ClientContext().setAccessToken(token);
-		@SuppressWarnings("rawtypes")
-		Map map = restTemplate.getForEntity(path, Map.class).getBody();
-		@SuppressWarnings("unchecked")
-		Map<String, Object> result = map;
-		return result;
+		return restTemplate.getForEntity(path, Map.class).getBody();
 	}
 
 }

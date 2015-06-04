@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.security.oauth2.sso;
 
-import static org.hamcrest.Matchers.startsWith;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+package org.springframework.boot.autoconfigure.security.oauth2.sso;
 
 import javax.servlet.Filter;
 
@@ -45,9 +40,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
- * @author Dave Syer
+ * Tests for {@link OAuth2AutoConfiguration} with custom configuration.
  *
+ * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
@@ -70,24 +72,25 @@ public class CustomOAuth2SsoConfigurationTests {
 
 	@Before
 	public void init() {
-		mvc = MockMvcBuilders.webAppContextSetup(context).addFilters(filter).build();
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.addFilters(this.filter).build();
 	}
 
 	@Test
 	public void homePageIsBasicAuth() throws Exception {
-		mvc.perform(get("/")).andExpect(status().isUnauthorized())
+		this.mvc.perform(get("/")).andExpect(status().isUnauthorized())
 				.andExpect(header().string("WWW-Authenticate", startsWith("Basic")));
 	}
 
 	@Test
 	public void uiPageIsSecure() throws Exception {
-		mvc.perform(get("/ui/")).andExpect(status().isFound())
+		this.mvc.perform(get("/ui/")).andExpect(status().isFound())
 				.andExpect(header().string("location", "http://localhost/login"));
 	}
 
 	@Test
 	public void uiTestPageIsAccessible() throws Exception {
-		mvc.perform(get("/ui/test")).andExpect(status().isOk())
+		this.mvc.perform(get("/ui/test")).andExpect(status().isOk())
 				.andExpect(content().string("test"));
 	}
 
@@ -112,6 +115,7 @@ public class CustomOAuth2SsoConfigurationTests {
 			}
 
 		}
+
 	}
 
 }

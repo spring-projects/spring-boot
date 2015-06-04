@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.util.ClassUtils;
 
 /**
- * If the user only has <code>@EnableOAuth2Sso</code> but not on a
- * WebSecurityConfigurerAdapter then one is added with all paths secured and with an order
- * that puts it ahead of the default HTTP Basic security chain in Spring Boot.
- * 
- * @author Dave Syer
+ * Configuration for OAuth2 Single Sign On (SSO). If the user only has
+ * {@code @EnableOAuth2Sso} but not on a {@code WebSecurityConfigurerAdapter} then one is
+ * added with all paths secured and with an order that puts it ahead of the default HTTP
+ * Basic security chain in Spring Boot.
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 @Configuration
 @EnableConfigurationProperties(OAuth2SsoProperties.class)
@@ -57,13 +58,13 @@ public class OAuth2SsoDefaultConfiguration {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
-			new SsoSecurityConfigurer(beanFactory).configure(http);
+			new SsoSecurityConfigurer(this.beanFactory).configure(http);
 		}
 
 		@Override
 		public int getOrder() {
-			if (sso.getFilterOrder() != null) {
-				return sso.getFilterOrder();
+			if (this.sso.getFilterOrder() != null) {
+				return this.sso.getFilterOrder();
 			}
 			if (ClassUtils
 					.isPresent(
@@ -80,6 +81,7 @@ public class OAuth2SsoDefaultConfiguration {
 	}
 
 	private static class NeedsWebSecurityCondition extends SpringBootCondition {
+
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
@@ -95,6 +97,7 @@ public class OAuth2SsoDefaultConfiguration {
 			return ConditionOutcome
 					.match("found no @EnableOAuth2Sso on a WebSecurityConfigurerAdapter");
 		}
+
 	}
 
 }

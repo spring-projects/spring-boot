@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.authserver.SpringSecurityOAuth2AuthorizationServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.method.OAuth2MethodSecurityConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
@@ -93,6 +89,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * Verify Spring Security OAuth2 auto-configuration secures end points properly, accepts
  * environmental overrides, and also backs off in the presence of other
@@ -103,6 +102,10 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class SpringSecurityOAuth2AutoConfigurationTests {
 
+	private static final Class<?> RESOURCE_SERVER_CONFIG = OAuth2ResourceServerConfiguration.class;
+
+	private static final Class<?> AUTHORIZATION_SERVER_CONFIG = SpringSecurityOAuth2AuthorizationServerConfiguration.class;
+
 	private AnnotationConfigEmbeddedWebApplicationContext context;
 
 	@Test
@@ -111,11 +114,9 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
-
-		this.context.getBean(SpringSecurityOAuth2AuthorizationServerConfiguration.class);
-		this.context.getBean(OAuth2ResourceServerConfiguration.class);
+		this.context.getBean(AUTHORIZATION_SERVER_CONFIG);
+		this.context.getBean(RESOURCE_SERVER_CONFIG);
 		this.context.getBean(OAuth2MethodSecurityConfiguration.class);
-
 		ClientDetails config = this.context.getBean(BaseClientDetails.class);
 		AuthorizationEndpoint endpoint = this.context
 				.getBean(AuthorizationEndpoint.class);
@@ -125,15 +126,11 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 				.getBean(ClientDetailsService.class);
 		ClientDetails clientDetails = clientDetailsService.loadClientByClientId(config
 				.getClientId());
-
-		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService), is(true));
+		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService), equalTo(true));
 		assertThat(AopUtils.getTargetClass(clientDetailsService).getName(),
-				is(ClientDetailsService.class.getName()));
-
-		assertThat(handler instanceof ApprovalStoreUserApprovalHandler, is(true));
-
+				equalTo(ClientDetailsService.class.getName()));
+		assertThat(handler instanceof ApprovalStoreUserApprovalHandler, equalTo(true));
 		assertThat(clientDetails, equalTo(config));
-
 		verifyAuthentication(config);
 	}
 
@@ -146,12 +143,9 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
-
 		ClientDetails config = this.context.getBean(ClientDetails.class);
-
-		assertThat(config.getClientId(), is("myclientid"));
-		assertThat(config.getClientSecret(), is("mysecret"));
-
+		assertThat(config.getClientId(), equalTo("myclientid"));
+		assertThat(config.getClientSecret(), equalTo("mysecret"));
 		verifyAuthentication(config);
 	}
 
@@ -161,16 +155,8 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		this.context.register(AuthorizationServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
-
-		assertThat(
-				this.context
-						.getBeanNamesForType(OAuth2ResourceServerConfiguration.class).length,
-				is(0));
-
-		assertThat(
-				this.context
-						.getBeanNamesForType(SpringSecurityOAuth2AuthorizationServerConfiguration.class).length,
-				is(1));
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(0));
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(1));
 	}
 
 	@Test
@@ -181,21 +167,10 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.oauth2.resource.jwt.keyValue:DEADBEEF");
 		this.context.refresh();
-
-		assertThat(
-				this.context
-						.getBeanNamesForType(OAuth2ResourceServerConfiguration.class).length,
-				is(1));
-
-		assertThat(
-				this.context
-						.getBeanNamesForType(SpringSecurityOAuth2AuthorizationServerConfiguration.class).length,
-				is(0));
-
-		assertThat(this.context.getBeanNamesForType(UserApprovalHandler.class).length,
-				is(0));
-		assertThat(this.context.getBeanNamesForType(DefaultTokenServices.class).length,
-				is(1));
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(1));
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(0));
+		assertThat(countBeans(UserApprovalHandler.class), equalTo(0));
+		assertThat(countBeans(DefaultTokenServices.class), equalTo(1));
 	}
 
 	@Test
@@ -204,24 +179,11 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				CustomResourceServer.class, MinimalSecureWebApplication.class);
 		this.context.refresh();
-
 		ClientDetails config = this.context.getBean(ClientDetails.class);
-
-		assertThat(
-				this.context
-						.getBeanNamesForType(SpringSecurityOAuth2AuthorizationServerConfiguration.class).length,
-				is(1));
-
-		assertThat(this.context.getBeanNamesForType(CustomResourceServer.class).length,
-				is(1));
-
-		assertThat(
-				this.context
-						.getBeanNamesForType(OAuth2ResourceServerConfiguration.class).length,
-				is(1));
-
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(1));
+		assertThat(countBeans(CustomResourceServer.class), equalTo(1));
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(1));
 		verifyAuthentication(config);
-
 	}
 
 	@Test
@@ -232,7 +194,6 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				CustomAuthorizationServer.class, MinimalSecureWebApplication.class);
 		this.context.refresh();
-
 		BaseClientDetails config = new BaseClientDetails();
 		config.setClientId("client");
 		config.setClientSecret("secret");
@@ -240,17 +201,8 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		config.setAuthorizedGrantTypes(Arrays.asList("password"));
 		config.setAuthorities(AuthorityUtils.commaSeparatedStringToAuthorityList("USER"));
 		config.setScope(Arrays.asList("read"));
-
-		assertThat(
-				this.context
-						.getBeanNamesForType(SpringSecurityOAuth2AuthorizationServerConfiguration.class).length,
-				is(0));
-
-		assertThat(
-				this.context
-						.getBeanNamesForType(OAuth2ResourceServerConfiguration.class).length,
-				is(1));
-
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(0));
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(1));
 		verifyAuthentication(config);
 	}
 
@@ -260,20 +212,15 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
-
 		this.context.getBean(OAuth2MethodSecurityConfiguration.class);
-
 		ClientDetails config = this.context.getBean(ClientDetails.class);
-
 		DelegatingMethodSecurityMetadataSource source = this.context
 				.getBean(DelegatingMethodSecurityMetadataSource.class);
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
-
-		assertThat(sources.size(), is(1));
+		assertThat(sources.size(), equalTo(1));
 		assertThat(sources.get(0).getClass().getName(),
-				is(PrePostAnnotationSecurityMetadataSource.class.getName()));
-
+				equalTo(PrePostAnnotationSecurityMetadataSource.class.getName()));
 		verifyAuthentication(config);
 	}
 
@@ -283,20 +230,15 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		this.context.register(SecuredEnabledConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
-
 		this.context.getBean(OAuth2MethodSecurityConfiguration.class);
-
 		ClientDetails config = this.context.getBean(ClientDetails.class);
-
 		DelegatingMethodSecurityMetadataSource source = this.context
 				.getBean(DelegatingMethodSecurityMetadataSource.class);
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
-
-		assertThat(sources.size(), is(1));
+		assertThat(sources.size(), equalTo(1));
 		assertThat(sources.get(0).getClass().getName(),
-				is(SecuredAnnotationSecurityMetadataSource.class.getName()));
-
+				equalTo(SecuredAnnotationSecurityMetadataSource.class.getName()));
 		verifyAuthentication(config, HttpStatus.OK);
 	}
 
@@ -306,20 +248,15 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		this.context.register(Jsr250EnabledConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
-
 		this.context.getBean(OAuth2MethodSecurityConfiguration.class);
-
 		ClientDetails config = this.context.getBean(ClientDetails.class);
-
 		DelegatingMethodSecurityMetadataSource source = this.context
 				.getBean(DelegatingMethodSecurityMetadataSource.class);
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
-
-		assertThat(sources.size(), is(1));
+		assertThat(sources.size(), equalTo(1));
 		assertThat(sources.get(0).getClass().getName(),
-				is(Jsr250MethodSecurityMetadataSource.class.getName()));
-
+				equalTo(Jsr250MethodSecurityMetadataSource.class.getName()));
 		verifyAuthentication(config, HttpStatus.OK);
 	}
 
@@ -329,20 +266,18 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		this.context.register(CustomMethodSecurity.class,
 				TestSecurityConfiguration.class, MinimalSecureWebApplication.class);
 		this.context.refresh();
-
 		DelegatingMethodSecurityMetadataSource source = this.context
 				.getBean(DelegatingMethodSecurityMetadataSource.class);
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
-		assertThat(sources.size(), is(1));
+		assertThat(sources.size(), equalTo(1));
 		assertThat(sources.get(0).getClass().getName(),
-				is(PrePostAnnotationSecurityMetadataSource.class.getName()));
+				equalTo(PrePostAnnotationSecurityMetadataSource.class.getName()));
 	}
 
 	/**
 	 * Connect to the oauth service, get a token, and then attempt some operations using
 	 * it.
-	 *
 	 * @param config
 	 */
 	private void verifyAuthentication(ClientDetails config) {
@@ -352,60 +287,66 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 	private void verifyAuthentication(ClientDetails config, HttpStatus finalStatus) {
 		String baseUrl = "http://localhost:"
 				+ this.context.getEmbeddedServletContainer().getPort();
-
 		RestTemplate rest = new TestRestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-
 		// First, verify the web endpoint can't be reached
-		ResponseEntity<String> entity = rest.exchange(new RequestEntity<Void>(headers,
-				HttpMethod.GET, URI.create(baseUrl + "/secured")), String.class);
-		assertThat(entity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
-
+		assertEndpointUnauthorized(baseUrl, rest);
 		// Since we can't reach it, need to collect an authorization token
-		String base64Creds = new String(
-				Base64.encode((config.getClientId() + ":" + config.getClientSecret())
-						.getBytes()));
-		headers.set("Authorization", "Basic " + base64Creds);
+		HttpHeaders headers = getHeaders(config);
+		String url = baseUrl + "/oauth/token";
+		JsonNode tokenResponse = rest.postForObject(url,
+				new HttpEntity<MultiValueMap<String, Object>>(getBody(), headers),
+				JsonNode.class);
+		String authorizationToken = tokenResponse.findValue("access_token").asText();
+		String tokenType = tokenResponse.findValue("token_type").asText();
+		String scope = tokenResponse.findValues("scope").get(0).toString();
+		assertThat(tokenType, equalTo("bearer"));
+		assertThat(scope, equalTo("\"read\""));
+		// Now we should be able to see that endpoint.
+		headers.set("Authorization", "BEARER " + authorizationToken);
+		ResponseEntity<String> securedResponse = rest.exchange(new RequestEntity<Void>(
+				headers, HttpMethod.GET, URI.create(baseUrl + "/securedFind")),
+				String.class);
+		assertThat(securedResponse.getStatusCode(), equalTo(HttpStatus.OK));
+		assertThat(securedResponse.getBody(), equalTo("You reached an endpoint "
+				+ "secured by Spring Security OAuth2"));
+		ResponseEntity<String> entity = rest.exchange(new RequestEntity<Void>(headers,
+				HttpMethod.POST, URI.create(baseUrl + "/securedSave")), String.class);
+		assertThat(entity.getStatusCode(), equalTo(finalStatus));
+	}
 
+	private HttpHeaders getHeaders(ClientDetails config) {
+		HttpHeaders headers = new HttpHeaders();
+		String token = new String(Base64.encode((config.getClientId() + ":" + config
+				.getClientSecret()).getBytes()));
+		headers.set("Authorization", "Basic " + token);
+		return headers;
+	}
+
+	private MultiValueMap<String, Object> getBody() {
 		MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
 		body.set("grant_type", "password");
 		body.set("username", "foo");
 		body.set("password", "bar");
 		body.set("scope", "read");
+		return body;
+	}
 
-		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(
-				body, headers);
+	private void assertEndpointUnauthorized(String baseUrl, RestTemplate rest) {
+		URI uri = URI.create(baseUrl + "/secured");
+		ResponseEntity<String> entity = rest.exchange(new RequestEntity<Void>(
+				HttpMethod.GET, uri), String.class);
+		assertThat(entity.getStatusCode(), equalTo(HttpStatus.UNAUTHORIZED));
+	}
 
-		JsonNode response = rest.postForObject(baseUrl + "/oauth/token", request,
-				JsonNode.class);
-		String authorizationToken = response.findValue("access_token").asText();
-		String tokenType = response.findValue("token_type").asText();
-		String scope = response.findValues("scope").get(0).toString();
-		assertThat(tokenType, is("bearer"));
-		assertThat(scope, is("\"read\""));
-
-		// Now we should be able to see that endpoint.
-		headers.set("Authorization", "BEARER " + authorizationToken);
-
-		ResponseEntity<String> securedResponse = rest.exchange(new RequestEntity<Void>(
-				headers, HttpMethod.GET, URI.create(baseUrl + "/securedFind")),
-				String.class);
-		assertThat(securedResponse.getStatusCode(), is(HttpStatus.OK));
-		assertThat(securedResponse.getBody(),
-				is("You reached an endpoint secured by Spring Security OAuth2"));
-
-		entity = rest.exchange(
-				new RequestEntity<Void>(headers, HttpMethod.POST, URI.create(baseUrl
-						+ "/securedSave")), String.class);
-		assertThat(entity.getStatusCode(), is(finalStatus));
+	private int countBeans(Class<?> type) {
+		return this.context.getBeanNamesForType(type).length;
 	}
 
 	@Configuration
 	@Import({ UseFreePortEmbeddedContainerConfiguration.class,
 			SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class,
-			OAuth2AutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class })
+			DispatcherServletAutoConfiguration.class, OAuth2AutoConfiguration.class,
+			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 	protected static class MinimalSecureWebApplication {
 
 	}
@@ -428,6 +369,7 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		TestWebApp testWebApp() {
 			return new TestWebApp();
 		}
+
 	}
 
 	@Configuration
@@ -436,6 +378,7 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 	@EnableGlobalMethodSecurity(prePostEnabled = true)
 	protected static class AuthorizationAndResourceServerConfiguration extends
 			TestSecurityConfiguration {
+
 	}
 
 	@Configuration
@@ -443,6 +386,7 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 	@EnableResourceServer
 	@EnableGlobalMethodSecurity(securedEnabled = true)
 	protected static class SecuredEnabledConfiguration extends TestSecurityConfiguration {
+
 	}
 
 	@Configuration
@@ -450,17 +394,20 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 	@EnableResourceServer
 	@EnableGlobalMethodSecurity(jsr250Enabled = true)
 	protected static class Jsr250EnabledConfiguration extends TestSecurityConfiguration {
+
 	}
 
 	@Configuration
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerConfiguration extends
 			TestSecurityConfiguration {
+
 	}
 
 	@Configuration
 	@EnableResourceServer
 	protected static class ResourceServerConfiguration extends TestSecurityConfiguration {
+
 	}
 
 	@RestController
@@ -477,14 +424,17 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 		public String secureSave() {
 			return "You reached an endpoint secured by Spring Security OAuth2";
 		}
+
 	}
 
 	@Configuration
 	protected static class UseFreePortEmbeddedContainerConfiguration {
+
 		@Bean
 		TomcatEmbeddedServletContainerFactory containerFactory() {
 			return new TomcatEmbeddedServletContainerFactory(0);
 		}
+
 	}
 
 	@Configuration
@@ -544,14 +494,18 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 			endpoints.tokenStore(tokenStore()).authenticationManager(
 					this.authenticationManager);
 		}
+
 	}
 
 	@Configuration
 	@EnableGlobalMethodSecurity(prePostEnabled = true)
 	protected static class CustomMethodSecurity extends GlobalMethodSecurityConfiguration {
+
 		@Override
 		protected MethodSecurityExpressionHandler createExpressionHandler() {
 			return new OAuth2MethodSecurityExpressionHandler();
 		}
+
 	}
+
 }

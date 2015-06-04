@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
+
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
@@ -31,16 +35,18 @@ import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 
 /**
- * @author Dave Syer
+ * {@link ResourceServerTokenServices} backed by Spring Social.
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 public class SpringSocialTokenServices implements ResourceServerTokenServices {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	private OAuth2ConnectionFactory<?> connectionFactory;
+	private final OAuth2ConnectionFactory<?> connectionFactory;
 
-	private String clientId;
+	private final String clientId;
 
 	public SpringSocialTokenServices(OAuth2ConnectionFactory<?> connectionFactory,
 			String clientId) {
@@ -51,21 +57,20 @@ public class SpringSocialTokenServices implements ResourceServerTokenServices {
 	@Override
 	public OAuth2Authentication loadAuthentication(String accessToken)
 			throws AuthenticationException, InvalidTokenException {
-
-		Connection<?> connection = connectionFactory.createConnection(new AccessGrant(
-				accessToken));
+		AccessGrant accessGrant = new AccessGrant(accessToken);
+		Connection<?> connection = this.connectionFactory.createConnection(accessGrant);
 		UserProfile user = connection.fetchUserProfile();
 		return extractAuthentication(user);
 	}
 
 	private OAuth2Authentication extractAuthentication(UserProfile user) {
-		UsernamePasswordAuthenticationToken principal = new UsernamePasswordAuthenticationToken(
-				user.getUsername(), "N/A",
-				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
-		principal.setDetails(user);
-		OAuth2Request request = new OAuth2Request(null, clientId, null, true, null, null,
-				null, null, null);
-		return new OAuth2Authentication(request, principal);
+		String principal = user.getUsername();
+		List<GrantedAuthority> authorities = AuthorityUtils
+				.commaSeparatedStringToAuthorityList("ROLE_USER");
+		OAuth2Request request = new OAuth2Request(null, this.clientId, null, true, null,
+				null, null, null, null);
+		return new OAuth2Authentication(request, new UsernamePasswordAuthenticationToken(
+				principal, "N/A", authorities));
 	}
 
 	@Override

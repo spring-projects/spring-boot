@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,11 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
@@ -30,42 +27,51 @@ import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.resource.BaseOAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+
 /**
- * @author Dave Syer
+ * Tests for {@link UserInfoTokenServices}.
  *
+ * @author Dave Syer
  */
 public class UserInfoTokenServicesTests {
 
 	private UserInfoTokenServices services = new UserInfoTokenServices(
 			"http://example.com", "foo");
+
 	private BaseOAuth2ProtectedResourceDetails resource = new BaseOAuth2ProtectedResourceDetails();
-	private OAuth2RestOperations template = Mockito.mock(OAuth2RestOperations.class);
+
+	private OAuth2RestOperations template = mock(OAuth2RestOperations.class);
+
 	private Map<String, Object> map = new LinkedHashMap<String, Object>();
 
 	@Before
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void init() {
-		resource.setClientId("foo");
-		Mockito.when(
-				template.getForEntity(Mockito.any(String.class), Mockito.any(Class.class)))
-				.thenReturn(new ResponseEntity<Map>(map, HttpStatus.OK));
-		Mockito.when(template.getAccessToken()).thenReturn(new DefaultOAuth2AccessToken("FOO"));
-		Mockito.when(template.getResource()).thenReturn(resource);
-		Mockito.when(template.getOAuth2ClientContext()).thenReturn(
-				Mockito.mock(OAuth2ClientContext.class));
+		this.resource.setClientId("foo");
+		given(this.template.getForEntity(any(String.class), any(Class.class)))
+				.willReturn(new ResponseEntity<Map>(this.map, HttpStatus.OK));
+		given(this.template.getAccessToken()).willReturn(
+				new DefaultOAuth2AccessToken("FOO"));
+		given(this.template.getResource()).willReturn(this.resource);
+		given(this.template.getOAuth2ClientContext()).willReturn(
+				mock(OAuth2ClientContext.class));
 	}
 
 	@Test
 	public void sunnyDay() {
-		services.setRestTemplate(template);
-		assertEquals("unknown", services.loadAuthentication("FOO").getName());
+		this.services.setRestTemplate(this.template);
+		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
 	}
 
 	@Test
 	public void userId() {
-		map.put("userid", "spencer");
-		services.setRestTemplate(template);
-		assertEquals("spencer", services.loadAuthentication("FOO").getName());
+		this.map.put("userid", "spencer");
+		this.services.setRestTemplate(this.template);
+		assertEquals("spencer", this.services.loadAuthentication("FOO").getName());
 	}
 
 }

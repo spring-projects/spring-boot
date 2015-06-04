@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,15 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
  * authenticator (which is how the token gets attached to outgoing requests). The rest
  * template that is being customized here is <i>only</i> used internally to carry out
  * authentication (in the SSO or Resource Server use cases).
- * 
- * @author Dave Syer
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 public interface UserInfoRestTemplateCustomizer {
 
 	/**
 	 * Customize the rest template before it is initialized.
-	 * 
+	 *
 	 * @param template the rest template
 	 */
 	void customize(OAuth2RestTemplate template);

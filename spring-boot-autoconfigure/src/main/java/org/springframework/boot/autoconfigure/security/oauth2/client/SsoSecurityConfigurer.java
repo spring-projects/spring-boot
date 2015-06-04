@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class SsoSecurityConfigurer {
 	}
 
 	public void configure(HttpSecurity http) throws Exception {
-		OAuth2SsoProperties sso = beanFactory.getBean(OAuth2SsoProperties.class);
+		OAuth2SsoProperties sso = this.beanFactory.getBean(OAuth2SsoProperties.class);
 		// Delay the processing of the filter until we know the
 		// SessionAuthenticationStrategy is available:
 		http.apply(new OAuth2ClientAuthenticationConfigurer(oauth2SsoFilter(sso)));
@@ -46,9 +46,9 @@ class SsoSecurityConfigurer {
 
 	private OAuth2ClientAuthenticationProcessingFilter oauth2SsoFilter(
 			OAuth2SsoProperties sso) {
-		OAuth2RestOperations restTemplate = beanFactory
+		OAuth2RestOperations restTemplate = this.beanFactory
 				.getBean(OAuth2RestOperations.class);
-		ResourceServerTokenServices tokenServices = beanFactory
+		ResourceServerTokenServices tokenServices = this.beanFactory
 				.getBean(ResourceServerTokenServices.class);
 		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
 				sso.getLoginPath());
@@ -59,6 +59,7 @@ class SsoSecurityConfigurer {
 
 	private static class OAuth2ClientAuthenticationConfigurer extends
 			SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+
 		private OAuth2ClientAuthenticationProcessingFilter filter;
 
 		public OAuth2ClientAuthenticationConfigurer(
@@ -68,12 +69,13 @@ class SsoSecurityConfigurer {
 
 		@Override
 		public void configure(HttpSecurity builder) throws Exception {
-			OAuth2ClientAuthenticationProcessingFilter ssoFilter = filter;
+			OAuth2ClientAuthenticationProcessingFilter ssoFilter = this.filter;
 			ssoFilter.setSessionAuthenticationStrategy(builder
 					.getSharedObject(SessionAuthenticationStrategy.class));
 			builder.addFilterAfter(ssoFilter,
 					AbstractPreAuthenticatedProcessingFilter.class);
 		}
+
 	}
 
 }

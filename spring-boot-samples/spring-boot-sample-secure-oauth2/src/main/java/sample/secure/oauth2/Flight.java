@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sample;
+
+package sample.secure.oauth2;
+
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -33,18 +35,24 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Flight {
 
-	@Id @GeneratedValue(strategy = GenerationType.AUTO)
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	private String origin;
+
 	private String destination;
+
 	private String airline;
+
 	private String flightNumber;
+
 	private Date date;
+
 	private String traveler;
 
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Long id) {
@@ -52,7 +60,7 @@ public class Flight {
 	}
 
 	public String getOrigin() {
-		return origin;
+		return this.origin;
 	}
 
 	public void setOrigin(String origin) {
@@ -60,7 +68,7 @@ public class Flight {
 	}
 
 	public String getDestination() {
-		return destination;
+		return this.destination;
 	}
 
 	public void setDestination(String destination) {
@@ -68,7 +76,7 @@ public class Flight {
 	}
 
 	public String getAirline() {
-		return airline;
+		return this.airline;
 	}
 
 	public void setAirline(String airline) {
@@ -76,7 +84,7 @@ public class Flight {
 	}
 
 	public String getFlightNumber() {
-		return flightNumber;
+		return this.flightNumber;
 	}
 
 	public void setFlightNumber(String flightNumber) {
@@ -84,7 +92,7 @@ public class Flight {
 	}
 
 	public Date getDate() {
-		return date;
+		return this.date;
 	}
 
 	public void setDate(Date date) {
@@ -92,10 +100,11 @@ public class Flight {
 	}
 
 	public String getTraveler() {
-		return traveler;
+		return this.traveler;
 	}
 
 	public void setTraveler(String traveler) {
 		this.traveler = traveler;
 	}
+
 }

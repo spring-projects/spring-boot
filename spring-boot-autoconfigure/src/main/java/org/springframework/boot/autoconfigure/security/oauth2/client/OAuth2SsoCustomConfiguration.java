@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,8 @@ import org.springframework.util.ReflectionUtils;
  * {@link WebSecurityConfigurerAdapter} provided by the user and annotated with
  * <code>@EnableOAuth2Sso</code>. The user-provided configuration is enhanced by adding an
  * authentication filter and an authentication entry point.
- * 
- * @author Dave Syer
  *
+ * @author Dave Syer
  */
 @Configuration
 @Conditional(WebSecurityEnhancerCondition.class)
@@ -64,7 +63,8 @@ public class OAuth2SsoCustomConfiguration implements ImportAware, BeanPostProces
 
 	@Override
 	public void setImportMetadata(AnnotationMetadata importMetadata) {
-		configType = ClassUtils.resolveClassName(importMetadata.getClassName(), null);
+		this.configType = ClassUtils
+				.resolveClassName(importMetadata.getClassName(), null);
 
 	}
 
@@ -77,11 +77,11 @@ public class OAuth2SsoCustomConfiguration implements ImportAware, BeanPostProces
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName)
 			throws BeansException {
-		if (configType.isAssignableFrom(bean.getClass())
+		if (this.configType.isAssignableFrom(bean.getClass())
 				&& bean instanceof WebSecurityConfigurerAdapter) {
 			ProxyFactory factory = new ProxyFactory();
 			factory.setTarget(bean);
-			factory.addAdvice(new SsoSecurityAdapter(beanFactory));
+			factory.addAdvice(new SsoSecurityAdapter(this.beanFactory));
 			bean = factory.getProxy();
 		}
 		return bean;
@@ -92,7 +92,7 @@ public class OAuth2SsoCustomConfiguration implements ImportAware, BeanPostProces
 		private SsoSecurityConfigurer configurer;
 
 		public SsoSecurityAdapter(BeanFactory beanFactory) {
-			configurer = new SsoSecurityConfigurer(beanFactory);
+			this.configurer = new SsoSecurityConfigurer(beanFactory);
 		}
 
 		@Override
@@ -102,8 +102,8 @@ public class OAuth2SsoCustomConfiguration implements ImportAware, BeanPostProces
 						WebSecurityConfigurerAdapter.class, "getHttp");
 				ReflectionUtils.makeAccessible(method);
 				HttpSecurity http = (HttpSecurity) ReflectionUtils.invokeMethod(method,
-						(WebSecurityConfigurerAdapter) invocation.getThis());
-				configurer.configure(http);
+						invocation.getThis());
+				this.configurer.configure(http);
 			}
 			return invocation.proceed();
 		}
@@ -127,6 +127,7 @@ public class OAuth2SsoCustomConfiguration implements ImportAware, BeanPostProces
 			return ConditionOutcome
 					.noMatch("found no @EnableOAuth2Sso on a WebSecurityConfigurerAdapter");
 		}
+
 	}
 
 }

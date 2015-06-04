@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package org.springframework.boot.cli;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.net.URI;
 
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests to exercise the samples.
@@ -72,8 +72,10 @@ public class SampleIntegrationTests {
 	@Test
 	public void oauth2Sample() throws Exception {
 		String output = this.cli.run("oauth2.groovy");
-		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.client.clientId"));
-		assertTrue("Wrong output: " + output, output.contains("spring.oauth2.client.secret ="));
+		assertTrue("Wrong output: " + output,
+				output.contains("spring.oauth2.client.clientId"));
+		assertTrue("Wrong output: " + output,
+				output.contains("spring.oauth2.client.secret ="));
 	}
 
 	@Test

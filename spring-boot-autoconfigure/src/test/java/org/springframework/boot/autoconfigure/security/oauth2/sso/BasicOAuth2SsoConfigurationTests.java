@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.security.oauth2.sso;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+package org.springframework.boot.autoconfigure.security.oauth2.sso;
 
 import javax.servlet.Filter;
 
@@ -39,9 +36,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
- * @author Dave Syer
+ * Tests for {@link OAuth2AutoConfiguration} with basic configuration.
  *
+ * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
@@ -64,12 +66,13 @@ public class BasicOAuth2SsoConfigurationTests {
 
 	@Before
 	public void init() {
-		mvc = MockMvcBuilders.webAppContextSetup(context).addFilters(filter).build();
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.addFilters(this.filter).build();
 	}
 
 	@Test
 	public void homePageIsSecure() throws Exception {
-		mvc.perform(get("/")).andExpect(status().isFound())
+		this.mvc.perform(get("/")).andExpect(status().isFound())
 				.andExpect(header().string("location", "http://localhost/login"));
 	}
 

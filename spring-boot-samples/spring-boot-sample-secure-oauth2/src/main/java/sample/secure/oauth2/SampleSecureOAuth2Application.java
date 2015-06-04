@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sample;
+package sample.secure.oauth2;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,14 +21,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
-// @formatter:off
 /**
  * After you launch the app, you can seek a bearer token like this:
  *
  * <pre>
- *
  * curl localhost:8080/oauth/token -d "grant_type=password&scope=read&username=greg&password=turnquist" -u foo:bar
- *
  * </pre>
  *
  * <ul>
@@ -91,16 +88,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  * @author Craig Walls
  * @author Greg Turnquist
  */
-// @formatter:on
-
 @SpringBootApplication
 @EnableAuthorizationServer
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class Application {
+public class SampleSecureOAuth2Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		SpringApplication.run(SampleSecureOAuth2Application.class, args);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,12 +47,13 @@ import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 /**
- * Auto-configure a Spring Security OAuth2 authorization server. Back off if another
+ * Configuration for a Spring Security OAuth2 authorization server. Back off if another
  * {@link AuthorizationServerConfigurer} already exists or if authorization server is not
  * enabled.
  *
  * @author Greg Turnquist
  * @author Dave Syer
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass(EnableAuthorizationServer.class)
@@ -62,6 +63,9 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 public class SpringSecurityOAuth2AuthorizationServerConfiguration extends
 		AuthorizationServerConfigurerAdapter {
 
+	private static final Log logger = LogFactory
+			.getLog(SpringSecurityOAuth2AuthorizationServerConfiguration.class);
+
 	@Autowired
 	private BaseClientDetails details;
 
@@ -70,12 +74,9 @@ public class SpringSecurityOAuth2AuthorizationServerConfiguration extends
 
 	@Autowired(required = false)
 	private TokenStore tokenStore;
-	
+
 	@Configuration
 	protected static class ClientDetailsLogger {
-
-		private static final Log logger = LogFactory
-				.getLog(SpringSecurityOAuth2AuthorizationServerConfiguration.class);
 
 		@Autowired
 		private OAuth2ClientProperties credentials;

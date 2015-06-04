@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,28 +28,30 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  *
  * @author Greg Turnquist
  * @author Dave Syer
+ * @since 1.3.0
  */
-public class SpringSecurityOAuth2CompilerAutoConfiguration extends CompilerAutoConfiguration {
+public class SpringSecurityOAuth2CompilerAutoConfiguration extends
+		CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode,
-				"EnableAuthorizationServer", "EnableResourceServer", "EnableOAuth2Client", "EnableOAuth2Sso");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableAuthorizationServer",
+				"EnableResourceServer", "EnableOAuth2Client", "EnableOAuth2Sso");
 	}
 
 	@Override
-	public void applyDependencies(DependencyCustomizer dependencies) throws CompilationFailedException {
-		dependencies.add("spring-security-oauth2").add("spring-boot-starter-web")
-			.add("spring-boot-starter-security");
+	public void applyDependencies(DependencyCustomizer dependencies)
+			throws CompilationFailedException {
+		dependencies.add("spring-security-oauth2", "spring-boot-starter-web",
+				"spring-boot-starter-security");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports
-			.addImports(
-					"org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso")
-			.addStarImports(
-					"org.springframework.security.oauth2.config.annotation.web.configuration",
-					"org.springframework.security.access.prepost");
+		imports.addImports("org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso");
+		imports.addStarImports(
+				"org.springframework.security.oauth2.config.annotation.web.configuration",
+				"org.springframework.security.access.prepost");
 	}
+
 }

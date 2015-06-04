@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,22 +30,22 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
 
 /**
  * Auto-configure an expression handler for method-level security (if the user already has
- * <code>@EnableGlobalMethodSecurity</code>).
+ * {@code @EnableGlobalMethodSecurity}).
  *
  * @author Greg Turnquist
  * @author Dave Syer
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({ OAuth2AccessToken.class })
 @ConditionalOnBean(GlobalMethodSecurityConfiguration.class)
-public class OAuth2MethodSecurityConfiguration implements
-		BeanFactoryPostProcessor {
+public class OAuth2MethodSecurityConfiguration implements BeanFactoryPostProcessor {
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
-		beanFactory
-				.addBeanPostProcessor(new OAuth2ExpressionHandlerInjectionPostProcessor());
+		OAuth2ExpressionHandlerInjectionPostProcessor processor = new OAuth2ExpressionHandlerInjectionPostProcessor();
+		beanFactory.addBeanPostProcessor(processor);
 	}
 
 	private static class OAuth2ExpressionHandlerInjectionPostProcessor implements

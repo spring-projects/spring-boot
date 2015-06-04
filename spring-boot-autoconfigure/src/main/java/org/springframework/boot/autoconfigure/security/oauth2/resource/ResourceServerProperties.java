@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,10 @@ import org.springframework.validation.Validator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * @author Dave Syer
+ * Configuration properties for OAuth2 Resources.
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 @ConfigurationProperties("spring.oauth2.resource")
 public class ResourceServerProperties implements Validator, BeanFactoryAware {
@@ -71,7 +73,7 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	 * The token type to send when using the userInfoUri.
 	 */
 	private String tokenType = DefaultOAuth2AccessToken.BEARER_TYPE;
-	
+
 	private Jwt jwt = new Jwt();
 
 	public ResourceServerProperties() {
@@ -133,7 +135,7 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 	}
 
 	public String getTokenType() {
-		return tokenType;
+		return this.tokenType;
 	}
 
 	public void setTokenType(String tokenType) {
@@ -187,7 +189,8 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 					}
 					if (!StringUtils.hasText(resource.getUserInfoUri())) {
 						errors.rejectValue("tokenInfoUri", "missing.tokenInfoUri",
-								"Missing tokenInfoUri and userInfoUri and there is no JWT verifier key");
+								"Missing tokenInfoUri and userInfoUri and there is no "
+										+ "JWT verifier key");
 					}
 				}
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProperties;
@@ -38,12 +38,22 @@ import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 /**
- * @author Dave Syer
+ * Tests for {@link ResourceServerTokenServicesConfiguration}.
  *
+ * @author Dave Syer
  */
 public class ResourceServerTokenServicesConfigurationTests {
+
+	private static String PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n"
+			+ "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnGp/Q5lh0P8nPL21oMMrt2RrkT9"
+			+ "AW5jgYwLfSUnJVc9G6uR3cXRRDCjHqWU5WYwivcF180A6CWp/ireQFFBNowgc5XaA0kPpzE"
+			+ "tgsA5YsNX7iSnUibB004iBTfU9hZ2Rbsc8cWqynT0RyN4TP1RYVSeVKvMQk4GT1r7JCEC+T"
+			+ "Nu1ELmbNwMQyzKjsfBXyIOCFU/E94ktvsTZUHF4Oq44DBylCDsS1k7/sfZC2G5EU7Oz0mhG"
+			+ "8+Uz6MSEQHtoIi6mc8u64Rwi3Z3tscuWG2ShtsUFuNSAFNkY7LkLn+/hxLCu2bNISMaESa8"
+			+ "dG22CIMuIeRLVcAmEWEWH5EEforTg+QIDAQAB\n-----END PUBLIC KEY-----";
 
 	private ConfigurableApplicationContext context;
 
@@ -112,7 +122,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@Test
 	public void asymmetricJwt() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
-				"spring.oauth2.resource.jwt.keyValue=" + publicKey);
+				"spring.oauth2.resource.jwt.keyValue=" + PUBLIC_KEY);
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
 				.environment(this.environment).web(false).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
@@ -141,6 +151,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 			PropertyPlaceholderAutoConfiguration.class })
 	@EnableConfigurationProperties(OAuth2ClientProperties.class)
 	protected static class ResourceConfiguration {
+
 	}
 
 	@Configuration
@@ -154,18 +165,17 @@ public class ResourceServerTokenServicesConfigurationTests {
 			return new ResourceServerProperties(this.credentials.getClientId(),
 					this.credentials.getClientSecret());
 		}
+
 	}
 
 	@Import({ FacebookAutoConfiguration.class, SocialWebAutoConfiguration.class })
 	protected static class SocialResourceConfiguration extends ResourceConfiguration {
+
 		@Bean
 		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return Mockito.mock(EmbeddedServletContainerFactory.class);
+			return mock(EmbeddedServletContainerFactory.class);
 		}
-	}
 
-	private static String publicKey = "-----BEGIN PUBLIC KEY-----\n"
-			+ "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnGp/Q5lh0P8nPL21oMMrt2RrkT9AW5jgYwLfSUnJVc9G6uR3cXRRDCjHqWU5WYwivcF180A6CWp/ireQFFBNowgc5XaA0kPpzEtgsA5YsNX7iSnUibB004iBTfU9hZ2Rbsc8cWqynT0RyN4TP1RYVSeVKvMQk4GT1r7JCEC+TNu1ELmbNwMQyzKjsfBXyIOCFU/E94ktvsTZUHF4Oq44DBylCDsS1k7/sfZC2G5EU7Oz0mhG8+Uz6MSEQHtoIi6mc8u64Rwi3Z3tscuWG2ShtsUFuNSAFNkY7LkLn+/hxLCu2bNISMaESa8dG22CIMuIeRLVcAmEWEWH5EEforTg+QIDAQAB\n"
-			+ "-----END PUBLIC KEY-----";
+	}
 
 }

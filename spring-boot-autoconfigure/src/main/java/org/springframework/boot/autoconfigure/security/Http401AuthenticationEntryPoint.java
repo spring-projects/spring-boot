@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security;
 
 import java.io.IOException;
@@ -26,26 +27,27 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
 /**
- * AuthenticationEntryPoint that sends a 401 and Parameterized by the value of the
- * WWW-Authenticate header. Like the {@link BasicAuthenticationEntryPoint} but more
+ * AuthenticationEntryPoint that sends a 401 and Parameterized by the value of the {@coe
+ * WWW-Authenticate} header. Like the {@link BasicAuthenticationEntryPoint} but more
  * flexible.
- * 
- * @author Dave Syer
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 public class Http401AuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-	private final String authenticateHeader;
+	private final String headerValue;
 
-	public Http401AuthenticationEntryPoint(String authenticateHeader) {
-		this.authenticateHeader = authenticateHeader;
+	public Http401AuthenticationEntryPoint(String headerValue) {
+		this.headerValue = headerValue;
 	}
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
-		response.setHeader("WWW-Authenticate", authenticateHeader);
+		response.setHeader("WWW-Authenticate", this.headerValue);
 		response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
 				authException.getMessage());
 	}
+
 }
