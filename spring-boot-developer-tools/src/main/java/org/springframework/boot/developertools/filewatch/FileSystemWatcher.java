@@ -199,11 +199,13 @@ public class FileSystemWatcher {
 		Thread thread = this.watchThread;
 		if (thread != null) {
 			this.remainingScans.set(remainingScans);
-			try {
-				thread.join();
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
+			if (Thread.currentThread() != thread) {
+				try {
+					thread.join();
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
 			}
 			this.watchThread = null;
 		}

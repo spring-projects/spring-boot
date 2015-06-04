@@ -27,6 +27,7 @@ import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.developertools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.developertools.classpath.PatternClassPathRestartStrategy;
+import org.springframework.boot.developertools.filewatch.FileSystemWatcher;
 import org.springframework.boot.developertools.livereload.LiveReloadServer;
 import org.springframework.boot.developertools.restart.ConditionalOnInitializedRestarter;
 import org.springframework.boot.developertools.restart.RestartScope;
@@ -103,11 +104,13 @@ public class LocalDeveloperToolsAutoConfiguration {
 		@Autowired
 		private DeveloperToolsProperties properties;
 
+		private FileSystemWatcher fileSystemWatcher = new FileSystemWatcher();
+
 		@Bean
 		@ConditionalOnMissingBean
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
-			return new ClassPathFileSystemWatcher(classPathRestartStrategy(), urls);
+			return new ClassPathFileSystemWatcher(fileSystemWatcher,  classPathRestartStrategy(), urls);
 		}
 
 		@Bean
@@ -120,6 +123,7 @@ public class LocalDeveloperToolsAutoConfiguration {
 		@EventListener
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
+				fileSystemWatcher.stop();
 				Restarter.getInstance().restart();
 			}
 		}
