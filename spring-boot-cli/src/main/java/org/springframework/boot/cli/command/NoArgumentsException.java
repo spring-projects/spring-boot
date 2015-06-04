@@ -17,7 +17,7 @@
 package org.springframework.boot.cli.command;
 
 /**
- * Exception used to indicate that no arguemnts were specified.
+ * Exception used to indicate that no arguments were specified.
  *
  * @author Phillip Webb
  */

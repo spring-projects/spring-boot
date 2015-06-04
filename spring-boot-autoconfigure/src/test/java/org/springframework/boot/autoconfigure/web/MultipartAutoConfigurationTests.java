@@ -215,7 +215,7 @@ public class MultipartAutoConfigurationTests {
 	}
 
 	@Test
-	public void containerWithCustomMulipartResolver() throws Exception {
+	public void containerWithCustomMultipartResolver() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithCustomMultipartResolver.class, BaseConfiguration.class);
 		MultipartResolver multipartResolver = this.context

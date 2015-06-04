@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  */
 public class Handler extends URLStreamHandler {
 
-	// NOTE: in order to be found as a URL protocol hander, this class must be public,
+	// NOTE: in order to be found as a URL protocol handler, this class must be public,
 	// must be named Handler and must be in a package ending '.jar'
 
 	private static final String FILE_PROTOCOL = "file:";

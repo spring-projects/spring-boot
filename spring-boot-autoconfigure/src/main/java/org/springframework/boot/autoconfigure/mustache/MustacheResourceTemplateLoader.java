@@ -31,7 +31,7 @@ import com.samskivert.mustache.Mustache.TemplateLoader;
  * Mustache TemplateLoader implementation that uses a prefix, suffix and the Spring
  * Resource abstraction to load a template from a file, classpath, URL etc. A
  * TemplateLoader is needed in the Compiler when you want to render partials (i.e.
- * tiles-like fetaures).
+ * tiles-like features).
  *
  * @author Dave Syer
  * @since 1.2.2

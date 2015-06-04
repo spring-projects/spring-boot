@@ -40,9 +40,9 @@ class LocalDebugPortAvailableCondition extends SpringBootCondition {
 			port = RemoteDevToolsProperties.Debug.DEFAULT_LOCAL_PORT;
 		}
 		if (isPortAvailable(port)) {
-			return ConditionOutcome.match("Local debug port availble");
+			return ConditionOutcome.match("Local debug port available");
 		}
-		return ConditionOutcome.noMatch("Local debug port unavailble");
+		return ConditionOutcome.noMatch("Local debug port unavailable");
 	}
 
 	private boolean isPortAvailable(int port) {

@@ -113,7 +113,7 @@ public class MailSenderAutoConfigurationTests {
 	}
 
 	@Test
-	public void smptHostWithJavaMailProperties() {
+	public void smtpHostWithJavaMailProperties() {
 		load(EmptyConfig.class, "spring.mail.host:localhost",
 				"spring.mail.properties.mail.smtp.auth:true");
 		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
