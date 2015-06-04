@@ -17,13 +17,13 @@
 package org.springframework.boot.context;
 
 import java.lang.management.ManagementFactory;
+
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,50 +52,51 @@ public class SpringApplicationLifecycleRegistrar implements ApplicationContextAw
 
 	private boolean ready = false;
 
-	public SpringApplicationLifecycleRegistrar(String name) throws MalformedObjectNameException {
+	public SpringApplicationLifecycleRegistrar(String name)
+			throws MalformedObjectNameException {
 		this.objectName = new ObjectName(name);
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		Assert.isTrue(applicationContext instanceof ConfigurableApplicationContext,
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		Assert.state(applicationContext instanceof ConfigurableApplicationContext,
 				"ApplicationContext does not implement ConfigurableApplicationContext");
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
 	}
 
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
-		ready = true;
+		this.ready = true;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-		server.registerMBean(new SpringApplicationLifecycle(), objectName);
+		server.registerMBean(new SpringApplicationLifecycle(), this.objectName);
 		if (logger.isDebugEnabled()) {
-			logger.debug("Application lifecycle MBean registered with name '" + objectName + "'");
+			logger.debug("Application lifecycle MBean registered with name '"
+					+ this.objectName + "'");
 		}
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		ManagementFactory.getPlatformMBeanServer().unregisterMBean(objectName);
+		ManagementFactory.getPlatformMBeanServer().unregisterMBean(this.objectName);
 	}
-
 
 	private class SpringApplicationLifecycle implements SpringApplicationLifecycleMXBean {
 
 		@Override
 		public boolean isReady() {
-			return ready;
+			return SpringApplicationLifecycleRegistrar.this.ready;
 		}
 
 		@Override
 		public void shutdown() {
 			logger.info("Application shutdown requested.");
-			applicationContext.close();
+			SpringApplicationLifecycleRegistrar.this.applicationContext.close();
 		}
 	}
 
 }
-

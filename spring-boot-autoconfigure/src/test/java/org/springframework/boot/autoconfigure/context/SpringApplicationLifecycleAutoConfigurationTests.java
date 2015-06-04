@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.context;
 
 import java.lang.management.ManagementFactory;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -28,7 +29,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -65,17 +65,16 @@ public class SpringApplicationLifecycleAutoConfigurationTests {
 	}
 
 	@Test
-	public void notRegisteredByDefault() throws MalformedObjectNameException, InstanceNotFoundException {
+	public void notRegisteredByDefault() throws MalformedObjectNameException,
+			InstanceNotFoundException {
 		load();
-
-		thrown.expect(InstanceNotFoundException.class);
+		this.thrown.expect(InstanceNotFoundException.class);
 		this.mBeanServer.getObjectInstance(createDefaultObjectName());
 	}
 
 	@Test
 	public void registeredWithProperty() throws Exception {
 		load(ENABLE_LIFECYCLE_PROP);
-
 		ObjectName objectName = createDefaultObjectName();
 		ObjectInstance objectInstance = this.mBeanServer.getObjectInstance(objectName);
 		assertNotNull("Lifecycle bean should have been registered", objectInstance);
@@ -84,18 +83,17 @@ public class SpringApplicationLifecycleAutoConfigurationTests {
 	@Test
 	public void registerWithCustomJmxName() throws InstanceNotFoundException {
 		String customJmxName = "org.acme:name=FooBar";
-		System.setProperty(SpringApplicationLifecycleAutoConfiguration.JMX_NAME_PROPERTY, customJmxName);
+		System.setProperty(SpringApplicationLifecycleAutoConfiguration.JMX_NAME_PROPERTY,
+				customJmxName);
 		try {
 			load(ENABLE_LIFECYCLE_PROP);
-
 			try {
 				this.mBeanServer.getObjectInstance(createObjectName(customJmxName));
 			}
-			catch (InstanceNotFoundException e) {
+			catch (InstanceNotFoundException ex) {
 				fail("lifecycle MBean should have been exposed with custom name");
 			}
-
-			thrown.expect(InstanceNotFoundException.class); // Should not be exposed
+			this.thrown.expect(InstanceNotFoundException.class); // Should not be exposed
 			this.mBeanServer.getObjectInstance(createDefaultObjectName());
 		}
 		finally {
@@ -111,18 +109,18 @@ public class SpringApplicationLifecycleAutoConfigurationTests {
 		try {
 			return new ObjectName(jmxName);
 		}
-		catch (MalformedObjectNameException e) {
-			throw new IllegalStateException("Invalid jmx name " + jmxName, e);
+		catch (MalformedObjectNameException ex) {
+			throw new IllegalStateException("Invalid jmx name " + jmxName, ex);
 		}
 	}
 
 	private void load(String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
-		applicationContext.register(JmxAutoConfiguration.class, SpringApplicationLifecycleAutoConfiguration.class);
+		applicationContext.register(JmxAutoConfiguration.class,
+				SpringApplicationLifecycleAutoConfiguration.class);
 		applicationContext.refresh();
 		this.context = applicationContext;
 	}
 
 }
-

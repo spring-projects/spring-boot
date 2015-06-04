@@ -43,7 +43,8 @@ import org.springframework.jmx.export.MBeanExporter;
 class SpringApplicationLifecycleAutoConfiguration {
 
 	/**
-	 * The property to use to customize the {@code ObjectName} of the application lifecycle mbean.
+	 * The property to use to customize the {@code ObjectName} of the application
+	 * lifecycle mbean.
 	 */
 	static final String JMX_NAME_PROPERTY = "spring.context.lifecycle.jmx-name";
 
@@ -61,10 +62,10 @@ class SpringApplicationLifecycleAutoConfiguration {
 	@Bean
 	public SpringApplicationLifecycleRegistrar springApplicationLifecycleRegistrar()
 			throws MalformedObjectNameException {
-
-		String jmxName = this.environment.getProperty(JMX_NAME_PROPERTY, DEFAULT_JMX_NAME);
-		if (mbeanExporter != null) { // Make sure to not register that MBean twice
-			mbeanExporter.addExcludedBean(jmxName);
+		String jmxName = this.environment
+				.getProperty(JMX_NAME_PROPERTY, DEFAULT_JMX_NAME);
+		if (this.mbeanExporter != null) { // Make sure to not register that MBean twice
+			this.mbeanExporter.addExcludedBean(jmxName);
 		}
 		return new SpringApplicationLifecycleRegistrar(jmxName);
 	}

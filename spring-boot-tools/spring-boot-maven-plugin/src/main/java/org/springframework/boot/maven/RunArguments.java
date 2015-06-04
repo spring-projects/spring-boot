@@ -42,7 +42,7 @@ class RunArguments {
 	}
 
 	public LinkedList<String> getArgs() {
-		return args;
+		return this.args;
 	}
 
 	public String[] asArray() {

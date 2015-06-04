@@ -55,13 +55,6 @@ public class RunProcess {
 		return run(waitForProcess, Arrays.asList(args));
 	}
 
-	/**
-	 * Kill this process.
-	 */
-	public void kill() {
-		doKill();
-	}
-
 	protected int run(boolean waitForProcess, Collection<String> args) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
 		builder.command().addAll(args);
@@ -131,7 +124,7 @@ public class RunProcess {
 				return true;
 			}
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			return true;
 		}
 		return false;
@@ -180,6 +173,13 @@ public class RunProcess {
 
 	}
 
+	/**
+	 * Kill this process.
+	 */
+	public void kill() {
+		doKill();
+	}
+
 	private boolean doKill() {
 		// destroy the running process
 		Process process = this.process;
@@ -194,7 +194,6 @@ public class RunProcess {
 				Thread.currentThread().interrupt();
 			}
 		}
-
 		return false;
 	}
 

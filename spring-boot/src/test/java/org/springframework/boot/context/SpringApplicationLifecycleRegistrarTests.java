@@ -17,6 +17,7 @@
 package org.springframework.boot.context;
 
 import java.lang.management.ManagementFactory;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -27,7 +28,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -75,15 +75,18 @@ public class SpringApplicationLifecycleRegistrarTests {
 			@Override
 			public void onApplicationEvent(ContextRefreshedEvent event) {
 				try {
-					assertFalse("Application should not be ready yet", isCurrentApplicationReady(objectName));
+					assertFalse("Application should not be ready yet",
+							isCurrentApplicationReady(objectName));
 				}
-				catch (Exception e) {
-					throw new IllegalStateException("Could not contact spring application lifecycle bean", e);
+				catch (Exception ex) {
+					throw new IllegalStateException(
+							"Could not contact spring application lifecycle bean", ex);
 				}
 			}
 		});
 		this.context = application.run();
-		assertTrue("application should be ready now", isCurrentApplicationReady(objectName));
+		assertTrue("application should be ready now",
+				isCurrentApplicationReady(objectName));
 	}
 
 	@Test
@@ -95,8 +98,7 @@ public class SpringApplicationLifecycleRegistrarTests {
 		assertTrue("application should be running", this.context.isRunning());
 		invokeShutdown(objectName);
 		assertFalse("application should not be running", this.context.isRunning());
-
-		thrown.expect(InstanceNotFoundException.class); // JMX cleanup
+		this.thrown.expect(InstanceNotFoundException.class); // JMX cleanup
 		this.mBeanServer.getObjectInstance(objectName);
 	}
 
@@ -127,16 +129,15 @@ public class SpringApplicationLifecycleRegistrarTests {
 		}
 	}
 
-
 	@Configuration
 	static class Config {
 
 		@Bean
 		public SpringApplicationLifecycleRegistrar springApplicationLifecycle()
 				throws MalformedObjectNameException {
-
 			return new SpringApplicationLifecycleRegistrar(OBJECT_NAME);
 		}
+
 	}
 
 }

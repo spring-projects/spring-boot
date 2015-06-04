@@ -24,7 +24,6 @@ import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.RunProcess;
 
@@ -41,15 +40,17 @@ public class RunMojo extends AbstractRunMojo {
 	@Override
 	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException {
 		try {
-			new RunProcess(new JavaExecutable().toString()).run(true, args
-					.toArray(new String[args.size()]));
+			new RunProcess(new JavaExecutable().toString()).run(true,
+					args.toArray(new String[args.size()]));
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
 		}
 	}
 
-	protected void runWithMavenJvm(String startClassName, String... arguments) throws MojoExecutionException {
+	@Override
+	protected void runWithMavenJvm(String startClassName, String... arguments)
+			throws MojoExecutionException {
 		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
 		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName,
 				arguments), startClassName + ".main()");

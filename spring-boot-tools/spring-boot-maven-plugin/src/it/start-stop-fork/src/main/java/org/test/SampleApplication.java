@@ -22,8 +22,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 /**
- * This sample app simulates the JMX Mbean that is exposed by the Spring
- * Boot application.
+ * This sample app simulates the JMX Mbean that is exposed by the Spring Boot application.
  */
 public class SampleApplication {
 
@@ -31,7 +30,8 @@ public class SampleApplication {
 
 	public static void main(String[] args) throws Exception {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-		ObjectName name = new ObjectName("org.springframework.boot:type=Lifecycle,name=springApplicationLifecycle");
+		ObjectName name = new ObjectName(
+				"org.springframework.boot:type=Lifecycle,name=springApplicationLifecycle");
 		SpringApplicationLifecycle mbean = new SpringApplicationLifecycle();
 		mbs.registerMBean(mbean, name);
 
@@ -41,7 +41,8 @@ public class SampleApplication {
 		int waitAttempts = 0;
 		while (!mbean.shutdownInvoked) {
 			if (waitAttempts > 10) {
-				throw new IllegalStateException("Shutdown should have been invoked by now");
+				throw new IllegalStateException(
+						"Shutdown should have been invoked by now");
 			}
 			synchronized (lock) {
 				lock.wait(250);
@@ -49,7 +50,6 @@ public class SampleApplication {
 			waitAttempts++;
 		}
 	}
-
 
 	public interface SpringApplicationLifecycleMXBean {
 
@@ -76,5 +76,7 @@ public class SampleApplication {
 			this.shutdownInvoked = true;
 			System.out.println("Shutdown requested");
 		}
+
 	}
+
 }

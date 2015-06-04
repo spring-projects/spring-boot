@@ -22,6 +22,8 @@ import java.net.ConnectException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+
 import javax.management.MBeanServerConnection;
 import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
@@ -32,15 +34,14 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.RunProcess;
 
 /**
- * Start a spring application. Contrary to the {@code run} goal, this does not
- * block and allows other goal to operate on the application. This goal is typically
- * used in integration test scenario where the application is started before a test
- * suite and stopped after.
+ * Start a spring application. Contrary to the {@code run} goal, this does not block and
+ * allows other goal to operate on the application. This goal is typically used in
+ * integration test scenario where the application is started before a test suite and
+ * stopped after.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -54,30 +55,30 @@ public class StartMojo extends AbstractRunMojo {
 	private static final String JMX_NAME_PROPERTY_PREFIX = "--spring.context.lifecycle.jmx-name=";
 
 	/**
-	 * The JMX name of the automatically deployed MBean managing the lifecycle
-	 * of the spring application.
+	 * The JMX name of the automatically deployed MBean managing the lifecycle of the
+	 * spring application.
 	 */
 	@Parameter
 	private String jmxName = SpringApplicationLifecycleClient.DEFAULT_OBJECT_NAME;
 
 	/**
-	 * The port to use to expose the platform MBeanServer if the application
-	 * needs to be forked.
+	 * The port to use to expose the platform MBeanServer if the application needs to be
+	 * forked.
 	 */
 	@Parameter
 	private int jmxPort = 9001;
 
 	/**
-	 * The number of milli-seconds to wait between each attempt to check if the
-	 * spring application is ready.
+	 * The number of milli-seconds to wait between each attempt to check if the spring
+	 * application is ready.
 	 */
 	@Parameter
 	private long wait = 500;
 
 	/**
-	 * The maximum number of attempts to check if the spring application is
-	 * ready. Combined with the "wait" argument, this gives a global timeout
-	 * value (30 sec by default)
+	 * The maximum number of attempts to check if the spring application is ready.
+	 * Combined with the "wait" argument, this gives a global timeout value (30 sec by
+	 * default)
 	 */
 	@Parameter
 	private int maxAttempts = 60;
@@ -85,26 +86,30 @@ public class StartMojo extends AbstractRunMojo {
 	private final Object lock = new Object();
 
 	@Override
-	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException, MojoFailureException {
-		RunProcess runProcess;
-		try {
-			runProcess = new RunProcess(new JavaExecutable().toString());
-			runProcess.run(false, args.toArray(new String[args.size()]));
-		}
-		catch (Exception ex) {
-			throw new MojoExecutionException("Could not exec java", ex);
-		}
-
+	protected void runWithForkedJvm(List<String> args) throws MojoExecutionException,
+			MojoFailureException {
+		RunProcess runProcess = runProcess(args);
 		try {
 			waitForSpringApplication();
 		}
-		catch (MojoExecutionException e) {
+		catch (MojoExecutionException ex) {
 			runProcess.kill();
-			throw e;
+			throw ex;
 		}
-		catch (MojoFailureException e) {
+		catch (MojoFailureException ex) {
 			runProcess.kill();
-			throw e;
+			throw ex;
+		}
+	}
+
+	private RunProcess runProcess(List<String> args) throws MojoExecutionException {
+		try {
+			RunProcess runProcess = new RunProcess(new JavaExecutable().toString());
+			runProcess.run(false, args.toArray(new String[args.size()]));
+			return runProcess;
+		}
+		catch (Exception ex) {
+			throw new MojoExecutionException("Could not exec java", ex);
 		}
 	}
 
@@ -113,7 +118,8 @@ public class StartMojo extends AbstractRunMojo {
 		RunArguments applicationArguments = super.resolveApplicationArguments();
 		applicationArguments.getArgs().addLast(ENABLE_MBEAN_PROPERTY);
 		if (isFork()) {
-			applicationArguments.getArgs().addLast(JMX_NAME_PROPERTY_PREFIX + this.jmxName);
+			applicationArguments.getArgs().addLast(
+					JMX_NAME_PROPERTY_PREFIX + this.jmxName);
 		}
 		return applicationArguments;
 	}
@@ -124,7 +130,7 @@ public class StartMojo extends AbstractRunMojo {
 		if (isFork()) {
 			List<String> remoteJmxArguments = new ArrayList<String>();
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote");
-			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.port=" + jmxPort);
+			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.port=" + this.jmxPort);
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.authenticate=false");
 			remoteJmxArguments.add("-Dcom.sun.management.jmxremote.ssl=false");
 			jvmArguments.getArgs().addAll(remoteJmxArguments);
@@ -132,18 +138,19 @@ public class StartMojo extends AbstractRunMojo {
 		return jvmArguments;
 	}
 
-
-	protected void runWithMavenJvm(String startClassName, String... arguments) throws MojoExecutionException {
+	@Override
+	protected void runWithMavenJvm(String startClassName, String... arguments)
+			throws MojoExecutionException {
 		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
 		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName,
 				arguments), startClassName + ".main()");
 		launchThread.setContextClassLoader(new URLClassLoader(getClassPathUrls()));
 		launchThread.start();
-
 		waitForSpringApplication(this.wait, this.maxAttempts);
 	}
 
-	private void waitForSpringApplication(long wait, int maxAttempts) throws MojoExecutionException {
+	private void waitForSpringApplication(long wait, int maxAttempts)
+			throws MojoExecutionException {
 		SpringApplicationLifecycleClient helper = new SpringApplicationLifecycleClient(
 				ManagementFactory.getPlatformMBeanServer(), this.jmxName);
 		getLog().debug("Waiting for spring application to start...");
@@ -151,21 +158,26 @@ public class StartMojo extends AbstractRunMojo {
 			if (helper.isReady()) {
 				return;
 			}
-			getLog().debug("Spring application is not ready yet, waiting " + wait + "ms (attempt " + (i + 1) + ")");
+			String message = "Spring application is not ready yet, waiting " + wait
+					+ "ms (attempt " + (i + 1) + ")";
+			getLog().debug(message);
 			synchronized (this.lock) {
 				try {
 					this.lock.wait(wait);
 				}
-				catch (InterruptedException e) {
-					throw new IllegalStateException("Interrupted while waiting for Spring Boot app to start.");
+				catch (InterruptedException ex) {
+					throw new IllegalStateException(
+							"Interrupted while waiting for Spring Boot app to start.");
 				}
 			}
 		}
-		throw new MojoExecutionException("Spring application did not start before the configured " +
-				"timeout (" + (wait * maxAttempts) + "ms");
+		throw new MojoExecutionException(
+				"Spring application did not start before the configured timeout ("
+						+ (wait * maxAttempts) + "ms");
 	}
 
-	private void waitForSpringApplication() throws MojoFailureException, MojoExecutionException {
+	private void waitForSpringApplication() throws MojoFailureException,
+			MojoExecutionException {
 		try {
 			if (Boolean.TRUE.equals(isFork())) {
 				waitForForkedSpringApplication();
@@ -174,114 +186,133 @@ public class StartMojo extends AbstractRunMojo {
 				doWaitForSpringApplication(ManagementFactory.getPlatformMBeanServer());
 			}
 		}
-		catch (IOException e) {
-			throw new MojoFailureException("Could not contact Spring Boot application", e);
+		catch (IOException ex) {
+			throw new MojoFailureException("Could not contact Spring Boot application",
+					ex);
 		}
-		catch (Exception e) {
-			throw new MojoExecutionException("Could not figure out if the application has started", e);
+		catch (Exception ex) {
+			throw new MojoExecutionException(
+					"Could not figure out if the application has started", ex);
 		}
-
 	}
 
-	private void waitForForkedSpringApplication() throws IOException, MojoFailureException, MojoExecutionException {
-		final JMXConnector jmxConnector;
+	private void waitForForkedSpringApplication() throws IOException,
+			MojoFailureException, MojoExecutionException {
 		try {
 			getLog().debug("Connecting to local MBeanServer at port " + this.jmxPort);
-			jmxConnector = execute(wait, maxAttempts, new RetryCallback<JMXConnector>() {
-				@Override
-				public JMXConnector retry() throws Exception {
-					try {
-						return SpringApplicationLifecycleClient.createLocalJmxConnector(jmxPort);
-					}
-					catch (IOException e) {
-						if (hasCauseWithType(e, ConnectException.class)) { // Not there yet
-							getLog().debug("MBean server at port " + jmxPort + " is not up yet...");
-							return null;
-						}
-						else {
-							throw e;
-						}
-					}
-				}
-			});
-			if (jmxConnector == null) {
-				throw new MojoExecutionException("JMX MBean server was not reachable before the configured " +
-						"timeout (" + (this.wait * this.maxAttempts) + "ms");
+			JMXConnector connector = execute(this.wait, this.maxAttempts,
+					new CreateJmxConnector(this.jmxPort));
+			if (connector == null) {
+				throw new MojoExecutionException(
+						"JMX MBean server was not reachable before the configured "
+								+ "timeout (" + (this.wait * this.maxAttempts) + "ms");
 			}
 			getLog().debug("Connected to local MBeanServer at port " + this.jmxPort);
 			try {
-				MBeanServerConnection mBeanServerConnection = jmxConnector.getMBeanServerConnection();
-				doWaitForSpringApplication(mBeanServerConnection);
+				MBeanServerConnection connection = connector.getMBeanServerConnection();
+				doWaitForSpringApplication(connection);
 			}
 			finally {
-				jmxConnector.close();
+				connector.close();
 			}
 		}
-		catch (IOException e) {
-			throw e;
+		catch (IOException ex) {
+			throw ex;
 		}
-		catch (Exception e) {
-			throw new MojoExecutionException("Failed to connect to MBean server at port " + this.jmxPort, e);
+		catch (Exception ex) {
+			throw new MojoExecutionException("Failed to connect to MBean server at port "
+					+ this.jmxPort, ex);
 		}
 	}
 
 	private void doWaitForSpringApplication(MBeanServerConnection connection)
 			throws IOException, MojoExecutionException, MojoFailureException {
-
-		final SpringApplicationLifecycleClient client =
-				new SpringApplicationLifecycleClient(connection, this.jmxName);
+		final SpringApplicationLifecycleClient client = new SpringApplicationLifecycleClient(
+				connection, this.jmxName);
 		try {
-			execute(this.wait, this.maxAttempts, new RetryCallback<Boolean>() {
+			execute(this.wait, this.maxAttempts, new Callable<Boolean>() {
+
 				@Override
-				public Boolean retry() throws Exception {
-					boolean ready = client.isReady();
-					// Wait until the app is ready
-					return (ready ? true : null);
+				public Boolean call() throws Exception {
+					return (client.isReady() ? true : null);
 				}
+
 			});
 		}
-		catch (ReflectionException e) {
-			throw new MojoExecutionException("Unable to retrieve Ready attribute", e.getCause());
+		catch (ReflectionException ex) {
+			throw new MojoExecutionException("Unable to retrieve 'ready' attribute",
+					ex.getCause());
 		}
-		catch (Exception e) {
-			throw new MojoFailureException("Could not invoke shutdown operation", e);
+		catch (Exception ex) {
+			throw new MojoFailureException("Could not invoke shutdown operation", ex);
 		}
 	}
 
-	public <T> T execute(long wait, int maxAttempts, RetryCallback<T> callback) throws Exception {
+	/**
+	 * Execute a task, retrying it on failure.
+	 * @param wait the wait time
+	 * @param maxAttempts the maximum number of attempts
+	 * @param callback the task to execute (possibly multiple times). The callback should
+	 * return {@code null} to indicate that another attempt should be made
+	 * @return the result
+	 * @throws Exception
+	 */
+	public <T> T execute(long wait, int maxAttempts, Callable<T> callback)
+			throws Exception {
 		getLog().debug("Waiting for spring application to start...");
 		for (int i = 0; i < maxAttempts; i++) {
-			T result = callback.retry();
+			T result = callback.call();
 			if (result != null) {
 				return result;
 			}
-			getLog().debug("Spring application is not ready yet, waiting " + wait + "ms (attempt " + (i + 1) + ")");
+			String message = "Spring application is not ready yet, waiting " + wait
+					+ "ms (attempt " + (i + 1) + ")";
+			getLog().debug(message);
 			synchronized (this.lock) {
 				try {
 					this.lock.wait(wait);
 				}
-				catch (InterruptedException e) {
-					throw new IllegalStateException("Interrupted while waiting for Spring Boot app to start.");
+				catch (InterruptedException ex) {
+					throw new IllegalStateException(
+							"Interrupted while waiting for Spring Boot app to start.");
 				}
 			}
 		}
-		throw new MojoExecutionException("Spring application did not start before the configured " +
-				"timeout (" + (wait * maxAttempts) + "ms");
+		throw new MojoExecutionException(
+				"Spring application did not start before the configured " + "timeout ("
+						+ (wait * maxAttempts) + "ms");
 	}
 
-	private static boolean hasCauseWithType(Throwable t, Class<? extends Exception> type) {
-		return type.isAssignableFrom(t.getClass()) || t.getCause() != null && hasCauseWithType(t.getCause(), type);
-	}
+	private class CreateJmxConnector implements Callable<JMXConnector> {
 
+		private final int port;
 
-	interface RetryCallback<T> {
+		public CreateJmxConnector(int port) {
+			this.port = port;
+		}
 
-		/**
-		 * Attempt to execute an operation. Throws an exception in case of fatal
-		 * exception, returns {@code null} to indicate another attempt should be
-		 * made if possible.
-		 */
-		T retry() throws Exception;
+		@Override
+		public JMXConnector call() throws Exception {
+			try {
+				return SpringApplicationLifecycleClient
+						.createLocalJmxConnector(this.port);
+			}
+			catch (IOException ex) {
+				if (hasCauseWithType(ex, ConnectException.class)) {
+					String message = "MBean server at port " + this.port
+							+ " is not up yet...";
+					getLog().debug(message);
+					return null;
+				}
+				throw ex;
+			}
+		}
+
+		private boolean hasCauseWithType(Throwable t, Class<? extends Exception> type) {
+			return type.isAssignableFrom(t.getClass()) || t.getCause() != null
+					&& hasCauseWithType(t.getCause(), type);
+		}
+
 	}
 
 }

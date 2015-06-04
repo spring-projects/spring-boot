@@ -18,6 +18,7 @@ package org.springframework.boot.maven;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
@@ -40,23 +41,23 @@ import org.apache.maven.plugins.annotations.Parameter;
 public class StopMojo extends AbstractMojo {
 
 	/**
-	 * Flag to indicate if the run processes should be forked. Must be aligned to the value
-	 * used to {@link StartMojo start} the process
+	 * Flag to indicate if the run processes should be forked. Must be aligned to the
+	 * value used to {@link StartMojo start} the process
 	 * @since 1.2
 	 */
 	@Parameter(property = "fork")
 	private Boolean fork;
 
 	/**
-	 * The JMX name of the automatically deployed MBean managing the lifecycle
-	 * of the application.
+	 * The JMX name of the automatically deployed MBean managing the lifecycle of the
+	 * application.
 	 */
 	@Parameter
 	private String jmxName = SpringApplicationLifecycleClient.DEFAULT_OBJECT_NAME;
 
 	/**
-	 * The port to use to lookup the platform MBeanServer if the application
-	 * has been forked.
+	 * The port to use to lookup the platform MBeanServer if the application has been
+	 * forked.
 	 */
 	@Parameter
 	private int jmxPort = 9001;
@@ -72,9 +73,22 @@ public class StopMojo extends AbstractMojo {
 				stop();
 			}
 		}
-		catch (IOException e) {
+		catch (IOException ex) {
 			// The response won't be received as the server has died - ignoring
-			getLog().debug("Service is not reachable anymore (" + e.getMessage() + ")");
+			getLog().debug("Service is not reachable anymore (" + ex.getMessage() + ")");
+		}
+	}
+
+	private void stopForkedProcess() throws IOException, MojoFailureException,
+			MojoExecutionException {
+		JMXConnector connector = SpringApplicationLifecycleClient
+				.createLocalJmxConnector(this.jmxPort);
+		try {
+			MBeanServerConnection connection = connector.getMBeanServerConnection();
+			doStop(connection);
+		}
+		finally {
+			connector.close();
 		}
 	}
 
@@ -82,26 +96,15 @@ public class StopMojo extends AbstractMojo {
 		doStop(ManagementFactory.getPlatformMBeanServer());
 	}
 
-	private void stopForkedProcess() throws IOException, MojoFailureException, MojoExecutionException {
-		JMXConnector jmxConnector = SpringApplicationLifecycleClient.createLocalJmxConnector(this.jmxPort);
+	private void doStop(MBeanServerConnection connection) throws IOException,
+			MojoExecutionException {
 		try {
-			MBeanServerConnection mBeanServerConnection = jmxConnector.getMBeanServerConnection();
-			doStop(mBeanServerConnection);
+			new SpringApplicationLifecycleClient(connection, this.jmxName).stop();
 		}
-		finally {
-			jmxConnector.close();
-		}
-	}
-
-	private void doStop(MBeanServerConnection connection)
-			throws IOException, MojoExecutionException {
-		SpringApplicationLifecycleClient helper = new SpringApplicationLifecycleClient(connection, this.jmxName);
-		try {
-			helper.stop();
-		}
-		catch (InstanceNotFoundException e) {
-			throw new MojoExecutionException("Spring application lifecycle JMX bean not found (fork is " +
-					"" + this.fork + "). Could not stop application gracefully", e);
+		catch (InstanceNotFoundException ex) {
+			throw new MojoExecutionException(
+					"Spring application lifecycle JMX bean not found (fork is " + ""
+							+ this.fork + "). Could not stop application gracefully", ex);
 		}
 	}
 

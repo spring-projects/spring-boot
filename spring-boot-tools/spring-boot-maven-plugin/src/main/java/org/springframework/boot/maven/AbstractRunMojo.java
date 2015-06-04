@@ -36,7 +36,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
-
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
@@ -137,8 +136,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return {@code true} if the application process should be forked
 	 */
 	protected boolean isFork() {
-		return (Boolean.TRUE.equals(this.fork)
-				|| (this.fork == null && (hasAgent() || hasJvmArgs())));
+		return (Boolean.TRUE.equals(this.fork) || (this.fork == null && (hasAgent() || hasJvmArgs())));
 	}
 
 	private boolean hasAgent() {
@@ -165,7 +163,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 					}
 					CodeSource source = loaded.getProtectionDomain().getCodeSource();
 					if (source != null) {
-						this.agent = new File[] {new File(source.getLocation().getFile())};
+						this.agent = new File[] { new File(source.getLocation().getFile()) };
 					}
 				}
 			}
@@ -178,7 +176,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void run(String startClassName) throws MojoExecutionException, MojoFailureException {
+	private void run(String startClassName) throws MojoExecutionException,
+			MojoFailureException {
 		findAgent();
 		if (isFork()) {
 			doRunWithForkedJvm(startClassName);
@@ -196,8 +195,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void doRunWithForkedJvm(String startClassName)
-			throws MojoExecutionException, MojoFailureException {
+	private void doRunWithForkedJvm(String startClassName) throws MojoExecutionException,
+			MojoFailureException {
 		List<String> args = new ArrayList<String>();
 		addAgents(args);
 		addJvmArgs(args);
@@ -213,8 +212,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @throws MojoExecutionException
 	 * @throws MojoFailureException
 	 */
-	protected abstract void runWithForkedJvm(List<String> args) throws MojoExecutionException, MojoFailureException;
-
+	protected abstract void runWithForkedJvm(List<String> args)
+			throws MojoExecutionException, MojoFailureException;
 
 	/**
 	 * Run with the current VM, using the specified arguments.
@@ -277,8 +276,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			args.add("-cp");
 			args.add(classpath.toString());
 		}
-		catch (Exception e) {
-			throw new MojoExecutionException("Could not build classpath", e);
+		catch (Exception ex) {
+			throw new MojoExecutionException("Could not build classpath", ex);
 		}
 	}
 
@@ -358,8 +357,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		getLog().debug(sb.toString().trim());
 	}
 
-
 	private static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
+
 		public TestArtifactFilter() {
 			super("", Artifact.SCOPE_TEST);
 		}
@@ -368,6 +367,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		protected String getArtifactFeature(Artifact artifact) {
 			return artifact.getScope();
 		}
+
 	}
 
 	/**
@@ -423,7 +423,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				if (!mainMethod.isAccessible()) {
 					mainMethod.setAccessible(true);
 				}
-				mainMethod.invoke(null, new Object[] {this.args});
+				mainMethod.invoke(null, new Object[] { this.args });
 			}
 			catch (NoSuchMethodException ex) {
 				Exception wrappedEx = new Exception(

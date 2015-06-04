@@ -17,6 +17,7 @@
 package org.springframework.boot.maven;
 
 import java.io.IOException;
+
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -35,20 +36,19 @@ import org.apache.maven.plugin.MojoExecutionException;
  * information about the lifecycle of a given Spring application.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 class SpringApplicationLifecycleClient {
 
-	//Note: see org.springframework.boot.autoconfigure.test.SpringApplicationLifecycleAutoConfiguration
-	static final String DEFAULT_OBJECT_NAME =
-			"org.springframework.boot:type=Lifecycle,name=springApplicationLifecycle";
+	// Note: see SpringApplicationLifecycleAutoConfiguration
+	static final String DEFAULT_OBJECT_NAME = "org.springframework.boot:type=Lifecycle,name=springApplicationLifecycle";
 
-	private final MBeanServerConnection mBeanServerConnection;
+	private final MBeanServerConnection connection;
 
 	private final ObjectName objectName;
 
-	public SpringApplicationLifecycleClient(MBeanServerConnection mBeanServerConnection, String jmxName) {
-		this.mBeanServerConnection = mBeanServerConnection;
+	public SpringApplicationLifecycleClient(MBeanServerConnection connection,
+			String jmxName) {
+		this.connection = connection;
 		this.objectName = toObjectName(jmxName);
 	}
 
@@ -66,30 +66,32 @@ class SpringApplicationLifecycleClient {
 	}
 
 	/**
-	 * Check if the spring application managed by this instance is ready.
-	 * <p>Returns {@code false} if the mbean is not yet deployed so this method
-	 * should be repeatedly called until a timeout is reached.
+	 * Check if the spring application managed by this instance is ready. Returns
+	 * {@code false} if the mbean is not yet deployed so this method should be repeatedly
+	 * called until a timeout is reached.
 	 * @return {@code true} if the application is ready to service requests
 	 * @throws MojoExecutionException if the JMX service could not be contacted
 	 */
 	public boolean isReady() throws MojoExecutionException {
 		try {
-			return (Boolean) this.mBeanServerConnection.getAttribute(this.objectName, "Ready");
+			return (Boolean) this.connection.getAttribute(this.objectName, "Ready");
 		}
-		catch (InstanceNotFoundException e) {
+		catch (InstanceNotFoundException ex) {
 			return false; // Instance not available yet
 		}
-		catch (AttributeNotFoundException e) {
-			throw new IllegalStateException("Unexpected: attribute 'Ready' not available", e);
+		catch (AttributeNotFoundException ex) {
+			throw new IllegalStateException(
+					"Unexpected: attribute 'Ready' not available", ex);
 		}
-		catch (ReflectionException e) {
-			throw new MojoExecutionException("Failed to retrieve Ready attribute", e.getCause());
+		catch (ReflectionException ex) {
+			throw new MojoExecutionException("Failed to retrieve Ready attribute",
+					ex.getCause());
 		}
-		catch (MBeanException e) {
-			throw new MojoExecutionException(e.getMessage(), e);
+		catch (MBeanException ex) {
+			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
-		catch (IOException e) {
-			throw new MojoExecutionException(e.getMessage(), e);
+		catch (IOException ex) {
+			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 	}
 
@@ -99,15 +101,16 @@ class SpringApplicationLifecycleClient {
 	 * @throws IOException if an I/O error occurs
 	 * @throws InstanceNotFoundException if the lifecycle mbean cannot be found
 	 */
-	public void stop() throws MojoExecutionException, IOException, InstanceNotFoundException {
+	public void stop() throws MojoExecutionException, IOException,
+			InstanceNotFoundException {
 		try {
-			this.mBeanServerConnection.invoke(this.objectName, "shutdown", null, null);
+			this.connection.invoke(this.objectName, "shutdown", null, null);
 		}
-		catch (ReflectionException e) {
-			throw new MojoExecutionException("Shutdown failed", e.getCause());
+		catch (ReflectionException ex) {
+			throw new MojoExecutionException("Shutdown failed", ex.getCause());
 		}
-		catch (MBeanException e) {
-			throw new MojoExecutionException("Could not invoke shutdown operation", e);
+		catch (MBeanException ex) {
+			throw new MojoExecutionException("Could not invoke shutdown operation", ex);
 		}
 	}
 
