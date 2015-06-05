@@ -29,9 +29,8 @@ import org.springframework.util.StringUtils;
  * collecting data from many sources in the same form (like a scaled-out application). The
  * source has metrics with names in the form {@code *.*.counter.**} and
  * {@code *.*.[anything].**}, and the result has metric names in the form
- * {@code aggregate.count.**} and {@code aggregate.[anything].**}. Counters are
- * summed and anything else (i.e. gauges) are aggregated by choosing the most recent
- * value.
+ * {@code aggregate.count.**} and {@code aggregate.[anything].**}. Counters are summed and
+ * anything else (i.e. gauges) are aggregated by choosing the most recent value.
  *
  * @author Dave Syer
  * @since 1.3.0
@@ -60,7 +59,6 @@ public class AggregateMetricReader implements MetricReader {
 	 * names)</li>
 	 * </ul>
 	 * Default is "d.d" (we assume there is a global prefix of length 2).
-	 *
 	 * @param keyPattern the keyPattern to set
 	 */
 	public void setKeyPattern(String keyPattern) {
@@ -68,13 +66,15 @@ public class AggregateMetricReader implements MetricReader {
 	}
 
 	/**
-	 * Prefix to apply to all output metrics. A period will be appended if not present in the
-	 * provided value.
-	 *
+	 * Prefix to apply to all output metrics. A period will be appended if not present in
+	 * the provided value.
 	 * @param prefix the prefix to use (default "aggregator.")
 	 */
 	public void setPrefix(String prefix) {
-		this.prefix = prefix.endsWith(".") ? prefix : (StringUtils.hasText(prefix) ? prefix + "." : "");
+		if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
+		this.prefix = prefix;
 	}
 
 	@Override
@@ -139,20 +139,15 @@ public class AggregateMetricReader implements MetricReader {
 		String[] keys = StringUtils.delimitedListToStringArray(name, ".");
 		String[] patterns = StringUtils.delimitedListToStringArray(this.keyPattern, ".");
 		StringBuilder builder = new StringBuilder();
-		int index = 0;
-		for (index = 0; index < patterns.length; index++) {
-			if ("k".equals(patterns[index])) {
-				if (builder.length() > 0) {
-					builder.append(".");
-				}
-				builder.append(keys[index]);
+		for (int i = 0; i < patterns.length; i++) {
+			if ("k".equals(patterns[i])) {
+				builder.append(builder.length() > 0 ? "." : "");
+				builder.append(keys[i]);
 			}
 		}
-		for (; index < keys.length; index++) {
-			if (builder.length() > 0) {
-				builder.append(".");
-			}
-			builder.append(keys[index]);
+		for (int i = patterns.length; i < keys.length; i++) {
+			builder.append(builder.length() > 0 ? "." : "");
+			builder.append(keys[i]);
 		}
 		return builder.toString();
 	}
