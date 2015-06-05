@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.annotation.Persistent;
-import org.springframework.data.authentication.UserCredentials;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
@@ -60,6 +59,7 @@ import org.springframework.util.StringUtils;
 
 import com.mongodb.DB;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's mongo support.
@@ -74,6 +74,7 @@ import com.mongodb.Mongo;
  * @author Oliver Gierke
  * @author Josh Long
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
@@ -100,15 +101,8 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoDbFactory mongoDbFactory(Mongo mongo) throws Exception {
+	public MongoDbFactory mongoDbFactory(MongoClient mongo) throws Exception {
 		String database = this.properties.getMongoClientDatabase();
-		String authDatabase = this.properties.getAuthenticationDatabase();
-		if (StringUtils.hasLength(authDatabase)) {
-			String username = this.properties.getUsername();
-			String password = new String(this.properties.getPassword());
-			UserCredentials credentials = new UserCredentials(username, password);
-			return new SimpleMongoDbFactory(mongo, database, credentials, authDatabase);
-		}
 		return new SimpleMongoDbFactory(mongo, database);
 	}
 
