@@ -939,19 +939,18 @@ which can be used to copy metric readings from the in-memory buffers to a place 
 can be analyzed and displayed. Indeed, if you provide a `@Bean` that implements the
 `MetricWriter` interface and mark it `@ExportMetricWriter`, then it will automatically be
 hooked up to an `Exporter` and fed metric updates every 5 seconds (configured via
-`spring.metrics.export.delayMillis`) via a `@Scheduled` annotation in
-`MetricRepositoryAutoConfiguration`. In addition, any `MetricReader` that you define and
+`spring.metrics.export.delay-millis`). In addition, any `MetricReader` that you define and
 mark as `@ExportMetricReader` will have its values exported by the default exporter.
 
 
 The default exporter is a `MetricCopyExporter` which tries to optimize itself by not
 copying values that haven't changed since it was last called (the optimization can be
-switched off using a flag `spring.metrics.export.sendLatest`). Note also that the
+switched off using a flag `spring.metrics.export.send-latest`). Note also that the
 Dropwizard `MetricRegistry` has no support for timestamps, so the optimization is not
 available if you are using Dropwizard metrics (all metrics will be copied on every tick).
 
-The default values for the export trigger (`delayMillis`, `includes`, `excludes`,
-`ignoreTimestamps` and `sendLatest`) can be set as `spring.metrics.export.\*`. Individual
+The default values for the export trigger (`delay-millis`, `includes`, `excludes`
+and `send-latest`) can be set as `spring.metrics.export.\*`. Individual
 values for specific `MetricWriters` can be set as
 `spring.metrics.export.triggers.<name>.*` where `<name>` is a bean name (or pattern for
 matching bean names).
