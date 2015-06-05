@@ -545,7 +545,7 @@ public class Restarter {
 	}
 
 	/**
-	 * {@link ThreadFactory} that creates a leak safe thead.
+	 * {@link ThreadFactory} that creates a leak safe thread.
 	 */
 	private class LeakSafeThreadFactory implements ThreadFactory {
 

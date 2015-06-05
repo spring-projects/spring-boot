@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Scope;
 
 /**
- * Restart {@code @Scope} Annotation used to indicate that a bean shoul remain beteen
+ * Restart {@code @Scope} Annotation used to indicate that a bean should remain between
  * restarts.
  *
  * @author Phillip Webb
