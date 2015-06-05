@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.redis;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -40,29 +42,34 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Christoph Strobl
+ * @author Eddú Meléndez
  */
 public class RedisAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
+	@Before
+	public void setup() {
+		this.context = new AnnotationConfigApplicationContext();
+	}
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void testDefaultRedisConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(RedisAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
 		assertNotNull(this.context.getBean(StringRedisTemplate.class));
 	}
 
 	@Test
 	public void testOverrideRedisConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.redis.host:foo");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.redis.database:1");
-		this.context.register(RedisAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load("spring.redis.host:foo", "spring.redis.database:1");
 		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
 				.getHostName());
 		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getDatabase());
@@ -70,12 +77,7 @@ public class RedisAutoConfigurationTests {
 
 	@Test
 	public void testRedisConfigurationWithPool() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.redis.host:foo");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.redis.pool.max-idle:1");
-		this.context.register(RedisAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load("spring.redis.host:foo", "spring.redis.pool.max-idle:1");
 		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
 				.getHostName());
 		assertEquals(1, this.context.getBean(JedisConnectionFactory.class)
@@ -83,20 +85,21 @@ public class RedisAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRedisConfigurationWithTimeout() throws Exception {
+		load("spring.redis.host:foo", "spring.redis.timeout:100");
+		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
+				.getHostName());
+		assertEquals(100, this.context.getBean(JedisConnectionFactory.class)
+				.getTimeout());
+	}
+
+	@Test
 	public void testRedisConfigurationWithSentinel() throws Exception {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
 
 		if (isAtLeastOneSentinelAvailable(sentinels)) {
-			this.context = new AnnotationConfigApplicationContext();
-			EnvironmentTestUtils.addEnvironment(this.context,
-					"spring.redis.sentinel.master:mymaster");
-			EnvironmentTestUtils.addEnvironment(
-					this.context,
-					"spring.redis.sentinel.nodes:"
-							+ StringUtils.collectionToCommaDelimitedString(sentinels));
-			this.context.register(RedisAutoConfiguration.class,
-					PropertyPlaceholderAutoConfiguration.class);
-			this.context.refresh();
+			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
+					+ StringUtils.collectionToCommaDelimitedString(sentinels));
 
 			assertTrue(this.context.getBean(JedisConnectionFactory.class)
 					.isRedisSentinelAware());
@@ -136,6 +139,20 @@ public class RedisAutoConfigurationTests {
 				}
 			}
 		}
+	}
+
+	private void load(String... environment) {
+		this.context = doLoad(environment);
+	}
+
+	private AnnotationConfigApplicationContext doLoad(
+			String... environment) {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+		applicationContext.register(RedisAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		applicationContext.refresh();
+		return applicationContext;
 	}
 
 }
