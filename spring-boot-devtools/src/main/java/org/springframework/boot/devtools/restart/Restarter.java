@@ -157,6 +157,7 @@ public class Restarter {
 				@Override
 				public Void call() throws Exception {
 					start();
+					cleanupCaches();
 					return null;
 				}
 
