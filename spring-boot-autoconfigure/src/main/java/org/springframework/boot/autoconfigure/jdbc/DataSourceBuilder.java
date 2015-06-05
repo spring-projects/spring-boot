@@ -33,7 +33,7 @@ import org.springframework.util.ClassUtils;
  * and so that there can be a fallback to an embedded database if one can be detected on
  * the classpath, only a small set of common configuration properties are supported. To
  * inject additional properties into the result you can downcast it, or use
- * <code>@ConfigurationProperties</code>.
+ * {@code @ConfigurationProperties}.
  *
  * @author Dave Syer
  * @since 1.1.0

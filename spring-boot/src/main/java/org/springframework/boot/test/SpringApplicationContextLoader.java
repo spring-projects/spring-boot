@@ -62,8 +62,8 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * {@code @WebAppConfiguration}) to indicate that you want to use a real servlet container
  * or {@code @WebAppConfiguration} alone to use a {@link MockServletContext}.
  * <p>
- * If <code>@ActiveProfiles</code> are provided in the test class they will be used to
- * create the application context.
+ * If {@code @ActiveProfiles} are provided in the test class they will be used to create
+ * the application context.
  *
  * @author Dave Syer
  * @author Phillip Webb

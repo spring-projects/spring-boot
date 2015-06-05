@@ -42,7 +42,7 @@ import org.springframework.util.ReflectionUtils;
 /**
  * Configuration for OAuth2 Single Sign On (SSO) when there is an existing
  * {@link WebSecurityConfigurerAdapter} provided by the user and annotated with
- * <code>@EnableOAuth2Sso</code>. The user-provided configuration is enhanced by adding an
+ * {@code @EnableOAuth2Sso}. The user-provided configuration is enhanced by adding an
  * authentication filter and an authentication entry point.
  *
  * @author Dave Syer

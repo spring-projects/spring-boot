@@ -63,12 +63,12 @@ import com.codahale.metrics.MetricRegistry;
  * {@link MetricRegistry} will be created and the default counter and gauge services will
  * switch to using it instead of the default repository. Users can create "special"
  * Dropwizard metrics by prefixing their metric names with the appropriate type (e.g.
- * "histogram.*", "meter.*". "timer.*") and sending them to the <code>GaugeService</code>
- * or <code>CounterService</code>.
+ * "histogram.*", "meter.*". "timer.*") and sending them to the {@code GaugeService} or
+ * {@code CounterService}.
  * <p>
  * By default all metric updates go to all {@link MetricWriter} instances in the
  * application context via a {@link MetricCopyExporter} firing every 5 seconds (disable
- * this by setting <code>spring.metrics.export.enabled=false</code>).
+ * this by setting {@code spring.metrics.export.enabled=false}).
  *
  * @see GaugeService
  * @see CounterService

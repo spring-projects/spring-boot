@@ -64,8 +64,8 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
  * <p>
  * To protect sensitive information from being exposed, certain property values are masked
  * if their names end with a set of configurable values (default "password" and "secret").
- * Configure property names by using <code>endpoints.configprops.keys_to_sanitize</code>
- * in your Spring Boot application configuration.
+ * Configure property names by using {@code endpoints.configprops.keys_to_sanitize} in
+ * your Spring Boot application configuration.
  *
  * @author Christian Dupuis
  * @author Dave Syer

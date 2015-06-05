@@ -26,11 +26,11 @@ import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 import org.springframework.util.StringUtils;
 
 /**
- * MBean naming strategy for metric keys. A metric name of
- * <code>counter.foo.bar.spam</code> translates to an object name with
- * <code>type=counter</code>, <code>name=foo</code> and <code>value=bar.spam</code>. This
- * results in a more or less pleasing view with no tweaks in jconsole or jvisualvm. The
- * domain is copied from the input key and the type in the input key is discarded.
+ * MBean naming strategy for metric keys. A metric name of {@code counter.foo.bar.spam}
+ * translates to an object name with {@code type=counter}, {@code name=foo} and
+ * {@code value=bar.spam}. This results in a more or less pleasing view with no tweaks in
+ * jconsole or jvisualvm. The domain is copied from the input key and the type in the
+ * input key is discarded.
  *
  * @author Dave Syer
  * @since 1.3.0

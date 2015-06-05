@@ -26,18 +26,18 @@ import org.springframework.core.Ordered;
 /**
  * An {@link ApplicationListener} that halts application startup if the system file
  * encoding does not match an expected value set in the environment. By default has no
- * effect, but if you set <code>spring.mandatory_file_encoding</code> (or some camelCase
- * or UPPERCASE variant of that) to the name of a character encoding (e.g. "UTF-8") then
- * this initializer throws an exception when the <code>file.encoding</code> System
- * property does not equal it.
+ * effect, but if you set {@code spring.mandatory_file_encoding} (or some camelCase or
+ * UPPERCASE variant of that) to the name of a character encoding (e.g. "UTF-8") then this
+ * initializer throws an exception when the {@code file.encoding} System property does not
+ * equal it.
  *
  * <p>
- * The System property <code>file.encoding</code> is normally set by the JVM in response
- * to the <code>LANG</code> or <code>LC_ALL</code> environment variables. It is used
- * (along with other platform-dependent variables keyed off those environment variables)
- * to encode JVM arguments as well as file names and paths. In most cases you can override
- * the file encoding System property on the command line (with standard JVM features), but
- * also consider setting the <code>LANG</code> environment variable to an explicit
+ * The System property {@code file.encoding} is normally set by the JVM in response to the
+ * {@code LANG} or {@code LC_ALL} environment variables. It is used (along with other
+ * platform-dependent variables keyed off those environment variables) to encode JVM
+ * arguments as well as file names and paths. In most cases you can override the file
+ * encoding System property on the command line (with standard JVM features), but also
+ * consider setting the {@code LANG} environment variable to an explicit
  * character-encoding value (e.g. "en_GB.UTF-8").
  *
  * @author Dave Syer

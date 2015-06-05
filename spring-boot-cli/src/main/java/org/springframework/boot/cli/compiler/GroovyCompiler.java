@@ -55,7 +55,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  * features:
  * <ul>
  * <li>{@link CompilerAutoConfiguration} strategies will be read from
- * <code>META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration</code>
+ * {@code META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration}
  * (per the standard java {@link ServiceLoader} contract) and applied during compilation</li>
  *
  * <li>Multiple classes can be returned if the Groovy source defines more than one Class</li>

@@ -60,10 +60,10 @@ import org.springframework.util.StringUtils;
  * </pre>
  *
  * These objects are flattened into properties. The VCAP_APPLICATION object goes straight
- * to <code>vcap.application.*</code> in a fairly obvious way, and the VCAP_SERVICES
- * object is unwrapped so that it is a hash of objects with key equal to the service
- * instance name (e.g. "mysql" in the example above), and value equal to that instances
- * properties, and then flattened in the same way. E.g.
+ * to {@code vcap.application.*} in a fairly obvious way, and the VCAP_SERVICES object is
+ * unwrapped so that it is a hash of objects with key equal to the service instance name
+ * (e.g. "mysql" in the example above), and value equal to that instances properties, and
+ * then flattened in the same way. E.g.
  *
  * <pre class="code">
  * vcap.application.instance_id: 2ce0ac627a6c8e47e936d829a3a47b5b

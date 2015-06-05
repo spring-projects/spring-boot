@@ -130,7 +130,7 @@ public class OAuth2RestOperationsConfiguration {
 	 * When the authentication is per cookie but the stored token is an oauth2 one, we can
 	 * pass that on to a client that wants to call downstream. We don't even need an
 	 * OAuth2ClientContextFilter until we need to refresh the access token. To handle
-	 * refresh tokens you need to <code>@EnableOAuth2Client</code>
+	 * refresh tokens you need to {@code @EnableOAuth2Client}
 	 */
 	@Configuration
 	@ConditionalOnMissingBean(OAuth2ClientConfiguration.class)

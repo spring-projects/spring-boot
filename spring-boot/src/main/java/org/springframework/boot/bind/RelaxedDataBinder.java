@@ -124,8 +124,8 @@ public class RelaxedDataBinder extends DataBinder {
 	/**
 	 * Modify the property values so that period separated property paths are valid for
 	 * map keys. Also creates new maps for properties of map type that are null (assuming
-	 * all maps are potentially nested). The standard bracket <code>[...]</code>
-	 * dereferencing is also accepted.
+	 * all maps are potentially nested). The standard bracket {@code[...]} dereferencing
+	 * is also accepted.
 	 * @param propertyValues the property values
 	 * @param target the target object
 	 */

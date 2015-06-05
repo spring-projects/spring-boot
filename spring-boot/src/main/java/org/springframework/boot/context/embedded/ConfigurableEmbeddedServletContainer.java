@@ -81,10 +81,10 @@ public interface ConfigurableEmbeddedServletContainer {
 
 	/**
 	 * The class name for the jsp servlet if used. If
-	 * {@link #setRegisterJspServlet(boolean) <code>registerJspServlet</code>} is true
-	 * <b>and</b> this class is on the classpath then it will be registered. Since both
-	 * Tomcat and Jetty use Jasper for their JSP implementation the default is
-	 * <code>org.apache.jasper.servlet.JspServlet</code>.
+	 * {@link #setRegisterJspServlet(boolean) registerJspServlet} is true <b>and</b> this
+	 * class is on the classpath then it will be registered. Since both Tomcat and Jetty
+	 * use Jasper for their JSP implementation the default is
+	 * {@code org.apache.jasper.servlet.JspServlet}.
 	 * @param jspServletClassName the class name for the JSP servlet if used
 	 * @deprecated in 1.3.0 in favor of {@link JspServlet#setClassName(String)}
 	 * @see #setJspServlet

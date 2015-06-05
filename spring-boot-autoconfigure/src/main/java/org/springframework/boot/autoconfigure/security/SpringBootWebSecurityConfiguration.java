@@ -67,17 +67,16 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
  * ). Many aspects of the behavior can be controller with {@link SecurityProperties} via
  * externalized application properties (or via an bean definition of that type to set the
  * defaults). The user details for authentication are just placeholders
- * <code>(username=user,
- * password=password)</code> but can easily be customized by providing a bean definition
- * of type {@link AuthenticationManager}. Also provides audit logging of authentication
- * events.
+ * {@code (username=user, password=password)} but can easily be customized by providing a
+ * bean definition of type {@link AuthenticationManager}. Also provides audit logging of
+ * authentication events.
  * <p>
  * Some common simple customizations:
  * <ul>
  * <li>Switch off security completely and permanently: remove Spring Security from the
  * classpath or {@link EnableAutoConfiguration#exclude() exclude} this configuration.</li>
  * <li>Switch off security temporarily (e.g. for a dev environment): set
- * <code>security.basic.enabled: false</code></li>
+ * {@code security.basic.enabled: false}</li>
  * <li>Customize the user details: add an AuthenticationManager bean</li>
  * <li>Add form login for user facing resources: add a
  * {@link WebSecurityConfigurerAdapter} and use {@link HttpSecurity#formLogin()}</li>

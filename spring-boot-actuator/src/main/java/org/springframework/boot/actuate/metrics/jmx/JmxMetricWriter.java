@@ -38,8 +38,8 @@ import org.springframework.jmx.export.naming.ObjectNamingStrategy;
  * A {@link MetricWriter} for MBeans. Each metric is registered as an individual MBean, so
  * (for instance) it can be graphed and monitored. The object names are provided by an
  * {@link ObjectNamingStrategy}, where the default is a
- * {@link DefaultMetricNamingStrategy} which provides <code>type</code>, <code>name</code>
- * and <code>value</code> keys by splitting up the metric name on periods.
+ * {@link DefaultMetricNamingStrategy} which provides {@code type}, {@code name} and
+ * {@code value} keys by splitting up the metric name on periods.
  *
  * @author Dave Syer
  * @since 1.3.0
