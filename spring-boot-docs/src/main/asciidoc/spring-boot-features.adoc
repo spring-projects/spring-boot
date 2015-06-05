@@ -2318,7 +2318,7 @@ relevant annotation to its method:
 ----
 
 NOTE: You can either use the standard JSR-107 (JCache) annotations or Spring's own
-caching annotations transparently. We strongly advice you however to not mix and match
+caching annotations transparently. We strongly advise you however to not mix and match
 them.
 
 TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
