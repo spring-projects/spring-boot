@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Dave Syer
  * @author Christoph Strobl
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -50,6 +51,11 @@ public class RedisProperties {
 	private Pool pool;
 
 	private Sentinel sentinel;
+
+	/**
+	 * Timeout to set in milliseconds.
+	 */
+	private int timeout;
 
 	public String getHost() {
 		return this.host;
@@ -93,6 +99,14 @@ public class RedisProperties {
 
 	public Sentinel getSentinel() {
 		return this.sentinel;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+
+	public int getTimeout() {
+		return this.timeout;
 	}
 
 	public void setSentinel(Sentinel sentinel) {
