@@ -132,7 +132,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * jar.
 	 * @since 1.3
 	 */
-	@Parameter(defaultValue = "true")
+	@Parameter(defaultValue = "false")
 	private boolean executable;
 
 	/**
@@ -218,7 +218,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private LaunchScript getLaunchScript() throws IOException {
-		if (this.executable) {
+		if (this.executable || this.embeddedLaunchScript != null) {
 			return new DefaultLaunchScript(this.embeddedLaunchScript,
 					this.embeddedLaunchScriptProperties);
 		}

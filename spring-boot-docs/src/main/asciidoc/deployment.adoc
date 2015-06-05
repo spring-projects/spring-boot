@@ -305,10 +305,39 @@ of this guide.
 [[deployment-service]]
 == Installing Spring Boot applications
 In additional to running Spring Boot applications using `java -jar` it is also possible
-to execute applications directly on Unix systems (Linux, OSX, FreeBSD etc). This makes it
-very easy to install and manage Spring Boot applications in common production
-environments. As long as you are generating '`fully executable`' jars from your build, and
-you are not using a custom `embeddedLaunchScript`, the following techniques can be used.
+to make fully executable applications for Unix systems (Linux, OSX, FreeBSD etc).
+This makes it very easy to install and manage Spring Boot applications in common
+production environments. As long as you are generating '`fully executable`' jars from your
+build, and you are not using a custom `embeddedLaunchScript`, the following techniques
+can be used.
+
+To create a '`fully executable`' jar with Maven use the following plugin configuration:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<plugin>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-maven-plugin</artifactId>
+		<configuration>
+			<executable>true</executable>
+		</configuration>
+	</plugin>
+----
+
+With Gradle, the equivalent configuration would be:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	apply plugin: 'spring-boot'
+
+	springBoot {
+		executable = true
+	}
+----
+
+NOTE: Fully executable jars work by embedding an extra script at the front of the file.
+Not all tools currently accept this format so you may not always be able to use this
+technique.
 
 
 
@@ -318,9 +347,9 @@ or `systemd`.
 
 
 
-==== Installation as a init.d (System V) service
-The default executable script that is embedded into Spring Boot executable jars will act
-as an `init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
+==== Installation as a init.d service (System V)
+The default executable script that can be embedded into Spring Boot jars will act as an
+`init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
 `restart` and `status` commands can be used. The script supports the following features:
 
 * Starts the services as the user that owns the jar file
@@ -349,7 +378,32 @@ if you use Debian:
 
 
 
-=== Running a JAR as a regular (not service) script
+==== Installation as a systemd service
+Systemd is the successor to `init.d` scripts, and now being used by many many modern Linux
+distributions. Although you can continue to use `init.d` script with `systemd`, it is also
+possible to launch Spring Boot applications using `systemd` '`service`' scripts.
+
+For example, to run a Spring Boot application installed in `var/myapp` you can add the
+following script in `/etc/systemd/system/myapp.service`:
+
+[indent=0]
+----
+	[Unit]
+	Description=myapp
+	After=syslog.target
+
+	[Service]
+	ExecStart=/var/myapp/myapp.jar
+
+	[Install]
+	WantedBy=multi-user.target
+----
+
+TIP: Remember to change the `Description` and `ExecStart` fields for your application.
+
+
+
+==== Customizing the startup script
 The script accepts the following parameters as environment variables, so you can change
 the default behavior in a script or on the command line:
 
@@ -358,11 +412,11 @@ the default behavior in a script or on the command line:
 |Variable |Description
 
 |`MODE`
-|The "mode" of operation. The default depends on the way the jar was built, but will
- usually be "auto" (meaning it tries to guess if it is an init script by checking if it
- is a symlink in a directory called "init.d"). You can explicitly set it to "service" so
- that the "stop|start|status|restart" commands work, or to "run" if you just want to run
- the script and not in the background.
+|The "`mode`" of operation. The default depends on the way the jar was built, but will
+ usually be `auto` _(meaning it tries to guess if it is an init script by checking if it
+ is a symlink in a directory called `init.d`)_. You can explicitly set it to `service` so
+ that the `stop\|start\|status\|restart` commands work, or to `run` if you just want to
+ run the script in the foreground.
 
 |`PID_FOLDER`
 |The root name of the pid folder (`/var/run` by default).
@@ -387,31 +441,6 @@ the default behavior in a script or on the command line:
 |if not empty will set the `-x` flag on the shell process, making it easy to see the logic
  in the script.
 |===
-
-
-
-==== Installation as a systemd service
-Systemd is the successor to `init.d` scripts, and now being used by many many modern Linux
-distributions. Although you can continue to use `init.d` script with `systemd`, it is also
-possible to launch Spring Boot applications using `systemd` '`service`' scripts.
-
-For example, to run a Spring Boot application installed in `var/myapp` you can add the
-following script in `/etc/systemd/system/myapp.service`:
-
-[indent=0]
-----
-	[Unit]
-	Description=myapp
-	After=syslog.target
-
-	[Service]
-	ExecStart=/var/myapp/myapp.jar
-
-	[Install]
-	WantedBy=multi-user.target
-----
-
-TIP: Remember to change the `Description` and `ExecStart` fields for your application.
 
 
 
