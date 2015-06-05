@@ -67,7 +67,7 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache> implem
 	 * {@code null} if none is found.
 	 * @param cache the cache to handle
 	 * @return the object name of the cache statistics MBean
-	 * @throws MalformedObjectNameException
+	 * @throws MalformedObjectNameException if the {@link ObjectName} for that cache is invalid
 	 */
 	protected abstract ObjectName getObjectName(C cache)
 			throws MalformedObjectNameException;

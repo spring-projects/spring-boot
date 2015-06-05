@@ -27,11 +27,9 @@ import org.springframework.util.StringUtils;
 /**
  * A metric reader that aggregates values from a source reader, normally one that has been
  * collecting data from many sources in the same form (like a scaled-out application). The
- * source has metrics with names in the form <code>*.*.counter.**</code> and
- * <code>*.*.[anything].**</code> (the length of the prefix is controlled by the
- * {@link #setTruncateKeyLength(int) truncateKeyLength} property, and defaults to 2,
- * meaning 2 period separated fields), and the result has metric names in the form
- * <code>aggregate.count.**</code> and <code>aggregate.[anything].**</code>. Counters are
+ * source has metrics with names in the form {@code *.*.counter.**} and
+ * {@code *.*.[anything].**}, and the result has metric names in the form
+ * {@code aggregate.count.**} and {@code aggregate.[anything].**}. Counters are
  * summed and anything else (i.e. gauges) are aggregated by choosing the most recent
  * value.
  *

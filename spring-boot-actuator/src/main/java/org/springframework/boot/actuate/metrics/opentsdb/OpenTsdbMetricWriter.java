@@ -40,7 +40,7 @@ import org.springframework.web.client.RestTemplate;
  * {@link #setBufferSize(int) bufferSize} property, and only flushed automatically when
  * the buffer size is reached. Users should either manually {@link #flush()} after writing
  * a batch of data if that makes sense, or consider adding a {@link Scheduled
- * <code>@Scheduled</code>} task to flush periodically.
+ * Scheduled} task to flush periodically.
  *
  * @author Dave Syer
  * @since 1.3.0
