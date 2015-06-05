@@ -52,6 +52,7 @@ import redis.clients.jedis.JedisPoolConfig;
  * @author Christian Dupuis
  * @author Christoph Strobl
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
@@ -83,6 +84,9 @@ public class RedisAutoConfiguration {
 				factory.setPassword(this.properties.getPassword());
 			}
 			factory.setDatabase(this.properties.getDatabase());
+			if(this.properties.getTimeout() > 0) {
+				factory.setTimeout(this.properties.getTimeout());
+			}
 			return factory;
 		}
 
