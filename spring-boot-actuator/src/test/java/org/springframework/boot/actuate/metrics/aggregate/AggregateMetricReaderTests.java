@@ -16,15 +16,15 @@
 
 package org.springframework.boot.actuate.metrics.aggregate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.Date;
 
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.writer.Delta;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * Tests for {@link AggregateMetricReader}.
@@ -44,16 +44,39 @@ public class AggregateMetricReaderTests {
 	}
 
 	@Test
-	public void writeAndReadLatestValue() {
-		this.source.set(new Metric<Double>("foo.bar.spam", 2.3, new Date(100L)));
-		this.source.set(new Metric<Double>("oof.rab.spam", 2.4, new Date(0L)));
-		assertEquals(2.3, this.reader.findOne("aggregate.spam").getValue());
+	public void defaultKeyPattern() {
+		this.source.set(new Metric<Double>("foo.bar.spam.bucket.wham", 2.3));
+		assertEquals(2.3, this.reader.findOne("aggregate.spam.bucket.wham").getValue());
+	}
+
+	@Test
+	public void addKeyPattern() {
+		this.source.set(new Metric<Double>("foo.bar.spam.bucket.wham", 2.3));
+		this.reader.setKeyPattern("d.d.k.d");
+		assertEquals(2.3, this.reader.findOne("aggregate.spam.wham").getValue());
+	}
+
+	@Test
+	public void addPrefix() {
+		this.source.set(new Metric<Double>("foo.bar.spam.bucket.wham", 2.3));
+		this.source.set(new Metric<Double>("off.bar.spam.bucket.wham", 2.4));
+		this.reader.setPrefix("www");
+		this.reader.setKeyPattern("k.d.k.d");
+		assertEquals(2.3, this.reader.findOne("www.foo.spam.wham").getValue());
+		assertEquals(2, this.reader.count());
 	}
 
 	@Test
 	public void writeAndReadExtraLong() {
 		this.source.set(new Metric<Double>("blee.foo.bar.spam", 2.3));
-		this.reader.setTruncateKeyLength(3);
+		this.reader.setKeyPattern("d.d.d.k");
+		assertEquals(2.3, this.reader.findOne("aggregate.spam").getValue());
+	}
+
+	@Test
+	public void writeAndReadLatestValue() {
+		this.source.set(new Metric<Double>("foo.bar.spam", 2.3, new Date(100L)));
+		this.source.set(new Metric<Double>("oof.rab.spam", 2.4, new Date(0L)));
 		assertEquals(2.3, this.reader.findOne("aggregate.spam").getValue());
 	}
 

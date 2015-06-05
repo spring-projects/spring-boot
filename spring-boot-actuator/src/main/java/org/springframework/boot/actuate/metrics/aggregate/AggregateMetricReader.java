@@ -42,7 +42,7 @@ public class AggregateMetricReader implements MetricReader {
 
 	private MetricReader source;
 
-	private int truncate = 2;
+	private String keyPattern = "d.d";
 
 	private String prefix = "aggregate.";
 
@@ -51,21 +51,32 @@ public class AggregateMetricReader implements MetricReader {
 	}
 
 	/**
-	 * The number of period-separated keys to remove from the start of the input metric
-	 * names before aggregating.
-	 * @param truncate length of source metric prefixes
+	 * Pattern that tells the aggregator what to do with the keys from the source
+	 * repository. The keys in the source repository are assumed to be period separated,
+	 * and the pattern is in the same format, e.g. "d.d.k.d". The pattern segments are
+	 * matched against the source keys and a rule is applied:
+	 * <ul>
+	 * <li>"d" means "discard" this key segment (useful for global prefixes like system
+	 * identifiers, or aggregate keys a.k.a. physical identifiers)</li>
+	 * <li>"k" means "keep" it with no change (useful for logical identifiers like app
+	 * names)</li>
+	 * </ul>
+	 * Default is "d.d" (we assume there is a global prefix of length 2).
+	 *
+	 * @param keyPattern the keyPattern to set
 	 */
-	public void setTruncateKeyLength(int truncate) {
-		this.truncate = truncate;
+	public void setKeyPattern(String keyPattern) {
+		this.keyPattern = keyPattern;
 	}
 
 	/**
-	 * Prefix to apply to all output metrics. A period will be appended if no present in
-	 * the provided value.
-	 * @param prefix the prefix to use default "aggregator.")
+	 * Prefix to apply to all output metrics. A period will be appended if not present in the
+	 * provided value.
+	 *
+	 * @param prefix the prefix to use (default "aggregator.")
 	 */
 	public void setPrefix(String prefix) {
-		this.prefix = prefix.endsWith(".") ? prefix : prefix + ".";
+		this.prefix = prefix.endsWith(".") ? prefix : (StringUtils.hasText(prefix) ? prefix + "." : "");
 	}
 
 	@Override
@@ -128,12 +139,22 @@ public class AggregateMetricReader implements MetricReader {
 
 	private String getSourceKey(String name) {
 		String[] keys = StringUtils.delimitedListToStringArray(name, ".");
-		if (keys.length <= this.truncate) {
-			return null;
+		String[] patterns = StringUtils.delimitedListToStringArray(this.keyPattern, ".");
+		StringBuilder builder = new StringBuilder();
+		int index = 0;
+		for (index = 0; index < patterns.length; index++) {
+			if ("k".equals(patterns[index])) {
+				if (builder.length() > 0) {
+					builder.append(".");
+				}
+				builder.append(keys[index]);
+			}
 		}
-		StringBuilder builder = new StringBuilder(keys[this.truncate]);
-		for (int i = this.truncate + 1; i < keys.length; i++) {
-			builder.append(".").append(keys[i]);
+		for (; index < keys.length; index++) {
+			if (builder.length() > 0) {
+				builder.append(".");
+			}
+			builder.append(keys[index]);
 		}
 		return builder.toString();
 	}

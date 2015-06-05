@@ -24,7 +24,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.PatternMatchUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for metrics export.
@@ -105,8 +104,8 @@ public class MetricExportProperties extends TriggerProperties {
 		/**
 		 * Prefix for redis repository if active. Should be unique for this JVM, but most
 		 * useful if it also has the form "x.y.a.b" where "x.y" is globally unique across
-		 * all processes sharing the same repository, "a" is unique to this physical
-		 * process and "b" is unique to this logical process (this application). If you
+		 * all processes sharing the same repository, "a" is unique to this logical
+		 * process (this application) and "b" is unique to this physical process. If you
 		 * set spring.application.name elsewhere, then the default will be in the right
 		 * form.
 		 */
@@ -117,6 +116,15 @@ public class MetricExportProperties extends TriggerProperties {
 		 * system sharing a redis repository.
 		 */
 		private String key = "keys.spring.metrics";
+
+		/**
+		 * Pattern that tells the aggregator what to do with the keys from the source
+		 * repository. The keys in the source repository are assumed to be period
+		 * separated, and the pattern is in the same format, e.g. "d.d.k.d". Here "d"
+		 * means "discard" and "k" means "keep" the key segment in the corresponding
+		 * position in the source.
+		 */
+		private String aggregateKeyPattern = "";
 
 		public String getPrefix() {
 			return this.prefix;
@@ -134,14 +142,22 @@ public class MetricExportProperties extends TriggerProperties {
 			this.key = key;
 		}
 
+		public String getAggregateKeyPattern() {
+			return this.aggregateKeyPattern;
+		}
+
+		public void setAggregateKeyPattern(String keyPattern) {
+			this.aggregateKeyPattern = keyPattern;
+		}
+
 		public String getAggregatePrefix() {
-			String[] tokens = StringUtils.delimitedListToStringArray(this.prefix, ".");
-			if (tokens.length > 1) {
-				if (StringUtils.hasText(tokens[1])) {
-					// If the prefix has 2 or more non-trivial parts, use the first 1
-					// (the aggregator strips a further 2 by default).
-					return tokens[0];
-				}
+			if (this.key.startsWith("keys.")) {
+				return this.key.substring("keys.".length());
+			}
+			// Something that is safe (not empty) but not the whole prefix (on the
+			// assumption that it contains dimension keys)
+			if (this.prefix.contains(".") && !this.prefix.endsWith(".")) {
+				return this.prefix.substring(this.prefix.indexOf("." + 1));
 			}
 			return this.prefix;
 		}

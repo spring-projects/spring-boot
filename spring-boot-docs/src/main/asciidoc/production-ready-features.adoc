@@ -985,11 +985,11 @@ MetricWriter metricWriter(MetricExportProperties export) {
 .application.properties
 [source,properties]
 ----
-spring.metrics.export.redis.prefix: metrics.mysystem.${random.value:0000}.${spring.application.name:application}
-spring.metrics.export.redis.key: keys.mysystem
+spring.metrics.export.redis.prefix: metrics.mysystem.${spring.application.name:application}.${random.value:0000}
+spring.metrics.export.redis.key: keys.metrics.mysystem
 ----
 
-The prefix is constructed with the application name at the end, so it can easily be used
+The prefix is constructed with the application name and id at the end, so it can easily be used
 to identify a group of processes with the same logical name later.
 
 NOTE: it's important to set both the key and the prefix. The key is used for all
@@ -1128,7 +1128,8 @@ results to the "/metrics" endpoint. Example:
 
 NOTE: the example above uses `MetricExportProperties` to inject and
 extract the key and prefix. This is provided to you as a convenience
-by Spring Boot, and the defaults for that will be sensible.
+by Spring Boot, and the defaults will be sensible. They are set up in 
+`MetricExportAutoConfiguration`.
 
 NOTE: the `MetricReaders` above are not `@Beans` and are not marked as
 `@ExportMetricReader` because they are just collecting and analysing
