@@ -4,7 +4,7 @@
 [partintro]
 --
 If you're just getting started with Spring Boot, or 'Spring' in general, this is the section
-for you! Here we answer the basic '"`what?`"', '"`how?`"' and '"`why?`"' questions. You'll
+for you! Here we answer the basic "`what?`", "`how?`" and "`why?`" questions. You'll
 find a gentle introduction to Spring Boot along with installation instructions.
 We'll then build our first Spring Boot application, discussing some core principles as
 we go.
@@ -524,7 +524,7 @@ endif::[]
 ----
 
 This should give you a working build, you can test it out by running `mvn package` (you
-can ignore the "`jar will be empty - no content was marked for inclusion!'`" warning for
+can ignore the "`jar will be empty - no content was marked for inclusion!`" warning for
 now).
 
 NOTE: At this point you could import the project into an IDE (most modern Java IDE's

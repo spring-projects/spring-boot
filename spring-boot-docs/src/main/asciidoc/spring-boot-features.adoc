@@ -1464,208 +1464,192 @@ features add a `@Bean` of type `WebSecurityConfigurerAdapter` with
 
 
 
+[[boot-features-security-oauth2]]
 === OAuth2
 If you have `spring-security-oauth2` on your classpath you can take advantage of some
-autoconfiguration to make it easy to set up Authorization or Resource Server features by
-configuring some property values in the `Environment`.
+auto-configuration to make it easy to set up Authorization or Resource Server.
 
 
 
+[[boot-features-security-oauth2-authorization-server]]
 ==== Authorization Server
-To create an Authorization Server and grant access tokens you need to
-`@EnableAuthorizationServer` and provide
-`spring.oauth2.client.[clientId,clientSecret]`. The client will be
-registered for you in an in-memory repository. Having done that you
-will be able to use the client credentials to create an access token,
-e.g.
+To create an Authorization Server and grant access tokens you need to use
+`@EnableAuthorizationServer` and provide `spring.oauth2.client.client-id` and
+`spring.oauth2.client.client-secret]` properties. The client will be registered for you
+in an in-memory repository.
 
+Having done that you will be able to use the client credentials to create an access token,
+for example:
+
+[indent=0]
 ----
-$ curl client:secret@localhost:8080/oauth/token -d grant_type=password -d username=user -d password=pwd
+	$ curl client:secret@localhost:8080/oauth/token -d grant_type=password -d username=user -d password=pwd
 ----
 
-The basic auth credentials for the `/token` endpoint are the client id
-and secret, and the user credentials are the normal Spring Security
-user details (which default in Spring Boot to "user" and a random
-password).
+The basic auth credentials for the `/token` endpoint are the `client-id` and
+`client-secret`. The user credentials are the normal Spring Security user details (which
+default in Spring Boot to "`user`" and a random password).
 
-To switch off the autoconfiguration and configure the Authorization
-Server features yourself just add a `@Bean` of type
-`AuthorizationServerConfigurer`.
+To switch off the auto-configuration and configure the Authorization Server features
+yourself just add a `@Bean` of type `AuthorizationServerConfigurer`.
 
 
 
+[[boot-features-security-oauth2-resource-server]]
 ==== Resource Server
-To use the access token you need a Resource Server (which can be the
-same as the Authorization Server). Creating a Resource Server is easy:
-just add `@EnableResourceServer` and provide some configuration to
-allow the server to decode access tokens. If your app is also an
-Authorization Server it already knows how to decode tokens, so there
-is nothing else to do. If your app is a standalone service then you
-need to give it some more configuration. Here are the options, one of
-the following:
+To use the access token you need a Resource Server (which can be the same as the
+Authorization Server). Creating a Resource Server is easy, just add
+`@EnableResourceServer` and provide some configuration to allow the server to decode
+access tokens. If your appplication is also an Authorization Server it already knows how
+to decode tokens, so there is nothing else to do. If your app is a standalone service then you
+need to give it some more configuration, one of the following options:
 
-* `spring.oauth2.resource.userInfoUri` to use the "/me" resource
-(e.g. "https://uaa.run.pivotal.io/userinfo" on PWS), or
+* `spring.oauth2.resource.user-info-uri` to use the "/me" resource (e.g.
+"`https://uaa.run.pivotal.io/userinfo`" on PWS)
 
-* `spring.oauth2.resource.tokenInfoUri` to use the token decoding endpoint
-(e.g. "https://uaa.run.pivotal.io/check_token" on PWS).
+* `spring.oauth2.resource.token-info-uri` to use the token decoding endpoint (e.g.
+"`https://uaa.run.pivotal.io/check_token`" on PWS).
 
-If you specify both the `userInfoUri` and the `tokenInfoUri` then
-you can set a flag to say that one is preferred over the other
-(`preferTokenInfo=true` is the default).
+If you specify both the `user-info-uri` and the `token-info-uri` then you can set a flag
+to say that one is preferred over the other (`prefer-token-info=true` is the default).
 
-Alternatively (instead of `userInfoUri` or `tokenInfoUri`) if the
-tokens are JWTs you can configure a
-`spring.oauth2.resource.jwt.keyValue` to decode them locally,
-where the key is a verification key. The verification key value is
-either a symmetric secret or PEM-encoded RSA public key. If you don't
-have the key and it's public you can provide a URI where it can be
-downloaded (as a JSON object with a "value" field) with
-`spring.oauth2.resource.jwt.keyUri`. E.g. on PWS:
+Alternatively (instead of `user-info-uri` or `token-info-uri`) if the tokens are JWTs you
+can configure a `spring.oauth2.resource.jwt.key-value` to decode them locally (where the
+key is a verification key). The verification key value is either a symmetric secret or
+PEM-encoded RSA public key. If you don't have the key and it's public you can provide a
+URI where it can be downloaded (as a JSON object with a "`value`" field) with
+`spring.oauth2.resource.jwt.key-uri`. E.g. on PWS:
 
+[indent=0]
 ----
-$ curl https://uaa.run.pivotal.io/token_key
-{"alg":"SHA256withRSA","value":"-----BEGIN PUBLIC KEY-----\nMIIBI...\n-----END PUBLIC KEY-----\n"}
+	$ curl https://uaa.run.pivotal.io/token_key
+	{"alg":"SHA256withRSA","value":"-----BEGIN PUBLIC KEY-----\nMIIBI...\n-----END PUBLIC KEY-----\n"}
 ----
 
-WARNING: If you use the `spring.oauth2.resource.jwt.keyUri` the
-authorization server needs to be running when your application starts
-up. It will log a warning if it can't find the key, and tell you what
-to do to fix it.
+WARNING: If you use the `spring.oauth2.resource.jwt.key-uri` the authorization server
+needs to be running when your application starts up. It will log a warning if it can't
+find the key, and tell you what to do to fix it.
 
 
 
+[[boot-features-security-oauth2-token-type]]
 === Token Type in User Info
-Google (and certain other 3rd party identity providers) is more strict
-about the token type name that is sent in the headers to the user info
-endpoint. The default is "Bearer" which suits most providers and
-matches the spec, but if you need to change it you can set
-`spring.oauth2.resource.tokenType`.
+Google, and certain other 3rd party identity providers, are more strict about the token
+type name that is sent in the headers to the user info endpoint. The default is "`Bearer`"
+which suits most providers and matches the spec, but if you need to change it you can set
+`spring.oauth2.resource.token-type`.
 
 
 
+[[boot-features-security-custom-user-info]]
 === Customizing the User Info RestTemplate
-If you have a `userInfoUri`, the Resource Server features use an
-`OAuth2RestTemplate` internally to fetch user details for
-authentication. This is provided as a qualified `@Bean` with id
-"userInfoRestTemplate", but you shouldn't need to know that to just
-use it. The default should be fine for most providers, but
-occasionally you might need to add additional interceptors, or change
-the request authenticator (which is how the token gets attached to
-outgoing requests). To add a customization just create a bean of type
-`UserInfoRestTemplateCustomizer` - it has a single method that will be
-called after the bean is created but before it is initialized. The
-rest template that is being customized here is _only_ used internally
-to carry out authentication.
+If you have a `user-info-uri`, the resource server features use an `OAuth2RestTemplate`
+internally to fetch user details for authentication. This is provided as a qualified
+`@Bean` with id `userInfoRestTemplate`, but you shouldn't need to know that to just
+use it. The default should be fine for most providers, but occasionally you might need to
+add additional interceptors, or change the request authenticator (which is how the token
+gets attached to outgoing requests). To add a customization just create a bean of type
+`UserInfoRestTemplateCustomizer` - it has a single method that will be called after the
+bean is created but before it is initialized. The rest template that is being customized
+here is _only_ used internally to carry out authentication.
 
 [TIP]
 ====
-To set an RSA key value in YAML use the "pipe" continuation
-marker to split it over multiple lines ("|") and remember to indent
-the key value (it's a standard YAML language feature). Example:
+To set an RSA key value in YAML use the "`pipe`" continuation marker to split it over
+multiple lines ("`|`") and remember to indent the key value (it's a standard YAML
+language feature). Example:
 
 [source,yaml,indent=0]
 ----
-        oauth2:
-          resource:
-            jwt:
-              keyValue: |
-                -----BEGIN PUBLIC KEY-----
-                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC...
-                -----END PUBLIC KEY-----
+	oauth2:
+		resource:
+			jwt:
+				keyValue: |
+					-----BEGIN PUBLIC KEY-----
+					MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC...
+					-----END PUBLIC KEY-----
 ----
 ====
 
 
 
+[[boot-features-security-custom-user-info-client]]
 ==== Client
-To make your webapp into an OAuth2 client you can simply
-`@EnableOAuth2Client` and Spring Boot will create an
-`OAuth2RestTemplate` for you to autowire. It uses the
-`spring.oauth2.client.*` as credentials (the same as you might be
-using in the Authorization Server), but in addition it will need to
-know the authorization and token URIs in the Authorization Server. For
-example:
+To make your webapp into an OAuth2 client you can simply add `@EnableOAuth2Client` and
+Spring Boot will create an `OAuth2RestTemplate` for you to `@Autowire`. It uses the
+`spring.oauth2.client.*` as credentials (the same as you might be using in the
+Authorization Server), but in addition it will need to know the authorization and token
+URIs in the Authorization Server. For example:
 
 .application.yml
-[source,yaml]
+[source,yaml,indent=0]
 ----
 spring:
-  oauth2:
-    client:
-      clientId: bd1c0a783ccdd1c9b9e4
-      clientSecret: 1a9030fbca47a5b2c28e92f19050bb77824b5ad1
-      accessTokenUri: https://github.com/login/oauth/access_token
-      userAuthorizationUri: https://github.com/login/oauth/authorize
-      clientAuthenticationScheme: form
+	oauth2:
+		client:
+			clientId: bd1c0a783ccdd1c9b9e4
+			clientSecret: 1a9030fbca47a5b2c28e92f19050bb77824b5ad1
+			accessTokenUri: https://github.com/login/oauth/access_token
+			userAuthorizationUri: https://github.com/login/oauth/authorize
+			clientAuthenticationScheme: form
 ----
 
-An app with this configuration will redirect to github for
-authorization if you attempt to use the `OAuth2RestTemplate`. If you
-are already signed into github you won't even notice that it has
-authenticated.  These specific credentials will only work if your app
-is running on port 8080 (register your own client app in Github or
-other provider for more flexibility).
+An application with this configuration will redirect to Github for authorization when you
+attempt to use the `OAuth2RestTemplate`. If you are already signed into Github you won't
+even notice that it has authenticated.  These specific credentials will only work if your
+application is running on port 8080 (register your own client app in Github or other
+provider for more flexibility).
 
-To limit the scope that the client asks for when it obtains an access token
-you can set `spring.oauth2.client.scope` (comma separated or an array in YAML). By
-default the scope is empty and it is up to to Authorization Server to
-decide what the defaults should be, usually depending on the settings in
-the client registration that it holds.
+To limit the scope that the client asks for when it obtains an access token you can set
+`spring.oauth2.client.scope` (comma separated or an array in YAML). By default the scope
+is empty and it is up to to Authorization Server to decide what the defaults should be,
+usually depending on the settings in the client registration that it holds.
 
-NOTE: There is also a setting for
-`spring.oauth2.client.clientAuthenticationScheme` which defaults to
-"header" (but you might need to set it to "form" if, like Github for
-instance, your OAuth2 provider doesn't like header authentication). In
-fact, the `spring.oauth2.client.*` properties are bound to an instance
-of `AuthorizationCodeResourceDetails` so all its properties can be
-specified.
+NOTE: There is also a setting for `spring.oauth2.client.client-authentication-scheme`
+which defaults to "`header`" (but you might need to set it to "`form`" if, like Github for
+instance, your OAuth2 provider doesn't like header authentication). In fact, the
+`spring.oauth2.client.*` properties are bound to an instance of
+`AuthorizationCodeResourceDetails` so all its properties can be specified.
 
-TIP: In a non-web application you can still `@Autowired` an
-`OAuth2RestOperations` and it is still wired into the
-`spring.oauth2.client.*` configuration, but in this case it is a
-client credentials token grant you will be asking for if you use it
-(and there is no need to use `@EnableOAuth2Client` or
-`@EnableOAuth2Sso`). To switch it off, just remove the
-`spring.oauth2.client.clientId` from your configuration (or make it
-the empty string).
+TIP: In a non-web application you can still `@Autowire` an `OAuth2RestOperations` and it
+is still wired into the `spring.oauth2.client.*` configuration. In this case it is a
+"`client credentials token grant`" you will be asking for if you use it (and there is no
+need to use `@EnableOAuth2Client` or `@EnableOAuth2Sso`). To switch it off, just remove
+the `spring.oauth2.client.client-id` from your configuration (or make it the empty
+string).
 
 
 
+[[boot-features-security-oauth2-single-sign-on]]
 ==== Single Sign On
-An OAuth2 Client can be used to fetch user details from the provider
-if such features are provided (e.g. by using the `userInfoUri` that
-the Resource Server supports as above), and then the user details can
-be converted to an `Authentication` token for Spring Security. This is
-the basis for a Single Sign On (SSO) protocol based on OAuth2, and
-Spring Boot makes it easy to participate by providing an annotation
-`@EnableOAuth2Sso`. The Github client above can protect all its
-resources and authenticate using the Github `/user/` endpoint, by
-adding that annotation and declaring where to find the endpoint (in
-addition to the `spring.oauth2.client.*` configuration already listed
-above):
+An OAuth2 Client can be used to fetch user details from the provider (if such features are
+available) and then convert them into an `Authentication` token for Spring Security.
+The Resource Server above support this via the `user-info-uri` property This is the basis
+for a Single Sign On (SSO) protocol based on OAuth2, and Spring Boot makes it easy to
+participate by providing an annotation `@EnableOAuth2Sso`. The Github client above can
+protect all its resources and authenticate using the Github `/user/` endpoint, by adding
+that annotation and declaring where to find the endpoint (in addition to the
+`spring.oauth2.client.*` configuration already listed above):
 
 .application.yml
-[source,yaml]
+[source,yaml,indent=0]]
 ----
-spring:
-  oauth2:
-...
-    resource:
-      userInfoUri: https://api.github.com/user
-      preferTokenInfo: false
+	spring:
+		oauth2:
+	...
+		resource:
+			userInfoUri: https://api.github.com/user
+			preferTokenInfo: false
 ----
 
-Since all paths are secure by default, there is no "home" page that
-you can show to unauthenticated users and invite them to login (by
-visiting the `/login` path, or the path specified by
-`spring.oauth2.sso.loginPath`).
+Since all paths are secure by default, there is no "`home`" page that you can show to
+unauthenticated users and invite them to login (by visiting the `/login` path, or the
+path specified by `spring.oauth2.sso.login-path`).
 
-To customize the access rules or paths to protect, so you can add a
-"home" page for instance, `@EnableOAuth2Sso` can be added to a
-`WebSecurityConfigurerAdapter` and the annotation will cause it to be
-decorated and enhanced with the necessary pieces to get the `/login`
-path working. For example, here we simply allow unauthenticated access
+To customize the access rules or paths to protect, so you can add a "`home`" page for
+instance, `@EnableOAuth2Sso` can be added to a `WebSecurityConfigurerAdapter` and the
+annotation will cause it to be decorated and enhanced with the necessary pieces to get
+the `/login` path working. For example, here we simply allow unauthenticated access
 to the home page at "/" and keep the default for everything else:
 
 [source,java,indent=0]
@@ -1688,6 +1672,7 @@ to the home page at "/" and keep the default for everything else:
 
 
 
+[[boot-features-security-actuator]]
 === Actuator Security
 If the Actuator is also in use, you will find:
 
@@ -2301,12 +2286,13 @@ TIP: For complete details of Spring Data Elasticsearch, refer to their
 http://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
 
 
+
 [[boot-features-caching]]
 == Caching
-The Spring Framework provides support for transparently adding caching into an
-application. At its core, the abstraction applies caching to methods, reducing thus the
-number of executions based on the information available in the cache. The caching logic
-is applied transparently without any interference to the invoker.
+The Spring Framework provides support for transparently adding caching to an application.
+At its core, the abstraction applies caching to methods, reducing thus the number of
+executions based on the information available in the cache. The caching logic is applied
+transparently, without any interference to the invoker.
 
 NOTE: Check the {spring-reference}/#cache[relevant section] of the Spring Framework
 reference for more details.
@@ -2324,7 +2310,9 @@ relevant annotation to its method:
 	public class MathService {
 
 		@CacheResult
-		public int computePiDecimal(int i) { ... }
+		public int computePiDecimal(int i) {
+			// ...
+		}
 
 	}
 ----
@@ -2339,16 +2327,17 @@ TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
 
 
 === Supported cache providers
-NOTE: To easily get started, just add `spring-boot-starter-cache` to the dependencies of
-your application.
-
 The cache abstraction does not provide an actual store and relies on a abstraction
 materialized by the `org.springframework.cache.Cache` and
 `org.springframework.cache.CacheManager` interfaces. Spring Boot auto-configures a
 suitable `CacheManager` according to the implementation as long as the caching support is
 enabled via the `@EnableCaching` annotation.
 
-Spring Boot tries to detect the following providers (in that order):
+TIP: Use the `spring-boot-starter-cache` "`Starter POM`" to quickly add required caching
+dependencies. If you are adding dependencies manually you should note that certain
+implementations are only provided by the `spring-context-support` jar.
+
+Spring Boot tries to detect the following providers (in this order):
 
 * <<boot-features-caching-provider-generic,Generic>>
 * <<boot-features-caching-provider-ehcache2,EhCache 2.x>>
@@ -2366,38 +2355,40 @@ property.
 
 [[boot-features-caching-provider-generic]]
 ==== Generic
-If the context defines _at least_ one `org.springframework.cache.Cache` bean, a
-`CacheManager` wrapping them is configured.
+Generic caching is used if the context defines _at least_ one
+`org.springframework.cache.Cache` bean, a `CacheManager` wrapping them is configured.
 
 
 
 [[boot-features-caching-provider-ehcache2]]
 ==== EhCache 2.x
-EhCache 2.x tries to locate a configuration file named `ehcache.xml` at the root of the
+EhCache 2.x is used if a file named `ehcache.xml` can be found at the root of the
 classpath. If EhCache 2.x and such file is present it is used to bootstrap the cache
-manager. An alternate configuration file can be provide a well:
+manager. An alternate configuration file can be provide a well using:
 
 [source,properties,indent=0]
 ----
 	spring.cache.ehcache.config=classpath:config/another-config.xml
 ----
 
+
+
 [[boot-features-caching-provider-hazelcast]]
 ==== Hazelcast
-
-Hazelcast tries to locate its configuration file as follows: An `hazelcast.xml` file
-stored either in the current working directory or at the root of the classpath, or a
-location specified via the `hazelcast.config` system property. Spring Boot detects all
-of these and allow for explicit location as well:
+Hazelcast is used if a `hazelcast.xml` file can be found in the current working
+directory, at the root of the classpath or a location specified via the `hazelcast.config`
+system property. Spring Boot detects all of these and also allows for explicit location
+using:
 
 [source,properties,indent=0]
 ----
 	spring.cache.hazelcast.config=classpath:config/my-hazelcast.xml
 ----
 
+
+
 [[boot-features-caching-provider-infinispan]]
 ==== Infinispan
-
 Infinispan has no default configuration file location so it must be specified explicitly
 (or the default bootstrap is used).
 
@@ -2423,7 +2414,6 @@ configuration file, Spring Boot does its best to accommodate with implementation
 ----
     # Only necessary if more than one provider is present
 	spring.cache.jcache.provider=com.acme.MyCachingProvider
-
 	spring.cache.jcache.config=classpath:acme.xml
 ----
 
@@ -2456,7 +2446,7 @@ property.
 ==== Guava
 If Guava is present, a `GuavaCacheManager` is auto-configured. Caches can be created
 on startup using the `spring.cache.cache-names` property and customized by one of the
-following (in that order):
+following (in this order):
 
 1. A cache spec defined by `spring.cache.guava.spec`
 2. A `com.google.common.cache.CacheBuilderSpec` bean is defined

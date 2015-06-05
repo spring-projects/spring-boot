@@ -964,10 +964,10 @@ the metrics are exported to a Redis cache for aggregation. The `RedisMetricRepos
 two important parameters to configure it for this purpose: `prefix` and `key` (passed into
 its constructor). It is best to use a prefix that is unique to the application instance
 (e.g. using a random value and maybe the logical name of the application to make it
-possible to correlate with other instances of the same application).  The "key" is used to
-keep a global index of all metric names, so it should be unique "globally", whatever that
-means for your system (e.g.  2 instances of the same system could share a Redis cache if
-they have distinct keys).
+possible to correlate with other instances of the same application).  The "`key`" is used
+to keep a global index of all metric names, so it should be unique "`globally`", whatever
+that means for your system (e.g. two instances of the same system could share a Redis cache
+if they have distinct keys).
 
 Example:
 
@@ -991,33 +991,33 @@ spring.metrics.export.redis.key: keys.metrics.mysystem
 The prefix is constructed with the application name and id at the end, so it can easily be used
 to identify a group of processes with the same logical name later.
 
-NOTE: it's important to set both the key and the prefix. The key is used for all
+NOTE: It's important to set both the `key` and the `prefix`. The key is used for all
 repository operations, and can be shared by multiple repositories. If multiple
 repositories share a key (like in the case where you need to aggregate across them), then
-you normally have a read-only "master" repository that has a short, but identifiable,
-prefix (like "metrics.mysystem"), and many write-only repositories with prefixes that
+you normally have a read-only "`master`" repository that has a short, but identifiable,
+prefix (like "`metrics.mysystem`"), and many write-only repositories with prefixes that
 start with the master prefix (like `metrics.mysystem.*` in the example above). It is
-efficient to read all the keys from a "master" repository like that, but inefficient to
+efficient to read all the keys from a "`master`" repository like that, but inefficient to
 read a subset with a longer prefix (e.g. using one of the writing repositories).
 
-NOTE: the example above uses `MetricExportProperties` to inject and extract the key and
-prefix. This is provided to you as a convenience by Spring Boot, and the defaults for that
-will be sensible, but there is nothing to stop you using your own values as long as they
-follow the recommendations.
+TIP: The example above uses `MetricExportProperties` to inject and extract the key and
+prefix. This is provided to you as a convenience by Spring Boot, configured with sensible
+defaults. There is nothing to stop you using your own values as long as they follow the
+recommendations.
 
 
 
 [[production-ready-metric-writers-export-to-open-tdsb]]
 ==== Example: Export to Open TSDB
 If you provide a `@Bean` of type `OpenTsdbHttpMetricWriter` and mark it
-`@ExportMetricWriter` the metrics are exported to http://opentsdb.net/[Open TSDB] for
+`@ExportMetricWriter` metrics are exported to http://opentsdb.net/[Open TSDB] for
 aggregation. The `OpenTsdbHttpMetricWriter` has a `url` property that you need to set
-to the Open TSDB "/put" endpoint, e.g. `http://localhost:4242/api/put`). It also has a
+to the Open TSDB "`/put`" endpoint, e.g. `http://localhost:4242/api/put`). It also has a
 `namingStrategy` that you can customize or configure to make the metrics match the data
 structure you need on the server. By default it just passes through the metric name as an
-Open TSDB metric name and adds a tag "domain" with value "org.springframework.metrics" and
-another tag "process" with value equals to the object hash of the naming strategy. Thus,
-after running the application and generating some metrics (e.g. by pinging the home page)
+Open TSDB metric name, and adds the tags "`domain`" (with value
+"`org.springframework.metrics`") and "`process`" (with the value equal to the object hash
+of the naming strategy). Thus, after running the application and generating some metrics
 you can inspect the metrics in the TDB UI (http://localhost:4242 by default).
 
 Example:
@@ -1072,7 +1072,9 @@ MetricWriter metricWriter() {
 If you provide a `@Bean` of type `JmxMetricWriter` marked `@ExportMetricWriter` the metrics are exported as MBeans to
 the local server (the `MBeanExporter` is provided by Spring Boot JMX autoconfiguration as
 long as it is switched on). Metrics can then be inspected, graphed, alerted etc. using any
-tool that understands JMX (e.g. JConsole or JVisualVM). Example:
+tool that understands JMX (e.g. JConsole or JVisualVM).
+
+Example:
 
 [source,java,indent=0]
 ----
@@ -1098,10 +1100,12 @@ period-separated prefix, and the reader will aggregate (by truncating the metric
 and dropping the prefix). Counters are summed and everything else (i.e. gauges) take their
 most recent value.
 
-This is very useful (for instance) if multiple application instances are feeding to a
-central (e.g. redis) repository and you want to display the results. Particularly
-recommended in conjunction with a `MetricReaderPublicMetrics` for hooking up to the
-results to the "/metrics" endpoint. Example:
+This is very useful if multiple application instances are feeding to a central (e.g.
+Redis) repository and you want to display the results. Particularly recommended in
+conjunction with a `MetricReaderPublicMetrics` for hooking up to the results to the
+"`/metrics`" endpoint.
+
+Example:
 
 [source,java,indent=0]
 ----
@@ -1125,17 +1129,17 @@ results to the "/metrics" endpoint. Example:
   }
 ----
 
-NOTE: the example above uses `MetricExportProperties` to inject and
-extract the key and prefix. This is provided to you as a convenience
-by Spring Boot, and the defaults will be sensible. They are set up in 
-`MetricExportAutoConfiguration`.
+NOTE: The example above uses `MetricExportProperties` to inject and extract the key and
+prefix. This is provided to you as a convenience by Spring Boot, and the defaults will be
+sensible. They are set up in `MetricExportAutoConfiguration`.
 
-NOTE: the `MetricReaders` above are not `@Beans` and are not marked as
-`@ExportMetricReader` because they are just collecting and analysing
-data from other repositories, and don't want to export their values.
-
+NOTE: The `MetricReaders` above are not `@Beans` and are not marked as
+`@ExportMetricReader` because they are just collecting and analyzing data from other
+repositories, and don't want to export their values.
 
 
+
+[[production-ready-code-hale-metrics]]
 [[production-ready-dropwizard-metrics]]
 === Dropwizard Metrics
 A default `MetricRegistry` Spring bean will be created when you declare a dependency to
@@ -1149,7 +1153,7 @@ endpoint
 When Dropwizard metrics are in use, the default `CounterService` and `GaugeService` are
 replaced with a `DropwizardMetricServices`, which is a wrapper around the `MetricRegistry`
 (so you can `@Autowired` one of those services and use it as normal). You can also create
-"special" Dropwizard metrics by prefixing your metric names with the appropriate type
+"`special`" Dropwizard metrics by prefixing your metric names with the appropriate type
 (i.e. `+timer.*+`, `+histogram.*+` for gauges, and `+meter.*+` for counters).
 
 
@@ -1185,7 +1189,7 @@ and obtain basic information about the last few requests:
 
 [source,json,indent=0]
 ----
-  [{
+[{
     "timestamp": 1394343677415,
     "info": {
       "method": "GET",
@@ -1253,9 +1257,9 @@ In `META-INF/spring.factories` file you have to activate the listener(s):
 
 [indent=0]
 ----
-  org.springframework.context.ApplicationListener=\
-  org.springframework.boot.actuate.system.ApplicationPidFileWriter,
-  org.springframework.boot.actuate.system.EmbeddedServerPortFileWriter
+	org.springframework.context.ApplicationListener=\
+	org.springframework.boot.actuate.system.ApplicationPidFileWriter,
+	org.springframework.boot.actuate.system.EmbeddedServerPortFileWriter
 ----
 
 
