@@ -42,6 +42,10 @@ class DevToolsPropertyDefaultsPostProcessor implements BeanFactoryPostProcessor,
 	static {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put("spring.thymeleaf.cache", "false");
+		properties.put("spring.freemarker.cache", "false");
+		properties.put("spring.groovy.template.cache", "false");
+		properties.put("spring.velocity.cache", "false");
+		properties.put("spring.mustache.cache", "false");
 		PROPERTIES = Collections.unmodifiableMap(properties);
 	}
 
