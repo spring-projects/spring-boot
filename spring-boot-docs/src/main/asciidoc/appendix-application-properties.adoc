@@ -455,6 +455,7 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.pool.max-wait=-1
 	spring.redis.sentinel.master= # name of Redis server
 	spring.redis.sentinel.nodes= # comma-separated list of host:port pairs
+	spring.redis.timeout= # connection timeout in milliseconds
 
 	# ACTIVEMQ ({sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[ActiveMQProperties])
 	spring.activemq.broker-url=tcp://localhost:61616 # connection URL

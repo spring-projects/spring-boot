@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Dave Syer
  * @author Christoph Strobl
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -47,9 +48,22 @@ public class RedisProperties {
 	 */
 	private int port = 6379;
 
+	/**
+	 * Connection timeout in milliseconds.
+	 */
+	private int timeout;
+
 	private Pool pool;
 
 	private Sentinel sentinel;
+
+	public int getDatabase() {
+		return this.database;
+	}
+
+	public void setDatabase(int database) {
+		this.database = database;
+	}
 
 	public String getHost() {
 		return this.host;
@@ -57,14 +71,6 @@ public class RedisProperties {
 
 	public void setHost(String host) {
 		this.host = host;
-	}
-
-	public int getPort() {
-		return this.port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public String getPassword() {
@@ -75,20 +81,20 @@ public class RedisProperties {
 		this.password = password;
 	}
 
-	public Pool getPool() {
-		return this.pool;
+	public int getPort() {
+		return this.port;
 	}
 
-	public void setPool(Pool pool) {
-		this.pool = pool;
+	public void setPort(int port) {
+		this.port = port;
 	}
 
-	public int getDatabase() {
-		return this.database;
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 
-	public void setDatabase(int database) {
-		this.database = database;
+	public int getTimeout() {
+		return this.timeout;
 	}
 
 	public Sentinel getSentinel() {
@@ -97,6 +103,14 @@ public class RedisProperties {
 
 	public void setSentinel(Sentinel sentinel) {
 		this.sentinel = sentinel;
+	}
+
+	public Pool getPool() {
+		return this.pool;
+	}
+
+	public void setPool(Pool pool) {
+		this.pool = pool;
 	}
 
 	/**
