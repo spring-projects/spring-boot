@@ -49,7 +49,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
@@ -184,7 +183,7 @@ public class SpringBootWebSecurityConfiguration {
 
 	}
 
-	// Pull in @EnableWebMvcSecurity if Spring MVC is available and no-one defined a
+	// Pull in @EnableWebSecurity if Spring MVC is available and no-one defined a
 	// RequestDataValueProcessor
 	@ConditionalOnClass(RequestDataValueProcessor.class)
 	@ConditionalOnMissingBean(RequestDataValueProcessor.class)
@@ -192,7 +191,7 @@ public class SpringBootWebSecurityConfiguration {
 	protected static class WebMvcSecurityConfigurationConditions {
 
 		@Configuration
-		@EnableWebMvcSecurity
+		@EnableWebSecurity
 		protected static class DefaultWebMvcSecurityConfiguration {
 
 		}
