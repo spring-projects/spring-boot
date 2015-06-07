@@ -623,7 +623,7 @@ content into your application; rather pick only the properties that you need.
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 
 	# MVC ONLY ENDPOINTS
-	endpoints.jolokia.path=jolokia
+	endpoints.jolokia.path=/jolokia
 	endpoints.jolokia.sensitive=true
 	endpoints.jolokia.enabled=true # when using Jolokia
 
