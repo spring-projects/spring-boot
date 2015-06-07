@@ -109,6 +109,7 @@
 		<mongodb.version>2.13.1</mongodb.version>
 		<mysql.version>5.1.35</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
+		<okhttp.version>2.4.0</okhttp.version>
 		<postgresql.version>9.4-1201-jdbc41</postgresql.version>
 		<reactor.version>2.0.1.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.1.RELEASE</reactor-spring.version>
@@ -564,6 +565,11 @@
 				<groupId>com.sendgrid</groupId>
 				<artifactId>sendgrid-java</artifactId>
 				<version>${sendgrid.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.okhttp</groupId>
+				<artifactId>okhttp</artifactId>
+				<version>${okhttp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>
