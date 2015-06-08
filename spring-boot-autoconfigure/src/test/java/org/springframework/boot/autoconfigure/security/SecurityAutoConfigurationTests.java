@@ -49,6 +49,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -188,6 +189,19 @@ public class SecurityAutoConfigurationTests {
 		assertEquals(
 				this.context.getBean(TestAuthenticationConfiguration.class).authenticationManager,
 				this.context.getBean(AuthenticationManager.class));
+	}
+
+	@Test
+	public void testDefaultAuthenticationManagerMakesUserDetailsAvailable()
+			throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(UserDetailsSecurityCustomizer.class,
+				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(UserDetailsSecurityCustomizer.class)
+				.getUserDetails().loadUserByUsername("user"));
 	}
 
 	@Test
@@ -376,6 +390,23 @@ public class SecurityAutoConfigurationTests {
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
 			auth.inMemoryAuthentication().withUser("foo").password("bar").roles("USER");
+		}
+
+	}
+
+	@Configuration
+	protected static class UserDetailsSecurityCustomizer extends
+			WebSecurityConfigurerAdapter {
+
+		private UserDetailsService userDetails;
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			this.userDetails = http.getSharedObject(UserDetailsService.class);
+		}
+
+		public UserDetailsService getUserDetails() {
+			return this.userDetails;
 		}
 
 	}
