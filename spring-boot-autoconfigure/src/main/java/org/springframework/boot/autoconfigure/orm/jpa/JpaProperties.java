@@ -159,13 +159,8 @@ public class JpaProperties {
 				DataSource dataSource) {
 			Map<String, String> result = new HashMap<String, String>(existing);
 			if (!isAlreadyProvided(existing, "ejb.naming_strategy_delegator")) {
-				if (!isAlreadyProvided(existing, "ejb.naming_strategy")
-						&& this.namingStrategy != null) {
-					result.put("hibernate.ejb.naming_strategy", this.namingStrategy.getName());
-				}
-				else if (this.namingStrategy == null) {
-					result.put("hibernate.ejb.naming_strategy", DEFAULT_NAMING_STRATEGY);
-				}
+				result.put("hibernate.ejb.naming_strategy",
+						getHibernateNamingStrategy(existing));
 			}
 			String ddlAuto = getOrDeduceDdlAuto(existing, dataSource);
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
@@ -175,6 +170,14 @@ public class JpaProperties {
 				result.remove("hibernate.hbm2ddl.auto");
 			}
 			return result;
+		}
+
+		private String getHibernateNamingStrategy(Map<String, String> existing) {
+			if (!isAlreadyProvided(existing, "ejb.naming_strategy")
+					&& this.namingStrategy != null) {
+				return this.namingStrategy.getName();
+			}
+			return DEFAULT_NAMING_STRATEGY;
 		}
 
 		private String getOrDeduceDdlAuto(Map<String, String> existing,

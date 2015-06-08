@@ -84,7 +84,7 @@ public class RedisAutoConfiguration {
 				factory.setPassword(this.properties.getPassword());
 			}
 			factory.setDatabase(this.properties.getDatabase());
-			if(this.properties.getTimeout() > 0) {
+			if (this.properties.getTimeout() > 0) {
 				factory.setTimeout(this.properties.getTimeout());
 			}
 			return factory;

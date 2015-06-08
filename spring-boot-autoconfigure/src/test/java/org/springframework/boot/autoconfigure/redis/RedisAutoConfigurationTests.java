@@ -89,8 +89,7 @@ public class RedisAutoConfigurationTests {
 		load("spring.redis.host:foo", "spring.redis.timeout:100");
 		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
 				.getHostName());
-		assertEquals(100, this.context.getBean(JedisConnectionFactory.class)
-				.getTimeout());
+		assertEquals(100, this.context.getBean(JedisConnectionFactory.class).getTimeout());
 	}
 
 	@Test
@@ -145,8 +144,7 @@ public class RedisAutoConfigurationTests {
 		this.context = doLoad(environment);
 	}
 
-	private AnnotationConfigApplicationContext doLoad(
-			String... environment) {
+	private AnnotationConfigApplicationContext doLoad(String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.register(RedisAutoConfiguration.class,

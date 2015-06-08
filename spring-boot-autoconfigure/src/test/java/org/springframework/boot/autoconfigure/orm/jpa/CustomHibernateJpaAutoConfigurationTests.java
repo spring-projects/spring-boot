@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.orm.jpa;
+
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -87,8 +89,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 	@Test
 	public void testNamingStrategyDelegatorTakesPrecedence() {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:" +
-						"org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator");
+				"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
+						+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator");
 		this.context.register(TestConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -96,8 +98,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		this.context.refresh();
 		JpaProperties bean = this.context.getBean(JpaProperties.class);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(bean.getHibernateProperties(dataSource).get(
-				"hibernate.ejb.naming_strategy"), nullValue());
+		Map<String, String> hibernateProperties = bean.getHibernateProperties(dataSource);
+		assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"), nullValue());
 	}
 
 	@Configuration
