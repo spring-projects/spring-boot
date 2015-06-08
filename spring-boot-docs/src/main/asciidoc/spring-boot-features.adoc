@@ -1117,6 +1117,7 @@ Spring Boot includes auto-configuration support for the following templating eng
  * http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
  * http://www.thymeleaf.org[Thymeleaf]
  * http://velocity.apache.org[Velocity]
+ * http://mustache.github.io/[Mustache]
 
 TIP: JSPs should be avoided if possible, there are several
 <<boot-features-jsp-limitations, known limitations>> when using them with embedded
