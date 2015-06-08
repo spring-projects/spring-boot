@@ -84,6 +84,22 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		assertThat(actual, equalTo("create-drop"));
 	}
 
+	@Test
+	public void testNamingStrategyDelegatorTakesPrecedence() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:" +
+						"org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator");
+		this.context.register(TestConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				HibernateJpaAutoConfiguration.class);
+		this.context.refresh();
+		JpaProperties bean = this.context.getBean(JpaProperties.class);
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(bean.getHibernateProperties(dataSource).get(
+				"hibernate.ejb.naming_strategy"), nullValue());
+	}
+
 	@Configuration
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {

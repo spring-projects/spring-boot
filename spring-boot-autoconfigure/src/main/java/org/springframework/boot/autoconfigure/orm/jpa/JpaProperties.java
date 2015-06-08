@@ -158,12 +158,14 @@ public class JpaProperties {
 		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
 				DataSource dataSource) {
 			Map<String, String> result = new HashMap<String, String>(existing);
-			if (!isAlreadyProvided(existing, "ejb.naming_strategy")
-					&& this.namingStrategy != null) {
-				result.put("hibernate.ejb.naming_strategy", this.namingStrategy.getName());
-			}
-			else if (this.namingStrategy == null) {
-				result.put("hibernate.ejb.naming_strategy", DEFAULT_NAMING_STRATEGY);
+			if (!isAlreadyProvided(existing, "ejb.naming_strategy_delegator")) {
+				if (!isAlreadyProvided(existing, "ejb.naming_strategy")
+						&& this.namingStrategy != null) {
+					result.put("hibernate.ejb.naming_strategy", this.namingStrategy.getName());
+				}
+				else if (this.namingStrategy == null) {
+					result.put("hibernate.ejb.naming_strategy", DEFAULT_NAMING_STRATEGY);
+				}
 			}
 			String ddlAuto = getOrDeduceDdlAuto(existing, dataSource);
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
