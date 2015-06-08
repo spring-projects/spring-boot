@@ -200,6 +200,16 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.toolbox-config-location= # velocity Toolbox config location, for example "/WEB-INF/toolbox.xml"
 	spring.velocity.view-names= # whitelist of view names that can be resolved
 
+	# MUSTACHE TEMPLATES ({sc-spring-boot-autoconfigure}/mustache/MustacheAutoConfiguration.{sc-ext}[MustacheAutoConfiguration])
+	spring.mustache.cache=true
+    spring.mustache.charset=UTF-8
+    spring.mustache.check-template-location=true
+    spring.mustache.content-type=UTF-8
+    spring.mustache.enabled=true # enable MVC view resolution
+    spring.mustache.prefix=
+    spring.mustache.suffix=.html
+    spring.mustache.view-names= # whitelist of view names that can be resolved
+
 	# JERSEY ({sc-spring-boot-autoconfigure}}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
 	spring.jersey.type=servlet # servlet or filter
 	spring.jersey.init= # init params
