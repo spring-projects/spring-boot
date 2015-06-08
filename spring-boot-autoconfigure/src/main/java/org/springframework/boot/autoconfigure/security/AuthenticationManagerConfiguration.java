@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +47,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Configuration for a Spring Security in-memory {@link AuthenticationManager}. Can be
@@ -171,7 +173,19 @@ public class AuthenticationManagerConfiguration {
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
 			withUser(user.getName()).password(user.getPassword()).roles(
 					roles.toArray(new String[roles.size()]));
+			setField(auth, "defaultUserDetailsService", getUserDetailsService());
 			super.configure(auth);
+		}
+
+		private void setField(Object target, String name, Object value) {
+			try {
+				Field field = ReflectionUtils.findField(target.getClass(), name);
+				ReflectionUtils.makeAccessible(field);
+				ReflectionUtils.setField(field, target, value);
+			}
+			catch (Exception e) {
+				logger.info("Could not set " + name);
+			}
 		}
 
 	}
