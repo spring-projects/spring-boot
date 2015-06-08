@@ -490,10 +490,10 @@ content into your application; rather pick only the properties that you need.
 	spring.mail.jndi-name= # JNDI location of a Mail Session
 
 	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
-	spring.batch.job.names=job1,job2
+	spring.batch.job.names=
 	spring.batch.job.enabled=true
 	spring.batch.initializer.enabled=true
-	spring.batch.schema= # batch schema to load
+	spring.batch.schema=classpath:org/springframework/batch/core/schema-@@platform@@.sql # batch schema to load
 	spring.batch.table-prefix= # table prefix for all the batch meta-data tables
 
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
