@@ -733,7 +733,6 @@ public class SpringApplication {
 	 * Sets if the Spring banner should be displayed when the application runs. Defaults
 	 * to {@code true}.
 	 * @param showBanner if the banner should be shown
-	 * @see #printDefaultBanner()
 	 */
 	public void setShowBanner(boolean showBanner) {
 		this.showBanner = showBanner;
