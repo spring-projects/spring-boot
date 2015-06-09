@@ -17,11 +17,13 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Configuration properties for developer tools.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.devtools")
@@ -37,6 +39,7 @@ public class DevToolsProperties {
 
 	private Livereload livereload = new Livereload();
 
+	@NestedConfigurationProperty
 	private RemoteDevToolsProperties remote = new RemoteDevToolsProperties();
 
 	public Restart getRestart() {
