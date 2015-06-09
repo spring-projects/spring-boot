@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.devtools.autoconfigure.DevToolHomePropertiesPostProcessor;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties.Restart;
 import org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer;
@@ -84,6 +85,11 @@ public class RemoteClientConfiguration {
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
+	}
+
+	@Bean
+	public static DevToolHomePropertiesPostProcessor devToolHomePropertiesPostProcessor() {
+		return new DevToolHomePropertiesPostProcessor();
 	}
 
 	@Bean

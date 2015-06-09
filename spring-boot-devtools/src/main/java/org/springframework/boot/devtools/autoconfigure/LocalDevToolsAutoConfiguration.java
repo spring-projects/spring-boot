@@ -58,6 +58,11 @@ public class LocalDevToolsAutoConfiguration {
 		return new DevToolsPropertyDefaultsPostProcessor();
 	}
 
+	@Bean
+	public static DevToolHomePropertiesPostProcessor devToolHomePropertiesPostProcessor() {
+		return new DevToolHomePropertiesPostProcessor();
+	}
+
 	/**
 	 * Local LiveReload configuration.
 	 */
