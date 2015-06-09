@@ -232,7 +232,9 @@ public class FileSystemWatcher {
 		Thread thread = this.watchThread;
 		if (thread != null) {
 			this.remainingScans.set(remainingScans);
-			thread.interrupt();
+			if (remainingScans <= 0) {
+				thread.interrupt();
+			}
 			if (Thread.currentThread() != thread) {
 				try {
 					thread.join();
