@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for local development support.
@@ -104,13 +105,19 @@ public class LocalDevToolsAutoConfiguration {
 		@Autowired
 		private DevToolsProperties properties;
 
-		private final FileSystemWatcher fileSystemWatcher = new FileSystemWatcher();
+		@EventListener
+		public void onClassPathChanged(ClassPathChangedEvent event) {
+			if (event.isRestartRequired()) {
+				getFileSystemWatcher().stop();
+				Restarter.getInstance().restart();
+			}
+		}
 
 		@Bean
 		@ConditionalOnMissingBean
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
-			return new ClassPathFileSystemWatcher(this.fileSystemWatcher,
+			return new ClassPathFileSystemWatcher(getFileSystemWatcher(),
 					classPathRestartStrategy(), urls);
 		}
 
@@ -121,12 +128,14 @@ public class LocalDevToolsAutoConfiguration {
 					.getExclude());
 		}
 
-		@EventListener
-		public void onClassPathChanged(ClassPathChangedEvent event) {
-			if (event.isRestartRequired()) {
-				this.fileSystemWatcher.stop();
-				Restarter.getInstance().restart();
+		@Bean
+		public FileSystemWatcher getFileSystemWatcher() {
+			FileSystemWatcher watcher = new FileSystemWatcher();
+			String triggerFile = this.properties.getRestart().getTriggerFile();
+			if (StringUtils.hasLength(triggerFile)) {
+				watcher.setTriggerFilter(new TriggerFileFilter(triggerFile));
 			}
+			return watcher;
 		}
 
 	}

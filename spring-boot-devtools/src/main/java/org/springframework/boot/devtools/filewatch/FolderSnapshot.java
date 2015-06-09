@@ -17,6 +17,7 @@
 package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -73,7 +74,7 @@ class FolderSnapshot {
 		}
 	}
 
-	public ChangedFiles getChangedFiles(FolderSnapshot snapshot) {
+	public ChangedFiles getChangedFiles(FolderSnapshot snapshot, FileFilter triggerFilter) {
 		Assert.notNull(snapshot, "Snapshot must not be null");
 		File folder = this.folder;
 		Assert.isTrue(snapshot.folder.equals(folder), "Snapshot source folder must be '"
@@ -81,18 +82,27 @@ class FolderSnapshot {
 		Set<ChangedFile> changes = new LinkedHashSet<ChangedFile>();
 		Map<File, FileSnapshot> previousFiles = getFilesMap();
 		for (FileSnapshot currentFile : snapshot.files) {
-			FileSnapshot previousFile = previousFiles.remove(currentFile.getFile());
-			if (previousFile == null) {
-				changes.add(new ChangedFile(folder, currentFile.getFile(), Type.ADD));
-			}
-			else if (!previousFile.equals(currentFile)) {
-				changes.add(new ChangedFile(folder, currentFile.getFile(), Type.MODIFY));
+			if (acceptChangedFile(triggerFilter, currentFile)) {
+				FileSnapshot previousFile = previousFiles.remove(currentFile.getFile());
+				if (previousFile == null) {
+					changes.add(new ChangedFile(folder, currentFile.getFile(), Type.ADD));
+				}
+				else if (!previousFile.equals(currentFile)) {
+					changes.add(new ChangedFile(folder, currentFile.getFile(),
+							Type.MODIFY));
+				}
 			}
 		}
 		for (FileSnapshot previousFile : previousFiles.values()) {
-			changes.add(new ChangedFile(folder, previousFile.getFile(), Type.DELETE));
+			if (acceptChangedFile(triggerFilter, previousFile)) {
+				changes.add(new ChangedFile(folder, previousFile.getFile(), Type.DELETE));
+			}
 		}
 		return new ChangedFiles(folder, changes);
+	}
+
+	private boolean acceptChangedFile(FileFilter triggerFilter, FileSnapshot file) {
+		return (triggerFilter == null || !triggerFilter.accept(file.getFile()));
 	}
 
 	private Map<File, FileSnapshot> getFilesMap() {
@@ -112,10 +122,31 @@ class FolderSnapshot {
 			return false;
 		}
 		if (obj instanceof FolderSnapshot) {
-			FolderSnapshot other = (FolderSnapshot) obj;
-			return this.folder.equals(other.folder) && this.files.equals(other.files);
+			return equals((FolderSnapshot) obj, null);
 		}
 		return super.equals(obj);
+	}
+
+	public boolean equals(FolderSnapshot other, FileFilter filter) {
+		if (this.folder.equals(other.folder)) {
+			Set<FileSnapshot> ourFiles = filter(this.files, filter);
+			Set<FileSnapshot> otherFiles = filter(other.files, filter);
+			return ourFiles.equals(otherFiles);
+		}
+		return false;
+	}
+
+	private Set<FileSnapshot> filter(Set<FileSnapshot> source, FileFilter filter) {
+		if (filter == null) {
+			return source;
+		}
+		Set<FileSnapshot> filtered = new LinkedHashSet<FileSnapshot>();
+		for (FileSnapshot file : source) {
+			if (filter.accept(file.getFile())) {
+				filtered.add(file);
+			}
+		}
+		return filtered;
 	}
 
 	@Override

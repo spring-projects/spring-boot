@@ -36,10 +36,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties;
 import org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer;
 import org.springframework.boot.devtools.autoconfigure.RemoteDevToolsProperties;
+import org.springframework.boot.devtools.autoconfigure.TriggerFileFilter;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.devtools.classpath.PatternClassPathRestartStrategy;
+import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScope;
@@ -57,6 +59,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration used to connect to remote Spring Boot applications.
@@ -178,7 +181,18 @@ public class RemoteClientConfiguration {
 			if (urls == null) {
 				urls = new URL[0];
 			}
-			return new ClassPathFileSystemWatcher(classPathRestartStrategy(), urls);
+			return new ClassPathFileSystemWatcher(getFileSystemWather(),
+					classPathRestartStrategy(), urls);
+		}
+
+		@Bean
+		public FileSystemWatcher getFileSystemWather() {
+			FileSystemWatcher watcher = new FileSystemWatcher();
+			String triggerFile = this.properties.getRestart().getTriggerFile();
+			if (StringUtils.hasLength(triggerFile)) {
+				watcher.setTriggerFilter(new TriggerFileFilter(triggerFile));
+			}
+			return watcher;
 		}
 
 		@Bean

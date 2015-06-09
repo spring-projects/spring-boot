@@ -17,6 +17,7 @@
 package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,10 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.devtools.filewatch.ChangedFile;
-import org.springframework.boot.devtools.filewatch.ChangedFiles;
-import org.springframework.boot.devtools.filewatch.FileChangeListener;
-import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
 
@@ -218,6 +215,33 @@ public class FileSystemWatcherTests {
 		expected.add(new ChangedFile(folder, modify, Type.MODIFY));
 		expected.add(new ChangedFile(folder, delete, Type.DELETE));
 		expected.add(new ChangedFile(folder, add, Type.ADD));
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void withTriggerFilter() throws Exception {
+		File folder = this.temp.newFolder();
+		File file = touch(new File(folder, "file.txt"));
+		File trigger = touch(new File(folder, "trigger.txt"));
+		this.watcher.addSourceFolder(folder);
+		this.watcher.setTriggerFilter(new FileFilter() {
+
+			@Override
+			public boolean accept(File file) {
+				return file.getName().equals("trigger.txt");
+			}
+
+		});
+		this.watcher.start();
+		FileCopyUtils.copy("abc".getBytes(), file);
+		Thread.sleep(100);
+		assertThat(this.changes.size(), equalTo(0));
+		FileCopyUtils.copy("abc".getBytes(), trigger);
+		this.watcher.stopAfter(1);
+		ChangedFiles changedFiles = getSingleChangedFiles();
+		Set<ChangedFile> actual = changedFiles.getFiles();
+		Set<ChangedFile> expected = new HashSet<ChangedFile>();
+		expected.add(new ChangedFile(folder, file, Type.MODIFY));
 		assertEquals(expected, actual);
 	}
 

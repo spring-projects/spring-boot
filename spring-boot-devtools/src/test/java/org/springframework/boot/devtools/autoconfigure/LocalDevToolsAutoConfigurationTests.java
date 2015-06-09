@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
+import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.MockRestartInitializer;
 import org.springframework.boot.devtools.restart.MockRestarter;
@@ -39,10 +40,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -164,6 +167,16 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context.getBean(ClassPathFileSystemWatcher.class);
 	}
 
+	@Test
+	public void restartWithTriggerFile() throws Exception {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("spring.devtools.restart.trigger-file", "somefile.txt");
+		this.context = initializeAndRun(Config.class, properties);
+		FileSystemWatcher watcher = this.context.getBean(FileSystemWatcher.class);
+		Object filter = ReflectionTestUtils.getField(watcher, "triggerFilter");
+		assertThat(filter, instanceOf(TriggerFileFilter.class));
+	}
+
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config) {
 		return initializeAndRun(config, Collections.<String, Object> emptyMap());
 	}
@@ -188,15 +201,13 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import({ LocalDevToolsAutoConfiguration.class,
-			ThymeleafAutoConfiguration.class })
+	@Import({ LocalDevToolsAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 	public static class Config {
 
 	}
 
 	@Configuration
-	@Import({ LocalDevToolsAutoConfiguration.class,
-			ThymeleafAutoConfiguration.class })
+	@Import({ LocalDevToolsAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 	public static class ConfigWithMockLiveReload {
 
 		@Bean

@@ -62,6 +62,12 @@ public class DevToolsProperties {
 		 */
 		private String exclude = DEFAULT_RESTART_EXCLUDES;
 
+		/**
+		 * The name of specific that that when changed will will trigger the restart. If
+		 * not specified any classpath file change will trigger the restart.
+		 */
+		private String triggerFile;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -76,6 +82,14 @@ public class DevToolsProperties {
 
 		public void setExclude(String exclude) {
 			this.exclude = exclude;
+		}
+
+		public String getTriggerFile() {
+			return this.triggerFile;
+		}
+
+		public void setTriggerFile(String triggerFile) {
+			this.triggerFile = triggerFile;
 		}
 
 	}

@@ -24,9 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.devtools.filewatch.ChangedFile;
-import org.springframework.boot.devtools.filewatch.ChangedFiles;
-import org.springframework.boot.devtools.filewatch.FolderSnapshot;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
 
@@ -104,7 +101,7 @@ public class FolderSnapshotTests {
 	public void getChangedFilesSnapshotMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Snapshot must not be null");
-		this.initialSnapshot.getChangedFiles(null);
+		this.initialSnapshot.getChangedFiles(null, null);
 	}
 
 	@Test
@@ -112,13 +109,13 @@ public class FolderSnapshotTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Snapshot source folder must be '" + this.folder + "'");
 		this.initialSnapshot.getChangedFiles(new FolderSnapshot(
-				createTestFolderStructure()));
+				createTestFolderStructure()), null);
 	}
 
 	@Test
 	public void getChangedFilesWhenNothingHasChanged() throws Exception {
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
-		this.initialSnapshot.getChangedFiles(updatedSnapshot);
+		this.initialSnapshot.getChangedFiles(updatedSnapshot, null);
 	}
 
 	@Test
@@ -131,7 +128,8 @@ public class FolderSnapshotTests {
 		file2.delete();
 		newFile.createNewFile();
 		FolderSnapshot updatedSnapshot = new FolderSnapshot(this.folder);
-		ChangedFiles changedFiles = this.initialSnapshot.getChangedFiles(updatedSnapshot);
+		ChangedFiles changedFiles = this.initialSnapshot.getChangedFiles(updatedSnapshot,
+				null);
 		assertThat(changedFiles.getSourceFolder(), equalTo(this.folder));
 		assertThat(getChangedFile(changedFiles, file1).getType(), equalTo(Type.MODIFY));
 		assertThat(getChangedFile(changedFiles, file2).getType(), equalTo(Type.DELETE));

@@ -17,9 +17,10 @@
 package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -56,6 +57,8 @@ public class FileSystemWatcher {
 	private AtomicInteger remainingScans = new AtomicInteger(-1);
 
 	private Map<File, FolderSnapshot> folders = new LinkedHashMap<File, FolderSnapshot>();
+
+	private FileFilter triggerFilter;
 
 	/**
 	 * Create a new {@link FileSystemWatcher} instance.
@@ -100,6 +103,14 @@ public class FileSystemWatcher {
 		this.folders.put(folder, null);
 	}
 
+	/**
+	 * Set an optional {@link FileFilter} used to limit the files that trigger a change.
+	 * @param triggerFilter a trigger filter or null
+	 */
+	public synchronized void setTriggerFilter(FileFilter triggerFilter) {
+		this.triggerFilter = triggerFilter;
+	}
+
 	private void checkNotStarted() {
 		Assert.state(this.watchThread == null, "FileSystemWatcher already started");
 	}
@@ -142,32 +153,50 @@ public class FileSystemWatcher {
 
 	private void scan() throws InterruptedException {
 		Thread.sleep(this.idleTime - this.quietTime);
-		Set<FolderSnapshot> previous;
-		Set<FolderSnapshot> current = new HashSet<FolderSnapshot>(this.folders.values());
+		Map<File, FolderSnapshot> previous;
+		Map<File, FolderSnapshot> current = this.folders;
 		do {
 			previous = current;
 			current = getCurrentSnapshots();
 			Thread.sleep(this.quietTime);
 		}
-		while (!previous.equals(current));
-		updateSnapshots(current);
+		while (isDifferent(previous, current));
+		if (isDifferent(this.folders, current)) {
+			updateSnapshots(current.values());
+		}
 	}
 
-	private Set<FolderSnapshot> getCurrentSnapshots() {
-		Set<FolderSnapshot> snapshots = new LinkedHashSet<FolderSnapshot>();
+	private boolean isDifferent(Map<File, FolderSnapshot> previous,
+			Map<File, FolderSnapshot> current) {
+		if (!previous.keySet().equals(current.keySet())) {
+			return true;
+		}
+		for (Map.Entry<File, FolderSnapshot> entry : previous.entrySet()) {
+			FolderSnapshot previousFolder = entry.getValue();
+			FolderSnapshot currentFolder = current.get(entry.getKey());
+			if (!previousFolder.equals(currentFolder, this.triggerFilter)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private Map<File, FolderSnapshot> getCurrentSnapshots() {
+		Map<File, FolderSnapshot> snapshots = new LinkedHashMap<File, FolderSnapshot>();
 		for (File folder : this.folders.keySet()) {
-			snapshots.add(new FolderSnapshot(folder));
+			snapshots.put(folder, new FolderSnapshot(folder));
 		}
 		return snapshots;
 	}
 
-	private void updateSnapshots(Set<FolderSnapshot> snapshots) {
+	private void updateSnapshots(Collection<FolderSnapshot> snapshots) {
 		Map<File, FolderSnapshot> updated = new LinkedHashMap<File, FolderSnapshot>();
 		Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
 		for (FolderSnapshot snapshot : snapshots) {
 			FolderSnapshot previous = this.folders.get(snapshot.getFolder());
 			updated.put(snapshot.getFolder(), snapshot);
-			ChangedFiles changedFiles = previous.getChangedFiles(snapshot);
+			ChangedFiles changedFiles = previous.getChangedFiles(snapshot,
+					this.triggerFilter);
 			if (!changedFiles.getFiles().isEmpty()) {
 				changeSet.add(changedFiles);
 			}
