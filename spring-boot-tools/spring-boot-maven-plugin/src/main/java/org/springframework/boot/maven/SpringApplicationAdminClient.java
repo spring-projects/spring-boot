@@ -32,37 +32,23 @@ import javax.management.remote.JMXServiceURL;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
- * A JMX client for the {@code SpringApplicationLifecycle} mbean. Permits to obtain
- * information about the lifecycle of a given Spring application.
+ * A JMX client for the {@code SpringApplicationAdmin} MBean. Permits to obtain
+ * information about a given Spring application.
  *
  * @author Stephane Nicoll
  */
-class SpringApplicationLifecycleClient {
+class SpringApplicationAdminClient {
 
-	// Note: see SpringApplicationLifecycleAutoConfiguration
-	static final String DEFAULT_OBJECT_NAME = "org.springframework.boot:type=Lifecycle,name=springApplicationLifecycle";
+	// Note: see SpringApplicationAdminJmxAutoConfiguration
+	static final String DEFAULT_OBJECT_NAME = "org.springframework.boot:type=SpringApplicationAdmin,name=springApplicationAdmin";
 
 	private final MBeanServerConnection connection;
 
 	private final ObjectName objectName;
 
-	public SpringApplicationLifecycleClient(MBeanServerConnection connection,
-			String jmxName) {
+	public SpringApplicationAdminClient(MBeanServerConnection connection, String jmxName) {
 		this.connection = connection;
 		this.objectName = toObjectName(jmxName);
-	}
-
-	/**
-	 * Create a connector for an {@link javax.management.MBeanServer} exposed on the
-	 * current machine and the current port. Security should be disabled.
-	 * @param port the port on which the mbean server is exposed
-	 * @return a connection
-	 * @throws IOException if the connection to that server failed
-	 */
-	public static JMXConnector createLocalJmxConnector(int port) throws IOException {
-		String url = "service:jmx:rmi:///jndi/rmi://127.0.0.1:" + port + "/jmxrmi";
-		JMXServiceURL serviceUrl = new JMXServiceURL(url);
-		return JMXConnectorFactory.connect(serviceUrl, null);
 	}
 
 	/**
@@ -121,6 +107,19 @@ class SpringApplicationLifecycleClient {
 		catch (MalformedObjectNameException ex) {
 			throw new IllegalArgumentException("Invalid jmx name '" + name + "'");
 		}
+	}
+
+	/**
+	 * Create a connector for an {@link javax.management.MBeanServer} exposed on the
+	 * current machine and the current port. Security should be disabled.
+	 * @param port the port on which the mbean server is exposed
+	 * @return a connection
+	 * @throws IOException if the connection to that server failed
+	 */
+	public static JMXConnector connect(int port) throws IOException {
+		String url = "service:jmx:rmi:///jndi/rmi://127.0.0.1:" + port + "/jmxrmi";
+		JMXServiceURL serviceUrl = new JMXServiceURL(url);
+		return JMXConnectorFactory.connect(serviceUrl, null);
 	}
 
 }

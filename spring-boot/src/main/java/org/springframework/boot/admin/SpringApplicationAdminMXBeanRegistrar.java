@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context;
+package org.springframework.boot.admin;
 
 import java.lang.management.ManagementFactory;
 
@@ -35,13 +35,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.Assert;
 
 /**
- * Register a {@link SpringApplicationLifecycleMXBean} implementation to the platform
+ * Register a {@link SpringApplicationAdminMXBean} implementation to the platform
  * {@link MBeanServer}.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class SpringApplicationLifecycleRegistrar implements ApplicationContextAware,
+public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware,
 		InitializingBean, DisposableBean, ApplicationListener<ApplicationReadyEvent> {
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationLifecycle.class);
@@ -52,7 +52,7 @@ public class SpringApplicationLifecycleRegistrar implements ApplicationContextAw
 
 	private boolean ready = false;
 
-	public SpringApplicationLifecycleRegistrar(String name)
+	public SpringApplicationAdminMXBeanRegistrar(String name)
 			throws MalformedObjectNameException {
 		this.objectName = new ObjectName(name);
 	}
@@ -85,17 +85,17 @@ public class SpringApplicationLifecycleRegistrar implements ApplicationContextAw
 		ManagementFactory.getPlatformMBeanServer().unregisterMBean(this.objectName);
 	}
 
-	private class SpringApplicationLifecycle implements SpringApplicationLifecycleMXBean {
+	private class SpringApplicationLifecycle implements SpringApplicationAdminMXBean {
 
 		@Override
 		public boolean isReady() {
-			return SpringApplicationLifecycleRegistrar.this.ready;
+			return SpringApplicationAdminMXBeanRegistrar.this.ready;
 		}
 
 		@Override
 		public void shutdown() {
 			logger.info("Application shutdown requested.");
-			SpringApplicationLifecycleRegistrar.this.applicationContext.close();
+			SpringApplicationAdminMXBeanRegistrar.this.applicationContext.close();
 		}
 	}
 

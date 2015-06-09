@@ -53,7 +53,7 @@ public class StopMojo extends AbstractMojo {
 	 * application.
 	 */
 	@Parameter
-	private String jmxName = SpringApplicationLifecycleClient.DEFAULT_OBJECT_NAME;
+	private String jmxName = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME;
 
 	/**
 	 * The port to use to lookup the platform MBeanServer if the application has been
@@ -81,8 +81,7 @@ public class StopMojo extends AbstractMojo {
 
 	private void stopForkedProcess() throws IOException, MojoFailureException,
 			MojoExecutionException {
-		JMXConnector connector = SpringApplicationLifecycleClient
-				.createLocalJmxConnector(this.jmxPort);
+		JMXConnector connector = SpringApplicationAdminClient.connect(this.jmxPort);
 		try {
 			MBeanServerConnection connection = connector.getMBeanServerConnection();
 			doStop(connection);
@@ -99,7 +98,7 @@ public class StopMojo extends AbstractMojo {
 	private void doStop(MBeanServerConnection connection) throws IOException,
 			MojoExecutionException {
 		try {
-			new SpringApplicationLifecycleClient(connection, this.jmxName).stop();
+			new SpringApplicationAdminClient(connection, this.jmxName).stop();
 		}
 		catch (InstanceNotFoundException ex) {
 			throw new MojoExecutionException(

@@ -4,6 +4,7 @@ org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingIni
 
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration,\
 org.springframework.boot.autoconfigure.aop.AopAutoConfiguration,\
 org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration,\
 org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration,\
@@ -11,7 +12,6 @@ org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration,\
 org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration,\
 org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.cloud.CloudAutoConfiguration,\
-org.springframework.boot.autoconfigure.context.SpringApplicationLifecycleAutoConfiguration,\
 org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,\

@@ -30,8 +30,8 @@ public class SampleApplication {
 	public static void main(String[] args) throws Exception {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 		ObjectName name = new ObjectName(
-				"org.springframework.boot:type=Lifecycle,name=springApplicationLifecycle");
-		SpringApplicationLifecycle mbean = new SpringApplicationLifecycle();
+				"org.springframework.boot:type=SpringApplicationAdmin,name=springApplicationAdmin");
+		SpringApplicationAdmin mbean = new SpringApplicationAdmin();
 		mbs.registerMBean(mbean, name);
 
 		// Flag the app as ready
@@ -50,7 +50,7 @@ public class SampleApplication {
 		}
 	}
 
-	public interface SpringApplicationLifecycleMXBean {
+	public interface SpringApplicationAdminMXBean {
 
 		boolean isReady();
 
@@ -58,7 +58,7 @@ public class SampleApplication {
 
 	}
 
-	static class SpringApplicationLifecycle implements SpringApplicationLifecycleMXBean {
+	static class SpringApplicationAdmin implements SpringApplicationAdminMXBean {
 
 		private boolean ready;
 

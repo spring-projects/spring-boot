@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context;
+package org.springframework.boot.admin;
 
 /**
- * A simple MBean contract to control the lifecycle of a {@code SpringApplication} via
- * JMX. Intended for internal use only.
+ * A MBean contract to control and monitor a running {@code SpringApplication} via JMX.
+ * Intended for internal use only.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public interface SpringApplicationLifecycleMXBean {
+public interface SpringApplicationAdminMXBean {
 
 	/**
 	 * Specify if the application has fully started and is now ready.

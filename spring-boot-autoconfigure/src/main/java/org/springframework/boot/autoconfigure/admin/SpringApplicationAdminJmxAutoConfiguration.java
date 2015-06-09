@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.context;
+package org.springframework.boot.autoconfigure.admin;
 
 import javax.management.MalformedObjectNameException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.admin.SpringApplicationAdminMXBean;
+import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.context.SpringApplicationLifecycleMXBean;
-import org.springframework.boot.context.SpringApplicationLifecycleRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -35,23 +35,23 @@ import org.springframework.jmx.export.MBeanExporter;
  *
  * @author Stephane Nicoll
  * @since 1.3.0
- * @see SpringApplicationLifecycleMXBean
+ * @see SpringApplicationAdminMXBean
  */
 @Configuration
 @AutoConfigureAfter(JmxAutoConfiguration.class)
 @ConditionalOnProperty(value = "spring.context.lifecycle.enabled", havingValue = "true", matchIfMissing = false)
-class SpringApplicationLifecycleAutoConfiguration {
+public class SpringApplicationAdminJmxAutoConfiguration {
 
 	/**
 	 * The property to use to customize the {@code ObjectName} of the application
 	 * lifecycle mbean.
 	 */
-	static final String JMX_NAME_PROPERTY = "spring.context.lifecycle.jmx-name";
+	private static final String JMX_NAME_PROPERTY = "spring.application.admin.jmx-name";
 
 	/**
 	 * The default {@code ObjectName} of the application lifecycle mbean.
 	 */
-	static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=Lifecycle,name=springApplicationLifecycle";
+	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=SpringApplicationAdmin,name=springApplicationAdmin";
 
 	@Autowired(required = false)
 	private MBeanExporter mbeanExporter;
@@ -60,14 +60,14 @@ class SpringApplicationLifecycleAutoConfiguration {
 	private Environment environment;
 
 	@Bean
-	public SpringApplicationLifecycleRegistrar springApplicationLifecycleRegistrar()
+	public SpringApplicationAdminMXBeanRegistrar springApplicationLifecycleRegistrar()
 			throws MalformedObjectNameException {
 		String jmxName = this.environment
 				.getProperty(JMX_NAME_PROPERTY, DEFAULT_JMX_NAME);
 		if (this.mbeanExporter != null) { // Make sure to not register that MBean twice
 			this.mbeanExporter.addExcludedBean(jmxName);
 		}
-		return new SpringApplicationLifecycleRegistrar(jmxName);
+		return new SpringApplicationAdminMXBeanRegistrar(jmxName);
 	}
 
 }

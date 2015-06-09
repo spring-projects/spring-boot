@@ -59,7 +59,7 @@ public class StartMojo extends AbstractRunMojo {
 	 * spring application.
 	 */
 	@Parameter
-	private String jmxName = SpringApplicationLifecycleClient.DEFAULT_OBJECT_NAME;
+	private String jmxName = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME;
 
 	/**
 	 * The port to use to expose the platform MBeanServer if the application needs to be
@@ -151,11 +151,11 @@ public class StartMojo extends AbstractRunMojo {
 
 	private void waitForSpringApplication(long wait, int maxAttempts)
 			throws MojoExecutionException {
-		SpringApplicationLifecycleClient helper = new SpringApplicationLifecycleClient(
+		SpringApplicationAdminClient client = new SpringApplicationAdminClient(
 				ManagementFactory.getPlatformMBeanServer(), this.jmxName);
 		getLog().debug("Waiting for spring application to start...");
 		for (int i = 0; i < maxAttempts; i++) {
-			if (helper.isReady()) {
+			if (client.isReady()) {
 				return;
 			}
 			String message = "Spring application is not ready yet, waiting " + wait
@@ -227,7 +227,7 @@ public class StartMojo extends AbstractRunMojo {
 
 	private void doWaitForSpringApplication(MBeanServerConnection connection)
 			throws IOException, MojoExecutionException, MojoFailureException {
-		final SpringApplicationLifecycleClient client = new SpringApplicationLifecycleClient(
+		final SpringApplicationAdminClient client = new SpringApplicationAdminClient(
 				connection, this.jmxName);
 		try {
 			execute(this.wait, this.maxAttempts, new Callable<Boolean>() {
@@ -294,8 +294,7 @@ public class StartMojo extends AbstractRunMojo {
 		@Override
 		public JMXConnector call() throws Exception {
 			try {
-				return SpringApplicationLifecycleClient
-						.createLocalJmxConnector(this.port);
+				return SpringApplicationAdminClient.connect(this.port);
 			}
 			catch (IOException ex) {
 				if (hasCauseWithType(ex, ConnectException.class)) {

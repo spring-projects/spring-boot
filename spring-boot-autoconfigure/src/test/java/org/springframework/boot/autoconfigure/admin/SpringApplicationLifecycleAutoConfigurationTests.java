@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.context;
+package org.springframework.boot.autoconfigure.admin;
 
 import java.lang.management.ManagementFactory;
 
@@ -37,13 +37,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link SpringApplicationLifecycleAutoConfiguration}.
+ * Tests for {@link SpringApplicationAdminJmxAutoConfiguration}.
  *
  * @author Stephane Nicoll
  */
 public class SpringApplicationLifecycleAutoConfigurationTests {
 
-	public static final String ENABLE_LIFECYCLE_PROP = "spring.context.lifecycle.enabled=true";
+	private static final String ENABLE_LIFECYCLE_PROP = "spring.context.lifecycle.enabled=true";
+
+	private static final String JMX_NAME_PROPERTY = "spring.application.admin.jmx-name";
+
+	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=SpringApplicationAdmin,name=springApplicationAdmin";
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
@@ -83,8 +87,7 @@ public class SpringApplicationLifecycleAutoConfigurationTests {
 	@Test
 	public void registerWithCustomJmxName() throws InstanceNotFoundException {
 		String customJmxName = "org.acme:name=FooBar";
-		System.setProperty(SpringApplicationLifecycleAutoConfiguration.JMX_NAME_PROPERTY,
-				customJmxName);
+		System.setProperty(JMX_NAME_PROPERTY, customJmxName);
 		try {
 			load(ENABLE_LIFECYCLE_PROP);
 			try {
@@ -97,12 +100,12 @@ public class SpringApplicationLifecycleAutoConfigurationTests {
 			this.mBeanServer.getObjectInstance(createDefaultObjectName());
 		}
 		finally {
-			System.clearProperty(SpringApplicationLifecycleAutoConfiguration.JMX_NAME_PROPERTY);
+			System.clearProperty(JMX_NAME_PROPERTY);
 		}
 	}
 
 	private ObjectName createDefaultObjectName() {
-		return createObjectName(SpringApplicationLifecycleAutoConfiguration.DEFAULT_JMX_NAME);
+		return createObjectName(DEFAULT_JMX_NAME);
 	}
 
 	private ObjectName createObjectName(String jmxName) {
@@ -118,7 +121,7 @@ public class SpringApplicationLifecycleAutoConfigurationTests {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.register(JmxAutoConfiguration.class,
-				SpringApplicationLifecycleAutoConfiguration.class);
+				SpringApplicationAdminJmxAutoConfiguration.class);
 		applicationContext.refresh();
 		this.context = applicationContext;
 	}

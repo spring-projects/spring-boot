@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +40,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link SpringApplicationLifecycleRegistrar}.
+ * Tests for {@link SpringApplicationAdminMXBeanRegistrar}.
  *
  * @author Stephane Nicoll
  */
@@ -133,9 +134,9 @@ public class SpringApplicationLifecycleRegistrarTests {
 	static class Config {
 
 		@Bean
-		public SpringApplicationLifecycleRegistrar springApplicationLifecycle()
+		public SpringApplicationAdminMXBeanRegistrar springApplicationLifecycle()
 				throws MalformedObjectNameException {
-			return new SpringApplicationLifecycleRegistrar(OBJECT_NAME);
+			return new SpringApplicationAdminMXBeanRegistrar(OBJECT_NAME);
 		}
 
 	}
