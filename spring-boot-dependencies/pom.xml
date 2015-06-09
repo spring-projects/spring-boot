@@ -131,7 +131,7 @@
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-security.version>4.0.1.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.3.RELEASE</spring-security-jwt.version>
-		<spring-security-oauth2.version>2.0.7.RELEASE</spring-security-oauth2.version>
+		<spring-security-oauth.version>2.0.7.RELEASE</spring-security-oauth.version>
 		<spring-social.version>1.1.2.RELEASE</spring-social.version>
 		<spring-social-facebook.version>2.0.1.RELEASE</spring-social-facebook.version>
 		<spring-social-linkedin.version>1.0.1.RELEASE</spring-social-linkedin.version>
@@ -1535,8 +1535,13 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security.oauth</groupId>
+				<artifactId>spring-security-oauth</artifactId>
+				<version>${spring-security-oauth.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security.oauth</groupId>
 				<artifactId>spring-security-oauth2</artifactId>
-				<version>${spring-security-oauth2.version}</version>
+				<version>${spring-security-oauth.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.social</groupId>
