@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +80,7 @@ import com.mongodb.Mongo;
 @ConditionalOnClass({ Mongo.class, MongoTemplate.class })
 @EnableConfigurationProperties(MongoProperties.class)
 @AutoConfigureAfter(MongoAutoConfiguration.class)
-public class MongoDataAutoConfiguration {
+public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 
 	@Autowired
 	private MongoProperties properties;
@@ -89,6 +90,13 @@ public class MongoDataAutoConfiguration {
 
 	@Autowired
 	private ResourceLoader resourceLoader;
+
+	private ClassLoader classLoader;
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -151,7 +159,7 @@ public class MongoDataAutoConfiguration {
 				for (BeanDefinition candidate : scanner
 						.findCandidateComponents(basePackage)) {
 					entitySet.add(ClassUtils.forName(candidate.getBeanClassName(),
-							MongoDataAutoConfiguration.class.getClassLoader()));
+							this.classLoader));
 				}
 			}
 		}
