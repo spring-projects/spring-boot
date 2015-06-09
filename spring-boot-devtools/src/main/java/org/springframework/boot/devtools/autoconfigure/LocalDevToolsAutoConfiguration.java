@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.devtools.autoconfigure.DevToolsProperties.Restart;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
@@ -130,8 +131,11 @@ public class LocalDevToolsAutoConfiguration {
 
 		@Bean
 		public FileSystemWatcher getFileSystemWatcher() {
-			FileSystemWatcher watcher = new FileSystemWatcher();
-			String triggerFile = this.properties.getRestart().getTriggerFile();
+			Restart restartProperties = this.properties.getRestart();
+			FileSystemWatcher watcher = new FileSystemWatcher(true,
+					restartProperties.getPollInterval(),
+					restartProperties.getQuietPeriod());
+			String triggerFile = restartProperties.getTriggerFile();
 			if (StringUtils.hasLength(triggerFile)) {
 				watcher.setTriggerFilter(new TriggerFileFilter(triggerFile));
 			}

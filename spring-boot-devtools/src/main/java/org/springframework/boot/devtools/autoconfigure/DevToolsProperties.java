@@ -29,6 +29,10 @@ public class DevToolsProperties {
 
 	private static final String DEFAULT_RESTART_EXCLUDES = "META-INF/resources/**,resource/**,static/**,public/**,templates/**";
 
+	private static final long DEFAULT_RESTART_POLL_INTERVAL = 1000;
+
+	private static final long DEFAULT_RESTART_QUIET_PERIOD = 400;
+
 	private Restart restart = new Restart();
 
 	private Livereload livereload = new Livereload();
@@ -63,6 +67,17 @@ public class DevToolsProperties {
 		private String exclude = DEFAULT_RESTART_EXCLUDES;
 
 		/**
+		 * Amount of time (in milliseconds) to wait between polling for classpath changes.
+		 */
+		private long pollInterval = DEFAULT_RESTART_POLL_INTERVAL;
+
+		/**
+		 * Amount of quiet time (in milliseconds) requited without any classpath changes
+		 * before a restart is triggered.
+		 */
+		private long quietPeriod = DEFAULT_RESTART_QUIET_PERIOD;
+
+		/**
 		 * The name of specific that that when changed will will trigger the restart. If
 		 * not specified any classpath file change will trigger the restart.
 		 */
@@ -82,6 +97,22 @@ public class DevToolsProperties {
 
 		public void setExclude(String exclude) {
 			this.exclude = exclude;
+		}
+
+		public long getPollInterval() {
+			return this.pollInterval;
+		}
+
+		public void setPollInterval(long pollInterval) {
+			this.pollInterval = pollInterval;
+		}
+
+		public long getQuietPeriod() {
+			return this.quietPeriod;
+		}
+
+		public void setQuietPeriod(long quietPeriod) {
+			this.quietPeriod = quietPeriod;
 		}
 
 		public String getTriggerFile() {

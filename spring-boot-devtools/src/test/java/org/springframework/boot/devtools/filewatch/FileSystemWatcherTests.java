@@ -65,6 +65,27 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
+	public void pollIntervalMustBePositive() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("PollInterval must be positive");
+		new FileSystemWatcher(true, 0, 1);
+	}
+
+	@Test
+	public void quietPeriodMustBePositive() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("QuietPeriod must be positive");
+		new FileSystemWatcher(true, 1, 0);
+	}
+
+	@Test
+	public void pollIntervalMustBeGreaterThanQuietPeriod() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("PollInterval must be greater than QuietPeriod");
+		new FileSystemWatcher(true, 1, 1);
+	}
+
+	@Test
 	public void listenerMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("FileChangeListener must not be null");
@@ -117,7 +138,7 @@ public class FileSystemWatcherTests {
 	@Test
 	public void waitsForIdleTime() throws Exception {
 		this.changes.clear();
-		setupWatcher(100, 0);
+		setupWatcher(100, 1);
 		File folder = startWithNewFolder();
 		touch(new File(folder, "test1.txt"));
 		Thread.sleep(200);

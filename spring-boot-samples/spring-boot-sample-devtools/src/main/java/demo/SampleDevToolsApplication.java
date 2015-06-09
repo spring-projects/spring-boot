@@ -26,5 +26,4 @@ public class SampleDevToolsApplication extends WebMvcAutoConfigurationAdapter {
 	public static void main(String[] args) {
 		SpringApplication.run(SampleDevToolsApplication.class, args);
 	}
-
 }

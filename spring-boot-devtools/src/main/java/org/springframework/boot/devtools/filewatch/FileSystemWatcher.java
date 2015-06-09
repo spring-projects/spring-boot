@@ -40,17 +40,17 @@ import org.springframework.util.Assert;
  */
 public class FileSystemWatcher {
 
-	private static final long DEFAULT_IDLE_TIME = 400;
+	private static final long DEFAULT_POLL_INTERVAL = 1000;
 
-	private static final long DEFAULT_QUIET_TIME = 200;
+	private static final long DEFAULT_QUIET_PERIOD = 400;
 
 	private List<FileChangeListener> listeners = new ArrayList<FileChangeListener>();
 
 	private final boolean daemon;
 
-	private final long idleTime;
+	private final long pollInterval;
 
-	private final long quietTime;
+	private final long quietPeriod;
 
 	private Thread watchThread;
 
@@ -64,20 +64,24 @@ public class FileSystemWatcher {
 	 * Create a new {@link FileSystemWatcher} instance.
 	 */
 	public FileSystemWatcher() {
-		this(true, DEFAULT_IDLE_TIME, DEFAULT_QUIET_TIME);
+		this(true, DEFAULT_POLL_INTERVAL, DEFAULT_QUIET_PERIOD);
 	}
 
 	/**
 	 * Create a new {@link FileSystemWatcher} instance.
 	 * @param daemon if a daemon thread used to monitor changes
-	 * @param idleTime the amount of time to wait between checking for changes
-	 * @param quietTime the amount of time required after a change has been detected to
+	 * @param pollInterval the amount of time to wait between checking for changes
+	 * @param quietPeriod the amount of time required after a change has been detected to
 	 * ensure that updates have completed
 	 */
-	public FileSystemWatcher(boolean daemon, long idleTime, long quietTime) {
+	public FileSystemWatcher(boolean daemon, long pollInterval, long quietPeriod) {
+		Assert.isTrue(pollInterval > 0, "PollInterval must be positive");
+		Assert.isTrue(quietPeriod > 0, "QuietPeriod must be positive");
+		Assert.isTrue(pollInterval > quietPeriod,
+				"PollInterval must be greater than QuietPeriod");
 		this.daemon = daemon;
-		this.idleTime = idleTime;
-		this.quietTime = quietTime;
+		this.pollInterval = pollInterval;
+		this.quietPeriod = quietPeriod;
 	}
 
 	/**
@@ -131,10 +135,10 @@ public class FileSystemWatcher {
 								FileSystemWatcher.this.remainingScans.decrementAndGet();
 							}
 							scan();
-							remainingScans = FileSystemWatcher.this.remainingScans.get();
 						}
 						catch (InterruptedException ex) {
 						}
+						remainingScans = FileSystemWatcher.this.remainingScans.get();
 					}
 				};
 			};
@@ -152,13 +156,13 @@ public class FileSystemWatcher {
 	}
 
 	private void scan() throws InterruptedException {
-		Thread.sleep(this.idleTime - this.quietTime);
+		Thread.sleep(this.pollInterval - this.quietPeriod);
 		Map<File, FolderSnapshot> previous;
 		Map<File, FolderSnapshot> current = this.folders;
 		do {
 			previous = current;
 			current = getCurrentSnapshots();
-			Thread.sleep(this.quietTime);
+			Thread.sleep(this.quietPeriod);
 		}
 		while (isDifferent(previous, current));
 		if (isDifferent(this.folders, current)) {
@@ -228,6 +232,7 @@ public class FileSystemWatcher {
 		Thread thread = this.watchThread;
 		if (thread != null) {
 			this.remainingScans.set(remainingScans);
+			thread.interrupt();
 			if (Thread.currentThread() != thread) {
 				try {
 					thread.join();
