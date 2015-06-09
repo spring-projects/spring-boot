@@ -62,6 +62,7 @@
 				<configuration>
 					<container>
 						<containerId>tomcat8x</containerId>
+						<timeout>300000</timeout>
 						<zipUrlInstaller>
 							<url>http://www.us.apache.org/dist/tomcat/tomcat-8/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip</url>
 						</zipUrlInstaller>
