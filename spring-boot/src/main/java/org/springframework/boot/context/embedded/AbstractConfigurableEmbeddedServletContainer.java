@@ -295,13 +295,13 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * Returns whether or not he JSP servlet should be registered with the embedded
+	 * Returns whether or not the JSP servlet should be registered with the embedded
 	 * container.
 	 * @return {@code true} if the container should be registered, otherwise {@code false}
 	 */
 	protected boolean shouldRegisterJspServlet() {
 		return this.jspServlet != null
-				&& this.jspServlet.getRegistered()
+				&& this.jspServlet.isRegistered()
 				&& ClassUtils.isPresent(this.jspServlet.getClassName(), getClass()
 						.getClassLoader());
 	}

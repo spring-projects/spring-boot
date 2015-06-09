@@ -378,7 +378,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Factory method called to create the {@link JettyEmbeddedServletContainer} .
+	 * Factory method called to create the {@link JettyEmbeddedServletContainer}.
 	 * Subclasses can override this method to return a different
 	 * {@link JettyEmbeddedServletContainer} or apply additional processing to the Jetty
 	 * server.
