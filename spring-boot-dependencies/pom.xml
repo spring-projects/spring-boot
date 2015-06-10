@@ -80,7 +80,8 @@
 		<hornetq.version>2.4.7.Final</hornetq.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 		<httpasyncclient.version>4.1</httpasyncclient.version>
-		<httpclient.version>4.4.1</httpclient.version>
+		<httpclient.version>4.5</httpclient.version>
+		<httpcore.version>4.4.1</httpcore.version>
 		<infinispan.version>7.2.2.Final</infinispan.version>
 		<jackson.version>2.5.4</jackson.version>
 		<janino.version>2.7.8</janino.version>
@@ -841,7 +842,7 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpcore</artifactId>
-				<version>${httpclient.version}</version>
+				<version>${httpcore.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
