@@ -30,7 +30,7 @@ public class SampleApplication {
 	public static void main(String[] args) throws Exception {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 		ObjectName name = new ObjectName(
-				"org.springframework.boot:type=SpringApplicationAdmin,name=springApplicationAdmin");
+				"org.springframework.boot:type=Admin,name=SpringApplication");
 		SpringApplicationAdmin mbean = new SpringApplicationAdmin();
 		mbs.registerMBean(mbean, name);
 

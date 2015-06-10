@@ -40,7 +40,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 class SpringApplicationAdminClient {
 
 	// Note: see SpringApplicationAdminJmxAutoConfiguration
-	static final String DEFAULT_OBJECT_NAME = "org.springframework.boot:type=SpringApplicationAdmin,name=springApplicationAdmin";
+	static final String DEFAULT_OBJECT_NAME = "org.springframework.boot:type=Admin,name=SpringApplication";
 
 	private final MBeanServerConnection connection;
 
