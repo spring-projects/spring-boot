@@ -45,6 +45,10 @@ content into your application; rather pick only the properties that you need.
 	spring.main.show-banner=true
 	spring.main....= # see class for all properties
 
+	# ADMIN ({sc-spring-boot-autoconfigure}/admin/SpringApplicationAdminJmxAutoConfiguration.{sc-ext}[SpringApplicationAdminJmxAutoConfiguration])
+	spring.application.admin.enabled=false # enable admin features for the application
+	spring.application.admin.jmx-name=org.springframework.boot:type=Admin,name=SpringApplication # JMX name of the application admin MBean
+
 	# OUTPUT
 	spring.output.ansi.enabled=detect # Configure the ANSI output ("detect", "always", "never")
 

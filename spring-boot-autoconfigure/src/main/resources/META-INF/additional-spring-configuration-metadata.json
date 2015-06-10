@@ -18,6 +18,18 @@
     "defaultValue": false
   },
   {
+    "name": "spring.application.admin.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable admin features for the application.",
+    "defaultValue": false
+  },
+  {
+    "name": "spring.application.admin.jmx-name",
+    "type": "java.lang.String",
+    "description": "JMX name of the application admin MBean.",
+    "defaultValue": "org.springframework.boot:type=Admin,name=SpringApplication"
+  },
+  {
     "name": "spring.batch.job.enabled",
     "type": "java.lang.Boolean",
     "description": "Execute all Spring Batch jobs in the context on startup.",
