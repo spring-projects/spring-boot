@@ -48,7 +48,7 @@
 		<!-- Third Party -->
 		<activemq.version>5.11.1</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
-		<aspectj.version>1.8.5</aspectj.version>
+		<aspectj.version>1.8.6</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
@@ -92,7 +92,7 @@
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.7.2</jedis.version>
 		<jersey.version>2.17</jersey.version>
-		<jetty.version>9.2.10.v20150310</jetty.version>
+		<jetty.version>9.2.11.v20150529</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jmustache.version>1.10</jmustache.version>
 		<joda-time.version>2.7</joda-time.version>
