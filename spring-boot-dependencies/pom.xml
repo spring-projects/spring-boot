@@ -92,7 +92,7 @@
 		<jaxen.version>1.1.6</jaxen.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.7.2</jedis.version>
-		<jersey.version>2.17</jersey.version>
+		<jersey.version>2.18</jersey.version>
 		<jetty.version>9.2.11.v20150529</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jmustache.version>1.10</jmustache.version>
