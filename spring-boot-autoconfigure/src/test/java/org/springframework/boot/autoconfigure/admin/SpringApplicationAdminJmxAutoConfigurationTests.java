@@ -41,7 +41,7 @@ import static org.junit.Assert.fail;
  *
  * @author Stephane Nicoll
  */
-public class SpringApplicationLifecycleAutoConfigurationTests {
+public class SpringApplicationAdminJmxAutoConfigurationTests {
 
 	private static final String ENABLE_ADMIN_PROP = "spring.application.admin.enabled=true";
 
