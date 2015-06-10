@@ -30,8 +30,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.jmx.export.MBeanExporter;
 
 /**
- * Register a JMX component that allows to manage the lifecycle of the current
- * application. Intended for internal use only.
+ * Register a JMX component that allows to administer the current application. Intended
+ * for internal use only.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -39,19 +39,19 @@ import org.springframework.jmx.export.MBeanExporter;
  */
 @Configuration
 @AutoConfigureAfter(JmxAutoConfiguration.class)
-@ConditionalOnProperty(value = "spring.context.lifecycle.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true", matchIfMissing = false)
 public class SpringApplicationAdminJmxAutoConfiguration {
 
 	/**
 	 * The property to use to customize the {@code ObjectName} of the application
-	 * lifecycle mbean.
+	 * admin mbean.
 	 */
 	private static final String JMX_NAME_PROPERTY = "spring.application.admin.jmx-name";
 
 	/**
-	 * The default {@code ObjectName} of the application lifecycle mbean.
+	 * The default {@code ObjectName} of the application admin mbean.
 	 */
-	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=SpringApplicationAdmin,name=springApplicationAdmin";
+	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=Admin,name=SpringApplication";
 
 	@Autowired(required = false)
 	private MBeanExporter mbeanExporter;
@@ -60,7 +60,7 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	private Environment environment;
 
 	@Bean
-	public SpringApplicationAdminMXBeanRegistrar springApplicationLifecycleRegistrar()
+	public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar()
 			throws MalformedObjectNameException {
 		String jmxName = this.environment
 				.getProperty(JMX_NAME_PROPERTY, DEFAULT_JMX_NAME);

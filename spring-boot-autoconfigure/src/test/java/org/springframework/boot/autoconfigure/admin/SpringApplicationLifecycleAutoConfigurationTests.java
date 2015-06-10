@@ -43,11 +43,11 @@ import static org.junit.Assert.fail;
  */
 public class SpringApplicationLifecycleAutoConfigurationTests {
 
-	private static final String ENABLE_LIFECYCLE_PROP = "spring.context.lifecycle.enabled=true";
+	private static final String ENABLE_LIFECYCLE_PROP = "spring.application.admin.enabled=true";
 
 	private static final String JMX_NAME_PROPERTY = "spring.application.admin.jmx-name";
 
-	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=SpringApplicationAdmin,name=springApplicationAdmin";
+	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=Admin,name=SpringApplication";
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
@@ -94,7 +94,7 @@ public class SpringApplicationLifecycleAutoConfigurationTests {
 				this.mBeanServer.getObjectInstance(createObjectName(customJmxName));
 			}
 			catch (InstanceNotFoundException ex) {
-				fail("lifecycle MBean should have been exposed with custom name");
+				fail("Admin MBean should have been exposed with custom name");
 			}
 			this.thrown.expect(InstanceNotFoundException.class); // Should not be exposed
 			this.mBeanServer.getObjectInstance(createDefaultObjectName());

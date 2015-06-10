@@ -44,7 +44,7 @@ import org.springframework.util.Assert;
 public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware,
 		InitializingBean, DisposableBean, ApplicationListener<ApplicationReadyEvent> {
 
-	private static final Log logger = LogFactory.getLog(SpringApplicationLifecycle.class);
+	private static final Log logger = LogFactory.getLog(SpringApplicationAdmin.class);
 
 	private ConfigurableApplicationContext applicationContext;
 
@@ -73,9 +73,9 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-		server.registerMBean(new SpringApplicationLifecycle(), this.objectName);
+		server.registerMBean(new SpringApplicationAdmin(), this.objectName);
 		if (logger.isDebugEnabled()) {
-			logger.debug("Application lifecycle MBean registered with name '"
+			logger.debug("Application Admin MBean registered with name '"
 					+ this.objectName + "'");
 		}
 	}
@@ -85,7 +85,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		ManagementFactory.getPlatformMBeanServer().unregisterMBean(this.objectName);
 	}
 
-	private class SpringApplicationLifecycle implements SpringApplicationAdminMXBean {
+	private class SpringApplicationAdmin implements SpringApplicationAdminMXBean {
 
 		@Override
 		public boolean isReady() {

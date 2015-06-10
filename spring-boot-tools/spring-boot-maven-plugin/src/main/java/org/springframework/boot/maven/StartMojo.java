@@ -50,9 +50,9 @@ import org.springframework.boot.loader.tools.RunProcess;
 @Mojo(name = "start", requiresProject = true, defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class StartMojo extends AbstractRunMojo {
 
-	private static final String ENABLE_MBEAN_PROPERTY = "--spring.context.lifecycle.enabled=true";
+	private static final String ENABLE_MBEAN_PROPERTY = "--spring.application.admin.enabled=true";
 
-	private static final String JMX_NAME_PROPERTY_PREFIX = "--spring.context.lifecycle.jmx-name=";
+	private static final String JMX_NAME_PROPERTY_PREFIX = "--spring.application.admin.jmx-name=";
 
 	/**
 	 * The JMX name of the automatically deployed MBean managing the lifecycle of the

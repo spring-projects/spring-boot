@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context;
+package org.springframework.boot.admin;
 
 import java.lang.management.ManagementFactory;
 
@@ -44,9 +44,9 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Stephane Nicoll
  */
-public class SpringApplicationLifecycleRegistrarTests {
+public class SpringApplicationAdminMXBeanRegistrarTests {
 
-	private static final String OBJECT_NAME = "org.springframework.boot:type=Test,name=springApplicationLifecycle";
+	private static final String OBJECT_NAME = "org.springframework.boot:type=Test,name=SpringApplication";
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
@@ -81,7 +81,7 @@ public class SpringApplicationLifecycleRegistrarTests {
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(
-							"Could not contact spring application lifecycle bean", ex);
+							"Could not contact spring application admin bean", ex);
 				}
 			}
 		});
@@ -134,7 +134,7 @@ public class SpringApplicationLifecycleRegistrarTests {
 	static class Config {
 
 		@Bean
-		public SpringApplicationAdminMXBeanRegistrar springApplicationLifecycle()
+		public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar()
 				throws MalformedObjectNameException {
 			return new SpringApplicationAdminMXBeanRegistrar(OBJECT_NAME);
 		}
