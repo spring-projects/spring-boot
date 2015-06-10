@@ -41,10 +41,12 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -169,6 +171,13 @@ public class GroovyTemplateAutoConfigurationTests {
 				.make(new HashMap<String, Object>(Collections.singletonMap("greeting",
 						"Hello World"))).writeTo(writer);
 		assertThat(writer.toString(), containsString("Hello World"));
+	}
+
+	@Test
+	public void customConfiguration() throws Exception {
+		registerAndRefreshContext("spring.groovy.template.configuration.auto-indent:true");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent(),
+				is(true));
 	}
 
 	private void registerAndRefreshContext(String... env) {
