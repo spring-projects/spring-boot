@@ -97,7 +97,7 @@
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jmustache.version>1.10</jmustache.version>
 		<joda-time.version>2.8</joda-time.version>
-		<jolokia.version>1.3.0</jolokia.version>
+		<jolokia.version>1.3.1</jolokia.version>
 		<json-path.version>2.0.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.12</junit.version>
