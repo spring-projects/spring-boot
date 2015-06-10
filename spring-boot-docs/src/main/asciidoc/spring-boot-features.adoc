@@ -218,16 +218,19 @@ be used.
 In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator`
 interface if they wish to return a specific exit code when the application ends.
 
+
+
 [[boot-features-application-admin]]
 === Admin features
 It is possible to enable admin-related features for the application by specifying the
-`spring.application.admin.enabled` property. For now, this exposes the
+`spring.application.admin.enabled` property. This exposes the
 {sc-spring-boot}/admin/SpringApplicationAdminMXBean.{sc-ext}[`SpringApplicationAdminMXBean`]`
 on the platform `MBeanServer`. You could use this feature to administer your Spring Boot
 application remotely. This could also be useful for any service wrapper implementation.
 
-NOTE: Be careful when enabling this feature as the MBean exposes a method to shutdown the
+NOTE: Take care when enabling this feature as the MBean exposes a method to shutdown the
 application.
+
 
 
 [[boot-features-external-config]]

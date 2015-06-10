@@ -43,8 +43,8 @@ import org.springframework.jmx.export.MBeanExporter;
 public class SpringApplicationAdminJmxAutoConfiguration {
 
 	/**
-	 * The property to use to customize the {@code ObjectName} of the application
-	 * admin mbean.
+	 * The property to use to customize the {@code ObjectName} of the application admin
+	 * mbean.
 	 */
 	private static final String JMX_NAME_PROPERTY = "spring.application.admin.jmx-name";
 
