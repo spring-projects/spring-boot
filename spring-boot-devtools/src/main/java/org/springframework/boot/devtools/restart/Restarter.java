@@ -78,11 +78,15 @@ import org.springframework.util.ReflectionUtils;
  */
 public class Restarter {
 
+	private static final String[] NO_ARGS = {};
+
 	private static Restarter instance;
 
 	private Log logger = new DeferredLog();
 
 	private final boolean forceReferenceCleanup;
+
+	private boolean enabled = true;
 
 	private URL[] initialUrls;
 
@@ -186,6 +190,14 @@ public class Restarter {
 	}
 
 	/**
+	 * Set if restart support is enabled.
+	 * @param enabled if restart support is enabled
+	 */
+	private void setEnabled(boolean enabled) {
+		this.enabled = false;
+	}
+
+	/**
 	 * Add additional URLs to be includes in the next restart.
 	 * @param urls the urls to add
 	 */
@@ -215,6 +227,10 @@ public class Restarter {
 	 * Restart the running application.
 	 */
 	public void restart() {
+		if (!this.enabled) {
+			this.logger.debug("Application restart is disabled");
+			return;
+		}
 		this.logger.debug("Restarting application");
 		getLeakSafeThread().call(new Callable<Void>() {
 
@@ -400,6 +416,14 @@ public class Restarter {
 	 */
 	public URL[] getInitialUrls() {
 		return this.initialUrls;
+	}
+
+	/**
+	 * Initialize and disable restart support.
+	 */
+	public static void disable() {
+		initialize(NO_ARGS, false, RestartInitializer.NONE);
+		getInstance().setEnabled(false);
 	}
 
 	/**

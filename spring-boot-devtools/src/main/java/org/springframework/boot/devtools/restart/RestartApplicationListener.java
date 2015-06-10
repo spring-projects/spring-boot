@@ -35,14 +35,28 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 
 	private int order = HIGHEST_PRECEDENCE;
 
+	private static final String ENABLED_PROPERTY = "spring.devtools.restart.enabled";
+
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationStartedEvent) {
-			Restarter.initialize(((ApplicationStartedEvent) event).getArgs());
+			onApplicationStartedEvent((ApplicationStartedEvent) event);
 		}
 		if (event instanceof ApplicationReadyEvent
 				|| event instanceof ApplicationFailedEvent) {
 			Restarter.getInstance().finish();
+		}
+	}
+
+	private void onApplicationStartedEvent(ApplicationStartedEvent event) {
+		// It's too early to use the Spring environment but we should still allow
+		// users to disable restart using a System property.
+		String enabled = System.getProperty(ENABLED_PROPERTY);
+		if (enabled == null || Boolean.parseBoolean(enabled)) {
+			Restarter.initialize(event.getArgs());
+		}
+		else {
+			Restarter.disable();
 		}
 	}
 
