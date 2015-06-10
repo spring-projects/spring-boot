@@ -65,7 +65,7 @@
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.22</freemarker.version>
 		<ecj.version>4.4.2</ecj.version>
-		<elasticsearch.version>1.4.5</elasticsearch.version>
+		<elasticsearch.version>1.5.2</elasticsearch.version>
 		<gemfire.version>8.0.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
 		<gradle.version>1.12</gradle.version>
