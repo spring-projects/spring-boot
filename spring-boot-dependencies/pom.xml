@@ -112,7 +112,7 @@
 		<postgresql.version>9.4-1201-jdbc41</postgresql.version>
 		<reactor.version>2.0.1.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.1.RELEASE</reactor-spring.version>
-		<sendgrid.version>2.2.1</sendgrid.version>
+		<sendgrid.version>2.2.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.12</slf4j.version>
@@ -138,7 +138,6 @@
 		<spring-social-twitter.version>1.1.0.RELEASE</spring-social-twitter.version>
 		<spring-ws.version>2.2.1.RELEASE</spring-ws.version>
 		<statsd-client.version>3.1.0</statsd-client.version>
-		<sendgrid.version>2.1.0</sendgrid.version>
 		<sun-mail.version>${javax-mail.version}</sun-mail.version>
 		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity4.version>2.1.2.RELEASE</thymeleaf-extras-springsecurity4.version>
