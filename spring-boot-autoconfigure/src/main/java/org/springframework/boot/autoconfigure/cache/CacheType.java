@@ -29,65 +29,46 @@ public enum CacheType {
 	/**
 	 * Generic caching using 'Cache' beans from the context.
 	 */
-	GENERIC(GenericCacheConfiguration.class),
+	GENERIC,
 
 	/**
 	 * EhCache backed caching.
 	 */
-	EHCACHE(EhCacheCacheConfiguration.class),
+	EHCACHE,
 
 	/**
 	 * Hazelcast backed caching
 	 */
-	HAZELCAST(HazelcastCacheConfiguration.class),
+	HAZELCAST,
 
 	/**
 	 * Infinispan backed caching.
 	 */
-	INFINISPAN(InfinispanCacheConfiguration.class),
+	INFINISPAN,
 
 	/**
 	 * JCache (JSR-107) backed caching.
 	 */
-	JCACHE(JCacheCacheConfiguration.class),
+	JCACHE,
 
 	/**
 	 * Redis backed caching.
 	 */
-	REDIS(RedisCacheConfiguration.class),
+	REDIS,
 
 	/**
 	 * Guava backed caching.
 	 */
-	GUAVA(GuavaCacheConfiguration.class),
+	GUAVA,
 
 	/**
 	 * Simple in-memory caching.
 	 */
-	SIMPLE(SimpleCacheConfiguration.class),
+	SIMPLE,
 
 	/**
 	 * No caching.
 	 */
-	NONE(NoOpCacheConfiguration.class);
-
-	private final Class<?> configurationClass;
-
-	CacheType(Class<?> configurationClass) {
-		this.configurationClass = configurationClass;
-	}
-
-	Class<?> getConfigurationClass() {
-		return this.configurationClass;
-	}
-
-	static CacheType forConfigurationClass(String configurationClass) {
-		for (CacheType type : values()) {
-			if (type.getConfigurationClass().getName().equals(configurationClass)) {
-				return type;
-			}
-		}
-		throw new IllegalArgumentException("Unsupported class " + configurationClass);
-	}
+	NONE;
 
 }

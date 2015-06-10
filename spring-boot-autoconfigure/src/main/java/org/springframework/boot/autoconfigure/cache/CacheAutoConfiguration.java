@@ -131,7 +131,7 @@ public class CacheAutoConfiguration {
 			CacheType[] types = CacheType.values();
 			String[] imports = new String[types.length];
 			for (int i = 0; i < types.length; i++) {
-				imports[i] = types[i].getConfigurationClass().getName();
+				imports[i] = CacheConfigurations.getConfigurationClass(types[i]);
 			}
 			return imports;
 		}
