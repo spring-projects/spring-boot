@@ -43,7 +43,7 @@ import static org.junit.Assert.fail;
  */
 public class SpringApplicationLifecycleAutoConfigurationTests {
 
-	private static final String ENABLE_LIFECYCLE_PROP = "spring.application.admin.enabled=true";
+	private static final String ENABLE_ADMIN_PROP = "spring.application.admin.enabled=true";
 
 	private static final String JMX_NAME_PROPERTY = "spring.application.admin.jmx-name";
 
@@ -78,7 +78,7 @@ public class SpringApplicationLifecycleAutoConfigurationTests {
 
 	@Test
 	public void registeredWithProperty() throws Exception {
-		load(ENABLE_LIFECYCLE_PROP);
+		load(ENABLE_ADMIN_PROP);
 		ObjectName objectName = createDefaultObjectName();
 		ObjectInstance objectInstance = this.mBeanServer.getObjectInstance(objectName);
 		assertNotNull("Lifecycle bean should have been registered", objectInstance);
@@ -89,7 +89,7 @@ public class SpringApplicationLifecycleAutoConfigurationTests {
 		String customJmxName = "org.acme:name=FooBar";
 		System.setProperty(JMX_NAME_PROPERTY, customJmxName);
 		try {
-			load(ENABLE_LIFECYCLE_PROP);
+			load(ENABLE_ADMIN_PROP);
 			try {
 				this.mBeanServer.getObjectInstance(createObjectName(customJmxName));
 			}
