@@ -606,7 +606,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.info.id=info
 	endpoints.info.sensitive=false
 	endpoints.info.enabled=true
-	endpoints.jmx.enabled=true # enable JMX export of all endpoints
 	endpoints.mappings.enabled=true
 	endpoints.mappings.id=mappings
 	endpoints.mappings.sensitive=true
@@ -650,7 +649,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.jolokia.enabled=true # when using Jolokia
 
 	# JMX ENDPOINT ({sc-spring-boot-actuator}/autoconfigure/EndpointMBeanExportProperties.{sc-ext}[EndpointMBeanExportProperties])
-	endpoints.jmx.enabled=true
+	endpoints.jmx.enabled=true # enable JMX export of all endpoints
 	endpoints.jmx.domain= # the JMX domain, defaults to 'org.springboot'
 	endpoints.jmx.unique-names=false
 	endpoints.jmx.static-names=
