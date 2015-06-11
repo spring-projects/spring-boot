@@ -122,9 +122,9 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 			restTemplate.getOAuth2ClientContext().setAccessToken(token);
 			return restTemplate.getForEntity(path, Map.class).getBody();
 		}
-		catch (Exception e) {
-			this.logger.info("Could not fetch user details: " + e.getClass() + ", "
-					+ e.getMessage());
+		catch (Exception ex) {
+			this.logger.info("Could not fetch user details: " + ex.getClass() + ", "
+					+ ex.getMessage());
 			return Collections.<String, Object> singletonMap("error",
 					"Could not fetch user details");
 		}

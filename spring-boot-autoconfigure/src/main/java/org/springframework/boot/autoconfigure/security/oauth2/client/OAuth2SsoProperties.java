@@ -36,8 +36,8 @@ public class OAuth2SsoProperties {
 	private String loginPath = DEFAULT_LOGIN_PATH;
 
 	/**
-	 * Filter order to apply if not providing an explicit WebSecurityConfigurerAdapter
-	 * (in which case the order can be provided there instead).
+	 * Filter order to apply if not providing an explicit WebSecurityConfigurerAdapter (in
+	 * which case the order can be provided there instead).
 	 */
 	private Integer filterOrder;
 
