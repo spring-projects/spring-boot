@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -109,16 +110,23 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 	@SuppressWarnings({ "unchecked" })
 	private Map<String, Object> getMap(String path, String accessToken) {
 		this.logger.info("Getting user info from: " + path);
-		OAuth2RestOperations restTemplate = this.restTemplate;
-		if (restTemplate == null) {
-			BaseOAuth2ProtectedResourceDetails resource = new BaseOAuth2ProtectedResourceDetails();
-			resource.setClientId(this.clientId);
-			restTemplate = new OAuth2RestTemplate(resource);
+		try {
+			OAuth2RestOperations restTemplate = this.restTemplate;
+			if (restTemplate == null) {
+				BaseOAuth2ProtectedResourceDetails resource = new BaseOAuth2ProtectedResourceDetails();
+				resource.setClientId(this.clientId);
+				restTemplate = new OAuth2RestTemplate(resource);
+			}
+			DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(accessToken);
+			token.setTokenType(this.tokenType);
+			restTemplate.getOAuth2ClientContext().setAccessToken(token);
+			return restTemplate.getForEntity(path, Map.class).getBody();
 		}
-		DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(accessToken);
-		token.setTokenType(this.tokenType);
-		restTemplate.getOAuth2ClientContext().setAccessToken(token);
-		return restTemplate.getForEntity(path, Map.class).getBody();
+		catch (Exception e) {
+			this.logger.info("Could not fetch user details: " + e.getClass() + ", "
+					+ e.getMessage());
+			return Collections.<String, Object> singletonMap("error",
+					"Could not fetch user details");
+		}
 	}
-
 }

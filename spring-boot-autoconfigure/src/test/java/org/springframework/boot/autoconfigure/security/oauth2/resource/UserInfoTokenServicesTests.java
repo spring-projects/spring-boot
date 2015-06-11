@@ -15,17 +15,22 @@
  */
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.resource.BaseOAuth2ProtectedResourceDetails;
+import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
@@ -38,6 +43,9 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  */
 public class UserInfoTokenServicesTests {
+
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
 
 	private UserInfoTokenServices services = new UserInfoTokenServices(
 			"http://example.com", "foo");
@@ -64,6 +72,17 @@ public class UserInfoTokenServicesTests {
 	@Test
 	public void sunnyDay() {
 		this.services.setRestTemplate(this.template);
+		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void badToken() {
+		this.services.setRestTemplate(this.template);
+		given(this.template.getForEntity(any(String.class), any(Class.class))).willThrow(
+				new UserRedirectRequiredException("foo:bar", Collections
+						.<String, String> emptyMap()));
+		this.expected.expect(InvalidTokenException.class);
 		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
 	}
 
