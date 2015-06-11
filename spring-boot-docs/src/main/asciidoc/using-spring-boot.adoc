@@ -731,11 +731,290 @@ You might also want to use this useful operating system environment variable:
 === Hot swapping
 Since Spring Boot applications are just plain Java applications, JVM hot-swapping should
 work out of the box. JVM hot swapping is somewhat limited with the bytecode that it can
-replace, for a more complete solution the
-https://github.com/spring-projects/spring-loaded[Spring Loaded] project, or
-http://zeroturnaround.com/software/jrebel/[JRebel] can be used.
+replace, for a more complete solution
+http://zeroturnaround.com/software/jrebel/[JRebel] or the
+https://github.com/spring-projects/spring-loaded[Spring Loaded] project can be used. The
+`spring-boot-devtools` module also includes support for quick application restarts.
 
-See the <<howto.adoc#howto-hotswapping, Hot swapping "`How-to`">> section for details.
+See the <<using-boot-devtools>> section below and the
+<<howto.adoc#howto-hotswapping, Hot swapping "`How-to`">> for details.
+
+
+
+[[using-boot-devtools]]
+== Developer tools
+Spring Boot includes an additional set of tools that can make the application
+development experience a little more pleasant. The `spring-boot-devtools` module can be
+included in any project to provide additional development-time features. To include
+devtools support, simply add the module dependency to your build:
+
+.Maven
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
+	</dependencies>
+----
+
+.Gradle
+[source,groovy,indent=0,subs="attributes"]
+----
+	dependencies {
+		compile("org.springframework.boot:spring-boot-devtools")
+	}
+----
+
+
+NOTE: Developer tools are automatically disabled when running a fully packaged
+application. If your application is launched using `java -jar` or if it's started using a
+special classloader, then it is considered a "`production application`".
+
+
+
+[[using-boot-devtools-property-defaults]]
+=== Property defaults
+Several of the libraries supported by Spring Boot use caches to improve performance. For
+example, Thymeleaf will cache templates to save repeatedly parsing XML source files.
+Whilst caching is very beneficial in production, it can be counter productive during
+development. If you make a change to a template file in your IDE, you'll likely want to
+immediately see the result.
+
+Cache options are usually configured by settings in your `application.properties` file.
+For example, Thymeleaf offers the `spring.thymeleaf.cache` property. Rather than needing
+to set these properties manually, the `spring-boot-devtools` module will automatically
+apply sensible development-time configuration.
+
+TIP: For a complete list of the properties that are applied see
+{sc-spring-boot-devtools}/autoconfigure/DevToolsPropertyDefaultsPostProcessor.{sc-ext}[DevToolsPropertyDefaultsPostProcessor].
+
+
+
+[[using-boot-devtools-restart]]
+=== Automatic restart
+Applications that use `spring-boot-devtools` will automatically restart whenever files
+on the classpath change. This can be a useful feature when working in an IDE as it gives
+a very fast feedback loop for code changes. By default, any entry on the classpath that
+points to a folder will be monitored for changes.
+
+TIP: Automatic restart work very well when used with with LiveReload.
+<<using-boot-devtools-livereload,See below>> for details.
+
+.Restart vs Reload
+****
+The restart technology provided by Spring Boot works by using two classloaders.
+Classes that don't change (for example, those from third-party jars) are loaded into a
+_base_ classloader. Classes that you're actively developing are loaded into a _restart_
+classloader. When the application is restarted, the _restart_ classloader is thrown away
+and a new one is created. This approach means that application restarts are typically much
+faster than "`cold starts`" since the _base_ classloader is already available and
+populated.
+
+If you find that restarts aren't quick enough for your applications, you could consider
+reloading technologies such as http://zeroturnaround.com/software/jrebel/[JRebel] from
+ZeroTurnaround. These work by rewriting classes as they are loaded to make them more
+amenable to reloading. https://github.com/spring-projects/spring-loaded[Spring Loaded]
+provides another option, however it doesn't support as many frameworks and it isn't
+commercially supported.
+****
+
+
+
+==== Excluding resources
+Certain resources don't necessarily need to trigger a restart when they are changed. For
+example, Thymeleaf templates can just be edited in-place. By default changing resources
+in `/META-INF/resources` ,`/resources` ,`/static` ,`/public` or `/templates` will not
+trigger a restart. If you want to customize these exclusions you can use the
+`spring.devtools.restart.exclude` property. For example, to exclude only `/static` and
+`/public` you would set the following:
+
+[indent=0]
+----
+	spring.devtools.restart.exclude=static/**,public/**
+----
+
+
+
+[[using-boot-devtools-restart-disable]]
+==== Disabling restart
+If you don't want to use the restart feature you can disable it using the
+`spring.devtools.restart.enabled` property. In most cases you can set this in your
+`application.properties` (this will still initialize the restart classloader but it won't
+watch for file changes).
+
+If you need to _completely_ disable restart support, for example, because it doesn't work
+with a specific library, you need to set a `System` property before calling
+`SpringApplication.run(...)`. For example:
+
+[source,java,indent=0]
+----
+	public static void main(String[] args) {
+		System.setProperty("spring.devtools.restart.enabled", "false");
+		SpringApplication.run(MyApp.class, args);
+	}
+----
+
+
+
+[[using-boot-devtools-restart-triggerfile]]
+==== Using a trigger file
+If you work with an IDE that continuously compiles changed files, you might prefer to
+trigger restarts only at specific times. To do this you can use a "`trigger file`", which
+is a special file that must be modified when you want to actually trigger a restart check.
+The trigger file could be updated manually, or via an IDE plugin.
+
+To use a trigger file use the `spring.devtools.restart.trigger-file` property.
+
+TIP: You might want to set `spring.devtools.restart.trigger-file` as a
+<<using-boot-devtools-globalsettings,global setting>> so that all your projects behave
+in the same way.
+
+
+
+[[using-boot-devtools-livereload]]
+=== LiveReload
+The `spring-boot-devtools` module includes an embedded LiveReload server that can be used
+to trigger a browser refresh when a resource is changed. LiveReload browser extensions are
+freely available for Chrome, Firefox and Safari from
+http://livereload.com/extensions/[livereload.com].
+
+If you don't want to start the LiveReload server when your application runs you can set
+the `spring.devtools.livereload.enabled` property to `false`.
+
+NOTE: You can only run one LiveReload server at a time, if you start multiple applications
+from your IDE only the first will have livereload support.
+
+
+
+[[using-boot-devtools-globalsettings]]
+=== Global settings
+You can configure global devtools settings by adding a file named
+`.spring-boot-devtools.properties` to your `$HOME` folder (note that the filename starts
+with "`.`"). Any properties added to this file will apply to _all_ Spring Boot
+applications on your machine that use devtools. For example, to configure restart to
+always use a <<using-boot-devtools-restart-triggerfile, trigger file>>, you would add
+the following:
+
+.~/.spring-boot-devtools.properties
+[source,properties,indent=0]
+----
+	spring.devtools.reload.trigger-file=.reloadtrigger
+----
+
+
+
+[[using-boot-devtools-remote]]
+=== Remote applications
+The Spring Boot developer tools are not just limited to local development. You can also
+use several features when running applications remotely. Remote support is opt-in, to
+enable it you need set a `spring.devtools.remote.password` property. For example:
+
+[source,properties,indent=0]
+----
+	spring.devtools.remote.password=mysecret
+----
+
+WARNING: Enabling `spring-boot-devtools` on a remote application is a security risk. You
+should never enable support on a production deployment.
+
+Remote devtools support is provided in two parts; there is a server side endpoint that
+accepts connections, and a client application that you run in your IDE. The server
+component is automatically enabled when the `spring.devtools.remote.password` property
+is set. The client component must be launched manually.
+
+
+
+==== Running the remote client application
+The remote client application is designed to be run from within you IDE. You need to run
+`org.springframework.boot.devtools.RemoteSpringApplication` using the same classpath as
+the remote project that you're connecting to. The _non-option_ argument passed to the
+application should be the remote URL that you are connecting to.
+
+For example, if you are using Eclipse or STS, and you have a project named `my-app` that
+you've deployed to Cloud Foundry, you would do the following:
+
+* Select `Run Configurations...` from the `Run` menu.
+* Create a new `Java Application` "`launch configuration`".
+* Browse for the `my-app` project.
+* Use `org.springframework.boot.devtools.RemoteSpringApplication` as the main class.
+* Add `+++http://myapp.cfapps.io+++` to the `Program arguments` (or whatever your remote
+  URL is).
+
+A running remote client will look like this:
+
+[indent=0,subs="attributes"]
+----
+	  .   ____          _                                              __ _ _
+	 /\\ / ___'_ __ _ _(_)_ __  __ _          ___               _      \ \ \ \
+	( ( )\___ | '_ | '_| | '_ \/ _` |        | _ \___ _ __  ___| |_ ___ \ \ \ \
+	 \\/  ___)| |_)| | | | | || (_| []::::::[]   / -_) '  \/ _ \  _/ -_) ) ) ) )
+	  '  |____| .__|_| |_|_| |_\__, |        |_|_\___|_|_|_\___/\__\___|/ / / /
+	 =========|_|==============|___/===================================/_/_/_/
+	 :: Spring Boot Remote :: {spring-boot-version}
+
+	2015-06-10 18:25:06.632  INFO 14938 --- [           main] o.s.b.devtools.RemoteSpringApplication   : Starting RemoteSpringApplication on pwmbp with PID 14938 (/Users/pwebb/projects/spring-boot/code/spring-boot-devtools/target/classes started by pwebb in /Users/pwebb/projects/spring-boot/code/spring-boot-samples/spring-boot-sample-devtools)
+	2015-06-10 18:25:06.671  INFO 14938 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@2a17b7b6: startup date [Wed Jun 10 18:25:06 PDT 2015]; root of context hierarchy
+	2015-06-10 18:25:07.043  WARN 14938 --- [           main] o.s.b.d.r.c.RemoteClientConfiguration    : The connection to http://localhost:8080 is insecure. You should use a URL starting with 'https://'.
+	2015-06-10 18:25:07.074  INFO 14938 --- [           main] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+	2015-06-10 18:25:07.130  INFO 14938 --- [           main] o.s.b.devtools.RemoteSpringApplication   : Started RemoteSpringApplication in 0.74 seconds (JVM running for 1.105)
+----
+
+NOTE: Because the remote client is using the same classpath as the real application it
+can directly read application properties. This is how the `spring.devtools.remote.password`
+property is read and passed to the server for authentication.
+
+TIP: It's always advisable to use `https://` as the connection protocol so that traffic is
+encrypted and passwords cannot be intercepted.
+
+
+
+[[using-boot-devtools-remote-update]]
+==== Remote update
+The remote client will monitor your application classpath for changes in the same way as
+the <<using-boot-devtools-restart,local restart>>. Any updated resource will be pushed
+to the remote application and _(if required)_ trigger a restart. This can be quite helpful
+if you are iterating on a feature that uses a cloud service that you don't have locally.
+Generally remote updates and restarts are much quicker than a full rebuild and deploy
+cycle.
+
+NOTE: Files are only monitored when the remote client is running. If you change a file
+before starting the remote client, it won't be pushed to the remote server.
+
+
+
+[[using-boot-devtools-remote-debugtunnel]]
+==== Remote debug tunnel
+Java remote debugging is useful tool when diagnosing issues on a remote application.
+Unfortunately, it's not always possible to enable remote debugging when your application
+is deployed outside of your data center. Remote debugging can also be tricky to setup if
+you are using a container based technology such as Docker.
+
+To help work around these limitations, devtools supports tunneling of remote debug traffic
+over HTTP. The remote client provides a local server on port `8000` that you can attach
+a remote debugger to. Once a connection is established, debug traffic is sent over HTTP
+to the remote application. You can use the `spring.devtools.remote.debug.local-port`
+property if you want to use a different port.
+
+You'll need to ensure that your remote application is started with remote debugging
+enabled. Often this can be achieved by configuring `JAVA_OPTS`. For example, with
+Cloud Foundry you can add the following to your `manifest.yml`:
+
+[source,yaml,indent=0]
+----
+	---
+	  env:
+	    JAVA_OPTS: "-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n"
+----
+
+TIP: Notice that you don't need to pass an `address=NNNN` option to `-Xrunjdwp`. If
+omitted Java will simply pick a random free port.
+
+NOTE: Debugging a remote service over the Internet can be slow and you might need to
+increase timeouts in your IDE. For example, in Eclipse you can select `Java` -> `Debug`
+from `Preferences...` and change the `Debugger timeout (ms)` to a more suitable value
+(`60000` works well in most situations).
 
 
 

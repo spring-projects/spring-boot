@@ -1809,10 +1809,23 @@ support running from the command line with reloading of static files. You can us
 with an external css/js compiler process if you are writing that code with higher level
 tools.
 
+The <<using-spring-boot.adoc#using-boot-devtools,`spring-boot-devtools`>> module is also
+available with support for fast application restarts and LiveReload.
+
+
+
+[[howto-reload-thymeleaf-template-content]]
+=== Reload templates without restarting the container
+Most of the templating technologies supported by Spring Boot include a configuration
+option to disable caching (see below for details). If you're using the
+`spring-boot-devtools` module these properties will be
+<<using-spring-boot.adoc#using-boot-devtools-property-defaults,automatically configured>>
+for you at developement time.
+
 
 
 [[howto-reload-thymeleaf-content]]
-=== Reload Thymeleaf templates without restarting the container
+==== Thymeleaf templates
 If you are using Thymeleaf, then set `spring.thymeleaf.cache` to `false`. See
 {sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`]
 for other Thymeleaf customization options.
@@ -1820,7 +1833,7 @@ for other Thymeleaf customization options.
 
 
 [[howto-reload-freemarker-content]]
-=== Reload FreeMarker templates without restarting the container
+==== FreeMarker templates
 If you are using FreeMarker, then set `spring.freemarker.cache` to `false`. See
 {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`]
 for other FreeMarker customization options.
@@ -1828,7 +1841,7 @@ for other FreeMarker customization options.
 
 
 [[howto-reload-groovy-template-content]]
-=== Reload Groovy templates without restarting the container
+==== Groovy templates
 If you are using Groovy templates, then set `spring.groovy.template.cache` to `false`. See
 {sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`]
 for other Groovy customization options.
@@ -1836,11 +1849,22 @@ for other Groovy customization options.
 
 
 [[howto-reload-velocity-content]]
-=== Reload Velocity templates without restarting the container
+==== Velocity templates
 If you are using Velocity, then set `spring.velocity.cache` to `false`. See
 {sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
 for other Velocity customization options.
 
+
+
+[[howto-reload-fast-restart]]
+=== Fast application restarts
+The `spring-boot-devtools` module includes support for automatic application restarts.
+Whilst not as fast a technologies such as http://zeroturnaround.com/software/jrebel/[JRebel]
+or https://github.com/spring-projects/spring-loaded[Spring Loaded] it's usually
+significantly faster that a "`cold start`". You should probably give it a try before
+investigating some of the more complex reload options discussed bellow.
+
+For more details see the <<using-spring-boot.adoc#using-boot-devtools>> section.
 
 
 [[howto-reload-java-classes-without-restarting]]
