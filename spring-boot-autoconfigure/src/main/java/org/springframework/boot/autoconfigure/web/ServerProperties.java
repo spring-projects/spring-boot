@@ -598,6 +598,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		 */
 		private Integer workerThreads;
 
+		/**
+		 * Allocate buffers outside the Java heap.
+		 */
 		private Boolean directBuffers;
 
 		/**
