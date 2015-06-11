@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assume;
+import org.junit.AssumptionViolatedException;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -218,6 +219,9 @@ public class CliTester implements TestRule {
 					}
 					System.clearProperty("disableSpringSnapshotRepos");
 				}
+			}
+			catch (AssumptionViolatedException ex) {
+				throw ex;
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);

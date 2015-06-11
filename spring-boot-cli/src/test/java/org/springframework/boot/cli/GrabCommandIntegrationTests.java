@@ -18,7 +18,13 @@ package org.springframework.boot.cli;
 
 import java.io.File;
 
+import org.apache.maven.settings.Settings;
+import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
+import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
+import org.apache.maven.settings.building.SettingsBuildingException;
+import org.apache.maven.settings.building.SettingsBuildingRequest;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +48,22 @@ public class GrabCommandIntegrationTests {
 	public CliTester cli = new CliTester("src/test/resources/grab-samples/");
 
 	@Before
+	public void setup() {
+		Settings settings;
+		try {
+			settings = loadSettings();
+		}
+		catch (Exception e) {
+			// be optimistic
+			settings = null;
+		}
+		Assume.assumeTrue(
+				"Grab command tests do not work with a local Maven repository declared",
+				settings == null || settings.getLocalRepository() == null);
+
+		deleteLocalRepository();
+	}
+
 	@After
 	public void deleteLocalRepository() {
 		FileSystemUtils.deleteRecursively(new File("target/repository"));
@@ -84,4 +106,19 @@ public class GrabCommandIntegrationTests {
 		this.cli.grab("customDependencyManagement.groovy", "--autoconfigure=false");
 		assertTrue(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory());
 	}
+
+	private Settings loadSettings() {
+		File settingsFile = new File(System.getProperty("user.home"), ".m2/settings.xml");
+		SettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
+		request.setUserSettingsFile(settingsFile);
+		try {
+			return new DefaultSettingsBuilderFactory().newInstance().build(request)
+					.getEffectiveSettings();
+		}
+		catch (SettingsBuildingException ex) {
+			throw new IllegalStateException("Failed to build settings from "
+					+ settingsFile, ex);
+		}
+	}
+
 }
