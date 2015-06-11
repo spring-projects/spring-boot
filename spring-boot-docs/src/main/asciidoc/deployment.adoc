@@ -302,7 +302,7 @@ of this guide.
 
 
 
-[[deployment-service]]
+[[deployment-install]]
 == Installing Spring Boot applications
 In additional to running Spring Boot applications using `java -jar` it is also possible
 to make fully executable applications for Unix systems (Linux, OSX, FreeBSD etc).
@@ -341,12 +341,13 @@ technique.
 
 
 
+[[deployment-service]]
 === Unix/Linux services
 Spring Boot application can be easily started as Unix/Linux services using either `init.d`
 or `systemd`.
 
 
-
+[[deployment-initd-service]]
 ==== Installation as a init.d service (System V)
 The default executable script that can be embedded into Spring Boot jars will act as an
 `init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
@@ -378,6 +379,7 @@ if you use Debian:
 
 
 
+[[deployment-systemd-service]]
 ==== Installation as a systemd service
 Systemd is the successor to `init.d` scripts, and now being used by many many modern Linux
 distributions. Although you can continue to use `init.d` script with `systemd`, it is also
@@ -403,6 +405,7 @@ TIP: Remember to change the `Description` and `ExecStart` fields for your applic
 
 
 
+[[deployment-script-customization]]
 ==== Customizing the startup script
 The script accepts the following parameters as environment variables, so you can change
 the default behavior in a script or on the command line:
