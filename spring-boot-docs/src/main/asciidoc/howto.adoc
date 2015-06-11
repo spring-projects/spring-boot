@@ -1861,7 +1861,7 @@ for other Velocity customization options.
 The `spring-boot-devtools` module includes support for automatic application restarts.
 Whilst not as fast a technologies such as http://zeroturnaround.com/software/jrebel/[JRebel]
 or https://github.com/spring-projects/spring-loaded[Spring Loaded] it's usually
-significantly faster that a "`cold start`". You should probably give it a try before
+significantly faster than a "`cold start`". You should probably give it a try before
 investigating some of the more complex reload options discussed bellow.
 
 For more details see the <<using-spring-boot.adoc#using-boot-devtools>> section.

@@ -85,7 +85,7 @@ public class RemoteDevToolsProperties {
 	public static class Restart {
 
 		/**
-		 * Enable remote restart
+		 * Enable remote restart.
 		 */
 		private boolean enabled = true;
 

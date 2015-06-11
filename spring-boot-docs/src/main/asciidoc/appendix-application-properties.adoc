@@ -546,6 +546,24 @@ content into your application; rather pick only the properties that you need.
 	spring.mobile.devicedelegatingviewresolver.tablet-suffix=
 
 	# ----------------------------------------
+	# DEVTOOLS PROPERTIES
+	# ----------------------------------------
+
+	spring.devtools.livereload.enabled=true # enable a livereload.com compatible server
+    spring.devtools.livereload.port=35729 # server port.
+    spring.devtools.remote.context-path=/.~~spring-boot!~ # context path used to handle the remote connection
+    spring.devtools.remote.debug.enabled=true # enable remote debug support
+    spring.devtools.remote.debug.local-port=8000 # local remote debug server port
+    spring.devtools.remote.restart.enabled=true # enable remote restart
+    spring.devtools.remote.secret= # a shared secret required to establish a connection
+    spring.devtools.remote.secret-header-name=X-AUTH-TOKEN # HTTP header used to transfer the shared secret
+    spring.devtools.restart.enabled=true # enable automatic restart
+    spring.devtools.restart.exclude= # patterns that should be excluding for triggering a full restart
+    spring.devtools.restart.poll-interval= # amount of time (in milliseconds) to wait between polling for classpath changes
+    spring.devtools.restart.quiet-period= # amount of quiet time (in milliseconds) requited without any classpath changes before a restart is triggered
+    spring.devtools.restart.trigger-file= # name of a specific file that when changed will trigger the restart
+
+	# ----------------------------------------
 	# ACTUATOR PROPERTIES
 	# ----------------------------------------
 

@@ -81,7 +81,7 @@ public class DevToolsProperties {
 		private long quietPeriod = DEFAULT_RESTART_QUIET_PERIOD;
 
 		/**
-		 * The name of specific that that when changed will will trigger the restart. If
+		 * Name of a specific file that when changed will trigger the restart. If
 		 * not specified any classpath file change will trigger the restart.
 		 */
 		private String triggerFile;

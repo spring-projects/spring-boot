@@ -799,7 +799,7 @@ on the classpath change. This can be a useful feature when working in an IDE as 
 a very fast feedback loop for code changes. By default, any entry on the classpath that
 points to a folder will be monitored for changes.
 
-TIP: Automatic restart work very well when used with with LiveReload.
+TIP: Automatic restart work very well when used with LiveReload.
 <<using-boot-devtools-livereload,See below>> for details.
 
 .Restart vs Reload
@@ -909,7 +909,7 @@ the following:
 === Remote applications
 The Spring Boot developer tools are not just limited to local development. You can also
 use several features when running applications remotely. Remote support is opt-in, to
-enable it you need set a `spring.devtools.remote.password` property. For example:
+enable it you need to set a `spring.devtools.remote.password` property. For example:
 
 [source,properties,indent=0]
 ----
@@ -939,7 +939,7 @@ you've deployed to Cloud Foundry, you would do the following:
 * Create a new `Java Application` "`launch configuration`".
 * Browse for the `my-app` project.
 * Use `org.springframework.boot.devtools.RemoteSpringApplication` as the main class.
-* Add `+++http://myapp.cfapps.io+++` to the `Program arguments` (or whatever your remote
+* Add `+++https://myapp.cfapps.io+++` to the `Program arguments` (or whatever your remote
   URL is).
 
 A running remote client will look like this:
@@ -986,7 +986,7 @@ before starting the remote client, it won't be pushed to the remote server.
 
 [[using-boot-devtools-remote-debugtunnel]]
 ==== Remote debug tunnel
-Java remote debugging is useful tool when diagnosing issues on a remote application.
+Java remote debugging is useful when diagnosing issues on a remote application.
 Unfortunately, it's not always possible to enable remote debugging when your application
 is deployed outside of your data center. Remote debugging can also be tricky to setup if
 you are using a container based technology such as Docker.
