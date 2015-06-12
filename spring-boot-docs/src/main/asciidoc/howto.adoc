@@ -1900,19 +1900,19 @@ Spring Boot plugin declaration, e.g.
 	</plugin>
 ----
 
-This normally works pretty well with Eclipse and IntelliJ as long as they have their
+This normally works pretty well with Eclipse and IntelliJ IDEA as long as they have their
 build configuration aligned with the Maven defaults (Eclipse m2e does this out of the
 box).
 
 
 
-[[howto-reload-springloaded-gradle-and-intellij]]
-==== Configuring Spring Loaded for use with Gradle and IntelliJ
+[[howto-reload-springloaded-gradle-and-intellij-idea]]
+==== Configuring Spring Loaded for use with Gradle and IntelliJ IDEA
 You need to jump through a few hoops if you want to use Spring Loaded in combination with
-Gradle and IntelliJ. By default, IntelliJ will compile classes into a different location
-than Gradle, causing Spring Loaded monitoring to fail.
+Gradle and IntelliJ IDEA. By default, IntelliJ IDEA will compile classes into a different
+location than Gradle, causing Spring Loaded monitoring to fail.
 
-To configure IntelliJ correctly you can use the `idea` Gradle plugin:
+To configure IntelliJ IDEA correctly you can use the `idea` Gradle plugin:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -1937,10 +1937,10 @@ To configure IntelliJ correctly you can use the `idea` Gradle plugin:
 
 ----
 
-NOTE: IntelliJ must be configured to use the same Java version as the command line Gradle
-task and `springloaded` *must* be included as a `buildscript` dependency.
+NOTE: IntelliJ IDEA must be configured to use the same Java version as the command line
+Gradle task and `springloaded` *must* be included as a `buildscript` dependency.
 
-You can also additionally enable '`Make Project Automatically`' inside  Intellij to
+You can also additionally enable '`Make Project Automatically`' inside  Intellij IDEA to
 automatically compile your code whenever a file is saved.
 
 
