@@ -50,6 +50,14 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	public void retrySample() throws Exception {
+		String output = this.cli.run("retry.groovy");
+		URI scriptUri = new File("samples/retry.groovy").toURI();
+		assertTrue("Wrong output: " + output,
+				output.contains("Hello World! From " + scriptUri));
+	}
+
+	@Test
 	public void beansSample() throws Exception {
 		this.cli.run("beans.groovy");
 		String output = this.cli.getHttpOutput();
