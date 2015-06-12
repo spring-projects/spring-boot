@@ -29,11 +29,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.devtools.restart.RestartInitializer;
-import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
+import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -250,10 +248,10 @@ public class RestarterTests {
 		}
 
 		@Override
-		public void restart() {
+		public void restart(FailureHandler failureHandler) {
 			try {
 				stop();
-				start();
+				start(failureHandler);
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);
@@ -261,8 +259,9 @@ public class RestarterTests {
 		}
 
 		@Override
-		protected void relaunch(ClassLoader classLoader) throws Exception {
+		protected Throwable relaunch(ClassLoader classLoader) throws Exception {
 			this.relaunchClassLoader = classLoader;
+			return null;
 		}
 
 		@Override

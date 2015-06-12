@@ -44,6 +44,7 @@ import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.devtools.classpath.PatternClassPathRestartStrategy;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
+import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScope;
@@ -188,12 +189,23 @@ public class RemoteClientConfiguration {
 			if (urls == null) {
 				urls = new URL[0];
 			}
-			return new ClassPathFileSystemWatcher(getFileSystemWather(),
+			return new ClassPathFileSystemWatcher(getFileSystemWatcherFactory(),
 					classPathRestartStrategy(), urls);
 		}
 
 		@Bean
-		public FileSystemWatcher getFileSystemWather() {
+		public FileSystemWatcherFactory getFileSystemWatcherFactory() {
+			return new FileSystemWatcherFactory() {
+
+				@Override
+				public FileSystemWatcher getFileSystemWatcher() {
+					return newFileSystemWatcher();
+				}
+
+			};
+		}
+
+		private FileSystemWatcher newFileSystemWatcher() {
 			Restart restartProperties = this.properties.getRestart();
 			FileSystemWatcher watcher = new FileSystemWatcher(true,
 					restartProperties.getPollInterval(),

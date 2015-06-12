@@ -21,7 +21,7 @@ import java.util.Set;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.filewatch.FileChangeListener;
-import org.springframework.context.ApplicationEvent;
+import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.Assert;
 
@@ -30,33 +30,44 @@ import org.springframework.util.Assert;
  * ClassPathChangedEvents}.
  *
  * @author Phillip Webb
- * @since 1.3.0
  * @see ClassPathFileSystemWatcher
  */
-public class ClassPathFileChangeListener implements FileChangeListener {
+class ClassPathFileChangeListener implements FileChangeListener {
 
 	private final ApplicationEventPublisher eventPublisher;
 
 	private final ClassPathRestartStrategy restartStrategy;
 
+	private final FileSystemWatcher fileSystemWatcherToStop;
+
 	/**
 	 * Create a new {@link ClassPathFileChangeListener} instance.
 	 * @param eventPublisher the event publisher used send events
 	 * @param restartStrategy the restart strategy to use
+	 * @param fileSystemWatcherToStop the file system watcher to stop on a restart (or
+	 * {@code null})
 	 */
 	public ClassPathFileChangeListener(ApplicationEventPublisher eventPublisher,
-			ClassPathRestartStrategy restartStrategy) {
+			ClassPathRestartStrategy restartStrategy,
+			FileSystemWatcher fileSystemWatcherToStop) {
 		Assert.notNull(eventPublisher, "EventPublisher must not be null");
 		Assert.notNull(restartStrategy, "RestartStrategy must not be null");
 		this.eventPublisher = eventPublisher;
 		this.restartStrategy = restartStrategy;
+		this.fileSystemWatcherToStop = fileSystemWatcherToStop;
 	}
 
 	@Override
 	public void onChange(Set<ChangedFiles> changeSet) {
 		boolean restart = isRestartRequired(changeSet);
-		ApplicationEvent event = new ClassPathChangedEvent(this, changeSet, restart);
+		publishEvent(new ClassPathChangedEvent(this, changeSet, restart));
+	}
+
+	private void publishEvent(ClassPathChangedEvent event) {
 		this.eventPublisher.publishEvent(event);
+		if (event.isRestartRequired() && this.fileSystemWatcherToStop != null) {
+			this.fileSystemWatcherToStop.stop();
+		}
 	}
 
 	private boolean isRestartRequired(Set<ChangedFiles> changeSet) {

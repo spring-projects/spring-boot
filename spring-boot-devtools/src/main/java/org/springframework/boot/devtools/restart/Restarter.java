@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.devtools.restart.FailureHandler.Outcome;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
@@ -160,7 +161,7 @@ public class Restarter {
 
 				@Override
 				public Void call() throws Exception {
-					start();
+					start(FailureHandler.NONE);
 					cleanupCaches();
 					return null;
 				}
@@ -227,6 +228,14 @@ public class Restarter {
 	 * Restart the running application.
 	 */
 	public void restart() {
+		restart(FailureHandler.NONE);
+	}
+
+	/**
+	 * Restart the running application.
+	 * @param failureHandler a failure handler to deal with application that don't start
+	 */
+	public void restart(final FailureHandler failureHandler) {
 		if (!this.enabled) {
 			this.logger.debug("Application restart is disabled");
 			return;
@@ -237,7 +246,7 @@ public class Restarter {
 			@Override
 			public Void call() throws Exception {
 				Restarter.this.stop();
-				Restarter.this.start();
+				Restarter.this.start(failureHandler);
 				return null;
 			}
 
@@ -246,9 +255,26 @@ public class Restarter {
 
 	/**
 	 * Start the application.
+	 * @param failureHandler a failure handler for application that wont start
 	 * @throws Exception
 	 */
-	protected void start() throws Exception {
+	protected void start(FailureHandler failureHandler) throws Exception {
+		do {
+			Throwable error = doStart();
+			if (error == null) {
+				return;
+			}
+			if (failureHandler.handle(error) == Outcome.ABORT) {
+				if (error instanceof Exception) {
+					throw (Exception) error;
+				}
+				throw new Exception(error);
+			}
+		}
+		while (true);
+	}
+
+	private Throwable doStart() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		ClassLoader parent = this.applicationClassLoader;
 		URL[] urls = this.urls.toArray(new URL[this.urls.size()]);
@@ -259,19 +285,21 @@ public class Restarter {
 			this.logger.debug("Starting application " + this.mainClassName
 					+ " with URLs " + Arrays.asList(urls));
 		}
-		relaunch(classLoader);
+		return relaunch(classLoader);
 	}
 
 	/**
 	 * Relaunch the application using the specified classloader.
 	 * @param classLoader the classloader to use
+	 * @return any exception that caused the launch to fail or {@code null}
 	 * @throws Exception
 	 */
-	protected void relaunch(ClassLoader classLoader) throws Exception {
+	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
 				this.args, this.exceptionHandler);
 		launcher.start();
 		launcher.join();
+		return launcher.getError();
 	}
 
 	/**

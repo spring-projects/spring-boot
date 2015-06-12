@@ -96,6 +96,18 @@ public class FileSystemWatcher {
 	}
 
 	/**
+	 * Add a source folders to monitor. Cannot be called after the watcher has been
+	 * {@link #start() started}.
+	 * @param folders the folders to monitor
+	 */
+	public void addSourceFolders(Iterable<File> folders) {
+		Assert.notNull(folders, "Folders must not be null");
+		for (File folder : folders) {
+			addSourceFolder(folder);
+		}
+	}
+
+	/**
 	 * Add a source folder to monitor. Cannot be called after the watcher has been
 	 * {@link #start() started}.
 	 * @param folder the folder to monitor

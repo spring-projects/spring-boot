@@ -18,16 +18,14 @@ package org.springframework.boot.devtools.classpath;
 
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
+import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
 
 /**
  * Encapsulates a {@link FileSystemWatcher} to watch the local classpath folders for
@@ -40,63 +38,37 @@ import org.springframework.util.ResourceUtils;
 public class ClassPathFileSystemWatcher implements InitializingBean, DisposableBean,
 		ApplicationContextAware {
 
-	private static final Log logger = LogFactory.getLog(ClassPathFileSystemWatcher.class);
-
 	private final FileSystemWatcher fileSystemWatcher;
 
 	private ClassPathRestartStrategy restartStrategy;
 
 	private ApplicationContext applicationContext;
 
-	/**
-	 * Create a new {@link ClassPathFileSystemWatcher} instance.
-	 * @param urls the classpath URLs to watch
-	 */
-	public ClassPathFileSystemWatcher(URL[] urls) {
-		this(new FileSystemWatcher(), null, urls);
-	}
+	private boolean stopWatcherOnRestart;
 
 	/**
 	 * Create a new {@link ClassPathFileSystemWatcher} instance.
+	 * @param fileSystemWatcherFactory the underlying {@link FileSystemWatcher} used to
+	 * monitor the local file system
 	 * @param restartStrategy the classpath restart strategy
 	 * @param urls the URLs to watch
 	 */
-	public ClassPathFileSystemWatcher(ClassPathRestartStrategy restartStrategy, URL[] urls) {
-		this(new FileSystemWatcher(), restartStrategy, urls);
-	}
-
-	/**
-	 * Create a new {@link ClassPathFileSystemWatcher} instance.
-	 * @param fileSystemWatcher the underlying {@link FileSystemWatcher} used to monitor
-	 * the local file system
-	 * @param restartStrategy the classpath restart strategy
-	 * @param urls the URLs to watch
-	 */
-	public ClassPathFileSystemWatcher(FileSystemWatcher fileSystemWatcher,
+	public ClassPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
 			ClassPathRestartStrategy restartStrategy, URL[] urls) {
-		Assert.notNull(fileSystemWatcher, "FileSystemWatcher must not be null");
+		Assert.notNull(fileSystemWatcherFactory,
+				"FileSystemWatcherFactory must not be null");
 		Assert.notNull(urls, "Urls must not be null");
-		this.fileSystemWatcher = fileSystemWatcher;
+		this.fileSystemWatcher = fileSystemWatcherFactory.getFileSystemWatcher();
 		this.restartStrategy = restartStrategy;
-		addUrls(urls);
+		this.fileSystemWatcher.addSourceFolders(new ClassPathFolders(urls));
 	}
 
-	private void addUrls(URL[] urls) {
-		for (URL url : urls) {
-			addUrl(url);
-		}
-	}
-
-	private void addUrl(URL url) {
-		if (url.getProtocol().equals("file") && url.getPath().endsWith("/")) {
-			try {
-				this.fileSystemWatcher.addSourceFolder(ResourceUtils.getFile(url));
-			}
-			catch (Exception ex) {
-				logger.warn("Unable to watch classpath URL " + url);
-				logger.trace("Unable to watch classpath URL " + url, ex);
-			}
-		}
+	/**
+	 * Set if the {@link FileSystemWatcher} should be stopped when a full restart occurs.
+	 * @param stopWatcherOnRestart if the watcher should be stopped when a restart occurs
+	 */
+	public void setStopWatcherOnRestart(boolean stopWatcherOnRestart) {
+		this.stopWatcherOnRestart = stopWatcherOnRestart;
 	}
 
 	@Override
@@ -108,8 +80,12 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (this.restartStrategy != null) {
+			FileSystemWatcher watcherToStop = null;
+			if (this.stopWatcherOnRestart) {
+				watcherToStop = this.fileSystemWatcher;
+			}
 			this.fileSystemWatcher.addListener(new ClassPathFileChangeListener(
-					this.applicationContext, this.restartStrategy));
+					this.applicationContext, this.restartStrategy, watcherToStop));
 		}
 		this.fileSystemWatcher.start();
 	}

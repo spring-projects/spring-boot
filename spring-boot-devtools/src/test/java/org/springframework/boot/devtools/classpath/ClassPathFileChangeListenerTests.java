@@ -27,19 +27,18 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
-import org.springframework.boot.devtools.classpath.ClassPathFileChangeListener;
-import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
+import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -51,6 +50,15 @@ public class ClassPathFileChangeListenerTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Mock
+	private ApplicationEventPublisher eventPublisher;
+
+	@Mock
+	private ClassPathRestartStrategy restartStrategy;
+
+	@Mock
+	private FileSystemWatcher fileSystemWatcher;
 
 	@Captor
 	private ArgumentCaptor<ApplicationEvent> eventCaptor;
@@ -64,31 +72,32 @@ public class ClassPathFileChangeListenerTests {
 	public void eventPublisherMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("EventPublisher must not be null");
-		new ClassPathFileChangeListener(null, mock(ClassPathRestartStrategy.class));
+		new ClassPathFileChangeListener(null, this.restartStrategy,
+				this.fileSystemWatcher);
 	}
 
 	@Test
 	public void restartStrategyMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RestartStrategy must not be null");
-		new ClassPathFileChangeListener(mock(ApplicationEventPublisher.class), null);
+		new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher);
 	}
 
 	@Test
 	public void sendsEventWithoutRestart() throws Exception {
 		testSendsEvent(false);
+		verify(this.fileSystemWatcher, never()).stop();
 	}
 
 	@Test
 	public void sendsEventWithRestart() throws Exception {
 		testSendsEvent(true);
+		verify(this.fileSystemWatcher).stop();
 	}
 
 	private void testSendsEvent(boolean restart) {
-		ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
-		ClassPathRestartStrategy restartStrategy = mock(ClassPathRestartStrategy.class);
 		ClassPathFileChangeListener listener = new ClassPathFileChangeListener(
-				eventPublisher, restartStrategy);
+				this.eventPublisher, this.restartStrategy, this.fileSystemWatcher);
 		File folder = new File("s1");
 		File file = new File("f1");
 		ChangedFile file1 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
@@ -99,10 +108,10 @@ public class ClassPathFileChangeListenerTests {
 		ChangedFiles changedFiles = new ChangedFiles(new File("source"), files);
 		Set<ChangedFiles> changeSet = Collections.singleton(changedFiles);
 		if (restart) {
-			given(restartStrategy.isRestartRequired(file2)).willReturn(true);
+			given(this.restartStrategy.isRestartRequired(file2)).willReturn(true);
 		}
 		listener.onChange(changeSet);
-		verify(eventPublisher).publishEvent(this.eventCaptor.capture());
+		verify(this.eventPublisher).publishEvent(this.eventCaptor.capture());
 		ClassPathChangedEvent actualEvent = (ClassPathChangedEvent) this.eventCaptor
 				.getValue();
 		assertThat(actualEvent.getChangeSet(), equalTo(changeSet));

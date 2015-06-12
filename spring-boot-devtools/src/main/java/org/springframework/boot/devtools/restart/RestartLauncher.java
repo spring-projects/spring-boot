@@ -29,6 +29,8 @@ class RestartLauncher extends Thread {
 
 	private final String[] args;
 
+	private Throwable error;
+
 	public RestartLauncher(ClassLoader classLoader, String mainClassName, String[] args,
 			UncaughtExceptionHandler exceptionHandler) {
 		this.mainClassName = mainClassName;
@@ -46,9 +48,13 @@ class RestartLauncher extends Thread {
 			Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
 			mainMethod.invoke(null, new Object[] { this.args });
 		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
+		catch (Throwable ex) {
+			this.error = ex;
 		}
+	}
+
+	public Throwable getError() {
+		return this.error;
 	}
 
 }

@@ -28,11 +28,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
-import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
-import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
+import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +41,7 @@ import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ClassPathFileSystemWatcher}.
@@ -62,7 +61,8 @@ public class ClassPathFileSystemWatcherTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Urls must not be null");
 		URL[] urls = null;
-		new ClassPathFileSystemWatcher(urls);
+		new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
+				mock(ClassPathRestartStrategy.class), urls);
 	}
 
 	@Test
@@ -99,7 +99,8 @@ public class ClassPathFileSystemWatcherTests {
 		public ClassPathFileSystemWatcher watcher() {
 			FileSystemWatcher watcher = new FileSystemWatcher(false, 100, 10);
 			URL[] urls = this.environemnt.getProperty("urls", URL[].class);
-			return new ClassPathFileSystemWatcher(watcher, restartStrategy(), urls);
+			return new ClassPathFileSystemWatcher(new MockFileSystemWatcherFactory(
+					watcher), restartStrategy(), urls);
 		}
 
 		@Bean
@@ -132,6 +133,21 @@ public class ClassPathFileSystemWatcherTests {
 
 		public List<ClassPathChangedEvent> getEvents() {
 			return this.events;
+		}
+
+	}
+
+	private static class MockFileSystemWatcherFactory implements FileSystemWatcherFactory {
+
+		private final FileSystemWatcher watcher;
+
+		public MockFileSystemWatcherFactory(FileSystemWatcher watcher) {
+			this.watcher = watcher;
+		}
+
+		@Override
+		public FileSystemWatcher getFileSystemWatcher() {
+			return this.watcher;
 		}
 
 	}

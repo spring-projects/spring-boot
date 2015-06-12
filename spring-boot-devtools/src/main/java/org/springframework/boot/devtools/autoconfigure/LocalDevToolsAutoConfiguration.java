@@ -29,6 +29,7 @@ import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.devtools.classpath.PatternClassPathRestartStrategy;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
+import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.ConditionalOnInitializedRestarter;
 import org.springframework.boot.devtools.restart.RestartScope;
@@ -114,8 +115,8 @@ public class LocalDevToolsAutoConfiguration {
 		@EventListener
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
-				getFileSystemWatcher().stop();
-				Restarter.getInstance().restart();
+				Restarter.getInstance().restart(
+						new FileWatchingFailureHandler(getFileSystemWatcherFactory()));
 			}
 		}
 
@@ -123,8 +124,10 @@ public class LocalDevToolsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
 			URL[] urls = Restarter.getInstance().getInitialUrls();
-			return new ClassPathFileSystemWatcher(getFileSystemWatcher(),
-					classPathRestartStrategy(), urls);
+			ClassPathFileSystemWatcher watcher = new ClassPathFileSystemWatcher(
+					getFileSystemWatcherFactory(), classPathRestartStrategy(), urls);
+			watcher.setStopWatcherOnRestart(true);
+			return watcher;
 		}
 
 		@Bean
@@ -135,7 +138,18 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		public FileSystemWatcher getFileSystemWatcher() {
+		public FileSystemWatcherFactory getFileSystemWatcherFactory() {
+			return new FileSystemWatcherFactory() {
+
+				@Override
+				public FileSystemWatcher getFileSystemWatcher() {
+					return newFileSystemWatcher();
+				}
+
+			};
+		}
+
+		private FileSystemWatcher newFileSystemWatcher() {
 			Restart restartProperties = this.properties.getRestart();
 			FileSystemWatcher watcher = new FileSystemWatcher(true,
 					restartProperties.getPollInterval(),

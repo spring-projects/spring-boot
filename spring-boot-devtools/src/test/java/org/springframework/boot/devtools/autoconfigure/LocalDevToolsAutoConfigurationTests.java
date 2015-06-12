@@ -30,8 +30,8 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
-import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
+import org.springframework.boot.devtools.restart.FailureHandler;
 import org.springframework.boot.devtools.restart.MockRestartInitializer;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.Restarter;
@@ -48,6 +48,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -138,7 +139,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
 				Collections.<ChangedFiles> emptySet(), true);
 		this.context.publishEvent(event);
-		verify(this.mockRestarter.getMock()).restart();
+		verify(this.mockRestarter.getMock()).restart(any(FailureHandler.class));
 	}
 
 	@Test
@@ -172,7 +173,10 @@ public class LocalDevToolsAutoConfigurationTests {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put("spring.devtools.restart.trigger-file", "somefile.txt");
 		this.context = initializeAndRun(Config.class, properties);
-		FileSystemWatcher watcher = this.context.getBean(FileSystemWatcher.class);
+		ClassPathFileSystemWatcher classPathWatcher = this.context
+				.getBean(ClassPathFileSystemWatcher.class);
+		Object watcher = ReflectionTestUtils.getField(classPathWatcher,
+				"fileSystemWatcher");
 		Object filter = ReflectionTestUtils.getField(watcher, "triggerFilter");
 		assertThat(filter, instanceOf(TriggerFileFilter.class));
 	}
