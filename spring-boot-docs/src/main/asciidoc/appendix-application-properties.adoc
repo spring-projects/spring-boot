@@ -445,7 +445,7 @@ content into your application; rather pick only the properties that you need.
 	# JMX
 	spring.jmx.default-domain= # JMX domain name
 	spring.jmx.enabled=true # Expose MBeans from Spring
-	spring.jmx.mbean-server=mBeanServer # MBeanServer bean name
+	spring.jmx.server=mBeanServer # MBeanServer bean name
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
 	spring.rabbitmq.addresses= # connection addresses (e.g. myhost:9999,otherhost:1111)

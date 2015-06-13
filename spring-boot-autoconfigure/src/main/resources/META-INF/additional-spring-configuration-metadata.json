@@ -99,7 +99,7 @@
     "defaultValue": true
   },
   {
-    "name": "spring.jmx.mbean-server",
+    "name": "spring.jmx.server",
     "type": "java.lang.String",
     "description": "MBeanServer bean name.",
     "defaultValue": "mBeanServer"
