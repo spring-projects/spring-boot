@@ -244,7 +244,7 @@ to your application properties:
 
 [source,properties,indent=0]
 ----
-	management.health.status.order: DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 ----
 
 You might also want to register custom status mappings with the `HealthMvcEndpoint`

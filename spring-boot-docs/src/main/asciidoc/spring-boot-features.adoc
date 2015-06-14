@@ -907,8 +907,8 @@ FATAL, OFF. Example `application.properties`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	logging.level.org.springframework.web: DEBUG
-	logging.level.org.hibernate: ERROR
+	logging.level.org.springframework.web=DEBUG
+	logging.level.org.hibernate=ERROR
 ----
 
 NOTE: By default Spring Boot remaps Thymeleaf `INFO` messages so that they are logged at

@@ -440,10 +440,10 @@ typically in `application.properties` or `application.yml`. For example:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	server.port = 8443
-	server.ssl.key-store = classpath:keystore.jks
-	server.ssl.key-store-password = secret
-	server.ssl.key-password = another-secret
+	server.port=8443
+	server.ssl.key-store=classpath:keystore.jks
+	server.ssl.key-store-password=secret
+	server.ssl.key-password another-secret
 ----
 
 See {sc-spring-boot}/context/embedded/Ssl.{sc-ext}[`Ssl`] for details of all of the
@@ -844,7 +844,7 @@ default, but can easily be enabled via `application.properties`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	server.tomcat.compression: on
+	server.tomcat.compression=on
 ----
 
 When set to `on` Tomcat will compress responses with a length that is at least 2048
@@ -853,7 +853,7 @@ e.g.:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	server.tomcat.compression: 4096
+	server.tomcat.compression=4096
 ----
 
 By default Tomcat will only compress responses with certain MIME types
@@ -1175,8 +1175,8 @@ then you can do that in `application.properties` using the "logging.level" prefi
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	logging.level.org.springframework.web: DEBUG
-	logging.level.org.hibernate: ERROR
+	logging.level.org.springframework.web=DEBUG
+	logging.level.org.hibernate=ERROR
 ----
 
 You can also set the location of a file to log to (in addition to the console) using
