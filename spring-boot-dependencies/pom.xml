@@ -48,6 +48,7 @@
 		<!-- Third Party -->
 		<activemq.version>5.11.1</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
+		<artemis.version>1.0.0</artemis.version>
 		<aspectj.version>1.8.6</aspectj.version>
 		<atomikos.version>3.9.3</atomikos.version>
 		<bitronix.version>2.1.4</bitronix.version>
@@ -932,6 +933,16 @@
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-web-console</artifactId>
 				<version>${activemq.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>artemis-jms-client</artifactId>
+				<version>${artemis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>artemis-jms-server</artifactId>
+				<version>${artemis.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
