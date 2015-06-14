@@ -971,7 +971,7 @@ Spring Boot has also some features to make it easier to customize this behavior.
 
 You can configure the `ObjectMapper` and `XmlMapper` instances using the environment.
 Jackson provides an extensive suite of simple on/off features that can be used to
-configure various aspects of its processing. These features are described in five enums in
+configure various aspects of its processing. These features are described in six enums in
 Jackson which map onto properties in the environment:
 
 |===
@@ -991,6 +991,9 @@ Jackson which map onto properties in the environment:
 
 |`com.fasterxml.jackson.databind.SerializationFeature`
 |`spring.jackson.serialization.<feature_name>=true\|false`
+
+|`com.fasterxml.jackson.annotation.JsonInclude.Include`
+|`spring.jackson.serialization-inclusion=always\|non_null\|non_default\|non_empty`
 |===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
