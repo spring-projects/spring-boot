@@ -42,7 +42,7 @@ content into your application; rather pick only the properties that you need.
 	spring.main....= # see class for all properties
 
 	# LOGGING
-	logging.path=/var/logs
+	logging.path=/var/log
 	logging.file=myapp.log
 	logging.config= # location of config file (default classpath:logback.xml for logback)
 	logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
