@@ -88,7 +88,7 @@ public class RabbitAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
 	@ConditionalOnMissingBean(AmqpAdmin.class)
-	public AmqpAdmin amqpAdmin(CachingConnectionFactory connectionFactory) {
+	public AmqpAdmin amqpAdmin(ConnectionFactory connectionFactory) {
 		return new RabbitAdmin(connectionFactory);
 	}
 
