@@ -81,7 +81,7 @@ class HazelcastCacheConfiguration {
 	static class ConfigAvailableCondition extends CacheConfigFileCondition {
 
 		public ConfigAvailableCondition() {
-			super("Hazelcast", "spring.config.hazelcast", "file:./hazelcast.xml",
+			super("Hazelcast", "spring.cache.hazelcast", "file:./hazelcast.xml",
 					"classpath:/hazelcast.xml");
 		}
 
