@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.servlet.MultipartConfigElement;
 
@@ -24,14 +26,16 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -196,22 +200,27 @@ public class MultipartAutoConfigurationTests {
 
 	@Test
 	public void containerWithMultipartConfigDisabled() {
+		testContainerWithCustomMultipartConfigEnabledSetting("false", 0);
+	}
 
+	@Test
+	public void containerWithMultipartConfigEnabled() {
+		testContainerWithCustomMultipartConfigEnabledSetting("true", 1);
+	}
+
+	private void testContainerWithCustomMultipartConfigEnabledSetting(
+			final String propertyValue, int expectedNumberOfMultipartConfigElementBeans) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new PropertySource<Object>("test") {
-					@Override
-					public Object getProperty(String name) {
-						if (name.toLowerCase().contains("multipart.enabled")) {
-							return "false";
-						}
-						return null;
-					}
-				});
+		Map<String, Object> poperties = new LinkedHashMap<String, Object>();
+		poperties.put("multipart.enabled", propertyValue);
+		MapPropertySource propertySource = new MapPropertySource("test", poperties);
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(ContainerWithNoMultipartTomcat.class,
 				BaseConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeansOfType(MultipartConfigElement.class).size());
+		this.context.getBean(MultipartProperties.class);
+		assertEquals(expectedNumberOfMultipartConfigElementBeans, this.context
+				.getBeansOfType(MultipartConfigElement.class).size());
 	}
 
 	@Test
@@ -245,7 +254,11 @@ public class MultipartAutoConfigurationTests {
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, MultipartAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class })
+	@EnableConfigurationProperties(MultipartProperties.class)
 	protected static class BaseConfiguration {
+
+		@Autowired
+		private MultipartProperties properties;
 
 		@Bean
 		public ServerProperties serverProperties() {
