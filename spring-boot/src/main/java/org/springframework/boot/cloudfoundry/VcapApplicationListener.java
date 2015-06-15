@@ -211,6 +211,9 @@ public class VcapApplicationListener implements
 			else if (value instanceof Number) {
 				properties.put(key, value.toString());
 			}
+			else if (value instanceof Boolean) {
+				properties.put(key, value.toString());
+			}
 			else if (value instanceof Map) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
