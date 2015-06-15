@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
  * Configuration for Spring AMQP annotation driven endpoints.
@@ -38,7 +38,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 class RabbitAnnotationDrivenConfiguration {
 
 	@Autowired(required = false)
-	private PlatformTransactionManager transactionManager;
+	private JtaTransactionManager transactionManager;
 
 	@Bean
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
