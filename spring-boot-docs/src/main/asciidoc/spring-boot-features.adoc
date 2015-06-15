@@ -2260,9 +2260,9 @@ details.
 [[boot-features-jta]]
 == Distributed Transactions with JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources using
-either an http://www.atomikos.com/[Atomikos] or
-http://docs.codehaus.org/display/BTM/Home[Bitronix] embedded transaction manager. JTA
-transactions are also supported when deploying to a suitable Java EE Application Server.
+either an http://www.atomikos.com/[Atomikos] or https://github.com/bitronix/btm[Bitronix]
+embedded transaction manager. JTA transactions are also supported when deploying to a
+suitable Java EE Application Server.
 
 When a JTA environment is detected, Spring's `JtaTransactionManager` will be used to
 manage transactions. Auto-configured JMS, DataSource and JPA beans will be upgraded to
@@ -2308,7 +2308,7 @@ a `transaction-logs` directory in your application home directory. You can custo
 directory by using the `spring.jta.log-dir` property. Properties starting `spring.jta.`
 are also bound to the `bitronix.tm.Configuration` bean, allowing for complete
 customization. See the
-http://btm.codehaus.org/api/2.0.1/bitronix/tm/Configuration.html[Bitronix documentation]
+https://github.com/bitronix/btm/wiki/Transaction-manager-configuration[Bitronix documentation]
 for details.
 
 NOTE: To ensure that multiple transaction managers can safely coordinate the same
