@@ -111,12 +111,15 @@ public class VcapApplicationListenerTests {
 								+ "\"plan\":\"10mb\",\"credentials\":{"
 								+ "\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\","
 								+ "\"hostname\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
+								+ "\"ssl\":true,\"location\":null,"
 								+ "\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
 								+ "\"port\":3306,\"user\":\"urpRuqTf8Cpe6\",\"username\":"
 								+ "\"urpRuqTf8Cpe6\",\"password\":\"pxLsGVpsC9A5S\"}}]}");
 		this.initializer.onApplicationEvent(this.event);
 		assertEquals("mysql", getProperty("vcap.services.mysql.name"));
 		assertEquals("3306", getProperty("vcap.services.mysql.credentials.port"));
+		assertEquals("true", getProperty("vcap.services.mysql.credentials.ssl"));
+		assertEquals("", getProperty("vcap.services.mysql.credentials.location"));
 	}
 
 	@Test
