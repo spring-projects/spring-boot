@@ -87,8 +87,13 @@ else
     exit 1
 fi
 
+# source config file to set RUN_ARGS and/or JAVA_OPTS
+if [[ -r "/$(dirname "$jarfile")/${identity}.conf" ]]; then
+    source "/$(dirname "$jarfile")/${identity}.conf"
+fi
+
 # Build actual command to execute
-command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $jarfile $@"
+command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS $jarfile $RUN_ARGS $@"
 
 # Action functions
 start() {
