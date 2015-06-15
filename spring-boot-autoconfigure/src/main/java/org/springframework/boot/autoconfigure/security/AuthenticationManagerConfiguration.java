@@ -183,7 +183,7 @@ public class AuthenticationManagerConfiguration {
 				ReflectionUtils.makeAccessible(field);
 				ReflectionUtils.setField(field, target, value);
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 				logger.info("Could not set " + name);
 			}
 		}

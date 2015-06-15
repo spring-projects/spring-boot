@@ -186,11 +186,9 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (classifier.length() > 0 && !classifier.startsWith("-")) {
 			classifier = "-" + classifier;
 		}
-
 		if (!this.outputDirectory.exists()) {
 			this.outputDirectory.mkdirs();
 		}
-
 		return new File(this.outputDirectory, this.finalName + classifier + "."
 				+ this.project.getArtifact().getArtifactHandler().getExtension());
 	}
