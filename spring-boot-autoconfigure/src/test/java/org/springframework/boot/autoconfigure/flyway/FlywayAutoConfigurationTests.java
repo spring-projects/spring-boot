@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import java.util.Arrays;
-
-import javax.sql.DataSource;
-
 import org.flywaydb.core.Flyway;
 import org.junit.After;
 import org.junit.Before;
@@ -34,9 +30,13 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import javax.sql.DataSource;
+import java.util.Arrays;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.*;
 
 /**
  * Tests for {@link FlywayAutoConfiguration}.
@@ -148,6 +148,16 @@ public class FlywayAutoConfigurationTests {
 				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 	}
 
+	@Test
+	public void customFlywayMigrationStrategy() throws Exception {
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				MockFlywayMigrationStrategy.class);
+		assertNotNull(this.context.getBean(Flyway.class));
+		this.context.getBean(MockFlywayMigrationStrategy.class).assertCalled();
+	}
+
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
 		this.context.register(annotatedClasses);
 		this.context.refresh();
@@ -165,4 +175,20 @@ public class FlywayAutoConfigurationTests {
 		}
 
 	}
+
+	@Component
+	protected static class MockFlywayMigrationStrategy extends FlywayMigrationStrategy {
+
+		private boolean called = false;
+
+		@Override
+		public void migrate(Flyway flyway) {
+			this.called = true;
+		}
+
+		public void assertCalled() {
+			assertThat(this.called, equalTo(true));
+		}
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.jpa;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.EntityManagerFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -31,6 +25,11 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.util.StringUtils;
+
+import javax.persistence.EntityManagerFactory;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * {@link BeanFactoryPostProcessor} that can be used to dynamically declare that all
@@ -45,9 +44,9 @@ import org.springframework.util.StringUtils;
 public class EntityManagerFactoryDependsOnPostProcessor implements
 		BeanFactoryPostProcessor {
 
-	private final String dependsOn;
+	private final String[] dependsOn;
 
-	public EntityManagerFactoryDependsOnPostProcessor(String dependsOn) {
+	public EntityManagerFactoryDependsOnPostProcessor(String... dependsOn) {
 		this.dependsOn = dependsOn;
 	}
 
@@ -55,13 +54,16 @@ public class EntityManagerFactoryDependsOnPostProcessor implements
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		for (String beanName : getEntityManagerFactoryBeanNames(beanFactory)) {
 			BeanDefinition definition = getBeanDefinition(beanName, beanFactory);
-			definition.setDependsOn(StringUtils.addStringToArray(
-					definition.getDependsOn(), this.dependsOn));
+			String[] dependencies = definition.getDependsOn();
+			for (String bean : this.dependsOn) {
+				dependencies = StringUtils.addStringToArray(dependencies, bean);
+			}
+			definition.setDependsOn(dependencies);
 		}
 	}
 
 	private static BeanDefinition getBeanDefinition(String beanName,
-			ConfigurableListableBeanFactory beanFactory) {
+													ConfigurableListableBeanFactory beanFactory) {
 		try {
 			return beanFactory.getBeanDefinition(beanName);
 		}
