@@ -49,6 +49,8 @@ public class WebMvcProperties {
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
 
+	private final Async async = new Async();
+
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
 	}
@@ -82,4 +84,27 @@ public class WebMvcProperties {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
 	}
 
+	public Async getAsync() {
+		return async;
+	}
+
+
+	public static class Async {
+
+		/**
+		 * Specify the amount of time, in milliseconds, before asynchronous request
+		 * handling times out. If this value is not set, the default timeout of the
+		 * underlying implementation is used, e.g. 10 seconds on Tomcat with Servlet 3.
+		 */
+		private Long requestTimeout;
+
+		public Long getRequestTimeout() {
+			return requestTimeout;
+		}
+
+		public void setRequestTimeout(Long requestTimeout) {
+			this.requestTimeout = requestTimeout;
+		}
+
+	}
 }
