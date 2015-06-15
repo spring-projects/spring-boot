@@ -37,8 +37,8 @@ public class EhCacheStatisticsProvider implements CacheStatisticsProvider<EhCach
 		statistics.setSize(ehCacheStatistics.getSize());
 		Double hitRatio = ehCacheStatistics.cacheHitRatio();
 		if (!hitRatio.isNaN()) {
-			statistics.setHitRatio(hitRatio);
-			statistics.setMissRatio(1 - hitRatio);
+			statistics.setHitRatio(hitRatio > 1 ? 1 : hitRatio);
+			statistics.setMissRatio(hitRatio > 1 ? 0 : 1 - hitRatio);
 		}
 		return statistics;
 	}
