@@ -23,6 +23,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * {@link ConfigurationProperties properties} for Spring MVC.
  *
  * @author Phillip Webb
+ * @author Sébastien Deleuze
  * @since 1.1
  */
 @ConfigurationProperties("spring.mvc")
@@ -48,6 +49,8 @@ public class WebMvcProperties {
 	 * scenarios.
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
+
+	private final Async async = new Async();
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
@@ -82,4 +85,26 @@ public class WebMvcProperties {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
 	}
 
+	public Async getAsync() {
+		return this.async;
+	}
+
+	public static class Async {
+
+		/**
+		 * The amount of time (in milliseconds) before asynchronous request handling times
+		 * out. If this value is not set, the default timeout of the underlying
+		 * implementation is used, e.g. 10 seconds on Tomcat with Servlet 3.
+		 */
+		private Long requestTimeout;
+
+		public Long getRequestTimeout() {
+			return this.requestTimeout;
+		}
+
+		public void setRequestTimeout(Long requestTimeout) {
+			this.requestTimeout = requestTimeout;
+		}
+
+	}
 }

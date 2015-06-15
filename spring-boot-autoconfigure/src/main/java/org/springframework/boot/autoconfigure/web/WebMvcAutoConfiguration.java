@@ -66,6 +66,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -87,6 +88,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Sébastien Deleuze
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -164,6 +166,14 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			converters.addAll(this.messageConverters.getConverters());
+		}
+
+		@Override
+		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+			Long timeout = this.mvcProperties.getAsync().getRequestTimeout();
+			if (timeout != null) {
+				configurer.setDefaultTimeout(timeout);
+			}
 		}
 
 		@Bean

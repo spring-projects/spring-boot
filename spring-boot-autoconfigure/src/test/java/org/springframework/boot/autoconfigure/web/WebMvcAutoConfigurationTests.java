@@ -385,6 +385,33 @@ public class WebMvcAutoConfigurationTests {
 						"faviconHandlerMapping"), is(nullValue()));
 	}
 
+	@Test
+	public void defaultAsyncRequestTimeout() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		RequestMappingHandlerAdapter adapter = this.context
+				.getBean(RequestMappingHandlerAdapter.class);
+		assertNull(ReflectionTestUtils.getField(adapter, "asyncRequestTimeout"));
+	}
+
+	@Test
+	public void customAsyncRequestTimeout() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.async.request-timeout:123456");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		RequestMappingHandlerAdapter adapter = this.context
+				.getBean(RequestMappingHandlerAdapter.class);
+		Object actual = ReflectionTestUtils.getField(adapter, "asyncRequestTimeout");
+		assertEquals(123456L, actual);
+	}
+
 	@Configuration
 	protected static class ViewConfig {
 
