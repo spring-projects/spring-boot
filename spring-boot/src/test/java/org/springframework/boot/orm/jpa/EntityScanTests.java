@@ -109,6 +109,13 @@ public class EntityScanTests {
 		assertSetPackagesToScan("com.mycorp.entity");
 	}
 
+	@Test
+	public void considersMultipleEntityScanAnnotations() {
+		this.context = new AnnotationConfigApplicationContext(MultiScanFirst.class,
+				MultiScanSecond.class);
+		assertSetPackagesToScan("foo", "bar");
+	}
+
 	private void assertSetPackagesToScan(String... expected) {
 		String[] actual = this.context.getBean(
 				TestLocalContainerEntityManagerFactoryBean.class).getPackagesToScan();
@@ -183,6 +190,16 @@ public class EntityScanTests {
 			};
 
 		}
+	}
+
+	@EntityScan(basePackages = "foo")
+	static class MultiScanFirst extends BaseConfig {
+
+	}
+
+	@EntityScan(basePackages = "bar")
+	static class MultiScanSecond extends BaseConfig {
+
 	}
 
 	private static class TestLocalContainerEntityManagerFactoryBean extends
