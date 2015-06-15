@@ -9,11 +9,40 @@
 #   :: Spring Boot Startup Script ::
 #
 
+### BEGIN INIT INFO
+# Provides:          spring-boot-application
+# Required-Start:    $remote_fs $syslog $network
+# Required-Stop:     $remote_fs $syslog $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Spring Boot Application
+# Description:       Spring Boot Application
+### END INIT INFO
+
 [[ -n "$DEBUG" ]] && set -x
 
+# Initialize variables that cannot be provided by a .conf file
 WORKING_DIR="$(pwd)"
 [[ -n "$JARFILE" ]] && jarfile="$JARFILE"
 [[ -n "$APP_NAME" ]] && identity="$APP_NAME"
+
+# Follow symlinks to find the real jar and detect init.d script
+cd $(dirname "$0")
+[[ -z "$jarfile" ]] && jarfile=$(pwd)/$(basename "$0")
+while [[ -L "$jarfile" ]]; do
+  [[ "$jarfile" =~ "init.d" ]] && init_script=$(basename "$jarfile")
+  jarfile=$(readlink "$jarfile")
+  cd $(dirname "$jarfile")
+  jarfile=$(pwd)/$(basename "$jarfile")
+done
+jarfolder=$(dirname "$jarfile")
+cd "$WORKING_DIR"
+
+# Source any config file
+configfile=$(basename "${jarfile%.*}.conf")
+[[ -r ${jarfolder}/${configfile} ]] && source ${jarfolder}/${configfile}
+
+# Initialize PID/LOG locations if they weren't provided by the config file
 [[ -z "$PID_FOLDER" ]] && PID_FOLDER="/var/run"
 [[ -z "$LOG_FOLDER" ]] && LOG_FOLDER="/var/log"
 ! [[ -x "$PID_FOLDER" ]] && PID_FOLDER="/tmp"
@@ -21,6 +50,18 @@ WORKING_DIR="$(pwd)"
 
 # Setup defaults
 [[ -z "$MODE" ]] && MODE="{{mode:auto}}" # modes are "auto", "service" or "run"
+
+# Create an identity for log/pid files
+if [[ -z "$identity" ]]; then
+  if [[ -n "$init_script" ]]; then
+    identity="${init_script}"
+  else
+    identity=$(basename "${jarfile%.*}")_${jar_folder//\//}
+  fi
+fi
+
+
+
 
 # ANSI Colors
 echoRed() { echo $'\e[0;31m'$1$'\e[0m'; }
@@ -37,32 +78,11 @@ isRunning() {
   ps -p $1 &> /dev/null
 }
 
-# Follow symlinks to find the real jar and detect init.d script
-cd $(dirname "$0")
-[[ -z "$jarfile" ]] && jarfile=$(pwd)/$(basename "$0")
-while [[ -L "$jarfile" ]]; do
-  [[ "$jarfile" =~ "init.d" ]] && init_script=$(basename "$jarfile")
-  jarfile=$(readlink "$jarfile")
-  cd $(dirname "$jarfile")
-  jarfile=$(pwd)/$(basename "$jarfile")
-done
-cd "$WORKING_DIR"
-
 # Determine the script mode
 action="run"
 if [[ "$MODE" == "auto" && -n "$init_script" ]] || [[ "$MODE" == "service" ]]; then
   action="$1"
   shift
-fi
-
-# Create an identity for log/pid files
-if [[ -z "$identity" ]]; then
-  if [[ -n "$init_script" ]]; then
-    identity="${init_script}"
-  else
-    jar_folder=$(dirname "$jarfile")
-    identity=$(basename "${jarfile%.*}")_${jar_folder//\//}
-  fi
 fi
 
 # Build the pid and log filenames
@@ -88,7 +108,7 @@ else
 fi
 
 # Build actual command to execute
-command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $jarfile $@"
+command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS $jarfile $RUN_ARGS $@"
 
 # Action functions
 start() {
@@ -166,4 +186,3 @@ run)
 esac
 
 exit 0
-
