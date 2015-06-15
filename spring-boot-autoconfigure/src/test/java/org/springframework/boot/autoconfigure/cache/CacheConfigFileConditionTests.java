@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.cache;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -63,15 +62,13 @@ public class CacheConfigFileConditionTests {
 		assertTrue(this.context.containsBean("foo"));
 	}
 
-	private void load(Class<?> config,
-			String... environment) {
+	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.register(config);
 		applicationContext.refresh();
 		this.context = applicationContext;
 	}
-
 
 	@Configuration
 	@Conditional(CacheConfigFileDefaultFileCondition.class)
@@ -93,16 +90,19 @@ public class CacheConfigFileConditionTests {
 		}
 	}
 
-	private static class CacheConfigFileDefaultFileCondition extends CacheConfigFileCondition {
+	private static class CacheConfigFileDefaultFileCondition extends
+			CacheConfigFileCondition {
 
 		public CacheConfigFileDefaultFileCondition() {
 			super("test", "spring.cache.test.", "classpath:/ehcache.xml");
 		}
 	}
 
-	private static class CacheConfigFileNoDefaultFileCondition extends CacheConfigFileCondition {
+	private static class CacheConfigFileNoDefaultFileCondition extends
+			CacheConfigFileCondition {
 		public CacheConfigFileNoDefaultFileCondition() {
-			super("test", "spring.cache.test", "classpath:/this-cache-file-does-not-exist.xml");
+			super("test", "spring.cache.test",
+					"classpath:/this-cache-file-does-not-exist.xml");
 		}
 
 	}

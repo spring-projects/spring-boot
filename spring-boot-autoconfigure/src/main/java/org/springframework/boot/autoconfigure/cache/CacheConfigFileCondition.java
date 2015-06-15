@@ -28,20 +28,19 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 1.3.0
  */
 abstract class CacheConfigFileCondition extends SpringBootCondition {
 
 	private final String name;
 
-	private final String configPrefix;
+	private final String prefix;
 
 	private final String[] resourceLocations;
 
-	public CacheConfigFileCondition(String name, String configPrefix,
+	public CacheConfigFileCondition(String name, String prefix,
 			String... resourceLocations) {
 		this.name = name;
-		this.configPrefix = (configPrefix.endsWith(".") ? configPrefix : configPrefix + ".");
+		this.prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
 		this.resourceLocations = resourceLocations;
 	}
 
@@ -49,9 +48,9 @@ abstract class CacheConfigFileCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), this.configPrefix);
+				context.getEnvironment(), this.prefix);
 		if (resolver.containsProperty("config")) {
-			return ConditionOutcome.match("A '" + this.configPrefix + ".config' "
+			return ConditionOutcome.match("A '" + this.prefix + ".config' "
 					+ "property is specified");
 		}
 		return getResourceOutcome(context, metadata);

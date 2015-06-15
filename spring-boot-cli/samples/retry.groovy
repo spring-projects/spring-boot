@@ -8,14 +8,14 @@ class Example implements CommandLineRunner {
 	private MyService myService
 
 	void run(String... args) {
-		println "Hello ${this.myService.sayWorld()} From ${getClass().getClassLoader().getResource('samples/retry.groovy')}" 
+		println "Hello ${this.myService.sayWorld()} From ${getClass().getClassLoader().getResource('samples/retry.groovy')}"
 	}
 }
 
 
 @Service
 class MyService {
-	
+
 	static int count = 0
 
 	@Retryable
@@ -26,5 +26,3 @@ class MyService {
 		return "World!"
 	}
 }
-
-
