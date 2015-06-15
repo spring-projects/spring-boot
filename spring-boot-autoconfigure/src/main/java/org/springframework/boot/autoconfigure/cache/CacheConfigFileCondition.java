@@ -41,7 +41,7 @@ abstract class CacheConfigFileCondition extends SpringBootCondition {
 	public CacheConfigFileCondition(String name, String configPrefix,
 			String... resourceLocations) {
 		this.name = name;
-		this.configPrefix = configPrefix;
+		this.configPrefix = (configPrefix.endsWith(".") ? configPrefix : configPrefix + ".");
 		this.resourceLocations = resourceLocations;
 	}
 
