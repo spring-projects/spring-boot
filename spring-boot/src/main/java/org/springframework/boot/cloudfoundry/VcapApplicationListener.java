@@ -193,46 +193,49 @@ public class VcapApplicationListener implements
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void flatten(Properties properties, Map<String, Object> input, String path) {
 		for (Entry<String, Object> entry : input.entrySet()) {
-			String key = entry.getKey();
-			if (StringUtils.hasText(path)) {
-				if (key.startsWith("[")) {
-					key = path + key;
-				}
-				else {
-					key = path + "." + key;
+			String key = getFullKey(path, entry.getKey());
+			Object value = entry.getValue();
+			if (value instanceof Map) {
+				// Need a compound key
+				flatten(properties, (Map<String, Object>) value, key);
+			}
+			else if (value instanceof Collection) {
+				// Need a compound key
+				Collection<Object> collection = (Collection<Object>) value;
+				properties.put(key,
+						StringUtils.collectionToCommaDelimitedString(collection));
+				int count = 0;
+				for (Object item : collection) {
+					String itemKey = "[" + (count++) + "]";
+					flatten(properties, Collections.singletonMap(itemKey, item), key);
 				}
 			}
-			Object value = entry.getValue();
-			if (value instanceof String) {
+			else if (value instanceof String) {
 				properties.put(key, value);
 			}
 			else if (value instanceof Number) {
 				properties.put(key, value.toString());
 			}
-			else if (value instanceof Map) {
-				// Need a compound key
-				@SuppressWarnings("unchecked")
-				Map<String, Object> map = (Map<String, Object>) value;
-				flatten(properties, map, key);
-			}
-			else if (value instanceof Collection) {
-				// Need a compound key
-				@SuppressWarnings("unchecked")
-				Collection<Object> collection = (Collection<Object>) value;
-				properties.put(key,
-						StringUtils.collectionToCommaDelimitedString(collection));
-				int count = 0;
-				for (Object object : collection) {
-					flatten(properties,
-							Collections.singletonMap("[" + (count++) + "]", object), key);
-				}
+			else if (value instanceof Boolean) {
+				properties.put(key, value.toString());
 			}
 			else {
 				properties.put(key, value == null ? "" : value);
 			}
 		}
+	}
+
+	private String getFullKey(String path, String key) {
+		if (!StringUtils.hasText(path)) {
+			return key;
+		}
+		if (key.startsWith("[")) {
+			return path + key;
+		}
+		return path + "." + key;
 	}
 
 }
