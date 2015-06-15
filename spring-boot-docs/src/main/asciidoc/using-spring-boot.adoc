@@ -909,11 +909,11 @@ the following:
 === Remote applications
 The Spring Boot developer tools are not just limited to local development. You can also
 use several features when running applications remotely. Remote support is opt-in, to
-enable it you need to set a `spring.devtools.remote.password` property. For example:
+enable it you need to set a `spring.devtools.remote.secret` property. For example:
 
 [source,properties,indent=0]
 ----
-	spring.devtools.remote.password=mysecret
+	spring.devtools.remote.secret=mysecret
 ----
 
 WARNING: Enabling `spring-boot-devtools` on a remote application is a security risk. You
@@ -921,7 +921,7 @@ should never enable support on a production deployment.
 
 Remote devtools support is provided in two parts; there is a server side endpoint that
 accepts connections, and a client application that you run in your IDE. The server
-component is automatically enabled when the `spring.devtools.remote.password` property
+component is automatically enabled when the `spring.devtools.remote.secret` property
 is set. The client component must be launched manually.
 
 
@@ -962,7 +962,7 @@ A running remote client will look like this:
 ----
 
 NOTE: Because the remote client is using the same classpath as the real application it
-can directly read application properties. This is how the `spring.devtools.remote.password`
+can directly read application properties. This is how the `spring.devtools.remote.secret`
 property is read and passed to the server for authentication.
 
 TIP: It's always advisable to use `https://` as the connection protocol so that traffic is
