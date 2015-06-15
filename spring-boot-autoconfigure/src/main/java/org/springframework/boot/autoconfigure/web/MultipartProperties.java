@@ -86,32 +86,32 @@ public class MultipartProperties {
 		this.enabled = enabled;
 	}
 
-	public String getMaxFileSize() {
-		return this.maxFileSize;
-	}
-
-	public String getMaxRequestSize() {
-		return this.maxRequestSize;
-	}
-
-	public String getFileSizeThreshold() {
-		return this.fileSizeThreshold;
-	}
-
 	public String getLocation() {
 		return this.location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getMaxFileSize() {
+		return this.maxFileSize;
 	}
 
 	public void setMaxFileSize(String maxFileSize) {
 		this.maxFileSize = maxFileSize;
 	}
 
+	public String getMaxRequestSize() {
+		return this.maxRequestSize;
+	}
+
 	public void setMaxRequestSize(String maxRequestSize) {
 		this.maxRequestSize = maxRequestSize;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public String getFileSizeThreshold() {
+		return this.fileSizeThreshold;
 	}
 
 	public void setFileSizeThreshold(String fileSizeThreshold) {
