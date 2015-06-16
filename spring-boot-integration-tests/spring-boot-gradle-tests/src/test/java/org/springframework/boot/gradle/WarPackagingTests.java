@@ -99,6 +99,13 @@ public class WarPackagingTests {
 		checkWebInfLibProvidedEntries(war, expectedLibProvidedEntries);
 
 		checkWebInfLibEntries(war, expectedLibProvidedEntries);
+
+		try {
+			war.close();
+		}
+		catch (IOException ex) {
+			// Ignore
+		}
 	}
 
 	private void checkWebInfLibProvidedEntries(JarFile war, Set<String> expectedEntries)
