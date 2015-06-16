@@ -115,6 +115,16 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-tools</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.codehaus.btm</groupId>
 			<artifactId>btm</artifactId>
 			<optional>true</optional>
@@ -185,6 +195,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 			<optional>true</optional>
@@ -202,13 +217,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
