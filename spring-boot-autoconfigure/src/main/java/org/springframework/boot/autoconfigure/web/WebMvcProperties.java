@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ public class WebMvcProperties {
 	public static class Async {
 
 		/**
-		 * The amount of time (in milliseconds) before asynchronous request handling times
+		 * Amount of time (in milliseconds) before asynchronous request handling times
 		 * out. If this value is not set, the default timeout of the underlying
 		 * implementation is used, e.g. 10 seconds on Tomcat with Servlet 3.
 		 */

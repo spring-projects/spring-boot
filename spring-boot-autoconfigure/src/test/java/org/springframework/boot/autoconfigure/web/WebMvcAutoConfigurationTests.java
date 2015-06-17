@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -79,6 +81,7 @@ import static org.junit.Assert.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -98,11 +101,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void handerAdaptersCreated() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		assertEquals(3, this.context.getBeanNamesForType(HandlerAdapter.class).length);
 		assertFalse(this.context.getBean(RequestMappingHandlerAdapter.class)
 				.getMessageConverters().isEmpty());
@@ -113,21 +112,13 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void handerMappingsCreated() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		assertEquals(6, this.context.getBeanNamesForType(HandlerMapping.class).length);
 	}
 
 	@Test
 	public void resourceHandlerMapping() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.get("/**").size(), equalTo(5));
 		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
@@ -137,11 +128,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerMappingOverrideWebjars() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(WebJars.class, Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load(WebJars.class);
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
 		assertThat(mappingLocations.get("/webjars/**").get(0),
@@ -149,13 +136,8 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void resourceHandlerMappingOverrideAll() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(AllResources.class, Config.class,
-				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	 public void resourceHandlerMappingOverrideAll() throws Exception {
+		load(AllResources.class);
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.get("/**").size(), equalTo(1));
 		assertThat(mappingLocations.get("/**").get(0),
@@ -164,39 +146,22 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerMappingDisabled() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.resources.add-mappings:false");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load("spring.resources.add-mappings:false");
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.size(), equalTo(0));
 	}
 
 	@Test
 	public void noLocaleResolver() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(AllResources.class, Config.class,
-				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load(AllResources.class);
 		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(LocaleResolver.class);
 	}
 
 	@Test
 	public void overrideLocale() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		// set fixed locale
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.locale:en_UK");
-		this.context.register(AllResources.class, Config.class,
-				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load(AllResources.class, "spring.mvc.locale:en_UK");
+
 		// mock request and set user preferred locale
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
@@ -209,12 +174,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void noDateFormat() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(AllResources.class, Config.class,
-				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load(AllResources.class);
 		FormattingConversionService cs = this.context
 				.getBean(FormattingConversionService.class);
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
@@ -224,15 +184,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void overrideDateFormat() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		// set fixed date format
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.dateFormat:dd*MM*yyyy");
-		this.context.register(AllResources.class, Config.class,
-				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load(AllResources.class, "spring.mvc.dateFormat:dd*MM*yyyy");
 		FormattingConversionService cs = this.context
 				.getBean(FormattingConversionService.class);
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
@@ -241,26 +193,14 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void noMessageCodesResolver() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(AllResources.class, Config.class,
-				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load(AllResources.class);
 		assertNull(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
 				.getMessageCodesResolver());
 	}
 
 	@Test
 	public void overrideMessageCodesFormat() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE");
-		this.context.register(AllResources.class, Config.class,
-				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load(AllResources.class, "spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE");
 		assertNotNull(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
 				.getMessageCodesResolver());
 	}
@@ -300,11 +240,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void ignoreDefaultModelOnRedirectIsTrue() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
 		assertEquals(true,
@@ -328,23 +264,13 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customViewResolver() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, CustomViewResolver.class,
-				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load(CustomViewResolver.class);
 		assertThat(this.context.getBean("viewResolver"), instanceOf(MyViewResolver.class));
 	}
 
 	@Test
 	public void customContentNegotiatingViewResolver() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, CustomContentNegotiatingViewResolver.class,
-				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load(CustomContentNegotiatingViewResolver.class);
 		Map<String, ContentNegotiatingViewResolver> beans = this.context
 				.getBeansOfType(ContentNegotiatingViewResolver.class);
 		assertThat(beans.size(), equalTo(1));
@@ -353,11 +279,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void faviconMapping() throws IllegalAccessException {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		assertThat(
 				this.context.getBeansOfType(ResourceHttpRequestHandler.class).get(
 						"faviconRequestHandler"), is(notNullValue()));
@@ -370,13 +292,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void faviconMappingDisabled() throws IllegalAccessException {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.favicon.enabled:false");
-		this.context.refresh();
+		load("spring.mvc.favicon.enabled:false");
 		assertThat(
 				this.context.getBeansOfType(ResourceHttpRequestHandler.class).get(
 						"faviconRequestHandler"), is(nullValue()));
@@ -387,11 +303,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void defaultAsyncRequestTimeout() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
 		assertNull(ReflectionTestUtils.getField(adapter, "asyncRequestTimeout"));
@@ -399,18 +311,33 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customAsyncRequestTimeout() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.async.request-timeout:123456");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load("spring.mvc.async.request-timeout:123456");
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
 		Object actual = ReflectionTestUtils.getField(adapter, "asyncRequestTimeout");
 		assertEquals(123456L, actual);
 	}
+
+
+	@SuppressWarnings("unchecked")
+	private void load(Class<?> config, String... environment) {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		List<Class<?>> configClasses = new ArrayList<Class<?>>();
+		if (config != null) {
+			configClasses.add(config);
+		}
+		configClasses.addAll(Arrays.asList(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class));
+		this.context.register(configClasses.toArray(new Class<?>[configClasses.size()]));
+		this.context.refresh();
+	}
+
+	private void load(String... environment) {
+		load(null, environment);
+	}
+
 
 	@Configuration
 	protected static class ViewConfig {
