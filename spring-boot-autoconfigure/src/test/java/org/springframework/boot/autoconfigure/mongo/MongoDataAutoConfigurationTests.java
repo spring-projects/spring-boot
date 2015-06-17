@@ -30,6 +30,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingStrategy;
+import org.springframework.data.mapping.model.FieldNamingStrategy;
+import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
@@ -101,6 +104,33 @@ public class MongoDataAutoConfigurationTests {
 		this.context.refresh();
 		assertDomainTypesDiscovered(this.context.getBean(MongoMappingContext.class),
 				City.class);
+	}
+
+	@Test
+	public void defaultNamingStrategy() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context);
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+			MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoMappingContext mappingContext = this.context.getBean(MongoMappingContext.class);
+		FieldNamingStrategy fieldNamingStrategy =
+			(FieldNamingStrategy) ReflectionTestUtils.getField(mappingContext, "fieldNamingStrategy");
+		assertEquals(PropertyNameFieldNamingStrategy.class, fieldNamingStrategy.getClass());
+	}
+
+	@Test
+	public void customNamingStrategy() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+			"spring.data.mongodb.naming-strategy:org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingStrategy");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+			MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoMappingContext mappingContext = this.context.getBean(MongoMappingContext.class);
+		FieldNamingStrategy fieldNamingStrategy =
+			(FieldNamingStrategy) ReflectionTestUtils.getField(mappingContext, "fieldNamingStrategy");
+		assertEquals(CamelCaseAbbreviatingFieldNamingStrategy.class, fieldNamingStrategy.getClass());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

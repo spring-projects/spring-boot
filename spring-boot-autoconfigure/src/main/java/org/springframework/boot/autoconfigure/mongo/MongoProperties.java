@@ -36,6 +36,7 @@ import com.mongodb.ServerAddress;
  * @author Phillip Webb
  * @author Josh Long
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
@@ -82,6 +83,11 @@ public class MongoProperties {
 	 */
 	private char[] password;
 
+	/**
+	 * Naming strategy fully qualified name.
+	 */
+	private Class<?> namingStrategy;
+
 	public String getHost() {
 		return this.host;
 	}
@@ -120,6 +126,14 @@ public class MongoProperties {
 
 	public void setPassword(char[] password) {
 		this.password = password;
+	}
+
+	public Class<?> getNamingStrategy() {
+		return this.namingStrategy;
+	}
+
+	public void setNamingStrategy(Class<?> namingStrategy) {
+		this.namingStrategy = namingStrategy;
 	}
 
 	public void clearPassword() {
