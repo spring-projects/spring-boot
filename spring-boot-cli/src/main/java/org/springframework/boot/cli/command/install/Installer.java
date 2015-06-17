@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -48,8 +49,13 @@ class Installer {
 
 	public Installer(OptionSet options, CompilerOptionHandler compilerOptionHandler)
 			throws IOException {
+		this(options, compilerOptionHandler, Collections.<String> emptyList());
+	}
+
+	public Installer(OptionSet options, CompilerOptionHandler compilerOptionHandler,
+			List<String> remoteRepositories) throws IOException {
 		this(new GroovyGrabDependencyResolver(createCompilerConfiguration(options,
-				compilerOptionHandler)));
+				compilerOptionHandler, remoteRepositories)));
 	}
 
 	public Installer(DependencyResolver resolver) throws IOException {
@@ -58,9 +64,10 @@ class Installer {
 	}
 
 	private static GroovyCompilerConfiguration createCompilerConfiguration(
-			OptionSet options, CompilerOptionHandler compilerOptionHandler) {
-		List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
-				.createDefaultRepositoryConfiguration();
+			OptionSet options, CompilerOptionHandler compilerOptionHandler,
+			List<String> remoteRepositories) {
+
+		List<RepositoryConfiguration> repositoryConfiguration = createRepositoryConfiguration(remoteRepositories);
 		return new OptionSetGroovyCompilerConfiguration(options, compilerOptionHandler,
 				repositoryConfiguration) {
 			@Override
@@ -68,6 +75,17 @@ class Installer {
 				return false;
 			}
 		};
+	}
+
+	private static List<RepositoryConfiguration> createRepositoryConfiguration(
+			List<String> remoteRepositories) {
+		if (remoteRepositories.isEmpty()) {
+			return RepositoryConfigurationFactory.createDefaultRepositoryConfiguration();
+		}
+		else {
+			return RepositoryConfigurationFactory
+					.createRepositoryConfiguration(remoteRepositories);
+		}
 	}
 
 	private Properties loadInstallCounts() throws IOException {

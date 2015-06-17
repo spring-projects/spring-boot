@@ -80,4 +80,27 @@ public final class RepositoryConfigurationFactory {
 		return new File(System.getProperty("user.home"), ".m2");
 	}
 
+	/**
+	 * Create a repository configuration with the provided urls
+	 * @param remoteRepositories List of Strings in the form id::url
+	 * @return the newly-created repository configuration
+	 */
+	public static List<RepositoryConfiguration> createRepositoryConfiguration(
+			List<String> remoteRepositories) {
+		List<RepositoryConfiguration> repositoryConfiguration = new ArrayList<RepositoryConfiguration>();
+
+		for (String remoteRepository : remoteRepositories) {
+			String[] tokens = remoteRepository.split("::");
+			if (tokens.length != 2) {
+				throw new IllegalArgumentException("Illegal remoteRepository "
+						+ remoteRepository + "! Must be specified as <name>::<url>!");
+			}
+
+			repositoryConfiguration.add(new RepositoryConfiguration(tokens[0], URI
+					.create(tokens[1]), false));
+		}
+
+		return repositoryConfiguration;
+	}
+
 }

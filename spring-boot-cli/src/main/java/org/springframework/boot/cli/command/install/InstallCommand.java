@@ -18,6 +18,7 @@ package org.springframework.boot.cli.command.install;
 import java.util.List;
 
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
@@ -47,6 +48,16 @@ public class InstallCommand extends OptionParsingCommand {
 
 	private static final class InstallOptionHandler extends CompilerOptionHandler {
 
+		private OptionSpec<String> remoteRepositories;
+
+		@Override
+		protected void doOptions() {
+			this.remoteRepositories = option("remoteRepositories",
+					"Repositories in the format id::url, separated by comma")
+					.withRequiredArg().withValuesSeparatedBy(',');
+
+		}
+
 		@Override
 		@SuppressWarnings("unchecked")
 		protected ExitStatus run(OptionSet options) throws Exception {
@@ -54,7 +65,8 @@ public class InstallCommand extends OptionParsingCommand {
 			Assert.notEmpty(args, "Please specify at least one "
 					+ "dependency, in the form group:artifact:version, to install");
 			try {
-				new Installer(options, this).install(args);
+				new Installer(options, this, this.remoteRepositories.values(options))
+						.install(args);
 			}
 			catch (Exception ex) {
 				String message = ex.getMessage();
