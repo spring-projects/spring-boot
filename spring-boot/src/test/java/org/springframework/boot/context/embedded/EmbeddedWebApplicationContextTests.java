@@ -48,6 +48,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
@@ -151,8 +152,9 @@ public class EmbeddedWebApplicationContextTests {
 		addEmbeddedServletContainerFactoryBean();
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
-		assertTrue(this.context.getEnvironment().containsProperty("local.server.port"));
-		assertEquals("8080", this.context.getEnvironment().getProperty("local.server.port"));
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		assertTrue(environment.containsProperty("local.server.port"));
+		assertEquals("8080", environment.getProperty("local.server.port"));
 	}
 
 	@Test

@@ -48,6 +48,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @since 1.3.0
  */
 public class ServerPortInfoApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -81,7 +82,8 @@ public class ServerPortInfoApplicationContextInitializer implements
 
 	private void setPortProperty(ApplicationContext context, String propertyName, int port) {
 		if (context instanceof ConfigurableApplicationContext) {
-			ConfigurableEnvironment environment = ((ConfigurableApplicationContext) context).getEnvironment();
+			ConfigurableEnvironment environment = ((ConfigurableApplicationContext) context)
+					.getEnvironment();
 			MutablePropertySources sources = environment.getPropertySources();
 			Map<String, Object> map;
 			if (!sources.contains("server.ports")) {
@@ -91,8 +93,8 @@ public class ServerPortInfoApplicationContextInitializer implements
 			}
 			else {
 				@SuppressWarnings("unchecked")
-				Map<String, Object> value = (Map<String, Object>) sources.get("server.ports")
-						.getSource();
+				Map<String, Object> value = (Map<String, Object>) sources.get(
+						"server.ports").getSource();
 				map = value;
 			}
 			map.put(propertyName, port);

@@ -124,7 +124,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	private String getProperty(ObjectName objectName, String key) {
 		try {
 			return (String) this.mBeanServer.invoke(objectName, "getProperty",
-					new Object[] {key}, new String[] {String.class.getName()});
+					new Object[] { key }, new String[] { String.class.getName() });
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex.getMessage(), ex);

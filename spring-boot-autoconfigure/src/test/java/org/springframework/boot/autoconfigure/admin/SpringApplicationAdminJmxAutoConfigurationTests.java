@@ -112,18 +112,19 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void registerWithSimpleWebApp() throws Exception {
-		this.context = new SpringApplicationBuilder()
-				.sources(
-						EmbeddedServletContainerAutoConfiguration.class,
-						ServerPropertiesAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-						JmxAutoConfiguration.class, SpringApplicationAdminJmxAutoConfiguration.class)
-				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0");
+		this.context = new SpringApplicationBuilder().sources(
+				EmbeddedServletContainerAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class, JmxAutoConfiguration.class,
+				SpringApplicationAdminJmxAutoConfiguration.class).run(
+				"--" + ENABLE_ADMIN_PROP, "--server.port=0");
 		assertTrue(this.context instanceof EmbeddedWebApplicationContext);
-		assertEquals(true, this.mBeanServer.getAttribute(createDefaultObjectName(), "EmbeddedWebApplication"));
-		int expected = ((EmbeddedWebApplicationContext) this.context).getEmbeddedServletContainer().getPort();
+		assertEquals(true, this.mBeanServer.getAttribute(createDefaultObjectName(),
+				"EmbeddedWebApplication"));
+		int expected = ((EmbeddedWebApplicationContext) this.context)
+				.getEmbeddedServletContainer().getPort();
 		String actual = getProperty(createDefaultObjectName(), "local.server.port");
 		assertEquals(String.valueOf(expected), actual);
 	}
@@ -143,7 +144,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 
 	private String getProperty(ObjectName objectName, String key) throws Exception {
 		return (String) this.mBeanServer.invoke(objectName, "getProperty",
-				new Object[]{key}, new String[]{String.class.getName()});
+				new Object[] { key }, new String[] { String.class.getName() });
 	}
 
 	private void load(String... environment) {

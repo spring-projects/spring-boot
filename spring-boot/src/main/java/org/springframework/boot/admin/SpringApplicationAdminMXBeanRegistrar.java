@@ -46,7 +46,8 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContextAware,
-		EnvironmentAware, InitializingBean, DisposableBean, ApplicationListener<ApplicationReadyEvent> {
+		EnvironmentAware, InitializingBean, DisposableBean,
+		ApplicationListener<ApplicationReadyEvent> {
 
 	private static final Log logger = LogFactory.getLog(SpringApplicationAdmin.class);
 
@@ -105,13 +106,13 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 
 		@Override
 		public boolean isEmbeddedWebApplication() {
-			return (applicationContext != null
-					&& applicationContext instanceof EmbeddedWebApplicationContext);
+			return (SpringApplicationAdminMXBeanRegistrar.this.applicationContext != null && SpringApplicationAdminMXBeanRegistrar.this.applicationContext instanceof EmbeddedWebApplicationContext);
 		}
 
 		@Override
 		public String getProperty(String key) {
-			return environment.getProperty(key);
+			return SpringApplicationAdminMXBeanRegistrar.this.environment
+					.getProperty(key);
 		}
 
 		@Override

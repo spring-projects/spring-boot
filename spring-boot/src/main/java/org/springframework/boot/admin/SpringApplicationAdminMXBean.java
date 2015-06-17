@@ -34,8 +34,8 @@ public interface SpringApplicationAdminMXBean {
 
 	/**
 	 * Specify if the application runs in an embedded web container. Can return
-	 * {@code null} if that information is not yet available. It is preferable to
-	 * wait for the application to be {@link #isReady() ready}.
+	 * {@code null} if that information is not yet available. It is preferable to wait for
+	 * the application to be {@link #isReady() ready}.
 	 * @return {@code true} if the application runs in an embedded web container
 	 * @see #isReady()
 	 */

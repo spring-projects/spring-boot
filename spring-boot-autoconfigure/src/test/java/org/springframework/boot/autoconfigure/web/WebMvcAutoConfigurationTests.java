@@ -136,7 +136,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	 public void resourceHandlerMappingOverrideAll() throws Exception {
+	public void resourceHandlerMappingOverrideAll() throws Exception {
 		load(AllResources.class);
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.get("/**").size(), equalTo(1));
@@ -200,7 +200,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void overrideMessageCodesFormat() throws Exception {
-		load(AllResources.class, "spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE");
+		load(AllResources.class,
+				"spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE");
 		assertNotNull(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
 				.getMessageCodesResolver());
 	}
@@ -318,7 +319,6 @@ public class WebMvcAutoConfigurationTests {
 		assertEquals(123456L, actual);
 	}
 
-
 	@SuppressWarnings("unchecked")
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
@@ -337,7 +337,6 @@ public class WebMvcAutoConfigurationTests {
 	private void load(String... environment) {
 		load(null, environment);
 	}
-
 
 	@Configuration
 	protected static class ViewConfig {
