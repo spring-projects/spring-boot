@@ -16,6 +16,10 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -32,8 +36,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link SettingsXmlRepositorySystemSessionAutoConfiguration}.
@@ -62,11 +70,30 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		assertSessionCustomization("src/test/resources/maven-settings/encrypted");
 	}
 
+	@Test
+	public void repositoryCustomization() throws SettingsBuildingException {
+		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<RepositoryConfiguration>();
+
+		new SettingsXmlRepositorySystemSessionAutoConfiguration(
+				"src/test/resources/maven-settings/active-profiles").apply(
+				MavenRepositorySystemUtils.newSession(), this.repositorySystem,
+				repositoryConfigurations);
+
+		assertThat(
+				repositoryConfigurations,
+				hasItem(equalTo(new RepositoryConfiguration("active-repository", URI
+						.create("http://maven.example.com/active"), false))));
+
+		assertThat(repositoryConfigurations,
+				not(hasItem(equalTo(new RepositoryConfiguration("inactive-repository",
+						URI.create("http://maven.example.com/inactive"), false)))));
+	}
+
 	private void assertSessionCustomization(String userHome) {
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
 		new SettingsXmlRepositorySystemSessionAutoConfiguration(userHome).apply(session,
-				this.repositorySystem);
+				this.repositorySystem, new ArrayList<RepositoryConfiguration>());
 
 		RemoteRepository repository = new RemoteRepository.Builder("my-server",
 				"default", "http://maven.example.com").build();
