@@ -16,10 +16,6 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.nio.charset.Charset;
-
-import org.springframework.boot.logging.LogFile;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -28,7 +24,11 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import ch.qos.logback.core.util.EnvUtil;
 import ch.qos.logback.core.util.OptionHelper;
+import org.springframework.boot.logging.LogFile;
+
+import java.nio.charset.Charset;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -98,6 +98,7 @@ class DefaultLogbackConfiguration {
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
+		appender.setWithJansi(detectJansi());
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setPattern(OptionHelper.substVars(CONSOLE_LOG_PATTERN,
 				config.getContext()));
@@ -106,6 +107,32 @@ class DefaultLogbackConfiguration {
 		appender.setEncoder(encoder);
 		config.appender("CONSOLE", appender);
 		return appender;
+	}
+
+	/**
+	 * Returns {@code true} if jansi is detected and the operating system is windows.
+	 * In case jansi is available in the classpath but for some reason, we don't want to use
+	 * it to color log output, jansi will be deactivated if the {@code spring.logback.jansi.deactivated}
+	 * system property is set to {@code true}.
+	 * @return Returns {@code true} if jansi library is detected and the operating system is windows.
+	 * @see ch.qos.logback.core.ConsoleAppender
+	 */
+	boolean detectJansi() {
+		final String jansiDeactivated = System.getProperty("spring.logback.jansi.deactivated", "false");
+		if("true".equals(jansiDeactivated)) {
+			//jansi is explicitly deactivated
+			return false;
+		}
+		final String WindowsAnsiOutputStream_CLASS_NAME = "org.fusesource.jansi.WindowsAnsiOutputStream";
+		final ClassLoader classLoader = this.getClass().getClassLoader();
+		try {
+			return EnvUtil.isWindows() &&
+					classLoader.loadClass(WindowsAnsiOutputStream_CLASS_NAME) != null;
+		} catch(Exception e) {
+			//jansi not available in classpath
+			//ignore exception
+			return false;
+		}
 	}
 
 	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config,
