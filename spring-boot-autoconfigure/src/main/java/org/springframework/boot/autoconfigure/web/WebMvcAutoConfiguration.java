@@ -242,11 +242,9 @@ public class WebMvcAutoConfiguration {
 			for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
 				registry.addConverter(converter);
 			}
-
 			for (GenericConverter converter : getBeansOfType(GenericConverter.class)) {
 				registry.addConverter(converter);
 			}
-
 			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
 				registry.addFormatter(formatter);
 			}
@@ -262,7 +260,6 @@ public class WebMvcAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
-
 			Integer cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				registry.addResourceHandler("/webjars/**")
