@@ -66,6 +66,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -164,6 +165,14 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			converters.addAll(this.messageConverters.getConverters());
+		}
+
+		@Override
+		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+			Long requestTimeout = this.mvcProperties.getAsync().getRequestTimeout();
+			if (requestTimeout != null) {
+				configurer.setDefaultTimeout(requestTimeout);
+			}
 		}
 
 		@Bean
