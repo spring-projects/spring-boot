@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.DefaultMessageCodesResolver;
 
@@ -24,6 +25,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  *
  * @author Phillip Webb
  * @author Sébastien Deleuze
+ * @author Stephane Nicoll
  * @since 1.1
  */
 @ConfigurationProperties("spring.mvc")
@@ -51,6 +53,8 @@ public class WebMvcProperties {
 	private boolean ignoreDefaultModelOnRedirect = true;
 
 	private final Async async = new Async();
+
+	private final View view = new View();
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
@@ -89,6 +93,10 @@ public class WebMvcProperties {
 		return this.async;
 	}
 
+	public View getView() {
+		return this.view;
+	}
+
 	public static class Async {
 
 		/**
@@ -106,5 +114,36 @@ public class WebMvcProperties {
 			this.requestTimeout = requestTimeout;
 		}
 
+	}
+
+	public static class View {
+
+		/**
+		 * Spring MVC view prefix.
+		 */
+		@Value("${spring.view.prefix:}")
+		private String prefix;
+
+		/**
+		 * Spring MVC view suffx.
+		 */
+		@Value("${spring.view.suffix:}")
+		private String suffix;
+
+		public String getPrefix() {
+			return prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getSuffix() {
+			return suffix;
+		}
+
+		public void setSuffix(String suffix) {
+			this.suffix = suffix;
+		}
 	}
 }

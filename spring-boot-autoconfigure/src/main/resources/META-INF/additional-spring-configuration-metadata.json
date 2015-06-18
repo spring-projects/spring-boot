@@ -149,12 +149,14 @@
   {
     "name": "spring.view.prefix",
     "type": "java.lang.String",
-    "description": "Spring MVC view prefix."
+    "description": "Spring MVC view prefix.",
+    "deprecated": true
   },
   {
     "name": "spring.view.suffix",
     "type": "java.lang.String",
-    "description": "Spring MVC view suffix."
+    "description": "Spring MVC view suffix.",
+    "deprecated": true
   }
 ]}
 

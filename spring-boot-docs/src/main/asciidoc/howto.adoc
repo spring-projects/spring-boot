@@ -1110,7 +1110,7 @@ added.
   resources and JSP pages if you are using those). It applies a prefix and a suffix to the
   view name and then looks for a physical resource with that path in the servlet context
   (defaults are both empty, but accessible for external configuration via
-  `spring.view.prefix` and `spring.view.suffix`). It can be overridden by providing a
+  `spring.mvc.view.prefix` and `spring.mvc.view.suffix`). It can be overridden by providing a
   bean of the same type.
 * A `BeanNameViewResolver` with id '`beanNameViewResolver`'. This is a useful member of the
   view resolver chain and will pick up any beans with the same name as the `View` being
