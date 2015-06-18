@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
+import java.io.File;
+
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -103,7 +105,7 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 
 		assertThat(this.session.getLocalRepository(), is(notNullValue()));
 		assertThat(this.session.getLocalRepository().getBasedir().getAbsolutePath(),
-				endsWith("/foo/repository"));
+				endsWith(File.separatorChar + "foo" + File.separatorChar + "repository"));
 	}
 
 	private class LocalRepositoryManagerAnswer implements Answer<LocalRepositoryManager> {

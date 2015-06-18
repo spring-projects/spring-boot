@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
+import java.io.File;
+
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -98,7 +100,7 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		}
 
 		assertThat(session.getLocalRepository().getBasedir().getAbsolutePath(),
-				endsWith("/bar/repository"));
+				endsWith(File.separatorChar + "bar" + File.separatorChar + "repository"));
 	}
 
 	private void assertSessionCustomization(String userHome) {
