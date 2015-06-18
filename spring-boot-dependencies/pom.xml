@@ -73,7 +73,7 @@
 		<gson.version>2.3.1</gson.version>
 		<h2.version>1.4.187</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<hazelcast.version>3.4.2</hazelcast.version>
+		<hazelcast.version>3.5</hazelcast.version>
 		<hibernate.version>4.3.10.Final</hibernate.version>
 		<hibernate-validator.version>5.1.3.Final</hibernate-validator.version>
 		<hikaricp.version>2.3.8</hikaricp.version>
