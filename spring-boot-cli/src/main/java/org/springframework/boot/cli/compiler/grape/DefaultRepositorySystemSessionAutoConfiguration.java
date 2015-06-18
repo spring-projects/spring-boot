@@ -57,15 +57,7 @@ public class DefaultRepositorySystemSessionAutoConfiguration implements
 	}
 
 	private File getM2RepoDirectory() {
-		return new File(getM2HomeDirectory(), "repository");
-	}
-
-	private File getM2HomeDirectory() {
-		String grapeRoot = System.getProperty("grape.root");
-		if (StringUtils.hasLength(grapeRoot)) {
-			return new File(grapeRoot);
-		}
-		return getDefaultM2HomeDirectory();
+		return new File(getDefaultM2HomeDirectory(), "repository");
 	}
 
 	private File getDefaultM2HomeDirectory() {

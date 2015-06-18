@@ -96,6 +96,7 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		File settingsFile = new File(this.homeDir, ".m2/settings.xml");
 		SettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
 		request.setUserSettingsFile(settingsFile);
+		request.setSystemProperties(System.getProperties());
 		try {
 			return new DefaultSettingsBuilderFactory().newInstance().build(request)
 					.getEffectiveSettings();
