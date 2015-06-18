@@ -90,6 +90,7 @@
 		<javax-mail.version>1.5.3</javax-mail.version>
 		<javax-transaction.version>1.2</javax-transaction.version>
 		<jaxen.version>1.1.6</jaxen.version>
+		<jaybird.version>2.2.8</jaybird.version>
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.7.2</jedis.version>
 		<jersey.version>2.18</jersey.version>
@@ -1317,6 +1318,21 @@
 				<groupId>org.elasticsearch</groupId>
 				<artifactId>elasticsearch</artifactId>
 				<version>${elasticsearch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.firebirdsql.jdbc</groupId>
+				<artifactId>jaybird-jdk16</artifactId>
+				<version>${jaybird.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.firebirdsql.jdbc</groupId>
+				<artifactId>jaybird-jdk17</artifactId>
+				<version>${jaybird.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.firebirdsql.jdbc</groupId>
+				<artifactId>jaybird-jdk18</artifactId>
+				<version>${jaybird.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.flywaydb</groupId>
