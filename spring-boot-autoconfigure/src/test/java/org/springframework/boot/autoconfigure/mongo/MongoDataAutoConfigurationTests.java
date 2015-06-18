@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
@@ -124,7 +125,7 @@ public class MongoDataAutoConfigurationTests {
 
 	@Test
 	public void interfaceFieldNamingStrategy() {
-		this.thrown.expectMessage("Invalid custom FieldNamingStrategy");
+		this.thrown.expect(UnsatisfiedDependencyException.class);
 		testFieldNamingStrategy(FieldNamingStrategy.class.getName(), null);
 	}
 
