@@ -20,8 +20,10 @@ import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.AuthenticationContext;
+import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -30,10 +32,17 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
+import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 
 /**
  * Tests for {@link SettingsXmlRepositorySystemSessionAutoConfiguration}.
@@ -49,9 +58,6 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 	@Mock
 	private RepositorySystem repositorySystem;
 
-	@Mock
-	LocalRepositoryManager localRepositoryManager;
-
 	@Test
 	public void basicSessionCustomization() throws SettingsBuildingException {
 		assertSessionCustomization("src/test/resources/maven-settings/basic");
@@ -60,6 +66,39 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 	@Test
 	public void encryptedSettingsSessionCustomization() throws SettingsBuildingException {
 		assertSessionCustomization("src/test/resources/maven-settings/encrypted");
+	}
+
+	@Test
+	public void propertyInterpolation() throws SettingsBuildingException {
+		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
+				.newSession();
+		given(
+				this.repositorySystem.newLocalRepositoryManager(eq(session),
+						any(LocalRepository.class))).willAnswer(
+				new Answer<LocalRepositoryManager>() {
+
+					@Override
+					public LocalRepositoryManager answer(InvocationOnMock invocation)
+							throws Throwable {
+						LocalRepository localRepository = invocation.getArgumentAt(1,
+								LocalRepository.class);
+						return new SimpleLocalRepositoryManagerFactory().newInstance(
+								session, localRepository);
+					}
+				});
+
+		System.setProperty("foo", "bar");
+		try {
+			new SettingsXmlRepositorySystemSessionAutoConfiguration(
+					"src/test/resources/maven-settings/property-interpolation").apply(
+					session, this.repositorySystem);
+		}
+		finally {
+			System.clearProperty("foo");
+		}
+
+		assertThat(session.getLocalRepository().getBasedir().getAbsolutePath(),
+				endsWith("/bar/repository"));
 	}
 
 	private void assertSessionCustomization(String userHome) {

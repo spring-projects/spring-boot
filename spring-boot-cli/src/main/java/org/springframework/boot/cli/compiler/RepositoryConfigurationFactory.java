@@ -21,6 +21,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.settings.Settings;
+import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
+import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
+import org.apache.maven.settings.building.SettingsBuildingException;
+import org.apache.maven.settings.building.SettingsBuildingRequest;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.util.StringUtils;
 
@@ -66,9 +71,32 @@ public final class RepositoryConfigurationFactory {
 	public static void addDefaultCacheAsRespository(
 			List<RepositoryConfiguration> repositoryConfiguration) {
 		RepositoryConfiguration repository = new RepositoryConfiguration("local",
-				new File(getM2HomeDirectory(), "repository").toURI(), true);
+				getLocalRepositoryDirectory().toURI(), true);
 		if (!repositoryConfiguration.contains(repository)) {
 			repositoryConfiguration.add(0, repository);
+		}
+	}
+
+	private static File getLocalRepositoryDirectory() {
+		String localRepository = loadSettings().getLocalRepository();
+		if (StringUtils.hasText(localRepository)) {
+			return new File(localRepository);
+		}
+		return new File(getM2HomeDirectory(), "repository");
+	}
+
+	private static Settings loadSettings() {
+		File settingsFile = new File(System.getProperty("user.home"), ".m2/settings.xml");
+		SettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
+		request.setUserSettingsFile(settingsFile);
+		request.setSystemProperties(System.getProperties());
+		try {
+			return new DefaultSettingsBuilderFactory().newInstance().build(request)
+					.getEffectiveSettings();
+		}
+		catch (SettingsBuildingException ex) {
+			throw new IllegalStateException("Failed to build settings from "
+					+ settingsFile, ex);
 		}
 	}
 
