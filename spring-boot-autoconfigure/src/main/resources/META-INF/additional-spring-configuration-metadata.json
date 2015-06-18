@@ -102,7 +102,7 @@
     "name": "spring.jmx.server",
     "type": "java.lang.String",
     "description": "MBeanServer bean name.",
-    "defaultValue": "mBeanServer"
+    "defaultValue": "mbeanServer"
   },
   {
     "name": "spring.jpa.open-in-view",
