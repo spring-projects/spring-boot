@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.core.env.MutablePropertySources;
  * Test utilities for setting environment values.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public abstract class EnvironmentTestUtils {
 
@@ -79,11 +80,23 @@ public abstract class EnvironmentTestUtils {
 			map = value;
 		}
 		for (String pair : pairs) {
-			int index = pair.indexOf(":");
-			index = index < 0 ? index = pair.indexOf("=") : index;
+			int index = getSeparatorIndex(pair);
 			String key = pair.substring(0, index > 0 ? index : pair.length());
 			String value = index > 0 ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
+		}
+	}
+
+	private static int getSeparatorIndex(String pair) {
+		int colonIndex = pair.indexOf(":");
+		int equalIndex = pair.indexOf("=");
+		if (colonIndex == -1) {
+			return equalIndex;
+		} else if (equalIndex == -1) {
+			return colonIndex;
+		}
+		else {
+			return Math.min(colonIndex, equalIndex);
 		}
 	}
 
