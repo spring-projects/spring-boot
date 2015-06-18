@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
@@ -71,16 +70,18 @@ public class EnvironmentTestUtilsTests {
 	@Test
 	public void addPairNoValue() {
 		String propertyName = "my.foo+bar";
-		assertFalse(environment.containsProperty(propertyName));
-		EnvironmentTestUtils.addEnvironment(environment, propertyName);
-		assertTrue(environment.containsProperty(propertyName));
-		assertEquals("", environment.getProperty(propertyName));
+		assertFalse(this.environment.containsProperty(propertyName));
+		EnvironmentTestUtils.addEnvironment(this.environment, propertyName);
+		assertTrue(this.environment.containsProperty(propertyName));
+		assertEquals("", this.environment.getProperty(propertyName));
 	}
 
 	private void testAddSimplePair(String key, String value, String delimiter) {
-		assertFalse("Property '" + key + "' should not exist", environment.containsProperty(key));
-		EnvironmentTestUtils.addEnvironment(environment, key + delimiter + value);
-		assertEquals("Wrong value for property '" + key + "'", value, environment.getProperty(key));
+		assertFalse("Property '" + key + "' should not exist",
+				this.environment.containsProperty(key));
+		EnvironmentTestUtils.addEnvironment(this.environment, key + delimiter + value);
+		assertEquals("Wrong value for property '" + key + "'", value,
+				this.environment.getProperty(key));
 	}
 
 	@Test
@@ -88,10 +89,10 @@ public class EnvironmentTestUtilsTests {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("my.foo", "bar");
 		MapPropertySource source = new MapPropertySource("sample", map);
-		environment.getPropertySources().addFirst(source);
-		assertEquals("bar", environment.getProperty("my.foo"));
-		EnvironmentTestUtils.addEnvironment(environment, "my.foo=bar2");
-		assertEquals("bar2", environment.getProperty("my.foo"));
+		this.environment.getPropertySources().addFirst(source);
+		assertEquals("bar", this.environment.getProperty("my.foo"));
+		EnvironmentTestUtils.addEnvironment(this.environment, "my.foo=bar2");
+		assertEquals("bar2", this.environment.getProperty("my.foo"));
 	}
 
 }
