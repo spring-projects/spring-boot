@@ -151,6 +151,11 @@ mvn spring-boot:run
   in such a way that any dependency that is excluded in the plugin's configuration gets excluded
   from the classpath as well. See {{{./examples/exclude-dependency.html}Exclude a dependency}} for
   more details.
+  
+  Sometimes it is useful to include test dependencies when running the application. For example,
+  if you want to run your application in a test mode that uses stub classes. If you wish to do this,
+  you can set the <<<useTestClasspath>>> parameter to true. Note that this is only applied when you
+  run an application: the <<<repackage>>> goal will not add test dependencies to the resulting JAR/WAR.
 
 * Working with integration tests
 
