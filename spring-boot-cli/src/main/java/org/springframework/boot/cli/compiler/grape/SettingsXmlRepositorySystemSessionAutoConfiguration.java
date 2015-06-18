@@ -18,10 +18,17 @@ package org.springframework.boot.cli.compiler.grape;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.settings.Mirror;
+import org.apache.maven.settings.Profile;
 import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Repository;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
@@ -70,7 +77,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,
-			RepositorySystem repositorySystem) {
+			RepositorySystem repositorySystem,
+			List<RepositoryConfiguration> repositoryConfigurations) {
 
 		Settings settings = loadSettings();
 		SettingsDecryptionResult decryptionResult = decryptSettings(settings);
@@ -90,6 +98,28 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 			session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(
 					session, new LocalRepository(localRepository)));
 		}
+
+		Map<String, Profile> profiles = settings.getProfilesAsMap();
+		for (String profile : settings.getActiveProfiles()) {
+			repositoryConfigurations.addAll(getRemoteRepositories(profiles.get(profile)));
+		}
+	}
+
+	private Collection<RepositoryConfiguration> getRemoteRepositories(Profile profile) {
+		if (profile.getRepositories().isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<RepositoryConfiguration> result = new ArrayList<RepositoryConfiguration>(
+				profile.getRepositories().size());
+
+		for (Repository repository : profile.getRepositories()) {
+			result.add(new RepositoryConfiguration(repository.getId(), URI
+					.create(repository.getUrl()), repository.getSnapshots() != null
+					&& repository.getSnapshots().isEnabled()));
+		}
+
+		return result;
 	}
 
 	private Settings loadSettings() {

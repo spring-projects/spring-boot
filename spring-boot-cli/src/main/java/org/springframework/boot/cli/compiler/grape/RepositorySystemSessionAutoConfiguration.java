@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
+import java.util.List;
+
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 
@@ -31,7 +33,9 @@ public interface RepositorySystemSessionAutoConfiguration {
 	 * Apply the configuration
 	 * @param session the repository system session
 	 * @param repositorySystem the repository system
+	 * @param repositoryConfigurations the configured repositories
 	 */
-	void apply(DefaultRepositorySystemSession session, RepositorySystem repositorySystem);
+	void apply(DefaultRepositorySystemSession session, RepositorySystem repositorySystem,
+			List<RepositoryConfiguration> repositoryConfigurations);
 
 }

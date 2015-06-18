@@ -57,11 +57,12 @@ public abstract class AetherGrapeEngineFactory {
 				.load(RepositorySystemSessionAutoConfiguration.class);
 
 		for (RepositorySystemSessionAutoConfiguration autoConfiguration : autoConfigurations) {
-			autoConfiguration.apply(repositorySystemSession, repositorySystem);
+			autoConfiguration.apply(repositorySystemSession, repositorySystem,
+					repositoryConfigurations);
 		}
 
 		new DefaultRepositorySystemSessionAutoConfiguration().apply(
-				repositorySystemSession, repositorySystem);
+				repositorySystemSession, repositorySystem, repositoryConfigurations);
 
 		return new AetherGrapeEngine(classLoader, repositorySystem,
 				repositorySystemSession, createRepositories(repositoryConfigurations),

@@ -18,6 +18,7 @@ package org.springframework.boot.cli.compiler.grape;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -38,7 +39,8 @@ public class DefaultRepositorySystemSessionAutoConfiguration implements
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,
-			RepositorySystem repositorySystem) {
+			RepositorySystem repositorySystem,
+			List<RepositoryConfiguration> repositoryConfigurations) {
 
 		if (session.getLocalRepositoryManager() == null) {
 			LocalRepository localRepository = new LocalRepository(getM2RepoDirectory());
