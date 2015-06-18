@@ -152,8 +152,8 @@ used with the following configuration:
 	spring.main.show-banner=true
 ----
 
-The actual application will _not_ show the banner and use three sources for the
-`ApplicationContext` (in that order): `demo.MyApp`, `com.acme.Config`,
+The actual application will _now_ show the banner (as overrided by configuration) and use
+three sources for the `ApplicationContext` (in that order): `demo.MyApp`, `com.acme.Config`,
 `com.acme.ExtraConfig`.
 
 
