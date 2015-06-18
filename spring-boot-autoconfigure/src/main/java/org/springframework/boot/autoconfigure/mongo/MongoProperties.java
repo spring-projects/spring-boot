@@ -133,7 +133,8 @@ public class MongoProperties {
 		return this.fieldNamingStrategy;
 	}
 
-	public void setFieldNamingStrategy(Class<? extends FieldNamingStrategy> fieldNamingStrategy) {
+	public void setFieldNamingStrategy(
+			Class<? extends FieldNamingStrategy> fieldNamingStrategy) {
 		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 

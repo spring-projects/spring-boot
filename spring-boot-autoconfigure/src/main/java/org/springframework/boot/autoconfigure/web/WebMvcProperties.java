@@ -131,7 +131,7 @@ public class WebMvcProperties {
 		private String suffix;
 
 		public String getPrefix() {
-			return prefix;
+			return this.prefix;
 		}
 
 		public void setPrefix(String prefix) {
@@ -139,11 +139,13 @@ public class WebMvcProperties {
 		}
 
 		public String getSuffix() {
-			return suffix;
+			return this.suffix;
 		}
 
 		public void setSuffix(String suffix) {
 			this.suffix = suffix;
 		}
+
 	}
+
 }

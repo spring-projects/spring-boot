@@ -23,6 +23,7 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.city.City;
@@ -41,7 +42,6 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.mongodb.Mongo;
-import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
@@ -124,11 +124,12 @@ public class MongoDataAutoConfigurationTests {
 
 	@Test
 	public void interfaceFieldNamingStrategy() {
-		thrown.expectMessage("Invalid custom FieldNamingStrategy");
+		this.thrown.expectMessage("Invalid custom FieldNamingStrategy");
 		testFieldNamingStrategy(FieldNamingStrategy.class.getName(), null);
 	}
 
-	public void testFieldNamingStrategy(String strategy, Class<? extends FieldNamingStrategy> expectedType) {
+	public void testFieldNamingStrategy(String strategy,
+			Class<? extends FieldNamingStrategy> expectedType) {
 		this.context = new AnnotationConfigApplicationContext();
 		if (strategy != null) {
 			EnvironmentTestUtils.addEnvironment(this.context,
@@ -137,9 +138,10 @@ public class MongoDataAutoConfigurationTests {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
-		MongoMappingContext mappingContext = this.context.getBean(MongoMappingContext.class);
-		FieldNamingStrategy fieldNamingStrategy =
-				(FieldNamingStrategy) ReflectionTestUtils.getField(mappingContext, "fieldNamingStrategy");
+		MongoMappingContext mappingContext = this.context
+				.getBean(MongoMappingContext.class);
+		FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils
+				.getField(mappingContext, "fieldNamingStrategy");
 		assertEquals(expectedType, fieldNamingStrategy.getClass());
 	}
 

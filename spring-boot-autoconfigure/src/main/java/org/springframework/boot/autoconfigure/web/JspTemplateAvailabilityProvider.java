@@ -35,23 +35,21 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig", classLoader)) {
-			String prefix = getProperty(environment, "spring.mvc.view.prefix", "spring.view.prefix",
-					WebMvcAutoConfiguration.DEFAULT_PREFIX);
-			String suffix = getProperty(environment, "spring.mvc.view.suffix", "spring.view.suffix",
-					WebMvcAutoConfiguration.DEFAULT_SUFFIX);
+			String prefix = getProperty(environment, "spring.mvc.view.prefix",
+					"spring.view.prefix", WebMvcAutoConfiguration.DEFAULT_PREFIX);
+			String suffix = getProperty(environment, "spring.mvc.view.suffix",
+					"spring.view.suffix", WebMvcAutoConfiguration.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(prefix + view + suffix).exists();
 		}
 		return false;
 	}
 
-	private String getProperty(Environment environment, String key, String deprecatedKey, String defaultValue) {
+	private String getProperty(Environment environment, String key, String deprecatedKey,
+			String defaultValue) {
 		if (environment.containsProperty(key)) {
 			return environment.getProperty(key);
 		}
-		if (environment.containsProperty(deprecatedKey)) {
-			return environment.getProperty(deprecatedKey);
-		}
-		return defaultValue;
+		return environment.getProperty(deprecatedKey, defaultValue);
 	}
 
 }

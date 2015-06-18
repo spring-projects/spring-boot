@@ -36,7 +36,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
-
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
@@ -349,7 +348,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void addDependencies(List<URL> urls) throws MalformedURLException,
 			MojoExecutionException {
-		FilterArtifacts filters = this.useTestClasspath ? getFilters() : getFilters(new TestArtifactFilter());
+		FilterArtifacts filters = this.useTestClasspath ? getFilters()
+				: getFilters(new TestArtifactFilter());
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), filters);
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {

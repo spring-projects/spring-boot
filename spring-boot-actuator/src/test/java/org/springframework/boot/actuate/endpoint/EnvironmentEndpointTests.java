@@ -97,13 +97,17 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
 		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("my.services.amqp-free.credentials.uri"));
+				((Map<String, Object>) env.get("systemProperties"))
+						.get("my.services.amqp-free.credentials.uri"));
 		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("credentials.http_api_uri"));
+				((Map<String, Object>) env.get("systemProperties"))
+						.get("credentials.http_api_uri"));
 		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("my.services.cleardb-free.credentials"));
+				((Map<String, Object>) env.get("systemProperties"))
+						.get("my.services.cleardb-free.credentials"));
 		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("foo.mycredentials.uri"));
+				((Map<String, Object>) env.get("systemProperties"))
+						.get("foo.mycredentials.uri"));
 
 	}
 
