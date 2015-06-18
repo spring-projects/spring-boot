@@ -37,6 +37,8 @@ import static org.junit.Assert.assertThat;
  *
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @author Nicolas Lejeune
+ * @author Stephane Nicoll
  */
 public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentEndpoint> {
 
@@ -69,7 +71,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("dbPassword", "123456");
 		System.setProperty("apiKey", "123456");
 		System.setProperty("mySecret", "123456");
-		System.setProperty("vcap_services", "123456");
+		System.setProperty("myCredentials", "123456");
+		System.setProperty("VCAP_SERVICES", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
 		assertEquals("******",
@@ -79,26 +82,28 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		assertEquals("******",
 				((Map<String, Object>) env.get("systemProperties")).get("mySecret"));
 		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("vcap_services"));
+				((Map<String, Object>) env.get("systemProperties")).get("myCredentials"));
+		assertEquals("******",
+				((Map<String, Object>) env.get("systemProperties")).get("VCAP_SERVICES"));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testKeySanitizationCredentialsPattern() throws Exception {
-		System.setProperty("vcap.services.amqp-free.credentials.uri", "123456");
+		System.setProperty("my.services.amqp-free.credentials.uri", "123456");
 		System.setProperty("credentials.http_api_uri", "123456");
-		System.setProperty("vcap.services.cleardb-free.credentials", "123456");
-		System.setProperty("vcap.mycredentials.uri", "123456");
+		System.setProperty("my.services.cleardb-free.credentials", "123456");
+		System.setProperty("foo.mycredentials.uri", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
 		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("vcap.services.amqp-free.credentials.uri"));
+				((Map<String, Object>) env.get("systemProperties")).get("my.services.amqp-free.credentials.uri"));
 		assertEquals("******",
 				((Map<String, Object>) env.get("systemProperties")).get("credentials.http_api_uri"));
 		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("vcap.services.cleardb-free.credentials"));
+				((Map<String, Object>) env.get("systemProperties")).get("my.services.cleardb-free.credentials"));
 		assertEquals("******",
-				((Map<String, Object>) env.get("systemProperties")).get("vcap.mycredentials.uri"));
+				((Map<String, Object>) env.get("systemProperties")).get("foo.mycredentials.uri"));
 
 	}
 
