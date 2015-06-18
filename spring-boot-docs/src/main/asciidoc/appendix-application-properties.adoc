@@ -322,6 +322,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.username=
 	spring.data.mongodb.password=
 	spring.data.mongodb.repositories.enabled=true # if spring data repository support is enabled
+	spring.data.mongodb.field-naming-strategy= # fully qualified name of the FieldNamingStrategy to use
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.jpa.properties.*= # properties to set on the JPA connection

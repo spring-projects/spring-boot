@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -30,6 +31,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mapping.model.CamelCaseAbbreviatingFieldNamingStrategy;
+import org.springframework.data.mapping.model.FieldNamingStrategy;
+import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
@@ -37,6 +41,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.mongodb.Mongo;
+import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
@@ -50,6 +55,9 @@ import static org.junit.Assert.assertTrue;
  * @author Oliver Gierke
  */
 public class MongoDataAutoConfigurationTests {
+
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -101,6 +109,38 @@ public class MongoDataAutoConfigurationTests {
 		this.context.refresh();
 		assertDomainTypesDiscovered(this.context.getBean(MongoMappingContext.class),
 				City.class);
+	}
+
+	@Test
+	public void defaultFieldNamingStrategy() {
+		testFieldNamingStrategy(null, PropertyNameFieldNamingStrategy.class);
+	}
+
+	@Test
+	public void customFieldNamingStrategy() {
+		testFieldNamingStrategy(CamelCaseAbbreviatingFieldNamingStrategy.class.getName(),
+				CamelCaseAbbreviatingFieldNamingStrategy.class);
+	}
+
+	@Test
+	public void interfaceFieldNamingStrategy() {
+		thrown.expectMessage("Invalid custom FieldNamingStrategy");
+		testFieldNamingStrategy(FieldNamingStrategy.class.getName(), null);
+	}
+
+	public void testFieldNamingStrategy(String strategy, Class<? extends FieldNamingStrategy> expectedType) {
+		this.context = new AnnotationConfigApplicationContext();
+		if (strategy != null) {
+			EnvironmentTestUtils.addEnvironment(this.context,
+					"spring.data.mongodb.field-naming-strategy:" + strategy);
+		}
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
+		this.context.refresh();
+		MongoMappingContext mappingContext = this.context.getBean(MongoMappingContext.class);
+		FieldNamingStrategy fieldNamingStrategy =
+				(FieldNamingStrategy) ReflectionTestUtils.getField(mappingContext, "fieldNamingStrategy");
+		assertEquals(expectedType, fieldNamingStrategy.getClass());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
