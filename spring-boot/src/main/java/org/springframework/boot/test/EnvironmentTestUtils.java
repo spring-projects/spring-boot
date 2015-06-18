@@ -92,12 +92,11 @@ public abstract class EnvironmentTestUtils {
 		int equalIndex = pair.indexOf("=");
 		if (colonIndex == -1) {
 			return equalIndex;
-		} else if (equalIndex == -1) {
+		}
+		if (equalIndex == -1) {
 			return colonIndex;
 		}
-		else {
-			return Math.min(colonIndex, equalIndex);
-		}
+		return Math.min(colonIndex, equalIndex);
 	}
 
 }
