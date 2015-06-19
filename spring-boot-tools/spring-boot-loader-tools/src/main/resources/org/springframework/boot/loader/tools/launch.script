@@ -9,6 +9,16 @@
 #   :: Spring Boot Startup Script ::
 #
 
+### BEGIN INIT INFO
+# Provides:          spring-boot-application
+# Required-Start:    $remote_fs $syslog $network
+# Required-Stop:     $remote_fs $syslog $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Spring Boot Application
+# Description:       Spring Boot Application 
+### END INIT INFO
+
 [[ -n "$DEBUG" ]] && set -x
 
 WORKING_DIR="$(pwd)"
@@ -87,8 +97,13 @@ else
     exit 1
 fi
 
+# source config file to set RUN_ARGS and/or JAVA_OPTS
+if [[ -r "/$(dirname "$jarfile")/${identity}.conf" ]]; then
+    source "/$(dirname "$jarfile")/${identity}.conf"
+fi
+
 # Build actual command to execute
-command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $jarfile $@"
+command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPTS $jarfile $RUN_ARGS $@"
 
 # Action functions
 start() {
