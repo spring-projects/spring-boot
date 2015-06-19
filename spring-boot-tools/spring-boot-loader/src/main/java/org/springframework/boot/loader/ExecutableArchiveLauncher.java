@@ -119,7 +119,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * Called to post-process archive entries before they are used. Implementations can
 	 * add and remove entries.
 	 * @param archives the archives
-	 * @throws Exception
+	 * @throws Exception if the post processing fails
 	 */
 	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
 	}

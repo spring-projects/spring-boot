@@ -49,6 +49,7 @@ public @interface WebIntegrationTest {
 	/**
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
+	 * @return properties to add to the context
 	 */
 	String[] value() default {};
 
@@ -57,6 +58,7 @@ public @interface WebIntegrationTest {
 	 * {@link Environment} property which usually triggers listening on a random port.
 	 * Often used in conjunction with a <code>&#064;Value("${local.server.port}")</code>
 	 * injected field on the test.
+	 * @return if a random port should be used
 	 */
 	boolean randomPort() default false;
 

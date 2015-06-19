@@ -119,7 +119,6 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * generally recommended that a single {@code @Configuration} class is used to bootstrap
  * your application, however, any of the following sources can also be used:
  *
- * <p>
  * <ul>
  * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}</li>
  *

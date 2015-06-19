@@ -118,7 +118,7 @@ public class AtomikosProperties {
 	/**
 	 * Specifies whether VM shutdown should trigger forced shutdown of the transaction
 	 * core. Defaults to false.
-	 * @param forceShutdownOnVmExit
+	 * @param forceShutdownOnVmExit if VM shutdown should be forced
 	 */
 	public void setForceShutdownOnVmExit(boolean forceShutdownOnVmExit) {
 		set("force_shutdown_on_vm_exit", forceShutdownOnVmExit);

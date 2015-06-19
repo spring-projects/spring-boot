@@ -45,7 +45,7 @@ public interface PropertySourceLoader {
 	 * used to load multi-document files (such as YAML). Simple property formats should
 	 * {@code null} when asked to load a profile.
 	 * @return a property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	PropertySource<?> load(String name, Resource resource, String profile)
 			throws IOException;

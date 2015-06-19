@@ -405,7 +405,7 @@ public class SpringApplicationBuilder {
 	/**
 	 * Default properties for the environment. Multiple calls to this method are
 	 * cumulative.
-	 * @param defaults
+	 * @param defaults the default properties
 	 * @return the current builder
 	 * @see SpringApplicationBuilder#properties(String...)
 	 */

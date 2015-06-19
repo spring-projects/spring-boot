@@ -69,7 +69,7 @@ public class PropertySourcesLoader {
 	 * Load the specified resource (if possible) and add it as the first source.
 	 * @param resource the source resource (may be {@code null}).
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource) throws IOException {
 		return load(resource, null);
@@ -81,7 +81,7 @@ public class PropertySourcesLoader {
 	 * @param resource the source resource (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource, String profile) throws IOException {
 		return load(resource, resource.getDescription(), profile);
@@ -94,7 +94,7 @@ public class PropertySourcesLoader {
 	 * @param name the root property name (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource, String name, String profile)
 			throws IOException {
@@ -115,7 +115,7 @@ public class PropertySourcesLoader {
 	 * @param name the root property name (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource, String group, String name,
 			String profile) throws IOException {

@@ -68,7 +68,8 @@ public class ContextIdApplicationContextInitializer implements
 	}
 
 	/**
-	 * @param name
+	 * Create a new {@link ContextIdApplicationContextInitializer} instance.
+	 * @param name the name of the application (can include placeholders)
 	 */
 	public ContextIdApplicationContextInitializer(String name) {
 		this.name = name;
@@ -91,7 +92,6 @@ public class ContextIdApplicationContextInitializer implements
 	private String getApplicationId(ConfigurableEnvironment environment) {
 		String name = environment.resolvePlaceholders(this.name);
 		String index = environment.resolvePlaceholders(INDEX_PATTERN);
-
 		String profiles = StringUtils.arrayToCommaDelimitedString(environment
 				.getActiveProfiles());
 		if (StringUtils.hasText(profiles)) {

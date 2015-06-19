@@ -62,8 +62,8 @@ public class JarWriter {
 	/**
 	 * Create a new {@link JarWriter} instance.
 	 * @param file the file to write
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @throws IOException if the file cannot be opened
+	 * @throws FileNotFoundException if the file cannot be found
 	 */
 	public JarWriter(File file) throws FileNotFoundException, IOException {
 		this(file, null);
@@ -73,8 +73,8 @@ public class JarWriter {
 	 * Create a new {@link JarWriter} instance.
 	 * @param file the file to write
 	 * @param launchScript an optional launch script to prepend to the front of the jar
-	 * @throws IOException
-	 * @throws FileNotFoundException
+	 * @throws IOException if the file cannot be opened
+	 * @throws FileNotFoundException if the file cannot be found
 	 */
 	public JarWriter(File file, LaunchScript launchScript) throws FileNotFoundException,
 			IOException {
@@ -102,7 +102,7 @@ public class JarWriter {
 	/**
 	 * Write the specified manifest.
 	 * @param manifest the manifest to write
-	 * @throws IOException
+	 * @throws IOException of the manifest cannot be written
 	 */
 	public void writeManifest(final Manifest manifest) throws IOException {
 		JarEntry entry = new JarEntry("META-INF/MANIFEST.MF");
@@ -117,7 +117,7 @@ public class JarWriter {
 	/**
 	 * Write all entries from the specified jar file.
 	 * @param jarFile the source jar file
-	 * @throws IOException
+	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
@@ -194,7 +194,7 @@ public class JarWriter {
 
 	/**
 	 * Write the required spring-boot-loader classes to the JAR.
-	 * @throws IOException
+	 * @throws IOException if the classes cannot be written
 	 */
 	public void writeLoaderClasses() throws IOException {
 		URL loaderJar = getClass().getClassLoader().getResource(NESTED_LOADER_JAR);
@@ -211,7 +211,7 @@ public class JarWriter {
 
 	/**
 	 * Close the writer.
-	 * @throws IOException
+	 * @throws IOException if the file cannot be closed
 	 */
 	public void close() throws IOException {
 		this.jarOutput.close();

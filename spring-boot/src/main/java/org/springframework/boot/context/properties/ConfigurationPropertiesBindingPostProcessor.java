@@ -114,28 +114,32 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	/**
-	 * @param propertySources
+	 * Set the property sources to bind.
+	 * @param propertySources the property sources
 	 */
 	public void setPropertySources(PropertySources propertySources) {
 		this.propertySources = propertySources;
 	}
 
 	/**
-	 * @param validator the validator to set
+	 * Set the bean validator used to validate property fields.
+	 * @param validator the validator
 	 */
 	public void setValidator(Validator validator) {
 		this.validator = validator;
 	}
 
 	/**
-	 * @param conversionService the conversionService to set
+	 * Set the conversion service used to convert property values.
+	 * @param conversionService the conversion service
 	 */
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
 	/**
-	 * @param beans the bean meta data to set
+	 * Set the bean meta-data store.
+	 * @param beans the bean meta data store
 	 */
 	public void setBeanMetaDataStore(ConfigurationBeanFactoryMetaData beans) {
 		this.beans = beans;
@@ -163,11 +167,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
 		if (this.propertySources == null) {
 			this.propertySources = deducePropertySources();
 		}
-
 		if (this.validator == null) {
 			this.validator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
 			if (this.validator == null && isJsr303Present()) {
@@ -176,7 +178,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 				this.ownedValidator = true;
 			}
 		}
-
 		if (this.conversionService == null) {
 			this.conversionService = getOptionalBean(
 					ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,

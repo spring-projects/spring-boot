@@ -100,7 +100,7 @@ public final class JarEntryData {
 	 * @return the underlying {@link RandomAccessData} for this entry. Generally this
 	 * method should not be called directly and instead data should be accessed via
 	 * {@link JarFile#getInputStream(ZipEntry)}.
-	 * @throws IOException
+	 * @throws IOException if the data cannot be read
 	 */
 	public RandomAccessData getData() throws IOException {
 		if (this.data == null) {

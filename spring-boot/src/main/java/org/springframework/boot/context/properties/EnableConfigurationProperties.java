@@ -42,6 +42,7 @@ public @interface EnableConfigurationProperties {
 	/**
 	 * Convenient way to quickly register {@link ConfigurationProperties} beans with
 	 * Spring. Standard Spring Beans will also be scanned regardless of this value.
+	 * @return {@link ConfigurationProperties} beans to register
 	 */
 	Class<?>[] value() default {};
 
