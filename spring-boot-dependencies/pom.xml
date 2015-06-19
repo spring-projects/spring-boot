@@ -1460,6 +1460,12 @@
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-spring4</artifactId>
 				<version>${infinispan.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.json</groupId>
