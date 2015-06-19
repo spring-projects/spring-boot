@@ -78,10 +78,9 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 
 	private Client createNodeClient() throws Exception {
 		ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder()
-				.put("http.enabled", String.valueOf(false))
 				.put(this.properties.getProperties());
 		Node node = new NodeBuilder().settings(settings)
-				.clusterName(this.properties.getClusterName()).local(true).node();
+				.clusterName(this.properties.getClusterName()).node();
 		this.releasable = node;
 		return node.client();
 	}

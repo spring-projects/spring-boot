@@ -58,14 +58,21 @@ public class ElasticsearchAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.elasticsearch.properties.foo.bar:baz",
 				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs");
+				"spring.data.elasticsearch.properties.path.logs:target/logs",
+				"spring.data.elasticsearch.properties.node.local:true",
+				"spring.data.elasticsearch.properties.node.data:true",
+				"spring.data.elasticsearch.properties.http.enabled:true");
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
 		Client client = this.context.getBean(Client.class);
 		assertThat(client, instanceOf(NodeClient.class));
-		assertThat(((NodeClient) client).settings().get("foo.bar"), is(equalTo("baz")));
+		NodeClient nodeClient = (NodeClient) client;
+		assertThat(nodeClient.settings().get("foo.bar"), is(equalTo("baz")));
+		assertThat(nodeClient.settings().get("node.local"), is(equalTo("true")));
+		assertThat(nodeClient.settings().get("node.data"), is(equalTo("true")));
+		assertThat(nodeClient.settings().get("http.enabled"), is(equalTo("true")));
 	}
 
 	@Test
