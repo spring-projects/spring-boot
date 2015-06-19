@@ -23,6 +23,7 @@
 		<module>spring-boot-starter</module>
 		<module>spring-boot-starter-amqp</module>
 		<module>spring-boot-starter-aop</module>
+		<module>spring-boot-starter-artemis</module>
 		<module>spring-boot-starter-batch</module>
 		<module>spring-boot-starter-cache</module>
 		<module>spring-boot-starter-cloud-connectors</module>

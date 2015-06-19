@@ -264,6 +264,9 @@ The following application starters are provided by Spring Boot under the
 |`spring-boot-starter-aop`
 |Support for aspect-oriented programming including `spring-aop` and AspectJ.
 
+|`spring-boot-starter-artemis`
+|Support for "`Java Message Service API`" via Apache Artemis.
+
 |`spring-boot-starter-batch`
 |Support for "`Spring Batch`" including HSQLDB database.
 
