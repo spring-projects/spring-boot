@@ -17,6 +17,7 @@
 # Default-Stop:      0 1 6
 # Short-Description: Spring Boot Application
 # Description:       Spring Boot Application
+# chkconfig:         345 99 01
 ### END INIT INFO
 
 [[ -n "$DEBUG" ]] && set -x
