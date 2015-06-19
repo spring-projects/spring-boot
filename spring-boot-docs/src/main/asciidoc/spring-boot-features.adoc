@@ -2515,6 +2515,43 @@ to send and receive messages.
 
 
 
+[[boot-features-activemq]]
+==== ActiveMQ support
+Spring Boot can also configure a `ConnectionFactory` when it detects that ActiveMQ is
+available on the classpath. If the broker is present, an embedded broker is started and
+configured automatically (as long as no broker URL is specified through configuration).
+
+ActiveMQ configuration is controlled by external configuration properties in
+`+spring.activemq.*+`. For example, you might declare the following section in
+`application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.activemq.broker-url=tcp://192.168.1.210:9876
+	spring.activemq.user=admin
+	spring.activemq.password=secret
+----
+
+See
+{sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[`ActiveMQProperties`]
+for more of the supported options.
+
+By default, ActiveMQ creates a destination if it does not exist yet, so destinations are
+resolved against their provided names.
+
+
+
+[[boot-features-artemis]]
+==== Artemis support
+Apache Artemis was formed in 2015 when HornetQ was donated to the Apache Foundation. All
+the features listed in the <<boot-features-hornetq>> section below can be applied to
+Artemis. Simply replace `+++spring.hornetq.*+++` properties with `+++spring.artemis.*+++`
+and use `spring-boot-starter-artemis` instead of `spring-boot-starter-hornetq`.
+
+NOTE: You should not try and use Artemis and HornetQ and the same time.
+
+
+
 [[boot-features-hornetq]]
 ==== HornetQ support
 Spring Boot can auto-configure a `ConnectionFactory` when it detects that HornetQ is
@@ -2556,32 +2593,6 @@ for more of the supported options.
 No JNDI lookup is involved at all and destinations are resolved against their names,
 either using the '`name`' attribute in the HornetQ configuration or the names provided
 through configuration.
-
-
-
-[[boot-features-activemq]]
-==== ActiveMQ support
-Spring Boot can also configure a `ConnectionFactory` when it detects that ActiveMQ is
-available on the classpath. If the broker is present, an embedded broker is started and
-configured automatically (as long as no broker URL is specified through configuration).
-
-ActiveMQ configuration is controlled by external configuration properties in
-`+spring.activemq.*+`. For example, you might declare the following section in
-`application.properties`:
-
-[source,properties,indent=0]
-----
-	spring.activemq.broker-url=tcp://192.168.1.210:9876
-	spring.activemq.user=admin
-	spring.activemq.password=secret
-----
-
-See
-{sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[`ActiveMQProperties`]
-for more of the supported options.
-
-By default, ActiveMQ creates a destination if it does not exist yet, so destinations are
-resolved against their provided names.
 
 
 
