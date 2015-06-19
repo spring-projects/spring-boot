@@ -59,7 +59,7 @@ public final class RepositoryConfigurationFactory {
 			repositoryConfiguration.add(SPRING_SNAPSHOT);
 		}
 
-		addDefaultCacheAsRespository(repositoryConfiguration);
+		addDefaultCacheAsRepository(repositoryConfiguration);
 		return repositoryConfiguration;
 	}
 
@@ -68,7 +68,7 @@ public final class RepositoryConfigurationFactory {
 	 * the local cache location has been changed from the default.
 	 * @param repositoryConfiguration
 	 */
-	public static void addDefaultCacheAsRespository(
+	public static void addDefaultCacheAsRepository(
 			List<RepositoryConfiguration> repositoryConfiguration) {
 		RepositoryConfiguration repository = new RepositoryConfiguration("local",
 				getLocalRepositoryDirectory().toURI(), true);
