@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -52,6 +55,14 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchAutoConfiguration implements DisposableBean {
 
+	private static final Map<String, String> DEFAULTS;
+	static {
+		Map<String, String> defaults = new LinkedHashMap<String, String>();
+		defaults.put("http.enabled", String.valueOf(false));
+		defaults.put("node.local", String.valueOf(true));
+		DEFAULTS = Collections.unmodifiableMap(defaults);
+	}
+
 	private static Log logger = LogFactory.getLog(ElasticsearchAutoConfiguration.class);
 
 	@Autowired
@@ -77,11 +88,15 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	}
 
 	private Client createNodeClient() throws Exception {
-		ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder()
-				.put("http.enabled", String.valueOf(false))
-				.put(this.properties.getProperties());
+		ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
+		for (Map.Entry<String, String> entry : DEFAULTS.entrySet()) {
+			if (!this.properties.getProperties().containsKey(entry.getKey())) {
+				settings.put(entry.getKey(), entry.getValue());
+			}
+		}
+		settings.put(this.properties.getProperties());
 		Node node = new NodeBuilder().settings(settings)
-				.clusterName(this.properties.getClusterName()).local(true).node();
+				.clusterName(this.properties.getClusterName()).node();
 		this.releasable = node;
 		return node.client();
 	}

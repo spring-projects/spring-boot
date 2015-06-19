@@ -28,7 +28,6 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -53,7 +52,7 @@ public class ElasticsearchAutoConfigurationTests {
 	}
 
 	@Test
-	public void createNodeClient() {
+	public void createNodeClientWithDefaults() {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.data.elasticsearch.properties.foo.bar:baz",
@@ -63,9 +62,31 @@ public class ElasticsearchAutoConfigurationTests {
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
-		Client client = this.context.getBean(Client.class);
-		assertThat(client, instanceOf(NodeClient.class));
-		assertThat(((NodeClient) client).settings().get("foo.bar"), is(equalTo("baz")));
+		NodeClient client = (NodeClient) this.context.getBean(Client.class);
+		assertThat(client.settings().get("foo.bar"), is(equalTo("baz")));
+		assertThat(client.settings().get("node.local"), is(equalTo("true")));
+		assertThat(client.settings().get("http.enabled"), is(equalTo("false")));
+	}
+
+	@Test
+	public void createNodeClientWithOverrides() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.foo.bar:baz",
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs",
+				"spring.data.elasticsearch.properties.node.local:false",
+				"spring.data.elasticsearch.properties.node.data:true",
+				"spring.data.elasticsearch.properties.http.enabled:true");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
+		NodeClient client = (NodeClient) this.context.getBean(Client.class);
+		assertThat(client.settings().get("foo.bar"), is(equalTo("baz")));
+		assertThat(client.settings().get("node.local"), is(equalTo("false")));
+		assertThat(client.settings().get("node.data"), is(equalTo("true")));
+		assertThat(client.settings().get("http.enabled"), is(equalTo("true")));
 	}
 
 	@Test
