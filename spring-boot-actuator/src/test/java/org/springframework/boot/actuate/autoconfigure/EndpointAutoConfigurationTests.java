@@ -141,6 +141,11 @@ public class EndpointAutoConfigurationTests {
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertNotNull(endpoint);
 		assertNotNull(endpoint.invoke().get("git"));
+		assertNotNull("develop",
+			((EndpointAutoConfiguration.GitInfo) endpoint.invoke().get("git")).getBranch());
+		assertNotNull("Dave Syer",
+			((EndpointAutoConfiguration.GitInfo) endpoint.invoke().get("git")).getBuild()
+				.get("user.name"));
 		assertEquals("bar", endpoint.invoke().get("foo"));
 	}
 

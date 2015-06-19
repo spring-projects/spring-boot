@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
@@ -209,11 +210,26 @@ public class EndpointAutoConfiguration {
 
 	}
 
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	public static class GitInfo {
+
+		private String tags;
 
 		private String branch;
 
-		private final Commit commit = new Commit();
+		private Map<String, String> remote = new HashMap<String, String>();
+
+		private Map<String, String> commit = new HashMap<String, String>();
+
+		private Map<String, String> build = new HashMap<String, String>();
+
+		public String getTags() {
+			return this.tags;
+		}
+
+		public void setTags(String tags) {
+			this.tags = tags;
+		}
 
 		public String getBranch() {
 			return this.branch;
@@ -223,33 +239,24 @@ public class EndpointAutoConfiguration {
 			this.branch = branch;
 		}
 
-		public Commit getCommit() {
+		public Map<String, String> getRemote() {
+			return this.remote;
+		}
+
+		public void setRemote(Map<String, String> remote) {
+			this.remote = remote;
+		}
+
+		public Map<String, String> getCommit() {
 			return this.commit;
 		}
 
-		public static class Commit {
+		public Map<String, String> getBuild() {
+			return this.build;
+		}
 
-			private String id;
-
-			private String time;
-
-			public String getId() {
-				return this.id == null ? "" : (this.id.length() > 7 ? this.id.substring(
-						0, 7) : this.id);
-			}
-
-			public void setId(String id) {
-				this.id = id;
-			}
-
-			public String getTime() {
-				return this.time;
-			}
-
-			public void setTime(String time) {
-				this.time = time;
-			}
-
+		public void setBuild(Map<String, String> build) {
+			this.build = build;
 		}
 
 	}
