@@ -445,6 +445,10 @@ the default behavior in a script or on the command line:
  in the script.
 |===
 
+TIP: With the exception of `JARFILE` and `APP_NAME`, the above settings can be placed in
+a `.conf` next to the jar. For example the jar `/var/myapp/myapp.jar` would attempt to
+source the configuration file `/var/myapp/myapp.conf`.
+
 
 
 [[deployment-whats-next]]
