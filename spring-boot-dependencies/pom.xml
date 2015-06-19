@@ -85,6 +85,7 @@
 		<infinispan.version>7.2.2.Final</infinispan.version>
 		<jackson.version>2.5.4</jackson.version>
 		<janino.version>2.7.8</janino.version>
+		<jason.version>20141113</jason.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
 		<javax-mail.version>1.5.3</javax-mail.version>
@@ -1459,6 +1460,11 @@
 				<groupId>org.infinispan</groupId>
 				<artifactId>infinispan-spring4</artifactId>
 				<version>${infinispan.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>${json.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.javassist</groupId>
