@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.jetty;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
@@ -59,6 +61,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -113,6 +116,12 @@ public class JettyEmbeddedServletContainerFactory extends
 		super(contextPath, port);
 	}
 
+	private static final String[] GZIP_HANDLER_CLASSNAMES = new String[] {
+			"org.eclipse.jetty.servlets.gzip.GzipHandler", // Jetty 9.2
+			"org.eclipse.jetty.server.handler.gzip.GzipHandler", // Jetty 9.3
+			"org.eclipse.jetty.server.handler.GzipHandler" // Jetty 8
+	};
+
 	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
@@ -120,7 +129,12 @@ public class JettyEmbeddedServletContainerFactory extends
 		int port = (getPort() >= 0 ? getPort() : 0);
 		Server server = new Server(new InetSocketAddress(getAddress(), port));
 		configureWebAppContext(context, initializers);
-		server.setHandler(context);
+		if (getCompression() != null && getCompression().isEnabled()) {
+			setupGzipHandler(context, server);
+		}
+		else {
+			server.setHandler(context);
+		}
 		this.logger.info("Server initialized with port: " + port);
 		if (getSsl() != null && getSsl().isEnabled()) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
@@ -133,6 +147,52 @@ public class JettyEmbeddedServletContainerFactory extends
 			customizer.customize(server);
 		}
 		return getJettyEmbeddedServletContainer(server);
+	}
+
+	private void setupGzipHandler(JettyEmbeddedWebAppContext context, Server server)
+			throws LinkageError {
+		boolean done = false;
+		for (String gzipHandlerClassName : GZIP_HANDLER_CLASSNAMES) {
+			if (ClassUtils.isPresent(gzipHandlerClassName, null)) {
+				try {
+					Class<?> gzipHandlerClass = ClassUtils.forName(gzipHandlerClassName,
+							null);
+
+					HandlerWrapper gzipHandler = (HandlerWrapper) gzipHandlerClass
+							.newInstance();
+					gzipHandler.setHandler(context);
+
+					Method minGzipSizeMethod = ReflectionUtils.findMethod(
+							gzipHandlerClass, "setMinGzipSize", int.class);
+					minGzipSizeMethod.invoke(gzipHandler, getCompression().getMinSize());
+
+					Method mimeTypesMethod = ReflectionUtils.findMethod(gzipHandlerClass,
+							"setMimeTypes", String.class);
+					if (mimeTypesMethod != null) {
+						// Jetty 8 & Jety 9.2
+						mimeTypesMethod.invoke(gzipHandler, getCompression()
+								.getMimeTypes());
+					}
+					else {
+						// Jetty 9.3
+						mimeTypesMethod = ReflectionUtils.findMethod(gzipHandlerClass,
+								"setIncludedMimeTypes", String[].class);
+						List<String> mimeTypes = getCompression().getMimeTypesList();
+						mimeTypesMethod.invoke(gzipHandler,
+								(Object) mimeTypes.toArray(new String[mimeTypes.size()]));
+					}
+					server.setHandler(gzipHandler);
+					done = true;
+					break;
+				}
+				catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		if (!done) {
+			throw new IllegalStateException("Jetty GzipHandler is not in classpath");
+		}
 	}
 
 	private SslServerConnectorFactory getSslServerConnectorFactory() {

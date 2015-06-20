@@ -19,8 +19,17 @@ package org.springframework.boot.context.embedded.undertow;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
+import io.undertow.attribute.ConstantExchangeAttribute;
+import io.undertow.attribute.ExchangeAttribute;
+import io.undertow.attribute.ResponseHeaderAttribute;
+import io.undertow.predicate.Predicate;
+import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.encoding.ContentEncodingRepository;
+import io.undertow.server.handlers.encoding.EncodingHandler;
+import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.util.HttpString;
 
 import java.lang.reflect.Field;
 import java.net.ServerSocket;
@@ -31,8 +40,10 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer.CompressionProperties;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -59,16 +70,20 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private final boolean autoStart;
 
+	private final CompressionProperties compression;
+
 	private Undertow undertow;
 
 	private boolean started = false;
 
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
-			String contextPath, int port, boolean autoStart) {
+			String contextPath, int port, boolean autoStart,
+			CompressionProperties compression) {
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
 		this.autoStart = autoStart;
+		this.compression = compression;
 	}
 
 	@Override
@@ -98,6 +113,29 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	private HttpHandler getContextHandler(HttpHandler servletHandler) {
+		if (compression != null && compression.isEnabled()) {
+			ContentEncodingRepository encodingRepository = new ContentEncodingRepository();
+
+			List<String> mimeTypes = compression.getMimeTypesList();
+			Predicate[] mimePredicates = new Predicate[mimeTypes.size()];
+			ResponseHeaderAttribute mimeHeader = new ResponseHeaderAttribute(
+					new HttpString(HttpHeaders.CONTENT_TYPE));
+			for (int i = 0; i < mimeTypes.size(); i++) {
+				mimePredicates[i] = Predicates.equals(new ExchangeAttribute[] {
+						mimeHeader, new ConstantExchangeAttribute(mimeTypes.get(i)) });
+
+			}
+
+			Predicate mimeAndSizePredicate = Predicates.and(
+					Predicates.maxContentSize(compression.getMinSize()),
+					Predicates.or(mimePredicates));
+
+			encodingRepository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
+					mimeAndSizePredicate);
+			servletHandler = new EncodingHandler(encodingRepository)
+					.setNext(servletHandler);
+		}
+
 		if (StringUtils.isEmpty(this.contextPath)) {
 			return servletHandler;
 		}
