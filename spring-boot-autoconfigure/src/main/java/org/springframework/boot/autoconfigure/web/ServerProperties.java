@@ -31,6 +31,8 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer.CompressionProperties;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
@@ -99,6 +101,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	private final Undertow undertow = new Undertow();
 
+	private CompressionProperties compression = new CompressionProperties();
+
 	@NestedConfigurationProperty
 	private JspServlet jspServlet;
 
@@ -118,6 +122,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	public Undertow getUndertow() {
 		return this.undertow;
+	}
+
+	public CompressionProperties getCompression() {
+		return this.compression;
 	}
 
 	public String getContextPath() {
@@ -238,6 +246,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		}
 		if (getJspServlet() != null) {
 			container.setJspServlet(getJspServlet());
+		}
+		if (container instanceof AbstractConfigurableEmbeddedServletContainer) {
+			((AbstractConfigurableEmbeddedServletContainer) container)
+					.setCompression(getCompression());
 		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat()
@@ -587,7 +599,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			valve.setSuffix(".log");
 			factory.addContextValves(valve);
 		}
-
 	}
 
 	public static class Undertow {

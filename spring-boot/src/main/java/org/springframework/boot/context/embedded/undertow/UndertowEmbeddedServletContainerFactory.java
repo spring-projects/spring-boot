@@ -219,7 +219,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 		int port = getPort();
 		Builder builder = createBuilder(port);
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, port >= 0);
+				port, port >= 0, getCompression());
 	}
 
 	private Builder createBuilder(int port) {
@@ -470,7 +470,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
 			Builder builder, DeploymentManager manager, int port) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, port >= 0);
+				port, port >= 0, getCompression());
 	}
 
 	@Override
