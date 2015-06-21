@@ -459,6 +459,16 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void absoluteResourceDefaultsToFile() throws Exception {
+		String location = new File("src/test/resources/specificlocation.properties").getAbsolutePath();
+		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
+				+ location);
+		this.initializer.onApplicationEvent(this.event);
+		assertThat(this.environment, containsPropertySource("applicationConfig: [file:"
+				+ location.replace(File.separatorChar, '/') + "]"));
+	}
+
+	@Test
 	public void propertySourceAnnotation() throws Exception {
 		SpringApplication application = new SpringApplication(WithPropertySource.class);
 		application.setWebEnvironment(false);
