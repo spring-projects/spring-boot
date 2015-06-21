@@ -54,6 +54,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 
@@ -455,10 +456,10 @@ public class ConfigFileApplicationListener implements
 				for (String path : asResolvedSet(
 						this.environment.getProperty(CONFIG_LOCATION_PROPERTY), null)) {
 					if (!path.contains("$")) {
-						if (!path.contains(":")) {
-							path = "file:" + path;
-						}
 						path = StringUtils.cleanPath(path);
+						if (!ResourceUtils.isUrl(path)) {
+							path = ResourceUtils.FILE_URL_PREFIX + path;
+						}
 					}
 					locations.add(path);
 				}
