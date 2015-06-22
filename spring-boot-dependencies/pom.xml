@@ -1718,6 +1718,11 @@
 				<version>${spring-session.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.session</groupId>
+				<artifactId>spring-session-data-redis</artifactId>
+				<version>${spring-session.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.social</groupId>
 				<artifactId>spring-social-config</artifactId>
 				<version>${spring-social.version}</version>
