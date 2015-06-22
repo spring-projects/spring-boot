@@ -126,7 +126,7 @@ public class RabbitProperties {
 				}
 			}
 			int index = address.indexOf("/");
-			if (index >= 0 && index < address.length()) {
+			if (index >= 0 && index < address.length() - 1) {
 				this.virtualHost = address.substring(index + 1);
 				address = address.substring(0, index);
 			}
