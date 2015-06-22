@@ -272,6 +272,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		private String protocolHeader;
 
 		/**
+		 * Value of the protocol header that indicates that the incoming request uses SSL.
+		 */
+		private String protocolHeaderHttpsValue = "https";
+
+		/**
 		 * Name of the HTTP header used to override the original port value.
 		 */
 		private String portHeader;
@@ -400,6 +405,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.protocolHeader = protocolHeader;
 		}
 
+		public String getProtocolHeaderHttpsValue() {
+			return this.protocolHeaderHttpsValue;
+		}
+
+		public void setProtocolHeaderHttpsValue(String protocolHeaderHttpsValue) {
+			this.protocolHeaderHttpsValue = protocolHeaderHttpsValue;
+		}
+
 		public String getPortHeader() {
 			return this.portHeader;
 		}
@@ -445,6 +458,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 				valve.setProtocolHeader(protocolHeader);
 				valve.setInternalProxies(getInternalProxies());
 				valve.setPortHeader(getPortHeader());
+				valve.setProtocolHeaderHttpsValue(getProtocolHeaderHttpsValue());
 				factory.addContextValves(valve);
 			}
 

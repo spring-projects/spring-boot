@@ -81,6 +81,7 @@ content into your application; rather pick only the properties that you need.
 			169\\.254\\.\\d{1,3}\\.\\d{1,3}|\\
 			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3} # regular expression matching trusted IP addresses
 	server.tomcat.protocol-header=x-forwarded-proto # front end proxy forward header
+	server.tomcat.protocol-header-https-value=https # value of the protocol header that indicates that the incoming request uses SSL
 	server.tomcat.port-header= # front end proxy port header
 	server.tomcat.remote-ip-header=x-forwarded-for
 	server.tomcat.basedir=/tmp # base dir (usually not needed, defaults to tmp)
