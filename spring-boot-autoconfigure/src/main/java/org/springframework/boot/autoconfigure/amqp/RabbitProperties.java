@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Greg Turnquist
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -115,7 +116,7 @@ public class RabbitProperties {
 			}
 			int index = address.indexOf("/");
 			if (index >= 0 && index < address.length()) {
-				this.virtualHost = address.substring(index + 1);
+				setVirtualHost(address.substring(index + 1));
 				address = address.substring(0, index);
 			}
 			if (!address.contains(":")) {
