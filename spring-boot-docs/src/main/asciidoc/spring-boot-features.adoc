@@ -408,7 +408,7 @@ for details.
 http://yaml.org[YAML] is a superset of JSON, and as such is a very convenient format
 for specifying hierarchical configuration data. The `SpringApplication` class will
 automatically support YAML as an alternative to properties whenever you have the
-http://code.google.com/p/snakeyaml/[SnakeYAML] library on your classpath.
+http://www.snakeyaml.org/[SnakeYAML] library on your classpath.
 
 NOTE: If you use '`starter POMs`' SnakeYAML will be automatically provided via
 `spring-boot-starter`.
