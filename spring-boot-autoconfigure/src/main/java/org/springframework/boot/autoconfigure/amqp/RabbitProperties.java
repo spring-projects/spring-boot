@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
  * @author Greg Turnquist
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -127,7 +128,7 @@ public class RabbitProperties {
 			}
 			int index = address.indexOf("/");
 			if (index >= 0 && index < address.length()) {
-				this.virtualHost = address.substring(index + 1);
+				setVirtualHost(address.substring(index + 1));
 				address = address.substring(0, index);
 			}
 			if (!address.contains(":")) {
