@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.trace;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -26,6 +27,7 @@ import java.util.Map;
  * In-memory implementation of {@link TraceRepository}.
  *
  * @author Dave Syer
+ * @author Olivier Bourgain
  */
 public class InMemoryTraceRepository implements TraceRepository {
 
@@ -40,20 +42,24 @@ public class InMemoryTraceRepository implements TraceRepository {
 	 * @param reverse flag value (default true)
 	 */
 	public void setReverse(boolean reverse) {
-		this.reverse = reverse;
+		synchronized (this.traces) {
+			this.reverse = reverse;
+		}
 	}
 
 	/**
 	 * @param capacity the capacity to set
 	 */
 	public void setCapacity(int capacity) {
-		this.capacity = capacity;
+		synchronized (this.traces) {
+			this.capacity = capacity;
+		}
 	}
 
 	@Override
 	public List<Trace> findAll() {
 		synchronized (this.traces) {
-			return Collections.unmodifiableList(this.traces);
+			return Collections.unmodifiableList(new ArrayList<Trace>(this.traces));
 		}
 	}
 
