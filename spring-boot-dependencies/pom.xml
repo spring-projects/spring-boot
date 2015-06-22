@@ -822,11 +822,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-fileserver</artifactId>
-				<version>${activemq.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-http</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
@@ -902,11 +897,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-rar</artifactId>
-				<version>${activemq.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-run</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
@@ -933,11 +923,6 @@
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-web</artifactId>
-				<version>${activemq.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-web-console</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
 			<dependency>
