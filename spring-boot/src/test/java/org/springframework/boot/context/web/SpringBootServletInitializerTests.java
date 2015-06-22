@@ -26,6 +26,7 @@ import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
@@ -33,12 +34,14 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link SpringBootServletInitializerTests}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class SpringBootServletInitializerTests {
 
@@ -77,6 +80,17 @@ public class SpringBootServletInitializerTests {
 		CustomSpringBootServletInitializer servletInitializer = new CustomSpringBootServletInitializer();
 		servletInitializer.createRootApplicationContext(this.servletContext);
 		assertThat(servletInitializer.applicationBuilder.built, equalTo(true));
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void mainClassHasSensibleDefault() throws Exception {
+		new WithConfigurationAnnotation()
+				.createRootApplicationContext(this.servletContext);
+		Class mainApplicationClass = (Class<?>) new DirectFieldAccessor(this.application)
+				.getPropertyValue("mainApplicationClass");
+		assertThat(mainApplicationClass,
+				is(equalTo((Class) WithConfigurationAnnotation.class)));
 	}
 
 	private Matcher<? super Set<Object>> equalToSet(Object... items) {
