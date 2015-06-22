@@ -85,7 +85,6 @@
 		<infinispan.version>7.2.2.Final</infinispan.version>
 		<jackson.version>2.5.4</jackson.version>
 		<janino.version>2.7.8</janino.version>
-		<jason.version>20141113</jason.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<javax-cache.version>1.0.0</javax-cache.version>
 		<javax-mail.version>1.5.3</javax-mail.version>
@@ -100,6 +99,7 @@
 		<jmustache.version>1.10</jmustache.version>
 		<joda-time.version>2.8.1</joda-time.version>
 		<jolokia.version>1.3.1</jolokia.version>
+		<json.version>20141113</json.version>
 		<json-path.version>2.0.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.12</junit.version>
@@ -1468,11 +1468,6 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.json</groupId>
-				<artifactId>json</artifactId>
-				<version>${json.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
 				<version>${javassist.version}</version>
@@ -1486,6 +1481,11 @@
 				<groupId>org.jolokia</groupId>
 				<artifactId>jolokia-core</artifactId>
 				<version>${jolokia.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>${json.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
