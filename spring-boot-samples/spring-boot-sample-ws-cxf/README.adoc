@@ -9,4 +9,4 @@ The sample uses Maven. It can be built and run from the command line:
 $ mvn spring-boot:run
 ----
 
-http://localhost:8080/Service/Hello?WSDL will now display the generated WSDL.
+http://localhost:8080/service/Hello?WSDL will now display the generated WSDL.

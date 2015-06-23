@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package sample.ws.service;
 
 import java.util.logging.Logger;
@@ -26,22 +25,23 @@ import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 
 /**
- * CXF JAX webservice implemntation example.
+ * demo CXF webservice implementation.
  *
  * @author Elan Thangamani
  */
+
 
 @javax.jws.WebService(
                       serviceName = "HelloService",
                       portName = "HelloPort",
                       targetNamespace = "http://service.ws.sample/",
                       endpointInterface = "sample.ws.service.Hello")
-
+                      
 public class HelloPortImpl implements Hello {
 
     private static final Logger LOG = Logger.getLogger(HelloPortImpl.class.getName());
 
-    public java.lang.String sayHello(java.lang.String myname) {
+    public java.lang.String sayHello(java.lang.String myname) { 
         LOG.info("Executing operation sayHello" + myname);
         try {
     		return "Welcome to CXF Spring boot "+myname + "!!!";

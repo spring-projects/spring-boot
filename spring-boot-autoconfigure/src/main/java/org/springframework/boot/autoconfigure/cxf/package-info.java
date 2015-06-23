@@ -13,33 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sample.rs.service;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+
+package org.springframework.boot.autoconfigure.cxf;
 
 /**
- * CXF rest Web service example.
+ * Auto-configuration for embedded servlet containers and CXF.
  *
  * @author Elan Thangamani
  */
-@Path("/sayHello")
-public class HelloService {
-
-	@GET
-	@Path("/txt/{a}")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String sayHello(@PathParam("a") String a) {
-		return "Hello " + a + ", Welcome to CXF RS Spring Boot World!!!";
-	}
-
-	@GET
-	@Path("/json/{a}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String sayJsonHello(@PathParam("a") String a) {
-		return "{hello='" + a + ", Welcome to CXF RS Spring Boot World!!!'}";
-	}
-}

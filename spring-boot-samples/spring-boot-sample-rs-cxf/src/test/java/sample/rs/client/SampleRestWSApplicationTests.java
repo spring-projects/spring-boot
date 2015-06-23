@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package sample.rs.client;
-
+package sample.rs.client;
 
 import javax.ws.rs.core.Response;
 
@@ -50,10 +49,11 @@ import javax.ws.rs.core.MediaType;
 import static org.junit.Assert.assertEquals;
 
 /**
- * CXF JAX RS integration tests examples for demo application.
+ * Basic integration tests for CXF rest demo application.
  *
  * @author Elan Thangamani
  */
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { SampleRestWSApplication.class })
 @WebAppConfiguration
@@ -63,14 +63,14 @@ public class SampleRestWSApplicationTests {
 
 	@Value("${local.server.port}")
 	private int port;
-
+	
 	@Test
-	public void rsTextClient() throws Exception {
+	public void resttxtclient() throws Exception {
 		String value = null;
 		try{
 			String name = "Elan";
 		 	Client client = Client.create();
-		 	WebResource webResource = client.resource("http://localhost:"+this.port+"/services/helloservice/sayHello/txt/"+name);
+		 	WebResource webResource = client.resource("http://localhost:"+this.port+"/service/helloservice/sayHello/txt/"+name);
 	 		ClientResponse response = webResource.accept("text/plain").get(ClientResponse.class);
 			 value = response.getEntity(String.class);
 			System.out.println(value);
@@ -80,14 +80,14 @@ public class SampleRestWSApplicationTests {
 		assertEquals(value, "Hello Elan, Welcome to CXF RS Spring Boot World!!!");
 	}
 
-
+	
 	@Test
-	public void rsJsonClient() throws Exception {
+	public void restjsonclient() throws Exception {
 		String value = null;
 		try{
 			String name = "Elan";
 		 	Client client = Client.create();
-		 	WebResource webResource = client.resource("http://localhost:"+this.port+"/services/helloservice/sayHello/json/"+name);
+		 	WebResource webResource = client.resource("http://localhost:"+this.port+"/service/helloservice/sayHello/json/"+name);
 	 		ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
 			 value = response.getEntity(String.class);
 			System.out.println(value);

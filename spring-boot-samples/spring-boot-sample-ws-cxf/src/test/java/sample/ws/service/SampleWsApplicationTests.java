@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package sample.ws.service;
+
 
 import java.io.StringReader;
 
@@ -37,7 +38,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 
 /**
- * CXF JAX webservice integration test samples.
+ * Basic integration tests for CXF WS demo application.
  *
  * @author Elan Thangamani
  */
@@ -60,14 +61,14 @@ public class SampleWsApplicationTests {
 	@Before
 	public void setUp() {
 		this.webServiceTemplate.setDefaultUri("http://localhost:" + this.serverPort
-				+ "/Service/Hello");
+				+ "/service/Hello");
 	}
 
 	@Test
 	public void testHelloRequest() {
 		//final String request = "<q0:sayHello xmlns:q0=\"http://service.ws.sample\">Elan</q0:sayHello>";
 		final String request = "<q0:sayHello xmlns:q0=\"http://service.ws.sample/\"><myname>Elan</myname></q0:sayHello>";
-
+				
 
 		StreamSource source = new StreamSource(new StringReader(request));
 		StreamResult result = new StreamResult(System.out);

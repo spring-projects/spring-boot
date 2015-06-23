@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+ package sample.rs.service;
 
-package sample.rs.service;
-import org.apache.cxf.Bus;
-import org.apache.cxf.endpoint.Server;
+import org.springframework.context.annotation.Bean;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
-import org.apache.cxf.transport.servlet.CXFServlet;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.cxf.CXFRestWSAdapter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
 /**
- * CXF JAX Rest webservice spting configuration example.
+ * Spring-boot CXF rest Web service example with rest adapter.
+ * This extends the {@link CXFRestAdapter} abstract class and implement the setupRestWSServer method.
+ * User has to initilize service bean and the address to configure the rest service.
  *
  * @author Elan Thangamani
  */
@@ -39,34 +36,22 @@ import org.springframework.context.annotation.ImportResource;
 @Configuration
 @EnableAutoConfiguration
 @ImportResource({ "classpath:META-INF/cxf/cxf.xml" })
-public class SampleRestWSApplication extends SpringBootServletInitializer {
+public class SampleRestWSApplication extends CXFRestWSAdapter  {
+ 
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
+   
     public static void main(String[] args) {
         SpringApplication.run(SampleRestWSApplication.class, args);
     }
-
-    @Bean
-    public ServletRegistrationBean servletRegistrationBean(ApplicationContext context) {
-        return new ServletRegistrationBean(new CXFServlet(), "/services/*");
-    }
-
-
-    @Bean
-    public Server rsServer() {
-        Bus bus = (Bus) applicationContext.getBean(Bus.DEFAULT_BUS_ID);
-        JAXRSServerFactoryBean endpoint = new JAXRSServerFactoryBean();
-        endpoint.setServiceBean(new HelloService());
-        endpoint.setAddress("/helloservice");
-        endpoint.setBus(bus);
-        return endpoint.create();
-    }
-
+    
     @Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SampleRestWSApplication.class);
-	}
-
+	 public void setupRestWSServer(JAXRSServerFactoryBean endpoint) {
+		 endpoint.setServiceBean(helloService());
+		 endpoint.setAddress("/helloservice");
+	 }
+    
+	@Bean 
+	public HelloService helloService() { 
+	    return new HelloService(); 
+	} 
 }
