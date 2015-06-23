@@ -45,15 +45,15 @@ public class SampleActuatorUiApplication {
 		throw new RuntimeException("Expected exception in controller");
 	}
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleActuatorUiApplication.class, args);
-	}
-
 	@Bean
 	public SecurityProperties securityProperties() {
 		SecurityProperties security = new SecurityProperties();
 		security.getBasic().setPath(""); // empty so home page is unsecured
 		return security;
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleActuatorUiApplication.class, args);
 	}
 
 }

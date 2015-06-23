@@ -16,14 +16,8 @@
 
 package sample.session.redis;
 
-import java.util.UUID;
-
-import javax.servlet.http.HttpSession;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 public class SampleSessionRedisApplication {
@@ -32,17 +26,4 @@ public class SampleSessionRedisApplication {
 		SpringApplication.run(SampleSessionRedisApplication.class);
 	}
 
-	@RestController
-	static class HelloRestController {
-
-		@RequestMapping("/")
-		String uid(HttpSession session) {
-			UUID uid = (UUID) session.getAttribute("uid");
-			if (uid == null) {
-				uid = UUID.randomUUID();
-			}
-			session.setAttribute("uid", uid);
-			return uid.toString();
-		}
-	}
 }

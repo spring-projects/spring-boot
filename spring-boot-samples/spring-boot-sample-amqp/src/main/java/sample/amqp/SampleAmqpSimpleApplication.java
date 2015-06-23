@@ -64,4 +64,5 @@ public class SampleAmqpSimpleApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleAmqpSimpleApplication.class, args);
 	}
+
 }

@@ -26,15 +26,15 @@ import org.springframework.context.annotation.ImportResource;
 @EnableConfigurationProperties(ServiceProperties.class)
 public class SampleParentContextApplication {
 
-	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(Parent.class).child(
-				SampleParentContextApplication.class).run(args);
-	}
-
 	@EnableAutoConfiguration
 	@ImportResource("integration-context.xml")
 	protected static class Parent {
 
+	}
+
+	public static void main(String[] args) throws Exception {
+		new SpringApplicationBuilder(Parent.class).child(
+				SampleParentContextApplication.class).run(args);
 	}
 
 }

@@ -41,4 +41,5 @@ public class SampleSimpleApplication implements CommandLineRunner {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleSimpleApplication.class, args);
 	}
+
 }

@@ -164,6 +164,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 		public IllegalGemstoneException(final String message, final Throwable cause) {
 			super(message, cause);
 		}
+
 	}
 
 }

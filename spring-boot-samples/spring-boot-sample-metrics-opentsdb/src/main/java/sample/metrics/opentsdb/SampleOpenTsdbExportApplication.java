@@ -28,10 +28,6 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class SampleOpenTsdbExportApplication {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleOpenTsdbExportApplication.class, args);
-	}
-
 	@Bean
 	@ConfigurationProperties("metrics.export")
 	public MetricWriter openTsdbMetricWriter() {
@@ -44,6 +40,10 @@ public class SampleOpenTsdbExportApplication {
 	@ConfigurationProperties("metrics.names")
 	public OpenTsdbNamingStrategy namingStrategy() {
 		return new DefaultOpenTsdbNamingStrategy();
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleOpenTsdbExportApplication.class, args);
 	}
 
 }
