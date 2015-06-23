@@ -21,9 +21,9 @@ import java.io.PrintStream;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.core.env.Environment;
 
-import static org.springframework.boot.ansi.AnsiElement.DEFAULT;
-import static org.springframework.boot.ansi.AnsiElement.FAINT;
-import static org.springframework.boot.ansi.AnsiElement.GREEN;
+import static org.springframework.boot.ansi.AnsiColor.DEFAULT;
+import static org.springframework.boot.ansi.AnsiColor.GREEN;
+import static org.springframework.boot.ansi.AnsiStyle.FAINT;
 
 /**
  * Default Banner implementation which writes the 'Spring' banner.

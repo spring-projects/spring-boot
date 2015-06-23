@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.ansi.AnsiPropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -77,6 +78,7 @@ public class ResourceBanner implements Banner {
 		List<PropertyResolver> resolvers = new ArrayList<PropertyResolver>();
 		resolvers.add(environment);
 		resolvers.add(getVersionResolver(sourceClass));
+		resolvers.add(getAnsiResolver());
 		return resolvers;
 	}
 
@@ -112,6 +114,12 @@ public class ResourceBanner implements Banner {
 			return "";
 		}
 		return (format ? " (v" + version + ")" : version);
+	}
+
+	private PropertyResolver getAnsiResolver() {
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addFirst(new AnsiPropertySource("ansi", true));
+		return new PropertySourcesPropertyResolver(sources);
 	}
 
 }
