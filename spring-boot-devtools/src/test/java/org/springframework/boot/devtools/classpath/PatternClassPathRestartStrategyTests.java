@@ -19,8 +19,7 @@ package org.springframework.boot.devtools.classpath;
 import java.io.File;
 
 import org.junit.Test;
-import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
-import org.springframework.boot.devtools.classpath.PatternClassPathRestartStrategy;
+
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 
@@ -31,6 +30,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link PatternClassPathRestartStrategy}.
  *
  * @author Phillip Webb
+ * @author Andrew Landsverk
  */
 public class PatternClassPathRestartStrategyTests {
 
@@ -64,6 +64,16 @@ public class PatternClassPathRestartStrategyTests {
 		assertRestartRequired(strategy, "public/folder/file.txt", false);
 		assertRestartRequired(strategy, "src/file.txt", true);
 		assertRestartRequired(strategy, "src/folder/file.txt", true);
+	}
+
+	@Test
+	public void pomChange() throws Exception {
+		ClassPathRestartStrategy strategy = createStrategy("META-INF/maven/**");
+		assertRestartRequired(strategy, "pom.xml", true);
+		assertRestartRequired(strategy,
+				"META-INF/maven/org.springframework.boot/spring-boot-devtools/pom.xml", false);
+		assertRestartRequired(strategy,
+				"META-INF/maven/org.springframework.boot/spring-boot-devtools/pom.properties", false);
 	}
 
 	private ClassPathRestartStrategy createStrategy(String pattern) {

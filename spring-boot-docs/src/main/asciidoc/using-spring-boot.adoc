@@ -828,10 +828,10 @@ commercially supported.
 ==== Excluding resources
 Certain resources don't necessarily need to trigger a restart when they are changed. For
 example, Thymeleaf templates can just be edited in-place. By default changing resources
-in `/META-INF/resources` ,`/resources` ,`/static` ,`/public` or `/templates` will not
-trigger a restart. If you want to customize these exclusions you can use the
-`spring.devtools.restart.exclude` property. For example, to exclude only `/static` and
-`/public` you would set the following:
+in `/META-INF/maven`, ``/META-INF/resources` ,`/resources` ,`/static` ,`/public` or
+`/templates` will not trigger a restart. If you want to customize these exclusions you
+can use the `spring.devtools.restart.exclude` property. For example, to exclude only
+`/static` and `/public` you would set the following:
 
 [indent=0]
 ----
