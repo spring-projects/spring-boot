@@ -7,7 +7,9 @@ contextual help and "`code completion`" as users are working with `application.p
 or `application.yml` files.
 
 The majority of the meta-data file is generated automatically at compile time by
-processing all items annotated with `@ConfigurationProperties`.
+processing all items annotated with `@ConfigurationProperties`. However, it is possible
+to <<configuration-metadata-additional-metadata,write part of the meta-data manually>>
+for corner cases or more advanced use cases.
 
 
 
@@ -15,7 +17,8 @@ processing all items annotated with `@ConfigurationProperties`.
 === Meta-data format
 Configuration meta-data files are located inside jars under
 `META-INF/spring-configuration-metadata.json` They use a simple JSON format with items
-categorized under either "`groups`" or "`properties`":
+categorized under either "`groups`" or "`properties`" and additional values hint
+categorized under "hints":
 
 [source,json,indent=0]
 ----
@@ -24,6 +27,12 @@ categorized under either "`groups`" or "`properties`":
 			"name": "server",
 			"type": "org.springframework.boot.autoconfigure.web.ServerProperties",
 			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+		},
+		{
+			"name": "server.tomcat",
+			"type": "org.springframework.boot.autoconfigure.web.ServerProperties$Tomcat",
+			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
+			"sourceMethod": "getTomcat()"
 		}
 		...
 	],"properties": [
@@ -37,8 +46,33 @@ categorized under either "`groups`" or "`properties`":
 			"type": "java.lang.String",
 			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
 			"defaultValue": "/"
-		}
+		},
+        {
+            "name": "server.tomcat.compression",
+            "type": "java.lang.String",
+            "description": "Controls response compression.",
+            "sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties$Tomcat",
+            "defaultValue": "off"
+        }
 		...
+	],"hints": [
+		{
+			"name": "server.tomcat.compression",
+			"values": [
+				{
+					"value": "off",
+					"description": "Disable compression."
+				},
+				{
+					"value": "on",
+					"description": "Enable compression of responses over 2048 byte."
+				},
+				{
+					"value": "force",
+					"description": "Enable compression of all responses."
+				},
+			]
+		}
 	]}
 ----
 
@@ -59,6 +93,9 @@ provide a contextual grouping for properties. For example the `server.port` and
 NOTE: It is not required that every "`property`" has a "`group`", some properties might
 just exist in their own right.
 
+Finally, "`hints`" are additional information used to assist the user in configuring a
+given property. When configuring the `server.tomcat.compression` property, a tool can
+use it to offer some auto-completion help for the `off`, `on` and `force` values.
 
 
 [[configuration-metadata-group-attributes]]
@@ -152,6 +189,46 @@ The JSON object contained in the `properties` array can contain the following at
 |===
 
 
+[[configuration-metadata-hints-attributes]]
+==== Hint Attributes
+The JSON object contained in the `hints` array can contain the following attributes:
+
+[cols="1,1,4"]
+|===
+|Name | Type |Purpose
+
+|`name`
+| String
+| The full name of the property that this hint refers to. Names are in lowercase dashed
+  form (e.g. `server.servlet-path`). If the property refers to a map (e.g.
+  `system.contexts`) the hint either applies to the _keys_ of the map (`system.context.keys`)
+   or the values (`system.context.values`). This attribute is mandatory.
+
+|`values`
+| ValueHint[]
+| A list of valid values as defined by the `ValueHint` object (see below). Each entry defines
+  the value and may have a description
+|===
+
+The JSON object contained in the `values` array of each `hint` element can contain the
+following attributes:
+
+[cols="1,1,4"]
+|===
+|Name | Type |Purpose
+
+|`value`
+| Object
+| A valid value for the element to which the hint refers to. Can also be an array of value(s)
+  if the type of the property is an array. This attribute is mandatory.
+
+|`description`
+| String
+| A short description of the value that can be displayed to users. May be omitted if no
+  description is available. It is recommended that descriptions are a short paragraphs,
+  with the first line providing a concise summary. The last line in the description should
+  end with a period (`.`).
+|===
 
 [[configuration-metadata-repeated-items]]
 ==== Repeated meta-data items
@@ -161,7 +238,19 @@ appear multiple times within a meta-data file. For example, Spring Boot binds
 offering overlap of property names. Consumers of meta-data should take care to ensure
 that they support such scenarios.
 
+=== Providing manual hints
 
+To improve the user experience and further assist the user in configuring a given
+property, you can provide additional meta-data that describes the list of potential
+values for a property.
+
+The `name` attribute of each hint refers to the `name` of a property. In the initial
+example above, we provide 3 values for the `server.tomcat.compression` property: `on`,
+`off` and `force`.
+
+If your property is of type `Map`, you can provide hints for both the keys and the
+values (but not for the map itself). The special `.keys` and `.values` suffixes must
+be used to refer to the keys and the values respectively.
 
 [[configuration-metadata-annotation-processor]]
 === Generating your own meta-data using the annotation processor
@@ -250,8 +339,9 @@ if it were nested.
 ==== Adding additional meta-data
 Spring Boot's configuration file handling is quite flexible; and it often the case that
 properties may exist that are not bound to a `@ConfigurationProperties` bean. To support
-such cases, the annotation processor will automatically merge items from
-`META-INF/additional-spring-configuration-metadata.json` into the main meta-data file.
+such cases and allow you to provide custom "hints", the annotation processor will
+automatically merge items from `META-INF/additional-spring-configuration-metadata.json`
+into the main meta-data file.
 
 The format of the `additional-spring-configuration-metadata.json` file is exactly the same
 as the regular `spring-configuration-metadata.json`. The additional properties file is

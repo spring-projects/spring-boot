@@ -16,10 +16,14 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
@@ -27,6 +31,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.Ite
  * Hamcrest {@link Matcher} to help test {@link ConfigurationMetadata}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class ConfigurationMetadataMatchers {
 
@@ -52,6 +57,10 @@ public class ConfigurationMetadataMatchers {
 
 	public static ContainsItemMatcher containsProperty(String name, String type) {
 		return new ContainsItemMatcher(ItemType.PROPERTY, name).ofType(type);
+	}
+
+	public static ContainsHintMatcher containsHint(String name) {
+		return new ContainsHintMatcher(name);
 	}
 
 	public static class ContainsItemMatcher extends BaseMatcher<ConfigurationMetadata> {
@@ -89,7 +98,7 @@ public class ConfigurationMetadataMatchers {
 		@Override
 		public boolean matches(Object item) {
 			ConfigurationMetadata metadata = (ConfigurationMetadata) item;
-			ItemMetadata itemMetadata = getFirstPropertyWithName(metadata, this.name);
+			ItemMetadata itemMetadata = getFirstItemWithName(metadata, this.name);
 			if (itemMetadata == null) {
 				return false;
 			}
@@ -117,7 +126,7 @@ public class ConfigurationMetadataMatchers {
 		@Override
 		public void describeMismatch(Object item, Description description) {
 			ConfigurationMetadata metadata = (ConfigurationMetadata) item;
-			ItemMetadata property = getFirstPropertyWithName(metadata, this.name);
+			ItemMetadata property = getFirstItemWithName(metadata, this.name);
 			if (property == null) {
 				description.appendText("missing "
 						+ this.itemType.toString().toLowerCase() + " " + this.name);
@@ -179,11 +188,134 @@ public class ConfigurationMetadataMatchers {
 					this.sourceType, this.description, this.defaultValue, true);
 		}
 
-		private ItemMetadata getFirstPropertyWithName(ConfigurationMetadata metadata,
+		private ItemMetadata getFirstItemWithName(ConfigurationMetadata metadata,
 				String name) {
 			for (ItemMetadata item : metadata.getItems()) {
 				if (item.isOfItemType(this.itemType) && name.equals(item.getName())) {
 					return item;
+				}
+			}
+			return null;
+		}
+
+	}
+
+	public static class ContainsHintMatcher extends BaseMatcher<ConfigurationMetadata> {
+
+		private final String name;
+
+		private final List<ValueHintMatcher> values;
+
+		public ContainsHintMatcher(String name) {
+			this(name, new ArrayList<ValueHintMatcher>());
+		}
+
+		public ContainsHintMatcher(String name, List<ValueHintMatcher> values) {
+			this.name = name;
+			this.values = values;
+		}
+
+		@Override
+		public boolean matches(Object item) {
+			ConfigurationMetadata metadata = (ConfigurationMetadata) item;
+			ItemHint itemHint = getFirstHintWithName(metadata, this.name);
+			if (itemHint == null) {
+				return false;
+			}
+			if (this.name != null && !this.name.equals(itemHint.getName())) {
+				return false;
+			}
+			for (ValueHintMatcher value : this.values) {
+				if (!value.matches(itemHint)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		@Override
+		public void describeMismatch(Object item, Description description) {
+			ConfigurationMetadata metadata = (ConfigurationMetadata) item;
+			ItemHint itemHint = getFirstHintWithName(metadata, this.name);
+			if (itemHint == null) {
+				description.appendText("missing hint " + this.name);
+			}
+			else {
+				description.appendText(
+						"was hint ").appendValue(itemHint);
+			}
+		}
+
+		@Override
+		public void describeTo(Description description) {
+			description.appendText("hints for " + this.name);
+			if (this.values != null) {
+				description.appendText(" values ").appendValue(this.values);
+			}
+		}
+
+		public ContainsHintMatcher withValue(int index, Object value, String description) {
+			List<ValueHintMatcher> values = new ArrayList<ValueHintMatcher>(this.values);
+			values.add(new ValueHintMatcher(index, value, description));
+			return new ContainsHintMatcher(this.name, values);
+		}
+
+		private ItemHint getFirstHintWithName(ConfigurationMetadata metadata,
+				String name) {
+			for (ItemHint hint : metadata.getHints()) {
+				if (name.equals(hint.getName())) {
+					return hint;
+				}
+			}
+			return null;
+		}
+
+	}
+
+	public static class ValueHintMatcher extends BaseMatcher<ItemHint> {
+		private final int index;
+		private final Object value;
+		private final String description;
+
+		public ValueHintMatcher(int index, Object value, String description) {
+			this.index = index;
+			this.value = value;
+			this.description = description;
+		}
+
+		@Override
+		public boolean matches(Object item) {
+			ItemHint hint = (ItemHint) item;
+			if (this.index + 1 > hint.getValues().size()) {
+				return false;
+			}
+			ItemHint.ValueHint valueHint = hint.getValues().get(this.index);
+			if (this.value != null
+				&& !this.value.equals(valueHint.getValue())) {
+				return false;
+			}
+			if (this.description != null
+				&& !this.description.equals(valueHint.getDescription())) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public void describeTo(Description description) {
+			description.appendText("value hint at index '"+this.index+"'");
+			if (this.value != null) {
+				description.appendText(" value ").appendValue(this.value);
+			}
+			if (this.description != null) {
+				description.appendText(" description ").appendValue(this.description);
+			}
+		}
+
+		private ItemHint.ValueHint getValueHint(ItemHint hint) {
+			for (ItemHint.ValueHint valueHint : hint.getValues()) {
+				if (this.value.equals(valueHint.getValue())) {
+					return valueHint;
 				}
 			}
 			return null;

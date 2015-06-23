@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
+import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsHint;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
 
 /**
@@ -52,6 +53,9 @@ public class JsonMarshallerTests {
 		metadata.add(ItemMetadata.newProperty("f", null, null, null, null, null,
 				new Boolean[] { true, false }, false));
 		metadata.add(ItemMetadata.newGroup("d", null, null, null));
+		metadata.add(ItemHint.newHint("a.b"));
+		metadata.add(ItemHint.newHint("c", new ItemHint.ValueHint(123, "hey"),
+				new ItemHint.ValueHint(456, null)));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
@@ -69,6 +73,8 @@ public class JsonMarshallerTests {
 		assertThat(read,
 				containsProperty("f").withDefaultValue(is(new boolean[] { true, false })));
 		assertThat(read, containsGroup("d"));
+		assertThat(read, containsHint("a.b"));
+		assertThat(read, containsHint("c").withValue(0, 123, "hey").withValue(1, 456, null));
 	}
 
 }

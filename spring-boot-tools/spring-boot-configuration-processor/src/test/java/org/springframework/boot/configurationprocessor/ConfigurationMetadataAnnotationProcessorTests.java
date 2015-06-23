@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
@@ -58,6 +59,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
+import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsHint;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
 import static org.springframework.boot.configurationprocessor.MetadataStore.METADATA_PATH;
 
@@ -324,12 +326,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
-	public void mergingOfAdditionalMetadata() throws Exception {
-		File metaInfFolder = new File(this.compiler.getOutputLocation(), "META-INF");
-		metaInfFolder.mkdirs();
-		File additionalMetadataFile = new File(metaInfFolder,
-				"additional-spring-configuration-metadata.json");
-		additionalMetadataFile.createNewFile();
+	public void mergingOfAdditionalProperty() throws Exception {
+		File additionalMetadataFile = createAdditionalMetadataFile();
 
 		JSONObject property = new JSONObject();
 		property.put("name", "foo");
@@ -339,10 +337,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		properties.put(property);
 		JSONObject additionalMetadata = new JSONObject();
 		additionalMetadata.put("properties", properties);
-		FileWriter writer = new FileWriter(additionalMetadataFile);
-		additionalMetadata.write(writer);
-		writer.flush();
 
+		writeMetadata(additionalMetadataFile, additionalMetadata);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 
 		assertThat(metadata, containsProperty("simple.comparator"));
@@ -350,6 +346,28 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata,
 				containsProperty("foo", String.class)
 						.fromSource(AdditionalMetadata.class));
+	}
+
+	@Test
+	public void mergingOfSimpleHint() throws Exception {
+		writeAdditionalHints(
+				ItemHint.newHint("simple.the-name", new ItemHint.ValueHint("boot", "Bla bla"),
+						new ItemHint.ValueHint("spring", null)));
+
+		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(metadata, containsHint("simple.the-name")
+				.withValue(0, "boot", "Bla bla")
+				.withValue(1, "spring", null));
+	}
+
+	@Test
+	public void mergingOfHintWithNonCanonicalName() throws Exception {
+		writeAdditionalHints(
+				ItemHint.newHint("simple.theName", new ItemHint.ValueHint("boot", "Bla bla")));
+
+		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(metadata, containsHint("simple.the-name")
+				.withValue(0, "boot", "Bla bla"));
 	}
 
 	@Test
@@ -446,6 +464,50 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				this.compiler.getOutputLocation());
 		this.compiler.getTask(types).call(processor);
 		return processor.getMetadata();
+	}
+
+	private void writeAdditionalHints(ItemHint... hints) throws IOException {
+		File additionalMetadataFile = createAdditionalMetadataFile();
+
+		JSONArray hintsArray = new JSONArray();
+		for (ItemHint hint : hints) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("name", hint.getName());
+			JSONArray valuesArray = new JSONArray();
+			for (ItemHint.ValueHint valueHint : hint.getValues()) {
+				JSONObject valueJsonObject = new JSONObject();
+				valueJsonObject.put("value", valueHint.getValue());
+				String description = valueHint.getDescription();
+				if (description != null) {
+					valueJsonObject.put("description", description);
+				}
+				valuesArray.put(valueJsonObject);
+			}
+			jsonObject.put("values", valuesArray);
+			hintsArray.put(jsonObject);
+		}
+		JSONObject additionalMetadata = new JSONObject();
+		additionalMetadata.put("hints", hints);
+		writeMetadata(additionalMetadataFile, additionalMetadata);
+	}
+
+	private File createAdditionalMetadataFile() throws IOException {
+		File metaInfFolder = new File(this.compiler.getOutputLocation(), "META-INF");
+		metaInfFolder.mkdirs();
+		File additionalMetadataFile = new File(metaInfFolder,
+				"additional-spring-configuration-metadata.json");
+		additionalMetadataFile.createNewFile();
+		return additionalMetadataFile;
+	}
+
+	private void writeMetadata(File metadataFile, JSONObject metadata) throws IOException {
+		FileWriter writer = new FileWriter(metadataFile);
+		try {
+			metadata.write(writer);
+		}
+		finally {
+			writer.close();
+		}
 	}
 
 	private static class AdditionalMetadata {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -48,6 +51,7 @@ public class JsonMarshaller {
 		JSONObject object = new JSONObject();
 		object.put("groups", toJsonArray(metadata, ItemType.GROUP));
 		object.put("properties", toJsonArray(metadata, ItemType.PROPERTY));
+		object.put("hints", toJsonArray(metadata.getHints()));
 		outputStream.write(object.toString(2).getBytes(UTF_8));
 	}
 
@@ -57,6 +61,14 @@ public class JsonMarshaller {
 			if (item.isOfItemType(itemType)) {
 				jsonArray.put(toJsonObject(item));
 			}
+		}
+		return jsonArray;
+	}
+
+	private JSONArray toJsonArray(Collection<ItemHint> hints) {
+		JSONArray jsonArray = new JSONArray();
+		for (ItemHint hint : hints) {
+			jsonArray.put(toJsonObject(hint));
 		}
 		return jsonArray;
 	}
@@ -78,13 +90,40 @@ public class JsonMarshaller {
 		return jsonObject;
 	}
 
+	private JSONObject toJsonObject(ItemHint hint) {
+		JSONObject jsonObject = new JSONOrderedObject();
+		jsonObject.put("name", hint.getName());
+		if (!hint.getValues().isEmpty()) {
+			JSONArray valuesArray = new JSONArray();
+			for (ItemHint.ValueHint valueHint : hint.getValues()) {
+				JSONObject valueObject = new JSONOrderedObject();
+				putHintValue(valueObject, valueHint.getValue());
+				putIfPresent(valueObject, "description", valueHint.getDescription());
+				valuesArray.put(valueObject);
+			}
+			jsonObject.put("values", valuesArray);
+		}
+		return jsonObject;
+	}
+
+
 	private void putIfPresent(JSONObject jsonObject, String name, Object value) {
 		if (value != null) {
 			jsonObject.put(name, value);
 		}
 	}
 
+	private void putHintValue(JSONObject jsonObject, Object value) {
+		Object hintValue = extractItemValue(value);
+		jsonObject.put("value", hintValue);
+	}
+
 	private void putDefaultValue(JSONObject jsonObject, Object value) {
+		Object defaultValue = extractItemValue(value);
+		jsonObject.put("defaultValue", defaultValue);
+	}
+
+	private Object extractItemValue(Object value) {
 		Object defaultValue = value;
 		if (value.getClass().isArray()) {
 			JSONArray array = new JSONArray();
@@ -95,7 +134,7 @@ public class JsonMarshaller {
 			defaultValue = array;
 
 		}
-		jsonObject.put("defaultValue", defaultValue);
+		return defaultValue;
 	}
 
 	public ConfigurationMetadata read(InputStream inputStream) throws IOException {
@@ -114,6 +153,12 @@ public class JsonMarshaller {
 						ItemType.PROPERTY));
 			}
 		}
+		JSONArray hints = object.optJSONArray("hints");
+		if (hints != null) {
+			for (int i = 0; i < hints.length(); i++) {
+				metadata.add(toItemHint((JSONObject) hints.get(i)));
+			}
+		}
 		return metadata;
 	}
 
@@ -123,23 +168,41 @@ public class JsonMarshaller {
 		String description = object.optString("description", null);
 		String sourceType = object.optString("sourceType", null);
 		String sourceMethod = object.optString("sourceMethod", null);
-		Object defaultValue = readDefaultValue(object);
+		Object defaultValue = readItemValue(object.opt("defaultValue"));
 		boolean deprecated = object.optBoolean("deprecated");
 		return new ItemMetadata(itemType, name, null, type, sourceType, sourceMethod,
 				description, defaultValue, deprecated);
 	}
 
-	private Object readDefaultValue(JSONObject object) {
-		Object defaultValue = object.opt("defaultValue");
-		if (defaultValue instanceof JSONArray) {
-			JSONArray array = (JSONArray) defaultValue;
+	private ItemHint toItemHint(JSONObject object) {
+		String name = object.getString("name");
+		List<ItemHint.ValueHint> values = new ArrayList<ItemHint.ValueHint>();
+		if (object.has("values")) {
+			JSONArray valuesArray = object.getJSONArray("values");
+			for (int i = 0; i < valuesArray.length(); i++) {
+				values.add(toValueHint((JSONObject) valuesArray.get(i)));
+			}
+		}
+		return new ItemHint(name, values);
+	}
+
+	private ItemHint.ValueHint toValueHint(JSONObject object) {
+		Object value = readItemValue(object.get("value"));
+		String description = object.optString("description", null);
+		return new ItemHint.ValueHint(value, description);
+	}
+
+
+	private Object readItemValue(Object value) {
+		if (value instanceof JSONArray) {
+			JSONArray array = (JSONArray) value;
 			Object[] content = new Object[array.length()];
 			for (int i = 0; i < array.length(); i++) {
 				content[i] = array.get(i);
 			}
 			return content;
 		}
-		return defaultValue;
+		return value;
 	}
 
 	private String toString(InputStream inputStream) throws IOException {
