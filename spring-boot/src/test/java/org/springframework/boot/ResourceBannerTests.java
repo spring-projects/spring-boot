@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ByteArrayResource;
@@ -70,6 +71,24 @@ public class ResourceBannerTests {
 						.getBytes());
 		String banner = printBanner(resource, null, null);
 		assertThat(banner, startsWith("banner 1"));
+	}
+
+	@Test
+	public void renderWithColors() throws Exception {
+		Resource resource = new ByteArrayResource("${AnsiElement.RED}This is red.${AnsiElement.NORMAL}".getBytes());
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+		String banner = printBanner(resource, null, null);
+		assertThat(banner, startsWith("\u001B[31mThis is red.\u001B[0m"));
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.DETECT);
+	}
+
+	@Test
+	public void renderWithColorsButDisabled() throws Exception {
+		Resource resource = new ByteArrayResource("${AnsiElement.RED}This is red.${AnsiElement.NORMAL}".getBytes());
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner(resource, null, null);
+		assertThat(banner, startsWith("This is red."));
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.DETECT);
 	}
 
 	private String printBanner(Resource resource, String bootVersion,

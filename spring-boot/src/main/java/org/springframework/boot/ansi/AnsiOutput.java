@@ -35,9 +35,9 @@ public abstract class AnsiOutput {
 	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name")
 			.toLowerCase();
 
-	private static final String ENCODE_START = "\033[";
+	public static final String ENCODE_START = "\033[";
 
-	private static final String ENCODE_END = "m";
+	public static final String ENCODE_END = "m";
 
 	private static final String RESET = "0;" + AnsiElement.DEFAULT;
 
@@ -117,7 +117,7 @@ public abstract class AnsiOutput {
 		}
 	}
 
-	private static boolean isEnabled() {
+	public static boolean isEnabled() {
 		if (enabled == Enabled.DETECT) {
 			return detectIfEnabled();
 		}
