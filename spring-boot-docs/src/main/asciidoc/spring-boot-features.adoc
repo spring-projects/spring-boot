@@ -1998,6 +1998,114 @@ Hibernate autoconfig is active because the `ddl-auto` settings are more fine-gra
 
 
 
+[[boot-features-jooq]]
+== Using jOOQ
+Java Object Oriented Querying (http://www.jooq.org/[jOOQ]) is a popular product from
+http://www.datageekery.com/[Data Geekery] which generates Java code from your
+database, and lets you build type safe SQL queries through its fluent API. Both the
+commercial and open source editions can be used with Spring Boot.
+
+
+
+=== Code Generation
+In oder to use jOOQ type-safe queries, you need to generate Java classes from your
+database schema. You can follow the instructions in the
+http://www.jooq.org/doc/3.6/manual-single-page/#jooq-in-7-steps-step3[jOOQ user manual].
+If you are using the `jooq-codegen-maven` plugin (and you also use the
+`spring-boot-starter-parent` "`parent POM`") you can safely omit the plugin's `<version>`
+tag. You can also use Spring Boot defined version variables (e.g. `h2.version`) to
+declare the plugin's database dependency. Here's an example:
+
+[source,xml,indent=0]
+----
+	<plugin>
+		<groupId>org.jooq</groupId>
+		<artifactId>jooq-codegen-maven</artifactId>
+		<executions>
+			...
+		</executions>
+		<dependencies>
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>${h2.version}</version>
+			</dependency>
+		</dependencies>
+		<configuration>
+			<jdbc>
+				<driver>org.h2.Driver</driver>
+				<url>jdbc:h2:~/yourdatabase</url>
+			</jdbc>
+			<generator>
+				...
+			</generator>
+		</configuration>
+	</plugin>
+----
+
+
+
+=== Using DSLContext
+The fluent API offered by jOOQ is initiated via the `org.jooq.DSLContext` interface.
+Spring Boot will auto-configure a `DSLContext` as a Spring Bean and connect it to your
+application `DataSource`. To use the `DSLContext` you can just `@Autowire` it:
+
+[source,java,indent=0]
+----
+	@Component
+	public class JooqExample implements CommandLineRunner {
+
+		private final DSLContext create;
+
+		@Autowired
+		public JooqExample(DSLContext dlsContext) {
+			this.create = dlsContext;
+		}
+
+	}
+----
+
+TIP: The jOOQ manual tends to use a variable named `create` to hold the `DSLContext`,
+we've done the same for this example.
+
+You can then use the `DSLContext` to construct your queries:
+
+[source,java,indent=0]
+----
+	public List<GregorianCalendar> authorsBornAfter1980() {
+		return this.create.selectFrom(AUTHOR)
+			.where(AUTHOR.DATE_OF_BIRTH.greaterThan(new GregorianCalendar(1980, 0, 1)))
+			.fetch(AUTHOR.DATE_OF_BIRTH);
+	}
+----
+
+
+
+=== Customizing jOOQ
+You can customize the SQL dialect used by jOOQ by setting `spring.jooq.sql-dialect` in
+your `application.properties`. For example, to specify Postgres you would add:
+
+[source,properties,indent=0]
+----
+	spring.jooq.sql-dialect=Postgres
+----
+
+More advanced customizations can be achieved by defining your own `@Bean` definitions
+which will be used when the jOOQ `Configuration` is created. You can define beans for
+the following jOOQ Types:
+
+* `ConnectionProvider`
+* `TransactionProvider`
+* `RecordMapperProvider`
+* `RecordListenerProvider`
+* `ExecuteListenerProvider`
+* `VisitListenerProvider`
+
+You can also create your own `org.jooq.Configuration` `@Bean` if you want to take
+complete control of the jOOQ configuration.
+
+
+
 [[boot-features-nosql]]
 == Working with NoSQL technologies
 Spring Data provides additional projects that help you access a variety of NoSQL
