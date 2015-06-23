@@ -33,7 +33,6 @@
 		<module>spring-boot-sample-cache</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
 		<module>spring-boot-sample-data-gemfire</module>
-		<module>spring-boot-sample-data-jooq</module>
 		<module>spring-boot-sample-data-jpa</module>
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-redis</module>
@@ -50,6 +49,7 @@
 		<module>spring-boot-sample-jetty-ssl</module>
 		<module>spring-boot-sample-jetty8</module>
 		<module>spring-boot-sample-jetty8-ssl</module>
+		<module>spring-boot-sample-jooq</module>
 		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
 		<module>spring-boot-sample-jta-bitronix</module>
