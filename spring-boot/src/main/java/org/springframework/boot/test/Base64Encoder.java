@@ -40,7 +40,7 @@ class Base64Encoder {
 
 	public static String encode(byte[] bytes) {
 		byte[] encoded = new byte[bytes.length / 3 * 4 + (bytes.length % 3 == 0 ? 0 : 4)];
-		for (int i = 0; i < encoded.length; i += 3) {
+		for (int i = 0; i < bytes.length; i += 3) {
 			encodeBlock(bytes, i, Math.min((bytes.length - i), 3), encoded, i / 3 * 4);
 		}
 		return new String(encoded, UTF_8);
@@ -48,14 +48,12 @@ class Base64Encoder {
 
 	private static void encodeBlock(byte[] src, int srcPos, int blockLen, byte[] dest,
 			int destPos) {
-		if (blockLen > 0) {
-			int inBuff = (blockLen > 0 ? ((src[srcPos] << 24) >>> 8) : 0)
-					| (blockLen > 1 ? ((src[srcPos + 1] << 24) >>> 16) : 0)
-					| (blockLen > 2 ? ((src[srcPos + 2] << 24) >>> 24) : 0);
-			for (int i = 0; i < 4; i++) {
-				dest[destPos + i] = (i > blockLen ? EQUALS_SIGN
-						: ALPHABET[(inBuff >>> (6 * (3 - i))) & 0x3f]);
-			}
+		int inBuff = (blockLen > 0 ? ((src[srcPos] << 24) >>> 8) : 0)
+				| (blockLen > 1 ? ((src[srcPos + 1] << 24) >>> 16) : 0)
+				| (blockLen > 2 ? ((src[srcPos + 2] << 24) >>> 24) : 0);
+		for (int i = 0; i < 4; i++) {
+			dest[destPos + i] = (i > blockLen ? EQUALS_SIGN
+					: ALPHABET[(inBuff >>> (6 * (3 - i))) & 0x3f]);
 		}
 	}
 
