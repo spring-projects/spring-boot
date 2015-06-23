@@ -1,5 +1,11 @@
 {"properties": [
   {
+    "name": "multipart.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable support of multi-part uploads.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.aop.auto",
     "type": "java.lang.Boolean",
     "description": "Add @EnableAspectJAutoProxy.",
@@ -10,6 +16,18 @@
     "type": "java.lang.Boolean",
     "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
     "defaultValue": false
+  },
+  {
+    "name": "spring.application.admin.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable admin features for the application.",
+    "defaultValue": false
+  },
+  {
+    "name": "spring.application.admin.jmx-name",
+    "type": "java.lang.String",
+    "description": "JMX name of the application admin MBean.",
+    "defaultValue": "org.springframework.boot:type=Admin,name=SpringApplication"
   },
   {
     "name": "spring.batch.job.enabled",
@@ -70,10 +88,21 @@
   	"description": "Enable gzip filter support."
   },
   {
+    "name": "spring.jmx.default-domain",
+    "type": "java.lang.String",
+    "description": "JMX domain name."
+  },
+  {
     "name": "spring.jmx.enabled",
     "type": "java.lang.Boolean",
     "description": "Expose management beans to the JMX domain.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.jmx.server",
+    "type": "java.lang.String",
+    "description": "MBeanServer bean name.",
+    "defaultValue": "mbeanServer"
   },
   {
     "name": "spring.jpa.open-in-view",
@@ -100,6 +129,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.mvc.favicon.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable resolution of favicon.ico.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.rabbitmq.dynamic",
     "type": "java.lang.Boolean",
     "description": "Create an AmqpAdmin bean.",
@@ -114,12 +149,14 @@
   {
     "name": "spring.view.prefix",
     "type": "java.lang.String",
-    "description": "Spring MVC view prefix."
+    "description": "Spring MVC view prefix.",
+    "deprecated": true
   },
   {
     "name": "spring.view.suffix",
     "type": "java.lang.String",
-    "description": "Spring MVC view suffix."
+    "description": "Spring MVC view suffix.",
+    "deprecated": true
   }
 ]}
 

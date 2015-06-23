@@ -23,6 +23,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link DefaultMetricNamingStrategy}.
+ *
  * @author Dave Syer
  */
 public class DefaultMetricNamingStrategyTests {

@@ -69,14 +69,15 @@ public class GzipFilterAutoConfigurationTests {
 				"spring.http.gzip.deflateNoWrap:false",
 				"spring.http.gzip.methods:GET,POST",
 				"spring.http.gzip.mimeTypes:application/foo,application/bar",
+				"spring.http.gzip.excludedMimeTypes:application/biz",
 				"spring.http.gzip.excludedAgents:excluded-agent-1,excluded-agent-2",
-				"spring.http.gzip.excludedAgentPatterns:agent-pattern-1,agent-pattern-2",
-				"spring.http.gzip.excludedPaths:/static/",
-				"spring.http.gzip.excludedPathPatterns:path-pattern",
+				"spring.http.gzip.excludeAgentPatterns:agent-pattern-1,agent-pattern-2",
+				"spring.http.gzip.excludePaths:/static/",
+				"spring.http.gzip.excludePathPatterns:path-pattern",
 				"spring.http.gzip.vary:vary-header-value");
 		FilterRegistrationBean registrationBean = this.context.getBean("gzipFilter",
 				FilterRegistrationBean.class);
-		assertThat(registrationBean.getInitParameters().size(), equalTo(12));
+		assertThat(registrationBean.getInitParameters().size(), equalTo(13));
 		assertThat(registrationBean.getInitParameters().get("checkGzExists"),
 				equalTo("false"));
 		assertThat(registrationBean.getInitParameters().get("bufferSize"),
@@ -91,13 +92,15 @@ public class GzipFilterAutoConfigurationTests {
 				equalTo("GET,POST"));
 		assertThat(registrationBean.getInitParameters().get("mimeTypes"),
 				equalTo("application/foo,application/bar"));
+		assertThat(registrationBean.getInitParameters().get("excludedMimeTypes"),
+				equalTo("application/biz"));
 		assertThat(registrationBean.getInitParameters().get("excludedAgents"),
 				equalTo("excluded-agent-1,excluded-agent-2"));
-		assertThat(registrationBean.getInitParameters().get("excludedAgentPatterns"),
+		assertThat(registrationBean.getInitParameters().get("excludeAgentPatterns"),
 				equalTo("agent-pattern-1,agent-pattern-2"));
-		assertThat(registrationBean.getInitParameters().get("excludedPaths"),
+		assertThat(registrationBean.getInitParameters().get("excludePaths"),
 				equalTo("/static/"));
-		assertThat(registrationBean.getInitParameters().get("excludedPathPatterns"),
+		assertThat(registrationBean.getInitParameters().get("excludePathPatterns"),
 				equalTo("path-pattern"));
 		assertThat(registrationBean.getInitParameters().get("vary"),
 				equalTo("vary-header-value"));

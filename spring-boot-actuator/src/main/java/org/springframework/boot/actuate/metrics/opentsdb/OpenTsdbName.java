@@ -20,7 +20,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * OpenTSDB Name.
+ *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class OpenTsdbName {
 

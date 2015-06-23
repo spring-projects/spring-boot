@@ -76,7 +76,7 @@ public abstract class MainClassFinder {
 	 * Find the main class from a given folder.
 	 * @param rootFolder the root folder to search
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the folder cannot be read
 	 */
 	public static String findMainClass(File rootFolder) throws IOException {
 		return doWithMainClasses(rootFolder, new ClassNameCallback<String>() {
@@ -91,7 +91,7 @@ public abstract class MainClassFinder {
 	 * Find a single main class from a given folder.
 	 * @param rootFolder the root folder to search
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the folder cannot be read
 	 */
 	public static String findSingleMainClass(File rootFolder) throws IOException {
 		MainClassesCallback callback = new MainClassesCallback();
@@ -161,7 +161,7 @@ public abstract class MainClassFinder {
 	 * @param jarFile the jar file to search
 	 * @param classesLocation the location within the jar containing classes
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the jar file cannot be read
 	 */
 	public static String findMainClass(JarFile jarFile, String classesLocation)
 			throws IOException {
@@ -179,7 +179,7 @@ public abstract class MainClassFinder {
 	 * @param jarFile the jar file to search
 	 * @param classesLocation the location within the jar containing classes
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the jar file cannot be read
 	 */
 	public static String findSingleMainClass(JarFile jarFile, String classesLocation)
 			throws IOException {

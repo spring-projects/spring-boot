@@ -35,4 +35,5 @@ public class SampleSpringXmlApplication implements CommandLineRunner {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run("classpath:/META-INF/application-context.xml", args);
 	}
+
 }

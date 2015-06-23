@@ -39,7 +39,7 @@ public class SampleJersey1Application {
 	}
 
 	@Bean
-	// Not needed if Spring Web MVC is also present on claspath
+	// Not needed if Spring Web MVC is also present on classpath
 	public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
 		return new TomcatEmbeddedServletContainerFactory();
 	}

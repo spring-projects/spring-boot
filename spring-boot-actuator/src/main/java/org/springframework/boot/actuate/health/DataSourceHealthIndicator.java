@@ -58,6 +58,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 				+ "INFORMATION_SCHEMA.SYSTEM_USERS");
 		queries.put("Oracle", "SELECT 'Hello' from DUAL");
 		queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
+		queries.put("DB2", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
+		queries.put("Informix Dynamic Server", "select count(*) from systables");
 		PRODUCT_SPECIFIC_QUERIES = Collections.unmodifiableMap(queries);
 	}
 

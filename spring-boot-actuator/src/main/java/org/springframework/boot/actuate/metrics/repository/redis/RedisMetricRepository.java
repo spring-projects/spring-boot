@@ -100,11 +100,6 @@ public class RedisMetricRepository implements MetricRepository {
 			prefix = prefix + ".";
 		}
 		this.prefix = prefix;
-		if (!DEFAULT_METRICS_PREFIX.equals(this.prefix)) {
-			if (DEFAULT_KEY.equals(key)) {
-				key = "keys." + prefix;
-			}
-		}
 		if (key.endsWith(".")) {
 			key = key.substring(0, key.length() - 1);
 		}

@@ -37,7 +37,7 @@ public abstract class Archive {
 	/**
 	 * Returns a URL that can be used to load the archive.
 	 * @return the archive URL
-	 * @throws MalformedURLException
+	 * @throws MalformedURLException if the URL is malformed
 	 */
 	public abstract URL getUrl() throws MalformedURLException;
 
@@ -45,7 +45,7 @@ public abstract class Archive {
 	 * Obtain the main class that should be used to launch the application. By default
 	 * this method uses a {@code Start-Class} manifest entry.
 	 * @return the main class
-	 * @throws Exception
+	 * @throws Exception if the main class cannot be obtained
 	 */
 	public String getMainClass() throws Exception {
 		Manifest manifest = getManifest();
@@ -73,7 +73,7 @@ public abstract class Archive {
 	/**
 	 * Returns the manifest of the archive.
 	 * @return the manifest
-	 * @throws IOException
+	 * @throws IOException if the manifest cannot be read
 	 */
 	public abstract Manifest getManifest() throws IOException;
 
@@ -87,7 +87,7 @@ public abstract class Archive {
 	 * Returns nested {@link Archive}s for entries that match the specified filter.
 	 * @param filter the filter used to limit entries
 	 * @return nested archives
-	 * @throws IOException
+	 * @throws IOException if nested archives cannot be read
 	 */
 	public abstract List<Archive> getNestedArchives(EntryFilter filter)
 			throws IOException;
@@ -96,7 +96,7 @@ public abstract class Archive {
 	 * Returns a filtered version of the archive.
 	 * @param filter the filter to apply
 	 * @return a filter archive
-	 * @throws IOException
+	 * @throws IOException if the archive cannot be read
 	 */
 	public abstract Archive getFilteredArchive(EntryRenameFilter filter)
 			throws IOException;

@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -74,19 +72,6 @@ public class JacksonAutoConfiguration {
 
 	@Autowired
 	private ListableBeanFactory beanFactory;
-
-	@PostConstruct
-	private void registerModulesWithObjectMappers() {
-		Collection<Module> modules = getBeans(this.beanFactory, Module.class);
-		for (ObjectMapper objectMapper : getBeans(this.beanFactory, ObjectMapper.class)) {
-			objectMapper.registerModules(modules);
-		}
-	}
-
-	private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
-			Class<T> type) {
-		return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type).values();
-	}
 
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
@@ -247,6 +232,12 @@ public class JacksonAutoConfiguration {
 			Collection<Module> moduleBeans = getBeans(this.applicationContext,
 					Module.class);
 			builder.modulesToInstall(moduleBeans.toArray(new Module[moduleBeans.size()]));
+		}
+
+		private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
+				Class<T> type) {
+			return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type)
+					.values();
 		}
 
 		@Override

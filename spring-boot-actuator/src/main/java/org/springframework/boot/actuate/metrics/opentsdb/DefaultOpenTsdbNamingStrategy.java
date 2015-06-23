@@ -34,6 +34,7 @@ import org.springframework.util.ObjectUtils;
  * (overwriting the default).
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class DefaultOpenTsdbNamingStrategy implements OpenTsdbNamingStrategy {
 

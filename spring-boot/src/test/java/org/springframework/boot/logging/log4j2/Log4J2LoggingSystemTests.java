@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.FileConfigurationMonitor;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -36,7 +38,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -72,6 +77,8 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
 		assertFalse(new File(tmpDir() + "/spring.log").exists());
+		assertThat(this.loggingSystem.getConfiguration().getConfigurationSource()
+				.getFile(), is(notNullValue()));
 	}
 
 	@Test
@@ -84,6 +91,8 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
 		assertTrue(new File(tmpDir() + "/spring.log").exists());
+		assertThat(this.loggingSystem.getConfiguration().getConfigurationSource()
+				.getFile(), is(notNullValue()));
 	}
 
 	@Test
@@ -96,6 +105,12 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertTrue("Wrong output:\n" + output, output.contains(tmpDir() + "/tmp.log"));
 		assertFalse(new File(tmpDir() + "/tmp.log").exists());
+		assertThat(this.loggingSystem.getConfiguration().getConfigurationSource()
+				.getFile().getAbsolutePath(), containsString("log4j2-nondefault.xml"));
+		// we assume that "log4j2-nondefault.xml" contains the 'monitorInterval'
+		// attribute, so we check that a monitor is created
+		assertThat(this.loggingSystem.getConfiguration().getConfigurationMonitor(),
+				is(instanceOf(FileConfigurationMonitor.class)));
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -165,6 +180,11 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 		public TestLog4J2LoggingSystem() {
 			super(TestLog4J2LoggingSystem.class.getClassLoader());
+		}
+
+		public Configuration getConfiguration() {
+			return ((org.apache.logging.log4j.core.LoggerContext) LogManager
+					.getContext(false)).getConfiguration();
 		}
 
 		@Override

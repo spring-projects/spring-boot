@@ -80,10 +80,6 @@ public class MvcEndpointCorsIntegrationTests {
 	public void maxAgeDefaultsTo30Minutes() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.cors.allowed-origins:foo.example.com");
-		createMockMvc().perform(
-				options("/beans").header("Origin", "bar.example.com").header(
-						HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).andExpect(
-				status().isForbidden());
 		performAcceptedCorsRequest().andExpect(
 				header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800"));
 	}
@@ -158,6 +154,15 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allow-credentials:true");
 		performAcceptedCorsRequest().andExpect(
 				header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
+	}
+
+	@Test
+	public void credentialsCanBeDisabled() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.cors.allowed-origins:foo.example.com",
+				"endpoints.cors.allow-credentials:false");
+		performAcceptedCorsRequest().andExpect(
+				header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS));
 	}
 
 	@Test

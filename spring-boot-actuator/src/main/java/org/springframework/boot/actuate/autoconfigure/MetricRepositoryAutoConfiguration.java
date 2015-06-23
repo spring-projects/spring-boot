@@ -26,7 +26,6 @@ import org.springframework.boot.actuate.metrics.buffer.CounterBuffers;
 import org.springframework.boot.actuate.metrics.buffer.GaugeBuffers;
 import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
-import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.repository.MetricRepository;
 import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
@@ -37,7 +36,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.MessageChannel;
@@ -65,12 +63,12 @@ import com.codahale.metrics.MetricRegistry;
  * {@link MetricRegistry} will be created and the default counter and gauge services will
  * switch to using it instead of the default repository. Users can create "special"
  * Dropwizard metrics by prefixing their metric names with the appropriate type (e.g.
- * "histogram.*", "meter.*". "timer.*") and sending them to the <code>GaugeService</code>
- * or <code>CounterService</code>.
+ * "histogram.*", "meter.*". "timer.*") and sending them to the {@code GaugeService} or
+ * {@code CounterService}.
  * <p>
  * By default all metric updates go to all {@link MetricWriter} instances in the
  * application context via a {@link MetricCopyExporter} firing every 5 seconds (disable
- * this by setting <code>spring.metrics.export.enabled=false</code>).
+ * this by setting {@code spring.metrics.export.enabled=false}).
  *
  * @see GaugeService
  * @see CounterService
@@ -81,7 +79,6 @@ import com.codahale.metrics.MetricRegistry;
  * @author Dave Syer
  */
 @Configuration
-@EnableConfigurationProperties(MetricExportProperties.class)
 public class MetricRepositoryAutoConfiguration {
 
 	@Configuration
@@ -90,7 +87,7 @@ public class MetricRepositoryAutoConfiguration {
 	static class LegacyMetricServicesConfiguration {
 
 		@Autowired
-		@ActuatorMetricReader
+		@ActuatorMetricWriter
 		private MetricWriter writer;
 
 		@Bean
@@ -125,7 +122,7 @@ public class MetricRepositoryAutoConfiguration {
 		}
 
 		@Bean
-		@ActuatorMetricReader
+		@ExportMetricReader
 		@ConditionalOnMissingBean
 		public BufferMetricReader actuatorMetricReader(CounterBuffers counters,
 				GaugeBuffers gauges) {
@@ -147,11 +144,12 @@ public class MetricRepositoryAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnJava(value = JavaVersion.EIGHT, range = Range.OLDER_THAN)
-	@ConditionalOnMissingBean(MetricRepository.class)
+	@ConditionalOnMissingBean(name = "actuatorMetricRepository")
 	static class LegacyMetricRepositoryConfiguration {
 
 		@Bean
-		@ActuatorMetricReader
+		@ExportMetricReader
+		@ActuatorMetricWriter
 		public InMemoryMetricRepository actuatorMetricRepository() {
 			return new InMemoryMetricRepository();
 		}

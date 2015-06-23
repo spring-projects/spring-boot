@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.DefaultMessageCodesResolver;
 
@@ -23,6 +24,8 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * {@link ConfigurationProperties properties} for Spring MVC.
  *
  * @author Phillip Webb
+ * @author Sébastien Deleuze
+ * @author Stephane Nicoll
  * @since 1.1
  */
 @ConfigurationProperties("spring.mvc")
@@ -48,6 +51,10 @@ public class WebMvcProperties {
 	 * scenarios.
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
+
+	private final Async async = new Async();
+
+	private final View view = new View();
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
@@ -80,6 +87,65 @@ public class WebMvcProperties {
 
 	public void setIgnoreDefaultModelOnRedirect(boolean ignoreDefaultModelOnRedirect) {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
+	}
+
+	public Async getAsync() {
+		return this.async;
+	}
+
+	public View getView() {
+		return this.view;
+	}
+
+	public static class Async {
+
+		/**
+		 * Amount of time (in milliseconds) before asynchronous request handling times
+		 * out. If this value is not set, the default timeout of the underlying
+		 * implementation is used, e.g. 10 seconds on Tomcat with Servlet 3.
+		 */
+		private Long requestTimeout;
+
+		public Long getRequestTimeout() {
+			return this.requestTimeout;
+		}
+
+		public void setRequestTimeout(Long requestTimeout) {
+			this.requestTimeout = requestTimeout;
+		}
+
+	}
+
+	public static class View {
+
+		/**
+		 * Spring MVC view prefix.
+		 */
+		@Value("${spring.view.prefix:}")
+		private String prefix;
+
+		/**
+		 * Spring MVC view suffx.
+		 */
+		@Value("${spring.view.suffix:}")
+		private String suffix;
+
+		public String getPrefix() {
+			return this.prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getSuffix() {
+			return this.suffix;
+		}
+
+		public void setSuffix(String suffix) {
+			this.suffix = suffix;
+		}
+
 	}
 
 }

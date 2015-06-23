@@ -61,4 +61,5 @@ public class SampleHornetQApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleHornetQApplication.class, args);
 	}
+
 }

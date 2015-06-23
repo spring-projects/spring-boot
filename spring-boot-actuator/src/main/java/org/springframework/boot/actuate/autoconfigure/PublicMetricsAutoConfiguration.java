@@ -70,7 +70,7 @@ import org.springframework.lang.UsesJava7;
 public class PublicMetricsAutoConfiguration {
 
 	@Autowired(required = false)
-	@ActuatorMetricReader
+	@ExportMetricReader
 	private List<MetricReader> metricReaders = Collections.emptyList();
 
 	@Bean
@@ -80,7 +80,8 @@ public class PublicMetricsAutoConfiguration {
 
 	@Bean
 	public MetricReaderPublicMetrics metricReaderPublicMetrics() {
-		return new MetricReaderPublicMetrics(new CompositeMetricReader(this.metricReaders.toArray(new MetricReader[0])));
+		return new MetricReaderPublicMetrics(new CompositeMetricReader(
+				this.metricReaders.toArray(new MetricReader[0])));
 	}
 
 	@Bean

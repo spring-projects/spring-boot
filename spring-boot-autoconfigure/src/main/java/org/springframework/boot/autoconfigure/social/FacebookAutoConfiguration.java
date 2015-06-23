@@ -37,7 +37,6 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.GenericConnectionStatusView;
 import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.web.servlet.View;
 

@@ -67,6 +67,7 @@
 				<configuration>
 					<container>
 						<containerId>tomee1x</containerId>
+						<timeout>300000</timeout>
 						<zipUrlInstaller>
 							<url>http://www.us.apache.org/dist/tomee/tomee-${tomee.version}/apache-tomee-${tomee.version}-webprofile.zip</url>
 						</zipUrlInstaller>

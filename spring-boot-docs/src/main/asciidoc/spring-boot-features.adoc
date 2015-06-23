@@ -51,7 +51,7 @@ such as the user that launched the application.
 === Customizing the Banner
 The banner that is printed on start up can be changed by adding a `banner.txt` file
 to your classpath, or by setting `banner.location` to the location of such a file.
-If the file has an unusual encoding you can set `banner.encoding` (default is `UTF-8`).
+If the file has an unusual encoding you can set `banner.charset` (default is `UTF-8`).
 
 You can use the following variables inside your `banner.txt` file:
 
@@ -217,6 +217,22 @@ be used.
 
 In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator`
 interface if they wish to return a specific exit code when the application ends.
+
+
+
+[[boot-features-application-admin]]
+=== Admin features
+It is possible to enable admin-related features for the application by specifying the
+`spring.application.admin.enabled` property. This exposes the
+{sc-spring-boot}/admin/SpringApplicationAdminMXBean.{sc-ext}[`SpringApplicationAdminMXBean`]`
+on the platform `MBeanServer`. You could use this feature to administer your Spring Boot
+application remotely. This could also be useful for any service wrapper implementation.
+
+TIP: If you want to know on which HTTP port the application is running, get the property
+with key `local.server.port`.
+
+NOTE: Take care when enabling this feature as the MBean exposes a method to shutdown the
+application.
 
 
 
@@ -392,7 +408,7 @@ for details.
 http://yaml.org[YAML] is a superset of JSON, and as such is a very convenient format
 for specifying hierarchical configuration data. The `SpringApplication` class will
 automatically support YAML as an alternative to properties whenever you have the
-http://code.google.com/p/snakeyaml/[SnakeYAML] library on your classpath.
+http://www.snakeyaml.org/[SnakeYAML] library on your classpath.
 
 NOTE: If you use '`starter POMs`' SnakeYAML will be automatically provided via
 `spring-boot-starter`.
@@ -837,6 +853,8 @@ messages to the console you can start your application with a `--debug` flag.
 	$ java -jar myapp.jar --debug
 ----
 
+NOTE: you can also specify `debug=true` in your `application.properties`.
+
 If your terminal supports ANSI, color output will be used to aid readability. You can set
 `spring.output.ansi.enabled` to a
 {dc-spring-boot}/ansi/AnsiOutput.Enabled.{dc-ext}[supported value] to override the auto
@@ -892,8 +910,8 @@ FATAL, OFF. Example `application.properties`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	logging.level.org.springframework.web: DEBUG
-	logging.level.org.hibernate: ERROR
+	logging.level.org.springframework.web=DEBUG
+	logging.level.org.hibernate=ERROR
 ----
 
 NOTE: By default Spring Boot remaps Thymeleaf `INFO` messages so that they are logged at
@@ -1112,9 +1130,10 @@ and JSPs. Many other templating engines also ship their own Spring MVC integrati
 Spring Boot includes auto-configuration support for the following templating engines:
 
  * http://freemarker.org/docs/[FreeMarker]
- * http://beta.groovy-lang.org/docs/groovy-2.3.0/html/documentation/markup-template-engine.html[Groovy]
+ * http://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
  * http://www.thymeleaf.org[Thymeleaf]
  * http://velocity.apache.org[Velocity]
+ * http://mustache.github.io/[Mustache]
 
 TIP: JSPs should be avoided if possible, there are several
 <<boot-features-jsp-limitations, known limitations>> when using them with embedded
@@ -1208,8 +1227,8 @@ If you're developing a RESTful API that makes use of hypermedia, Spring Boot pro
 auto-configuration for Spring HATEOAS that works well with most applications. The
 auto-configuration replaces the need to use `@EnableHypermediaSupport` and registers a
 number of beans to ease building hypermedia-based applications including a
-`LinkDiscoverer` and an `ObjectMapper` configured to correctly marshal responses into the
-desired representation. The `ObjectMapper` will be customized based on the
+`LinkDiscoverers` (for client side support) and an `ObjectMapper` configured to correctly 
+marshal responses into the desired representation. The `ObjectMapper` will be customized based on the
 `spring.jackson.*` properties or a `Jackson2ObjectMapperBuilder` bean if one exists.
 
 You can take control of Spring HATEOAS's configuration by using
@@ -1460,6 +1479,218 @@ All of the above can be switched on and off or modified using external propertie
 features add a `@Bean` of type `WebSecurityConfigurerAdapter` with
 `@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)`.
 
+
+
+[[boot-features-security-oauth2]]
+=== OAuth2
+If you have `spring-security-oauth2` on your classpath you can take advantage of some
+auto-configuration to make it easy to set up Authorization or Resource Server.
+
+
+
+[[boot-features-security-oauth2-authorization-server]]
+==== Authorization Server
+To create an Authorization Server and grant access tokens you need to use
+`@EnableAuthorizationServer` and provide `spring.oauth2.client.client-id` and
+`spring.oauth2.client.client-secret]` properties. The client will be registered for you
+in an in-memory repository.
+
+Having done that you will be able to use the client credentials to create an access token,
+for example:
+
+[indent=0]
+----
+	$ curl client:secret@localhost:8080/oauth/token -d grant_type=password -d username=user -d password=pwd
+----
+
+The basic auth credentials for the `/token` endpoint are the `client-id` and
+`client-secret`. The user credentials are the normal Spring Security user details (which
+default in Spring Boot to "`user`" and a random password).
+
+To switch off the auto-configuration and configure the Authorization Server features
+yourself just add a `@Bean` of type `AuthorizationServerConfigurer`.
+
+
+
+[[boot-features-security-oauth2-resource-server]]
+==== Resource Server
+To use the access token you need a Resource Server (which can be the same as the
+Authorization Server). Creating a Resource Server is easy, just add
+`@EnableResourceServer` and provide some configuration to allow the server to decode
+access tokens. If your appplication is also an Authorization Server it already knows how
+to decode tokens, so there is nothing else to do. If your app is a standalone service then you
+need to give it some more configuration, one of the following options:
+
+* `spring.oauth2.resource.user-info-uri` to use the `/me` resource (e.g.
+`https://uaa.run.pivotal.io/userinfo` on PWS)
+
+* `spring.oauth2.resource.token-info-uri` to use the token decoding endpoint (e.g.
+`https://uaa.run.pivotal.io/check_token` on PWS).
+
+If you specify both the `user-info-uri` and the `token-info-uri` then you can set a flag
+to say that one is preferred over the other (`prefer-token-info=true` is the default).
+
+Alternatively (instead of `user-info-uri` or `token-info-uri`) if the tokens are JWTs you
+can configure a `spring.oauth2.resource.jwt.key-value` to decode them locally (where the
+key is a verification key). The verification key value is either a symmetric secret or
+PEM-encoded RSA public key. If you don't have the key and it's public you can provide a
+URI where it can be downloaded (as a JSON object with a "`value`" field) with
+`spring.oauth2.resource.jwt.key-uri`. E.g. on PWS:
+
+[indent=0]
+----
+	$ curl https://uaa.run.pivotal.io/token_key
+	{"alg":"SHA256withRSA","value":"-----BEGIN PUBLIC KEY-----\nMIIBI...\n-----END PUBLIC KEY-----\n"}
+----
+
+WARNING: If you use the `spring.oauth2.resource.jwt.key-uri` the authorization server
+needs to be running when your application starts up. It will log a warning if it can't
+find the key, and tell you what to do to fix it.
+
+
+
+[[boot-features-security-oauth2-token-type]]
+=== Token Type in User Info
+Google, and certain other 3rd party identity providers, are more strict about the token
+type name that is sent in the headers to the user info endpoint. The default is "`Bearer`"
+which suits most providers and matches the spec, but if you need to change it you can set
+`spring.oauth2.resource.token-type`.
+
+
+
+[[boot-features-security-custom-user-info]]
+=== Customizing the User Info RestTemplate
+If you have a `user-info-uri`, the resource server features use an `OAuth2RestTemplate`
+internally to fetch user details for authentication. This is provided as a qualified
+`@Bean` with id `userInfoRestTemplate`, but you shouldn't need to know that to just
+use it. The default should be fine for most providers, but occasionally you might need to
+add additional interceptors, or change the request authenticator (which is how the token
+gets attached to outgoing requests). To add a customization just create a bean of type
+`UserInfoRestTemplateCustomizer` - it has a single method that will be called after the
+bean is created but before it is initialized. The rest template that is being customized
+here is _only_ used internally to carry out authentication.
+
+[TIP]
+====
+To set an RSA key value in YAML use the "`pipe`" continuation marker to split it over
+multiple lines ("`|`") and remember to indent the key value (it's a standard YAML
+language feature). Example:
+
+[source,yaml,indent=0]
+----
+	oauth2:
+		resource:
+			jwt:
+				keyValue: |
+					-----BEGIN PUBLIC KEY-----
+					MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC...
+					-----END PUBLIC KEY-----
+----
+====
+
+
+
+[[boot-features-security-custom-user-info-client]]
+==== Client
+To make your webapp into an OAuth2 client you can simply add `@EnableOAuth2Client` and
+Spring Boot will create an `OAuth2RestTemplate` for you to `@Autowire`. It uses the
+`spring.oauth2.client.*` as credentials (the same as you might be using in the
+Authorization Server), but in addition it will need to know the authorization and token
+URIs in the Authorization Server. For example:
+
+.application.yml
+[source,yaml,indent=0]
+----
+spring:
+	oauth2:
+		client:
+			clientId: bd1c0a783ccdd1c9b9e4
+			clientSecret: 1a9030fbca47a5b2c28e92f19050bb77824b5ad1
+			accessTokenUri: https://github.com/login/oauth/access_token
+			userAuthorizationUri: https://github.com/login/oauth/authorize
+			clientAuthenticationScheme: form
+----
+
+An application with this configuration will redirect to Github for authorization when you
+attempt to use the `OAuth2RestTemplate`. If you are already signed into Github you won't
+even notice that it has authenticated.  These specific credentials will only work if your
+application is running on port 8080 (register your own client app in Github or other
+provider for more flexibility).
+
+To limit the scope that the client asks for when it obtains an access token you can set
+`spring.oauth2.client.scope` (comma separated or an array in YAML). By default the scope
+is empty and it is up to to Authorization Server to decide what the defaults should be,
+usually depending on the settings in the client registration that it holds.
+
+NOTE: There is also a setting for `spring.oauth2.client.client-authentication-scheme`
+which defaults to "`header`" (but you might need to set it to "`form`" if, like Github for
+instance, your OAuth2 provider doesn't like header authentication). In fact, the
+`spring.oauth2.client.*` properties are bound to an instance of
+`AuthorizationCodeResourceDetails` so all its properties can be specified.
+
+TIP: In a non-web application you can still `@Autowire` an `OAuth2RestOperations` and it
+is still wired into the `spring.oauth2.client.*` configuration. In this case it is a
+"`client credentials token grant`" you will be asking for if you use it (and there is no
+need to use `@EnableOAuth2Client` or `@EnableOAuth2Sso`). To switch it off, just remove
+the `spring.oauth2.client.client-id` from your configuration (or make it the empty
+string).
+
+
+
+[[boot-features-security-oauth2-single-sign-on]]
+==== Single Sign On
+An OAuth2 Client can be used to fetch user details from the provider (if such features are
+available) and then convert them into an `Authentication` token for Spring Security.
+The Resource Server above support this via the `user-info-uri` property This is the basis
+for a Single Sign On (SSO) protocol based on OAuth2, and Spring Boot makes it easy to
+participate by providing an annotation `@EnableOAuth2Sso`. The Github client above can
+protect all its resources and authenticate using the Github `/user/` endpoint, by adding
+that annotation and declaring where to find the endpoint (in addition to the
+`spring.oauth2.client.*` configuration already listed above):
+
+.application.yml
+[source,yaml,indent=0]]
+----
+	spring:
+		oauth2:
+	...
+		resource:
+			userInfoUri: https://api.github.com/user
+			preferTokenInfo: false
+----
+
+Since all paths are secure by default, there is no "`home`" page that you can show to
+unauthenticated users and invite them to login (by visiting the `/login` path, or the
+path specified by `spring.oauth2.sso.login-path`).
+
+To customize the access rules or paths to protect, so you can add a "`home`" page for
+instance, `@EnableOAuth2Sso` can be added to a `WebSecurityConfigurerAdapter` and the
+annotation will cause it to be decorated and enhanced with the necessary pieces to get
+the `/login` path working. For example, here we simply allow unauthenticated access
+to the home page at "/" and keep the default for everything else:
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+		@Override
+		public void init(WebSecurity web) {
+			web.ignore("/");
+		}
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
+		}
+
+	}
+----
+
+
+
+[[boot-features-security-actuator]]
+=== Actuator Security
 If the Actuator is also in use, you will find:
 
 * The management endpoints are secure even if the application endpoints are unsecure.
@@ -1764,6 +1995,114 @@ passes `hibernate.globally_quoted_identifiers` to the Hibernate entity manager.
 By default the DDL execution (or validation) is deferred until the `ApplicationContext`
 has started. There is also a `spring.jpa.generate-ddl` flag, but it is not used if
 Hibernate autoconfig is active because the `ddl-auto` settings are more fine-grained.
+
+
+
+[[boot-features-jooq]]
+== Using jOOQ
+Java Object Oriented Querying (http://www.jooq.org/[jOOQ]) is a popular product from
+http://www.datageekery.com/[Data Geekery] which generates Java code from your
+database, and lets you build type safe SQL queries through its fluent API. Both the
+commercial and open source editions can be used with Spring Boot.
+
+
+
+=== Code Generation
+In oder to use jOOQ type-safe queries, you need to generate Java classes from your
+database schema. You can follow the instructions in the
+http://www.jooq.org/doc/3.6/manual-single-page/#jooq-in-7-steps-step3[jOOQ user manual].
+If you are using the `jooq-codegen-maven` plugin (and you also use the
+`spring-boot-starter-parent` "`parent POM`") you can safely omit the plugin's `<version>`
+tag. You can also use Spring Boot defined version variables (e.g. `h2.version`) to
+declare the plugin's database dependency. Here's an example:
+
+[source,xml,indent=0]
+----
+	<plugin>
+		<groupId>org.jooq</groupId>
+		<artifactId>jooq-codegen-maven</artifactId>
+		<executions>
+			...
+		</executions>
+		<dependencies>
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>${h2.version}</version>
+			</dependency>
+		</dependencies>
+		<configuration>
+			<jdbc>
+				<driver>org.h2.Driver</driver>
+				<url>jdbc:h2:~/yourdatabase</url>
+			</jdbc>
+			<generator>
+				...
+			</generator>
+		</configuration>
+	</plugin>
+----
+
+
+
+=== Using DSLContext
+The fluent API offered by jOOQ is initiated via the `org.jooq.DSLContext` interface.
+Spring Boot will auto-configure a `DSLContext` as a Spring Bean and connect it to your
+application `DataSource`. To use the `DSLContext` you can just `@Autowire` it:
+
+[source,java,indent=0]
+----
+	@Component
+	public class JooqExample implements CommandLineRunner {
+
+		private final DSLContext create;
+
+		@Autowired
+		public JooqExample(DSLContext dlsContext) {
+			this.create = dlsContext;
+		}
+
+	}
+----
+
+TIP: The jOOQ manual tends to use a variable named `create` to hold the `DSLContext`,
+we've done the same for this example.
+
+You can then use the `DSLContext` to construct your queries:
+
+[source,java,indent=0]
+----
+	public List<GregorianCalendar> authorsBornAfter1980() {
+		return this.create.selectFrom(AUTHOR)
+			.where(AUTHOR.DATE_OF_BIRTH.greaterThan(new GregorianCalendar(1980, 0, 1)))
+			.fetch(AUTHOR.DATE_OF_BIRTH);
+	}
+----
+
+
+
+=== Customizing jOOQ
+You can customize the SQL dialect used by jOOQ by setting `spring.jooq.sql-dialect` in
+your `application.properties`. For example, to specify Postgres you would add:
+
+[source,properties,indent=0]
+----
+	spring.jooq.sql-dialect=Postgres
+----
+
+More advanced customizations can be achieved by defining your own `@Bean` definitions
+which will be used when the jOOQ `Configuration` is created. You can define beans for
+the following jOOQ Types:
+
+* `ConnectionProvider`
+* `TransactionProvider`
+* `RecordMapperProvider`
+* `RecordListenerProvider`
+* `ExecuteListenerProvider`
+* `VisitListenerProvider`
+
+You can also create your own `org.jooq.Configuration` `@Bean` if you want to take
+complete control of the jOOQ configuration.
 
 
 
@@ -2073,6 +2412,193 @@ http://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
 
 
 
+[[boot-features-caching]]
+== Caching
+The Spring Framework provides support for transparently adding caching to an application.
+At its core, the abstraction applies caching to methods, reducing thus the number of
+executions based on the information available in the cache. The caching logic is applied
+transparently, without any interference to the invoker.
+
+NOTE: Check the {spring-reference}/#cache[relevant section] of the Spring Framework
+reference for more details.
+
+In a nutshell, adding caching to an operation of your service is as easy as adding the
+relevant annotation to its method:
+
+[source,java,indent=0]
+----
+	import javax.cache.annotation.CacheResult;
+
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MathService {
+
+		@CacheResult
+		public int computePiDecimal(int i) {
+			// ...
+		}
+
+	}
+----
+
+NOTE: You can either use the standard JSR-107 (JCache) annotations or Spring's own
+caching annotations transparently. We strongly advise you however to not mix and match
+them.
+
+TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
+{spring-reference}/#cache-annotations-evict[evict] data from the cache transparently.
+
+
+
+=== Supported cache providers
+The cache abstraction does not provide an actual store and relies on a abstraction
+materialized by the `org.springframework.cache.Cache` and
+`org.springframework.cache.CacheManager` interfaces. Spring Boot auto-configures a
+suitable `CacheManager` according to the implementation as long as the caching support is
+enabled via the `@EnableCaching` annotation.
+
+TIP: Use the `spring-boot-starter-cache` "`Starter POM`" to quickly add required caching
+dependencies. If you are adding dependencies manually you should note that certain
+implementations are only provided by the `spring-context-support` jar.
+
+Spring Boot tries to detect the following providers (in this order):
+
+* <<boot-features-caching-provider-generic,Generic>>
+* <<boot-features-caching-provider-ehcache2,EhCache 2.x>>
+* <<boot-features-caching-provider-hazelcast,Hazelcast>>
+* <<boot-features-caching-provider-infinispan,Infinispan>>
+* <<boot-features-caching-provider-jcache,JCache (JSR-107)>>
+* <<boot-features-caching-provider-redis,Redis>>
+* <<boot-features-caching-provider-guava,Guava>>
+* <<boot-features-caching-provider-simple,Simple>>
+
+It is also possible to _force_ the cache provider to use via the `spring.cache.type`
+property.
+
+
+
+[[boot-features-caching-provider-generic]]
+==== Generic
+Generic caching is used if the context defines _at least_ one
+`org.springframework.cache.Cache` bean, a `CacheManager` wrapping them is configured.
+
+
+
+[[boot-features-caching-provider-ehcache2]]
+==== EhCache 2.x
+EhCache 2.x is used if a file named `ehcache.xml` can be found at the root of the
+classpath. If EhCache 2.x and such file is present it is used to bootstrap the cache
+manager. An alternate configuration file can be provide a well using:
+
+[source,properties,indent=0]
+----
+	spring.cache.ehcache.config=classpath:config/another-config.xml
+----
+
+
+
+[[boot-features-caching-provider-hazelcast]]
+==== Hazelcast
+Hazelcast is used if a `hazelcast.xml` file can be found in the current working
+directory, at the root of the classpath or a location specified via the `hazelcast.config`
+system property. Spring Boot detects all of these and also allows for explicit location
+using:
+
+[source,properties,indent=0]
+----
+	spring.cache.hazelcast.config=classpath:config/my-hazelcast.xml
+----
+
+
+
+[[boot-features-caching-provider-infinispan]]
+==== Infinispan
+Infinispan has no default configuration file location so it must be specified explicitly
+(or the default bootstrap is used).
+
+[source,properties,indent=0]
+----
+	spring.cache.infinispan.config=infinispan.xml
+----
+
+Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
+`ConfigurationBuilder` bean is defined, it is used to customize them.
+
+
+
+[[boot-features-caching-provider-jcache]]
+==== JCache
+JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
+classpath (i.e. a JSR-107 compliant caching library). It might happen than more that one
+provider is present, in which case the provider must be explicitly specified. Even if the
+JSR-107 standard does not enforce a standardized way to define the location of the
+configuration file, Spring Boot does its best to accommodate with implementation details.
+
+[source,properties,indent=0]
+----
+    # Only necessary if more than one provider is present
+	spring.cache.jcache.provider=com.acme.MyCachingProvider
+	spring.cache.jcache.config=classpath:acme.xml
+----
+
+NOTE: Since a cache library may offer both a native implementation and JSR-107 support
+it is advised to set the `spring.cache.type` to `jcache` to force that mode if that's
+what you want.
+
+There are several ways to customize the underlying `javax.cache.cacheManager`:
+
+* Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
+`javax.cache.configuration.Configuration` bean is defined, it is used to customize them.
+* `org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer` beans are
+invoked with the reference of the `CacheManager` for full customization.
+
+TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped
+automatically in a `org.springframework.cache.CacheManager` implementation that the
+abstraction expects. No further customization is applied on it.
+
+
+
+[[boot-features-caching-provider-redis]]
+==== Redis
+If Redis is available and configured, the `RedisCacheManager` is auto-configured. It is
+also possible to create additional caches on startup using the `spring.cache.cache-names`
+property.
+
+
+
+[[boot-features-caching-provider-guava]]
+==== Guava
+If Guava is present, a `GuavaCacheManager` is auto-configured. Caches can be created
+on startup using the `spring.cache.cache-names` property and customized by one of the
+following (in this order):
+
+1. A cache spec defined by `spring.cache.guava.spec`
+2. A `com.google.common.cache.CacheBuilderSpec` bean is defined
+3. A `com.google.common.cache.CacheBuilder` bean is defined
+
+For instance, the following configuration creates a `foo` and `bar` caches with a maximum
+size of 500 and a _time to live_ of 10 minutes
+
+[source,properties,indent=0]
+----
+    spring.cache.cache-names=foo,bar
+	spring.cache.guava.spec=maximumSize=500,expireAfterAccess=600s
+----
+
+Besides, if a `com.google.common.cache.CacheLoader` bean is defined, it is automatically
+associated to the `GuavaCacheManager`.
+
+
+
+[[boot-features-caching-provider-simple]]
+==== Simple
+If none of these options worked out, a simple implementation using `ConcurrentHashMap`
+as cache store is configured. This is the default if no caching library is present in
+your application.
+
+
+
 [[boot-features-messaging]]
 == Messaging
 The Spring Framework provides extensive support for integrating with messaging systems:
@@ -2094,6 +2620,43 @@ and you can instead rely on higher level messaging abstractions (see the
 {spring-reference}/#jms[relevant section] of the Spring Framework reference
 documentation for details). Spring Boot also auto-configures the necessary infrastructure
 to send and receive messages.
+
+
+
+[[boot-features-activemq]]
+==== ActiveMQ support
+Spring Boot can also configure a `ConnectionFactory` when it detects that ActiveMQ is
+available on the classpath. If the broker is present, an embedded broker is started and
+configured automatically (as long as no broker URL is specified through configuration).
+
+ActiveMQ configuration is controlled by external configuration properties in
+`+spring.activemq.*+`. For example, you might declare the following section in
+`application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.activemq.broker-url=tcp://192.168.1.210:9876
+	spring.activemq.user=admin
+	spring.activemq.password=secret
+----
+
+See
+{sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[`ActiveMQProperties`]
+for more of the supported options.
+
+By default, ActiveMQ creates a destination if it does not exist yet, so destinations are
+resolved against their provided names.
+
+
+
+[[boot-features-artemis]]
+==== Artemis support
+Apache Artemis was formed in 2015 when HornetQ was donated to the Apache Foundation. All
+the features listed in the <<boot-features-hornetq>> section below can be applied to
+Artemis. Simply replace `+++spring.hornetq.*+++` properties with `+++spring.artemis.*+++`
+and use `spring-boot-starter-artemis` instead of `spring-boot-starter-hornetq`.
+
+NOTE: You should not try and use Artemis and HornetQ and the same time.
 
 
 
@@ -2138,32 +2701,6 @@ for more of the supported options.
 No JNDI lookup is involved at all and destinations are resolved against their names,
 either using the '`name`' attribute in the HornetQ configuration or the names provided
 through configuration.
-
-
-
-[[boot-features-activemq]]
-==== ActiveMQ support
-Spring Boot can also configure a `ConnectionFactory` when it detects that ActiveMQ is
-available on the classpath. If the broker is present, an embedded broker is started and
-configured automatically (as long as no broker URL is specified through configuration).
-
-ActiveMQ configuration is controlled by external configuration properties in
-`+spring.activemq.*+`. For example, you might declare the following section in
-`application.properties`:
-
-[source,properties,indent=0]
-----
-	spring.activemq.broker-url=tcp://192.168.1.210:9876
-	spring.activemq.user=admin
-	spring.activemq.password=secret
-----
-
-See
-{sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[`ActiveMQProperties`]
-for more of the supported options.
-
-By default, ActiveMQ creates a destination if it does not exist yet, so destinations are
-resolved against their provided names.
 
 
 
@@ -2261,9 +2798,9 @@ details.
 [[boot-features-jta]]
 == Distributed Transactions with JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources using
-either an http://www.atomikos.com/[Atomikos] or
-http://docs.codehaus.org/display/BTM/Home[Bitronix] embedded transaction manager. JTA
-transactions are also supported when deploying to a suitable Java EE Application Server.
+either an http://www.atomikos.com/[Atomikos] or https://github.com/bitronix/btm[Bitronix]
+embedded transaction manager. JTA transactions are also supported when deploying to a
+suitable Java EE Application Server.
 
 When a JTA environment is detected, Spring's `JtaTransactionManager` will be used to
 manage transactions. Auto-configured JMS, DataSource and JPA beans will be upgraded to
@@ -2309,7 +2846,7 @@ a `transaction-logs` directory in your application home directory. You can custo
 directory by using the `spring.jta.log-dir` property. Properties starting `spring.jta.`
 are also bound to the `bitronix.tm.Configuration` bean, allowing for complete
 customization. See the
-http://btm.codehaus.org/api/2.0.1/bitronix/tm/Configuration.html[Bitronix documentation]
+https://github.com/bitronix/btm/wiki/Transaction-manager-configuration[Bitronix documentation]
 for details.
 
 NOTE: To ensure that multiple transaction managers can safely coordinate the same
@@ -2391,6 +2928,16 @@ through the `@EnableIntegration` annotation. Message processing statistics will 
 published over JMX if `'spring-integration-jmx'` is also on the classpath. See the
 {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
 class for more details.
+
+
+
+[[boot-features-session]]
+== Spring Session
+Spring Session provides support for managing a user's session information. If you are
+writing a web application and Spring Session and Spring Data Redis are both on the
+classpath, Spring Boot will auto-configure Spring Session through its
+`@EnableRedisHttpSession`. Session data will be stored in Redis and the session timeout
+can be configured using the `server.session-timeout` property.
 
 
 
@@ -2542,23 +3089,6 @@ the actual port that was allocated for the duration of the tests.
 If you wish to use Spock to test a Spring Boot application you should add a dependency
 on Spock's `spock-spring` module to your application's build. `spock-spring` integrates
 Spring's test framework into Spock.
-
-Please note that you cannot use the `@SpringApplicationConfiguration` annotation that was
-<<boot-features-testing-spring-boot-applications,described above>> as Spock
-https://code.google.com/p/spock/issues/detail?id=349[does not find the
-`@ContextConfiguration` meta-annotation]. To work around this limitation, you should use
-the `@ContextConfiguration` annotation directly and configure it to use the Spring
-Boot specific context loader:
-
-[source,groovy,indent=0]
-----
-	@ContextConfiguration(loader = SpringApplicationContextLoader.class)
-	class ExampleSpec extends Specification {
-
-		// ...
-
-	}
-----
 
 NOTE: The annotations <<boot-features-testing-spring-boot-applications,described above>>
 can be used with Spock, i.e. you can annotate your `Specification` with

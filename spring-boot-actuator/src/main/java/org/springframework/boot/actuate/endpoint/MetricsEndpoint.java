@@ -77,7 +77,7 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 					result.put(metric.getName(), metric.getValue());
 				}
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 				// Could not evaluate metrics
 			}
 		}

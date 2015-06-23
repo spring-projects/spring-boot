@@ -43,4 +43,5 @@ public class SampleRedisApplication implements CommandLineRunner {
 		// Close the context so it doesn't stay awake listening for redis
 		SpringApplication.run(SampleRedisApplication.class, args).close();
 	}
+
 }

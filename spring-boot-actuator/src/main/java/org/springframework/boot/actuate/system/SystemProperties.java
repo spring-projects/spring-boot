@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.system;
 
 /**
+ * Access to system properties.
+ *
  * @author Phillip Webb
  */
 class SystemProperties {

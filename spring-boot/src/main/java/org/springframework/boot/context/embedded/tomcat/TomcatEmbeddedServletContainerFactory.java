@@ -382,7 +382,17 @@ public class TomcatEmbeddedServletContainerFactory extends
 		return new TomcatEmbeddedServletContainer(tomcat, getPort() >= 0);
 	}
 
-	private File createTempDir(String prefix) {
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
+	/**
+	 * Returns the absolute temp dir for given web server.
+	 * @param prefix webserver name
+	 * @return The temp dir for given web server.
+	 */
+	protected File createTempDir(String prefix) {
 		try {
 			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
 			tempFolder.delete();
@@ -394,11 +404,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 			throw new EmbeddedServletContainerException(
 					"Unable to create Tomcat tempdir", ex);
 		}
-	}
-
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
 	}
 
 	/**

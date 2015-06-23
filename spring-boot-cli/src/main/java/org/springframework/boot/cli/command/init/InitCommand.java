@@ -130,19 +130,15 @@ public class InitCommand extends OptionParsingCommand {
 
 		private void projectGenerationOptions() {
 			this.groupId = option(Arrays.asList("groupId", "g"),
-					"Project coordinates (for example 'org.test')")
-					.withRequiredArg();
+					"Project coordinates (for example 'org.test')").withRequiredArg();
 			this.artifactId = option(Arrays.asList("artifactId", "a"),
 					"Project coordinates; infer archive name (for example 'test')")
 					.withRequiredArg();
 			this.version = option(Arrays.asList("version", "v"),
-					"Project version (for example '0.0.1-SNAPSHOT')")
-					.withRequiredArg();
+					"Project version (for example '0.0.1-SNAPSHOT')").withRequiredArg();
 			this.name = option(Arrays.asList("name", "n"),
-					"Project name; infer application name")
-					.withRequiredArg();
-			this.description = option("description",
-					"Project description")
+					"Project name; infer application name").withRequiredArg();
+			this.description = option("description", "Project description")
 					.withRequiredArg();
 			this.packaging = option(Arrays.asList("packaging", "p"),
 					"Project packaging (for example 'jar')").withRequiredArg();
@@ -162,8 +158,7 @@ public class InitCommand extends OptionParsingCommand {
 			this.javaVersion = option(Arrays.asList("java-version", "j"),
 					"Language level (for example '1.8')").withRequiredArg();
 			this.language = option(Arrays.asList("language", "l"),
-					"Programming language  (for example 'java')")
-					.withRequiredArg();
+					"Programming language  (for example 'java')").withRequiredArg();
 			this.bootVersion = option(Arrays.asList("boot-version", "b"),
 					"Spring Boot version (for example '1.2.0.RELEASE')")
 					.withRequiredArg();
@@ -240,22 +235,22 @@ public class InitCommand extends OptionParsingCommand {
 			if (options.has(this.type)) {
 				request.setType(options.valueOf(this.type));
 			}
-			if(options.has(this.language)) {
+			if (options.has(this.language)) {
 				request.setLanguage(options.valueOf(this.language));
 			}
-			if(options.has(this.groupId)) {
+			if (options.has(this.groupId)) {
 				request.setGroupId(options.valueOf(this.groupId));
 			}
 			if (options.has(this.artifactId)) {
 				request.setArtifactId(options.valueOf(this.artifactId));
 			}
-			if(options.has(this.name)) {
+			if (options.has(this.name)) {
 				request.setName(options.valueOf(this.name));
 			}
-			if(options.has(this.version)) {
+			if (options.has(this.version)) {
 				request.setVersion(options.valueOf(this.version));
 			}
-			if(options.has(this.description)) {
+			if (options.has(this.description)) {
 				request.setDescription(options.valueOf(this.description));
 			}
 			request.setExtract(options.has(this.extract));

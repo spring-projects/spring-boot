@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<infinispan xmlns="urn:infinispan:config:7.2">
+
+	<cache-container default-cache="default">
+		<local-cache name="books" statistics="true"/>
+		<local-cache name="players" statistics="true"/>
+	</cache-container>
+
+</infinispan>

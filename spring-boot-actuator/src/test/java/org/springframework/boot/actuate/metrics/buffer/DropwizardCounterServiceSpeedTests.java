@@ -70,7 +70,7 @@ public class DropwizardCounterServiceSpeedTests {
 	private static int threadCount = 2;
 
 	private static final int number = Boolean.getBoolean("performance.test") ? 10000000
-			: 100000;
+			: 1000000;
 
 	private static int count;
 
@@ -80,7 +80,7 @@ public class DropwizardCounterServiceSpeedTests {
 
 	@BeforeClass
 	public static void prime() throws FileNotFoundException {
-		err = new PrintWriter("/dev/null");
+		err = new NullPrintWriter();
 		final Random random = new Random();
 		for (int i = 0; i < 1000; i++) {
 			sample[i] = names[random.nextInt(names.length)];

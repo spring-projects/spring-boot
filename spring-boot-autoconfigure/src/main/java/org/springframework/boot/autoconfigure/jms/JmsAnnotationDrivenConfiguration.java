@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerConfigUtils;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.JndiDestinationResolver;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
  * Configuration for Spring 4.1 annotation driven JMS.
@@ -46,7 +46,7 @@ class JmsAnnotationDrivenConfiguration {
 	private DestinationResolver destinationResolver;
 
 	@Autowired(required = false)
-	private PlatformTransactionManager transactionManager;
+	private JtaTransactionManager transactionManager;
 
 	@Autowired
 	private JmsProperties properties;

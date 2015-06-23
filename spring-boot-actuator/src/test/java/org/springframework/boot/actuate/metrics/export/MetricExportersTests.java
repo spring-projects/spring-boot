@@ -29,14 +29,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link MetricExporters}.
+ *
  * @author Dave Syer
  */
 public class MetricExportersTests {
 
 	private MetricExporters exporters;
+
 	private MetricExportProperties export = new MetricExportProperties();
+
 	private Map<String, MetricWriter> writers = new LinkedHashMap<String, MetricWriter>();
+
 	private MetricReader reader = Mockito.mock(MetricReader.class);
+
 	private MetricWriter writer = Mockito.mock(MetricWriter.class);
 
 	@Test

@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} to enable/disable Spring's
  * {@link EnableMBeanExport} mechanism based on configuration properties.
  * <p>
- * To disable auto export of annotation beans set <code>spring.jmx.enabled: false</code>.
+ * To disable auto export of annotation beans set {@code spring.jmx.enabled: false}.
  *
  * @author Christian Dupuis
  */

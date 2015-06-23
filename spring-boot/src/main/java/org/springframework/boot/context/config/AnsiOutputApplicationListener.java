@@ -25,8 +25,8 @@ import org.springframework.core.Ordered;
 
 /**
  * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the the
- * value of the property <code>spring.output.ansi.enabled</code>. See {@link Enabled} for
- * valid values.
+ * value of the property {@code spring.output.ansi.enabled}. See {@link Enabled} for valid
+ * values.
  *
  * @author Raphael von der Grün
  * @since 1.2.0

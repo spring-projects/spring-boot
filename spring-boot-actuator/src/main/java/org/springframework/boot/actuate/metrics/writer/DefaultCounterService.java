@@ -65,4 +65,5 @@ public class DefaultCounterService implements CounterService {
 		this.names.put(metricName, name);
 		return name;
 	}
+
 }

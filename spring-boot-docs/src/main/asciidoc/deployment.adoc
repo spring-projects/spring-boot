@@ -14,7 +14,6 @@ This section covers some of the more common deployment scenarios.
 
 [[cloud-deployment]]
 == Deploying to the cloud
-
 Spring Boot's executable jars are ready-made for most popular cloud PaaS
 (platform-as-a-service) providers. These providers tend to require that you
 "`bring your own container`"; they manage application processes (not Java applications
@@ -172,14 +171,14 @@ Spring Boot makes `-D` arguments available as properties accessible from a Sprin
 Tomcat, Jetty or Undertow instance which then uses it when it starts up. The `$PORT`
 environment variable is assigned to us by the Heroku PaaS.
 
-Heroku by default will use Java 1.6. This is fine as long as your Maven or Gradle build
-is set to use the same version (Maven users can use the `java.version` property). If you
+Heroku by default will use Java 1.8. This is fine as long as your Maven or Gradle build
+is set to use the same version (Maven users can use the java.version property). If you
 want to use JDK 1.7, create a new file adjacent to your `pom.xml` and `Procfile`,
 called `system.properties`. In this file add the following:
 
-[source,java]
+[indent=0]
 ----
-java.runtime.version=1.7
+	java.runtime.version=1.7
 ----
 
 This should be everything you need. The most common workflow for Heroku deployments is to
@@ -197,13 +196,10 @@ This should be everything you need. The most common workflow for Heroku deployme
 	Total 95 (delta 31), reused 0 (delta 0)
 
 	-----> Java app detected
-	-----> Installing OpenJDK 1.7... *done*
-	-----> Installing Maven 3.2.3... *done*
+	-----> Installing OpenJDK 1.8... *done*
+	-----> Installing Maven 3.3.1... *done*
 	-----> Installing settings.xml... *done*
-	-----> executing /app/tmp/cache/.maven/bin/mvn -B
-	       -Duser.home=/tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229
-	       -Dmaven.repo.local=/app/tmp/cache/.m2/repository
-	       -s /app/tmp/cache/.m2/settings.xml -DskipTests=true clean install
+	-----> Executing: mvn -B -DskipTests=true clean install
 
 	       [INFO] Scanning for projects...
 	       Downloading: http://repo.spring.io/...
@@ -305,25 +301,56 @@ there without some modifications. See the <<howto.adoc#howto-servlet-2-5, Servle
 of this guide.
 
 
-[[deployment-service]]
+
+[[deployment-install]]
 == Installing Spring Boot applications
 In additional to running Spring Boot applications using `java -jar` it is also possible
-to execute applications directly on Unix systems (Linux, OSX, FreeBSD etc). This makes it
-very easy to install and manage Spring Boot applications in common production
-environments. As long as you are generating '`fully executable`' jars from your build, and
-you are not using a custom `embeddedLaunchScript`, the following techniques can be used.
+to make fully executable applications for Unix systems (Linux, OSX, FreeBSD etc).
+This makes it very easy to install and manage Spring Boot applications in common
+production environments. As long as you are generating '`fully executable`' jars from your
+build, and you are not using a custom `embeddedLaunchScript`, the following techniques
+can be used.
+
+To create a '`fully executable`' jar with Maven use the following plugin configuration:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<plugin>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-maven-plugin</artifactId>
+		<configuration>
+			<executable>true</executable>
+		</configuration>
+	</plugin>
+----
+
+With Gradle, the equivalent configuration would be:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	apply plugin: 'spring-boot'
+
+	springBoot {
+		executable = true
+	}
+----
+
+NOTE: Fully executable jars work by embedding an extra script at the front of the file.
+Not all tools currently accept this format so you may not always be able to use this
+technique.
 
 
 
+[[deployment-service]]
 === Unix/Linux services
 Spring Boot application can be easily started as Unix/Linux services using either `init.d`
 or `systemd`.
 
 
-
-==== Installation as a init.d (System V) service
-The default executable script that is embedded into Spring Boot executable jars will act
-as an `init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
+[[deployment-initd-service]]
+==== Installation as a init.d service (System V)
+The default executable script that can be embedded into Spring Boot jars will act as an
+`init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
 `restart` and `status` commands can be used. The script supports the following features:
 
 * Starts the services as the user that owns the jar file
@@ -350,35 +377,9 @@ if you use Debian:
 	$ update-rc.d myapp defaults <priority>
 ----
 
-=== Running a JAR as a regular (not service) script
-
-The script accepts the following parameters as environment variables, so you can change the
-default behaviour in a script or on the command line:
-
-* `MODE` - the "mode" of operation. The default depends on the way the jar was built, but
-will usually be "auto" (meaning it tries to guess if it is an init script by checking if
-it is a symlink in a directory called "init.d"). You can explicitly set it to "service"
-so that the "stop|start|status|restart" commands work, or to "run" if you just want to
-run the script and not in the background.
-
-* `PID_FOLDER` - the root name of the pid folder (`/var/run` by default).
-
-* `LOG_FOLDER` - the name of the folder to put log files in (`/var/log` by default).
-
-* `APP_NAME` - the name of the app. If the jar is run from a symlink the script guesses the 
-app name, but if it is not a symlink, or you want to explicitly set the app name this can be
-useful.
-
-* `JAVA_HOME` - the location of the `java` executable is discovered by using the `PATH` by 
-default, but you can set it explicitly if there is an executable file at `$JAVA_HOME/bin/java`.
-
-* `JARFILE` - the explicit location of the jar file, in case the script is being used to launch
-a jar that it is not actually embedded in.
-
-* `DEBUG` - if not empty will set the `-x` flag on the shell process, making it easy to
-see the logic in the script.
 
 
+[[deployment-systemd-service]]
 ==== Installation as a systemd service
 Systemd is the successor to `init.d` scripts, and now being used by many many modern Linux
 distributions. Although you can continue to use `init.d` script with `systemd`, it is also
@@ -401,6 +402,52 @@ following script in `/etc/systemd/system/myapp.service`:
 ----
 
 TIP: Remember to change the `Description` and `ExecStart` fields for your application.
+
+
+
+[[deployment-script-customization]]
+==== Customizing the startup script
+The script accepts the following parameters as environment variables, so you can change
+the default behavior in a script or on the command line:
+
+[cols="1,6"]
+|===
+|Variable |Description
+
+|`MODE`
+|The "`mode`" of operation. The default depends on the way the jar was built, but will
+ usually be `auto` _(meaning it tries to guess if it is an init script by checking if it
+ is a symlink in a directory called `init.d`)_. You can explicitly set it to `service` so
+ that the `stop\|start\|status\|restart` commands work, or to `run` if you just want to
+ run the script in the foreground.
+
+|`PID_FOLDER`
+|The root name of the pid folder (`/var/run` by default).
+
+|`LOG_FOLDER`
+|The name of the folder to put log files in (`/var/log` by default).
+
+|`APP_NAME`
+|The name of the app. If the jar is run from a symlink the script guesses the app name,
+ but if it is not a symlink, or you want to explicitly set the app name this can be
+ useful.
+
+|`JAVA_HOME`
+|The location of the `java` executable is discovered by using the `PATH` by default, but
+ you can set it explicitly if there is an executable file at `$JAVA_HOME/bin/java`.
+
+|`JARFILE`
+|The explicit location of the jar file, in case the script is being used to launch a jar
+ that it is not actually embedded in.
+
+|`DEBUG`
+|if not empty will set the `-x` flag on the shell process, making it easy to see the logic
+ in the script.
+|===
+
+TIP: With the exception of `JARFILE` and `APP_NAME`, the above settings can be placed in
+a `.conf` next to the jar. For example the jar `/var/myapp/myapp.jar` would attempt to
+source the configuration file `/var/myapp/myapp.conf`.
 
 
 

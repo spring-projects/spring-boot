@@ -89,7 +89,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
-	 * @throws IOException
+	 * @throws IOException if the file cannot be read
 	 */
 	public JarFile(File file) throws IOException {
 		this(new RandomAccessDataFile(file));
@@ -98,7 +98,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
-	 * @throws IOException
+	 * @throws IOException if the file cannot be read
 	 */
 	JarFile(RandomAccessDataFile file) throws IOException {
 		this(file, "", file);
@@ -110,7 +110,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @param rootFile the root jar file
 	 * @param pathFromRoot the name of this file
 	 * @param data the underlying data
-	 * @throws IOException
+	 * @throws IOException if the file cannot be read
 	 */
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
 			RandomAccessData data) throws IOException {
@@ -320,19 +320,19 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	/**
 	 * Return a nested {@link JarFile} loaded from the specified entry.
-	 * @param ze the zip entry
+	 * @param entry the zip entry
 	 * @return a {@link JarFile} for the entry
-	 * @throws IOException
+	 * @throws IOException if the nested jar file cannot be read
 	 */
-	public synchronized JarFile getNestedJarFile(final ZipEntry ze) throws IOException {
-		return getNestedJarFile(getContainedEntry(ze).getSource());
+	public synchronized JarFile getNestedJarFile(final ZipEntry entry) throws IOException {
+		return getNestedJarFile(getContainedEntry(entry).getSource());
 	}
 
 	/**
 	 * Return a nested {@link JarFile} loaded from the specified entry.
 	 * @param sourceEntry the zip entry
 	 * @return a {@link JarFile} for the entry
-	 * @throws IOException
+	 * @throws IOException if the nested jar file cannot be read
 	 */
 	public synchronized JarFile getNestedJarFile(JarEntryData sourceEntry)
 			throws IOException {
@@ -388,7 +388,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * Return a new jar based on the filtered contents of this file.
 	 * @param filters the set of jar entry filters to be applied
 	 * @return a filtered {@link JarFile}
-	 * @throws IOException
+	 * @throws IOException if the jar file cannot be read
 	 */
 	public synchronized JarFile getFilteredJarFile(JarEntryFilter... filters)
 			throws IOException {
@@ -418,7 +418,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * Return a URL that can be used to access this JAR file. NOTE: the specified URL
 	 * cannot be serialized and or cloned.
 	 * @return the URL
-	 * @throws MalformedURLException
+	 * @throws MalformedURLException if the URL is malformed
 	 */
 	public URL getUrl() throws MalformedURLException {
 		if (this.url == null) {

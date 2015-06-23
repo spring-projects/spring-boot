@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.settings.Settings;
+import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
+import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
+import org.apache.maven.settings.building.SettingsBuildingException;
+import org.apache.maven.settings.building.SettingsBuildingRequest;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.util.StringUtils;
 
@@ -54,7 +59,7 @@ public final class RepositoryConfigurationFactory {
 			repositoryConfiguration.add(SPRING_SNAPSHOT);
 		}
 
-		addDefaultCacheAsRespository(repositoryConfiguration);
+		addDefaultCacheAsRepository(repositoryConfiguration);
 		return repositoryConfiguration;
 	}
 
@@ -63,12 +68,35 @@ public final class RepositoryConfigurationFactory {
 	 * the local cache location has been changed from the default.
 	 * @param repositoryConfiguration
 	 */
-	public static void addDefaultCacheAsRespository(
+	public static void addDefaultCacheAsRepository(
 			List<RepositoryConfiguration> repositoryConfiguration) {
 		RepositoryConfiguration repository = new RepositoryConfiguration("local",
-				new File(getM2HomeDirectory(), "repository").toURI(), true);
+				getLocalRepositoryDirectory().toURI(), true);
 		if (!repositoryConfiguration.contains(repository)) {
 			repositoryConfiguration.add(0, repository);
+		}
+	}
+
+	private static File getLocalRepositoryDirectory() {
+		String localRepository = loadSettings().getLocalRepository();
+		if (StringUtils.hasText(localRepository)) {
+			return new File(localRepository);
+		}
+		return new File(getM2HomeDirectory(), "repository");
+	}
+
+	private static Settings loadSettings() {
+		File settingsFile = new File(System.getProperty("user.home"), ".m2/settings.xml");
+		SettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
+		request.setUserSettingsFile(settingsFile);
+		request.setSystemProperties(System.getProperties());
+		try {
+			return new DefaultSettingsBuilderFactory().newInstance().build(request)
+					.getEffectiveSettings();
+		}
+		catch (SettingsBuildingException ex) {
+			throw new IllegalStateException("Failed to build settings from "
+					+ settingsFile, ex);
 		}
 	}
 

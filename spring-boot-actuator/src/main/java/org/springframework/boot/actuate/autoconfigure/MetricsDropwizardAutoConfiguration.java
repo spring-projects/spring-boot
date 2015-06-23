@@ -35,6 +35,7 @@ import com.codahale.metrics.MetricRegistry;
  * {@link EnableAutoConfiguration Auto-configuration} for Dropwizard-based metrics.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass(MetricRegistry.class)

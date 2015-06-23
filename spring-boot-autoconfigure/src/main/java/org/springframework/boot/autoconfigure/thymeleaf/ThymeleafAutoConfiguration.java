@@ -87,7 +87,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Bean
-		public ITemplateResolver defaultTemplateResolver() {
+		public TemplateResolver defaultTemplateResolver() {
 			TemplateResolver resolver = new TemplateResolver();
 			resolver.setResourceResolver(thymeleafResourceResolver());
 			resolver.setPrefix(this.properties.getPrefix());

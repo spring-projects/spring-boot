@@ -28,6 +28,7 @@ import org.springframework.lang.UsesJava8;
  * Fast writes to in-memory metrics store using {@link DoubleBuffer}.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @UsesJava8
 public class GaugeBuffers {
@@ -51,12 +52,7 @@ public class GaugeBuffers {
 	}
 
 	public void get(final String name, final Consumer<DoubleBuffer> consumer) {
-		acceptInternal(name, new Consumer<DoubleBuffer>() {
-			@Override
-			public void accept(DoubleBuffer value) {
-				consumer.accept(value);
-			}
-		});
+		acceptInternal(name, consumer);
 	}
 
 	public void set(final String name, final double value) {
@@ -94,4 +90,5 @@ public class GaugeBuffers {
 		}
 		consumer.accept(value);
 	}
+
 }

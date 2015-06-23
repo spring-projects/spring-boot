@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -44,6 +45,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @see EnableAutoConfiguration
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -72,8 +74,10 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
 							this.beanClassLoader)));
 
-			// Remove those specifically disabled
-			List<String> excluded = Arrays.asList(attributes.getStringArray("exclude"));
+			// Remove those specifically excluded
+			Set<String> excluded = new LinkedHashSet<String>();
+			excluded.addAll(Arrays.asList(attributes.getStringArray("exclude")));
+			excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
 			factories.removeAll(excluded);
 			ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
 

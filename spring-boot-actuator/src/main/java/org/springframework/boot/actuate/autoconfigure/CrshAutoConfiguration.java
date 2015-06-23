@@ -86,17 +86,16 @@ import org.springframework.util.StringUtils;
  * The default shell authentication method uses a username and password combination. If no
  * configuration is provided the default username is 'user' and the password will be
  * printed to console during application startup. Those default values can be overridden
- * by using <code>shell.auth.simple.username</code> and
- * <code>shell.auth.simple.password</code>.
+ * by using {@code shell.auth.simple.username} and {@code shell.auth.simple.password}.
  * <p>
  * If a Spring Security {@link AuthenticationManager} is detected, this configuration will
  * create a {@link CRaSHPlugin} to forward shell authentication requests to Spring
- * Security. This authentication method will get enabled if <code>shell.auth</code> is set
- * to <code>spring</code> or if no explicit <code>shell.auth</code> is provided and a
+ * Security. This authentication method will get enabled if {@code shell.auth} is set to
+ * {@code spring} or if no explicit {@code shell.auth} is provided and a
  * {@link AuthenticationManager} is available. In the latter case shell access will be
  * restricted to users having roles that match those configured in
  * {@link ManagementServerProperties}. Required roles can be overridden by
- * <code>shell.auth.spring.roles</code>.
+ * {@code shell.auth.spring.roles}.
  * <p>
  * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
  * the application context. Those beans will get auto detected during startup and
@@ -106,9 +105,9 @@ import org.springframework.util.StringUtils;
  * <p>
  * Additional shell commands can be implemented using the guide and documentation at <a
  * href="http://www.crashub.org">crashub.org</a>. By default Boot will search for commands
- * using the following classpath scanning pattern <code>classpath*:/commands/**</code>. To
- * add different locations or override the default use
- * <code>shell.command_path_patterns</code> in your application configuration.
+ * using the following classpath scanning pattern {@code classpath*:/commands/**}. To add
+ * different locations or override the default use {@code shell.command_path_patterns} in
+ * your application configuration.
  *
  * @author Christian Dupuis
  * @see ShellProperties

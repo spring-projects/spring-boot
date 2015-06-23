@@ -70,7 +70,7 @@ public abstract class Launcher {
 	 * Create a classloader for the specified archives.
 	 * @param archives the archives
 	 * @return the classloader
-	 * @throws Exception
+	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
 		List<URL> urls = new ArrayList<URL>(archives.size());
@@ -86,7 +86,7 @@ public abstract class Launcher {
 	 * Create a classloader for the specified URLs
 	 * @param urls the URLs
 	 * @return the classloader
-	 * @throws Exception
+	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
 		return new LaunchedURLClassLoader(urls, getClass().getClassLoader());
@@ -97,7 +97,7 @@ public abstract class Launcher {
 	 * @param args the incoming arguments
 	 * @param mainClass the main class to run
 	 * @param classLoader the classloader
-	 * @throws Exception
+	 * @throws Exception if the launch fails
 	 */
 	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
 			throws Exception {
@@ -114,7 +114,7 @@ public abstract class Launcher {
 	 * @param args the incoming arguments
 	 * @param classLoader the classloader
 	 * @return a runnable used to start the application
-	 * @throws Exception
+	 * @throws Exception if the main method runner cannot be created
 	 */
 	protected Runnable createMainMethodRunner(String mainClass, String[] args,
 			ClassLoader classLoader) throws Exception {
@@ -127,14 +127,14 @@ public abstract class Launcher {
 	/**
 	 * Returns the main class that should be launched.
 	 * @return the name of the main class
-	 * @throws Exception
+	 * @throws Exception if the main class cannot be obtained
 	 */
 	protected abstract String getMainClass() throws Exception;
 
 	/**
 	 * Returns the archives that will be used to construct the class path.
 	 * @return the class path archives
-	 * @throws Exception
+	 * @throws Exception if the class path archives cannot be obtained
 	 */
 	protected abstract List<Archive> getClassPathArchives() throws Exception;
 

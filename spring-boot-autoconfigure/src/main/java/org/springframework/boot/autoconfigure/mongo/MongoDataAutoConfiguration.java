@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.annotation.Persistent;
-import org.springframework.data.authentication.UserCredentials;
+import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
@@ -59,6 +61,7 @@ import org.springframework.util.StringUtils;
 
 import com.mongodb.DB;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's mongo support.
@@ -73,13 +76,14 @@ import com.mongodb.Mongo;
  * @author Oliver Gierke
  * @author Josh Long
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass({ Mongo.class, MongoTemplate.class })
 @EnableConfigurationProperties(MongoProperties.class)
 @AutoConfigureAfter(MongoAutoConfiguration.class)
-public class MongoDataAutoConfiguration {
+public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 
 	@Autowired
 	private MongoProperties properties;
@@ -90,17 +94,17 @@ public class MongoDataAutoConfiguration {
 	@Autowired
 	private ResourceLoader resourceLoader;
 
+	private ClassLoader classLoader;
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoDbFactory mongoDbFactory(Mongo mongo) throws Exception {
+	public MongoDbFactory mongoDbFactory(MongoClient mongo) throws Exception {
 		String database = this.properties.getMongoClientDatabase();
-		String authDatabase = this.properties.getAuthenticationDatabase();
-		if (StringUtils.hasLength(authDatabase)) {
-			String username = this.properties.getUsername();
-			String password = new String(this.properties.getPassword());
-			UserCredentials credentials = new UserCredentials(username, password);
-			return new SimpleMongoDbFactory(mongo, database, credentials, authDatabase);
-		}
 		return new SimpleMongoDbFactory(mongo, database);
 	}
 
@@ -134,6 +138,11 @@ public class MongoDataAutoConfiguration {
 			throws ClassNotFoundException {
 		MongoMappingContext context = new MongoMappingContext();
 		context.setInitialEntitySet(getInitialEntitySet(beanFactory));
+		Class<? extends FieldNamingStrategy> strategyClass = this.properties
+				.getFieldNamingStrategy();
+		if (strategyClass != null) {
+			context.setFieldNamingStrategy(BeanUtils.instantiate(strategyClass));
+		}
 		return context;
 	}
 
@@ -151,7 +160,7 @@ public class MongoDataAutoConfiguration {
 				for (BeanDefinition candidate : scanner
 						.findCandidateComponents(basePackage)) {
 					entitySet.add(ClassUtils.forName(candidate.getBeanClassName(),
-							MongoDataAutoConfiguration.class.getClassLoader()));
+							this.classLoader));
 				}
 			}
 		}

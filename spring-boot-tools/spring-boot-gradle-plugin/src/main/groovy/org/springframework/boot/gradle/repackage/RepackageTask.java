@@ -210,7 +210,8 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		private LaunchScript getLaunchScript() throws IOException {
-			if (this.extension.isExecutable()) {
+			if (this.extension.isExecutable()
+					|| extension.getEmbeddedLaunchScript() != null) {
 				return new DefaultLaunchScript(this.extension.getEmbeddedLaunchScript(),
 						this.extension.getEmbeddedLaunchScriptProperties());
 			}

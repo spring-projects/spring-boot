@@ -31,20 +31,21 @@ public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfigu
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableWebSecurity");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableWebSecurity", "EnableGlobalMethodSecurity");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies
 				.ifAnyMissingClasses(
-						"org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
-				.add("spring-security-config").add("spring-security-web", false);
+						"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity")
+				.add("spring-boot-starter-security");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
 		imports.addImports("org.springframework.security.core.Authentication",
+				"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity",
 				"org.springframework.security.core.authority.AuthorityUtils")
 				.addStarImports(
 						"org.springframework.security.config.annotation.web.configuration",

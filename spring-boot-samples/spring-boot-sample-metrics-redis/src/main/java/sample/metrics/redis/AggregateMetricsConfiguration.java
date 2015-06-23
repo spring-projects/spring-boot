@@ -20,20 +20,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.metrics.aggregate.AggregateMetricReader;
+import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.redis.RedisMetricRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
-/**
- * @author Dave Syer
- */
 @Configuration
 public class AggregateMetricsConfiguration {
 
 	@Autowired
-	private ExportProperties export;
+	private MetricExportProperties export;
 
 	@Autowired
 	private RedisConnectionFactory connectionFactory;
@@ -44,8 +42,8 @@ public class AggregateMetricsConfiguration {
 	}
 
 	private MetricReader globalMetricsForAggregation() {
-		return new RedisMetricRepository(this.connectionFactory,
-				this.export.getAggregatePrefix(), this.export.getKey());
+		return new RedisMetricRepository(this.connectionFactory, this.export.getRedis()
+				.getAggregatePrefix(), this.export.getRedis().getKey());
 	}
 
 	private MetricReader aggregatesMetricReader() {

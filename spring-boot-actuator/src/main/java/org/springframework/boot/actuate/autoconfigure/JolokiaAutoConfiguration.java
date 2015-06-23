@@ -40,11 +40,11 @@ import org.springframework.context.annotation.Configuration;
  * <p>
  * This configuration will get automatically enabled as soon as the Jolokia
  * {@link AgentServlet} is on the classpath. To disable it set
- * <code>endpoints.jolokia.enabled: false</code> or <code>endpoints.enabled: false</code>.
+ * {@code endpoints.jolokia.enabled: false} or {@code endpoints.enabled: false}.
  *
  * <p>
  * Additional configuration parameters for Jolokia can be provided by specifying
- * <code>jolokia.config.*</code> properties. See the <a
+ * {@code jolokia.config.*} properties. See the <a
  * href="http://jolokia.org">http://jolokia.org</a> web site for more information on
  * supported configuration parameters.
  *

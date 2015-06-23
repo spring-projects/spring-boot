@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see #configure(SpringApplicationBuilder)
  */
 public abstract class SpringBootServletInitializer implements WebApplicationInitializer {
@@ -83,7 +84,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	protected WebApplicationContext createRootApplicationContext(
 			ServletContext servletContext) {
-		SpringApplicationBuilder builder = new SpringApplicationBuilder();
+		SpringApplicationBuilder builder = createSpringApplicationBuilder();
+		builder.main(getClass());
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
 		if (parent != null) {
 			this.logger.info("Root context already created (using as parent).");
@@ -106,6 +108,17 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		// Ensure error pages are registered
 		application.getSources().add(ErrorPageFilter.class);
 		return run(application);
+	}
+
+	/**
+	 * Returns the {@code SpringApplicationBuilder} that is used to configure and create
+	 * the {@link SpringApplication}. The default implementation returns a new
+	 * {@code SpringApplicationBuilder} in its default state.
+	 * @return the {@code SpringApplicationBuilder}.
+	 * @since 1.3.0
+	 */
+	protected SpringApplicationBuilder createSpringApplicationBuilder() {
+		return new SpringApplicationBuilder();
 	}
 
 	/**

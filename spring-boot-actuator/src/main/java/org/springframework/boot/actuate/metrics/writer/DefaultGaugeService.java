@@ -57,4 +57,5 @@ public class DefaultGaugeService implements GaugeService {
 		this.names.put(metricName, name);
 		return name;
 	}
+
 }

@@ -32,6 +32,7 @@ import org.springframework.messaging.MessageChannel;
  * {@link MessageChannel}.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass(MessageChannel.class)

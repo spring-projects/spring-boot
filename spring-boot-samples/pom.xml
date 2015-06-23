@@ -30,6 +30,7 @@
 		<module>spring-boot-sample-aop</module>
 		<module>spring-boot-sample-atmosphere</module>
 		<module>spring-boot-sample-batch</module>
+		<module>spring-boot-sample-cache</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
 		<module>spring-boot-sample-data-gemfire</module>
 		<module>spring-boot-sample-data-jpa</module>
@@ -37,6 +38,7 @@
 		<module>spring-boot-sample-data-redis</module>
 		<module>spring-boot-sample-data-rest</module>
 		<module>spring-boot-sample-data-solr</module>
+		<module>spring-boot-sample-devtools</module>
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
 		<module>spring-boot-sample-hornetq</module>
@@ -47,6 +49,7 @@
 		<module>spring-boot-sample-jetty-ssl</module>
 		<module>spring-boot-sample-jetty8</module>
 		<module>spring-boot-sample-jetty8-ssl</module>
+		<module>spring-boot-sample-jooq</module>
 		<module>spring-boot-sample-jpa</module>
 		<module>spring-boot-sample-jta-atomikos</module>
 		<module>spring-boot-sample-jta-bitronix</module>
@@ -58,7 +61,9 @@
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-secure</module>
+		<module>spring-boot-sample-secure-oauth2</module>
 		<module>spring-boot-sample-servlet</module>
+		<module>spring-boot-sample-session-redis</module>
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-testng</module>
 		<module>spring-boot-sample-tomcat</module>
@@ -76,6 +81,7 @@
 		<module>spring-boot-sample-web-mustache</module>
 		<module>spring-boot-sample-web-secure</module>
 		<module>spring-boot-sample-web-secure-custom</module>
+		<module>spring-boot-sample-web-secure-github</module>
 		<module>spring-boot-sample-web-secure-jdbc</module>
 		<module>spring-boot-sample-web-static</module>
 		<module>spring-boot-sample-web-jsp</module>

@@ -232,6 +232,20 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedListOfBean() throws Exception {
+		TargetWithNestedListOfBean target = new TargetWithNestedListOfBean();
+		bind(target, "nested[0].foo: bar\nnested[1].foo: foo");
+		assertEquals("bar", target.getNested().get(0).getFoo());
+	}
+
+	@Test
+	public void testBindNestedListOfBeanWithList() throws Exception {
+		TargetWithNestedListOfBeanWithList target = new TargetWithNestedListOfBeanWithList();
+		bind(target, "nested[0].nested[0].foo: bar\nnested[1].nested[0].foo: foo");
+		assertEquals("bar", target.getNested().get(0).getNested().get(0).getFoo());
+	}
+
+	@Test
 	public void testBindNestedListCommaDelimitedOnly() throws Exception {
 		TargetWithNestedList target = new TargetWithNestedList();
 		this.conversionService = new DefaultConversionService();
@@ -759,6 +773,34 @@ public class RelaxedDataBinderTests {
 		}
 
 		public void setNested(List<String> nested) {
+			this.nested = nested;
+		}
+
+	}
+
+	public static class TargetWithNestedListOfBean {
+
+		private List<VanillaTarget> nested;
+
+		public List<VanillaTarget> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(List<VanillaTarget> nested) {
+			this.nested = nested;
+		}
+
+	}
+
+	public static class TargetWithNestedListOfBeanWithList {
+
+		private List<TargetWithNestedListOfBean> nested;
+
+		public List<TargetWithNestedListOfBean> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(List<TargetWithNestedListOfBean> nested) {
 			this.nested = nested;
 		}
 

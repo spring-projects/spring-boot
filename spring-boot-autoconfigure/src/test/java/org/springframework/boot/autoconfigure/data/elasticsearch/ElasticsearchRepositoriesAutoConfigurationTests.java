@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs");
+		addElasticsearchProperties(this.context);
 		this.context.register(TestConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -67,9 +65,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs");
+		addElasticsearchProperties(this.context);
 		this.context.register(EmptyConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -82,9 +78,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.properties.path.data:target/data",
-				"spring.data.elasticsearch.properties.path.logs:target/logs");
+		addElasticsearchProperties(this.context);
 		this.context.register(CustomizedConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchRepositoriesAutoConfiguration.class,
@@ -92,6 +86,12 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityElasticsearchDbRepository.class));
+	}
+
+	private void addElasticsearchProperties(AnnotationConfigApplicationContext context) {
+		EnvironmentTestUtils.addEnvironment(context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
 	}
 
 	@Configuration

@@ -19,7 +19,10 @@ package org.springframework.boot.actuate.metrics.opentsdb;
 import java.util.Map;
 
 /**
+ * OpenTSDB Data.
+ *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class OpenTsdbData {
 

@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.web.servlet.view.velocity.EmbeddedVelocityViewResolver;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -42,6 +43,7 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -136,7 +138,7 @@ public class VelocityAutoConfigurationTests {
 	}
 
 	@Test
-	public void customFreeMarkerSettings() {
+	public void customVelocitySettings() {
 		registerAndRefreshContext("spring.velocity.properties.directive.parse.max.depth:10");
 		assertThat(this.context.getBean(VelocityConfigurer.class).getVelocityEngine()
 				.getProperty("directive.parse.max.depth"), equalTo((Object) "10"));
@@ -172,6 +174,13 @@ public class VelocityAutoConfigurationTests {
 		finally {
 			context.close();
 		}
+	}
+
+	@Test
+	public void usesEmbeddedVelocityViewResolver() {
+		registerAndRefreshContext("spring.velocity.toolbox:/toolbox.xml");
+		VelocityViewResolver resolver = this.context.getBean(VelocityViewResolver.class);
+		assertThat(resolver, instanceOf(EmbeddedVelocityViewResolver.class));
 	}
 
 	private void registerAndRefreshContext(String... env) {

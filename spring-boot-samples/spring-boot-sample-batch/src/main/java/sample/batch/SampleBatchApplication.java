@@ -67,4 +67,5 @@ public class SampleBatchApplication {
 		System.exit(SpringApplication.exit(SpringApplication.run(
 				SampleBatchApplication.class, args)));
 	}
+
 }

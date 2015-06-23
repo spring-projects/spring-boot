@@ -61,4 +61,5 @@ public class CounterBuffersTests {
 	public void findNonExistent() {
 		assertNull(this.buffers.find("foo"));
 	}
+
 }

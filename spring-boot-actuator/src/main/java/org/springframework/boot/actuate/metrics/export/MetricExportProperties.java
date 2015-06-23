@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.export;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,61 +26,30 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.PatternMatchUtils;
 
 /**
+ * Configuration properties for metrics export.
+ *
  * @author Dave Syer
+ * @since 1.3.0
  */
 @ConfigurationProperties("spring.metrics.export")
-public class MetricExportProperties {
+public class MetricExportProperties extends TriggerProperties {
 
 	/**
-	 * Flag to disable all metric exports (assuming any MetricWriters are available).
+	 * Specific trigger properties per MetricWriter bean name.
 	 */
-	private boolean enabled = true;
+	private Map<String, SpecificTriggerProperties> triggers = new LinkedHashMap<String, SpecificTriggerProperties>();
 
-	private Export export = new Export();
-
-	private Map<String, Export> writers = new LinkedHashMap<String, Export>();
-
-	/**
-	 * Default values for trigger configuration for all writers. Can also be set by
-	 * including a writer with <code>name="*"</code>.
-	 *
-	 * @return the default trigger configuration
-	 */
-	public Export getDefault() {
-		return this.export;
-	}
-
-	/**
-	 * Configuration for triggers on individual named writers. Each value can individually
-	 * specify a name pattern explicitly, or else the map key will be used if the name is
-	 * not set.
-	 *
-	 * @return the writers
-	 */
-	public Map<String, Export> getWriters() {
-		return this.writers;
-	}
+	private Redis redis = new Redis();
 
 	@PostConstruct
 	public void setUpDefaults() {
-		Export defaults = null;
-		for (Entry<String, Export> entry : this.writers.entrySet()) {
+		TriggerProperties defaults = this;
+		for (Entry<String, SpecificTriggerProperties> entry : this.triggers.entrySet()) {
 			String key = entry.getKey();
-			Export value = entry.getValue();
+			SpecificTriggerProperties value = entry.getValue();
 			if (value.getNames() == null || value.getNames().length == 0) {
 				value.setNames(new String[] { key });
 			}
-			if (Arrays.asList(value.getNames()).contains("*")) {
-				defaults = value;
-			}
-		}
-		if (defaults == null) {
-			this.export.setNames(new String[] { "*" });
-			this.writers.put("*", this.export);
-			defaults = this.export;
-		}
-		if (defaults.isIgnoreTimestamps() == null) {
-			defaults.setIgnoreTimestamps(false);
 		}
 		if (defaults.isSendLatest() == null) {
 			defaults.setSendLatest(true);
@@ -89,10 +57,7 @@ public class MetricExportProperties {
 		if (defaults.getDelayMillis() == null) {
 			defaults.setDelayMillis(5000);
 		}
-		for (Export value : this.writers.values()) {
-			if (value.isIgnoreTimestamps() == null) {
-				value.setIgnoreTimestamps(defaults.isIgnoreTimestamps());
-			}
+		for (TriggerProperties value : this.triggers.values()) {
 			if (value.isSendLatest() == null) {
 				value.setSendLatest(defaults.isSendLatest());
 			}
@@ -102,101 +67,22 @@ public class MetricExportProperties {
 		}
 	}
 
-	public boolean isEnabled() {
-		return this.enabled;
+	/**
+	 * Configuration for triggers on individual named writers. Each value can individually
+	 * specify a name pattern explicitly, or else the map key will be used if the name is
+	 * not set.
+	 * @return the writers
+	 */
+	public Map<String, SpecificTriggerProperties> getTriggers() {
+		return this.triggers;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public Redis getRedis() {
+		return this.redis;
 	}
 
-	public static class Export {
-		/**
-		 * Names (or patterns) for bean names that this configuration applies to.
-		 */
-		private String[] names;
-		/**
-		 * Delay in milliseconds between export ticks. Metrics are exported to external
-		 * sources on a schedule with this delay.
-		 */
-		private Long delayMillis;
-
-		/**
-		 * Flag to enable metric export (assuming a MetricWriter is available).
-		 */
-		private boolean enabled = true;
-
-		/**
-		 * Flag to switch off any available optimizations based on not exporting unchanged
-		 * metric values.
-		 */
-		private Boolean sendLatest;
-
-		/**
-		 * Flag to ignore timestamps completely. If true, send all metrics all the time,
-		 * including ones that haven't changed since startup.
-		 */
-		private Boolean ignoreTimestamps;
-
-		private String[] includes;
-
-		private String[] excludes;
-
-		public String[] getNames() {
-			return this.names;
-		}
-
-		public void setNames(String[] names) {
-			this.names = names;
-		}
-
-		public String[] getIncludes() {
-			return this.includes;
-		}
-
-		public void setIncludes(String[] includes) {
-			this.includes = includes;
-		}
-
-		public void setExcludes(String[] excludes) {
-			this.excludes = excludes;
-		}
-
-		public String[] getExcludes() {
-			return this.excludes;
-		}
-
-		public boolean isEnabled() {
-			return this.enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-		public Long getDelayMillis() {
-			return this.delayMillis;
-		}
-
-		public void setDelayMillis(long delayMillis) {
-			this.delayMillis = delayMillis;
-		}
-
-		public Boolean isIgnoreTimestamps() {
-			return this.ignoreTimestamps;
-		}
-
-		public void setIgnoreTimestamps(boolean ignoreTimestamps) {
-			this.ignoreTimestamps = ignoreTimestamps;
-		}
-
-		public Boolean isSendLatest() {
-			return this.sendLatest;
-		}
-
-		public void setSendLatest(boolean sendLatest) {
-			this.sendLatest = sendLatest;
-		}
+	public void setRedis(Redis redis) {
+		this.redis = redis;
 	}
 
 	/**
@@ -204,12 +90,78 @@ public class MetricExportProperties {
 	 * @param name the bean name to match
 	 * @return a matching configuration if there is one
 	 */
-	public Export findExport(String name) {
-		for (Export value : this.writers.values()) {
+	public TriggerProperties findTrigger(String name) {
+		for (SpecificTriggerProperties value : this.triggers.values()) {
 			if (PatternMatchUtils.simpleMatch(value.getNames(), name)) {
 				return value;
 			}
 		}
-		return this.export;
+		return this;
 	}
+
+	public static class Redis {
+
+		/**
+		 * Prefix for redis repository if active. Should be unique for this JVM, but most
+		 * useful if it also has the form "x.y.a.b" where "x.y" is globally unique across
+		 * all processes sharing the same repository, "a" is unique to this logical
+		 * process (this application) and "b" is unique to this physical process. If you
+		 * set spring.application.name elsewhere, then the default will be in the right
+		 * form.
+		 */
+		private String prefix = "spring.metrics";
+
+		/**
+		 * Key for redis repository export (if active). Should be globally unique for a
+		 * system sharing a redis repository.
+		 */
+		private String key = "keys.spring.metrics";
+
+		/**
+		 * Pattern that tells the aggregator what to do with the keys from the source
+		 * repository. The keys in the source repository are assumed to be period
+		 * separated, and the pattern is in the same format, e.g. "d.d.k.d". Here "d"
+		 * means "discard" and "k" means "keep" the key segment in the corresponding
+		 * position in the source.
+		 */
+		private String aggregateKeyPattern = "";
+
+		public String getPrefix() {
+			return this.prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getKey() {
+			return this.key;
+		}
+
+		public void setKey(String key) {
+			this.key = key;
+		}
+
+		public String getAggregateKeyPattern() {
+			return this.aggregateKeyPattern;
+		}
+
+		public void setAggregateKeyPattern(String keyPattern) {
+			this.aggregateKeyPattern = keyPattern;
+		}
+
+		public String getAggregatePrefix() {
+			if (this.key.startsWith("keys.")) {
+				return this.key.substring("keys.".length());
+			}
+			// Something that is safe (not empty) but not the whole prefix (on the
+			// assumption that it contains dimension keys)
+			if (this.prefix.contains(".") && !this.prefix.endsWith(".")) {
+				return this.prefix.substring(this.prefix.indexOf("." + 1));
+			}
+			return this.prefix;
+		}
+
+	}
+
 }

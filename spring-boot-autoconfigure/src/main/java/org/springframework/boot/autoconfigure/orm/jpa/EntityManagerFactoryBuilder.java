@@ -34,7 +34,7 @@ import org.springframework.util.ClassUtils;
  * {@link LocalContainerEntityManagerFactoryBean} through a fluent builder pattern. The
  * most common options are covered in the builder, but you can always manipulate the
  * product of the builder if you need more control, before returning it from a
- * <code>@Bean</code> definition.
+ * {@code @Bean} definition.
  *
  * @author Dave Syer
  * @since 1.1.0
@@ -97,7 +97,7 @@ public class EntityManagerFactoryBuilder {
 		}
 
 		/**
-		 * The names of packages to scan for <code>@Entity</code> annotations.
+		 * The names of packages to scan for {@code @Entity} annotations.
 		 * @param packagesToScan packages to scan
 		 * @return the builder for fluent usage
 		 */
@@ -107,8 +107,7 @@ public class EntityManagerFactoryBuilder {
 		}
 
 		/**
-		 * The classes whose packages should be scanned for <code>@Entity</code>
-		 * annotations.
+		 * The classes whose packages should be scanned for {@code @Entity} annotations.
 		 * @param basePackageClasses the classes to use
 		 * @return the builder for fluent usage
 		 */

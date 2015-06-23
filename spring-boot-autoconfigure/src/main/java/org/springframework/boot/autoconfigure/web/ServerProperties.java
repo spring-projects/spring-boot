@@ -56,6 +56,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Ivan Sopov
+ * @author Marcos Barbero
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
@@ -294,13 +295,21 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
-				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"; // 127/8
+				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
+				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
+				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
 		 * Configured as a RemoteIpValve only if remoteIpHeader is also set.
 		 */
 		private String protocolHeader;
+
+		/**
+		 * Value of the protocol header that indicates that the incoming request uses SSL.
+		 */
+		private String protocolHeaderHttpsValue = "https";
 
 		/**
 		 * Name of the HTTP header used to override the original port value.
@@ -431,6 +440,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.protocolHeader = protocolHeader;
 		}
 
+		public String getProtocolHeaderHttpsValue() {
+			return this.protocolHeaderHttpsValue;
+		}
+
+		public void setProtocolHeaderHttpsValue(String protocolHeaderHttpsValue) {
+			this.protocolHeaderHttpsValue = protocolHeaderHttpsValue;
+		}
+
 		public String getPortHeader() {
 			return this.portHeader;
 		}
@@ -459,14 +476,36 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
 			}
+			customizeBackgroundProcessorDelay(factory);
+			customizeHeaders(factory);
+			if (this.maxThreads > 0) {
+				customizeMaxThreads(factory);
+			}
+			if (this.maxHttpHeaderSize > 0) {
+				customizeMaxHttpHeaderSize(factory);
+			}
+			customizeCompression(factory);
+			if (this.accessLogEnabled) {
+				customizeAccessLog(factory);
+			}
+			if (getUriEncoding() != null) {
+				factory.setUriEncoding(getUriEncoding());
+			}
+		}
 
+		private void customizeBackgroundProcessorDelay(
+				TomcatEmbeddedServletContainerFactory factory) {
 			factory.addContextCustomizers(new TomcatContextCustomizer() {
+
 				@Override
 				public void customize(Context context) {
 					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
 				}
-			});
 
+			});
+		}
+
+		private void customizeHeaders(TomcatEmbeddedServletContainerFactory factory) {
 			String remoteIpHeader = getRemoteIpHeader();
 			String protocolHeader = getProtocolHeader();
 			if (StringUtils.hasText(remoteIpHeader)
@@ -476,37 +515,45 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 				valve.setProtocolHeader(protocolHeader);
 				valve.setInternalProxies(getInternalProxies());
 				valve.setPortHeader(getPortHeader());
+				valve.setProtocolHeaderHttpsValue(getProtocolHeaderHttpsValue());
 				factory.addContextValves(valve);
 			}
+		}
 
-			if (this.maxThreads > 0) {
-				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-					@Override
-					public void customize(Connector connector) {
-						ProtocolHandler handler = connector.getProtocolHandler();
-						if (handler instanceof AbstractProtocol) {
-							@SuppressWarnings("rawtypes")
-							AbstractProtocol protocol = (AbstractProtocol) handler;
-							protocol.setMaxThreads(Tomcat.this.maxThreads);
-						}
+		@SuppressWarnings("rawtypes")
+		private void customizeMaxThreads(TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+				@Override
+				public void customize(Connector connector) {
+
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractProtocol) {
+						AbstractProtocol protocol = (AbstractProtocol) handler;
+						protocol.setMaxThreads(Tomcat.this.maxThreads);
 					}
-				});
-			}
 
-			if (this.maxHttpHeaderSize > 0) {
-				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-					@Override
-					public void customize(Connector connector) {
-						ProtocolHandler handler = connector.getProtocolHandler();
-						if (handler instanceof AbstractHttp11Protocol) {
-							@SuppressWarnings("rawtypes")
-							AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-							protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
-						}
+				}
+			});
+		}
+
+		@SuppressWarnings("rawtypes")
+		private void customizeMaxHttpHeaderSize(
+				TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+
+				@Override
+				public void customize(Connector connector) {
+					ProtocolHandler handler = connector.getProtocolHandler();
+					if (handler instanceof AbstractHttp11Protocol) {
+						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+						protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
 					}
-				});
-			}
+				}
 
+			});
+		}
+
+		private void customizeCompression(TomcatEmbeddedServletContainerFactory factory) {
 			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
 
 				@Override
@@ -531,22 +578,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 				}
 
 			});
+		}
 
-			if (this.accessLogEnabled) {
-				AccessLogValve valve = new AccessLogValve();
-				String accessLogPattern = getAccessLogPattern();
-				if (accessLogPattern != null) {
-					valve.setPattern(accessLogPattern);
-				}
-				else {
-					valve.setPattern("common");
-				}
-				valve.setSuffix(".log");
-				factory.addContextValves(valve);
-			}
-			if (getUriEncoding() != null) {
-				factory.setUriEncoding(getUriEncoding());
-			}
+		private void customizeAccessLog(TomcatEmbeddedServletContainerFactory factory) {
+			AccessLogValve valve = new AccessLogValve();
+			String accessLogPattern = getAccessLogPattern();
+			valve.setPattern(accessLogPattern == null ? "common" : accessLogPattern);
+			valve.setSuffix(".log");
+			factory.addContextValves(valve);
 		}
 
 	}
@@ -573,7 +612,25 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		 */
 		private Integer workerThreads;
 
+		/**
+		 * Allocate buffers outside the Java heap.
+		 */
 		private Boolean directBuffers;
+
+		/**
+		 * Format pattern for access logs.
+		 */
+		private String accessLogPattern = "common";
+
+		/**
+		 * Enable access log.
+		 */
+		private boolean accessLogEnabled = false;
+
+		/**
+		 * Undertow access log directory.
+		 */
+		private File accessLogDir = new File("logs");
 
 		public Integer getBufferSize() {
 			return this.bufferSize;
@@ -615,12 +672,39 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.directBuffers = directBuffers;
 		}
 
+		public String getAccessLogPattern() {
+			return this.accessLogPattern;
+		}
+
+		public void setAccessLogPattern(String accessLogPattern) {
+			this.accessLogPattern = accessLogPattern;
+		}
+
+		public boolean isAccessLogEnabled() {
+			return this.accessLogEnabled;
+		}
+
+		public void setAccessLogEnabled(boolean accessLogEnabled) {
+			this.accessLogEnabled = accessLogEnabled;
+		}
+
+		public File getAccessLogDir() {
+			return this.accessLogDir;
+		}
+
+		public void setAccessLogDir(File accessLogDir) {
+			this.accessLogDir = accessLogDir;
+		}
+
 		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
 			factory.setBufferSize(this.bufferSize);
 			factory.setBuffersPerRegion(this.buffersPerRegion);
 			factory.setIoThreads(this.ioThreads);
 			factory.setWorkerThreads(this.workerThreads);
 			factory.setDirectBuffers(this.directBuffers);
+			factory.setAccessLogDirectory(this.accessLogDir);
+			factory.setAccessLogPattern(this.accessLogPattern);
+			factory.setAccessLogEnabled(this.accessLogEnabled);
 		}
 
 	}

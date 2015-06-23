@@ -81,7 +81,6 @@ public abstract class CompilerAutoConfiguration {
 
 	/**
 	 * Apply any additional configuration.
-	 *
 	 * @param loader the class loader being used during compilation
 	 * @param configuration the compiler configuration
 	 * @param generatorContext the current context
@@ -93,4 +92,5 @@ public abstract class CompilerAutoConfiguration {
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
 			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
 	}
+
 }

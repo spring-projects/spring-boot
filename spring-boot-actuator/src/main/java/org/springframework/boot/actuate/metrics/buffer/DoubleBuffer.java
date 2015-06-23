@@ -20,6 +20,7 @@ package org.springframework.boot.actuate.metrics.buffer;
  * Mutable buffer containing a double value and a timestamp.
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public class DoubleBuffer {
 
@@ -47,4 +48,5 @@ public class DoubleBuffer {
 	public long getTimestamp() {
 		return this.timestamp;
 	}
+
 }

@@ -99,6 +99,7 @@ public class StatsdMetricWriterTests {
 	private static final class DummyStatsDServer {
 
 		private final List<String> messagesReceived = new ArrayList<String>();
+
 		private final DatagramSocket server;
 
 		public DummyStatsDServer(int port) {
@@ -141,5 +142,7 @@ public class StatsdMetricWriterTests {
 		public List<String> messagesReceived() {
 			return new ArrayList<String>(this.messagesReceived);
 		}
+
 	}
+
 }

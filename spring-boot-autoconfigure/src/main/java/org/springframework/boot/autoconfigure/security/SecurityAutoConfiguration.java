@@ -37,9 +37,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * random and printed on the console at INFO level during startup. In a webapp this
  * configuration also secures all web endpoints (except some well-known static resource)
  * locations with HTTP basic security. To replace all the default behaviour in a webapp
- * provide a <code>@Configuration</code> with <code>@EnableWebSecurity</code>. To just add
- * your own layer of application security in front of the defaults, add a
- * <code>@Configuration</code> of type {@link WebSecurityConfigurerAdapter}.
+ * provide a {@code @Configuration} with {@code @EnableWebSecurity}. To just add your own
+ * layer of application security in front of the defaults, add a {@code @Configuration} of
+ * type {@link WebSecurityConfigurerAdapter}.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 
@@ -387,15 +388,17 @@ public class ConfigFileApplicationListener implements
 							.getProperty(INCLUDE_PROFILES_PROPERTY));
 				}
 			}
-
 			StringBuilder msg = new StringBuilder();
 			msg.append(propertySource == null ? "Skipped " : "Loaded ");
 			msg.append("config file ");
-			msg.append("'" + location + "' ");
-			msg.append(StringUtils.hasLength(profile) ? "for profile " + profile : "");
-			msg.append(resource == null || !resource.exists() ? "resource not found" : "");
+			msg.append("'").append(location).append("'");
+			if (StringUtils.hasLength(profile)) {
+				msg.append(" for profile ").append(profile);
+			}
+			if (resource == null || !resource.exists()) {
+				msg.append(" resource not found");
+			}
 			this.debug.add(msg);
-
 			return propertySource;
 		}
 
@@ -453,10 +456,10 @@ public class ConfigFileApplicationListener implements
 				for (String path : asResolvedSet(
 						this.environment.getProperty(CONFIG_LOCATION_PROPERTY), null)) {
 					if (!path.contains("$")) {
-						if (!path.contains(":")) {
-							path = "file:" + path;
-						}
 						path = StringUtils.cleanPath(path);
+						if (!ResourceUtils.isUrl(path)) {
+							path = ResourceUtils.FILE_URL_PREFIX + path;
+						}
 					}
 					locations.add(path);
 				}

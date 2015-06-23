@@ -64,4 +64,5 @@ public class SampleElasticsearchApplication implements CommandLineRunner {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleElasticsearchApplication.class, "--debug").close();
 	}
+
 }

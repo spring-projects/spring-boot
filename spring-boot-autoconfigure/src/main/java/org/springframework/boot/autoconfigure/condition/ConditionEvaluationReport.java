@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -86,7 +87,7 @@ public class ConditionEvaluationReport {
 	 * Records the name of the classes that have been excluded from condition evaluation
 	 * @param exclusions the names of the excluded classes
 	 */
-	public void recordExclusions(List<String> exclusions) {
+	public void recordExclusions(Collection<String> exclusions) {
 		Assert.notNull(exclusions, "exclusions must not be null");
 		this.exclusions = new ArrayList<String>(exclusions);
 	}

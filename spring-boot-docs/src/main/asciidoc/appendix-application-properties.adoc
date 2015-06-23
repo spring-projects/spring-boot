@@ -27,6 +27,10 @@ content into your application; rather pick only the properties that you need.
 	# CORE PROPERTIES
 	# ----------------------------------------
 
+    # BANNER
+    banner.charset=UTF-8 # banner file encoding
+    banner.location=classpath:banner.txt # banner file location
+
 	# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
 	spring.config.name= # config file name (default to 'application')
 	spring.config.location= # location of config file
@@ -36,13 +40,20 @@ content into your application; rather pick only the properties that you need.
 	spring.profiles.include= # unconditionally activate the specified comma separated profiles
 
 	# APPLICATION SETTINGS ({sc-spring-boot}/SpringApplication.{sc-ext}[SpringApplication])
-	spring.main.sources=
+	spring.main.sources= # sources (class name, package name or XML resource location) to include
 	spring.main.web-environment= # detect by default
 	spring.main.show-banner=true
 	spring.main....= # see class for all properties
 
+	# ADMIN ({sc-spring-boot-autoconfigure}/admin/SpringApplicationAdminJmxAutoConfiguration.{sc-ext}[SpringApplicationAdminJmxAutoConfiguration])
+	spring.application.admin.enabled=false # enable admin features for the application
+	spring.application.admin.jmx-name=org.springframework.boot:type=Admin,name=SpringApplication # JMX name of the application admin MBean
+
+	# OUTPUT
+	spring.output.ansi.enabled=detect # Configure the ANSI output ("detect", "always", "never")
+
 	# LOGGING
-	logging.path=/var/logs
+	logging.path=/var/log
 	logging.file=myapp.log
 	logging.config= # location of config file (default classpath:logback.xml for logback)
 	logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
@@ -83,8 +94,12 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
 			169\\.254\\.\\d{1,3}\\.\\d{1,3}|\\
-			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3} # regular expression matching trusted IP addresses
+			127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
+			172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
+			172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|\\
+			172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3} # regular expression matching trusted IP addresses
 	server.tomcat.protocol-header=x-forwarded-proto # front end proxy forward header
+	server.tomcat.protocol-header-https-value=https # value of the protocol header that indicates that the incoming request uses SSL
 	server.tomcat.port-header= # front end proxy port header
 	server.tomcat.remote-ip-header=x-forwarded-for
 	server.tomcat.basedir=/tmp # base dir (usually not needed, defaults to tmp)
@@ -92,15 +107,24 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.max-http-header-size= # maximum size in bytes of the HTTP message header
 	server.tomcat.max-threads = 0 # number of threads in protocol handler
 	server.tomcat.uri-encoding = UTF-8 # character encoding to use for URL decoding
+	server.undertow.access-log-enabled=false # if access logging is enabled
+	server.undertow.access-log-pattern=common # log pattern of the access log
+	server.undertow.access-log-dir=logs # access logs directory
+	server.undertow.buffer-size= # size of each buffer in bytes
+    server.undertow.buffers-per-region= # number of buffer per region
+    server.undertow.direct-buffers=false # allocate buffers outside the Java heap
+    server.undertow.io-threads= # number of I/O threads to create for the worker
+    server.undertow.worker-threads= # number of worker threads
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.locale= # set fixed locale, e.g. en_UK
 	spring.mvc.date-format= # set fixed date format, e.g. dd/MM/yyyy
 	spring.mvc.favicon.enabled=true
 	spring.mvc.message-codes-resolver-format= # PREFIX_ERROR_CODE / POSTFIX_ERROR_CODE
-	spring.mvc.ignore-default-model-on-redirect=true # If the the content of the "default" model should be ignored redirects
-	spring.view.prefix= # MVC view prefix
-	spring.view.suffix= # ... and suffix
+	spring.mvc.ignore-default-model-on-redirect=true # if the the content of the "default" model should be ignored redirects
+	spring.mvc.async.request-timeout= # async request timeout in milliseconds
+	spring.mvc.view.prefix= # MVC view prefix
+	spring.mvc.view.suffix= # ... and suffix
 
 	# SPRING RESOURCES HANDLING ({sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[ResourceProperties])
 	spring.resources.cache-period= # cache timeouts in headers sent to browser
@@ -130,11 +154,12 @@ content into your application; rather pick only the properties that you need.
 	spring.http.gzip.deflate-no-wrap= # noWrap setting for deflate compression (true or false)
 	spring.http.gzip.enabled=true # enable gzip filter support
 	spring.http.gzip.excluded-agents= # comma-separated list of user agents to exclude from compression
-	spring.http.gzip.excluded-agent-patterns= # comma-separated list of regular expression patterns to control user agents excluded from compression
-	spring.http.gzip.excluded-paths= # comma-separated list of paths to exclude from compression
-	spring.http.gzip.excluded-path-patterns= # comma-separated list of regular expression patterns to control the paths that are excluded from compression
+	spring.http.gzip.exclude-agent-patterns= # comma-separated list of regular expression patterns to control user agents excluded from compression
+	spring.http.gzip.exclude-paths= # comma-separated list of paths to exclude from compression
+	spring.http.gzip.exclude-path-patterns= # comma-separated list of regular expression patterns to control the paths that are excluded from compression
 	spring.http.gzip.methods= # comma-separated list of HTTP methods for which compression is enabled
 	spring.http.gzip.mime-types= # comma-separated list of MIME types which should be compressed
+	spring.http.gzip.excluded-mime-types= # comma-separated list of MIME types to exclude from compression
 	spring.http.gzip.min-gzip-size= # minimum content length required for compression to occur
 	spring.http.gzip.vary= # Vary header to be sent on responses that may be compressed
 
@@ -143,6 +168,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jackson.property-naming-strategy= # One of the constants on Jackson's PropertyNamingStrategy (e.g. CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES) or the fully-qualified class name of a PropertyNamingStrategy subclass
 	spring.jackson.deserialization.*= # see Jackson's DeserializationFeature
 	spring.jackson.generator.*= # see Jackson's JsonGenerator.Feature
+	spring.jackson.joda-date-time-format= # Joda date time format string
 	spring.jackson.mapper.*= # see Jackson's MapperFeature
 	spring.jackson.parser.*= # see Jackson's JsonParser.Feature
 	spring.jackson.serialization.*= # see Jackson's SerializationFeature
@@ -155,6 +181,7 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.view-names= # comma-separated list of view names that can be resolved
 	spring.thymeleaf.suffix=.html
 	spring.thymeleaf.mode=HTML5
+	spring.thymeleaf.enabled=true # enable MVC view resolution
 	spring.thymeleaf.encoding=UTF-8
 	spring.thymeleaf.content-type=text/html # ;charset=<encoding> is added
 	spring.thymeleaf.cache=true # set to false for hot refresh
@@ -165,6 +192,7 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.check-template-location=true
 	spring.freemarker.charset=UTF-8
 	spring.freemarker.content-type=text/html
+	spring.freemarker.enabled=true # enable MVC view resolution
 	spring.freemarker.expose-request-attributes=false
 	spring.freemarker.expose-session-attributes=false
 	spring.freemarker.expose-spring-macro-helpers=false
@@ -178,8 +206,10 @@ content into your application; rather pick only the properties that you need.
 	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[GroovyTemplateAutoConfiguration])
 	spring.groovy.template.cache=true
 	spring.groovy.template.charset=UTF-8
-	spring.groovy.template.configuration.*= # See Groovy's TemplateConfiguration
+	spring.groovy.template.check-template-location=true # check that the templates location exists
+	spring.groovy.template.configuration.*= # See GroovyMarkupConfigurer
 	spring.groovy.template.content-type=text/html
+	spring.groovy.template.enabled=true # enable MVC view resolution
 	spring.groovy.template.prefix=classpath:/templates/
 	spring.groovy.template.suffix=.tpl
 	spring.groovy.template.view-names= # whitelist of view names that can be resolved
@@ -191,6 +221,7 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.charset=UTF-8
 	spring.velocity.content-type=text/html
 	spring.velocity.date-tool-attribute=
+	spring.velocity.enabled=true # enable MVC view resolution
 	spring.velocity.expose-request-attributes=false
 	spring.velocity.expose-session-attributes=false
 	spring.velocity.expose-spring-macro-helpers=false
@@ -203,6 +234,16 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.suffix=.vm
 	spring.velocity.toolbox-config-location= # velocity Toolbox config location, for example "/WEB-INF/toolbox.xml"
 	spring.velocity.view-names= # whitelist of view names that can be resolved
+
+	# MUSTACHE TEMPLATES ({sc-spring-boot-autoconfigure}/mustache/MustacheAutoConfiguration.{sc-ext}[MustacheAutoConfiguration])
+	spring.mustache.cache=true
+	spring.mustache.charset=UTF-8
+	spring.mustache.check-template-location=true
+	spring.mustache.content-type=UTF-8
+	spring.mustache.enabled=true # enable MVC view resolution
+	spring.mustache.prefix=
+	spring.mustache.suffix=.html
+	spring.mustache.view-names= # whitelist of view names that can be resolved
 
 	# JERSEY ({sc-spring-boot-autoconfigure}}/jersey/JerseyProperties.{sc-ext}[JerseyProperties])
 	spring.jersey.type=servlet # servlet or filter
@@ -233,6 +274,14 @@ content into your application; rather pick only the properties that you need.
 	security.headers.hsts=all # none / domain / all
 	security.sessions=stateless # always / never / if_required / stateless
 	security.ignored= # Comma-separated list of paths to exclude from the default secured paths
+
+	# OAuth2 client ({sc-spring-boot-autoconfigure}/security/oauth2/OAuth2ClientProperties.{sc-ext}[OAuth2ClientProperties]
+	spring.oauth2.client.client-id= # OAuth2 client id
+    spring.oauth2.client.client-secret= # OAuth2 client secret. A random secret is generated by default
+
+    # OAuth2 SSO ({sc-spring-boot-autoconfigure}/security/oauth2/client/OAuth2SsoProperties.{sc-ext}[OAuth2SsoProperties]
+    spring.oauth2.sso.filter-order= # Filter order to apply if not providing an explicit WebSecurityConfigurerAdapter
+    spring.oauth2.sso.login-path= # Path to the login page, i.e. the one that triggers the redirect to the OAuth2 Authorization Server
 
 	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[DataSourceProperties])
 	spring.datasource.name= # name of the data source
@@ -274,6 +323,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.username=
 	spring.data.mongodb.password=
 	spring.data.mongodb.repositories.enabled=true # if spring data repository support is enabled
+	spring.data.mongodb.field-naming-strategy= # fully qualified name of the FieldNamingStrategy to use
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.jpa.properties.*= # properties to set on the JPA connection
@@ -286,9 +336,12 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
 	spring.data.jpa.repositories.enabled=true # if spring data repository support is enabled
 
-	# JTA ({sc-spring-boot-autoconfigure}/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
+	# JTA ({sc-spring-boot-autoconfigure}/transaction/jta/JtaAutoConfiguration.{sc-ext}[JtaAutoConfiguration])
 	spring.jta.log-dir= # transaction log dir
 	spring.jta.*= # technology specific configuration
+
+	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
+	spring.jooq.sql-dialect=
 
 	# ATOMIKOS
 	spring.jta.atomikos.connectionfactory.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool
@@ -341,17 +394,17 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.datasource.automatic-enlisting-enabled=true # Whether or not resources should be enlisted and delisted automatically
 	spring.jta.bitronix.datasource.cursor-holdability= # The default cursor holdability for connections
 	spring.jta.bitronix.datasource.defer-connection-release=true # Whether or not the database can run many transactions on the same connection and supports transaction interleaving
-	spring.jta.bitronix.datasource.enable-jdbc4-connection-test # Whether or not Connection.isValid() is called when acquiring a connection from the pool
+	spring.jta.bitronix.datasource.enable-jdbc4-connection-test= # Whether or not Connection.isValid() is called when acquiring a connection from the pool
 	spring.jta.bitronix.datasource.ignore-recovery-failures=false # Whether or not recovery failures should be ignored
 	spring.jta.bitronix.datasource.isolation-level= # The default isolation level for connections
-	spring.jta.bitronix.datasource.local-auto-commit # The default auto-commit mode for local transactions
+	spring.jta.bitronix.datasource.local-auto-commit= # The default auto-commit mode for local transactions
 	spring.jta.bitronix.datasource.login-timeout= # Timeout, in seconds, for establishing a database connection
 	spring.jta.bitronix.datasource.max-idle-time=60 # The time, in seconds, after which connections are cleaned up from the pool
 	spring.jta.bitronix.datasource.max-pool-size=10 # The maximum size of the pool. 0 denotes no limit
 	spring.jta.bitronix.datasource.min-pool-size=0 # The minimum size of the pool
 	spring.jta.bitronix.datasource.prepared-statement-cache-size=0 # The target size of the prepared statement cache. 0 disables the cache
 	spring.jta.bitronix.datasource.share-transaction-connections=false #  Whether or not connections in the ACCESSIBLE state can be shared within the context of a transaction
-	spring.jta.bitronix.datasource.test-query # SQL query or statement used to validate a connection before returning it
+	spring.jta.bitronix.datasource.test-query= # SQL query or statement used to validate a connection before returning it
 	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE)
 	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery
 	spring.jta.bitronix.datasource.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources
@@ -368,7 +421,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.elasticsearch.repositories.enabled=true # if spring data repository support is enabled
 
 	# DATA REST ({spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[RepositoryRestConfiguration])
-	spring.data.rest.base-uri= # base URI against which the exporter should calculate its links
+	spring.data.rest.base-path= # base path against which the exporter should calculate its links
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
 	flyway.*= # Any public property available on the auto-configured `Flyway` object
@@ -396,16 +449,24 @@ content into your application; rather pick only the properties that you need.
 	liquibase.password= # password for liquibase.url
 
 	# JMX
+	spring.jmx.default-domain= # JMX domain name
 	spring.jmx.enabled=true # Expose MBeans from Spring
+	spring.jmx.server=mbeanServer # MBeanServer bean name
 
 	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
+	spring.rabbitmq.addresses= # connection addresses (e.g. myhost:9999,otherhost:1111)
+	spring.rabbitmq.dynamic=true # create an AmqpAdmin bean
 	spring.rabbitmq.host= # connection host
 	spring.rabbitmq.port= # connection port
-	spring.rabbitmq.addresses= # connection addresses (e.g. myhost:9999,otherhost:1111)
-	spring.rabbitmq.username= # login user
 	spring.rabbitmq.password= # login password
-	spring.rabbitmq.virtual-host=
-	spring.rabbitmq.dynamic=
+	spring.rabbitmq.requested-heartbeat= # requested heartbeat timeout, in seconds; zero for none
+	spring.rabbitmq.ssl.enabled=false # enable SSL support
+	spring.rabbitmq.ssl.key-store= # path to the key store that holds the SSL certificate
+	spring.rabbitmq.ssl.key-store-password= # password used to access the key store
+	spring.rabbitmq.ssl.trust-store= # trust store that holds SSL certificates
+	spring.rabbitmq.ssl.trust-store-password= # password used to access the trust store
+	spring.rabbitmq.username= # login user
+	spring.rabbitmq.virtual-host= # virtual host to use when connecting to the broker
 
 	# REDIS ({sc-spring-boot-autoconfigure}/redis/RedisProperties.{sc-ext}[RedisProperties])
 	spring.redis.database= # database name
@@ -418,6 +479,7 @@ content into your application; rather pick only the properties that you need.
 	spring.redis.pool.max-wait=-1
 	spring.redis.sentinel.master= # name of Redis server
 	spring.redis.sentinel.nodes= # comma-separated list of host:port pairs
+	spring.redis.timeout= # connection timeout in milliseconds
 
 	# ACTIVEMQ ({sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[ActiveMQProperties])
 	spring.activemq.broker-url=tcp://localhost:61616 # connection URL
@@ -426,7 +488,19 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.in-memory=true # broker kind to create if no broker-url is specified
 	spring.activemq.pooled=false
 
-	# HornetQ ({sc-spring-boot-autoconfigure}/jms/hornetq/HornetQProperties.{sc-ext}[HornetQProperties])
+	# ARTEMIS ({sc-spring-boot-autoconfigure}/jms/artemis/ArtemisProperties.{sc-ext}[ArtemisProperties])
+	spring.artemis.mode= # connection mode (native, embedded)
+	spring.artemis.host=localhost # hornetQ host (native mode)
+	spring.artemis.port=5445 # hornetQ port (native mode)
+	spring.artemis.embedded.enabled=true # if the embedded server is enabled (needs hornetq-jms-server.jar)
+	spring.artemis.embedded.server-id= # auto-generated id of the embedded server (integer)
+	spring.artemis.embedded.persistent=false # message persistence
+	spring.artemis.embedded.data-directory= # location of data content (when persistence is enabled)
+	spring.artemis.embedded.queues= # comma-separated queues to create on startup
+	spring.artemis.embedded.topics= # comma-separated topics to create on startup
+	spring.artemis.embedded.cluster-password= # customer password (randomly generated by default)
+
+	# HORNETQ ({sc-spring-boot-autoconfigure}/jms/hornetq/HornetQProperties.{sc-ext}[HornetQProperties])
 	spring.hornetq.mode= # connection mode (native, embedded)
 	spring.hornetq.host=localhost # hornetQ host (native mode)
 	spring.hornetq.port=5445 # hornetQ port (native mode)
@@ -449,17 +523,22 @@ content into your application; rather pick only the properties that you need.
 	spring.mail.password=
 	spring.mail.default-encoding=UTF-8 # encoding to use for MimeMessages
 	spring.mail.properties.*= # properties to set on the JavaMail session
+	spring.mail.jndi-name= # JNDI location of a Mail Session
 
-	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchDatabaseInitializer.{sc-ext}[BatchDatabaseInitializer])
+	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchProperties.{sc-ext}[BatchProperties])
 	spring.batch.job.names=job1,job2
 	spring.batch.job.enabled=true
 	spring.batch.initializer.enabled=true
 	spring.batch.schema= # batch schema to load
+	spring.batch.table-prefix= # table prefix for all the batch meta-data tables
 
 	# SPRING CACHE ({sc-spring-boot-autoconfigure}/cache/CacheProperties.{sc-ext}[CacheProperties])
-	spring.cache.type= # generic, ehcache, hazelcast, jcache, redis, guava, simple, none
-	spring.cache.config= #
+	spring.cache.type= # generic, ehcache, hazelcast, infinispan, jcache, redis, guava, simple, none
 	spring.cache.cache-names= # cache names to create on startup
+	spring.cache.ehcache.config= # location of the ehcache configuration
+	spring.cache.hazelcast.config= # location of the hazelcast configuration
+	spring.cache.infinispan.config= # location of the infinispan configuration
+	spring.cache.jcache.config= # location of jcache configuration
 	spring.cache.jcache.provider= # fully qualified name of the CachingProvider implementation to use
 	spring.cache.guava.spec= # link:http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilderSpec.html[guava specs]
 
@@ -490,12 +569,34 @@ content into your application; rather pick only the properties that you need.
 
 	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DeviceDelegatingViewResolverAutoConfiguration.{sc-ext}[DeviceDelegatingViewResolverAutoConfiguration])
 	spring.mobile.devicedelegatingviewresolver.enabled=true # disabled by default
+	spring.mobile.devicedelegatingviewresolver.enable-fallback= # enable support for fallback resolution, default to false.
 	spring.mobile.devicedelegatingviewresolver.normal-prefix=
 	spring.mobile.devicedelegatingviewresolver.normal-suffix=
 	spring.mobile.devicedelegatingviewresolver.mobile-prefix=mobile/
 	spring.mobile.devicedelegatingviewresolver.mobile-suffix=
 	spring.mobile.devicedelegatingviewresolver.tablet-prefix=tablet/
 	spring.mobile.devicedelegatingviewresolver.tablet-suffix=
+
+	# ----------------------------------------
+	# DEVTOOLS PROPERTIES
+	# ----------------------------------------
+
+    # DEVTOOLS ({sc-spring-boot-devtools}/autoconfigure/DevToolsProperties.{sc-ext}[DevToolsProperties])
+    spring.devtools.restart.enabled=true # enable automatic restart
+    spring.devtools.restart.exclude= # patterns that should be excluding for triggering a full restart
+    spring.devtools.restart.poll-interval= # amount of time (in milliseconds) to wait between polling for classpath changes
+    spring.devtools.restart.quiet-period= # amount of quiet time (in milliseconds) requited without any classpath changes before a restart is triggered
+    spring.devtools.restart.trigger-file= # name of a specific file that when changed will trigger the restart
+	spring.devtools.livereload.enabled=true # enable a livereload.com compatible server
+    spring.devtools.livereload.port=35729 # server port.
+
+    # REMOTE DEVTOOLS ({sc-spring-boot-devtools}/autoconfigure/RemoteDevToolsProperties.{sc-ext}[RemoteDevToolsProperties])
+    spring.devtools.remote.context-path=/.~~spring-boot!~ # context path used to handle the remote connection
+    spring.devtools.remote.debug.enabled=true # enable remote debug support
+    spring.devtools.remote.debug.local-port=8000 # local remote debug server port
+    spring.devtools.remote.restart.enabled=true # enable remote restart
+    spring.devtools.remote.secret= # a shared secret required to establish a connection
+    spring.devtools.remote.secret-header-name=X-AUTH-TOKEN # HTTP header used to transfer the shared secret
 
 	# ----------------------------------------
 	# ACTUATOR PROPERTIES
@@ -511,7 +612,8 @@ content into your application; rather pick only the properties that you need.
 	management.security.sessions=stateless # session creating policy to use (always, never, if_required, stateless)
 
 	# PID FILE ({sc-spring-boot-actuator}/system/ApplicationPidFileWriter.{sc-ext}[ApplicationPidFileWriter])
-	spring.pidfile= # Location of the PID file to write
+	spring.pid.file= # Location of the PID file to write
+	spring.pid.fail-on-write-error= # Fail if the PID file cannot be written
 
 	# ENDPOINTS ({sc-spring-boot-actuator}/endpoint/AbstractEndpoint.{sc-ext}[AbstractEndpoint] subclasses)
 	endpoints.autoconfig.id=autoconfig
@@ -523,14 +625,15 @@ content into your application; rather pick only the properties that you need.
 	endpoints.configprops.id=configprops
 	endpoints.configprops.sensitive=true
 	endpoints.configprops.enabled=true
-	endpoints.configprops.keys-to-sanitize=password,secret,key # suffix or regex
+	endpoints.configprops.keys-to-sanitize=password,secret,key,.*credentials.*,vcap_services # suffix or regex
 	endpoints.dump.id=dump
 	endpoints.dump.sensitive=true
 	endpoints.dump.enabled=true
+	endpoints.enabled=true # enable all endpoints
 	endpoints.env.id=env
 	endpoints.env.sensitive=true
 	endpoints.env.enabled=true
-	endpoints.env.keys-to-sanitize=password,secret,key # suffix or regex
+	endpoints.env.keys-to-sanitize=password,secret,key,.*credentials.*,vcap_services # suffix or regex
 	endpoints.health.id=health
 	endpoints.health.sensitive=true
 	endpoints.health.enabled=true
@@ -558,14 +661,18 @@ content into your application; rather pick only the properties that you need.
 	endpoints.cors.allowed-methods= # comma-separated list of methods to allow. * allows all methods. When not set, defaults to GET.
 	endpoints.cors.allowed-headers= # comma-separated list of headers to allow in a request. * allows all headers.
 	endpoints.cors.exposed-headers= # comma-separated list of headers to include in a response.
+	endpoints.cors.max-age=1800 # how long, in seconds, the response from a pre-flight request can be cached by clients.
 
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true
 	management.health.elasticsearch.enabled=true
+	management.health.elasticsearch.indices=  # comma-separated index names
 	management.health.elasticsearch.response-timeout=100 # the time, in milliseconds, to wait for a response from the cluster
 	management.health.diskspace.enabled=true
 	management.health.diskspace.path=.
 	management.health.diskspace.threshold=10485760
+	management.health.jms.enabled=true
+	management.health.mail.enabled=true
 	management.health.mongo.enabled=true
 	management.health.rabbit.enabled=true
 	management.health.redis.enabled=true
@@ -573,12 +680,12 @@ content into your application; rather pick only the properties that you need.
 	management.health.status.order=DOWN, OUT_OF_SERVICE, UNKNOWN, UP
 
 	# MVC ONLY ENDPOINTS
-	endpoints.jolokia.path=jolokia
+	endpoints.jolokia.path=/jolokia
 	endpoints.jolokia.sensitive=true
 	endpoints.jolokia.enabled=true # when using Jolokia
 
 	# JMX ENDPOINT ({sc-spring-boot-actuator}/autoconfigure/EndpointMBeanExportProperties.{sc-ext}[EndpointMBeanExportProperties])
-	endpoints.jmx.enabled=true
+	endpoints.jmx.enabled=true # enable JMX export of all endpoints
 	endpoints.jmx.domain= # the JMX domain, defaults to 'org.springboot'
 	endpoints.jmx.unique-names=false
 	endpoints.jmx.static-names=
@@ -603,6 +710,17 @@ content into your application; rather pick only the properties that you need.
 	shell.auth.simple.user.name=
 	shell.auth.simple.user.password=
 	shell.auth.spring.roles=
+
+	# METRICS EXPORT ({sc-spring-boot-actuator}/metrics/export/MetricExportProperties.{sc-ext}[MetricExportProperties])
+	spring.metrics.export.enabled=true # flag to disable all metric exports (assuming any MetricWriters are available)
+	spring.metrics.export.delay-millis=5000 # delay in milliseconds between export ticks
+	spring.metrics.export.send-latest=true # flag to switch off any available optimizations based on not exporting unchanged metric values
+	spring.metrics.export.includes= # list of patterns for metric names to include
+	spring.metrics.export.excludes= # list of patterns for metric names to exclude. Applied after the includes
+	spring.metrics.export.redis.aggregate-key-pattern= # pattern that tells the aggregator what to do with the keys from the source repository
+	spring.metrics.export.redis.prefix=spring.metrics # prefix for redis repository if active
+	spring.metrics.export.redis.key=keys.spring.metrics # key for redis repository export (if active)
+	spring.metrics.export.triggers.*= # specific trigger properties per MetricWriter bean name
 
 	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
 	spring.sendgrid.username= # SendGrid account username

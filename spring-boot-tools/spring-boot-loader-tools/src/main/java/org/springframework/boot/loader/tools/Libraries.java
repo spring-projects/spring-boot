@@ -37,7 +37,7 @@ public interface Libraries {
 	/**
 	 * Iterate all relevant libraries.
 	 * @param callback a callback for each relevant library.
-	 * @throws IOException
+	 * @throws IOException if the operation fails
 	 */
 	void doWithLibraries(LibraryCallback callback) throws IOException;
 

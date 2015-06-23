@@ -38,6 +38,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.context.request.async.StandardServletAsyncWebRequest;
 import org.springframework.web.context.request.async.WebAsyncManager;
 import org.springframework.web.context.request.async.WebAsyncUtils;
+import org.springframework.web.util.NestedServletException;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -62,7 +63,8 @@ public class ErrorPageFilterTests {
 
 	private ErrorPageFilter filter = new ErrorPageFilter();
 
-	private MockHttpServletRequest request = new MockHttpServletRequest();
+	private MockHttpServletRequest request = new MockHttpServletRequest("GET",
+			"/test/path");
 
 	private MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -199,6 +201,9 @@ public class ErrorPageFilterTests {
 				equalTo((Object) 400));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
 				equalTo((Object) "BAD"));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
+
 		assertTrue(this.response.isCommitted());
 		assertThat(this.response.getForwardedUrl(), equalTo("/error"));
 	}
@@ -221,6 +226,8 @@ public class ErrorPageFilterTests {
 				equalTo((Object) 400));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
 				equalTo((Object) "BAD"));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
 		assertTrue(this.response.isCommitted());
 		assertThat(this.response.getForwardedUrl(), equalTo("/400"));
 	}
@@ -264,6 +271,8 @@ public class ErrorPageFilterTests {
 				equalTo((Object) "BAD"));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
 				equalTo((Object) RuntimeException.class.getName()));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
 		assertTrue(this.response.isCommitted());
 		assertThat(this.response.getForwardedUrl(), equalTo("/500"));
 	}
@@ -319,6 +328,8 @@ public class ErrorPageFilterTests {
 				equalTo((Object) "BAD"));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
 				equalTo((Object) IllegalStateException.class.getName()));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
 		assertTrue(this.response.isCommitted());
 	}
 
@@ -463,6 +474,32 @@ public class ErrorPageFilterTests {
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.output.toString(), containsString("request [/test/alpha]"));
+	}
+
+	@Test
+	public void nestedServletExceptionIsUnwrapped() throws Exception {
+		this.filter.addErrorPages(new ErrorPage(RuntimeException.class, "/500"));
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				throw new NestedServletException("Wrapper", new RuntimeException("BAD"));
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
+				equalTo(500));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE),
+				equalTo((Object) 500));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
+				equalTo((Object) "BAD"));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
+				equalTo((Object) RuntimeException.class.getName()));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
+				equalTo((Object) "/test/path"));
+		assertTrue(this.response.isCommitted());
+		assertThat(this.response.getForwardedUrl(), equalTo("/500"));
 	}
 
 	private void setUpAsyncDispatch() throws Exception {

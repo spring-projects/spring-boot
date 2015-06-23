@@ -39,6 +39,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.NestedServletException;
 
 /**
  * A special {@link AbstractConfigurableEmbeddedServletContainer} for non-embedded
@@ -68,6 +69,8 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 	private static final String ERROR_EXCEPTION_TYPE = "javax.servlet.error.exception_type";
 
 	private static final String ERROR_MESSAGE = "javax.servlet.error.message";
+
+	public static final String ERROR_REQUEST_URI = "javax.servlet.error.request_uri";
 
 	private static final String ERROR_STATUS_CODE = "javax.servlet.error.status_code";
 
@@ -121,7 +124,11 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 			}
 		}
 		catch (Throwable ex) {
-			handleException(request, response, wrapped, ex);
+			Throwable exceptionToHandle = ex;
+			if (ex instanceof NestedServletException) {
+				exceptionToHandle = ((NestedServletException) ex).getRootCause();
+			}
+			handleException(request, response, wrapped, exceptionToHandle);
 			response.flushBuffer();
 		}
 	}
@@ -225,9 +232,10 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		return this.global;
 	}
 
-	private void setErrorAttributes(ServletRequest request, int status, String message) {
+	private void setErrorAttributes(HttpServletRequest request, int status, String message) {
 		request.setAttribute(ERROR_STATUS_CODE, status);
 		request.setAttribute(ERROR_MESSAGE, message);
+		request.setAttribute(ERROR_REQUEST_URI, request.getRequestURI());
 	}
 
 	private void rethrow(Throwable ex) throws IOException, ServletException {

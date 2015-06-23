@@ -18,6 +18,12 @@
     "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions."
   },
   {
+    "name": "endpoints.jmx.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable JMX export of all endpoints.",
+    "defaultValue": true
+  },
+  {
     "name": "info",
     "type": "java.util.Map<java.lang.String,java.lang.Object>",
     "description": "Arbitrary properties to add to the info endpoint."
@@ -32,6 +38,12 @@
     "name": "management.health.diskspace.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable disk space health check.",
+    "defaultValue": true
+  },
+  {
+    "name": "management.health.elasticsearch.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable elasticsearch health check.",
     "defaultValue": true
   },
   {
@@ -76,8 +88,21 @@
     "description": "Resource reference to a generated git info properties file."
   },
   {
+    "name": "spring.pid.file",
+    "type": "java.lang.String",
+    "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
+    "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
+  }
+  {
+    "name": "spring.pid.fail-on-write-error",
+    "type": "java.lang.Boolean",
+    "description": "Fail if ApplicationPidFileWriter is used but it cannot write the PID file.",
+    "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
+  }
+  {
     "name": "spring.pidfile",
     "type": "java.lang.String",
+    "deprecated:" true,
     "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
     "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
   }
