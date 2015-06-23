@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -56,6 +58,9 @@ public class JsonMarshallerTests {
 		metadata.add(ItemHint.newHint("a.b"));
 		metadata.add(ItemHint.newHint("c", new ItemHint.ValueHint(123, "hey"),
 				new ItemHint.ValueHint(456, null)));
+		metadata.add(new ItemHint("d", null, Arrays.asList(
+				new ItemHint.ProviderHint("first", Collections.<String,Object>singletonMap("target", "foo")),
+				new ItemHint.ProviderHint("second", null))));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
@@ -76,6 +81,9 @@ public class JsonMarshallerTests {
 		assertThat(read, containsHint("a.b"));
 		assertThat(read,
 				containsHint("c").withValue(0, 123, "hey").withValue(1, 456, null));
+		assertThat(read, containsHint("d")
+				.withProvider("first", "target", "foo")
+				.withProvider("second"));
 	}
 
 }

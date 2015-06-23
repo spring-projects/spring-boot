@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provide hints on an {@link ItemMetadata}. Defines the list of possible values for a
@@ -27,7 +28,7 @@ import java.util.List;
  * <p>
  * The {@code name} of the hint is the name of the related property with one major
  * exception for map types as both the keys and values of the map can have hints. In such
- * a case, the hint should be suffixed by ".key" or ".values" respectively. Creating a
+ * a case, the hint should be suffixed by ".keys" or ".values" respectively. Creating a
  * hint for a map using its property name is therefore invalid.
  *
  * @author Stephane Nicoll
@@ -39,9 +40,12 @@ public class ItemHint implements Comparable<ItemHint> {
 
 	private final List<ValueHint> values;
 
-	public ItemHint(String name, List<ValueHint> values) {
+	private final List<ProviderHint> providers;
+
+	public ItemHint(String name, List<ValueHint> values, List<ProviderHint> providers) {
 		this.name = toCanonicalName(name);
-		this.values = new ArrayList<ValueHint>(values);
+		this.values = (values != null ? new ArrayList<ValueHint>(values) : new ArrayList<ValueHint>());
+		this.providers = (providers != null ? new ArrayList<ProviderHint>(providers) : new ArrayList<ProviderHint>());
 	}
 
 	private String toCanonicalName(String name) {
@@ -62,19 +66,23 @@ public class ItemHint implements Comparable<ItemHint> {
 		return Collections.unmodifiableList(this.values);
 	}
 
+	public List<ProviderHint> getProviders() {
+		return Collections.unmodifiableList(this.providers);
+	}
+
 	@Override
 	public int compareTo(ItemHint other) {
 		return getName().compareTo(other.getName());
 	}
 
 	public static ItemHint newHint(String name, ValueHint... values) {
-		return new ItemHint(name, Arrays.asList(values));
+		return new ItemHint(name, Arrays.asList(values), Collections.<ProviderHint>emptyList());
 	}
 
 	@Override
 	public String toString() {
-		return "ItemHint{" + "name='" + this.name + '\'' + ", values=" + this.values
-				+ '}';
+		return "ItemHint{" + "name='" + this.name + ", values=" + this.values
+				+ "providers=" + this.providers + '}';
 	}
 
 	public static class ValueHint {
@@ -102,6 +110,30 @@ public class ItemHint implements Comparable<ItemHint> {
 					+ this.description + '\'' + '}';
 		}
 
+	}
+
+	public static class ProviderHint {
+		private final String name;
+		private final Map<String,Object> parameters;
+
+		public ProviderHint(String name, Map<String, Object> parameters) {
+			this.name = name;
+			this.parameters = parameters;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Map<String, Object> getParameters() {
+			return parameters;
+		}
+
+		@Override
+		public String toString() {
+			return "Provider{" + "name='" + this.name + ", parameters=" + this.parameters +
+					'}';
+		}
 	}
 
 }

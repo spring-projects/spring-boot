@@ -71,6 +71,11 @@ categorized under "hints":
 					"value": "force",
 					"description": "Enable compression of all responses."
 				},
+			],
+			"providers": [
+				{
+					"name": "any"
+				}
 			]
 		}
 	]}
@@ -210,6 +215,12 @@ The JSON object contained in the `hints` array can contain the following attribu
 | ValueHint[]
 | A list of valid values as defined by the `ValueHint` object (see below). Each entry defines
   the value and may have a description
+
+|`providers`
+| ProviderHint[]
+| A list of providers as defined by the `ValueHint` object (see below). Each entry defines
+  the name of the provider and its parameters, if any.
+
 |===
 
 The JSON object contained in the `values` array of each `hint` element can contain the
@@ -232,6 +243,24 @@ following attributes:
   end with a period (`.`).
 |===
 
+The JSON object contained in the `providers` array of each `hint` element can contain the
+following attributes:
+
+[cols="1,1,4"]
+|===
+|Name | Type |Purpose
+
+|`name`
+| String
+| The name of the provider to use to offer additional content assistance for the element
+  to which the hint refers to.
+
+|`parameters`
+| JSON object
+| Any additional parameter that the provider supports (check the documentation of the
+  provider for more details).
+|===
+
 [[configuration-metadata-repeated-items]]
 ==== Repeated meta-data items
 It is perfectly acceptable for "`property`" and "`group`" objects with the same name to
@@ -245,8 +274,14 @@ that they support such scenarios.
 [[configuration-metadata-providing-manual-hints]]
 === Providing manual hints
 To improve the user experience and further assist the user in configuring a given
-property, you can provide additional meta-data that describes the list of potential
-values for a property.
+property, you can provide additional meta-data that:
+
+1. Describes the list of potential values for a property.
+2. Associates a provider to attach a well-defined semantic to a property so that a tool
+   can discover the list of potential values based on the project's context.
+
+
+==== Value hints
 
 The `name` attribute of each hint refers to the `name` of a property. In the initial
 example above, we provide 3 values for the `server.tomcat.compression` property: `on`,
@@ -256,7 +291,302 @@ If your property is of type `Map`, you can provide hints for both the keys and t
 values (but not for the map itself). The special `.keys` and `.values` suffixes must
 be used to refer to the keys and the values respectively.
 
+Let's assume a `foo.contexts` that maps magic String values to an integer:
 
+[source,java,indent=0]
+----
+	@ConfigurationProperties("foo")
+	public class FooProperties {
+
+		private Map<String,Integer> contexts;
+		// getters and setters
+	}
+----
+
+The magic values are foo and bar for instance. In order to offer additional content
+assistance for the keys, you could add the following to
+<<configuration-metadata-additional-metadata,the manual meta-data of the module>>:
+
+[source,json,indent=0]
+----
+	{"hints": [
+		{
+			"name": "foo.contexts.keys",
+			"values": [
+				{
+					"value": "foo"
+				},
+				{
+					"value": "bar"
+				}
+			]
+		}
+	]}
+----
+
+NOTE: Of course, you should have an `Enum` for those two values instead. This is by far
+the most effective approach to auto-completion if your IDE supports it.
+
+==== Provider hints
+
+Providers are a powerful way of attaching semantics to a property. We define in the section
+below the official providers that you can use for your own hints. Bare in mind however that
+your favorite IDE may implement some of these or none of them. It could eventually provide
+its own as well.
+
+NOTE: As this is a new feature, IDE vendors will have to catch up with this new feature.
+
+The table below summarizes the list of supported providers:
+
+[cols="2,4"]
+|===
+|Name | Description
+
+|`any`
+|Permit any additional values to be provided.
+
+|`class-reference`
+|Auto-complete the classes available in the project. Usually constrained by a base
+ class that is specified via the `target` parameter.
+
+|`enum`
+|Auto-complete the values of an enum given by the mandatory `target` parameter.
+
+|`logger-name`
+|Auto-complete valid logger names. Typically, package and class names available in
+ the current project can be auto-completed.
+
+|`spring-bean-reference`
+|Auto-complete the available bean names in the current project. Usually constrained
+ by a base class that is specified via the `target` parameter.
+|===
+
+
+TIP: No more than one provider can be active for a given property but you can specify
+several providers if they can all manage the property _in some ways_. Make sure to place
+the most powerful provider first as the IDE must use the first one in the JSON section it
+can handle. If no provider for a given property is supported, no special content
+assistance is provided either.
+
+
+===== Any
+
+The **any** provider permits any additional values to be provided. Regular value
+validation based on the property type should be applied if this is supported.
+
+This provider will be typically used if you have a list of values and any extra values
+are still to be considered as valid.
+
+The example below offers `on` and `off` as auto-completion values for `system.state`; any
+other value is also allowed:
+
+[source,json,indent=0]
+----
+	{"hints": [
+		{
+			"name": "system.state",
+			"values": [
+				{
+					"value": "on"
+				},
+				{
+					"value": "off"
+				}
+			],
+			"providers": [
+				{
+					"name": "any"
+				}
+			]
+		}
+	]}
+----
+
+===== Class reference
+
+The **class-reference** provider auto-completes classes available in the project. This
+provider supports these parameters:
+
+[cols="1,1,2,4"]
+|===
+|Parameter |Type |Default value |Description
+
+|`target`
+|`String` (`Class`)
+|_none_
+|The fully qualified name of the class that should be assignable to the chosen value.
+ Typically used to filter out non candidate classes. Note that this information can
+ be provided by the type itself by exposing a class with the appropriate upper bound.
+
+|`concrete`
+|`boolean`
+|true
+|Specify if only concrete classes are to be considered as valid candidates.
+|===
+
+
+The meta-data snippet below corresponds to the standard `server.jsp-servlet.class-name`
+property that defines the `JspServlet` class name to use:
+
+[source,json,indent=0]
+----
+	{"hints": [
+		{
+			"name": "server.jsp-servlet.class-name",
+			"providers": [
+				{
+					"name": "class-reference",
+					"parameters": {
+						"target": "javax.servlet.http.HttpServlet"
+					}
+				}
+			]
+		}
+	]}
+----
+
+===== Enum
+
+The **enum** provider auto-completes the values of the `Enum` class referenced via the
+`target` parameter. This provider supports these parameters:
+
+[cols="1,1,2,4"]
+|===
+|Parameter |Type |Default value |Description
+
+| **`target`**
+| `String` (`Enum`)
+|_none_
+|The fully qualified name of the `Enum` class. This parameter is mandatory.
+|===
+
+
+The meta-data snippet below corresponds to the standard `spring.jooq.sql-dialect`
+property that defines the `SQLDialect` class name to use:
+
+[source,json,indent=0]
+----
+	{"hints": [
+		{
+			"name": "spring.jooq.sql-dialect",
+			"providers": [
+			  {
+				"name": "enum",
+				"parameters": {
+				  "target": "org.jooq.SQLDialect"
+				}
+			  }
+			]
+		},
+    ]}
+----
+
+TIP: This is useful when you don't want your configuration classes to rely on classes
+that may not be on the classpath.
+
+
+===== Logger name
+
+The **logger-name** provider auto-completes valid logger names. Typically, package and
+class names available in the current project can be auto-completed. Specific frameworks
+may have extra magic logger names that could be supported as well.
+
+Since a logger name can be any arbitrary name, really, this provider should allow any
+value but could highlight valid packages and class names that are not available in the
+project's classpath.
+
+The meta-data snippet below corresponds to the standard `logger.level` property, keys
+are _logger names_ and values correspond to the the standard log levels or any custom
+level:
+
+[source,json,indent=0]
+----
+	{"hints": [
+		{
+			"name": "logger.level.keys",
+			"values": [
+				{
+					"value": "root",
+					"description": "Root logger used to assign the default logging level."
+				}
+			],
+			"providers": [
+				{
+					"name": "logger-name"
+				}
+			]
+		},
+		{
+			"name": "logger.level.values",
+			"values": [
+				{
+					"value": "trace"
+				},
+				{
+					"value": "debug"
+				},
+				{
+					"value": "info"
+				},
+				{
+					"value": "warn"
+				},
+				{
+					"value": "error"
+				},
+				{
+					"value": "fatal"
+				},
+				{
+					"value": "off"
+				}
+
+			],
+			"providers": [
+				{
+					"name": "any"
+				}
+			]
+		}
+	]}
+----
+
+
+===== Spring bean reference
+
+The **spring-bean-reference** provider auto-completes the beans that are defined in
+the configuration of the current project. This provider supports these parameters:
+
+[cols="1,1,2,4"]
+|===
+|Parameter |Type |Default value |Description
+
+|`target`
+| `String` (`Class`)
+|_none_
+|The fully qualified name of the bean class that should be assignable to the candidate.
+ Typically used to filter out non candidate beans.
+|===
+
+The meta-data snippet below corresponds to the standard `spring.jmx.server` property
+that defines the name of the `MBeanServer` bean to use:
+
+[source,json,indent=0]
+----
+	{"hints": [
+		{
+			"name": "spring.jmx.server",
+			"providers": [
+				{
+					"name": "spring-bean-reference",
+					"parameters": {
+						"target": "javax.management.MBeanServer"
+					}
+				}
+			]
+		}
+	]}
+----
 
 [[configuration-metadata-annotation-processor]]
 === Generating your own meta-data using the annotation processor

@@ -19,6 +19,8 @@ package org.springframework.boot.configurationprocessor;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -367,6 +369,20 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata,
 				containsHint("simple.the-name").withValue(0, "boot", "Bla bla"));
+	}
+
+	@Test
+	public void mergingOfHintWithProvider() throws Exception {
+		writeAdditionalHints(
+				new ItemHint("simple.theName", Collections.<ItemHint.ValueHint>emptyList(), Arrays.asList(
+						new ItemHint.ProviderHint("first", Collections.<String,Object>singletonMap("target", "org.foo")),
+						new ItemHint.ProviderHint("second", null))
+				));
+
+		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(metadata, containsHint("simple.the-name")
+				.withProvider("first", "target", "org.foo")
+				.withProvider("second"));
 	}
 
 	@Test

@@ -17,11 +17,14 @@
 package org.springframework.boot.configurationprocessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.collection.IsMapContaining;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
@@ -206,13 +209,16 @@ public class ConfigurationMetadataMatchers {
 
 		private final List<ValueHintMatcher> values;
 
+		private final List<ProviderHintMatcher> providers;
+
 		public ContainsHintMatcher(String name) {
-			this(name, new ArrayList<ValueHintMatcher>());
+			this(name, new ArrayList<ValueHintMatcher>(), new ArrayList<ProviderHintMatcher>());
 		}
 
-		public ContainsHintMatcher(String name, List<ValueHintMatcher> values) {
+		public ContainsHintMatcher(String name, List<ValueHintMatcher> values, List<ProviderHintMatcher> providers) {
 			this.name = name;
 			this.values = values;
+			this.providers = providers;
 		}
 
 		@Override
@@ -227,6 +233,11 @@ public class ConfigurationMetadataMatchers {
 			}
 			for (ValueHintMatcher value : this.values) {
 				if (!value.matches(itemHint)) {
+					return false;
+				}
+			}
+			for (ProviderHintMatcher provider : this.providers) {
+				if (!provider.matches(itemHint)) {
 					return false;
 				}
 			}
@@ -251,12 +262,29 @@ public class ConfigurationMetadataMatchers {
 			if (this.values != null) {
 				description.appendText(" values ").appendValue(this.values);
 			}
+			if (this.providers != null) {
+				description.appendText(" providers ").appendValue(this.providers);
+			}
 		}
 
 		public ContainsHintMatcher withValue(int index, Object value, String description) {
 			List<ValueHintMatcher> values = new ArrayList<ValueHintMatcher>(this.values);
 			values.add(new ValueHintMatcher(index, value, description));
-			return new ContainsHintMatcher(this.name, values);
+			return new ContainsHintMatcher(this.name, values, this.providers);
+		}
+
+		public ContainsHintMatcher withProvider(int index, String provider, Map<String,Object> parameters) {
+			List<ProviderHintMatcher> providers = new ArrayList<ProviderHintMatcher>(this.providers);
+			providers.add(new ProviderHintMatcher(index, provider, parameters));
+			return new ContainsHintMatcher(this.name, this.values, providers);
+		}
+
+		public ContainsHintMatcher withProvider(String provider, String key, Object value) {
+			return withProvider(this.providers.size(), provider, Collections.singletonMap(key, value));
+		}
+
+		public ContainsHintMatcher withProvider(String provider) {
+			return withProvider(this.providers.size(), provider, null);
 		}
 
 		private ItemHint getFirstHintWithName(ConfigurationMetadata metadata, String name) {
@@ -309,6 +337,52 @@ public class ConfigurationMetadataMatchers {
 			}
 			if (this.description != null) {
 				description.appendText(" description ").appendValue(this.description);
+			}
+		}
+
+	}
+
+	public static class ProviderHintMatcher extends BaseMatcher<ItemHint> {
+		private final int index;
+		private final String name;
+		private final Map<String, Object> parameters;
+
+		public ProviderHintMatcher(int index, String name, Map<String, Object> parameters) {
+			this.index = index;
+			this.name = name;
+			this.parameters = parameters;
+		}
+
+		@Override
+		public boolean matches(Object item) {
+			ItemHint hint = (ItemHint) item;
+			if (this.index + 1 > hint.getProviders().size()) {
+				return false;
+			}
+			ItemHint.ProviderHint providerHint = hint.getProviders().get(index);
+			if (this.name != null
+					&& !this.name.equals(providerHint.getName())) {
+				return false;
+			}
+			if (this.parameters != null) {
+				for (Map.Entry<String, Object> entry : this.parameters.entrySet()) {
+					if (!IsMapContaining.hasEntry(entry.getKey(), entry.getValue())
+							.matches(providerHint.getParameters())) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		@Override
+		public void describeTo(Description description) {
+			description.appendText("provider hint ");
+			if (this.name != null) {
+				description.appendText(" name ").appendValue(this.name);
+			}
+			if (this.parameters != null) {
+				description.appendText(" parameters ").appendValue(this.parameters);
 			}
 		}
 

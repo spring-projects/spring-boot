@@ -24,8 +24,10 @@ import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -102,6 +104,22 @@ public class JsonMarshaller {
 				valuesArray.put(valueObject);
 			}
 			jsonObject.put("values", valuesArray);
+		}
+		if (!hint.getProviders().isEmpty()) {
+			JSONArray providersArray = new JSONArray();
+			for (ItemHint.ProviderHint providerHint : hint.getProviders()) {
+				JSONObject providerHintObject = new JSONOrderedObject();
+				providerHintObject.put("name", providerHint.getName());
+				if (providerHint.getParameters() != null && !providerHint.getParameters().isEmpty()) {
+					JSONObject parametersObject = new JSONOrderedObject();
+					for (Map.Entry<String, Object> entry : providerHint.getParameters().entrySet()) {
+						parametersObject.put(entry.getKey(), extractItemValue(entry.getValue()));
+					}
+					providerHintObject.put("parameters", parametersObject);
+				}
+				providersArray.put(providerHintObject);
+			}
+			jsonObject.put("providers", providersArray);
 		}
 		return jsonObject;
 	}
@@ -182,13 +200,34 @@ public class JsonMarshaller {
 				values.add(toValueHint((JSONObject) valuesArray.get(i)));
 			}
 		}
-		return new ItemHint(name, values);
+		List<ItemHint.ProviderHint> providers = new ArrayList<ItemHint.ProviderHint>();
+		if (object.has("providers")) {
+			JSONArray providersObject = object.getJSONArray("providers");
+			for (int i = 0; i < providersObject.length(); i++) {
+				providers.add(toProviderHint((JSONObject) providersObject.get(i)));
+			}
+		}
+		return new ItemHint(name, values, providers);
 	}
 
 	private ItemHint.ValueHint toValueHint(JSONObject object) {
 		Object value = readItemValue(object.get("value"));
 		String description = object.optString("description", null);
 		return new ItemHint.ValueHint(value, description);
+	}
+
+	private ItemHint.ProviderHint toProviderHint(JSONObject object) {
+		String name = object.getString("name");
+		Map<String,Object> parameters = new HashMap<String,Object>();
+		if (object.has("parameters")) {
+			JSONObject parametersObject = object.getJSONObject("parameters");
+			for (Object k : parametersObject.keySet()) {
+				String key = (String) k;
+				Object value = readItemValue(parametersObject.get(key));
+				parameters.put(key, value);
+			}
+		}
+		return new ItemHint.ProviderHint(name, parameters);
 	}
 
 	private Object readItemValue(Object value) {
