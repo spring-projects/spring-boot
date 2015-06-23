@@ -394,17 +394,17 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.bitronix.datasource.automatic-enlisting-enabled=true # Whether or not resources should be enlisted and delisted automatically
 	spring.jta.bitronix.datasource.cursor-holdability= # The default cursor holdability for connections
 	spring.jta.bitronix.datasource.defer-connection-release=true # Whether or not the database can run many transactions on the same connection and supports transaction interleaving
-	spring.jta.bitronix.datasource.enable-jdbc4-connection-test # Whether or not Connection.isValid() is called when acquiring a connection from the pool
+	spring.jta.bitronix.datasource.enable-jdbc4-connection-test= # Whether or not Connection.isValid() is called when acquiring a connection from the pool
 	spring.jta.bitronix.datasource.ignore-recovery-failures=false # Whether or not recovery failures should be ignored
 	spring.jta.bitronix.datasource.isolation-level= # The default isolation level for connections
-	spring.jta.bitronix.datasource.local-auto-commit # The default auto-commit mode for local transactions
+	spring.jta.bitronix.datasource.local-auto-commit= # The default auto-commit mode for local transactions
 	spring.jta.bitronix.datasource.login-timeout= # Timeout, in seconds, for establishing a database connection
 	spring.jta.bitronix.datasource.max-idle-time=60 # The time, in seconds, after which connections are cleaned up from the pool
 	spring.jta.bitronix.datasource.max-pool-size=10 # The maximum size of the pool. 0 denotes no limit
 	spring.jta.bitronix.datasource.min-pool-size=0 # The minimum size of the pool
 	spring.jta.bitronix.datasource.prepared-statement-cache-size=0 # The target size of the prepared statement cache. 0 disables the cache
 	spring.jta.bitronix.datasource.share-transaction-connections=false #  Whether or not connections in the ACCESSIBLE state can be shared within the context of a transaction
-	spring.jta.bitronix.datasource.test-query # SQL query or statement used to validate a connection before returning it
+	spring.jta.bitronix.datasource.test-query= # SQL query or statement used to validate a connection before returning it
 	spring.jta.bitronix.datasource.two-pc-ordering-position=1 # The position that this resource should take during two-phase commit (always first is Integer.MIN_VALUE, always last is Integer.MAX_VALUE)
 	spring.jta.bitronix.datasource.unique-name=dataSource # The unique name used to identify the resource during recovery
 	spring.jta.bitronix.datasource.use-tm-join=true Whether or not TMJOIN should be used when starting XAResources
