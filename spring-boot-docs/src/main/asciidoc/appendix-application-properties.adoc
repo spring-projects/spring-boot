@@ -340,6 +340,9 @@ content into your application; rather pick only the properties that you need.
 	spring.jta.log-dir= # transaction log dir
 	spring.jta.*= # technology specific configuration
 
+	# JOOQ ({sc-spring-boot-autoconfigure}/jooq/JooqAutoConfiguration.{sc-ext}[JooqAutoConfiguration])
+	spring.jooq.sql-dialect=
+
 	# ATOMIKOS
 	spring.jta.atomikos.connectionfactory.borrow-connection-timeout=30 # Timeout, in seconds, for borrowing connections from the pool
 	spring.jta.atomikos.connectionfactory.ignore-session-transacted-flag=true # Whether or not to ignore the transacted flag when creating session
