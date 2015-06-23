@@ -19,7 +19,6 @@ package org.springframework.boot.devtools.classpath;
 import java.io.File;
 
 import org.junit.Test;
-
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 
@@ -70,10 +69,9 @@ public class PatternClassPathRestartStrategyTests {
 	public void pomChange() throws Exception {
 		ClassPathRestartStrategy strategy = createStrategy("META-INF/maven/**");
 		assertRestartRequired(strategy, "pom.xml", true);
-		assertRestartRequired(strategy,
-				"META-INF/maven/org.springframework.boot/spring-boot-devtools/pom.xml", false);
-		assertRestartRequired(strategy,
-				"META-INF/maven/org.springframework.boot/spring-boot-devtools/pom.properties", false);
+		String mavenFolder = "META-INF/maven/org.springframework.boot/spring-boot-devtools";
+		assertRestartRequired(strategy, mavenFolder + "/pom.xml", false);
+		assertRestartRequired(strategy, mavenFolder + "/pom.properties", false);
 	}
 
 	private ClassPathRestartStrategy createStrategy(String pattern) {
