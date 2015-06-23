@@ -497,5 +497,11 @@
 			<artifactId>slf4j-jdk14</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-bundle</artifactId>
+			<version>3.0.0-milestone2</version>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 </project>
