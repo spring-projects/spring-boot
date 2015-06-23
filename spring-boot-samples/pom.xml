@@ -33,6 +33,7 @@
 		<module>spring-boot-sample-cache</module>
 		<module>spring-boot-sample-data-elasticsearch</module>
 		<module>spring-boot-sample-data-gemfire</module>
+		<module>spring-boot-sample-data-jooq</module>
 		<module>spring-boot-sample-data-jpa</module>
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-redis</module>
