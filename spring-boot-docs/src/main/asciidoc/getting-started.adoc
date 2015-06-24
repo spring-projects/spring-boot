@@ -702,8 +702,8 @@ Java does not provide any standard way to load nested jar files (i.e. jar files 
 themselves contained within a jar). This can be problematic if you are looking to
 distribute a self-contained application.
 
-To solve this problem, many developers use "`shaded`" jars. A shaded jar simply packages
-all classes, from all jars, into a single "`uber jar`". The problem with shaded jars is that
+To solve this problem, many developers use "`uber`" jars. An uber jar simply packages
+all classes, from all jars, into a single archive. The problem with this approach is that
 it becomes hard to see which libraries you are actually using in your application. It can
 also be problematic if the the same filename is used (but with different content) in
 multiple jars.
