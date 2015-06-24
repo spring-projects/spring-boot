@@ -106,7 +106,6 @@ public class JsonMarshaller {
 		return jsonObject;
 	}
 
-
 	private void putIfPresent(JSONObject jsonObject, String name, Object value) {
 		if (value != null) {
 			jsonObject.put(name, value);
@@ -191,7 +190,6 @@ public class JsonMarshaller {
 		String description = object.optString("description", null);
 		return new ItemHint.ValueHint(value, description);
 	}
-
 
 	private Object readItemValue(Object value) {
 		if (value instanceof JSONArray) {

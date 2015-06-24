@@ -74,7 +74,8 @@ public class JsonMarshallerTests {
 				containsProperty("f").withDefaultValue(is(new boolean[] { true, false })));
 		assertThat(read, containsGroup("d"));
 		assertThat(read, containsHint("a.b"));
-		assertThat(read, containsHint("c").withValue(0, 123, "hey").withValue(1, 456, null));
+		assertThat(read,
+				containsHint("c").withValue(0, 123, "hey").withValue(1, 456, null));
 	}
 
 }

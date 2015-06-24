@@ -98,6 +98,7 @@ given property. When configuring the `server.tomcat.compression` property, a too
 use it to offer some auto-completion help for the `off`, `on` and `force` values.
 
 
+
 [[configuration-metadata-group-attributes]]
 ==== Group Attributes
 The JSON object contained in the `groups` array can contain the following attributes:
@@ -189,6 +190,7 @@ The JSON object contained in the `properties` array can contain the following at
 |===
 
 
+
 [[configuration-metadata-hints-attributes]]
 ==== Hint Attributes
 The JSON object contained in the `hints` array can contain the following attributes:
@@ -238,8 +240,10 @@ appear multiple times within a meta-data file. For example, Spring Boot binds
 offering overlap of property names. Consumers of meta-data should take care to ensure
 that they support such scenarios.
 
-=== Providing manual hints
 
+
+[[configuration-metadata-providing-manual-hints]]
+=== Providing manual hints
 To improve the user experience and further assist the user in configuring a given
 property, you can provide additional meta-data that describes the list of potential
 values for a property.
@@ -251,6 +255,8 @@ example above, we provide 3 values for the `server.tomcat.compression` property:
 If your property is of type `Map`, you can provide hints for both the keys and the
 values (but not for the map itself). The special `.keys` and `.values` suffixes must
 be used to refer to the keys and the values respectively.
+
+
 
 [[configuration-metadata-annotation-processor]]
 === Generating your own meta-data using the annotation processor

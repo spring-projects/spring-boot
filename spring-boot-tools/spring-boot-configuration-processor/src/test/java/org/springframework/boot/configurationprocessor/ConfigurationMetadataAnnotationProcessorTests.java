@@ -350,24 +350,23 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void mergingOfSimpleHint() throws Exception {
-		writeAdditionalHints(
-				ItemHint.newHint("simple.the-name", new ItemHint.ValueHint("boot", "Bla bla"),
-						new ItemHint.ValueHint("spring", null)));
+		writeAdditionalHints(ItemHint.newHint("simple.the-name", new ItemHint.ValueHint(
+				"boot", "Bla bla"), new ItemHint.ValueHint("spring", null)));
 
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata, containsHint("simple.the-name")
-				.withValue(0, "boot", "Bla bla")
-				.withValue(1, "spring", null));
+		assertThat(metadata,
+				containsHint("simple.the-name").withValue(0, "boot", "Bla bla")
+						.withValue(1, "spring", null));
 	}
 
 	@Test
 	public void mergingOfHintWithNonCanonicalName() throws Exception {
-		writeAdditionalHints(
-				ItemHint.newHint("simple.theName", new ItemHint.ValueHint("boot", "Bla bla")));
+		writeAdditionalHints(ItemHint.newHint("simple.theName", new ItemHint.ValueHint(
+				"boot", "Bla bla")));
 
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata, containsHint("simple.the-name")
-				.withValue(0, "boot", "Bla bla"));
+		assertThat(metadata,
+				containsHint("simple.the-name").withValue(0, "boot", "Bla bla"));
 	}
 
 	@Test

@@ -241,8 +241,7 @@ public class ConfigurationMetadataMatchers {
 				description.appendText("missing hint " + this.name);
 			}
 			else {
-				description.appendText(
-						"was hint ").appendValue(itemHint);
+				description.appendText("was hint ").appendValue(itemHint);
 			}
 		}
 
@@ -260,8 +259,7 @@ public class ConfigurationMetadataMatchers {
 			return new ContainsHintMatcher(this.name, values);
 		}
 
-		private ItemHint getFirstHintWithName(ConfigurationMetadata metadata,
-				String name) {
+		private ItemHint getFirstHintWithName(ConfigurationMetadata metadata, String name) {
 			for (ItemHint hint : metadata.getHints()) {
 				if (name.equals(hint.getName())) {
 					return hint;
@@ -273,8 +271,11 @@ public class ConfigurationMetadataMatchers {
 	}
 
 	public static class ValueHintMatcher extends BaseMatcher<ItemHint> {
+
 		private final int index;
+
 		private final Object value;
+
 		private final String description;
 
 		public ValueHintMatcher(int index, Object value, String description) {
@@ -290,12 +291,11 @@ public class ConfigurationMetadataMatchers {
 				return false;
 			}
 			ItemHint.ValueHint valueHint = hint.getValues().get(this.index);
-			if (this.value != null
-				&& !this.value.equals(valueHint.getValue())) {
+			if (this.value != null && !this.value.equals(valueHint.getValue())) {
 				return false;
 			}
 			if (this.description != null
-				&& !this.description.equals(valueHint.getDescription())) {
+					&& !this.description.equals(valueHint.getDescription())) {
 				return false;
 			}
 			return true;
@@ -303,22 +303,13 @@ public class ConfigurationMetadataMatchers {
 
 		@Override
 		public void describeTo(Description description) {
-			description.appendText("value hint at index '"+this.index+"'");
+			description.appendText("value hint at index '" + this.index + "'");
 			if (this.value != null) {
 				description.appendText(" value ").appendValue(this.value);
 			}
 			if (this.description != null) {
 				description.appendText(" description ").appendValue(this.description);
 			}
-		}
-
-		private ItemHint.ValueHint getValueHint(ItemHint hint) {
-			for (ItemHint.ValueHint valueHint : hint.getValues()) {
-				if (this.value.equals(valueHint.getValue())) {
-					return valueHint;
-				}
-			}
-			return null;
 		}
 
 	}

@@ -22,13 +22,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Provide hints on an {@link ItemMetadata}. Defines the list of possible values for
- * a particular item as {@link ItemHint.ValueHint} instances.
+ * Provide hints on an {@link ItemMetadata}. Defines the list of possible values for a
+ * particular item as {@link ItemHint.ValueHint} instances.
  * <p>
  * The {@code name} of the hint is the name of the related property with one major
- * exception for map types as both the keys and values of the map can have hints. In
- * such a case, the hint should be suffixed by ".key" or ".values" respectively. Creating
- * a hint for a map using its property name is therefore invalid.
+ * exception for map types as both the keys and values of the map can have hints. In such
+ * a case, the hint should be suffixed by ".key" or ".values" respectively. Creating a
+ * hint for a map using its property name is therefore invalid.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -73,13 +73,12 @@ public class ItemHint implements Comparable<ItemHint> {
 
 	@Override
 	public String toString() {
-		return "ItemHint{" + "name='" + this.name + '\'' +
-				", values=" + this.values +
-				'}';
+		return "ItemHint{" + "name='" + this.name + '\'' + ", values=" + this.values
+				+ '}';
 	}
 
-
 	public static class ValueHint {
+
 		private final Object value;
 
 		private final String description;
@@ -99,9 +98,10 @@ public class ItemHint implements Comparable<ItemHint> {
 
 		@Override
 		public String toString() {
-			return "ValueHint{" + "value=" + this.value +
-					", description='" + this.description + '\'' +
-					'}';
+			return "ValueHint{" + "value=" + this.value + ", description='"
+					+ this.description + '\'' + '}';
 		}
+
 	}
+
 }
