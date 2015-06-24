@@ -134,7 +134,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void restartTriggerdOnClassPathChangeWithRestart() throws Exception {
+	public void restartTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
 				Collections.<ChangedFiles> emptySet(), true);
@@ -143,7 +143,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	public void restartNotTriggerdOnClassPathChangeWithRestart() throws Exception {
+	public void restartNotTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
 				Collections.<ChangedFiles> emptySet(), false);
