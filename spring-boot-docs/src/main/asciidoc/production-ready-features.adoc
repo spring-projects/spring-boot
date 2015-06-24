@@ -811,8 +811,6 @@ The following system metrics are exposed by Spring Boot:
 The following metrics are exposed for each supported `DataSource` defined in your
 application:
 
-* The maximum number connections (`datasource.xxx.max`).
-* The minimum number of connections (`datasource.xxx.min`).
 * The number of active connections (`datasource.xxx.active`)
 * The current usage of the connection pool (`datasource.xxx.usage`).
 
