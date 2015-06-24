@@ -16,11 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,10 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Andy Wilkinson
  */
 public class EndpointMvcAdapter implements MvcEndpoint {
-
-	private final ResponseEntity<Map<String, String>> disabledResponse = new ResponseEntity<Map<String, String>>(
-			Collections.singletonMap("message", "This endpoint is disabled"),
-			HttpStatus.NOT_FOUND);
 
 	private final Endpoint<?> delegate;
 
@@ -54,9 +46,8 @@ public class EndpointMvcAdapter implements MvcEndpoint {
 	@ResponseBody
 	public Object invoke() {
 		if (!this.delegate.isEnabled()) {
-			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's
-			// disabled
-			return this.disabledResponse;
+			// Shouldn't happen - shouldn't be registered when delegate's disabled
+			return getDisabledResponse();
 		}
 		return this.delegate.invoke();
 	}
@@ -89,7 +80,7 @@ public class EndpointMvcAdapter implements MvcEndpoint {
 	 * @return The response to be returned when the endpoint is disabled
 	 */
 	protected ResponseEntity<?> getDisabledResponse() {
-		return this.disabledResponse;
+		return MvcEndpoint.DISABLED_RESPONSE;
 	}
 
 }

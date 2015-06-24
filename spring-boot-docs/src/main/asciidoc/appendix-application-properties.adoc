@@ -643,6 +643,9 @@ content into your application; rather pick only the properties that you need.
 	endpoints.info.id=info
 	endpoints.info.sensitive=false
 	endpoints.info.enabled=true
+	endpoints.logfile.path=/logfile
+	endpoints.logfile.sensitive=true
+	endpoints.logfile.enabled=true
 	endpoints.mappings.enabled=true
 	endpoints.mappings.id=mappings
 	endpoints.mappings.sensitive=true

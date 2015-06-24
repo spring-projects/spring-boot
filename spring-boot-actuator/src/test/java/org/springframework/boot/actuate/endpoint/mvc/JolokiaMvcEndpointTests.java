@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Set;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,8 +41,9 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,10 +75,10 @@ public class JolokiaMvcEndpointTests {
 	}
 
 	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void endpointRegistered() throws Exception {
 		Set<? extends MvcEndpoint> values = this.endpoints.getEndpoints();
-		assertEquals(1, values.size());
-		assertTrue(values.iterator().next() instanceof JolokiaMvcEndpoint);
+		assertThat(values, (Matcher) hasItem(instanceOf(JolokiaMvcEndpoint.class)));
 	}
 
 	@Test

@@ -94,6 +94,11 @@ unauthenticated connection or full message details when authenticated).
 |Displays arbitrary application info.
 |false
 
+|`logfile`
+|Returns the contents of the logfile (if `logging.file` or `logging.path` properties have
+been set). Only available via MVC.
+|true
+
 |`metrics`
 |Shows '`metrics`' information for the current application.
 |true
