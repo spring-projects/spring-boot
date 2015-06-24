@@ -35,7 +35,7 @@ categorized under either "`groups`" or "`properties`":
 		{
 			"name": "server.servlet-path",
 			"type": "java.lang.String",
-			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
 			"defaultValue": "/"
 		}
 		...
