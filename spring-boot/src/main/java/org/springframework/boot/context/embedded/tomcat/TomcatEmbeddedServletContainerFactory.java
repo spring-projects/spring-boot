@@ -402,7 +402,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		}
 		catch (IOException ex) {
 			throw new EmbeddedServletContainerException(
-					"Unable to create Tomcat tempdir", ex);
+					"Unable to create Tomcat tempdir. java.io.tmpdir is set to "
+							+ System.getProperty("java.io.tmpdir"), ex);
 		}
 	}
 
