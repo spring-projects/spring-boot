@@ -75,9 +75,6 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Value("${error.path:/error}")
 	private String errorPath = "/error";
 
-	@Autowired(required = false)
-	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
-
 	@Configuration
 	protected static class ServerCustomization implements
 			EmbeddedServletContainerCustomizer, Ordered {
