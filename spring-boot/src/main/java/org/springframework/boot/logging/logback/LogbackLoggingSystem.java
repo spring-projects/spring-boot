@@ -125,21 +125,23 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 					+ location, ex);
 		}
 		List<Status> statuses = context.getStatusManager().getCopyOfStatusList();
-		if (containsError(statuses)) {
-			for (Status status : statuses) {
-				System.err.println(status);
+		StringBuilder errors = new StringBuilder();
+		for (Status status : statuses) {
+			if (status.getLevel() == Status.ERROR) {
+				errors.append(errors.length() > 0 ? "\n" : "");
+				errors.append(status.toString());
 			}
-			throw new IllegalStateException("Logback configuration error detected");
+		}
+		if (errors.length() > 0) {
+			throw new IllegalStateException("Logback configuration error "
+					+ "detected: \n" + errors);
 		}
 	}
 
-	private boolean containsError(List<Status> statuses) {
-		for (Status status : statuses) {
-			if (status.getLevel() == Status.ERROR) {
-				return true;
-			}
-		}
-		return false;
+	@Override
+	public void cleanUp() {
+		super.cleanUp();
+		getLoggerContext().getStatusManager().clear();
 	}
 
 	@Override
