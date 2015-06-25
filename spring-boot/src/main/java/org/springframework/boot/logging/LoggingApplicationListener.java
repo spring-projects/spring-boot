@@ -206,10 +206,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				system.initialize(logConfig, logFile);
 			}
 			catch (Exception ex) {
-				this.logger.warn("Logging environment value '" + logConfig
-						+ "' cannot be opened and will be ignored "
-						+ "(using default location instead)");
-				system.initialize(null, logFile);
+				System.err
+						.println("Logging system failed to initialize using configuration from '"
+								+ logConfig + "'");
+				ex.printStackTrace(System.err);
+				throw new IllegalStateException(ex);
 			}
 		}
 		else {

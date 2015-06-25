@@ -21,6 +21,7 @@ import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.ILoggerFactory;
@@ -40,6 +41,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.spi.FilterReply;
+import ch.qos.logback.core.status.Status;
 
 /**
  * {@link LoggingSystem} for <a href="http://logback.qos.ch">logback</a>.
@@ -122,6 +124,22 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			throw new IllegalStateException("Could not initialize Logback logging from "
 					+ location, ex);
 		}
+		List<Status> statuses = context.getStatusManager().getCopyOfStatusList();
+		if (containsError(statuses)) {
+			for (Status status : statuses) {
+				System.err.println(status);
+			}
+			throw new IllegalStateException("Logback configuration error detected");
+		}
+	}
+
+	private boolean containsError(List<Status> statuses) {
+		for (Status status : statuses) {
+			if (status.getLevel() == Status.ERROR) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

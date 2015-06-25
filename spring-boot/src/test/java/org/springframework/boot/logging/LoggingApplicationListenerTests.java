@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.boot.SpringApplication;
@@ -55,6 +56,9 @@ import static org.junit.Assert.assertTrue;
 public class LoggingApplicationListenerTests {
 
 	private static final String[] NO_ARGS = {};
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -129,14 +133,23 @@ public class LoggingApplicationListenerTests {
 	public void overrideConfigDoesNotExist() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: doesnotexist.xml");
+		this.thrown.expect(IllegalStateException.class);
+		this.outputCapture
+				.expect(containsString("Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		// Should not throw
-		this.logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertFalse(new File(tmpDir() + "/spring.log").exists());
+	}
+
+	@Test
+	public void overrideConfigBroken() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.config: classpath:logback-broken.xml");
+		this.thrown.expect(IllegalStateException.class);
+		this.outputCapture
+				.expect(containsString("Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
+		this.outputCapture.expect(containsString("ConsolAppender"));
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
 	}
 
 	@Test
