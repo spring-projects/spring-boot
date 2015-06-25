@@ -92,17 +92,17 @@
     "type": "java.lang.String",
     "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
     "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
-  }
+  },
   {
     "name": "spring.pid.fail-on-write-error",
     "type": "java.lang.Boolean",
     "description": "Fail if ApplicationPidFileWriter is used but it cannot write the PID file.",
     "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
-  }
+  },
   {
     "name": "spring.pidfile",
     "type": "java.lang.String",
-    "deprecated:" true,
+    "deprecated": true,
     "description": "Location of the PID file to write (if ApplicationPidFileWriter is used).",
     "sourceType": "org.springframework.boot.actuate.system.ApplicationPidFileWriter"
   }
