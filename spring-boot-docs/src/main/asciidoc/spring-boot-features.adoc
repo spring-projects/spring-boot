@@ -228,7 +228,7 @@ interface if they wish to return a specific exit code when the application ends.
 === Admin features
 It is possible to enable admin-related features for the application by specifying the
 `spring.application.admin.enabled` property. This exposes the
-{sc-spring-boot}/admin/SpringApplicationAdminMXBean.{sc-ext}[`SpringApplicationAdminMXBean`]`
+{sc-spring-boot}/admin/SpringApplicationAdminMXBean.{sc-ext}[`SpringApplicationAdminMXBean`]
 on the platform `MBeanServer`. You could use this feature to administer your Spring Boot
 application remotely. This could also be useful for any service wrapper implementation.
 
@@ -1231,7 +1231,7 @@ If you're developing a RESTful API that makes use of hypermedia, Spring Boot pro
 auto-configuration for Spring HATEOAS that works well with most applications. The
 auto-configuration replaces the need to use `@EnableHypermediaSupport` and registers a
 number of beans to ease building hypermedia-based applications including a
-`LinkDiscoverers` (for client side support) and an `ObjectMapper` configured to correctly 
+`LinkDiscoverers` (for client side support) and an `ObjectMapper` configured to correctly
 marshal responses into the desired representation. The `ObjectMapper` will be customized based on the
 `spring.jackson.*` properties or a `Jackson2ObjectMapperBuilder` bean if one exists.
 
