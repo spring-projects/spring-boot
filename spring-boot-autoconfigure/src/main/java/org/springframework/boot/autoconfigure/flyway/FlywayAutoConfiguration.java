@@ -75,6 +75,9 @@ public class FlywayAutoConfiguration {
 		@FlywayDataSource
 		private DataSource flywayDataSource;
 
+		@Autowired(required = false)
+		private FlywayMigrationStrategy migrationStrategy;
+
 		@PostConstruct
 		public void checkLocationExists() {
 			if (this.properties.isCheckLocation()) {
@@ -97,12 +100,6 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
-		public FlywayMigrationStrategy flywayMigrationStrategy() {
-			return new FlywayMigrationStrategy();
-		}
-
-		@Bean
 		@ConfigurationProperties(prefix = "flyway")
 		public Flyway flyway() {
 			Flyway flyway = new Flyway();
@@ -121,9 +118,8 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
-		public FlywayMigrationInitializer flywayInitializer(Flyway flyway,
-				FlywayMigrationStrategy migrationStrategy) {
-			return new FlywayMigrationInitializer(flyway, migrationStrategy);
+		public FlywayMigrationInitializer flywayInitializer(Flyway flyway) {
+			return new FlywayMigrationInitializer(flyway, this.migrationStrategy);
 
 		}
 
@@ -163,7 +159,12 @@ public class FlywayAutoConfiguration {
 
 		@Override
 		public void afterPropertiesSet() throws Exception {
-			this.migrationStrategy.migrate(this.flyway);
+			if (this.migrationStrategy != null) {
+				this.migrationStrategy.migrate(this.flyway);
+			}
+			else {
+				this.flyway.migrate();
+			}
 		}
 
 	}

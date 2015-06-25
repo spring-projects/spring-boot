@@ -25,10 +25,12 @@ import org.flywaydb.core.Flyway;
  * @author Andreas Ahlenstorf
  * @author Phillip Webb
  */
-public class FlywayMigrationStrategy {
+public interface FlywayMigrationStrategy {
 
-	public void migrate(Flyway flyway) {
-		flyway.migrate();
-	}
+	/**
+	 * Trigger flyway migration.
+	 * @param flyway the flyway instance
+	 */
+	void migrate(Flyway flyway);
 
 }
