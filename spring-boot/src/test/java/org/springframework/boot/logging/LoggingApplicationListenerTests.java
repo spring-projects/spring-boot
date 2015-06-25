@@ -89,6 +89,7 @@ public class LoggingApplicationListenerTests {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
+		System.clearProperty("ADDITIONAL_PROPERTY");
 		if (this.context != null) {
 			this.context.close();
 		}
@@ -126,6 +127,7 @@ public class LoggingApplicationListenerTests {
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
 		assertTrue("Wrong output:\n" + output, output.startsWith("LOG_FILE_IS_UNDEFINED"));
+		assertTrue("Wrong output:\n" + output, output.contains("ADDITIONAL_PROPERTY_IS_UNDEFINED"));
 		assertTrue("Wrong output:\n" + output, output.endsWith("BOOTBOOT"));
 	}
 
@@ -187,6 +189,19 @@ public class LoggingApplicationListenerTests {
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo/spring.log"));
+	}
+
+	@Test
+	public void addAdditionalProperty() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.config: classpath:logback-nondefault.xml",
+				"logging.path: target/foo/",
+				"logging.properties.ADDITIONAL_PROPERTY: foo-bar");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+		logger.info("Hello world");
+		assertThat(this.outputCapture.toString(), containsString("foo-bar"));
 	}
 
 	@Test
