@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -42,6 +43,7 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -178,6 +180,14 @@ public class ThymeleafAutoConfigurationTests {
 		finally {
 			context.close();
 		}
+	}
+
+	@Test
+	public void registerResourceHandlingFilter() throws Exception {
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(ResourceUrlEncodingFilter.class));
 	}
 
 }

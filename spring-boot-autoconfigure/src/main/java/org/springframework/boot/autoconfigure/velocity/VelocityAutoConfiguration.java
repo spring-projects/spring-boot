@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.velocity.VelocityEngineFactory;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.view.velocity.VelocityConfig;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
@@ -132,6 +133,12 @@ public class VelocityAutoConfiguration {
 			EmbeddedVelocityViewResolver resolver = new EmbeddedVelocityViewResolver();
 			this.properties.applyToViewResolver(resolver);
 			return resolver;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
+			return new ResourceUrlEncodingFilter();
 		}
 
 	}

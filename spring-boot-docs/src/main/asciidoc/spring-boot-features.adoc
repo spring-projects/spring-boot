@@ -1183,6 +1183,51 @@ TIP: Do not use the `src/main/webapp` directory if your application will be pack
 jar. Although this directory is a common standard, it will *only* work with war packaging
 and it will be silently ignored by most build tools if you generate a jar.
 
+Spring Boot also supports advanced resource handling features provided by Spring MVC,
+allowing use cases such as cache busting static resources or using version agnostic URLs
+for Webjars.
+
+For example, the following configuration will configure a cache busting solution
+for all static resources, effectively adding a content hash in URLs, such as
+`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.resources.chain.enabled=true
+	spring.resources.chain.strategy.content.enabled=true
+	spring.resources.chain.strategy.content.paths=/**
+----
+
+NOTE: Links to resources are rewritten at runtime in template, thanks to a
+`ResourceUrlEncodingFilter`, auto-configured for Thymeleaf and Velocity. You should
+manually declare this filter when using JSPs. Other template engines aren't automatically
+supported right now, but can be with custom template macros/helpers and the use of the
+{spring-javadoc}/web/servlet/resource/ResourceUrlProvider.{dc-ext}[`ResourceUrlProvider`].
+
+When loading resources dynamically with, for example, a JavaScript module loader, renaming
+files is not an option. That's why other strategies are also supported and can be combined.
+A "fixed" strategy will add a static version string in the URL, without changing the file name:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.resources.chain.enabled=true
+	spring.resources.chain.strategy.content.enabled=true
+	spring.resources.chain.strategy.content.paths=/**
+	spring.resources.chain.strategy.fixed.enabled=true
+	spring.resources.chain.strategy.fixed.paths=/js/lib/
+	spring.resources.chain.strategy.fixed.version=v12
+----
+
+With this configuration, JavaScript modules located under `"/js/lib/"` will use a fixed
+versioning strategy `"/v12/js/lib/mymodule.js"` while other resources will still use
+the content one `<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`.
+
+See {sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[`ResourceProperties`]
+for more of the supported options.
+
+This feature has been thoroughly described in a dedicated
+https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post]
+and in Spring Framework's {spring-reference}/#mvc-config-static-resources[reference documentation].
 
 
 [[boot-features-spring-mvc-template-engines]]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Properties used to configure resource handling.
  *
  * @author Phillip Webb
+ * @author Brian Clozel
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
@@ -36,6 +37,8 @@ public class ResourceProperties {
 	 * Enable default resource handling.
 	 */
 	private boolean addMappings = true;
+
+	private final Chain chain = new Chain();
 
 	public Integer getCachePeriod() {
 		return this.cachePeriod;
@@ -53,4 +56,153 @@ public class ResourceProperties {
 		this.addMappings = addMappings;
 	}
 
+	public Chain getChain() {
+		return chain;
+	}
+
+	/**
+	 * Configuration for the Spring Resource Handling chain.
+	 */
+	public static class Chain {
+
+		/**
+		 * Enable the Spring Resource Handling chain.
+		 */
+		private boolean enabled = false;
+
+		/**
+		 * Enable caching in the Resource chain.
+		 */
+		private boolean cache = true;
+
+		/**
+		 * Enable HTML5 app cache manifest rewriting.
+		 */
+		private boolean html5AppCache = false;
+
+		private Strategy strategy = new Strategy();
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public boolean isCache() {
+			return cache;
+		}
+
+		public void setCache(boolean cache) {
+			this.cache = cache;
+		}
+
+		public Strategy getStrategy() {
+			return strategy;
+		}
+
+		public boolean isHtml5AppCache() {
+			return html5AppCache;
+		}
+
+		public void setHtml5AppCache(boolean html5AppCache) {
+			this.html5AppCache = html5AppCache;
+		}
+	}
+
+	/**
+	 * Strategies for extracting and embedding a resource version in its URL path.
+	 */
+	public static class Strategy {
+
+		private Fixed fixed = new Fixed();
+
+		private Content content = new Content();
+
+		public Fixed getFixed() {
+			return fixed;
+		}
+
+		public Content getContent() {
+			return content;
+		}
+	}
+
+	/**
+	 * Version Strategy based on content hashing.
+	 */
+	public static class Content {
+
+		/**
+		 * Enable the content Version Strategy.
+		 */
+		private boolean enabled = false;
+
+		/**
+		 * Comma-separated list of patterns to apply to the Version Strategy.
+		 */
+		private String[] paths = new String[]{"/**"};
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String[] getPaths() {
+			return paths;
+		}
+
+		public void setPaths(String[] paths) {
+			this.paths = paths;
+		}
+	}
+
+	/**
+	 * Version Strategy based on a fixed version string.
+	 */
+	public static class Fixed {
+
+		/**
+		 * Enable the fixed Version Strategy.
+		 */
+		private boolean enabled = false;
+
+		/**
+		 * Comma-separated list of patterns to apply to the Version Strategy.
+		 */
+		private String[] paths;
+
+		/**
+		 * Version string to use for the Version Strategy.
+		 */
+		private String version;
+
+		public boolean isEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String[] getPaths() {
+			return paths;
+		}
+
+		public void setPaths(String[] paths) {
+			this.paths = paths;
+		}
+
+		public String getVersion() {
+			return version;
+		}
+
+		public void setVersion(String version) {
+			this.version = version;
+		}
+	}
 }
