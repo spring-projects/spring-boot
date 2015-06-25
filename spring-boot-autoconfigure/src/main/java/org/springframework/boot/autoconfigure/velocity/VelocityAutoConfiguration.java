@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.view.velocity.EmbeddedVelocityViewResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -128,7 +129,7 @@ public class VelocityAutoConfiguration {
 		@ConditionalOnMissingBean(name = "velocityViewResolver")
 		@ConditionalOnProperty(name = "spring.velocity.enabled", matchIfMissing = true)
 		public VelocityViewResolver velocityViewResolver() {
-			VelocityViewResolver resolver = new VelocityViewResolver();
+			EmbeddedVelocityViewResolver resolver = new EmbeddedVelocityViewResolver();
 			this.properties.applyToViewResolver(resolver);
 			return resolver;
 		}

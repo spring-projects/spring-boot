@@ -39,7 +39,7 @@ public abstract class AnsiOutput {
 
 	private static final String ENCODE_END = "m";
 
-	private static final String RESET = "0;" + AnsiElement.DEFAULT;
+	private static final String RESET = "0;" + AnsiColor.DEFAULT;
 
 	/**
 	 * Sets if ANSI output is enabled.
@@ -61,6 +61,18 @@ public abstract class AnsiOutput {
 
 	static Enabled getEnabled() {
 		return AnsiOutput.enabled;
+	}
+
+	/**
+	 * Encode a single {@link AnsiElement} if output is enabled.
+	 * @param element the element to encode
+	 * @return the encoded element or an empty string
+	 */
+	public static String encode(AnsiElement element) {
+		if (isEnabled()) {
+			return ENCODE_START + element + ENCODE_END;
+		}
+		return "";
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.util.ClassUtils;
  * and so that there can be a fallback to an embedded database if one can be detected on
  * the classpath, only a small set of common configuration properties are supported. To
  * inject additional properties into the result you can downcast it, or use
- * <code>@ConfigurationProperties</code>.
+ * {@code @ConfigurationProperties}.
  *
  * @author Dave Syer
  * @since 1.1.0

@@ -180,7 +180,7 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Component
-	protected static class MockFlywayMigrationStrategy extends FlywayMigrationStrategy {
+	protected static class MockFlywayMigrationStrategy implements FlywayMigrationStrategy {
 
 		private boolean called = false;
 

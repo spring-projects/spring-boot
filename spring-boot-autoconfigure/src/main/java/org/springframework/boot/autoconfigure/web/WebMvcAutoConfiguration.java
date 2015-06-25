@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,6 +39,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +65,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -86,6 +87,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Sébastien Deleuze
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -127,7 +129,7 @@ public class WebMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
-		return new HiddenHttpMethodFilter();
+		return new OrderedHiddenHttpMethodFilter();
 	}
 
 	// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when not
@@ -138,12 +140,6 @@ public class WebMvcAutoConfiguration {
 	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
 		private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
-
-		@Value("${spring.view.prefix:}")
-		private String prefix = "";
-
-		@Value("${spring.view.suffix:}")
-		private String suffix = "";
 
 		@Autowired
 		private ResourceProperties resourceProperties = new ResourceProperties();
@@ -165,12 +161,20 @@ public class WebMvcAutoConfiguration {
 			converters.addAll(this.messageConverters.getConverters());
 		}
 
+		@Override
+		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+			Long timeout = this.mvcProperties.getAsync().getRequestTimeout();
+			if (timeout != null) {
+				configurer.setDefaultTimeout(timeout);
+			}
+		}
+
 		@Bean
 		@ConditionalOnMissingBean(InternalResourceViewResolver.class)
 		public InternalResourceViewResolver defaultViewResolver() {
 			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-			resolver.setPrefix(this.prefix);
-			resolver.setSuffix(this.suffix);
+			resolver.setPrefix(this.mvcProperties.getView().getPrefix());
+			resolver.setSuffix(this.mvcProperties.getView().getSuffix());
 			return resolver;
 		}
 
@@ -231,11 +235,9 @@ public class WebMvcAutoConfiguration {
 			for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
 				registry.addConverter(converter);
 			}
-
 			for (GenericConverter converter : getBeansOfType(GenericConverter.class)) {
 				registry.addConverter(converter);
 			}
-
 			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
 				registry.addFormatter(formatter);
 			}
@@ -251,7 +253,6 @@ public class WebMvcAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
-
 			Integer cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				registry.addResourceHandler("/webjars/**")

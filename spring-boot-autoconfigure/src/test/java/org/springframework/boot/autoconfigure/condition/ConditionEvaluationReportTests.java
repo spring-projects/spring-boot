@@ -223,7 +223,6 @@ public class ConditionEvaluationReportTests {
 		List<String> messages = new ArrayList<String>();
 		for (ConditionAndOutcome outcome : outcomes) {
 			messages.add(outcome.getOutcome().getMessage());
-			System.out.println(outcome.getOutcome().getMessage());
 		}
 
 		Matcher<String> onClassMessage = containsString("@ConditionalOnClass "

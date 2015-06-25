@@ -57,7 +57,10 @@ public final class CommandLineInvoker {
 		List<String> command = new ArrayList<String>();
 		command.add(findLaunchScript().getAbsolutePath());
 		command.addAll(Arrays.asList(args));
-		return new ProcessBuilder(command).directory(this.workingDirectory).start();
+		ProcessBuilder processBuilder = new ProcessBuilder(command)
+				.directory(this.workingDirectory);
+		processBuilder.environment().remove("JAVA_OPTS");
+		return processBuilder.start();
 	}
 
 	private File findLaunchScript() {

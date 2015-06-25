@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,9 +74,6 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	@Value("${error.path:/error}")
 	private String errorPath = "/error";
-
-	@Autowired(required = false)
-	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
 
 	@Configuration
 	protected static class ServerCustomization implements
@@ -158,7 +155,7 @@ public class EndpointWebMvcChildContextConfiguration {
 	 * configures the security filter.
 	 */
 	@Configuration
-	@ConditionalOnMissingClass(name = "org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter")
+	@ConditionalOnMissingClass("org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter")
 	protected static class EndpointHandlerMappingConfiguration {
 
 		@Autowired(required = false)

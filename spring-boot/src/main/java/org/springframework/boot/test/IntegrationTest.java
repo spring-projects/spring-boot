@@ -56,6 +56,7 @@ public @interface IntegrationTest {
 	/**
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
+	 * @return the environment properties
 	 */
 	String[] value() default {};
 

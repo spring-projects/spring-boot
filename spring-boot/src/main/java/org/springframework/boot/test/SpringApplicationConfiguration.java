@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,31 +45,37 @@ public @interface SpringApplicationConfiguration {
 
 	/**
 	 * @see ContextConfiguration#locations()
+	 * @return the context configuration locations
 	 */
 	String[] locations() default {};
 
 	/**
 	 * @see ContextConfiguration#classes()
+	 * @return the context configuration classes
 	 */
 	Class<?>[] classes() default {};
 
 	/**
 	 * @see ContextConfiguration#initializers()
+	 * @return the context configuration initializers
 	 */
 	Class<? extends ApplicationContextInitializer<? extends ConfigurableApplicationContext>>[] initializers() default {};
 
 	/**
 	 * @see ContextConfiguration#inheritLocations()
+	 * @return if context locations should be inherited
 	 */
 	boolean inheritLocations() default true;
 
 	/**
 	 * @see ContextConfiguration#inheritInitializers()
+	 * @return if context initializers should be inherited
 	 */
 	boolean inheritInitializers() default true;
 
 	/**
 	 * @see ContextConfiguration#name()
+	 * @return if context configuration name
 	 */
 	String name() default "";
 

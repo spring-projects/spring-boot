@@ -57,12 +57,15 @@ class HazelcastCacheConfiguration {
 	private CacheProperties cacheProperties;
 
 	@Bean
-	public HazelcastCacheManager cacheManager() throws IOException {
-		return new HazelcastCacheManager(createHazelcastInstance());
+	public HazelcastCacheManager cacheManager(HazelcastInstance hazelcastInstance) {
+		return new HazelcastCacheManager(hazelcastInstance);
 	}
 
-	private HazelcastInstance createHazelcastInstance() throws IOException {
-		Resource location = this.cacheProperties.resolveConfigLocation();
+	@Bean
+	@ConditionalOnMissingBean
+	public HazelcastInstance hazelcastInstance() throws IOException {
+		Resource location = this.cacheProperties
+				.resolveConfigLocation(this.cacheProperties.getHazelcast().getConfig());
 		if (location != null) {
 			Config cfg = new XmlConfigBuilder(location.getURL()).build();
 			return Hazelcast.newHazelcastInstance(cfg);
@@ -71,14 +74,15 @@ class HazelcastCacheConfiguration {
 	}
 
 	/**
-	 * Determines if the Hazelcast configuration is available. This either kick in if a
+	 * Determines if the Hazelcast configuration is available. This either kicks in if a
 	 * default configuration has been found or if property referring to the file to use
 	 * has been set.
 	 */
 	static class ConfigAvailableCondition extends CacheConfigFileCondition {
 
 		public ConfigAvailableCondition() {
-			super("Hazelcast", "file:./hazelcast.xml", "classpath:/hazelcast.xml");
+			super("Hazelcast", "spring.cache.hazelcast", "file:./hazelcast.xml",
+					"classpath:/hazelcast.xml");
 		}
 
 		@Override

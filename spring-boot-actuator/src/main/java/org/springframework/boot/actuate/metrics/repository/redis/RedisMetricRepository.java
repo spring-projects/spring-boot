@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.BoundZSetOperations;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link MetricRepository} implementation for a redis backend. Metric values are stored
@@ -92,16 +93,13 @@ public class RedisMetricRepository implements MetricRepository {
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory,
 			String prefix, String key) {
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
+		Assert.state(StringUtils.hasText(prefix), "Prefix must be non-empty");
+		Assert.state(StringUtils.hasText(key), "Key must be non-empty");
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";
 		}
 		this.prefix = prefix;
-		if (!DEFAULT_METRICS_PREFIX.equals(this.prefix)) {
-			if (DEFAULT_KEY.equals(key)) {
-				key = "keys." + prefix;
-			}
-		}
 		if (key.endsWith(".")) {
 			key = key.substring(0, key.length() - 1);
 		}

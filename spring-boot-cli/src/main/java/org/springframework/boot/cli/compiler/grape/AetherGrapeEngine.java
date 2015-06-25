@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,6 +167,9 @@ public class AetherGrapeEngine implements GrapeEngine {
 		String group = (String) dependencyMap.get("group");
 		String module = (String) dependencyMap.get("module");
 		String version = (String) dependencyMap.get("version");
+		if (version == null) {
+			version = this.resolutionContext.getManagedVersion(group, module);
+		}
 		String classifier = (String) dependencyMap.get("classifier");
 		String type = determineType(dependencyMap);
 		return new DefaultArtifact(group, module, classifier, type, version);
@@ -324,7 +327,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	private void addManagedDependencies(DependencyResult result) {
-		this.resolutionContext.getManagedDependencies().addAll(getDependencies(result));
+		this.resolutionContext.addManagedDependencies(getDependencies(result));
 	}
 
 	@Override

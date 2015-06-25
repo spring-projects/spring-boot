@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.util.StringUtils;
 
@@ -31,20 +33,27 @@ import org.springframework.util.StringUtils;
  * export).
  *
  * @author Dave Syer
+ * @since 1.3.0
  */
 public abstract class AbstractMetricExporter implements Exporter {
 
-	private volatile AtomicBoolean processing = new AtomicBoolean(false);
+	private static final Log logger = LogFactory.getLog(AbstractMetricExporter.class);
+
+	private final String prefix;
 
 	private Date earliestTimestamp = new Date();
 
 	private boolean ignoreTimestamps = false;
 
-	private final String prefix;
+	private boolean sendLatest = true;
+
+	private volatile AtomicBoolean processing = new AtomicBoolean(false);
+
+	private Date latestTimestamp = new Date(0L);
 
 	public AbstractMetricExporter(String prefix) {
-		this.prefix = !StringUtils.hasText(prefix) ? "" : (prefix.endsWith(".") ? prefix
-				: prefix + ".");
+		this.prefix = (!StringUtils.hasText(prefix) ? "" : (prefix.endsWith(".") ? prefix
+				: prefix + "."));
 	}
 
 	/**
@@ -63,32 +72,77 @@ public abstract class AbstractMetricExporter implements Exporter {
 		this.ignoreTimestamps = ignoreTimestamps;
 	}
 
+	/**
+	 * Send only the data that changed since the last export.
+	 * @param sendLatest the flag to set
+	 */
+	public void setSendLatest(boolean sendLatest) {
+		this.sendLatest = sendLatest;
+	}
+
 	@Override
 	public void export() {
-		if (!this.processing.compareAndSet(false, true)) {
-			// skip a tick
-			return;
-		}
-		try {
-			for (String group : groups()) {
-				Collection<Metric<?>> values = new ArrayList<Metric<?>>();
-				for (Metric<?> metric : next(group)) {
-					Metric<?> value = new Metric<Number>(this.prefix + metric.getName(),
-							metric.getValue(), metric.getTimestamp());
-					Date timestamp = metric.getTimestamp();
-					if (!this.ignoreTimestamps && this.earliestTimestamp.after(timestamp)) {
-						continue;
-					}
-					values.add(value);
-				}
-				if (!values.isEmpty()) {
-					write(group, values);
-				}
+		if (this.processing.compareAndSet(false, true)) {
+			long latestTimestamp = System.currentTimeMillis();
+			try {
+				exportGroups();
+			}
+			catch (Exception ex) {
+				logger.warn("Could not write to MetricWriter: " + ex.getClass() + ": "
+						+ ex.getMessage());
+			}
+			finally {
+				this.latestTimestamp = new Date(latestTimestamp);
+				flushQuietly();
+				this.processing.set(false);
 			}
 		}
-		finally {
-			this.processing.set(false);
+	}
+
+	private void exportGroups() {
+		for (String group : groups()) {
+			Collection<Metric<?>> values = new ArrayList<Metric<?>>();
+			for (Metric<?> metric : next(group)) {
+				Date timestamp = metric.getTimestamp();
+				if (canExportTimestamp(timestamp)) {
+					values.add(getPrefixedMetric(metric));
+				}
+			}
+			if (!values.isEmpty()) {
+				write(group, values);
+			}
 		}
+	}
+
+	private Metric<?> getPrefixedMetric(Metric<?> metric) {
+		String name = this.prefix + metric.getName();
+		return new Metric<Number>(name, metric.getValue(), metric.getTimestamp());
+	}
+
+	private boolean canExportTimestamp(Date timestamp) {
+		if (this.ignoreTimestamps) {
+			return true;
+		}
+		if (this.earliestTimestamp.after(timestamp)) {
+			return false;
+		}
+		if (this.sendLatest && this.latestTimestamp.after(timestamp)) {
+			return false;
+		}
+		return true;
+	}
+
+	private void flushQuietly() {
+		try {
+			flush();
+		}
+		catch (Exception ex) {
+			logger.warn("Could not flush MetricWriter: " + ex.getClass() + ": "
+					+ ex.getMessage());
+		}
+	}
+
+	public void flush() {
 	}
 
 	/**

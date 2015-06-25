@@ -7,7 +7,7 @@ import java.util.concurrent.CountDownLatch
 class Runner implements CommandLineRunner {
 
 	@Autowired
-	Reactor reactor
+	EventBus eventBus
 
 	private CountDownLatch latch = new CountDownLatch(1)
 
@@ -17,7 +17,7 @@ class Runner implements CommandLineRunner {
 	}
 
 	void run(String... args) {
-		reactor.notify("hello", Event.wrap("Phil"))
+		eventBus.notify("hello", Event.wrap("Phil"))
 		log.info "Notified Phil"
 		latch.await()
 	}
@@ -34,7 +34,7 @@ class Runner implements CommandLineRunner {
 class Greeter {
 
 	@Autowired
-	Reactor reactor
+	EventBus eventBus
 
 	@Autowired
 	private CountDownLatch latch

@@ -28,6 +28,10 @@ import org.elasticsearch.action.support.PlainActionFuture;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.ClusterAdminClient;
+import org.elasticsearch.cluster.ClusterState;
+import org.elasticsearch.cluster.block.ClusterBlocks;
+import org.elasticsearch.cluster.node.DiscoveryNodes;
+import org.elasticsearch.cluster.routing.RoutingTable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -175,7 +179,9 @@ public class ElasticsearchHealthIndicatorTests {
 		}
 
 		private StubClusterHealthResponse(ClusterHealthStatus status) {
-			super("test-cluster", null);
+			super("test-cluster", new String[0], new ClusterState(null, 0, null,
+					RoutingTable.builder().build(), DiscoveryNodes.builder().build(),
+					ClusterBlocks.builder().build(), null));
 			this.status = status;
 		}
 

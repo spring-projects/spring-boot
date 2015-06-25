@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,9 +123,8 @@ public class TestRestTemplate extends RestTemplate {
 		@Override
 		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
 				ClientHttpRequestExecution execution) throws IOException {
-			byte[] token = Base64
-					.encode((this.username + ":" + this.password).getBytes());
-			request.getHeaders().add("Authorization", "Basic " + new String(token));
+			String token = Base64Encoder.encode(this.username + ":" + this.password);
+			request.getHeaders().add("Authorization", "Basic " + token);
 			return execution.execute(request, body);
 		}
 

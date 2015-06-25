@@ -62,9 +62,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JacksonAutoConfiguration}.
@@ -97,18 +95,6 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
 		assertThat(objectMapper.canSerialize(LocalDateTime.class), is(true));
-	}
-
-	@Test
-	public void customJacksonModules() throws Exception {
-		this.context.register(ModuleConfig.class, MockObjectMapperConfig.class,
-				JacksonAutoConfiguration.class);
-		this.context.refresh();
-		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		@SuppressWarnings({ "unchecked", "unused" })
-		ObjectMapper result = verify(mapper).registerModules(
-				(Iterable<Module>) argThat(hasItem(this.context.getBean("jacksonModule",
-						Module.class))));
 	}
 
 	@Test
@@ -353,28 +339,6 @@ public class JacksonAutoConfigurationTests {
 		assertTrue(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault());
 		assertFalse(mapper.getDeserializationConfig().isEnabled(
 				DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
-	}
-
-	@Test
-	public void httpMappersJsonPrettyPrintIsApplied() {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"http.mappers.json-pretty-print:true");
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig().isEnabled(
-				SerializationFeature.INDENT_OUTPUT));
-	}
-
-	@Test
-	public void httpMappersJsonSortKeysIsApplied() {
-		this.context.register(JacksonAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"http.mappers.json-sort-keys:true");
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig().isEnabled(
-				SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS));
 	}
 
 	@Test

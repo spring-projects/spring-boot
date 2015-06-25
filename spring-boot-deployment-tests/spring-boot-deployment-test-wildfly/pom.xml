@@ -63,6 +63,7 @@
 				<configuration>
 					<container>
 						<containerId>wildfly8x</containerId>
+						<timeout>300000</timeout>
 						<zipUrlInstaller>
 							<url>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip</url>
 						</zipUrlInstaller>

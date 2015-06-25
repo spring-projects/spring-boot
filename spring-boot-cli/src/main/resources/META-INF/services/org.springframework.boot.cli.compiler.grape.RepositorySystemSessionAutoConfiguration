@@ -1,1 +1,2 @@
 org.springframework.boot.cli.compiler.grape.SettingsXmlRepositorySystemSessionAutoConfiguration
+org.springframework.boot.cli.compiler.grape.GrapeRootRepositorySystemSessionAutoConfiguration

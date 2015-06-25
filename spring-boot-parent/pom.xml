@@ -19,7 +19,7 @@
 	<properties>
 		<main.basedir>..</main.basedir>
 		<java.version>1.6</java.version>
-		<aether.version>0.9.1.v20140329</aether.version>
+		<aether.version>1.0.2.v20150114</aether.version>
 		<json.version>20140107</json.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -53,7 +53,7 @@
 			<dependency>
 				<groupId>io.spring.gradle</groupId>
 				<artifactId>dependency-management-plugin</artifactId>
-				<version>0.5.0.RELEASE</version>
+				<version>0.5.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
@@ -433,7 +433,7 @@
 						<configuration>
 							<rules>
 								<requireJavaVersion>
-									<version>(1.7,)</version>
+									<version>[1.8,)</version>
 								</requireJavaVersion>
 								<requireProperty>
 									<property>main.basedir</property>
@@ -513,6 +513,7 @@
 					<annotations>
 						<annotation>org.springframework.lang.UsesJava8</annotation>
 						<annotation>org.springframework.lang.UsesJava7</annotation>
+						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
 					</annotations>
 				</configuration>
 				<executions>
@@ -645,7 +646,7 @@
 								<configuration>
 									<rules>
 										<requireJavaVersion>
-											<version>(1.7,1.8)</version>
+											<version>(1.8,1.9)</version>
 										</requireJavaVersion>
 										<requireReleaseDeps />
 										<requireReleaseVersion />
@@ -674,7 +675,7 @@
 								<configuration>
 									<rules>
 										<requireJavaVersion>
-											<version>(1.7,1.8)</version>
+											<version>(1.8,1.9)</version>
 										</requireJavaVersion>
 										<requireReleaseDeps />
 										<requireReleaseVersion />

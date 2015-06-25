@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link ProjectGenerationRequest}
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class ProjectGenerationRequestTests {
 
@@ -67,7 +68,7 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void customBootVersion() {
 		this.request.setBootVersion("1.2.0.RELEASE");
-		assertEquals(createDefaultUrl("?bootVersion=1.2.0.RELEASE&type=test-type"),
+		assertEquals(createDefaultUrl("?type=test-type&bootVersion=1.2.0.RELEASE"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -89,7 +90,7 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void customJavaVersion() {
 		this.request.setJavaVersion("1.8");
-		assertEquals(createDefaultUrl("?javaVersion=1.8&type=test-type"),
+		assertEquals(createDefaultUrl("?type=test-type&javaVersion=1.8"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -110,6 +111,25 @@ public class ProjectGenerationRequestTests {
 		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
 				+ "/foo?dependencies=data-rest&type=custom"),
 				this.request.generateUrl(metadata));
+	}
+
+	@Test
+	public void customLanguage() {
+		this.request.setLanguage("groovy");
+		assertEquals(createDefaultUrl("?type=test-type&language=groovy"),
+				this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
+	public void customProjectInfo() {
+		this.request.setGroupId("org.acme");
+		this.request.setArtifactId("sample");
+		this.request.setVersion("1.0.1-SNAPSHOT");
+		this.request.setDescription("Spring Boot Test");
+		assertEquals(
+				createDefaultUrl("?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
+						+ "&description=Spring+Boot+Test&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test

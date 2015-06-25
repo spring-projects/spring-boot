@@ -40,8 +40,8 @@ class CacheCondition extends SpringBootCondition {
 		if (!resolver.containsProperty("type")) {
 			return ConditionOutcome.match("Automatic cache type");
 		}
-		CacheType cacheType = CacheType
-				.forConfigurationClass(((AnnotationMetadata) metadata).getClassName());
+		CacheType cacheType = CacheConfigurations.getType(((AnnotationMetadata) metadata)
+				.getClassName());
 		String value = resolver.getProperty("type").replace("-", "_").toUpperCase();
 		if (value.equals(cacheType.name())) {
 			return ConditionOutcome.match("Cache type " + cacheType);

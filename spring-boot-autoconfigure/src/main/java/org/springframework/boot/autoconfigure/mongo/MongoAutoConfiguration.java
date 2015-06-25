@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 
 /**
@@ -39,7 +39,7 @@ import com.mongodb.MongoClientOptions;
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass(Mongo.class)
+@ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
 public class MongoAutoConfiguration {
@@ -50,7 +50,7 @@ public class MongoAutoConfiguration {
 	@Autowired(required = false)
 	private MongoClientOptions options;
 
-	private Mongo mongo;
+	private MongoClient mongo;
 
 	@PreDestroy
 	public void close() {
@@ -61,7 +61,7 @@ public class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Mongo mongo() throws UnknownHostException {
+	public MongoClient mongo() throws UnknownHostException {
 		this.mongo = this.properties.createMongoClient(this.options);
 		return this.mongo;
 	}

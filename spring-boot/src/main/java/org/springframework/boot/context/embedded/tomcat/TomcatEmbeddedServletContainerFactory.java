@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -160,6 +161,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
+		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
@@ -173,9 +175,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
-		if (isRegisterJspServlet()
-				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
-						.getClassLoader())) {
+		if (shouldRegisterJspServlet()) {
 			addJspServlet(context);
 			addJasperInitializer(context);
 			context.addLifecycleListener(new StoreMergedWebXmlListener());
@@ -202,8 +202,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private void addJspServlet(Context context) {
 		Wrapper jspServlet = context.createWrapper();
 		jspServlet.setName("jsp");
-		jspServlet.setServletClass(getJspServletClassName());
+		jspServlet.setServletClass(getJspServlet().getClassName());
 		jspServlet.addInitParameter("fork", "false");
+		for (Entry<String, String> initParameter : getJspServlet().getInitParameters()
+				.entrySet()) {
+			jspServlet.addInitParameter(initParameter.getKey(), initParameter.getValue());
+		}
 		jspServlet.setLoadOnStartup(3);
 		context.addChild(jspServlet);
 		context.addServletMapping("*.jsp", "jsp");
@@ -378,7 +382,17 @@ public class TomcatEmbeddedServletContainerFactory extends
 		return new TomcatEmbeddedServletContainer(tomcat, getPort() >= 0);
 	}
 
-	private File createTempDir(String prefix) {
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
+	/**
+	 * Returns the absolute temp dir for given web server.
+	 * @param prefix webserver name
+	 * @return The temp dir for given web server.
+	 */
+	protected File createTempDir(String prefix) {
 		try {
 			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
 			tempFolder.delete();
@@ -388,13 +402,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 		}
 		catch (IOException ex) {
 			throw new EmbeddedServletContainerException(
-					"Unable to create Tomcat tempdir", ex);
+					"Unable to create Tomcat tempdir. java.io.tmpdir is set to "
+							+ System.getProperty("java.io.tmpdir"), ex);
 		}
-	}
-
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
 	}
 
 	/**

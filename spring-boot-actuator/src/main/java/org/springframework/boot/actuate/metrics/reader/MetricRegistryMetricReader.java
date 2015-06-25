@@ -45,7 +45,7 @@ import com.codahale.metrics.Sampling;
 import com.codahale.metrics.Timer;
 
 /**
- * A Spring Boot {@link MetricReader} that reads metrics from a Codahale
+ * A Spring Boot {@link MetricReader} that reads metrics from a Dropwizard
  * {@link MetricRegistry}. Gauges and Counters are reflected as a single value. Timers,
  * Meters and Histograms are expanded into sets of metrics containing all the properties
  * of type Number.

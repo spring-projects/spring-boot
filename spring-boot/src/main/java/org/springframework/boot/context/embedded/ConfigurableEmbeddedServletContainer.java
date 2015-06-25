@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
  * {@link EmbeddedServletContainerFactory}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
@@ -39,6 +41,14 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param contextPath the contextPath to set
 	 */
 	void setContextPath(String contextPath);
+
+	/**
+	 * Sets the display name of the application deployed in the embedded servlet
+	 * container.
+	 * @param displayName the displayName to set
+	 * @since 1.3.0
+	 */
+	void setDisplayName(String displayName);
 
 	/**
 	 * Sets the port that the embedded servlet container should listen on. If not
@@ -71,12 +81,16 @@ public interface ConfigurableEmbeddedServletContainer {
 
 	/**
 	 * The class name for the jsp servlet if used. If
-	 * {@link #setRegisterJspServlet(boolean) <code>registerJspServlet</code>} is true
-	 * <b>and</b> this class is on the classpath then it will be registered. Since both
-	 * Tomcat and Jetty use Jasper for their JSP implementation the default is
-	 * <code>org.apache.jasper.servlet.JspServlet</code>.
+	 * {@link #setRegisterJspServlet(boolean) registerJspServlet} is true <b>and</b> this
+	 * class is on the classpath then it will be registered. Since both Tomcat and Jetty
+	 * use Jasper for their JSP implementation the default is
+	 * {@code org.apache.jasper.servlet.JspServlet}.
 	 * @param jspServletClassName the class name for the JSP servlet if used
+	 * @deprecated in 1.3.0 in favor of {@link JspServlet#setClassName(String)}
+	 * @see #setJspServlet
+	 * @see JspServlet#setClassName(String)
 	 */
+	@Deprecated
 	void setJspServletClassName(String jspServletClassName);
 
 	/**
@@ -84,7 +98,11 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * {@code true} so that files from the {@link #setDocumentRoot(File) document root}
 	 * will be served.
 	 * @param registerJspServlet if the JSP servlet should be registered
+	 * @deprecated in 1.3.0 in favor of {@link JspServlet#setRegistered(boolean)}
+	 * @see #setJspServlet
+	 * @see JspServlet#setRegistered(boolean)
 	 */
+	@Deprecated
 	void setRegisterJspServlet(boolean registerJspServlet);
 
 	/**
@@ -145,5 +163,11 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param ssl the SSL configuration
 	 */
 	void setSsl(Ssl ssl);
+
+	/**
+	 * Sets the configuration that will be applied to the container's JSP servlet
+	 * @param jspServlet the JSP servlet configuration
+	 */
+	void setJspServlet(JspServlet jspServlet);
 
 }

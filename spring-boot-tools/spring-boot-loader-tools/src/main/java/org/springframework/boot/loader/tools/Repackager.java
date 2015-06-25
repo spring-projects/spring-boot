@@ -90,7 +90,7 @@ public class Repackager {
 	/**
 	 * Repackage the source file so that it can be run using '{@literal java -jar}'
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(Libraries libraries) throws IOException {
 		repackage(this.source, libraries);
@@ -101,7 +101,7 @@ public class Repackager {
 	 * {@literal java -jar}'
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(File destination, Libraries libraries) throws IOException {
 		repackage(destination, libraries, null);
@@ -113,7 +113,7 @@ public class Repackager {
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
 	 * @param launchScript an optional launch script prepended to the front of the jar
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 * @since 1.3.0
 	 */
 	public void repackage(File destination, Libraries libraries, LaunchScript launchScript)

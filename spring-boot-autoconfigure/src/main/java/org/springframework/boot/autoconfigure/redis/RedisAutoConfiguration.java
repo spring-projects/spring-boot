@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ import redis.clients.jedis.JedisPoolConfig;
  * @author Christian Dupuis
  * @author Christoph Strobl
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
@@ -83,6 +84,9 @@ public class RedisAutoConfiguration {
 				factory.setPassword(this.properties.getPassword());
 			}
 			factory.setDatabase(this.properties.getDatabase());
+			if (this.properties.getTimeout() > 0) {
+				factory.setTimeout(this.properties.getTimeout());
+			}
 			return factory;
 		}
 
@@ -123,7 +127,7 @@ public class RedisAutoConfiguration {
 	 * Redis connection configuration.
 	 */
 	@Configuration
-	@ConditionalOnMissingClass(name = "org.apache.commons.pool2.impl.GenericObjectPool")
+	@ConditionalOnMissingClass("org.apache.commons.pool2.impl.GenericObjectPool")
 	protected static class RedisConnectionConfiguration extends
 			AbstractRedisConfiguration {
 
@@ -178,7 +182,7 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "redisTemplate")
-		public RedisOperations<Object, Object> redisTemplate(
+		public RedisTemplate<Object, Object> redisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
 				throws UnknownHostException {
 			RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();

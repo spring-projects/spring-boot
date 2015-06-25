@@ -56,10 +56,11 @@ import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.jar.PackagedSpringApplicationLauncher;
 import org.springframework.boot.loader.tools.JarWriter;
-import org.springframework.boot.loader.tools.Layout;
-import org.springframework.boot.loader.tools.Layouts;
+import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
+import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
+import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
@@ -71,10 +72,6 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 public class JarCommand extends OptionParsingCommand {
-
-	private static final Layout LAYOUT = new Layouts.Jar();
-
-	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
 	public JarCommand() {
 		super("jar", "Create a self-contained "
@@ -169,6 +166,7 @@ public class JarCommand extends OptionParsingCommand {
 		private void writeJar(File file, Class<?>[] compiledClasses,
 				List<MatchedResource> classpathEntries, List<URL> dependencies)
 				throws FileNotFoundException, IOException, URISyntaxException {
+			final List<Library> libraries;
 			JarWriter writer = new JarWriter(file);
 			try {
 				addManifest(writer, compiledClasses);
@@ -176,23 +174,39 @@ public class JarCommand extends OptionParsingCommand {
 				for (Class<?> compiledClass : compiledClasses) {
 					addClass(writer, compiledClass);
 				}
-				addClasspathEntries(writer, classpathEntries);
-				addDependencies(writer, dependencies);
-				writer.writeLoaderClasses();
+				libraries = addClasspathEntries(writer, classpathEntries);
 			}
 			finally {
 				writer.close();
 			}
+			libraries.addAll(createLibraries(dependencies));
+			Repackager repackager = new Repackager(file);
+			repackager.setMainClass(PackagedSpringApplicationLauncher.class.getName());
+			repackager.repackage(new Libraries() {
+
+				@Override
+				public void doWithLibraries(LibraryCallback callback) throws IOException {
+					for (Library library : libraries) {
+						callback.library(library);
+					}
+				}
+			});
+		}
+
+		private List<Library> createLibraries(List<URL> dependencies)
+				throws URISyntaxException {
+			List<Library> libraries = new ArrayList<Library>();
+			for (URL dependency : dependencies) {
+				File file = new File(dependency.toURI());
+				libraries.add(new Library(file, LibraryScope.COMPILE));
+			}
+			return libraries;
 		}
 
 		private void addManifest(JarWriter writer, Class<?>[] compiledClasses)
 				throws IOException {
 			Manifest manifest = new Manifest();
 			manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-			manifest.getMainAttributes().putValue("Main-Class",
-					LAYOUT.getLauncherClassName());
-			manifest.getMainAttributes().putValue("Start-Class",
-					PackagedSpringApplicationLauncher.class.getName());
 			manifest.getMainAttributes().putValue(
 					PackagedSpringApplicationLauncher.SOURCE_ENTRY,
 					commaDelimitedClassNames(compiledClasses));
@@ -232,56 +246,19 @@ public class JarCommand extends OptionParsingCommand {
 			writer.writeEntry(name, stream);
 		}
 
-		private void addClasspathEntries(JarWriter writer, List<MatchedResource> entries)
-				throws IOException {
+		private List<Library> addClasspathEntries(JarWriter writer,
+				List<MatchedResource> entries) throws IOException {
+			List<Library> libraries = new ArrayList<Library>();
 			for (MatchedResource entry : entries) {
 				if (entry.isRoot()) {
-					addDependency(writer, entry.getFile());
+					libraries.add(new Library(entry.getFile(), LibraryScope.COMPILE));
 				}
 				else {
 					writer.writeEntry(entry.getName(),
 							new FileInputStream(entry.getFile()));
 				}
 			}
-		}
-
-		private void addDependencies(JarWriter writer, List<URL> urls)
-				throws IOException, URISyntaxException, FileNotFoundException {
-			for (URL url : urls) {
-				addDependency(writer, new File(url.toURI()));
-			}
-		}
-
-		private void addDependency(JarWriter writer, File dependency)
-				throws FileNotFoundException, IOException {
-			if (dependency.isFile() && isZip(dependency)) {
-				writer.writeNestedLibrary("lib/", new Library(dependency,
-						LibraryScope.COMPILE));
-			}
-		}
-
-		private boolean isZip(File file) {
-			try {
-				FileInputStream fileInputStream = new FileInputStream(file);
-				try {
-					return isZip(fileInputStream);
-				}
-				finally {
-					fileInputStream.close();
-				}
-			}
-			catch (IOException ex) {
-				return false;
-			}
-		}
-
-		private boolean isZip(InputStream inputStream) throws IOException {
-			for (int i = 0; i < ZIP_FILE_HEADER.length; i++) {
-				if (inputStream.read() != ZIP_FILE_HEADER[i]) {
-					return false;
-				}
-			}
-			return true;
+			return libraries;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,16 @@ public class ConfigurationMetadata {
 
 	private final List<ItemMetadata> items;
 
+	private final List<ItemHint> hints;
+
 	public ConfigurationMetadata() {
 		this.items = new ArrayList<ItemMetadata>();
+		this.hints = new ArrayList<ItemHint>();
 	}
 
 	public ConfigurationMetadata(ConfigurationMetadata metadata) {
 		this.items = new ArrayList<ItemMetadata>(metadata.getItems());
+		this.hints = new ArrayList<ItemHint>(metadata.getHints());
 	}
 
 	/**
@@ -53,6 +57,11 @@ public class ConfigurationMetadata {
 		Collections.sort(this.items);
 	}
 
+	public void add(ItemHint itemHint) {
+		this.hints.add(itemHint);
+		Collections.sort(this.hints);
+	}
+
 	/**
 	 * Add all properties from another {@link ConfigurationMetadata}.
 	 * @param metadata the {@link ConfigurationMetadata} instance to merge
@@ -60,6 +69,8 @@ public class ConfigurationMetadata {
 	public void addAll(ConfigurationMetadata metadata) {
 		this.items.addAll(metadata.getItems());
 		Collections.sort(this.items);
+		this.hints.addAll(metadata.getHints());
+		Collections.sort(this.hints);
 	}
 
 	/**
@@ -67,6 +78,13 @@ public class ConfigurationMetadata {
 	 */
 	public List<ItemMetadata> getItems() {
 		return Collections.unmodifiableList(this.items);
+	}
+
+	/**
+	 * @return the meta-data hints.
+	 */
+	public List<ItemHint> getHints() {
+		return Collections.unmodifiableList(this.hints);
 	}
 
 	public static String nestedPrefix(String prefix, String name) {

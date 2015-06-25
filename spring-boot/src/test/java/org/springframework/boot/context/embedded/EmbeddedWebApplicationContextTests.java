@@ -41,12 +41,14 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
@@ -73,6 +75,7 @@ import static org.mockito.Mockito.withSettings;
  * Tests for {@link EmbeddedWebApplicationContext}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class EmbeddedWebApplicationContextTests {
 
@@ -142,6 +145,16 @@ public class EmbeddedWebApplicationContextTests {
 		assertNotNull(event);
 		assertTrue(event.getSource().getPort() >= 0);
 		assertEquals(this.context, event.getApplicationContext());
+	}
+
+	@Test
+	public void localPortIsAvailable() throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
+		this.context.refresh();
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		assertTrue(environment.containsProperty("local.server.port"));
+		assertEquals("8080", environment.getProperty("local.server.port"));
 	}
 
 	@Test

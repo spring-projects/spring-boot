@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -43,26 +41,14 @@ class JacksonHttpMessageConvertersConfiguration {
 	@Configuration
 	@ConditionalOnClass(ObjectMapper.class)
 	@ConditionalOnBean(ObjectMapper.class)
-	@EnableConfigurationProperties(HttpMapperProperties.class)
 	@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "jackson", matchIfMissing = true)
-	@SuppressWarnings("deprecation")
 	protected static class MappingJackson2HttpMessageConverterConfiguration {
-
-		// This can be removed when the deprecated class is removed (the ObjectMapper will
-		// already have all the correct properties).
-		@Autowired
-		private HttpMapperProperties properties = new HttpMapperProperties();
 
 		@Bean
 		@ConditionalOnMissingBean
 		public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
 				ObjectMapper objectMapper) {
-			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(
-					objectMapper);
-			if (this.properties.isJsonPrettyPrint() != null) {
-				converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
-			}
-			return converter;
+			return new MappingJackson2HttpMessageConverter(objectMapper);
 		}
 
 	}
@@ -70,23 +56,14 @@ class JacksonHttpMessageConvertersConfiguration {
 	@Configuration
 	@ConditionalOnClass(XmlMapper.class)
 	@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
-	@EnableConfigurationProperties(HttpMapperProperties.class)
-	@SuppressWarnings("deprecation")
 	protected static class MappingJackson2XmlHttpMessageConverterConfiguration {
-
-		@Autowired
-		private HttpMapperProperties properties = new HttpMapperProperties();
 
 		@Bean
 		@ConditionalOnMissingBean
 		public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(
 				Jackson2ObjectMapperBuilder builder) {
-			MappingJackson2XmlHttpMessageConverter converter = new MappingJackson2XmlHttpMessageConverter();
-			converter.setObjectMapper(builder.createXmlMapper(true).build());
-			if (this.properties.isJsonPrettyPrint() != null) {
-				converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
-			}
-			return converter;
+			return new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(
+					true).build());
 		}
 
 	}

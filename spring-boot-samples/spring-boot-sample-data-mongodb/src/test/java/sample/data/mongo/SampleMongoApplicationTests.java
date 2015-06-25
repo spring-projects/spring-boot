@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
-import com.mongodb.MongoServerSelectionException;
 import com.mongodb.MongoTimeoutException;
 
 import static org.junit.Assert.assertTrue;
@@ -61,8 +60,7 @@ public class SampleMongoApplicationTests {
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
 		Throwable root = nested.getRootCause();
-		if (root instanceof MongoServerSelectionException
-				|| root instanceof MongoTimeoutException) {
+		if (root instanceof MongoTimeoutException) {
 			if (root.getMessage().contains("Unable to connect to any server")) {
 				return true;
 			}

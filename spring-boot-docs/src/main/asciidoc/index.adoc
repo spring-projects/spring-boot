@@ -22,6 +22,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :sc-spring-boot-autoconfigure: {github-code}/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
 :sc-spring-boot-actuator: {github-code}/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
 :sc-spring-boot-cli: {github-code}/spring-boot-cli/src/main/java/org/springframework/boot/cli
+:sc-spring-boot-devtools: {github-code}/spring-boot-devtools/src/main/java/org/springframework/boot/devtools
 :dc-ext: html
 :dc-root: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/api
 :dc-spring-boot: {dc-root}/org/springframework/boot

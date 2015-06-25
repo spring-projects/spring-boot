@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,8 +167,8 @@ public abstract class SystemPropertyUtils {
 
 	/**
 	 * Search the System properties and environment variables for a value with the
-	 * provided key. Environment variables in <code>UPPER_CASE</code> style are allowed
-	 * where System properties would normally be <code>lower.case</code>.
+	 * provided key. Environment variables in {@code UPPER_CASE} style are allowed
+	 * where System properties would normally be {@code lower.case}.
 	 * @param key the key to resolve
 	 * @param defaultValue the default value
 	 * @param text optional extra context for an error message if the key resolution fails

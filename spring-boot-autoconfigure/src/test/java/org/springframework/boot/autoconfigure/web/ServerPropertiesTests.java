@@ -113,6 +113,21 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void testDefaultDisplayName() throws Exception {
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		this.properties.customize(factory);
+		verify(factory).setDisplayName("application");
+	}
+
+	@Test
+	public void testCustomizeDisplayName() throws Exception {
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		this.properties.setDisplayName("TestName");
+		this.properties.customize(factory);
+		verify(factory).setDisplayName("TestName");
+	}
+
+	@Test
 	public void testCustomizeTomcatPort() throws Exception {
 		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.setPort(8080);
@@ -134,6 +149,18 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.maxHttpHeaderSize", "9999");
 		bindProperties(map);
 		assertEquals(9999, this.properties.getTomcat().getMaxHttpHeaderSize());
+	}
+
+	@Test
+	public void customizeTomcatDisplayName() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.display-name", "MyBootApp");
+		bindProperties(map);
+
+		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+
+		assertEquals("MyBootApp", container.getDisplayName());
 	}
 
 	@Test
@@ -165,12 +192,16 @@ public class ServerPropertiesTests {
 		assertThat(valve, instanceOf(RemoteIpValve.class));
 		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
 		assertEquals("x-forwarded-proto", remoteIpValve.getProtocolHeader());
+		assertEquals("https", remoteIpValve.getProtocolHeaderHttpsValue());
 		assertEquals("x-forwarded-for", remoteIpValve.getRemoteIpHeader());
 
 		String expectedInternalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
-				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"; // 127/8
+				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
+				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
+				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
 
 		assertEquals(expectedInternalProxies, remoteIpValve.getInternalProxies());
 	}
@@ -182,6 +213,7 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.protocol_header", "x-my-protocol-header");
 		map.put("server.tomcat.internal_proxies", "192.168.0.1");
 		map.put("server.tomcat.port-header", "x-my-forward-port");
+		map.put("server.tomcat.protocol-header-https-value", "On");
 		bindProperties(map);
 
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
@@ -192,6 +224,7 @@ public class ServerPropertiesTests {
 		assertThat(valve, instanceOf(RemoteIpValve.class));
 		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
 		assertEquals("x-my-protocol-header", remoteIpValve.getProtocolHeader());
+		assertEquals("On", remoteIpValve.getProtocolHeaderHttpsValue());
 		assertEquals("x-my-remote-ip-header", remoteIpValve.getRemoteIpHeader());
 		assertEquals("x-my-forward-port", remoteIpValve.getPortHeader());
 		assertEquals("192.168.0.1", remoteIpValve.getInternalProxies());

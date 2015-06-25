@@ -116,24 +116,12 @@ abstract class BeanTypeRegistry {
 				definition.getFactoryMethodName());
 		Class<?> generic = ResolvableType.forMethodReturnType(method)
 				.as(FactoryBean.class).resolveGeneric();
-		if (generic == null || generic.equals(Object.class)) {
-			generic = determineTypeFromDefinitionAttribute(factoryDefinition);
+		if ((generic == null || generic.equals(Object.class))
+				&& definition.hasAttribute(FACTORY_BEAN_OBJECT_TYPE)) {
+			generic = getTypeFromAttribute(definition
+					.getAttribute(FACTORY_BEAN_OBJECT_TYPE));
 		}
 		return generic;
-	}
-
-	private Class<?> determineTypeFromDefinitionAttribute(BeanDefinition definition)
-			throws ClassNotFoundException, LinkageError {
-		if (definition.hasAttribute(FACTORY_BEAN_OBJECT_TYPE)) {
-			Object attributeObject = definition.getAttribute(FACTORY_BEAN_OBJECT_TYPE);
-			if (attributeObject instanceof Class<?>) {
-				return (Class<?>) attributeObject;
-			}
-			else if (attributeObject instanceof String) {
-				return ClassUtils.forName((String) attributeObject, null);
-			}
-		}
-		return Object.class;
 	}
 
 	private Class<?> getDirectFactoryBeanGeneric(
@@ -143,10 +131,23 @@ abstract class BeanTypeRegistry {
 				beanFactory.getBeanClassLoader());
 		Class<?> generic = ResolvableType.forClass(factoryBeanClass)
 				.as(FactoryBean.class).resolveGeneric();
-		if (generic == null || generic.equals(Object.class)) {
-			generic = determineTypeFromDefinitionAttribute(definition);
+		if ((generic == null || generic.equals(Object.class))
+				&& definition.hasAttribute(FACTORY_BEAN_OBJECT_TYPE)) {
+			generic = getTypeFromAttribute(definition
+					.getAttribute(FACTORY_BEAN_OBJECT_TYPE));
 		}
 		return generic;
+	}
+
+	private Class<?> getTypeFromAttribute(Object attribute)
+			throws ClassNotFoundException, LinkageError {
+		if (attribute instanceof Class<?>) {
+			return (Class<?>) attribute;
+		}
+		if (attribute instanceof String) {
+			return ClassUtils.forName((String) attribute, null);
+		}
+		return null;
 	}
 
 	/**

@@ -121,18 +121,23 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 						.contains(source.getName()) && !includes.matches(propertyName)) {
 					continue;
 				}
-				Object value = source.getProperty(propertyName);
-				try {
-					value = resolver.getProperty(propertyName);
-				}
-				catch (RuntimeException ex) {
-					// Probably could not resolve placeholders, ignore it here
-				}
+				Object value = getEnumerableProperty(source, resolver, propertyName);
 				if (!this.propertyValues.containsKey(propertyName)) {
 					this.propertyValues.put(propertyName, new PropertyValue(propertyName,
 							value));
 				}
 			}
+		}
+	}
+
+	private Object getEnumerableProperty(EnumerablePropertySource<?> source,
+			PropertySourcesPropertyResolver resolver, String propertyName) {
+		try {
+			return resolver.getProperty(propertyName, Object.class);
+		}
+		catch (RuntimeException ex) {
+			// Probably could not resolve placeholders, ignore it here
+			return source.getProperty(propertyName);
 		}
 	}
 

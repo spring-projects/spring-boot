@@ -16,6 +16,8 @@
   -- A production features sample with no web application
 * link:spring-boot-sample-actuator-log4j[spring-boot-sample-actuator-log4j]
   -- A production features sample using log4j for logging (instead of logback)
+* link:spring-boot-sample-cache-ehcache[spring-boot-sample-cache]
+  -- A web sample that uses Spring's cache abstraction
 * link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
   -- A thymeleaf web application
 * link:spring-boot-sample-web-static[spring-boot-sample-web-static]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 the original author or authors.
+ * Copyright 2010-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -456,6 +456,17 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.onApplicationEvent(this.event);
 		assertThat(this.environment, containsPropertySource("applicationConfig: [file:"
 				+ location + "]"));
+	}
+
+	@Test
+	public void absoluteResourceDefaultsToFile() throws Exception {
+		String location = new File("src/test/resources/specificlocation.properties")
+				.getAbsolutePath();
+		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
+				+ location);
+		this.initializer.onApplicationEvent(this.event);
+		assertThat(this.environment, containsPropertySource("applicationConfig: [file:"
+				+ location.replace(File.separatorChar, '/') + "]"));
 	}
 
 	@Test

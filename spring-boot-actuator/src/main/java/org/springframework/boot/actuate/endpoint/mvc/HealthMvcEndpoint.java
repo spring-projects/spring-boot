@@ -89,7 +89,7 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	}
 
 	/**
-	 * Add specfic status mappings to the existing set.
+	 * Add specific status mappings to the existing set.
 	 * @param statusMapping a map of status code to {@link HttpStatus}
 	 */
 	public void addStatusMapping(Map<String, HttpStatus> statusMapping) {

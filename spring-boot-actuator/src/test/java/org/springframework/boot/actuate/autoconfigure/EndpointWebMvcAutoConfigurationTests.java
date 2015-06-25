@@ -50,8 +50,8 @@ import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
+import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.boot.test.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -294,7 +294,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.refresh();
 		// /health, /metrics, /env (/shutdown is disabled by default)
 		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class).size(),
-				is(equalTo(3)));
+				is(equalTo(4)));
 	}
 
 	@Test

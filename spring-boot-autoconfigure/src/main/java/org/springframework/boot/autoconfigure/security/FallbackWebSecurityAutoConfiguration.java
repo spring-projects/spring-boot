@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 /**
  * If the user explicitly disables the basic security features and forgets to
- * <code>@EnableWebSecurity</code>, and yet still wants a bean of type
+ * {@code @EnableWebSecurity}, and yet still wants a bean of type
  * WebSecurityConfigurerAdapter, he is trying to use a custom security setup. The app
  * would fail in a confusing way without this shim configuration, which just helpfully
- * defines an empty <code>@EnableWebSecurity</code>.
+ * defines an empty {@code @EnableWebSecurity}.
  *
  * @author Dave Syer
  */

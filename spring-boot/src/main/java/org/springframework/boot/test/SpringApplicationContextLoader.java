@@ -62,11 +62,12 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * {@code @WebAppConfiguration}) to indicate that you want to use a real servlet container
  * or {@code @WebAppConfiguration} alone to use a {@link MockServletContext}.
  * <p>
- * If <code>@ActiveProfiles</code> are provided in the test class they will be used to
- * create the application context.
+ * If {@code @ActiveProfiles} are provided in the test class they will be used to create
+ * the application context.
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see IntegrationTest
  * @see WebIntegrationTest
  * @see TestRestTemplate
@@ -80,6 +81,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			throws Exception {
 		assertValidAnnotations(config.getTestClass());
 		SpringApplication application = getSpringApplication();
+		application.setMainApplicationClass(config.getTestClass());
 		application.setSources(getSources(config));
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
@@ -196,7 +198,6 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
 		initializers.add(new PropertySourceLocationsInitializer(mergedConfig
 				.getPropertySourceLocations()));
-		initializers.add(new ServerPortInfoApplicationContextInitializer());
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
 				.getContextInitializerClasses()) {
