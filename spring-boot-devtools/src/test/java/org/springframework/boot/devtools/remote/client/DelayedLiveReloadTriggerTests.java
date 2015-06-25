@@ -98,7 +98,7 @@ public class DelayedLiveReloadTriggerTests {
 	}
 
 	@Test
-	public void urlMostNotBeNull() throws Exception {
+	public void urlMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URL must not be empty");
 		new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, null);
