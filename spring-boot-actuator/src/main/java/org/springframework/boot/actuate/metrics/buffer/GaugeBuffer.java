@@ -16,32 +16,28 @@
 
 package org.springframework.boot.actuate.metrics.buffer;
 
-import java.util.function.Consumer;
-
-import org.springframework.lang.UsesJava8;
-
 /**
- * Fast writes to in-memory metrics store using {@link GaugeBuffer}.
+ * Mutable buffer containing a double value and a timestamp.
  *
  * @author Dave Syer
  * @since 1.3.0
  */
-@UsesJava8
-public class GaugeBuffers extends Buffers<GaugeBuffer> {
+public class GaugeBuffer extends Buffer<Double> {
 
-	public void set(final String name, final double value) {
-		doWith(name, new Consumer<GaugeBuffer>() {
-			@Override
-			public void accept(GaugeBuffer buffer) {
-				buffer.setTimestamp(System.currentTimeMillis());
-				buffer.setValue(value);
-			}
-		});
+	private volatile double value;
+
+	public GaugeBuffer(long timestamp) {
+		super(timestamp);
+		this.value = 0;
 	}
 
 	@Override
-	protected GaugeBuffer createBuffer() {
-		return new GaugeBuffer(0L);
+	public Double getValue() {
+		return this.value;
+	}
+
+	public void setValue(double value) {
+		this.value = value;
 	}
 
 }

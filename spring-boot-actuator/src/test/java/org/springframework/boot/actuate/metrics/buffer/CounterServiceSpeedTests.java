@@ -98,18 +98,18 @@ public class CounterServiceSpeedTests {
 		watch.start("readRaw" + count);
 		for (String name : names) {
 			this.counters.forEach(Pattern.compile(name).asPredicate(),
-					new BiConsumer<String, LongBuffer>() {
+					new BiConsumer<String, CounterBuffer>() {
 						@Override
-						public void accept(String name, LongBuffer value) {
+						public void accept(String name, CounterBuffer value) {
 							err.println(name + "=" + value);
 						}
 					});
 		}
 		final LongAdder total = new LongAdder();
 		this.counters.forEach(Pattern.compile(".*").asPredicate(),
-				new BiConsumer<String, LongBuffer>() {
+				new BiConsumer<String, CounterBuffer>() {
 					@Override
-					public void accept(String name, LongBuffer value) {
+					public void accept(String name, CounterBuffer value) {
 						total.add(value.getValue());
 					}
 				});

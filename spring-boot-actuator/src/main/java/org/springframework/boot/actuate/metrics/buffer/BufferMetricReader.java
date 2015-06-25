@@ -38,35 +38,29 @@ import org.springframework.lang.UsesJava8;
 @UsesJava8
 public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 
-	private final CounterBuffers counters;
+	private static final Predicate<String> ALL = Pattern.compile(".*").asPredicate();
 
-	private final GaugeBuffers gauges;
+	private final CounterBuffers counterBuffers;
 
-	private final Predicate<String> all = Pattern.compile(".*").asPredicate();
+	private final GaugeBuffers gaugeBuffers;
 
-	public BufferMetricReader(CounterBuffers counters, GaugeBuffers gauges) {
-		this.counters = counters;
-		this.gauges = gauges;
+	public BufferMetricReader(CounterBuffers counterBuffers, GaugeBuffers gaugeBuffers) {
+		this.counterBuffers = counterBuffers;
+		this.gaugeBuffers = gaugeBuffers;
 	}
 
 	@Override
 	public Metric<?> findOne(final String name) {
-		LongBuffer buffer = this.counters.find(name);
-		if (buffer != null) {
-			return new Metric<Long>(name, buffer.getValue(), new Date(
-					buffer.getTimestamp()));
+		Buffer<?> buffer = this.counterBuffers.find(name);
+		if (buffer == null) {
+			buffer = this.gaugeBuffers.find(name);
 		}
-		DoubleBuffer doubleValue = this.gauges.find(name);
-		if (doubleValue != null) {
-			return new Metric<Double>(name, doubleValue.getValue(), new Date(
-					doubleValue.getTimestamp()));
-		}
-		return null;
+		return (buffer == null ? null : asMetric(name, buffer));
 	}
 
 	@Override
 	public Iterable<Metric<?>> findAll() {
-		return findAll(this.all);
+		return findAll(BufferMetricReader.ALL);
 	}
 
 	@Override
@@ -76,30 +70,30 @@ public class BufferMetricReader implements MetricReader, PrefixMetricReader {
 
 	@Override
 	public long count() {
-		return this.counters.count() + this.gauges.count();
+		return this.counterBuffers.count() + this.gaugeBuffers.count();
 	}
 
 	private Iterable<Metric<?>> findAll(Predicate<String> predicate) {
 		final List<Metric<?>> metrics = new ArrayList<Metric<?>>();
-		this.counters.forEach(predicate, new BiConsumer<String, LongBuffer>() {
-
-			@Override
-			public void accept(String name, LongBuffer value) {
-				metrics.add(new Metric<Long>(name, value.getValue(), new Date(value
-						.getTimestamp())));
-			}
-
-		});
-		this.gauges.forEach(predicate, new BiConsumer<String, DoubleBuffer>() {
-
-			@Override
-			public void accept(String name, DoubleBuffer value) {
-				metrics.add(new Metric<Double>(name, value.getValue(), new Date(value
-						.getTimestamp())));
-			}
-
-		});
+		collectMetrics(this.gaugeBuffers, predicate, metrics);
+		collectMetrics(this.counterBuffers, predicate, metrics);
 		return metrics;
+	}
+
+	private <T extends Number, B extends Buffer<T>> void collectMetrics(
+			Buffers<B> buffers, Predicate<String> predicate, final List<Metric<?>> metrics) {
+		buffers.forEach(predicate, new BiConsumer<String, B>() {
+
+			@Override
+			public void accept(String name, B value) {
+				metrics.add(asMetric(name, value));
+			}
+
+		});
+	}
+
+	private <T extends Number> Metric<T> asMetric(final String name, Buffer<T> buffer) {
+		return new Metric<T>(name, buffer.getValue(), new Date(buffer.getTimestamp()));
 	}
 
 }

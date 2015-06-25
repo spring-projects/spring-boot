@@ -16,37 +16,37 @@
 
 package org.springframework.boot.actuate.metrics.buffer;
 
+import java.util.concurrent.atomic.LongAdder;
+
+import org.springframework.lang.UsesJava8;
+
 /**
- * Mutable buffer containing a double value and a timestamp.
+ * Mutable buffer containing a long adder (Java 8) and a timestamp.
  *
  * @author Dave Syer
  * @since 1.3.0
  */
-public class DoubleBuffer {
+@UsesJava8
+public class CounterBuffer extends Buffer<Long> {
 
-	private volatile double value;
+	private final LongAdder adder;
 
-	private volatile long timestamp;
-
-	public DoubleBuffer(long timestamp) {
-		this.value = 0;
-		this.timestamp = timestamp;
+	public CounterBuffer(long timestamp) {
+		super(timestamp);
+		this.adder = new LongAdder();
 	}
 
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public void add(long delta) {
+		this.adder.add(delta);
 	}
 
-	public double getValue() {
-		return this.value;
+	public void reset() {
+		this.adder.reset();
 	}
 
-	public void setValue(double value) {
-		this.value = value;
-	}
-
-	public long getTimestamp() {
-		return this.timestamp;
+	@Override
+	public Long getValue() {
+		return this.adder.sum();
 	}
 
 }

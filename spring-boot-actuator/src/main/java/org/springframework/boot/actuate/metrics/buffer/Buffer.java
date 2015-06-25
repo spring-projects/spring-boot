@@ -16,46 +16,33 @@
 
 package org.springframework.boot.actuate.metrics.buffer;
 
-import java.util.concurrent.atomic.LongAdder;
-
-import org.springframework.lang.UsesJava8;
-
 /**
- * Mutable buffer containing a long adder (Java 8) and a timestamp.
+ * Base class for a mutable buffer containing a timestamp and a value.
  *
  * @author Dave Syer
- * @since 1.3.0
+ * @author Phillip Webb
+ * @param <T> The value type
  */
-@UsesJava8
-public class LongBuffer {
-
-	private final LongAdder adder;
+abstract class Buffer<T extends Number> {
 
 	private volatile long timestamp;
 
-	public LongBuffer(long timestamp) {
-		this.adder = new LongAdder();
+	public Buffer(long timestamp) {
 		this.timestamp = timestamp;
-	}
-
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public long getValue() {
-		return this.adder.sum();
 	}
 
 	public long getTimestamp() {
 		return this.timestamp;
 	}
 
-	public void reset() {
-		this.adder.reset();
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 
-	public void add(long delta) {
-		this.adder.add(delta);
-	}
+	/**
+	 * Returns the buffer value.
+	 * @return the value of the buffer
+	 */
+	public abstract T getValue();
 
 }

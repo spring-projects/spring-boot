@@ -32,19 +32,19 @@ public class BufferGaugeService implements GaugeService {
 
 	private final ConcurrentHashMap<String, String> names = new ConcurrentHashMap<String, String>();
 
-	private final GaugeBuffers writer;
+	private final GaugeBuffers buffers;
 
 	/**
 	 * Create a {@link BufferGaugeService} instance.
-	 * @param writer the underlying writer used to manage metrics
+	 * @param buffers the underlying buffers used to store metrics
 	 */
-	public BufferGaugeService(GaugeBuffers writer) {
-		this.writer = writer;
+	public BufferGaugeService(GaugeBuffers buffers) {
+		this.buffers = buffers;
 	}
 
 	@Override
 	public void submit(String metricName, double value) {
-		this.writer.set(wrap(metricName), value);
+		this.buffers.set(wrap(metricName), value);
 	}
 
 	private String wrap(String metricName) {
