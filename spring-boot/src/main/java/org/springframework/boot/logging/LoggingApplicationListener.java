@@ -206,9 +206,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				system.initialize(logConfig, logFile);
 			}
 			catch (Exception ex) {
-				System.err
-						.println("Logging system failed to initialize using configuration from '"
-								+ logConfig + "'");
+				// NOTE: We can't use the logger here to report the problem
+				System.err.println("Logging system failed to initialize "
+						+ "using configuration from '" + logConfig + "'");
 				ex.printStackTrace(System.err);
 				throw new IllegalStateException(ex);
 			}

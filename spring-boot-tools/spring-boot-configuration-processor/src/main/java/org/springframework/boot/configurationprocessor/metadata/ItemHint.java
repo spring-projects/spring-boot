@@ -44,8 +44,10 @@ public class ItemHint implements Comparable<ItemHint> {
 
 	public ItemHint(String name, List<ValueHint> values, List<ProviderHint> providers) {
 		this.name = toCanonicalName(name);
-		this.values = (values != null ? new ArrayList<ValueHint>(values) : new ArrayList<ValueHint>());
-		this.providers = (providers != null ? new ArrayList<ProviderHint>(providers) : new ArrayList<ProviderHint>());
+		this.values = (values != null ? new ArrayList<ValueHint>(values)
+				: new ArrayList<ValueHint>());
+		this.providers = (providers != null ? new ArrayList<ProviderHint>(providers)
+				: new ArrayList<ProviderHint>());
 	}
 
 	private String toCanonicalName(String name) {
@@ -76,7 +78,8 @@ public class ItemHint implements Comparable<ItemHint> {
 	}
 
 	public static ItemHint newHint(String name, ValueHint... values) {
-		return new ItemHint(name, Arrays.asList(values), Collections.<ProviderHint>emptyList());
+		return new ItemHint(name, Arrays.asList(values),
+				Collections.<ProviderHint> emptyList());
 	}
 
 	@Override
@@ -113,8 +116,10 @@ public class ItemHint implements Comparable<ItemHint> {
 	}
 
 	public static class ProviderHint {
+
 		private final String name;
-		private final Map<String,Object> parameters;
+
+		private final Map<String, Object> parameters;
 
 		public ProviderHint(String name, Map<String, Object> parameters) {
 			this.name = name;
@@ -122,18 +127,19 @@ public class ItemHint implements Comparable<ItemHint> {
 		}
 
 		public String getName() {
-			return name;
+			return this.name;
 		}
 
 		public Map<String, Object> getParameters() {
-			return parameters;
+			return this.parameters;
 		}
 
 		@Override
 		public String toString() {
-			return "Provider{" + "name='" + this.name + ", parameters=" + this.parameters +
-					'}';
+			return "Provider{" + "name='" + this.name + ", parameters=" + this.parameters
+					+ '}';
 		}
+
 	}
 
 }

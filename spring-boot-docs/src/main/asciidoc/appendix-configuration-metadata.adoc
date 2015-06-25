@@ -261,6 +261,8 @@ following attributes:
   provider for more details).
 |===
 
+
+
 [[configuration-metadata-repeated-items]]
 ==== Repeated meta-data items
 It is perfectly acceptable for "`property`" and "`group`" objects with the same name to
@@ -282,7 +284,6 @@ property, you can provide additional meta-data that:
 
 
 ==== Value hints
-
 The `name` attribute of each hint refers to the `name` of a property. In the initial
 example above, we provide 3 values for the `server.tomcat.compression` property: `on`,
 `off` and `force`.
@@ -327,8 +328,9 @@ assistance for the keys, you could add the following to
 NOTE: Of course, you should have an `Enum` for those two values instead. This is by far
 the most effective approach to auto-completion if your IDE supports it.
 
-==== Provider hints
 
+
+==== Provider hints
 Providers are a powerful way of attaching semantics to a property. We define in the section
 below the official providers that you can use for your own hints. Bare in mind however that
 your favorite IDE may implement some of these or none of them. It could eventually provide
@@ -369,8 +371,8 @@ can handle. If no provider for a given property is supported, no special content
 assistance is provided either.
 
 
-===== Any
 
+===== Any
 The **any** provider permits any additional values to be provided. Regular value
 validation based on the property type should be applied if this is supported.
 
@@ -402,8 +404,9 @@ other value is also allowed:
 	]}
 ----
 
-===== Class reference
 
+
+===== Class reference
 The **class-reference** provider auto-completes classes available in the project. This
 provider supports these parameters:
 
@@ -445,8 +448,9 @@ property that defines the `JspServlet` class name to use:
 	]}
 ----
 
-===== Enum
 
+
+===== Enum
 The **enum** provider auto-completes the values of the `Enum` class referenced via the
 `target` parameter. This provider supports these parameters:
 
@@ -485,8 +489,8 @@ TIP: This is useful when you don't want your configuration classes to rely on cl
 that may not be on the classpath.
 
 
-===== Logger name
 
+===== Logger name
 The **logger-name** provider auto-completes valid logger names. Typically, package and
 class names available in the current project can be auto-completed. Specific frameworks
 may have extra magic logger names that could be supported as well.
@@ -552,8 +556,8 @@ level:
 ----
 
 
-===== Spring bean reference
 
+===== Spring bean reference
 The **spring-bean-reference** provider auto-completes the beans that are defined in
 the configuration of the current project. This provider supports these parameters:
 
@@ -587,6 +591,8 @@ that defines the name of the `MBeanServer` bean to use:
 		}
 	]}
 ----
+
+
 
 [[configuration-metadata-annotation-processor]]
 === Generating your own meta-data using the annotation processor
@@ -633,6 +639,7 @@ Properties are discovered via the presence of standard getters and setters with 
 handling for collection types (that will be detected even if only a getter is present). The
 annotation processor also supports the use of the `@Data`, `@Getter` and `@Setter` lombok
 annotations.
+
 
 
 [[configuration-metadata-nested-properties]]

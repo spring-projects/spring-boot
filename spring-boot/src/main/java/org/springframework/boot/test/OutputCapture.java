@@ -108,10 +108,9 @@ public class OutputCapture implements TestRule {
 	/**
 	 * Verify that the output is matched by the supplied {@code matcher}. Verification is
 	 * performed after the test method has executed.
-	 *
 	 * @param matcher the matcher
 	 */
-	public void expect(Matcher<String> matcher) {
+	public void expect(Matcher<? super String> matcher) {
 		this.matchers.add(matcher);
 	}
 

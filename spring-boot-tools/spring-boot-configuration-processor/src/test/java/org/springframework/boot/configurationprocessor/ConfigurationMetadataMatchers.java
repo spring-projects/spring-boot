@@ -212,10 +212,12 @@ public class ConfigurationMetadataMatchers {
 		private final List<ProviderHintMatcher> providers;
 
 		public ContainsHintMatcher(String name) {
-			this(name, new ArrayList<ValueHintMatcher>(), new ArrayList<ProviderHintMatcher>());
+			this(name, new ArrayList<ValueHintMatcher>(),
+					new ArrayList<ProviderHintMatcher>());
 		}
 
-		public ContainsHintMatcher(String name, List<ValueHintMatcher> values, List<ProviderHintMatcher> providers) {
+		public ContainsHintMatcher(String name, List<ValueHintMatcher> values,
+				List<ProviderHintMatcher> providers) {
 			this.name = name;
 			this.values = values;
 			this.providers = providers;
@@ -273,14 +275,17 @@ public class ConfigurationMetadataMatchers {
 			return new ContainsHintMatcher(this.name, values, this.providers);
 		}
 
-		public ContainsHintMatcher withProvider(int index, String provider, Map<String,Object> parameters) {
-			List<ProviderHintMatcher> providers = new ArrayList<ProviderHintMatcher>(this.providers);
+		public ContainsHintMatcher withProvider(int index, String provider,
+				Map<String, Object> parameters) {
+			List<ProviderHintMatcher> providers = new ArrayList<ProviderHintMatcher>(
+					this.providers);
 			providers.add(new ProviderHintMatcher(index, provider, parameters));
 			return new ContainsHintMatcher(this.name, this.values, providers);
 		}
 
 		public ContainsHintMatcher withProvider(String provider, String key, Object value) {
-			return withProvider(this.providers.size(), provider, Collections.singletonMap(key, value));
+			return withProvider(this.providers.size(), provider,
+					Collections.singletonMap(key, value));
 		}
 
 		public ContainsHintMatcher withProvider(String provider) {
@@ -359,9 +364,8 @@ public class ConfigurationMetadataMatchers {
 			if (this.index + 1 > hint.getProviders().size()) {
 				return false;
 			}
-			ItemHint.ProviderHint providerHint = hint.getProviders().get(index);
-			if (this.name != null
-					&& !this.name.equals(providerHint.getName())) {
+			ItemHint.ProviderHint providerHint = hint.getProviders().get(this.index);
+			if (this.name != null && !this.name.equals(providerHint.getName())) {
 				return false;
 			}
 			if (this.parameters != null) {

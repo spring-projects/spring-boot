@@ -110,10 +110,13 @@ public class JsonMarshaller {
 			for (ItemHint.ProviderHint providerHint : hint.getProviders()) {
 				JSONObject providerHintObject = new JSONOrderedObject();
 				providerHintObject.put("name", providerHint.getName());
-				if (providerHint.getParameters() != null && !providerHint.getParameters().isEmpty()) {
+				if (providerHint.getParameters() != null
+						&& !providerHint.getParameters().isEmpty()) {
 					JSONObject parametersObject = new JSONOrderedObject();
-					for (Map.Entry<String, Object> entry : providerHint.getParameters().entrySet()) {
-						parametersObject.put(entry.getKey(), extractItemValue(entry.getValue()));
+					for (Map.Entry<String, Object> entry : providerHint.getParameters()
+							.entrySet()) {
+						parametersObject.put(entry.getKey(),
+								extractItemValue(entry.getValue()));
 					}
 					providerHintObject.put("parameters", parametersObject);
 				}
@@ -218,7 +221,7 @@ public class JsonMarshaller {
 
 	private ItemHint.ProviderHint toProviderHint(JSONObject object) {
 		String name = object.getString("name");
-		Map<String,Object> parameters = new HashMap<String,Object>();
+		Map<String, Object> parameters = new HashMap<String, Object>();
 		if (object.has("parameters")) {
 			JSONObject parametersObject = object.getJSONObject("parameters");
 			for (Object k : parametersObject.keySet()) {

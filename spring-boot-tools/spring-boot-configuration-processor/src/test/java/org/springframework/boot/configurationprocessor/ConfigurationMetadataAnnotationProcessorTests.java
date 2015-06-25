@@ -330,7 +330,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void mergingOfAdditionalProperty() throws Exception {
 		File additionalMetadataFile = createAdditionalMetadataFile();
-
 		JSONObject property = new JSONObject();
 		property.put("name", "foo");
 		property.put("type", "java.lang.String");
@@ -339,12 +338,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		properties.put(property);
 		JSONObject additionalMetadata = new JSONObject();
 		additionalMetadata.put("properties", properties);
-
 		writeMetadata(additionalMetadataFile, additionalMetadata);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-
 		assertThat(metadata, containsProperty("simple.comparator"));
-
 		assertThat(metadata,
 				containsProperty("foo", String.class)
 						.fromSource(AdditionalMetadata.class));
@@ -354,7 +350,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void mergingOfSimpleHint() throws Exception {
 		writeAdditionalHints(ItemHint.newHint("simple.the-name", new ItemHint.ValueHint(
 				"boot", "Bla bla"), new ItemHint.ValueHint("spring", null)));
-
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata,
 				containsHint("simple.the-name").withValue(0, "boot", "Bla bla")
@@ -365,7 +360,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void mergingOfHintWithNonCanonicalName() throws Exception {
 		writeAdditionalHints(ItemHint.newHint("simple.theName", new ItemHint.ValueHint(
 				"boot", "Bla bla")));
-
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata,
 				containsHint("simple.the-name").withValue(0, "boot", "Bla bla"));
@@ -373,16 +367,16 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void mergingOfHintWithProvider() throws Exception {
-		writeAdditionalHints(
-				new ItemHint("simple.theName", Collections.<ItemHint.ValueHint>emptyList(), Arrays.asList(
-						new ItemHint.ProviderHint("first", Collections.<String,Object>singletonMap("target", "org.foo")),
-						new ItemHint.ProviderHint("second", null))
-				));
-
+		writeAdditionalHints(new ItemHint("simple.theName",
+				Collections.<ItemHint.ValueHint> emptyList(), Arrays.asList(
+						new ItemHint.ProviderHint("first", Collections
+								.<String, Object> singletonMap("target", "org.foo")),
+						new ItemHint.ProviderHint("second", null))));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(metadata, containsHint("simple.the-name")
-				.withProvider("first", "target", "org.foo")
-				.withProvider("second"));
+		assertThat(metadata,
+				containsHint("simple.the-name")
+						.withProvider("first", "target", "org.foo")
+						.withProvider("second"));
 	}
 
 	@Test

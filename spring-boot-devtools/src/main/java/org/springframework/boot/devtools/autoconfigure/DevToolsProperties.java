@@ -76,7 +76,7 @@ public class DevToolsProperties {
 		private long pollInterval = DEFAULT_RESTART_POLL_INTERVAL;
 
 		/**
-		 * Amount of quiet time (in milliseconds) requited without any classpath changes
+		 * Amount of quiet time (in milliseconds) required without any classpath changes
 		 * before a restart is triggered.
 		 */
 		private long quietPeriod = DEFAULT_RESTART_QUIET_PERIOD;
