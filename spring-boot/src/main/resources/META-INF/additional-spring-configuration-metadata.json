@@ -113,5 +113,68 @@
     "type": "java.lang.String",
     "description": "Unconditionally activate the specified comma separated profiles."
   }
+],"hints": [
+  {
+    "name": "logger.level.keys",
+    "values": [
+      {
+        "value": "root",
+        "description": "Root logger used to assign the default logging level."
+      }
+    ],
+    "providers": [
+      {
+        "name": "logger-name"
+      }
+    ]
+  },
+  {
+    "name": "logger.level.values",
+    "values": [
+      {
+        "value": "trace"
+      },
+      {
+        "value": "debug"
+      },
+      {
+        "value": "info"
+      },
+      {
+        "value": "warn"
+      },
+      {
+        "value": "error"
+      },
+      {
+        "value": "fatal"
+      },
+      {
+        "value": "off"
+      }
+
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.profiles.active",
+    "providers": [
+      {
+        "name": "spring-profile-name"
+      }
+    ]
+  },
+  {
+    "name": "spring.profiles.include",
+    "providers": [
+      {
+        "name": "spring-profile-name"
+      }
+    ]
+  }
 ]}
 

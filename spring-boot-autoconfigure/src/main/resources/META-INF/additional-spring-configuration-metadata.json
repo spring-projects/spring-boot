@@ -158,5 +158,146 @@
     "description": "Spring MVC view suffix.",
     "deprecated": true
   }
+],"hints": [
+  {
+    "name": "server.jsp-servlet.class-name",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "javax.servlet.http.HttpServlet"
+        }
+      }
+    ]
+  },
+  {
+    "name": "server.tomcat.compression",
+    "values": [
+      {
+        "value": "off",
+        "description": "Disable compression."
+      },
+      {
+        "value": "on",
+        "description": "Enable compression of responses over 2048 bytes."
+      },
+      {
+        "value": "force",
+        "description": "Enable compression of all responses."
+      }
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.cache.jcache.provider",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "javax.cache.spi.CachingProvider"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.datasource.driver-class-name",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "java.sql.Driver"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.datasource.xa.data-source-class-name",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "javax.sql.XADataSource"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.http.converters.preferred-json-mapper",
+    "values": [
+      {
+        "value": "gson"
+      },
+      {
+        "value": "jackson"
+      }
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.jooq.sql-dialect",
+    "providers": [
+      {
+        "name": "enum",
+        "parameters": {
+          "target": "org.jooq.SQLDialect"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.jmx.server",
+    "providers": [
+      {
+        "name": "spring-bean-reference",
+        "parameters": {
+          "target": "javax.management.MBeanServer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.jpa.hibernate.ddl-auto",
+    "values": [
+      {
+        "value": "none",
+        "description": "Disable DDL handling."
+      },
+      {
+        "value": "validate",
+        "description": "Validate the schema, make no changes to the database."
+      },
+      {
+        "value": "update",
+        "description": "Update the schema if necessary."
+      },
+      {
+        "value": "create",
+        "description": "Create the schema and destroy previous data."
+      },
+      {
+        "value": "create-drop",
+        "description": "Create and then destroy the schema at the end of the session."
+      }
+    ]
+  },
+  {
+    "name": "spring.jpa.hibernate.naming-strategy",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "org.hibernate.cfg.NamingStrategy"
+        }
+      }
+    ]
+  }
 ]}
 
