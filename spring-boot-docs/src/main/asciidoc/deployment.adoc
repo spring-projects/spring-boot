@@ -362,7 +362,7 @@ Spring Boot application as an `init.d` service simply create a symlink:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ sudo link -s /var/myapp/myapp.jar /etc/init.d/myapp
+	$ sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp
 ----
 
 TIP: It is advisable to create a specific user account to run you application. Ensure
