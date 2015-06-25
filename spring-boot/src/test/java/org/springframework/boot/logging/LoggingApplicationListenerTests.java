@@ -195,7 +195,6 @@ public class LoggingApplicationListenerTests {
 	public void addAdditionalProperty() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-nondefault.xml",
-				"logging.path: target/foo/",
 				"logging.properties.ADDITIONAL_PROPERTY: foo-bar");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
