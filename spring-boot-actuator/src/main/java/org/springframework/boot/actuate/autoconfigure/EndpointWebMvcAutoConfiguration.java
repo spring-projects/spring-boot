@@ -205,7 +205,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnEnabledEndpoint("health")
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		Security security = this.managementServerProperties.getSecurity();
-		boolean secure = (security == null || security.isEnabled());
+		boolean secure = (security != null && security.isEnabled());
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate, secure);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
 			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties

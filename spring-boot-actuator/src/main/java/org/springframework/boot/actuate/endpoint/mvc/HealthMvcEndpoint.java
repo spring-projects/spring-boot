@@ -165,7 +165,7 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	private boolean isUnrestricted() {
 		Boolean sensitive = this.propertyResolver.getProperty("sensitive", Boolean.class);
-		return !this.secure || Boolean.FALSE.equals(sensitive);
+		return !this.secure && !Boolean.TRUE.equals(sensitive);
 	}
 
 	@Override

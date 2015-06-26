@@ -34,6 +34,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -139,6 +140,31 @@ public class HealthMvcEndpointTests {
 
 	@Test
 	public void unsecureAnonymousAccessUnrestricted() {
+		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
+		this.mvc.setEnvironment(this.environment);
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(null);
+		assertTrue(result instanceof Health);
+		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+	}
+
+	@Test
+	public void unsensitiveAnonymousAccessRestricted() {
+		this.environment.getPropertySources().addLast(NON_SENSITIVE);
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(null);
+		assertTrue(result instanceof Health);
+		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertNull(((Health) result).getDetails().get("foo"));
+	}
+
+	@Test
+	public void unsecureUnsensitiveAnonymousAccessUnrestricted() {
+		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
+		this.mvc.setEnvironment(this.environment);
 		this.environment.getPropertySources().addLast(NON_SENSITIVE);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
