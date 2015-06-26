@@ -29,7 +29,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.BoundZSetOperations;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * A {@link MetricRepository} implementation for a redis backend. Metric values are stored
@@ -63,7 +62,7 @@ public class RedisMetricRepository implements MetricRepository {
 	 * @param redisConnectionFactory the redis connection factory
 	 */
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory) {
-		this(redisConnectionFactory, DEFAULT_METRICS_PREFIX);
+		this(redisConnectionFactory, null);
 	}
 
 	/**
@@ -77,7 +76,7 @@ public class RedisMetricRepository implements MetricRepository {
 	 */
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory,
 			String prefix) {
-		this(redisConnectionFactory, prefix, DEFAULT_KEY);
+		this(redisConnectionFactory, prefix, null);
 	}
 
 	/**
@@ -92,9 +91,16 @@ public class RedisMetricRepository implements MetricRepository {
 	 */
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory,
 			String prefix, String key) {
+		if (prefix == null) {
+			prefix = DEFAULT_METRICS_PREFIX;
+			if (key == null) {
+				key = DEFAULT_KEY;
+			}
+		}
+		else if (key == null) {
+			key = "keys." + prefix;
+		}
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
-		Assert.state(StringUtils.hasText(prefix), "Prefix must be non-empty");
-		Assert.state(StringUtils.hasText(key), "Key must be non-empty");
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";
