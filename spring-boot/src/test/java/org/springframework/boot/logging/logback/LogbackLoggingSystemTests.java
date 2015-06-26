@@ -161,6 +161,22 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertFalse(bridgeHandlerInstalled());
 	}
 
+	@Test
+	public void standardConfigLocations() throws Exception {
+		String[] locations = this.loggingSystem.getStandardConfigLocations();
+		assertThat(locations, equalTo(new String[] { "logback-test.groovy",
+				"logback-test.xml", "logback.groovy", "logback.xml" }));
+	}
+
+	@Test
+	public void springConfigLocations() throws Exception {
+		String[] locations = getSpringConfigLocations(this.loggingSystem);
+		assertThat(locations,
+				equalTo(new String[] { "logback-test-spring.groovy",
+						"logback-test-spring.xml", "logback-spring.groovy",
+						"logback-spring.xml" }));
+	}
+
 	private boolean bridgeHandlerInstalled() {
 		java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();

@@ -60,6 +60,10 @@ public abstract class AbstractLoggingSystemTests {
 		System.clearProperty("PID");
 	}
 
+	protected final String[] getSpringConfigLocations(AbstractLoggingSystem system) {
+		return system.getSpringConfigLocations();
+	}
+
 	protected final LogFile getLogFile(String file, String path) {
 		return new LogFile(file, path);
 	}

@@ -42,34 +42,55 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	@Override
 	public void initialize(String configLocation, LogFile logFile) {
 		if (StringUtils.hasLength(configLocation)) {
-			// Load a specific configuration
-			configLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
-			loadConfiguration(configLocation, logFile);
+			initializeWithSpecificConfig(configLocation, logFile);
+			return;
 		}
-		else {
-			String selfInitializationConfig = getSelfInitializationConfig();
-			if (selfInitializationConfig == null) {
-				// No self initialization has occurred, use defaults
-				loadDefaults(logFile);
-			}
-			else if (logFile != null) {
-				// Self initialization has occurred but the file has changed, reload
-				loadConfiguration(selfInitializationConfig, logFile);
-			}
-			else {
-				reinitialize();
-			}
+		initializeWithConventions(logFile);
+	}
+
+	private void initializeWithSpecificConfig(String configLocation, LogFile logFile) {
+		configLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
+		loadConfiguration(configLocation, logFile);
+	}
+
+	private void initializeWithConventions(LogFile logFile) {
+		String config = getSelfInitializationConfig();
+		if (config != null && logFile == null) {
+			// self initialization has occurred, reinitialize in case of property changes
+			reinitialize();
+			return;
 		}
+		if (config == null) {
+			config = getSpringInitializationConfig();
+		}
+		if (config != null) {
+			loadConfiguration(config, logFile);
+			return;
+		}
+		loadDefaults(logFile);
 	}
 
 	/**
 	 * Return any self initialization config that has been applied. By default this method
 	 * checks {@link #getStandardConfigLocations()} and assumes that any file that exists
 	 * will have been applied.
-	 * @return the self initialization config
+	 * @return the self initialization configor {@code null}
 	 */
 	protected String getSelfInitializationConfig() {
-		for (String location : getStandardConfigLocations()) {
+		return findConfig(getStandardConfigLocations());
+	}
+
+	/**
+	 * Return any spring specific initialization config that should be applied. By default
+	 * this method checks {@link #getSpringConfigLocations()}.
+	 * @return the spring initialization config or {@code null}
+	 */
+	protected String getSpringInitializationConfig() {
+		return findConfig(getSpringConfigLocations());
+	}
+
+	private String findConfig(String[] locations) {
+		for (String location : locations) {
 			ClassPathResource resource = new ClassPathResource(location, this.classLoader);
 			if (resource.exists()) {
 				return "classpath:" + location;
@@ -84,6 +105,23 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 * @see #getSelfInitializationConfig()
 	 */
 	protected abstract String[] getStandardConfigLocations();
+
+	/**
+	 * Return the spring config locations for this system. By default this method returns
+	 * a set of locations based on {@link #getStandardConfigLocations()}.
+	 * @return the standard config locations
+	 * @see #getSpringInitializationConfig()
+	 */
+	protected String[] getSpringConfigLocations() {
+		String[] locations = getStandardConfigLocations();
+		for (int i = 0; i < locations.length; i++) {
+			String extension = StringUtils.getFilenameExtension(locations[i]);
+			locations[i] = locations[i].substring(0,
+					locations[i].length() - extension.length() - 1)
+					+ "-spring." + extension;
+		}
+		return locations;
+	}
 
 	/**
 	 * Load sensible defaults for the logging system.
