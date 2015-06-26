@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.springframework.util.StringUtils;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Base for {@link LoggingSystem} tests.
  *
@@ -51,7 +53,14 @@ public abstract class AbstractLoggingSystemTests {
 
 	@Before
 	public void deleteTempLog() {
-		new File(tmpDir() + "/spring.log").delete();
+		deleteFile(new File(tmpDir() + "/spring.log"));
+		deleteFile(new File(tmpDir() + "/tmp.log"));
+	}
+
+	private void deleteFile(File file) {
+		if (file.exists()) {
+			assertTrue("Unable to delete file", file.delete());
+		}
 	}
 
 	@After
