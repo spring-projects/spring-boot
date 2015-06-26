@@ -62,11 +62,6 @@ public class LogFileMvcEndpointTests {
 		this.mvc.setEnvironment(this.environment);
 	}
 
-	@After
-	public void after() {
-		new File("test.log").delete();
-	}
-
 	@Test
 	public void notAvailableWithoutLogFile() throws IOException {
 		assertThat(this.mvc.available().getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
