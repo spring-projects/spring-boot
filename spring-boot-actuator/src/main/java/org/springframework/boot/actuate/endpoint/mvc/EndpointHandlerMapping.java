@@ -107,6 +107,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	@Override
+	@Deprecated
 	protected void registerHandlerMethod(Object handler, Method method,
 			RequestMappingInfo mapping) {
 		if (mapping == null) {

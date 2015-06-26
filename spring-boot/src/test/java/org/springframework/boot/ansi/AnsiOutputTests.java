@@ -23,11 +23,6 @@ import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.springframework.boot.ansi.AnsiElement.BOLD;
-import static org.springframework.boot.ansi.AnsiElement.FAINT;
-import static org.springframework.boot.ansi.AnsiElement.GREEN;
-import static org.springframework.boot.ansi.AnsiElement.NORMAL;
-import static org.springframework.boot.ansi.AnsiElement.RED;
 
 /**
  * Tests for {@link AnsiOutput}.
@@ -48,8 +43,8 @@ public class AnsiOutputTests {
 
 	@Test
 	public void encoding() throws Exception {
-		String encoded = AnsiOutput.toString("A", RED, BOLD, "B", NORMAL, "D", GREEN,
-				"E", FAINT, "F");
+		String encoded = AnsiOutput.toString("A", AnsiColor.RED, AnsiStyle.BOLD, "B",
+				AnsiStyle.NORMAL, "D", AnsiColor.GREEN, "E", AnsiStyle.FAINT, "F");
 		assertThat(encoded, equalTo("A[31;1mB[0mD[32mE[2mF[0;39m"));
 	}
 
