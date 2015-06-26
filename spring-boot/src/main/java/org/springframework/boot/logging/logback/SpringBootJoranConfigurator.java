@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.logback;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.core.env.Environment;
 
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.action.NOPAction;
@@ -40,6 +41,9 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	@Override
 	public void addInstanceRules(RuleStore rs) {
 		super.addInstanceRules(rs);
+		Environment environment = this.initializationContext.getEnvironment();
+		rs.addRule(new ElementSelector("configuration/springProperty"),
+				new SpringPropertyAction(environment));
 		rs.addRule(new ElementSelector("*/springProfile"), new SpringProfileAction(
 				this.initializationContext.getEnvironment()));
 		rs.addRule(new ElementSelector("*/springProfile/*"), new NOPAction());

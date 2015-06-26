@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -31,7 +32,9 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link SpringBootJoranConfigurator}.
@@ -101,6 +104,20 @@ public class SpringBootJoranConfiguratorTests {
 	@Test
 	public void profileNestedNotActiveNotActive() throws Exception {
 		doTestNestedProfile(false);
+	}
+
+	@Test
+	public void springProperty() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment, "my.example-property:test");
+		initialize("property.xml");
+		assertThat(this.context.getProperty("MINE"), equalTo("test"));
+	}
+
+	@Test
+	public void relaxedSpringProperty() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment, "my.EXAMPLE_PROPERTY:test");
+		initialize("property.xml");
+		assertThat(this.context.getProperty("MINE"), equalTo("test"));
 	}
 
 	private void doTestNestedProfile(boolean expected, String... profiles)
