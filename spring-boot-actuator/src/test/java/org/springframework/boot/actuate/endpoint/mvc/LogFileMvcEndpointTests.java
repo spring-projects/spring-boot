@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,11 +59,6 @@ public class LogFileMvcEndpointTests {
 		this.environment = new MockEnvironment();
 		this.mvc = new LogFileMvcEndpoint();
 		this.mvc.setEnvironment(this.environment);
-	}
-
-	@After
-	public void after() {
-		new File("test.log").delete();
 	}
 
 	@Test
