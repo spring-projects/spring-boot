@@ -930,10 +930,12 @@ for details of how you can apply remapping in your own configuration.
 The various logging systems can be activated by including the appropriate libraries on
 the classpath, and further customized by providing a suitable configuration file in the
 root of the classpath, or in a location specified by the Spring `Environment` property
-`logging.config`. (Note however that since logging is initialized *before* the
-`ApplicationContext` is created, it isn't possible to control logging from
-`@PropertySources` in Spring `@Configuration` files.  System properties and the
-conventional Spring Boot external configuration files work just fine.)
+`logging.config`.
+
+NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it isn't
+possible to control logging from `@PropertySources` in Spring `@Configuration` files.
+System properties and the conventional Spring Boot external configuration files work just
+fine.)
 
 Depending on your logging system, the following files will be loaded:
 
@@ -941,17 +943,25 @@ Depending on your logging system, the following files will be loaded:
 |Logging System |Customization
 
 |Logback
-|`logback.xml` or `logback.groovy`
+|`logback-spring.xml`, `logback-spring.groovy`, `logback.xml` or `logback.groovy`
 
 |Log4j
-|`log4j.properties` or `log4j.xml`
+|`log4j-spring.properties`, `log4j-spring.xml`, `log4j.properties` or `log4j.xml`
 
 |Log4j2
-|`log4j2.xml`
+|`log4j2-spring.xml` or `log4j2.xml`
 
 |JDK (Java Util Logging)
 |`logging.properties`
 |===
+
+NOTE: When possible we recommend that you use the `-spring` variants for your logging
+configuration (for example `logback-spring.xml` rather than `logback.xml`). If you use
+standard configuration locations, Spring cannot completely control log initialization.
+
+WARNING: There are known classloading issues with Java Util Logging that cause problems
+when running from an '`executable jar`'. We recommend that you avoid it if at all
+possible.
 
 To help with the customization some other properties are transferred from the Spring
 `Environment` to System properties:
@@ -973,12 +983,63 @@ To help with the customization some other properties are transferred from the Sp
  environment variable).
 |===
 
+
 All the logging systems supported can consult System properties when parsing their
 configuration files.  See the default configurations in `spring-boot.jar` for examples.
 
-WARNING: There are known classloading issues with Java Util Logging that cause problems
-when running from an '`executable jar`'. We recommend that you avoid it if at all
-possible.
+
+
+[[boot-features-logback-extensions]]
+=== Logback extensions
+Spring Boot includes a number of extensions to Logback which can help with advanced
+configuration. You can use these extensions in your `logback-spring.xml` configuration
+file.
+
+NOTE: You cannot use extensions in the standard `logback.xml` configuration file since
+it's loaded too early. You need to either use `logback-spring.xml` or define a
+`logging.config` property.
+
+
+
+==== Profile specific configuration
+The `<springProfile>` tag allows you to optionally include or exclude sections of
+configuration based on the active Spring profiles. Profile sections are supported anywhere
+within the `<configuration>` element. Use the `name` attribute to specify which profile
+accepts the configuration.
+
+[source,xml,indent=0]
+----
+	<springProfile name="staging">
+		<!-- configuration to be enabled when the "staging" profile is active -->
+	</springProfile>
+
+	<springProfile name="!production">
+		<!-- configuration to be enabled when the "production" profile is not active -->
+	</springProfile>
+----
+
+
+
+==== Environment properties
+The `<springProperty>` tag allows you to surface properties from the Spring `Environment`
+for use within Logback. This can be useful if you want to access values from your
+`application.properties` file in your logback configuration. The tag works in a similar
+way to Logback's standard `<property>` tag, but rather than specifying a direct `value`
+you specify the `source` of the property (from the `Environment`). You can use the `scope`
+attribute if you need to store the property somewhere other than in `local` scope.
+
+[source,xml,indent=0]
+----
+	<springProperty scope="context" name="fluentHost" source="myapp.fulentd.host"/>
+	<appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
+		<remoteHost>${fluentHost}</remoteHost>
+		...
+	</appender>
+----
+
+TIP: The `RelaxedPropertyResolver` is used to access `Environment` properties. If specify
+the `source` in dashed notation (`my-property-name`) all the relaxed variations will be
+tried (`myPropertyName`, `MY_PROPERTY_NAME` etc).
 
 
 
@@ -1126,7 +1187,6 @@ and it will be silently ignored by most build tools if you generate a jar.
 
 [[boot-features-spring-mvc-template-engines]]
 ==== Template engines
-
 As well as REST web services, you can also use Spring MVC to serve dynamic HTML content.
 Spring MVC supports a variety of templating technologies including Velocity, FreeMarker
 and JSPs. Many other templating engines also ship their own Spring MVC integrations.

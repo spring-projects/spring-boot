@@ -1198,9 +1198,9 @@ using the "logging.config" property.
 
 [[howto-configure-logback-for-loggin]]
 === Configure Logback for logging
-If you put a `logback.xml` in the root of your classpath it will be picked up from there.
-Spring Boot provides a default base configuration that you can include if you just want
-to set levels, e.g.
+If you put a `logback-spring.xml` in the root of your classpath it will be picked up from
+there. Spring Boot provides a default base configuration that you can include if you just
+want to set levels, e.g.
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
