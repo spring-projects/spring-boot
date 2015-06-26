@@ -55,6 +55,7 @@ import org.springframework.util.StringUtils;
  * <li>{@code LOG_FILE} is set to the value of path of the log file that should be written
  * (if any).</li>
  * <li>{@code PID} is set to the value of the current process ID if it can be determined.</li>
+ * <li>Any spring property starting with prefix {@code logging.properties.} (stripped of the prefix)</li>
  * </ul>
  *
  * @author Dave Syer
@@ -86,6 +87,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * The name of the System property that contains the process ID.
 	 */
 	public static final String PID_KEY = "PID";
+
+    /**
+     * The prefix of Spring properties that contain additional values to be set as system properties.
+     */
+	public static final String PROPERTIES_PREFIX = "logging.properties.";
 
 	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
 	static {
@@ -181,6 +187,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			System.setProperty(PID_KEY, new ApplicationPid().toString());
 		}
 		initializeEarlyLoggingLevel(environment);
+		initializeSystemProperties(environment);
 		initializeSystem(environment, this.loggingSystem);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
 	}
@@ -193,6 +200,14 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			if (environment.containsProperty("trace")) {
 				this.springBootLogging = LogLevel.TRACE;
 			}
+		}
+	}
+
+	private void initializeSystemProperties(ConfigurableEnvironment environment) {
+        Map<String, Object> subProperties = new RelaxedPropertyResolver(environment)
+                .getSubProperties(PROPERTIES_PREFIX);
+        for (Entry<String, Object> entry : subProperties.entrySet()) {
+			System.setProperty(entry.getKey(), entry.getValue().toString());
 		}
 	}
 
