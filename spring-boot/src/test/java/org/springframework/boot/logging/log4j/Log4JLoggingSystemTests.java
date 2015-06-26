@@ -68,7 +68,7 @@ public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void noFile() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -80,7 +80,7 @@ public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void withFile() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, getLogFile(null, tmpDir()));
+		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -91,7 +91,7 @@ public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testNonDefaultConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:log4j-nondefault.properties",
+		this.loggingSystem.initialize(null, "classpath:log4j-nondefault.properties",
 				getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
@@ -103,13 +103,13 @@ public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:log4j-nonexistent.xml", null);
+		this.loggingSystem.initialize(null, "classpath:log4j-nonexistent.xml", null);
 	}
 
 	@Test
 	public void setLevel() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(null, null, null);
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.debug("Hello");
@@ -121,7 +121,7 @@ public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Ignore("Fails on Bamboo")
 	public void loggingThatUsesJulIsCaptured() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(null, null, null);
 		java.util.logging.Logger julLogger = java.util.logging.Logger
 				.getLogger(getClass().getName());
 		julLogger.severe("Hello world");

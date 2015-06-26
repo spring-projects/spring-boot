@@ -31,7 +31,9 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.test.OutputCapture;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.StringUtils;
 
 import ch.qos.logback.classic.Logger;
@@ -61,9 +63,13 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private Log logger;
 
+	private LoggingInitializationContext initializationContext;
+
 	@Before
 	public void setup() {
 		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
+		this.initializationContext = new LoggingInitializationContext(
+				new MockEnvironment());
 	}
 
 	@Override
@@ -76,7 +82,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void noFile() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -88,7 +94,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void withFile() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, getLogFile(null, tmpDir()));
+		this.loggingSystem.initialize(this.initializationContext, null,
+				getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -108,7 +115,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testNonDefaultConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:logback-nondefault.xml",
+		this.loggingSystem.initialize(this.initializationContext,
+				"classpath:logback-nondefault.xml",
 				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
@@ -121,13 +129,14 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:logback-nonexistent.xml", null);
+		this.loggingSystem.initialize(this.initializationContext,
+				"classpath:logback-nonexistent.xml", null);
 	}
 
 	@Test
 	public void setLevel() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.debug("Hello");
@@ -138,7 +147,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void loggingThatUsesJulIsCaptured() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(this.initializationContext, null, null);
 		java.util.logging.Logger julLogger = java.util.logging.Logger
 				.getLogger(getClass().getName());
 		julLogger.info("Hello world");

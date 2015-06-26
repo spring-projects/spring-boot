@@ -40,31 +40,35 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext,
+			String configLocation, LogFile logFile) {
 		if (StringUtils.hasLength(configLocation)) {
-			initializeWithSpecificConfig(configLocation, logFile);
+			initializeWithSpecificConfig(initializationContext, configLocation, logFile);
 			return;
 		}
-		initializeWithConventions(logFile);
+		initializeWithConventions(initializationContext, logFile);
 	}
 
-	private void initializeWithSpecificConfig(String configLocation, LogFile logFile) {
+	private void initializeWithSpecificConfig(
+			LoggingInitializationContext initializationContext, String configLocation,
+			LogFile logFile) {
 		configLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
-		loadConfiguration(configLocation, logFile);
+		loadConfiguration(initializationContext, configLocation, logFile);
 	}
 
-	private void initializeWithConventions(LogFile logFile) {
+	private void initializeWithConventions(
+			LoggingInitializationContext initializationContext, LogFile logFile) {
 		String config = getSelfInitializationConfig();
 		if (config != null && logFile == null) {
 			// self initialization has occurred, reinitialize in case of property changes
-			reinitialize();
+			reinitialize(initializationContext);
 			return;
 		}
 		if (config == null) {
 			config = getSpringInitializationConfig();
 		}
 		if (config != null) {
-			loadConfiguration(config, logFile);
+			loadConfiguration(initializationContext, config, logFile);
 			return;
 		}
 		loadDefaults(logFile);
@@ -131,18 +135,22 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	/**
 	 * Load a specific configuration.
+	 * @param initializationContext the logging initialization context
 	 * @param location the location of the configuration to load (never {@code null})
 	 * @param logFile the file to load or {@code null} if no log file is to be written
 	 */
-	protected abstract void loadConfiguration(String location, LogFile logFile);
+	protected abstract void loadConfiguration(
+			LoggingInitializationContext initializationContext, String location,
+			LogFile logFile);
 
 	/**
 	 * Reinitialize the logging system if required. Called when
 	 * {@link #getSelfInitializationConfig()} is used and the log file hasn't changed. May
 	 * be used to reload configuration (for example to pickup additional System
 	 * properties).
+	 * @param initializationContext the logging initialization context
 	 */
-	protected void reinitialize() {
+	protected void reinitialize(LoggingInitializationContext initializationContext) {
 	}
 
 	protected final ClassLoader getClassLoader() {

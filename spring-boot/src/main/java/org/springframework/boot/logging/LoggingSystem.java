@@ -53,19 +53,21 @@ public abstract class LoggingSystem {
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
-	 * {@link #initialize(String, LogFile)} to reduce logging noise until the system has
-	 * been fully Initialized.
+	 * {@link #initialize(LoggingInitializationContext, String, LogFile)} to reduce
+	 * logging noise until the system has been fully Initialized.
 	 */
 	public abstract void beforeInitialize();
 
 	/**
 	 * Fully initialize the logging system.
+	 * @param initializationContext the logging initialization context
 	 * @param configLocation a log configuration location or {@code null} if default
 	 * initialization is required
 	 * @param logFile the log output file that should be written or {@code null} for
 	 * console only output
 	 */
-	public abstract void initialize(String configLocation, LogFile logFile);
+	public abstract void initialize(LoggingInitializationContext initializationContext,
+			String configLocation, LogFile logFile);
 
 	/**
 	 * Clean up the logging system. The default implementation does nothing. Subclasses

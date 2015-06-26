@@ -39,6 +39,7 @@ import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
@@ -128,9 +129,10 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext,
+			String configLocation, LogFile logFile) {
 		getLoggerConfig(null).removeFilter(FILTER);
-		super.initialize(configLocation, logFile);
+		super.initialize(initializationContext, configLocation, logFile);
 	}
 
 	@Override
@@ -144,6 +146,11 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
+	protected void loadConfiguration(LoggingInitializationContext initializationContext,
+			String location, LogFile logFile) {
+		loadConfiguration(location, logFile);
+	}
+
 	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		if (logFile != null) {
@@ -170,7 +177,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void reinitialize() {
+	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		getLoggerContext().reconfigure();
 	}
 

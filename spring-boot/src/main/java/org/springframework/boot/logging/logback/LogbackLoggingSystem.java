@@ -30,6 +30,7 @@ import org.slf4j.Marker;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
@@ -38,8 +39,10 @@ import org.springframework.util.StringUtils;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.Status;
 
@@ -93,9 +96,10 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	public void initialize(String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext,
+			String configLocation, LogFile logFile) {
 		getLogger(null).getLoggerContext().getTurboFilterList().remove(FILTER);
-		super.initialize(configLocation, logFile);
+		super.initialize(initializationContext, configLocation, logFile);
 	}
 
 	@Override
@@ -108,23 +112,24 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadConfiguration(String location, LogFile logFile) {
+	protected void loadConfiguration(LoggingInitializationContext initializationContext,
+			String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
-		LoggerContext context = getLoggerContext();
-		context.stop();
-		context.reset();
+		LoggerContext loggerContext = getLoggerContext();
+		loggerContext.stop();
+		loggerContext.reset();
 		try {
-			URL url = ResourceUtils.getURL(location);
-			new ContextInitializer(context).configureByResource(url);
+			configureByResourceUrl(initializationContext, loggerContext,
+					ResourceUtils.getURL(location));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Logback logging from "
 					+ location, ex);
 		}
-		List<Status> statuses = context.getStatusManager().getCopyOfStatusList();
+		List<Status> statuses = loggerContext.getStatusManager().getCopyOfStatusList();
 		StringBuilder errors = new StringBuilder();
 		for (Status status : statuses) {
 			if (status.getLevel() == Status.ERROR) {
@@ -138,6 +143,20 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		}
 	}
 
+	private void configureByResourceUrl(
+			LoggingInitializationContext initializationContext,
+			LoggerContext loggerContext, URL url) throws JoranException {
+		if (url.toString().endsWith("xml")) {
+			JoranConfigurator configurator = new SpringBootJoranConfigurator(
+					initializationContext);
+			configurator.setContext(loggerContext);
+			configurator.doConfigure(url);
+		}
+		else {
+			new ContextInitializer(loggerContext).configureByResource(url);
+		}
+	}
+
 	@Override
 	public void cleanUp() {
 		super.cleanUp();
@@ -145,9 +164,9 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void reinitialize() {
+	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		getLoggerContext().reset();
-		loadConfiguration(getSelfInitializationConfig(), null);
+		loadConfiguration(initializationContext, getSelfInitializationConfig(), null);
 	}
 
 	private void configureJBossLoggingToUseSlf4j() {

@@ -35,4 +35,12 @@ public class SampleLogbackApplicationTests {
 		this.outputCapture.expect(not(containsString("Sample Trace Message")));
 	}
 
+	@Test
+	public void testProfile() throws Exception {
+		SampleLogbackApplication
+				.main(new String[] { "--spring.profiles.active=staging" });
+		this.outputCapture.expect(containsString("Sample Debug Message"));
+		this.outputCapture.expect(containsString("Sample Trace Message"));
+	}
+
 }

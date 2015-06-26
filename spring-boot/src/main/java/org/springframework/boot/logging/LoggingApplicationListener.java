@@ -198,12 +198,14 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private void initializeSystem(ConfigurableEnvironment environment,
 			LoggingSystem system) {
+		LoggingInitializationContext initializationContext = new LoggingInitializationContext(
+				environment);
 		LogFile logFile = LogFile.get(environment);
 		String logConfig = environment.getProperty(CONFIG_PROPERTY);
 		if (StringUtils.hasLength(logConfig)) {
 			try {
 				ResourceUtils.getURL(logConfig).openStream().close();
-				system.initialize(logConfig, logFile);
+				system.initialize(initializationContext, logConfig, logFile);
 			}
 			catch (Exception ex) {
 				// NOTE: We can't use the logger here to report the problem
@@ -214,7 +216,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			}
 		}
 		else {
-			system.initialize(null, logFile);
+			system.initialize(initializationContext, null, logFile);
 		}
 	}
 

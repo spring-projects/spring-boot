@@ -81,7 +81,7 @@ public class JavaLoggerSystemTests extends AbstractLoggingSystemTests {
 	public void noFile() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -98,7 +98,7 @@ public class JavaLoggerSystemTests extends AbstractLoggingSystemTests {
 		}
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, getLogFile(null, tmpDir()));
+		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -109,7 +109,7 @@ public class JavaLoggerSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testCustomFormatter() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -121,6 +121,7 @@ public class JavaLoggerSystemTests extends AbstractLoggingSystemTests {
 		System.setProperty("PID", "1234");
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(
+				null,
 				"classpath:"
 						+ ClassUtils.addResourcePathToPackagePath(getClass(),
 								"logging.properties"), null);
@@ -134,7 +135,8 @@ public class JavaLoggerSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testNonDefaultConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:logging-nondefault.properties", null);
+		this.loggingSystem.initialize(null, "classpath:logging-nondefault.properties",
+				null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("INFO: Hello"));
@@ -143,13 +145,14 @@ public class JavaLoggerSystemTests extends AbstractLoggingSystemTests {
 	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize("classpath:logging-nonexistent.properties", null);
+		this.loggingSystem.initialize(null, "classpath:logging-nonexistent.properties",
+				null);
 	}
 
 	@Test
 	public void setLevel() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(null, null, null);
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.debug("Hello");

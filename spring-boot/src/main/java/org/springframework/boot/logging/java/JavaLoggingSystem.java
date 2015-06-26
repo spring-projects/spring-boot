@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
@@ -81,6 +82,11 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
+	protected void loadConfiguration(LoggingInitializationContext initializationContext,
+			String location, LogFile logFile) {
+		loadConfiguration(location, logFile);
+	}
+
 	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		try {
