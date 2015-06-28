@@ -530,10 +530,10 @@ under the `org.springframework.boot` domain.
 [[production-ready-custom-mbean-names]]
 === Customizing MBean names
 The name of the MBean is usually generated from the `id` of the endpoint. For example
-the `health` endpoint is exposed as `org.springframework.boot/Endpoint/HealthEndpoint`.
+the `health` endpoint is exposed as `org.springframework.boot/Endpoint/healthEndpoint`.
 
 If your application contains more than one Spring `ApplicationContext` you may find that
-names clash. To solve this problem you can set the `endpoints.jmx.uniqueNames` property
+names clash. To solve this problem you can set the `endpoints.jmx.unique-names` property
 to `true` so that MBean names are always unique.
 
 You can also customize the JMX domain under which endpoints are exposed. Here is an
@@ -542,7 +542,7 @@ example `application.properties`:
 [source,properties,indent=0]
 ----
 	endpoints.jmx.domain=myapp
-	endpoints.jmx.uniqueNames=true
+	endpoints.jmx.unique-names=true
 ----
 
 
@@ -605,8 +605,8 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 [[production-ready-remote-shell]]
 == Monitoring and management using a remote shell
 Spring Boot supports an integrated Java shell called '`CRaSH`'. You can use CRaSH to
-`ssh` or `telnet` into your running application. To enable remote shell support add a
-dependency to `spring-boot-starter-remote-shell`:
+`ssh` or `telnet` into your running application. To enable remote shell support, add
+the following dependency to your project:
 
 [source,xml,indent=0]
 ----
@@ -683,15 +683,16 @@ for details). By default Spring Boot will search for commands in the following l
 
 TIP: You can change the search path by settings a `shell.command-path-patterns` property.
 
-Here is a simple '`hello world`' command that could be loaded from
+Here is a simple '`hello`' command that could be loaded from
 `src/main/resources/commands/hello.groovy`
 
 [source,groovy,indent=0]
 ----
 	package commands
 
-	import org.crsh.cli.Usage
 	import org.crsh.cli.Command
+	import org.crsh.cli.Usage
+	import org.crsh.command.InvocationContext
 
 	class hello {
 
