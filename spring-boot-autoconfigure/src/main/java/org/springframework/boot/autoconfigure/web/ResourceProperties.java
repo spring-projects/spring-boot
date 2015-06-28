@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -39,6 +41,15 @@ public class ResourceProperties {
 	private boolean addMappings = true;
 
 	private final Chain chain = new Chain();
+
+
+	@PostConstruct
+	public void setUpDefaults() {
+		if (this.chain.enabled == null && (this.chain.strategy.content.enabled
+				|| this.chain.strategy.fixed.enabled)) {
+			this.chain.enabled = true;
+		}
+	}
 
 	public Integer getCachePeriod() {
 		return this.cachePeriod;
@@ -66,9 +77,10 @@ public class ResourceProperties {
 	public static class Chain {
 
 		/**
-		 * Enable the Spring Resource Handling chain.
+		 * Enable the Spring Resource Handling chain. Disabled by default unless
+		 * at least one strategy has been enabled.
 		 */
-		private boolean enabled = false;
+		private Boolean enabled;
 
 		/**
 		 * Enable caching in the Resource chain.
@@ -80,9 +92,9 @@ public class ResourceProperties {
 		 */
 		private boolean html5AppCache = false;
 
-		private Strategy strategy = new Strategy();
+		private final Strategy strategy = new Strategy();
 
-		public boolean isEnabled() {
+		public Boolean getEnabled() {
 			return enabled;
 		}
 
@@ -116,9 +128,9 @@ public class ResourceProperties {
 	 */
 	public static class Strategy {
 
-		private Fixed fixed = new Fixed();
+		private final Fixed fixed = new Fixed();
 
-		private Content content = new Content();
+		private final Content content = new Content();
 
 		public Fixed getFixed() {
 			return fixed;
@@ -137,7 +149,7 @@ public class ResourceProperties {
 		/**
 		 * Enable the content Version Strategy.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.
@@ -169,7 +181,7 @@ public class ResourceProperties {
 		/**
 		 * Enable the fixed Version Strategy.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.

@@ -1193,7 +1193,6 @@ for all static resources, effectively adding a content hash in URLs, such as
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.resources.chain.enabled=true
 	spring.resources.chain.strategy.content.enabled=true
 	spring.resources.chain.strategy.content.paths=/**
 ----
@@ -1210,7 +1209,6 @@ A "fixed" strategy will add a static version string in the URL, without changing
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.resources.chain.enabled=true
 	spring.resources.chain.strategy.content.enabled=true
 	spring.resources.chain.strategy.content.paths=/**
 	spring.resources.chain.strategy.fixed.enabled=true
@@ -1225,9 +1223,12 @@ the content one `<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>
 See {sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[`ResourceProperties`]
 for more of the supported options.
 
+[TIP]
+====
 This feature has been thoroughly described in a dedicated
 https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post]
 and in Spring Framework's {spring-reference}/#mvc-config-static-resources[reference documentation].
+====
 
 
 [[boot-features-spring-mvc-template-engines]]

@@ -57,6 +57,7 @@ import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDiale
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Brian Clozel
  */
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)

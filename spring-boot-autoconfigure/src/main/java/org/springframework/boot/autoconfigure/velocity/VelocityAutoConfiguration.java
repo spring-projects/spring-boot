@@ -51,6 +51,7 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
  * {@link EnableAutoConfiguration Auto-configuration} for Velocity.
  *
  * @author Andy Wilkinson
+ * @author Brian Clozel
  * @since 1.1.0
  */
 @Configuration

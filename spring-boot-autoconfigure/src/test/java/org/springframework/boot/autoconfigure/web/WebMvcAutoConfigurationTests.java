@@ -169,12 +169,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerChainEnabled() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.resources.chain.enabled:true");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load("spring.resources.chain.enabled:true");
+
 		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(1));
 		assertThat(getResourceResolvers("/**").size(), equalTo(2));
@@ -186,20 +182,54 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void resourceHandlerFixedStrategyEnabled() throws Exception {
+		load("spring.resources.chain.strategy.fixed.enabled:true",
+				"spring.resources.chain.strategy.fixed.version:test",
+				"spring.resources.chain.strategy.fixed.paths:/**/*.js");
+
+		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(3));
+		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
+		assertThat(getResourceResolvers("/**").size(), equalTo(3));
+		assertThat(getResourceTransformers("/**").size(), equalTo(2));
+
+		assertThat(getResourceResolvers("/**"), contains(instanceOf(CachingResourceResolver.class),
+				instanceOf(VersionResourceResolver.class),
+				instanceOf(PathResourceResolver.class)));
+		assertThat(getResourceTransformers("/**"), contains(instanceOf(CachingResourceTransformer.class),
+				instanceOf(CssLinkResourceTransformer.class)));
+		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers("/**").get(1);
+		assertThat(resolver.getStrategyMap().get("/**/*.js"), instanceOf(FixedVersionStrategy.class));
+	}
+
+	@Test
+	public void resourceHandlerContentStrategyEnabled() throws Exception {
+		load("spring.resources.chain.strategy.content.enabled:true",
+				"spring.resources.chain.strategy.content.paths:/**,/*.png");
+
+		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(3));
+		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
+		assertThat(getResourceResolvers("/**").size(), equalTo(3));
+		assertThat(getResourceTransformers("/**").size(), equalTo(2));
+
+		assertThat(getResourceResolvers("/**"), contains(instanceOf(CachingResourceResolver.class),
+				instanceOf(VersionResourceResolver.class),
+				instanceOf(PathResourceResolver.class)));
+		assertThat(getResourceTransformers("/**"), contains(instanceOf(CachingResourceTransformer.class),
+				instanceOf(CssLinkResourceTransformer.class)));
+		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers("/**").get(1);
+		assertThat(resolver.getStrategyMap().get("/*.png"), instanceOf(ContentVersionStrategy.class));
+	}
+
+	@Test
 	public void resourceHandlerChainCustomized() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.resources.chain.enabled:true", "spring.resources.chain.cache:false",
+		load("spring.resources.chain.enabled:true", "spring.resources.chain.cache:false",
 				"spring.resources.chain.strategy.content.enabled:true",
 				"spring.resources.chain.strategy.content.paths:/**,/*.png",
 				"spring.resources.chain.strategy.fixed.enabled:true",
 				"spring.resources.chain.strategy.fixed.version:test",
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js",
 				"spring.resources.chain.html5AppCache:true");
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+
 		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceResolvers("/**").size(), equalTo(2));

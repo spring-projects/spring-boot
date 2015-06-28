@@ -55,6 +55,7 @@ import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
@@ -274,7 +275,7 @@ public class WebMvcAutoConfiguration {
 
 		private void registerResourceChain(ResourceHandlerRegistration registration) {
 			ResourceProperties.Chain chainProperties = this.resourceProperties.getChain();
-			if (chainProperties.isEnabled()) {
+			if (ObjectUtils.nullSafeEquals(chainProperties.getEnabled(), Boolean.TRUE)) {
 				ResourceChainRegistration chain = registration.resourceChain(chainProperties.isCache());
 				boolean hasFixedVersionConfigured = chainProperties.getStrategy().getFixed().isEnabled();
 				boolean hasContentVersionConfigured = chainProperties.getStrategy().getContent().isEnabled();
