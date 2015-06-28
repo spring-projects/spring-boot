@@ -68,6 +68,8 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -76,7 +78,9 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
+import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -255,14 +259,41 @@ public class WebMvcAutoConfiguration {
 			}
 			Integer cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				registry.addResourceHandler("/webjars/**")
+				ResourceHandlerRegistration registration = registry.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/")
 						.setCachePeriod(cachePeriod);
+				registerResourceChain(registration);
 			}
 			if (!registry.hasMappingForPattern("/**")) {
-				registry.addResourceHandler("/**")
+				ResourceHandlerRegistration registration = registry.addResourceHandler("/**")
 						.addResourceLocations(RESOURCE_LOCATIONS)
 						.setCachePeriod(cachePeriod);
+				registerResourceChain(registration);
+			}
+		}
+
+		private void registerResourceChain(ResourceHandlerRegistration registration) {
+			ResourceProperties.Chain chainProperties = this.resourceProperties.getChain();
+			if (chainProperties.isEnabled()) {
+				ResourceChainRegistration chain = registration.resourceChain(chainProperties.isCache());
+				boolean hasFixedVersionConfigured = chainProperties.getStrategy().getFixed().isEnabled();
+				boolean hasContentVersionConfigured = chainProperties.getStrategy().getContent().isEnabled();
+				if (hasFixedVersionConfigured || hasContentVersionConfigured) {
+					VersionResourceResolver versionResourceResolver = new VersionResourceResolver();
+					if (hasFixedVersionConfigured) {
+						versionResourceResolver.addFixedVersionStrategy(
+								chainProperties.getStrategy().getFixed().getVersion(),
+								chainProperties.getStrategy().getFixed().getPaths());
+					}
+					if (hasContentVersionConfigured) {
+						versionResourceResolver.
+								addContentVersionStrategy(chainProperties.getStrategy().getContent().getPaths());
+					}
+					chain.addResolver(versionResourceResolver);
+				}
+				if (chainProperties.isHtml5AppCache()) {
+					chain.addTransformer(new AppCacheManifestTransformer());
+				}
 			}
 		}
 
