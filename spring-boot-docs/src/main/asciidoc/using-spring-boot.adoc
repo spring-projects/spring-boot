@@ -802,7 +802,7 @@ on the classpath change. This can be a useful feature when working in an IDE as 
 a very fast feedback loop for code changes. By default, any entry on the classpath that
 points to a folder will be monitored for changes.
 
-TIP: Automatic restart work very well when used with LiveReload.
+TIP: Automatic restart works very well when used with LiveReload.
 <<using-boot-devtools-livereload,See below>> for details.
 
 .Restart vs Reload
@@ -828,7 +828,7 @@ commercially supported.
 ==== Excluding resources
 Certain resources don't necessarily need to trigger a restart when they are changed. For
 example, Thymeleaf templates can just be edited in-place. By default changing resources
-in `/META-INF/maven`, ``/META-INF/resources` ,`/resources` ,`/static` ,`/public` or
+in `/META-INF/maven`, `/META-INF/resources` ,`/resources` ,`/static` ,`/public` or
 `/templates` will not trigger a restart. If you want to customize these exclusions you
 can use the `spring.devtools.restart.exclude` property. For example, to exclude only
 `/static` and `/public` you would set the following:
