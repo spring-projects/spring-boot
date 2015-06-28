@@ -37,6 +37,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
@@ -45,6 +46,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -181,6 +183,12 @@ public class VelocityAutoConfigurationTests {
 		registerAndRefreshContext("spring.velocity.toolbox:/toolbox.xml");
 		VelocityViewResolver resolver = this.context.getBean(VelocityViewResolver.class);
 		assertThat(resolver, instanceOf(EmbeddedVelocityViewResolver.class));
+	}
+
+	@Test
+	public void registerResourceHandlingFilter() throws Exception {
+		registerAndRefreshContext();
+		assertNotNull(this.context.getBean(ResourceUrlEncodingFilter.class));
 	}
 
 	private void registerAndRefreshContext(String... env) {

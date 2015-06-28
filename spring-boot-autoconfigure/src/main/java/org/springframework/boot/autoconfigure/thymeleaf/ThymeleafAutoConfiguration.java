@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect;
 import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
@@ -56,6 +57,7 @@ import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDiale
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Brian Clozel
  */
 @Configuration
 @EnableConfigurationProperties(ThymeleafProperties.class)
@@ -209,6 +211,18 @@ public class ThymeleafAutoConfiguration {
 				return type;
 			}
 			return type + ";charset=" + charset;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnWebApplication
+	protected static class ThymeleafResourceHandlingConfig {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
+			return new ResourceUrlEncodingFilter();
 		}
 
 	}
