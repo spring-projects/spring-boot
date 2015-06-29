@@ -35,6 +35,7 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Ivan Sopov
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer implements
@@ -66,6 +67,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	private Ssl ssl;
 
 	private JspServlet jspServlet = new JspServlet();
+
+	private Compression compression;
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -276,6 +279,14 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	public JspServlet getJspServlet() {
 		return this.jspServlet;
+	}
+
+	public Compression getCompression() {
+		return this.compression;
+	}
+
+	public void setCompression(Compression compression) {
+		this.compression = compression;
 	}
 
 	/**

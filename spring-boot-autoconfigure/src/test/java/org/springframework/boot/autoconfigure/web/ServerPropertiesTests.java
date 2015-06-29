@@ -23,16 +23,12 @@ import java.util.Map;
 
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -230,72 +226,9 @@ public class ServerPropertiesTests {
 		assertEquals("192.168.0.1", remoteIpValve.getInternalProxies());
 	}
 
-	@Test
-	public void customTomcatCompression() throws Exception {
-		assertThat("on", is(equalTo(configureCompression("on"))));
-	}
-
-	@Test
-	public void disableTomcatCompressionWithYaml() throws Exception {
-		// YAML interprets "off" as false, check that it's mapped back to off
-		assertThat("off", is(equalTo(configureCompression("faLSe"))));
-	}
-
-	@Test
-	public void enableTomcatCompressionWithYaml() throws Exception {
-		// YAML interprets "on" as true, check that it's mapped back to on
-		assertThat("on", is(equalTo(configureCompression("trUE"))));
-	}
-
-	@Test
-	public void customTomcatCompressableMimeTypes() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.port", "0");
-		map.put("server.tomcat.compressableMimeTypes", "application/foo");
-		bindProperties(map);
-
-		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-		this.properties.customize(factory);
-
-		TomcatEmbeddedServletContainer container = (TomcatEmbeddedServletContainer) factory
-				.getEmbeddedServletContainer();
-
-		try {
-			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) container
-					.getTomcat().getConnector().getProtocolHandler();
-			assertEquals("application/foo", protocol.getCompressableMimeTypes());
-		}
-		finally {
-			container.stop();
-		}
-	}
-
 	private void bindProperties(Map<String, String> map) {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				map));
-	}
-
-	private String configureCompression(String compression) {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("server.port", "0");
-		// YAML interprets "on" as true
-		map.put("server.tomcat.compression", compression);
-		bindProperties(map);
-
-		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-		this.properties.customize(factory);
-
-		TomcatEmbeddedServletContainer container = (TomcatEmbeddedServletContainer) factory
-				.getEmbeddedServletContainer();
-
-		try {
-			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) container
-					.getTomcat().getConnector().getProtocolHandler();
-			return protocol.getCompression();
-		}
-		finally {
-			container.stop();
-		}
 	}
 
 }

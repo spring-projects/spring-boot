@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -27,6 +28,8 @@ import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLException;
 import javax.servlet.GenericServlet;
@@ -36,8 +39,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.InputStreamFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.After;
@@ -58,6 +63,7 @@ import org.springframework.util.SocketUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -65,7 +71,9 @@ import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -518,6 +526,80 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void defaultSessionTimeout() throws Exception {
 		assertThat(getFactory().getSessionTimeout(), equalTo(30 * 60));
+	}
+
+	@Test
+	public void compression() throws Exception {
+		assertTrue(internalTestCompression(10000, null));
+	}
+
+	@Test
+	public void noCompressionForSmallResponse() throws Exception {
+		assertFalse(internalTestCompression(100, null));
+	}
+
+	@Test
+	public void noCompressionForMimeType() throws Exception {
+		assertFalse(internalTestCompression(10000, new String[] { "text/html",
+				"text/xml", "text/css" }));
+	}
+
+	protected String setUpFactoryForCompression(int contentSize, String[] mimeTypes)
+			throws Exception {
+		char[] chars = new char[contentSize];
+		Arrays.fill(chars, 'F');
+		String testContent = new String(chars);
+
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+
+		FileCopyUtils.copy(testContent,
+				new FileWriter(this.temporaryFolder.newFile("test.txt")));
+		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+		Compression compression = new Compression();
+		compression.setEnabled(true);
+		if (mimeTypes != null) {
+			compression.setMimeTypes(mimeTypes);
+		}
+		factory.setCompression(compression);
+
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		return testContent;
+	}
+
+	private boolean internalTestCompression(int contentSize, String[] mimeTypes)
+			throws Exception {
+		String testContent = setUpFactoryForCompression(contentSize, mimeTypes);
+
+		class TestGzipInputStreamFactory implements InputStreamFactory {
+
+			final AtomicBoolean requested = new AtomicBoolean(false);
+
+			@Override
+			public InputStream create(InputStream instream) throws IOException {
+				if (this.requested.get()) {
+					throw new IllegalStateException(
+							"On deflated InputStream already requested");
+				}
+				this.requested.set(true);
+				return new GZIPInputStream(instream);
+			}
+
+		}
+
+		TestGzipInputStreamFactory gzipTestInputStreamFactory = new TestGzipInputStreamFactory();
+
+		String response = getResponse(
+				getLocalUrl("/test.txt"),
+				new HttpComponentsClientHttpRequestFactory(HttpClientBuilder
+						.create()
+						.setContentDecoderRegistry(
+								singletonMap("gzip",
+										(InputStreamFactory) gzipTestInputStreamFactory))
+						.build()));
+		assertThat(response, equalTo(testContent));
+		boolean wasCompressionUsed = gzipTestInputStreamFactory.requested.get();
+		return wasCompressionUsed;
 	}
 
 	private void addTestTxtFile(AbstractEmbeddedServletContainerFactory factory)

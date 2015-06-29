@@ -170,4 +170,11 @@ public interface ConfigurableEmbeddedServletContainer {
 	 */
 	void setJspServlet(JspServlet jspServlet);
 
+	/**
+	 * Sets the compression configuration that will be applied to the container's default
+	 * connector.
+	 * @param compression the compression configuration
+	 */
+	void setCompression(Compression compression);
+
 }

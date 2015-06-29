@@ -19,7 +19,13 @@ package org.springframework.boot.context.embedded.undertow;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
+import io.undertow.predicate.Predicate;
+import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.encoding.ContentEncodingRepository;
+import io.undertow.server.handlers.encoding.EncodingHandler;
+import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.servlet.api.DeploymentManager;
 
 import java.lang.reflect.Field;
@@ -31,8 +37,12 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -59,16 +69,19 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private final boolean autoStart;
 
+	private final Compression compression;
+
 	private Undertow undertow;
 
 	private boolean started = false;
 
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
-			String contextPath, int port, boolean autoStart) {
+			String contextPath, int port, boolean autoStart, Compression compression) {
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
 		this.autoStart = autoStart;
+		this.compression = compression;
 	}
 
 	@Override
@@ -98,10 +111,26 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	}
 
 	private HttpHandler getContextHandler(HttpHandler servletHandler) {
+		HttpHandler contextHandler = configurationCompressionIfNecessary(servletHandler);
 		if (StringUtils.isEmpty(this.contextPath)) {
+			return contextHandler;
+		}
+		return Handlers.path().addPrefixPath(this.contextPath, contextHandler);
+	}
+
+	private HttpHandler configurationCompressionIfNecessary(HttpHandler servletHandler) {
+		if (this.compression == null || !this.compression.getEnabled()) {
 			return servletHandler;
 		}
-		return Handlers.path().addPrefixPath(this.contextPath, servletHandler);
+		ContentEncodingRepository encodingRepository = new ContentEncodingRepository();
+
+		Predicate mimeAndSizePredicate = Predicates.and(Predicates
+				.maxContentSize(this.compression.getMinResponseSize()), Predicates
+				.or(new CompressibleMimeTypePredicate(this.compression.getMimeTypes())));
+
+		encodingRepository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
+				mimeAndSizePredicate);
+		return new EncodingHandler(encodingRepository).setNext(servletHandler);
 	}
 
 	private String getPortsDescription() {
@@ -208,6 +237,34 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		@Override
 		public String toString() {
 			return this.number + " (" + this.protocol + ")";
+		}
+
+	}
+
+	private static class CompressibleMimeTypePredicate implements Predicate {
+
+		private final List<MimeType> mimeTypes;
+
+		CompressibleMimeTypePredicate(String[] mimeTypes) {
+			this.mimeTypes = new ArrayList<MimeType>(mimeTypes.length);
+			for (String mimeTypeString : mimeTypes) {
+				this.mimeTypes.add(MimeTypeUtils.parseMimeType(mimeTypeString));
+			}
+		}
+
+		@Override
+		public boolean resolve(HttpServerExchange value) {
+			String contentType = value.getResponseHeaders().getFirst(
+					HttpHeaders.CONTENT_TYPE);
+			if (contentType != null) {
+				for (MimeType mimeType : this.mimeTypes) {
+					if (mimeType.isCompatibleWith(MimeTypeUtils
+							.parseMimeType(contentType))) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 	}

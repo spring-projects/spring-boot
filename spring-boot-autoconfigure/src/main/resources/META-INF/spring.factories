@@ -68,7 +68,6 @@ org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration,\
-org.springframework.boot.autoconfigure.web.GzipFilterAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpEncodingAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\

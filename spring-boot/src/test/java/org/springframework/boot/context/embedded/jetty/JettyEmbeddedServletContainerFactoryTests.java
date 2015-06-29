@@ -16,10 +16,16 @@
 
 package org.springframework.boot.context.embedded.jetty;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -32,8 +38,12 @@ import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.Compression;
+import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.http.HttpHeaders;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -171,6 +181,38 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		factory.getJspServlet().setInitParameters(initParameters);
 		this.container = factory.getEmbeddedServletContainer();
 		assertThat(getJspServlet().getInitParameters(), is(equalTo(initParameters)));
+	}
+
+	@Override
+	@SuppressWarnings("serial")
+	// Workaround for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646
+	protected String setUpFactoryForCompression(final int contentSize, String[] mimeTypes)
+			throws Exception {
+		char[] chars = new char[contentSize];
+		Arrays.fill(chars, 'F');
+		final String testContent = new String(chars);
+
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+
+		Compression compression = new Compression();
+		compression.setEnabled(true);
+		if (mimeTypes != null) {
+			compression.setMimeTypes(mimeTypes);
+		}
+		factory.setCompression(compression);
+
+		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
+				new HttpServlet() {
+					@Override
+					protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+							throws ServletException, IOException {
+						resp.setContentLength(contentSize);
+						resp.setHeader(HttpHeaders.CONTENT_TYPE, "text/plain");
+						resp.getWriter().print(testContent);
+					}
+				}, "/test.txt"));
+		this.container.start();
+		return testContent;
 	}
 
 	@Override

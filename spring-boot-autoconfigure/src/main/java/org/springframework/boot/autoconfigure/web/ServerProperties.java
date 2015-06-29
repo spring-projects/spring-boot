@@ -31,6 +31,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
@@ -100,6 +101,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	private final Undertow undertow = new Undertow();
 
 	@NestedConfigurationProperty
+	private Compression compression = new Compression();
+
+	@NestedConfigurationProperty
 	private JspServlet jspServlet;
 
 	/**
@@ -118,6 +122,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	public Undertow getUndertow() {
 		return this.undertow;
+	}
+
+	public Compression getCompression() {
+		return this.compression;
 	}
 
 	public String getContextPath() {
@@ -239,6 +247,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		if (getJspServlet() != null) {
 			container.setJspServlet(getJspServlet());
 		}
+		if (getCompression() != null) {
+			container.setCompression(getCompression());
+		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat()
 					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
@@ -347,19 +358,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		 */
 		private String uriEncoding;
 
-		/**
-		 * Controls response compression. Acceptable values are "off" to disable
-		 * compression, "on" to enable compression of responses over 2048 bytes, "force"
-		 * to force response compression, or an integer value to enable compression of
-		 * responses with content length that is at least that value.
-		 */
-		private String compression = "off";
-
-		/**
-		 * Comma-separated list of MIME types for which compression is used.
-		 */
-		private String compressableMimeTypes = "text/html,text/xml,text/plain";
-
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -406,22 +404,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		public void setAccessLogPattern(String accessLogPattern) {
 			this.accessLogPattern = accessLogPattern;
-		}
-
-		public String getCompressableMimeTypes() {
-			return this.compressableMimeTypes;
-		}
-
-		public void setCompressableMimeTypes(String compressableMimeTypes) {
-			this.compressableMimeTypes = compressableMimeTypes;
-		}
-
-		public String getCompression() {
-			return this.compression;
-		}
-
-		public void setCompression(String compression) {
-			this.compression = compression;
 		}
 
 		public String getInternalProxies() {
@@ -484,7 +466,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			if (this.maxHttpHeaderSize > 0) {
 				customizeMaxHttpHeaderSize(factory);
 			}
-			customizeCompression(factory);
 			if (this.accessLogEnabled) {
 				customizeAccessLog(factory);
 			}
@@ -553,33 +534,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			});
 		}
 
-		private void customizeCompression(TomcatEmbeddedServletContainerFactory factory) {
-			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-
-				@Override
-				public void customize(Connector connector) {
-					ProtocolHandler handler = connector.getProtocolHandler();
-					if (handler instanceof AbstractHttp11Protocol) {
-						@SuppressWarnings("rawtypes")
-						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-						protocol.setCompression(coerceCompression(Tomcat.this.compression));
-						protocol.setCompressableMimeTypes(Tomcat.this.compressableMimeTypes);
-					}
-				}
-
-				private String coerceCompression(String compression) {
-					if ("true".equalsIgnoreCase(compression)) {
-						return "on";
-					}
-					if ("false".equalsIgnoreCase(compression)) {
-						return "off";
-					}
-					return compression;
-				}
-
-			});
-		}
-
 		private void customizeAccessLog(TomcatEmbeddedServletContainerFactory factory) {
 			AccessLogValve valve = new AccessLogValve();
 			String accessLogPattern = getAccessLogPattern();
@@ -587,7 +541,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			valve.setSuffix(".log");
 			factory.addContextValves(valve);
 		}
-
 	}
 
 	public static class Undertow {
