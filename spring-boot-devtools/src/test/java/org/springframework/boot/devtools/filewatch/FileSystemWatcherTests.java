@@ -136,7 +136,7 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void waitsForIdleTime() throws Exception {
+	public void waitsForPollingInterval() throws Exception {
 		this.changes.clear();
 		setupWatcher(100, 1);
 		File folder = startWithNewFolder();
@@ -148,7 +148,7 @@ public class FileSystemWatcherTests {
 	}
 
 	@Test
-	public void waitsForQuietTime() throws Exception {
+	public void waitsForQuietPeriod() throws Exception {
 		setupWatcher(300, 200);
 		File folder = startWithNewFolder();
 		for (int i = 0; i < 10; i++) {
@@ -266,8 +266,8 @@ public class FileSystemWatcherTests {
 		assertEquals(expected, actual);
 	}
 
-	private void setupWatcher(long idleTime, long quietTime) {
-		this.watcher = new FileSystemWatcher(false, idleTime, quietTime);
+	private void setupWatcher(long pollingInterval, long quietPeriod) {
+		this.watcher = new FileSystemWatcher(false, pollingInterval, quietPeriod);
 		this.watcher.addListener(new FileChangeListener() {
 			@Override
 			public void onChange(Set<ChangedFiles> changeSet) {
