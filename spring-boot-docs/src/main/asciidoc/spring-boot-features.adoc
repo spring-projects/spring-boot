@@ -1205,7 +1205,8 @@ supported right now, but can be with custom template macros/helpers and the use 
 
 When loading resources dynamically with, for example, a JavaScript module loader, renaming
 files is not an option. That's why other strategies are also supported and can be combined.
-A "fixed" strategy will add a static version string in the URL, without changing the file name:
+A "fixed" strategy will add a static version string in the URL, without changing the file
+name:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1229,6 +1230,7 @@ This feature has been thoroughly described in a dedicated
 https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post]
 and in Spring Framework's {spring-reference}/#mvc-config-static-resources[reference documentation].
 ====
+
 
 
 [[boot-features-spring-mvc-template-engines]]

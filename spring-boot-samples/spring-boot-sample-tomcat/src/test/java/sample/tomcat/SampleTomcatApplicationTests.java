@@ -66,14 +66,10 @@ public class SampleTomcatApplicationTests {
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.set("Accept-Encoding", "gzip");
 		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-
 		RestTemplate restTemplate = new TestRestTemplate();
-
 		ResponseEntity<byte[]> entity = restTemplate.exchange("http://localhost:"
 				+ this.port, HttpMethod.GET, requestEntity, byte[].class);
-
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-
 		GZIPInputStream inflater = new GZIPInputStream(new ByteArrayInputStream(
 				entity.getBody()));
 		try {

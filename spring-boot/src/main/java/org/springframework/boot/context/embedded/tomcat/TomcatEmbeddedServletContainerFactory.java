@@ -51,6 +51,7 @@ import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -233,10 +234,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		int port = (getPort() >= 0 ? getPort() : 0);
 		connector.setPort(port);
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
-			if (getAddress() != null) {
-				((AbstractProtocol<?>) connector.getProtocolHandler())
-						.setAddress(getAddress());
-			}
+			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
 		}
 		if (getUriEncoding() != null) {
 			connector.setURIEncoding(getUriEncoding());
@@ -247,30 +245,41 @@ public class TomcatEmbeddedServletContainerFactory extends
 		connector.setProperty("bindOnInit", "false");
 
 		if (getSsl() != null && getSsl().isEnabled()) {
-			Assert.state(
-					connector.getProtocolHandler() instanceof AbstractHttp11JsseProtocol,
-					"To use SSL, the connector's protocol handler must be an "
-							+ "AbstractHttp11JsseProtocol subclass");
-			configureSsl((AbstractHttp11JsseProtocol<?>) connector.getProtocolHandler(),
-					getSsl());
-			connector.setScheme("https");
-			connector.setSecure(true);
+			customizeSsl(connector);
 		}
-
 		if (getCompression() != null && getCompression().getEnabled()) {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol) {
-				@SuppressWarnings("rawtypes")
-				AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-				protocol.setCompression("on");
-				protocol.setCompressionMinSize(getCompression().getMinResponseSize());
-				protocol.setCompressableMimeTypes(StringUtils
-						.arrayToCommaDelimitedString(getCompression().getMimeTypes()));
-			}
+			customizeCompression(connector);
 		}
-
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
+		}
+	}
+
+	private void customizeProtocol(AbstractProtocol<?> protocol) {
+		if (getAddress() != null) {
+			protocol.setAddress(getAddress());
+		}
+	}
+
+	private void customizeSsl(Connector connector) {
+		ProtocolHandler handler = connector.getProtocolHandler();
+		Assert.state(handler instanceof AbstractHttp11JsseProtocol,
+				"To use SSL, the connector's protocol handler must be an "
+						+ "AbstractHttp11JsseProtocol subclass");
+		configureSsl((AbstractHttp11JsseProtocol<?>) handler, getSsl());
+		connector.setScheme("https");
+		connector.setSecure(true);
+	}
+
+	private void customizeCompression(Connector connector) {
+		ProtocolHandler handler = connector.getProtocolHandler();
+		if (handler instanceof AbstractHttp11Protocol) {
+			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+			Compression compression = getCompression();
+			protocol.setCompression("on");
+			protocol.setCompressionMinSize(compression.getMinResponseSize());
+			protocol.setCompressableMimeTypes(StringUtils
+					.arrayToCommaDelimitedString(compression.getMimeTypes()));
 		}
 	}
 

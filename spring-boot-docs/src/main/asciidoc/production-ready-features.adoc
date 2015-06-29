@@ -157,7 +157,7 @@ For example, the following will disable _all_ endpoints except for `info`:
 Health information can be used to check the status of your running application. It is
 often used by monitoring software to alert someone if a production system goes down.
 The default information exposed by the `health` endpoint depends on how it is accessed.
-For an unauthenticated connection in a secure application a simple '`status`' message is 
+For an unauthenticated connection in a secure application a simple '`status`' message is
 returned, and for an authenticated connection additional details are also displayed (see
 <<production-ready-health-access-restrictions>> for HTTP details).
 
@@ -507,7 +507,7 @@ If you don't want to expose endpoints over HTTP you can set the management port 
 [[production-ready-health-access-restrictions]]
 === HTTP health endpoint access restrictions
 The information exposed by the health endpoint varies depending on whether or not it's
-accessed anonymously, and whether or not the enclosing application is secure. 
+accessed anonymously, and whether or not the enclosing application is secure.
 By default, when accessed anonymously in a secure application, any details about the
 server's health are hidden and the endpoint will simply indicate whether or not the server
 is up or down. Furthermore, when accessed anonymously, the response is cached for a
@@ -515,22 +515,35 @@ configurable period to prevent the endpoint being used in a denial of service at
 The `endpoints.health.time-to-live` property is used to configure the caching period in
 milliseconds. It defaults to 1000, i.e. one second.
 
-The above-described restrictions can be enhanced, thereby allowing only authenticated users full
-access to the health endpoint in a secure application. To do so, set `endpoints.health.sensitive` to `true`.
-Here's a summary of behaviour (with default `sensitive` flag value "false" indicated in bold):
+The above-described restrictions can be enhanced, thereby allowing only authenticated
+users full access to the health endpoint in a secure application. To do so, set
+`endpoints.health.sensitive` to `true`. Here's a summary of behavior (with default
+`sensitive` flag value "`false`" indicated in bold):
 
 |====
-|Secure | Sensitive | Unauthenticated behaviour | Authenticated behaviour
+|Secure |Sensitive |Unauthenticated |Authenticated
 
-|    false  |  **false**       |    Full content   | Full content 
+|false
+|**false**
+|Full content
+|Full content
 
-|    false  |  true        |    Status only    | Full content
+|false
+|true
+|Status only
+|Full content
 
-|    true   |  **false**       |    Status only     | Full content
+|true
+|**false**
+|Status only
+|Full content
 
-|    true   |  true        |    No content     | Full content
-
+|true
+|true
+|No content
+|Full content
 |====
+
 
 
 [[production-ready-jmx]]

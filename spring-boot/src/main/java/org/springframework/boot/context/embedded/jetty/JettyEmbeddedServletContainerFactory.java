@@ -155,14 +155,14 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	private HandlerWrapper createGzipHandler() {
-		if (ClassUtils.isPresent(GZIP_HANDLER_JETTY_9_2, getClass().getClassLoader())) {
+		ClassLoader classLoader = getClass().getClassLoader();
+		if (ClassUtils.isPresent(GZIP_HANDLER_JETTY_9_2, classLoader)) {
 			return new Jetty92GzipHandlerFactory().createGzipHandler(getCompression());
 		}
-		else if (ClassUtils.isPresent(GZIP_HANDLER_JETTY_8, getClass().getClassLoader())) {
+		if (ClassUtils.isPresent(GZIP_HANDLER_JETTY_8, getClass().getClassLoader())) {
 			return new Jetty8GzipHandlerFactory().createGzipHandler(getCompression());
 		}
-		else if (ClassUtils
-				.isPresent(GZIP_HANDLER_JETTY_9_3, getClass().getClassLoader())) {
+		if (ClassUtils.isPresent(GZIP_HANDLER_JETTY_9_3, getClass().getClassLoader())) {
 			return new Jetty93GzipHandlerFactory().createGzipHandler(getCompression());
 		}
 		throw new IllegalStateException(
@@ -579,19 +579,17 @@ public class JettyEmbeddedServletContainerFactory extends
 		@Override
 		public HandlerWrapper createGzipHandler(Compression compression) {
 			try {
-				Class<?> gzipHandlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_8,
+				Class<?> handlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_8,
 						getClass().getClassLoader());
-				HandlerWrapper gzipHandler = (HandlerWrapper) gzipHandlerClass
-						.newInstance();
-				ReflectionUtils.findMethod(gzipHandlerClass, "setMinGzipSize", int.class)
-						.invoke(gzipHandler, compression.getMinResponseSize());
-				ReflectionUtils.findMethod(gzipHandlerClass, "setMimeTypes", Set.class)
-						.invoke(gzipHandler,
+				HandlerWrapper handler = (HandlerWrapper) handlerClass.newInstance();
+				ReflectionUtils.findMethod(handlerClass, "setMinGzipSize", int.class)
+						.invoke(handler, compression.getMinResponseSize());
+				ReflectionUtils.findMethod(handlerClass, "setMimeTypes", Set.class)
+						.invoke(handler,
 								new HashSet<String>(Arrays.asList(compression
 										.getMimeTypes())));
-				return gzipHandler;
+				return handler;
 			}
-
 			catch (Exception ex) {
 				throw new RuntimeException("Failed to configure Jetty 8 gzip handler", ex);
 			}
@@ -608,7 +606,6 @@ public class JettyEmbeddedServletContainerFactory extends
 			gzipHandler.setMimeTypes(new HashSet<String>(Arrays.asList(compression
 					.getMimeTypes())));
 			return gzipHandler;
-
 		}
 
 	}
@@ -618,18 +615,16 @@ public class JettyEmbeddedServletContainerFactory extends
 		@Override
 		public HandlerWrapper createGzipHandler(Compression compression) {
 			try {
-				Class<?> gzipHandlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_9_3,
+				Class<?> handlerClass = ClassUtils.forName(GZIP_HANDLER_JETTY_9_3,
 						getClass().getClassLoader());
-				HandlerWrapper gzipHandler = (HandlerWrapper) gzipHandlerClass
-						.newInstance();
-				ReflectionUtils.findMethod(gzipHandlerClass, "setMinGzipSize", int.class)
-						.invoke(gzipHandler, compression.getMinResponseSize());
-				ReflectionUtils.findMethod(gzipHandlerClass, "setIncludedMimeTypes",
-						String[].class).invoke(gzipHandler,
+				HandlerWrapper handler = (HandlerWrapper) handlerClass.newInstance();
+				ReflectionUtils.findMethod(handlerClass, "setMinGzipSize", int.class)
+						.invoke(handler, compression.getMinResponseSize());
+				ReflectionUtils.findMethod(handlerClass, "setIncludedMimeTypes",
+						String[].class).invoke(handler,
 						new Object[] { compression.getMimeTypes() });
-				return gzipHandler;
+				return handler;
 			}
-
 			catch (Exception ex) {
 				throw new RuntimeException("Failed to configure Jetty 9.3 gzip handler",
 						ex);
@@ -637,4 +632,5 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 
 	}
+
 }

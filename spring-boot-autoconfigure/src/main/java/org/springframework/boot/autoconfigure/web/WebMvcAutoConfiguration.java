@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ResourceLoaderAware;
@@ -55,7 +56,6 @@ import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
@@ -81,6 +81,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
+import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
@@ -260,42 +261,51 @@ public class WebMvcAutoConfiguration {
 			}
 			Integer cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				ResourceHandlerRegistration registration = registry.addResourceHandler("/webjars/**")
+				registerResourceChain(registry.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/")
-						.setCachePeriod(cachePeriod);
-				registerResourceChain(registration);
+						.setCachePeriod(cachePeriod));
 			}
 			if (!registry.hasMappingForPattern("/**")) {
-				ResourceHandlerRegistration registration = registry.addResourceHandler("/**")
+				registerResourceChain(registry.addResourceHandler("/**")
 						.addResourceLocations(RESOURCE_LOCATIONS)
-						.setCachePeriod(cachePeriod);
-				registerResourceChain(registration);
+						.setCachePeriod(cachePeriod));
 			}
 		}
 
 		private void registerResourceChain(ResourceHandlerRegistration registration) {
-			ResourceProperties.Chain chainProperties = this.resourceProperties.getChain();
-			if (ObjectUtils.nullSafeEquals(chainProperties.getEnabled(), Boolean.TRUE)) {
-				ResourceChainRegistration chain = registration.resourceChain(chainProperties.isCache());
-				boolean hasFixedVersionConfigured = chainProperties.getStrategy().getFixed().isEnabled();
-				boolean hasContentVersionConfigured = chainProperties.getStrategy().getContent().isEnabled();
-				if (hasFixedVersionConfigured || hasContentVersionConfigured) {
-					VersionResourceResolver versionResourceResolver = new VersionResourceResolver();
-					if (hasFixedVersionConfigured) {
-						versionResourceResolver.addFixedVersionStrategy(
-								chainProperties.getStrategy().getFixed().getVersion(),
-								chainProperties.getStrategy().getFixed().getPaths());
-					}
-					if (hasContentVersionConfigured) {
-						versionResourceResolver.
-								addContentVersionStrategy(chainProperties.getStrategy().getContent().getPaths());
-					}
-					chain.addResolver(versionResourceResolver);
-				}
-				if (chainProperties.isHtml5AppCache()) {
-					chain.addTransformer(new AppCacheManifestTransformer());
-				}
+			ResourceProperties.Chain properties = this.resourceProperties.getChain();
+			if (Boolean.TRUE.equals(properties.getEnabled())
+					|| properties.getStrategy().getFixed().isEnabled()
+					|| properties.getStrategy().getContent().isEnabled()) {
+				configureResourceChain(properties,
+						registration.resourceChain(properties.isCache()));
 			}
+		}
+
+		private void configureResourceChain(ResourceProperties.Chain properties,
+				ResourceChainRegistration chain) {
+			Strategy strategy = properties.getStrategy();
+			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
+				chain.addResolver(getVersionResourceResolver(strategy));
+			}
+			if (properties.isHtml5AppCache()) {
+				chain.addTransformer(new AppCacheManifestTransformer());
+			}
+		}
+
+		private ResourceResolver getVersionResourceResolver(
+				ResourceProperties.Strategy properties) {
+			VersionResourceResolver resolver = new VersionResourceResolver();
+			if (properties.getFixed().isEnabled()) {
+				String version = properties.getFixed().getVersion();
+				String[] paths = properties.getFixed().getPaths();
+				resolver.addFixedVersionStrategy(version, paths);
+			}
+			if (properties.getContent().isEnabled()) {
+				String[] paths = properties.getContent().getPaths();
+				resolver.addContentVersionStrategy(paths);
+			}
+			return resolver;
 		}
 
 		@Override

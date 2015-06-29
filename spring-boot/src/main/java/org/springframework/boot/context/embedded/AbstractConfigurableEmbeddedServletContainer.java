@@ -285,6 +285,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		return this.compression;
 	}
 
+	@Override
 	public void setCompression(Compression compression) {
 		this.compression = compression;
 	}

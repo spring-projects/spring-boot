@@ -191,16 +191,13 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
 		final String testContent = new String(chars);
-
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		if (mimeTypes != null) {
 			compression.setMimeTypes(mimeTypes);
 		}
 		factory.setCompression(compression);
-
 		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
 				new HttpServlet() {
 					@Override

@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hamcrest.Matcher;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Rule;
@@ -170,15 +171,16 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void resourceHandlerChainEnabled() throws Exception {
 		load("spring.resources.chain.enabled:true");
-
 		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(1));
 		assertThat(getResourceResolvers("/**").size(), equalTo(2));
 		assertThat(getResourceTransformers("/**").size(), equalTo(1));
-
-		assertThat(getResourceResolvers("/**"), contains(instanceOf(CachingResourceResolver.class),
-				instanceOf(PathResourceResolver.class)));
-		assertThat(getResourceTransformers("/**"), contains(instanceOf(CachingResourceTransformer.class)));
+		assertThat(
+				getResourceResolvers("/**"),
+				containsInstances(CachingResourceResolver.class,
+						PathResourceResolver.class));
+		assertThat(getResourceTransformers("/**"),
+				contains(instanceOf(CachingResourceTransformer.class)));
 	}
 
 	@Test
@@ -186,38 +188,44 @@ public class WebMvcAutoConfigurationTests {
 		load("spring.resources.chain.strategy.fixed.enabled:true",
 				"spring.resources.chain.strategy.fixed.version:test",
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js");
-
 		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(3));
 		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceResolvers("/**").size(), equalTo(3));
 		assertThat(getResourceTransformers("/**").size(), equalTo(2));
-
-		assertThat(getResourceResolvers("/**"), contains(instanceOf(CachingResourceResolver.class),
-				instanceOf(VersionResourceResolver.class),
-				instanceOf(PathResourceResolver.class)));
-		assertThat(getResourceTransformers("/**"), contains(instanceOf(CachingResourceTransformer.class),
-				instanceOf(CssLinkResourceTransformer.class)));
-		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers("/**").get(1);
-		assertThat(resolver.getStrategyMap().get("/**/*.js"), instanceOf(FixedVersionStrategy.class));
+		assertThat(
+				getResourceResolvers("/**"),
+				containsInstances(CachingResourceResolver.class,
+						VersionResourceResolver.class, PathResourceResolver.class));
+		assertThat(
+				getResourceTransformers("/**"),
+				containsInstances(CachingResourceTransformer.class,
+						CssLinkResourceTransformer.class));
+		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(
+				"/**").get(1);
+		assertThat(resolver.getStrategyMap().get("/**/*.js"),
+				instanceOf(FixedVersionStrategy.class));
 	}
 
 	@Test
 	public void resourceHandlerContentStrategyEnabled() throws Exception {
 		load("spring.resources.chain.strategy.content.enabled:true",
 				"spring.resources.chain.strategy.content.paths:/**,/*.png");
-
 		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(3));
 		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceResolvers("/**").size(), equalTo(3));
 		assertThat(getResourceTransformers("/**").size(), equalTo(2));
-
-		assertThat(getResourceResolvers("/**"), contains(instanceOf(CachingResourceResolver.class),
-				instanceOf(VersionResourceResolver.class),
-				instanceOf(PathResourceResolver.class)));
-		assertThat(getResourceTransformers("/**"), contains(instanceOf(CachingResourceTransformer.class),
-				instanceOf(CssLinkResourceTransformer.class)));
-		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers("/**").get(1);
-		assertThat(resolver.getStrategyMap().get("/*.png"), instanceOf(ContentVersionStrategy.class));
+		assertThat(
+				getResourceResolvers("/**"),
+				containsInstances(CachingResourceResolver.class,
+						VersionResourceResolver.class, PathResourceResolver.class));
+		assertThat(
+				getResourceTransformers("/**"),
+				containsInstances(CachingResourceTransformer.class,
+						CssLinkResourceTransformer.class));
+		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(
+				"/**").get(1);
+		assertThat(resolver.getStrategyMap().get("/*.png"),
+				instanceOf(ContentVersionStrategy.class));
 	}
 
 	@Test
@@ -229,20 +237,24 @@ public class WebMvcAutoConfigurationTests {
 				"spring.resources.chain.strategy.fixed.version:test",
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js",
 				"spring.resources.chain.html5AppCache:true");
-
 		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceResolvers("/**").size(), equalTo(2));
 		assertThat(getResourceTransformers("/**").size(), equalTo(2));
-
-		assertThat(getResourceResolvers("/**"), contains(
-				instanceOf(VersionResourceResolver.class), instanceOf(PathResourceResolver.class)));
-		assertThat(getResourceTransformers("/**"), contains(instanceOf(CssLinkResourceTransformer.class),
-				instanceOf(AppCacheManifestTransformer.class)));
-
-		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers("/**").get(0);
-		assertThat(resolver.getStrategyMap().get("/*.png"), instanceOf(ContentVersionStrategy.class));
-		assertThat(resolver.getStrategyMap().get("/**/*.js"), instanceOf(FixedVersionStrategy.class));
+		assertThat(
+				getResourceResolvers("/**"),
+				containsInstances(VersionResourceResolver.class,
+						PathResourceResolver.class));
+		assertThat(
+				getResourceTransformers("/**"),
+				containsInstances(CssLinkResourceTransformer.class,
+						AppCacheManifestTransformer.class));
+		VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(
+				"/**").get(0);
+		assertThat(resolver.getStrategyMap().get("/*.png"),
+				instanceOf(ContentVersionStrategy.class));
+		assertThat(resolver.getStrategyMap().get("/**/*.js"),
+				instanceOf(FixedVersionStrategy.class));
 	}
 
 	@Test
@@ -315,14 +327,18 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	protected List<ResourceResolver> getResourceResolvers(String mapping) {
-		SimpleUrlHandlerMapping handler = (SimpleUrlHandlerMapping) this.context.getBean("resourceHandlerMapping");
-		ResourceHttpRequestHandler resourceHandler = (ResourceHttpRequestHandler) handler.getHandlerMap().get(mapping);
+		SimpleUrlHandlerMapping handler = (SimpleUrlHandlerMapping) this.context
+				.getBean("resourceHandlerMapping");
+		ResourceHttpRequestHandler resourceHandler = (ResourceHttpRequestHandler) handler
+				.getHandlerMap().get(mapping);
 		return resourceHandler.getResourceResolvers();
 	}
 
 	protected List<ResourceTransformer> getResourceTransformers(String mapping) {
-		SimpleUrlHandlerMapping handler = (SimpleUrlHandlerMapping) this.context.getBean("resourceHandlerMapping");
-		ResourceHttpRequestHandler resourceHandler = (ResourceHttpRequestHandler) handler.getHandlerMap().get(mapping);
+		SimpleUrlHandlerMapping handler = (SimpleUrlHandlerMapping) this.context
+				.getBean("resourceHandlerMapping");
+		ResourceHttpRequestHandler resourceHandler = (ResourceHttpRequestHandler) handler
+				.getHandlerMap().get(mapping);
 		return resourceHandler.getResourceTransformers();
 	}
 
@@ -438,6 +454,15 @@ public class WebMvcAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class));
 		this.context.register(configClasses.toArray(new Class<?>[configClasses.size()]));
 		this.context.refresh();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private <E> Matcher<E> containsInstances(Class<?>... types) {
+		Matcher[] instances = new Matcher[types.length];
+		for (int i = 0; i < instances.length; i++) {
+			instances[i] = instanceOf(types[i]);
+		}
+		return contains(instances);
 	}
 
 	private void load(String... environment) {

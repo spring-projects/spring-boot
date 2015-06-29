@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -42,15 +40,6 @@ public class ResourceProperties {
 
 	private final Chain chain = new Chain();
 
-
-	@PostConstruct
-	public void setUpDefaults() {
-		if (this.chain.enabled == null && (this.chain.strategy.content.enabled
-				|| this.chain.strategy.fixed.enabled)) {
-			this.chain.enabled = true;
-		}
-	}
-
 	public Integer getCachePeriod() {
 		return this.cachePeriod;
 	}
@@ -68,7 +57,7 @@ public class ResourceProperties {
 	}
 
 	public Chain getChain() {
-		return chain;
+		return this.chain;
 	}
 
 	/**
@@ -77,8 +66,8 @@ public class ResourceProperties {
 	public static class Chain {
 
 		/**
-		 * Enable the Spring Resource Handling chain. Disabled by default unless
-		 * at least one strategy has been enabled.
+		 * Enable the Spring Resource Handling chain. Disabled by default unless at least
+		 * one strategy has been enabled.
 		 */
 		private Boolean enabled;
 
@@ -95,7 +84,7 @@ public class ResourceProperties {
 		private final Strategy strategy = new Strategy();
 
 		public Boolean getEnabled() {
-			return enabled;
+			return this.enabled;
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -103,7 +92,7 @@ public class ResourceProperties {
 		}
 
 		public boolean isCache() {
-			return cache;
+			return this.cache;
 		}
 
 		public void setCache(boolean cache) {
@@ -111,16 +100,17 @@ public class ResourceProperties {
 		}
 
 		public Strategy getStrategy() {
-			return strategy;
+			return this.strategy;
 		}
 
 		public boolean isHtml5AppCache() {
-			return html5AppCache;
+			return this.html5AppCache;
 		}
 
 		public void setHtml5AppCache(boolean html5AppCache) {
 			this.html5AppCache = html5AppCache;
 		}
+
 	}
 
 	/**
@@ -133,12 +123,13 @@ public class ResourceProperties {
 		private final Content content = new Content();
 
 		public Fixed getFixed() {
-			return fixed;
+			return this.fixed;
 		}
 
 		public Content getContent() {
-			return content;
+			return this.content;
 		}
+
 	}
 
 	/**
@@ -154,10 +145,10 @@ public class ResourceProperties {
 		/**
 		 * Comma-separated list of patterns to apply to the Version Strategy.
 		 */
-		private String[] paths = new String[]{"/**"};
+		private String[] paths = new String[] { "/**" };
 
 		public boolean isEnabled() {
-			return enabled;
+			return this.enabled;
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -165,12 +156,13 @@ public class ResourceProperties {
 		}
 
 		public String[] getPaths() {
-			return paths;
+			return this.paths;
 		}
 
 		public void setPaths(String[] paths) {
 			this.paths = paths;
 		}
+
 	}
 
 	/**
@@ -194,7 +186,7 @@ public class ResourceProperties {
 		private String version;
 
 		public boolean isEnabled() {
-			return enabled;
+			return this.enabled;
 		}
 
 		public void setEnabled(boolean enabled) {
@@ -202,7 +194,7 @@ public class ResourceProperties {
 		}
 
 		public String[] getPaths() {
-			return paths;
+			return this.paths;
 		}
 
 		public void setPaths(String[] paths) {
@@ -210,11 +202,13 @@ public class ResourceProperties {
 		}
 
 		public String getVersion() {
-			return version;
+			return this.version;
 		}
 
 		public void setVersion(String version) {
 			this.version = version;
 		}
+
 	}
+
 }

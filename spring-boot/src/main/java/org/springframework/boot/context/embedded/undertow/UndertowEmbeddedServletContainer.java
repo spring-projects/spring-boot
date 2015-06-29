@@ -123,11 +123,9 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 			return servletHandler;
 		}
 		ContentEncodingRepository encodingRepository = new ContentEncodingRepository();
-
 		Predicate mimeAndSizePredicate = Predicates.and(Predicates
 				.maxContentSize(this.compression.getMinResponseSize()), Predicates
 				.or(new CompressibleMimeTypePredicate(this.compression.getMimeTypes())));
-
 		encodingRepository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
 				mimeAndSizePredicate);
 		return new EncodingHandler(encodingRepository).setNext(servletHandler);
