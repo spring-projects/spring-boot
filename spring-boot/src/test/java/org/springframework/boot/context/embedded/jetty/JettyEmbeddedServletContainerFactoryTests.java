@@ -40,9 +40,9 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.embedded.Ssl;
-import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer.CompressionProperties;
 import org.springframework.http.HttpHeaders;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -185,8 +185,8 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 
 	@Override
 	@SuppressWarnings("serial")
-	// work-around for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646
-	protected String setupFactoryForCompression(final int contentSize, String mimeTypes)
+	// Workaround for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646
+	protected String setUpFactoryForCompression(final int contentSize, String[] mimeTypes)
 			throws Exception {
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
@@ -194,7 +194,7 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 
-		CompressionProperties compression = new CompressionProperties();
+		Compression compression = new Compression();
 		compression.setEnabled(true);
 		if (mimeTypes != null) {
 			compression.setMimeTypes(mimeTypes);

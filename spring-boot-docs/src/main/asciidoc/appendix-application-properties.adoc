@@ -66,6 +66,9 @@ content into your application; rather pick only the properties that you need.
 	server.port=8080
 	server.address= # bind to a specific NIC
 	server.session-timeout= # session timeout in seconds
+	server.compression.enabled=false # if response compression is enabled
+	server.compression.mime-types=text/html,text/xml,text/plain,text/css # comma-separated list of MIME types that should be compressed
+	server.compression.min-response-size=2048 # minimum response size that is required for compression to be performed
 	server.context-parameters.*= # Servlet context init parameters, e.g. server.context-parameters.a=alpha
 	server.context-path= # the context path, defaults to '/'
 	server.jsp-servlet.class-name=org.apache.jasper.servlet.JspServlet # The class name of the JSP servlet
@@ -89,8 +92,6 @@ content into your application; rather pick only the properties that you need.
 	server.ssl.trust-store-type=
 	server.tomcat.access-log-pattern= # log pattern of the access log
 	server.tomcat.access-log-enabled=false # is access logging enabled
-	server.tomcat.compression=off # is compression enabled (off, on, or an integer content length limit)
-	server.tomcat.compressable-mime-types=text/html,text/xml,text/plain # comma-separated list of mime types that Tomcat will compress
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
 			169\\.254\\.\\d{1,3}\\.\\d{1,3}|\\
@@ -155,21 +156,6 @@ content into your application; rather pick only the properties that you need.
 
 	# HTTP message conversion
 	spring.http.converters.preferred-json-mapper= # the preferred JSON mapper to use for HTTP message conversion. Set to "gson" to force the use of Gson when both it and Jackson are on the classpath.
-
-	# HTTP response compression ({sc-spring-boot-autoconfigure}/web/GzipFilterProperties.{sc-ext}[GzipFilterProperties])
-	spring.http.gzip.buffer-size= # size of the output buffer in bytes
-	spring.http.gzip.deflate-compression-level= # the level used for deflate compression (0-9)
-	spring.http.gzip.deflate-no-wrap= # noWrap setting for deflate compression (true or false)
-	spring.http.gzip.enabled=true # enable gzip filter support
-	spring.http.gzip.excluded-agents= # comma-separated list of user agents to exclude from compression
-	spring.http.gzip.exclude-agent-patterns= # comma-separated list of regular expression patterns to control user agents excluded from compression
-	spring.http.gzip.exclude-paths= # comma-separated list of paths to exclude from compression
-	spring.http.gzip.exclude-path-patterns= # comma-separated list of regular expression patterns to control the paths that are excluded from compression
-	spring.http.gzip.methods= # comma-separated list of HTTP methods for which compression is enabled
-	spring.http.gzip.mime-types= # comma-separated list of MIME types which should be compressed
-	spring.http.gzip.excluded-mime-types= # comma-separated list of MIME types to exclude from compression
-	spring.http.gzip.min-gzip-size= # minimum content length required for compression to occur
-	spring.http.gzip.vary= # Vary header to be sent on responses that may be compressed
 
 	# JACKSON ({sc-spring-boot-autoconfigure}/jackson/JacksonProperties.{sc-ext}[JacksonProperties])
 	spring.jackson.date-format= # Date format string (e.g. yyyy-MM-dd HH:mm:ss), or a fully-qualified date format class name (e.g. com.fasterxml.jackson.databind.util.ISO8601DateFormat)

@@ -51,7 +51,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
-import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer.CompressionProperties;
 import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -541,10 +540,11 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void noCompressionForMimeType() throws Exception {
-		assertFalse(internalTestCompression(10000, "text/html,text/xml,text/css"));
+		assertFalse(internalTestCompression(10000, new String[] { "text/html",
+				"text/xml", "text/css" }));
 	}
 
-	protected String setupFactoryForCompression(int contentSize, String mimeTypes)
+	protected String setUpFactoryForCompression(int contentSize, String[] mimeTypes)
 			throws Exception {
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
@@ -555,7 +555,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		FileCopyUtils.copy(testContent,
 				new FileWriter(this.temporaryFolder.newFile("test.txt")));
 		factory.setDocumentRoot(this.temporaryFolder.getRoot());
-		CompressionProperties compression = new CompressionProperties();
+		Compression compression = new Compression();
 		compression.setEnabled(true);
 		if (mimeTypes != null) {
 			compression.setMimeTypes(mimeTypes);
@@ -567,9 +567,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return testContent;
 	}
 
-	private boolean internalTestCompression(int contentSize, String mimeTypes)
+	private boolean internalTestCompression(int contentSize, String[] mimeTypes)
 			throws Exception {
-		String testContent = setupFactoryForCompression(contentSize, mimeTypes);
+		String testContent = setUpFactoryForCompression(contentSize, mimeTypes);
 
 		class TestGzipInputStreamFactory implements InputStreamFactory {
 
@@ -577,11 +577,11 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 			@Override
 			public InputStream create(InputStream instream) throws IOException {
-				if (requested.get()) {
+				if (this.requested.get()) {
 					throw new IllegalStateException(
 							"On deflated InputStream already requested");
 				}
-				requested.set(true);
+				this.requested.set(true);
 				return new GZIPInputStream(instream);
 			}
 

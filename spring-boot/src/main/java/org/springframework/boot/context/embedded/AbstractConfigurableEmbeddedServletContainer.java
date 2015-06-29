@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.util.Assert;
@@ -36,6 +35,7 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Ivan Sopov
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer implements
@@ -68,7 +68,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	private JspServlet jspServlet = new JspServlet();
 
-	private CompressionProperties compression;
+	private Compression compression;
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -281,11 +281,11 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		return this.jspServlet;
 	}
 
-	public CompressionProperties getCompression() {
+	public Compression getCompression() {
 		return this.compression;
 	}
 
-	public void setCompression(CompressionProperties compression) {
+	public void setCompression(Compression compression) {
 		this.compression = compression;
 	}
 
@@ -315,46 +315,6 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 				&& this.jspServlet.getRegistered()
 				&& ClassUtils.isPresent(this.jspServlet.getClassName(), getClass()
 						.getClassLoader());
-	}
-
-	public static class CompressionProperties {
-		private boolean enabled = false;
-		private String mimeTypes = "text/html,text/xml,text/plain,text/css";
-		private int minSize = 2048;
-
-		public boolean isEnabled() {
-			return enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-		public String getMimeTypes() {
-			return mimeTypes;
-		}
-
-		public void setMimeTypes(String mimeTypes) {
-			this.mimeTypes = mimeTypes;
-		}
-
-		public int getMinSize() {
-			return minSize;
-		}
-
-		public void setMinSize(int minSize) {
-			this.minSize = minSize;
-		}
-
-		public List<String> getMimeTypesList() {
-			List<String> mimeTypesList = new ArrayList<String>();
-			StringTokenizer tok = new StringTokenizer(mimeTypes, ",", false);
-			while (tok.hasMoreTokens()) {
-				mimeTypesList.add(tok.nextToken());
-			}
-			return mimeTypesList;
-		}
-
 	}
 
 }

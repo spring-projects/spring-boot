@@ -257,14 +257,15 @@ public class TomcatEmbeddedServletContainerFactory extends
 			connector.setSecure(true);
 		}
 
-		if (getCompression() != null && getCompression().isEnabled()) {
+		if (getCompression() != null && getCompression().getEnabled()) {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractHttp11Protocol) {
 				@SuppressWarnings("rawtypes")
 				AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
 				protocol.setCompression("on");
-				protocol.setCompressionMinSize(getCompression().getMinSize());
-				protocol.setCompressableMimeTypes(getCompression().getMimeTypes());
+				protocol.setCompressionMinSize(getCompression().getMinResponseSize());
+				protocol.setCompressableMimeTypes(StringUtils
+						.arrayToCommaDelimitedString(getCompression().getMimeTypes()));
 			}
 		}
 
