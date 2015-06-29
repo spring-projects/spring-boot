@@ -81,6 +81,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 			// Start the server so that the ServletContext is available
 			this.server.start();
+			this.server.setStopAtShutdown(false);
 		}
 		catch (Exception ex) {
 			// Ensure process isn't left running
