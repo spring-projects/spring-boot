@@ -37,6 +37,7 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -103,6 +104,18 @@ public class ServerPropertiesTests {
 				.getProtocolHeader());
 		assertEquals("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", this.properties.getTomcat()
 				.getInternalProxies());
+	}
+
+	@Test
+	public void testCompressionBinding() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.compression.enabled", "true");
+		map.put("server.compression.mimeTypes", "foo/bar");
+		map.put("server.compression.minSize", "228");
+		bindProperties(map);
+		assertTrue(this.properties.getCompression().isEnabled());
+		assertEquals("foo/bar", this.properties.getCompression().getMimeTypes());
+		assertEquals(228, this.properties.getCompression().getMinSize());
 	}
 
 	@Test

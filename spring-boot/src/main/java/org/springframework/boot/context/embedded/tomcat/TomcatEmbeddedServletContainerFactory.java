@@ -46,7 +46,9 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -253,6 +255,17 @@ public class TomcatEmbeddedServletContainerFactory extends
 					getSsl());
 			connector.setScheme("https");
 			connector.setSecure(true);
+		}
+
+		if (getCompression() != null && getCompression().isEnabled()) {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractHttp11Protocol) {
+				@SuppressWarnings("rawtypes")
+				AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+				protocol.setCompression("on");
+				protocol.setCompressionMinSize(getCompression().getMinSize());
+				protocol.setCompressableMimeTypes(getCompression().getMimeTypes());
+			}
 		}
 
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
