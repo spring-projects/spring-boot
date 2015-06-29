@@ -37,7 +37,12 @@ public class Compression {
 			"text/css" };
 
 	/**
-	 * Minimum response size that is required for compression to be performed
+	 * Comma-separated list of user agents for which responses should not be compressed.
+	 */
+	private String[] excludedUserAgents = null;
+
+	/**
+	 * Minimum response size that is required for compression to be performed.
 	 */
 	private int minResponseSize = 2048;
 
@@ -65,4 +70,11 @@ public class Compression {
 		this.minResponseSize = minSize;
 	}
 
+	public String[] getExcludedUserAgents() {
+		return this.excludedUserAgents;
+	}
+
+	public void setExcludedUserAgents(String[] excludedUserAgents) {
+		this.excludedUserAgents = excludedUserAgents;
+	}
 }

@@ -68,6 +68,7 @@ content into your application; rather pick only the properties that you need.
 	server.port=8080
 	server.address= # bind to a specific NIC
 	server.compression.enabled=false # if response compression is enabled
+	server.compression.exclude-user-agents= # list of user-agents to exclude from compression
 	server.compression.mime-types=text/html,text/xml,text/plain,text/css # comma-separated list of MIME types that should be compressed
 	server.compression.min-response-size=2048 # minimum response size that is required for compression to be performed
 	server.context-parameters.*= # Servlet context init parameters, e.g. server.context-parameters.a=alpha
