@@ -112,7 +112,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void handerAdaptersCreated() throws Exception {
+	public void handlerAdaptersCreated() throws Exception {
 		load();
 		assertEquals(3, this.context.getBeanNamesForType(HandlerAdapter.class).length);
 		assertFalse(this.context.getBean(RequestMappingHandlerAdapter.class)
@@ -123,7 +123,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void handerMappingsCreated() throws Exception {
+	public void handlerMappingsCreated() throws Exception {
 		load();
 		assertEquals(6, this.context.getBeanNamesForType(HandlerMapping.class).length);
 	}
