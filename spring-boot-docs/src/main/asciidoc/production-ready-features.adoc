@@ -158,7 +158,7 @@ Health information can be used to check the status of your running application. 
 often used by monitoring software to alert someone if a production system goes down.
 The default information exposed by the `health` endpoint depends on how it is accessed.
 For an unauthenticated connection in a secure application a simple '`status`' message is 
-returned, and for a authenticated connection additional details are also displayed (see
+returned, and for an authenticated connection additional details are also displayed (see
 <<production-ready-health-access-restrictions>> for HTTP details).
 
 Health information is collected from all
