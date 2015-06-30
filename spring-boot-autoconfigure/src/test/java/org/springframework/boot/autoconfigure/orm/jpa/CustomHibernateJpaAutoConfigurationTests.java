@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -100,6 +101,23 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		Map<String, String> hibernateProperties = bean.getHibernateProperties(dataSource);
 		assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"), nullValue());
+	}
+
+	@Test
+	public void testEjbNamingStrategy() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jpa.properties.hibernate.ejb.naming_strategy:"
+						+ "org.hibernate.cfg.ImprovedNamingStrategy");
+		this.context.register(TestConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				HibernateJpaAutoConfiguration.class);
+		this.context.refresh();
+		JpaProperties bean = this.context.getBean(JpaProperties.class);
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		Map<String, String> hibernateProperties = bean.getHibernateProperties(dataSource);
+		assertThat(hibernateProperties.get("hibernate.ejb.naming_strategy"),
+				is("org.hibernate.cfg.ImprovedNamingStrategy"));
 	}
 
 	@Configuration
