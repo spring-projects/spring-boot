@@ -246,7 +246,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 				name = null;
 			}
 			level = environment.resolvePlaceholders(level);
-			system.setLogLevel(name, LogLevel.valueOf(level));
+			system.setLogLevel(name, LogLevel.valueOf(level.toUpperCase()));
 		}
 		catch (RuntimeException ex) {
 			this.logger.error("Cannot set level: " + level + " for '" + name + "'");
