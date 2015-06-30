@@ -2198,9 +2198,10 @@ details.
 
 
 [[howto-build-an-executable-archive-with-ant]]
-=== Build an executable archive with Ant
+=== Build an executable archive from Ant without using spring-boot-antlib
 To build with Ant you need to grab dependencies, compile and then create a jar or war
-archive as normal. To make it executable:
+archive as normal. To make it executable you can either use the `spring-boot-antlib`
+module, or you can follow these instructions:
 
 . Use the appropriate launcher as a `Main-Class`, e.g. `JarLauncher` for a jar file, and
   specify the other properties it needs as manifest entries, principally a `Start-Class`.
@@ -2236,7 +2237,7 @@ The Actuator Sample has a `build.xml` that should work if you run it with
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ ant -lib <path_to>/ivy-2.2.jar
+	$ ant -lib <folder containing ivy-2.2.jar>
 ----
 
 after which you can run the application with
