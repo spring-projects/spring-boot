@@ -25,6 +25,7 @@ import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link GzipFilter}.
@@ -33,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.2.2
  */
 @Configuration
-@ConditionalOnClass(GzipFilter.class)
+@ConditionalOnClass({ GzipFilter.class, HttpMethod.class })
 @EnableConfigurationProperties(GzipFilterProperties.class)
 public class GzipFilterAutoConfiguration {
 
