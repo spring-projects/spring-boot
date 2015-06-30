@@ -1,0 +1,79 @@
+= Spring Boot - Antlib
+
+This is an add-on for building Spring Boot applications with http://ant.apache.org[Apache Ant].
+
+== Provided tasks
+
+=== exejar
+Creates a Spring Boot executable +jar+.
+
+==== Supported attributes
+[options="header,footer",format="csv"]
+|========================
+Attribute,Description,Required
++*destfile*+,destination +jar+ file to create,Yes
++*classes*+,root directory of Java classfiles,Yes
++*start-class*+,Spring boot application class,No (default is first class found declaring +public static void main(String[])+)
+|========================
+
+==== Nested elements
+===== resources
+You should nest into the +*resources*+ element one or more http://ant.apache.org/manual/Types/resources.html#collection[Resource Collections]
+describing a set of http://ant.apache.org/manual/Types/resources.html[Resources] that should be added to the content of the created +jar+ file.
+
+===== lib
+You should nest into the +*lib*+ element one or more http://ant.apache.org/manual/Types/resources.html#collection[Resource Collections]
+describing the set of +jar+ libraries that make up the runtime dependency classpath of the application.
+
+==== Examples
+.Specify +start-class+
+----
+<exejar destfile="target/my-application.jar" classes="target/classes" start-class="com.foo.MyApplication">
+  <resources>
+  	<fileset dir="src/main/resources" />
+  </resources>
+  <lib>
+  	<fileset dir="lib" />
+  </lib>
+</exejar>
+----
+
+.Detect +start-class+
+----
+<exejar destfile="target/my-application.jar" classes="target/classes">
+  <resources>
+  	<fileset dir="src/main/resources" />
+  </resources>
+  <lib>
+  	<fileset dir="lib" />
+  </lib>
+</exejar>
+----
+
+=== findmainclass
+Used internally by +exejar+ to locate a class declaring +public static void main(String[])+.
+
+==== Supported attributes
+[options="header,footer",format="csv"]
+|========================
+Attribute,Description,Required
++*classesroot*+,root directory of Java classfiles,Yes; unless +*mainclass*+ is specified
++*mainclass*+,Can be used to short-circuit the main-class search,No
++*property*+,Ant property that should be set with the result,No (result will be logged if unspecified)
+|========================
+
+==== Examples
+.Find and log
+----
+<findmainclass classesroot="target/classes" />
+----
+
+.Find and set
+----
+<findmainclass classesroot="target/classes" property="main-class" />
+----
+
+.Override and set
+----
+<findmainclass mainclass="com.foo.MainClass" property="main-class" />
+----
