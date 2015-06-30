@@ -16,6 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
 import java.io.FileNotFoundException;
 import java.net.SocketException;
 import java.net.URI;
@@ -30,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration.ManagementContextResolver;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
@@ -70,18 +83,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EndpointWebMvcAutoConfiguration}.
@@ -146,9 +147,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, "endpointoutput");
+		ApplicationContext managementContext = this.applicationContext.getBean(
+				ManagementContextResolver.class).getApplicationContext();
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
-				this.applicationContext.getBean(EndpointHandlerMapping.class),
-				"interceptors");
+				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
 		assertEquals(1, interceptors.size());
 		this.applicationContext.close();
 		assertAllClosed();
@@ -243,7 +245,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
 		new ServerPortInfoApplicationContextInitializer()
-				.initialize(this.applicationContext);
+		.initialize(this.applicationContext);
 		this.applicationContext.refresh();
 		Integer localServerPort = this.applicationContext.getEnvironment().getProperty(
 				"local.server.port", Integer.class);
@@ -259,7 +261,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void portPropertiesOnDifferentPort() throws Exception {
 		new ServerPortInfoApplicationContextInitializer()
-				.initialize(this.applicationContext);
+		.initialize(this.applicationContext);
 		this.applicationContext.register(RootConfig.class, DifferentPortConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
@@ -420,12 +422,12 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Configuration
 	@Import({ PropertyPlaceholderAutoConfiguration.class,
-			EmbeddedServletContainerAutoConfiguration.class,
-			EndpointAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class })
+		EmbeddedServletContainerAutoConfiguration.class,
+		EndpointAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class,
+		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		ManagementServerPropertiesAutoConfiguration.class,
+		ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	protected static class BaseConfiguration {
 
 	}
@@ -583,7 +585,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	private static class GrabManagementPort implements
-			ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+	ApplicationListener<EmbeddedServletContainerInitializedEvent> {
 
 		private ApplicationContext rootContext;
 

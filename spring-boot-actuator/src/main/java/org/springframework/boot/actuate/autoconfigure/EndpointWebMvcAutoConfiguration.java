@@ -17,8 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -33,29 +34,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties.Security;
-import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.condition.ConditionalOnManagementMvcContext;
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
-import org.springframework.boot.actuate.endpoint.HealthEndpoint;
-import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
-import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
-import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.LogFileMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
-import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -64,19 +49,17 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -99,26 +82,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
 		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
 		ManagementServerPropertiesAutoConfiguration.class })
-@EnableConfigurationProperties({ HealthMvcEndpointProperties.class,
-		EndpointCorsProperties.class })
-public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
-		SmartInitializingSingleton {
+public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware, SmartInitializingSingleton {
 
 	private static Log logger = LogFactory.getLog(EndpointWebMvcAutoConfiguration.class);
 
 	private ApplicationContext applicationContext;
-
-	@Autowired
-	private HealthMvcEndpointProperties healthMvcEndpointProperties;
-
-	@Autowired
-	private ManagementServerProperties managementServerProperties;
-
-	@Autowired
-	private EndpointCorsProperties corsProperties;
-
-	@Autowired(required = false)
-	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
@@ -126,48 +94,15 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		this.applicationContext = applicationContext;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointHandlerMapping endpointHandlerMapping() {
-		Set<? extends MvcEndpoint> endpoints = mvcEndpoints().getEndpoints();
-		CorsConfiguration corsConfiguration = getCorsConfiguration(this.corsProperties);
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
-				corsConfiguration);
-		boolean disabled = ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME;
-		mapping.setDisabled(disabled);
-		if (!disabled) {
-			mapping.setPrefix(this.managementServerProperties.getContextPath());
-		}
-		if (this.mappingCustomizers != null) {
-			for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
-				customizer.customize(mapping);
-			}
-		}
-		return mapping;
+	@ConditionalOnManagementMvcContext
+	@Configuration
+	@Import(EndpointWebMvcImportSelector.class)
+	protected static class EndpointWebMvcConfiguration {
 	}
 
-	private CorsConfiguration getCorsConfiguration(EndpointCorsProperties properties) {
-		if (CollectionUtils.isEmpty(properties.getAllowedOrigins())) {
-			return null;
-		}
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(properties.getAllowedOrigins());
-		if (!CollectionUtils.isEmpty(properties.getAllowedHeaders())) {
-			configuration.setAllowedHeaders(properties.getAllowedHeaders());
-		}
-		if (!CollectionUtils.isEmpty(properties.getAllowedMethods())) {
-			configuration.setAllowedMethods(properties.getAllowedMethods());
-		}
-		if (!CollectionUtils.isEmpty(properties.getExposedHeaders())) {
-			configuration.setExposedHeaders(properties.getExposedHeaders());
-		}
-		if (properties.getMaxAge() != null) {
-			configuration.setMaxAge(properties.getMaxAge());
-		}
-		if (properties.getAllowCredentials() != null) {
-			configuration.setAllowCredentials(properties.getAllowCredentials());
-		}
-		return configuration;
+	@Bean
+	public ManagementContextResolver managementContextResolver() {
+		return new ManagementContextResolver(this.applicationContext);
 	}
 
 	@Override
@@ -187,53 +122,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		}
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	public MvcEndpoints mvcEndpoints() {
-		return new MvcEndpoints();
-	}
-
-	@Bean
-	@ConditionalOnBean(EnvironmentEndpoint.class)
-	@ConditionalOnEnabledEndpoint("env")
-	public EnvironmentMvcEndpoint environmentMvcEndpoint(EnvironmentEndpoint delegate) {
-		return new EnvironmentMvcEndpoint(delegate);
-	}
-
-	@Bean
-	@ConditionalOnBean(HealthEndpoint.class)
-	@ConditionalOnEnabledEndpoint("health")
-	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
-		Security security = this.managementServerProperties.getSecurity();
-		boolean secure = (security != null && security.isEnabled());
-		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate, secure);
-		if (this.healthMvcEndpointProperties.getMapping() != null) {
-			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
-					.getMapping());
-		}
-		return healthMvcEndpoint;
-	}
-
-	@Bean
-	@ConditionalOnBean(MetricsEndpoint.class)
-	@ConditionalOnEnabledEndpoint("metrics")
-	public MetricsMvcEndpoint metricsMvcEndpoint(MetricsEndpoint delegate) {
-		return new MetricsMvcEndpoint(delegate);
-	}
-
-	@Bean
-	@ConditionalOnEnabledEndpoint("logfile")
-	public LogFileMvcEndpoint logfileMvcEndpoint() {
-		return new LogFileMvcEndpoint();
-	}
-
-	@Bean
-	@ConditionalOnBean(ShutdownEndpoint.class)
-	@ConditionalOnEnabledEndpoint(value = "shutdown", enabledByDefault = false)
-	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
-		return new ShutdownMvcEndpoint(delegate);
-	}
-
 	private void createChildManagementContext() {
 
 		final AnnotationConfigEmbeddedWebApplicationContext childContext = new AnnotationConfigEmbeddedWebApplicationContext();
@@ -241,13 +129,16 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		childContext.setNamespace("management");
 		childContext.setId(this.applicationContext.getId() + ":management");
 
+		List<Class<?>> configurations = new ArrayList<Class<?>>();
+		configurations.addAll(Arrays.<Class<?>> asList(
+				EndpointWebMvcChildContextConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class));
 		// Register the ManagementServerChildContextConfiguration first followed
 		// by various specific AutoConfiguration classes. NOTE: The child context
 		// is intentionally not completely auto-configured.
-		childContext.register(EndpointWebMvcChildContextConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class);
+		childContext.register(configurations.toArray(new Class<?>[0]));
 
 		// Ensure close on the parent also closes the child
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
@@ -261,6 +152,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 						}
 					});
 		}
+		managementContextResolver().setApplicationContext(childContext);
 		try {
 			childContext.refresh();
 		}
@@ -371,6 +263,33 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 					|| (serverProperties.getPort() == null && port.equals(8080))
 					|| (port != 0 && port.equals(serverProperties.getPort())) ? SAME
 					: DIFFERENT);
+		}
+
+	}
+
+	public static class ManagementContextResolver {
+
+		private ApplicationContext applicationContext;
+
+		public ManagementContextResolver(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		public ApplicationContext getApplicationContext() {
+			return this.applicationContext;
+		}
+
+		public void setApplicationContext(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		public MvcEndpoints getMvcEndpoints() {
+			try {
+				return applicationContext.getBean(MvcEndpoints.class);
+			}
+			catch (Exception e) {
+				return null;
+			}
 		}
 
 	}

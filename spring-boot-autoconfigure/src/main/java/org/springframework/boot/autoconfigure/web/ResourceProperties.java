@@ -16,17 +16,51 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 /**
  * Properties used to configure resource handling.
  *
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Dave Syer
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
-public class ResourceProperties {
+public class ResourceProperties implements ResourceLoaderAware {
+
+	private static final String[] SERVLET_RESOURCE_LOCATIONS = { "/" };
+
+	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
+			"classpath:/META-INF/resources/", "classpath:/resources/",
+			"classpath:/static/", "classpath:/public/" };
+
+	private static final String[] RESOURCE_LOCATIONS;
+	static {
+		RESOURCE_LOCATIONS = new String[CLASSPATH_RESOURCE_LOCATIONS.length
+				+ SERVLET_RESOURCE_LOCATIONS.length];
+		System.arraycopy(SERVLET_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS, 0,
+				SERVLET_RESOURCE_LOCATIONS.length);
+		System.arraycopy(CLASSPATH_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS,
+				SERVLET_RESOURCE_LOCATIONS.length, CLASSPATH_RESOURCE_LOCATIONS.length);
+	}
+
+	private static final String[] STATIC_INDEX_HTML_RESOURCES;
+	static {
+		STATIC_INDEX_HTML_RESOURCES = new String[RESOURCE_LOCATIONS.length];
+		for (int i = 0; i < STATIC_INDEX_HTML_RESOURCES.length; i++) {
+			STATIC_INDEX_HTML_RESOURCES[i] = RESOURCE_LOCATIONS[i] + "index.html";
+		}
+	}
 
 	/**
 	 * Cache period for the resources served by the resource handler, in seconds.
@@ -39,6 +73,19 @@ public class ResourceProperties {
 	private boolean addMappings = true;
 
 	private final Chain chain = new Chain();
+
+	/**
+	 * Locations of static resources. Defaults to classpath:[/META-INF/resources/, /resources/, /static/, /public/]
+	 * plus context:/ (the root of the servlet context).
+	 */
+	private String[] staticLocations = RESOURCE_LOCATIONS;
+
+	private ResourceLoader resourceLoader;
+
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
 
 	public Integer getCachePeriod() {
 		return this.cachePeriod;
@@ -209,6 +256,54 @@ public class ResourceProperties {
 			this.version = version;
 		}
 
+	}
+
+	public String[] getStaticLocations() {
+		return this.staticLocations;
+	}
+
+	public void setStaticLocations(String[] staticLocations) {
+		this.staticLocations = staticLocations;
+	}
+
+	private String[] getStaticWelcomePageLocations() {
+		String[] result = new String[staticLocations.length];
+		for (int i = 0; i < result.length; i++) {
+			String location = staticLocations[i];
+			if (!location.endsWith("/")) {
+				location = location + "/";
+			}
+			result[i] = location + "index.html";
+		}
+		return result;
+	}
+
+	public List<Resource> getFaviconLocations() {
+		List<Resource> locations = new ArrayList<Resource>(
+				CLASSPATH_RESOURCE_LOCATIONS.length + 1);
+		if (resourceLoader != null) {
+			for (String location : CLASSPATH_RESOURCE_LOCATIONS) {
+				locations.add(this.resourceLoader.getResource(location));
+			}
+		}
+		locations.add(new ClassPathResource("/"));
+		return Collections.unmodifiableList(locations);
+	}
+
+	public Resource getWelcomePage() {
+		for (String location : getStaticWelcomePageLocations()) {
+			Resource resource = this.resourceLoader.getResource(location);
+			if (resource.exists()) {
+				try {
+					resource.getURL();
+					return resource;
+				}
+				catch (IOException ex) {
+					// Ignore
+				}
+			}
+		}
+		return null;
 	}
 
 }

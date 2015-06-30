@@ -150,6 +150,23 @@ For example, the following will disable _all_ endpoints except for `info`:
 	endpoints.info.enabled=true
 ----
 
+[[production-ready-customizing-endpoints-programmatically]]
+=== Adding Custom Endpoints
+
+If you add a `@Bean` of type `Endpoint` then it will automatically be
+exposed over JMX and HTTP (if there is an server available). An HTTP
+endpoints can be customized further by creating a bean of type
+`MvcEndpoint`. Your `MvcEndpoint` is not a `@Controller` but it can use
+`@RequestMapping` (and `@Managed*`) to expose resources. 
+
+TIP: If you are doing this as a library feature consider adding a
+configuration class to `/META-INF/spring.factories` under the key
+`org.springframework.boot.actuate.autoconfigure.EndpointWebMvcConfiguration`.
+If you do that then the endpoint will move to a child context with all
+the other MVC endpoints if your users ask for a separate management port
+or address. A configuration declared this way can be a `WebConfigurerAdapter`
+if it wants to add static resources (for instance) to the management
+endpoints.
 
 
 [[production-ready-health]]
@@ -1284,7 +1301,8 @@ described below.
 
 [[production-ready-process-monitoring-configuration]]
 === Extend configuration
-In `META-INF/spring.factories` file you have to activate the listener(s):
+In `META-INF/spring.factories` file you can activate the listener(s) that
+writes a PID file. Example:
 
 [indent=0]
 ----

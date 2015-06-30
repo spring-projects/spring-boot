@@ -18,12 +18,15 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration.ManagementContextResolver;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
@@ -45,6 +48,7 @@ import org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConf
 import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -61,6 +65,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
 /**
@@ -209,7 +217,10 @@ public class ManagementSecurityAutoConfiguration {
 		@Autowired
 		private ManagementServerProperties management;
 
-		@Autowired
+		@Autowired(required = false)
+		private ManagementContextResolver contextResolver;
+
+		@Autowired(required = false)
 		private ServerProperties server;
 
 		@Autowired(required = false)
@@ -223,19 +234,17 @@ public class ManagementSecurityAutoConfiguration {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			// secure endpoints
-			String[] paths = getEndpointPaths(this.endpointHandlerMapping);
-			if (paths.length > 0 && this.management.getSecurity().isEnabled()) {
+			RequestMatcher matcher = getRequestMatcher();
+			if (matcher != null) {
 				// Always protect them if present
 				if (this.security.isRequireSsl()) {
 					http.requiresChannel().anyRequest().requiresSecure();
 				}
 				AuthenticationEntryPoint entryPoint = entryPoint();
 				http.exceptionHandling().authenticationEntryPoint(entryPoint);
-				paths = this.server.getPathsArray(paths);
-				http.requestMatchers().antMatchers(paths);
-				String[] endpointPaths = this.server.getPathsArray(getEndpointPaths(
-						this.endpointHandlerMapping, false));
-				configureAuthorizeRequests(endpointPaths, http.authorizeRequests());
+				http.requestMatcher(matcher);
+				configureAuthorizeRequests(new EndpointPathRequestMatcher(false),
+						http.authorizeRequests());
 				http.httpBasic().authenticationEntryPoint(entryPoint);
 				// No cookies for management endpoints by default
 				http.csrf().disable();
@@ -246,6 +255,19 @@ public class ManagementSecurityAutoConfiguration {
 			}
 		}
 
+		private RequestMatcher getRequestMatcher() {
+			if (!this.management.getSecurity().isEnabled()) {
+				return null;
+			}
+			String path = management.getContextPath();
+			if (StringUtils.hasText(path)) {
+				AntPathRequestMatcher matcher = new AntPathRequestMatcher(
+						server.getPath(path) + "/**");
+				return matcher;
+			}
+			return new EndpointPathRequestMatcher();
+		}
+
 		private AuthenticationEntryPoint entryPoint() {
 			BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
 			entryPoint.setRealmName(this.security.getBasic().getRealm());
@@ -253,10 +275,53 @@ public class ManagementSecurityAutoConfiguration {
 		}
 
 		private void configureAuthorizeRequests(
-				String[] endpointPaths,
+				RequestMatcher permitAllMatcher,
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
-			requests.antMatchers(endpointPaths).permitAll();
+			requests.requestMatchers(permitAllMatcher).permitAll();
 			requests.anyRequest().hasRole(this.management.getSecurity().getRole());
+		}
+
+		private final class EndpointPathRequestMatcher implements RequestMatcher {
+
+			private boolean sensitive;
+
+			private RequestMatcher delegate;
+
+			public EndpointPathRequestMatcher(boolean sensitive) {
+				this.sensitive = sensitive;
+			}
+
+			public EndpointPathRequestMatcher() {
+				this(true);
+			}
+
+			@Override
+			public boolean matches(HttpServletRequest request) {
+				if (endpointHandlerMapping == null && contextResolver != null) {
+					ApplicationContext context = contextResolver.getApplicationContext();
+					if (context != null
+							&& context.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
+						endpointHandlerMapping = context
+								.getBean(EndpointHandlerMapping.class);
+					}
+				}
+				if (endpointHandlerMapping == null) {
+					endpointHandlerMapping = new EndpointHandlerMapping(
+							Collections.<MvcEndpoint> emptySet());
+				}
+				if (delegate == null) {
+					List<RequestMatcher> pathMatchers = new ArrayList<RequestMatcher>();
+					String[] paths = !sensitive ? getEndpointPaths(
+							endpointHandlerMapping, false)
+							: getEndpointPaths(endpointHandlerMapping);
+					for (String path : paths) {
+						pathMatchers.add(new AntPathRequestMatcher(server.getPath(path)));
+					}
+					delegate = pathMatchers.isEmpty() ? AnyRequestMatcher.INSTANCE
+							: new OrRequestMatcher(pathMatchers);
+				}
+				return delegate.matches(request);
+			}
 		}
 
 	}

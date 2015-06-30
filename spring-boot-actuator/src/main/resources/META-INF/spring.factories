@@ -17,3 +17,6 @@ org.springframework.boot.actuate.autoconfigure.MetricExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.PublicMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration
+
+org.springframework.boot.actuate.autoconfigure.EndpointWebMvcConfiguration=\
+org.springframework.boot.actuate.autoconfigure.EndpointWebMvcConfiguration

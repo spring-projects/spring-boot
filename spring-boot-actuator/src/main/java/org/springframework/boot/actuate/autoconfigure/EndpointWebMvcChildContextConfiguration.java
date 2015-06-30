@@ -16,12 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.Filter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementSecurityAutoConfiguration.ManagementWebSecurityConfigurerAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementErrorEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
@@ -41,8 +41,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -50,13 +50,18 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * Configuration triggered from {@link EndpointWebMvcAutoConfiguration} when a new
@@ -75,9 +80,17 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Value("${error.path:/error}")
 	private String errorPath = "/error";
 
+	@Autowired
+	private ManagementServerProperties managementServerProperties;
+
+	@Configuration
+	@Import(EndpointWebMvcImportSelector.class)
+	protected static class EndpointWebMvcConfiguration {
+	}
+
 	@Configuration
 	protected static class ServerCustomization implements
-			EmbeddedServletContainerCustomizer, Ordered {
+	EmbeddedServletContainerCustomizer, Ordered {
 
 		@Value("${error.path:/error}")
 		private String errorPath = "/error";
@@ -113,13 +126,12 @@ public class EndpointWebMvcChildContextConfiguration {
 			// and add the management-specific bits
 			container.setPort(this.managementServerProperties.getPort());
 			container.setAddress(this.managementServerProperties.getAddress());
-			container.setContextPath(this.managementServerProperties.getContextPath());
 			container.addErrorPages(new ErrorPage(this.errorPath));
 		}
 
 	}
 
-	@Bean
+	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 	public DispatcherServlet dispatcherServlet() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 
@@ -132,11 +144,132 @@ public class EndpointWebMvcChildContextConfiguration {
 		return dispatcherServlet;
 	}
 
-	@Bean
-	public HandlerAdapter handlerAdapter(HttpMessageConverters converters) {
-		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
-		adapter.setMessageConverters(converters.getConverters());
-		return adapter;
+	@Configuration(DispatcherServlet.HANDLER_MAPPING_BEAN_NAME)
+	@EnableWebMvc
+	public static class CompositeHandlerMapping implements HandlerMapping {
+
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
+		private List<HandlerMapping> mappings;
+
+		@Override
+		public HandlerExecutionChain getHandler(HttpServletRequest request)
+				throws Exception {
+			if (this.mappings == null) {
+				this.mappings = extractMappings();
+			}
+			for (HandlerMapping mapping : this.mappings) {
+				HandlerExecutionChain handler = mapping.getHandler(request);
+				if (handler != null) {
+					return handler;
+				}
+			}
+			return null;
+		}
+
+		private List<HandlerMapping> extractMappings() {
+			List<HandlerMapping> list = new ArrayList<HandlerMapping>();
+			list.addAll(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
+			list.remove(this);
+			AnnotationAwareOrderComparator.sort(list);
+			return list;
+		}
+
+	}
+
+	@Configuration(DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
+	public static class CompositeHandlerAdapter implements HandlerAdapter {
+
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
+		private List<HandlerAdapter> adapters;
+
+		private List<HandlerAdapter> extractAdapters() {
+			List<HandlerAdapter> list = new ArrayList<HandlerAdapter>();
+			list.addAll(this.beanFactory.getBeansOfType(HandlerAdapter.class).values());
+			list.remove(this);
+			AnnotationAwareOrderComparator.sort(list);
+			return list;
+		}
+
+		@Override
+		public boolean supports(Object handler) {
+			if (this.adapters == null) {
+				this.adapters = extractAdapters();
+			}
+			for (HandlerAdapter mapping : this.adapters) {
+				if (mapping.supports(handler)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public ModelAndView handle(HttpServletRequest request,
+				HttpServletResponse response, Object handler) throws Exception {
+			if (this.adapters == null) {
+				this.adapters = extractAdapters();
+			}
+			for (HandlerAdapter mapping : this.adapters) {
+				if (mapping.supports(handler)) {
+					return mapping.handle(request, response, handler);
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public long getLastModified(HttpServletRequest request, Object handler) {
+			if (this.adapters == null) {
+				this.adapters = extractAdapters();
+			}
+			for (HandlerAdapter mapping : this.adapters) {
+				if (mapping.supports(handler)) {
+					return mapping.getLastModified(request, handler);
+				}
+			}
+			return 0;
+		}
+
+	}
+
+	@Configuration(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
+	public static class CompositeHandlerExceptionResolver implements
+	HandlerExceptionResolver {
+
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
+		private List<HandlerExceptionResolver> resolvers;
+
+		private List<HandlerExceptionResolver> extractResolvers() {
+			List<HandlerExceptionResolver> list = new ArrayList<HandlerExceptionResolver>();
+			list.addAll(this.beanFactory.getBeansOfType(HandlerExceptionResolver.class)
+					.values());
+			list.remove(this);
+			AnnotationAwareOrderComparator.sort(list);
+			return list;
+		}
+
+		@Override
+		public ModelAndView resolveException(HttpServletRequest request,
+				HttpServletResponse response, Object handler, Exception ex) {
+			if (this.resolvers == null) {
+				this.resolvers = extractResolvers();
+			}
+			for (HandlerExceptionResolver mapping : this.resolvers) {
+				ModelAndView mav = mapping.resolveException(request, response, handler,
+						ex);
+				if (mav != null) {
+					return mav;
+				}
+			}
+			return null;
+		}
+
 	}
 
 	/*
@@ -158,24 +291,12 @@ public class EndpointWebMvcChildContextConfiguration {
 	@ConditionalOnMissingClass("org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter")
 	protected static class EndpointHandlerMappingConfiguration {
 
-		@Autowired(required = false)
-		private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
-
-		@Bean
-		public HandlerMapping handlerMapping(MvcEndpoints endpoints,
-				ListableBeanFactory beanFactory) {
-			Set<MvcEndpoint> set = new HashSet<MvcEndpoint>(endpoints.getEndpoints());
-			set.addAll(beanFactory.getBeansOfType(MvcEndpoint.class).values());
-			EndpointHandlerMapping mapping = new EndpointHandlerMapping(set);
+		@Autowired
+		public void handlerMapping(MvcEndpoints endpoints,
+				ListableBeanFactory beanFactory, EndpointHandlerMapping mapping) {
 			// In a child context we definitely want to see the parent endpoints
 			mapping.setDetectHandlerMethodsInAncestorContexts(true);
 			postProcessMapping(beanFactory, mapping);
-			if (this.mappingCustomizers != null) {
-				for (EndpointHandlerMappingCustomizer customizer : this.mappingCustomizers) {
-					customizer.customize(mapping);
-				}
-			}
-			return mapping;
 		}
 
 		/**
@@ -196,7 +317,7 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Configuration
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
 	protected static class SecureEndpointHandlerMappingConfiguration extends
-			EndpointHandlerMappingConfiguration {
+	EndpointHandlerMappingConfiguration {
 
 		@Override
 		protected void postProcessMapping(ListableBeanFactory beanFactory,

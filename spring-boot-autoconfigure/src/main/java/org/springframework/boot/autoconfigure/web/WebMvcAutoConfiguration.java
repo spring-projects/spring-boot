@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -41,7 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
-import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -49,7 +46,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
@@ -103,30 +99,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
 public class WebMvcAutoConfiguration {
-
-	private static final String[] SERVLET_RESOURCE_LOCATIONS = { "/" };
-
-	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
-			"classpath:/META-INF/resources/", "classpath:/resources/",
-			"classpath:/static/", "classpath:/public/" };
-
-	private static final String[] RESOURCE_LOCATIONS;
-	static {
-		RESOURCE_LOCATIONS = new String[CLASSPATH_RESOURCE_LOCATIONS.length
-				+ SERVLET_RESOURCE_LOCATIONS.length];
-		System.arraycopy(SERVLET_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS, 0,
-				SERVLET_RESOURCE_LOCATIONS.length);
-		System.arraycopy(CLASSPATH_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS,
-				SERVLET_RESOURCE_LOCATIONS.length, CLASSPATH_RESOURCE_LOCATIONS.length);
-	}
-
-	private static final String[] STATIC_INDEX_HTML_RESOURCES;
-	static {
-		STATIC_INDEX_HTML_RESOURCES = new String[RESOURCE_LOCATIONS.length];
-		for (int i = 0; i < STATIC_INDEX_HTML_RESOURCES.length; i++) {
-			STATIC_INDEX_HTML_RESOURCES[i] = RESOURCE_LOCATIONS[i] + "index.html";
-		}
-	}
 
 	public static String DEFAULT_PREFIX = "";
 
@@ -267,7 +239,7 @@ public class WebMvcAutoConfiguration {
 			}
 			if (!registry.hasMappingForPattern("/**")) {
 				registerResourceChain(registry.addResourceHandler("/**")
-						.addResourceLocations(RESOURCE_LOCATIONS)
+						.addResourceLocations(resourceProperties.getStaticLocations())
 						.setCachePeriod(cachePeriod));
 			}
 		}
@@ -310,31 +282,19 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addViewControllers(ViewControllerRegistry registry) {
-			addStaticIndexHtmlViewControllers(registry);
-		}
-
-		private void addStaticIndexHtmlViewControllers(ViewControllerRegistry registry) {
-			for (String resource : STATIC_INDEX_HTML_RESOURCES) {
-				if (this.resourceLoader.getResource(resource).exists()) {
-					try {
-						logger.info("Adding welcome page: "
-								+ this.resourceLoader.getResource(resource).getURL());
-					}
-					catch (IOException ex) {
-						// Ignore
-					}
-					// Use forward: prefix so that no view resolution is done
-					registry.addViewController("/").setViewName("forward:index.html");
-					return;
-				}
+			Resource page = resourceProperties.getWelcomePage();
+			if (page != null) {
+				logger.info("Adding welcome page: " + page);
+				registry.addViewController("/").setViewName("forward:index.html");
 			}
 		}
 
 		@Configuration
 		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
-		public static class FaviconConfiguration implements ResourceLoaderAware {
+		public static class FaviconConfiguration {
 
-			private ResourceLoader resourceLoader;
+			@Autowired
+			private ResourceProperties resourceProperties = new ResourceProperties();
 
 			@Bean
 			public SimpleUrlHandlerMapping faviconHandlerMapping() {
@@ -345,26 +305,11 @@ public class WebMvcAutoConfiguration {
 				return mapping;
 			}
 
-			@Override
-			public void setResourceLoader(ResourceLoader resourceLoader) {
-				this.resourceLoader = resourceLoader;
-			}
-
 			@Bean
 			public ResourceHttpRequestHandler faviconRequestHandler() {
 				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
-				requestHandler.setLocations(getLocations());
+				requestHandler.setLocations(resourceProperties.getFaviconLocations());
 				return requestHandler;
-			}
-
-			private List<Resource> getLocations() {
-				List<Resource> locations = new ArrayList<Resource>(
-						CLASSPATH_RESOURCE_LOCATIONS.length + 1);
-				for (String location : CLASSPATH_RESOURCE_LOCATIONS) {
-					locations.add(this.resourceLoader.getResource(location));
-				}
-				locations.add(new ClassPathResource("/"));
-				return Collections.unmodifiableList(locations);
 			}
 
 		}
