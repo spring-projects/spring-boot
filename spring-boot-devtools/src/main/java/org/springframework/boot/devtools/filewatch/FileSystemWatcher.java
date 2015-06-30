@@ -135,7 +135,7 @@ public class FileSystemWatcher {
 	 * Start monitoring the source folder for changes.
 	 */
 	public synchronized void start() {
-		saveInitalSnapshots();
+		saveInitialSnapshots();
 		if (this.watchThread == null) {
 			this.watchThread = new Thread() {
 				@Override
@@ -161,7 +161,7 @@ public class FileSystemWatcher {
 		}
 	}
 
-	private void saveInitalSnapshots() {
+	private void saveInitialSnapshots() {
 		for (File folder : this.folders.keySet()) {
 			this.folders.put(folder, new FolderSnapshot(folder));
 		}
