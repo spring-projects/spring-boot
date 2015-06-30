@@ -195,7 +195,7 @@ public class Restarter {
 	 * @param enabled if restart support is enabled
 	 */
 	private void setEnabled(boolean enabled) {
-		this.enabled = false;
+		this.enabled = enabled;
 	}
 
 	/**
