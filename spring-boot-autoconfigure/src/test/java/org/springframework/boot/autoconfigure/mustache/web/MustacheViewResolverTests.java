@@ -20,12 +20,14 @@ import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheViewResolver;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
+import org.springframework.web.servlet.View;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link MustacheViewResolver}.
@@ -72,6 +74,14 @@ public class MustacheViewResolverTests {
 	@Test
 	public void resolveSpecificLocale() throws Exception {
 		assertNotNull(this.resolver.resolveViewName("foo", new Locale("de")));
+	}
+
+	@Test
+	public void setsContentType() throws Exception {
+		this.resolver.setContentType("application/octet-stream");
+		View view = this.resolver.resolveViewName("foo", null);
+		assertThat(view.getContentType(), equalTo("application/octet-stream"));
+
 	}
 
 }

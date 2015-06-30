@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mustache.web;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Locale;
 
 import org.springframework.beans.propertyeditors.LocaleEditor;
@@ -35,6 +36,7 @@ import com.samskivert.mustache.Template;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 1.2.2
  */
 public class MustacheViewResolver extends UrlBasedViewResolver {
@@ -44,7 +46,12 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	private String charset;
 
 	public MustacheViewResolver() {
-		setViewClass(MustacheView.class);
+		setViewClass(requiredViewClass());
+	}
+
+	@Override
+	protected Class<?> requiredViewClass() {
+		return MustacheView.class;
 	}
 
 	/**
@@ -67,29 +74,13 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 		if (resource == null) {
 			return null;
 		}
-		MustacheView view = new MustacheView(createTemplate(resource));
-		view.setApplicationContext(getApplicationContext());
-		view.setServletContext(getServletContext());
-		return view;
-	}
-
-	private Template createTemplate(Resource resource) throws IOException {
-		return this.charset == null ? this.compiler.compile(new InputStreamReader(
-				resource.getInputStream())) : this.compiler
-				.compile(new InputStreamReader(resource.getInputStream(), this.charset));
+		MustacheView mustacheView = (MustacheView) super.loadView(viewName, locale);
+		mustacheView.setTemplate(createTemplate(resource));
+		return mustacheView;
 	}
 
 	private Resource resolveResource(String viewName, Locale locale) {
 		return resolveFromLocale(viewName, getLocale(locale));
-	}
-
-	private String getLocale(Locale locale) {
-		if (locale == null) {
-			return "";
-		}
-		LocaleEditor localeEditor = new LocaleEditor();
-		localeEditor.setValue(locale);
-		return "_" + localeEditor.getAsText();
 	}
 
 	private Resource resolveFromLocale(String viewName, String locale) {
@@ -103,6 +94,26 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 			return resolveFromLocale(viewName, locale.substring(0, index));
 		}
 		return resource;
+	}
+
+	private String getLocale(Locale locale) {
+		if (locale == null) {
+			return "";
+		}
+		LocaleEditor localeEditor = new LocaleEditor();
+		localeEditor.setValue(locale);
+		return "_" + localeEditor.getAsText();
+	}
+
+	private Template createTemplate(Resource resource) throws IOException {
+		return this.compiler.compile(getReader(resource));
+	}
+
+	private Reader getReader(Resource resource) throws IOException {
+		if (this.charset != null) {
+			return new InputStreamReader(resource.getInputStream(), this.charset);
+		}
+		return new InputStreamReader(resource.getInputStream());
 	}
 
 }
