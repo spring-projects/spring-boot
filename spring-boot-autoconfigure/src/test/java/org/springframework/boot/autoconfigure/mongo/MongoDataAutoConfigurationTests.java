@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -48,6 +49,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link MongoDataAutoConfiguration}.
@@ -125,8 +127,17 @@ public class MongoDataAutoConfigurationTests {
 
 	@Test
 	public void interfaceFieldNamingStrategy() {
-		this.thrown.expect(UnsatisfiedDependencyException.class);
-		testFieldNamingStrategy(FieldNamingStrategy.class.getName(), null);
+		try {
+			testFieldNamingStrategy(FieldNamingStrategy.class.getName(), null);
+			fail("Create FieldNamingStrategy interface should fail");
+		}
+		// We seem to have an inconsistent exception, accept either
+		catch (UnsatisfiedDependencyException ex) {
+			// Expected
+		}
+		catch (BeanCreationException ex) {
+			// Expected
+		}
 	}
 
 	public void testFieldNamingStrategy(String strategy,
