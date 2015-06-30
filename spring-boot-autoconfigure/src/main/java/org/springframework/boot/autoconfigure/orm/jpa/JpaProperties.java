@@ -158,7 +158,7 @@ public class JpaProperties {
 		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
 				DataSource dataSource) {
 			Map<String, String> result = new HashMap<String, String>(existing);
-			if (!isAlreadyProvided(existing, "ejb.naming_strategy_delegator")) {
+			if (!existing.containsKey("hibernate." + "ejb.naming_strategy_delegator")) {
 				result.put("hibernate.ejb.naming_strategy",
 						getHibernateNamingStrategy(existing));
 			}
@@ -173,7 +173,7 @@ public class JpaProperties {
 		}
 
 		private String getHibernateNamingStrategy(Map<String, String> existing) {
-			if (!isAlreadyProvided(existing, "ejb.naming_strategy")
+			if (!existing.containsKey("hibernate." + "ejb.naming_strategy")
 					&& this.namingStrategy != null) {
 				return this.namingStrategy.getName();
 			}
@@ -184,10 +184,11 @@ public class JpaProperties {
 				DataSource dataSource) {
 			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto
 					: getDefaultDdlAuto(dataSource));
-			if (!isAlreadyProvided(existing, "hbm2ddl.auto") && !"none".equals(ddlAuto)) {
+			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
+					&& !"none".equals(ddlAuto)) {
 				return ddlAuto;
 			}
-			if (isAlreadyProvided(existing, "hbm2ddl.auto")) {
+			if (existing.containsKey("hibernate." + "hbm2ddl.auto")) {
 				return existing.get("hibernate.hbm2ddl.auto");
 			}
 			return "none";
@@ -198,10 +199,6 @@ public class JpaProperties {
 				return "create-drop";
 			}
 			return "none";
-		}
-
-		private boolean isAlreadyProvided(Map<String, String> existing, String key) {
-			return existing.containsKey("hibernate." + key);
 		}
 
 	}
