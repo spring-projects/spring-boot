@@ -288,7 +288,7 @@ public class WebMvcAutoConfiguration {
 			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 				chain.addResolver(getVersionResourceResolver(strategy));
 			}
-			if (properties.isHtml5AppCache()) {
+			if (properties.isHtmlApplicationCache()) {
 				chain.addTransformer(new AppCacheManifestTransformer());
 			}
 		}

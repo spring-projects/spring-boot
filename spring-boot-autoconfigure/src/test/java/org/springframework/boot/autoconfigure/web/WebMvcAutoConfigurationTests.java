@@ -236,7 +236,7 @@ public class WebMvcAutoConfigurationTests {
 				"spring.resources.chain.strategy.fixed.enabled:true",
 				"spring.resources.chain.strategy.fixed.version:test",
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js",
-				"spring.resources.chain.html5AppCache:true");
+				"spring.resources.chain.html-application-cache:true");
 		assertThat(getResourceResolvers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceTransformers("/webjars/**").size(), equalTo(2));
 		assertThat(getResourceResolvers("/**").size(), equalTo(2));

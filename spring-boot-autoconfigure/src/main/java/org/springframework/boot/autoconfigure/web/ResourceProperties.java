@@ -77,9 +77,9 @@ public class ResourceProperties {
 		private boolean cache = true;
 
 		/**
-		 * Enable HTML5 app cache manifest rewriting.
+		 * Enable HTML5 application cache manifest rewriting.
 		 */
-		private boolean html5AppCache = false;
+		private boolean htmlApplicationCache = false;
 
 		private final Strategy strategy = new Strategy();
 
@@ -103,12 +103,12 @@ public class ResourceProperties {
 			return this.strategy;
 		}
 
-		public boolean isHtml5AppCache() {
-			return this.html5AppCache;
+		public boolean isHtmlApplicationCache() {
+			return this.htmlApplicationCache;
 		}
 
-		public void setHtml5AppCache(boolean html5AppCache) {
-			this.html5AppCache = html5AppCache;
+		public void setHtmlApplicationCache(boolean htmlApplicationCache) {
+			this.htmlApplicationCache = htmlApplicationCache;
 		}
 
 	}
