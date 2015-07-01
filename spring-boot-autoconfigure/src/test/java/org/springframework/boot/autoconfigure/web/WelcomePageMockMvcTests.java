@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -38,6 +35,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for welcome page using {@link MockMvc} and {@link SpringJUnit4ClassRunner}.
@@ -69,7 +69,7 @@ public class WelcomePageMockMvcTests {
 	public void homePageCustomLocation() throws Exception {
 		this.wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
 				TestConfiguration.class).properties(
-						"spring.resources.staticLocations:classpath:/custom/").run();
+				"spring.resources.staticLocations:classpath:/custom/").run();
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		this.mockMvc.perform(get("/")).andExpect(status().isOk()).andReturn();
 	}
@@ -78,7 +78,7 @@ public class WelcomePageMockMvcTests {
 	public void homePageCustomLocationNoTrailingSlash() throws Exception {
 		this.wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
 				TestConfiguration.class).properties(
-						"spring.resources.staticLocations:classpath:/custom").run();
+				"spring.resources.staticLocations:classpath:/custom").run();
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		this.mockMvc.perform(get("/")).andExpect(status().isOk()).andReturn();
 	}
@@ -87,9 +87,9 @@ public class WelcomePageMockMvcTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Import({ ServerPropertiesAutoConfiguration.class,
-		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class,
-		ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected static @interface MinimalWebConfiguration {
 	}
 

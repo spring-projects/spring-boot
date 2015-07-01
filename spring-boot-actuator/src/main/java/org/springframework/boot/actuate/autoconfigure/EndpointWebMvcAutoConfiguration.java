@@ -86,10 +86,10 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
-	EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
-	ManagementServerPropertiesAutoConfiguration.class })
+		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		ManagementServerPropertiesAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
-SmartInitializingSingleton {
+		SmartInitializingSingleton {
 
 	private static Log logger = LogFactory.getLog(EndpointWebMvcAutoConfiguration.class);
 
@@ -119,7 +119,7 @@ SmartInitializingSingleton {
 		if (managementPort == ManagementServerPort.DIFFERENT
 				&& this.applicationContext instanceof EmbeddedWebApplicationContext
 				&& ((EmbeddedWebApplicationContext) this.applicationContext)
-				.getEmbeddedServletContainer() != null) {
+						.getEmbeddedServletContainer() != null) {
 			createChildManagementContext();
 		}
 		if (managementPort == ManagementServerPort.SAME
@@ -139,7 +139,7 @@ SmartInitializingSingleton {
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		CloseEventPropagationListener
-		.addIfPossible(this.applicationContext, childContext);
+				.addIfPossible(this.applicationContext, childContext);
 		try {
 			childContext.refresh();
 			managementContextResolver().setApplicationContext(childContext);
@@ -205,7 +205,7 @@ SmartInitializingSingleton {
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain filterChain)
-						throws ServletException, IOException {
+				throws ServletException, IOException {
 			if (this.properties == null) {
 				this.properties = this.applicationContext
 						.getBean(ManagementServerProperties.class);
@@ -224,7 +224,7 @@ SmartInitializingSingleton {
 	 * parent to a child.
 	 */
 	private static class CloseEventPropagationListener implements
-	ApplicationListener<ContextClosedEvent> {
+			ApplicationListener<ContextClosedEvent> {
 
 		private final ApplicationContext parentContext;
 
@@ -289,7 +289,7 @@ SmartInitializingSingleton {
 			return ((port == null)
 					|| (serverProperties.getPort() == null && port.equals(8080))
 					|| (port != 0 && port.equals(serverProperties.getPort())) ? SAME
-							: DIFFERENT);
+					: DIFFERENT);
 		}
 
 	}
@@ -329,9 +329,11 @@ SmartInitializingSingleton {
 			if ((managementPort == null)
 					|| (serverPort == null && managementPort.equals(8080))
 					|| (managementPort != 0 && managementPort.equals(serverPort))) {
-				return ConditionOutcome.match("The main context is the management context");
+				return ConditionOutcome
+						.match("The main context is the management context");
 			}
-			return ConditionOutcome.noMatch("The main context is not the management context");
+			return ConditionOutcome
+					.noMatch("The main context is not the management context");
 		}
 
 		private <T> T getBeanCarefully(ConditionContext context, Class<T> type) {
