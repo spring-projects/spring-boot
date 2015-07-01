@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,15 +30,14 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for welcome page using {@link MockMvc} and {@link SpringJUnit4ClassRunner}.
@@ -67,7 +69,7 @@ public class WelcomePageMockMvcTests {
 	public void homePageCustomLocation() throws Exception {
 		this.wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
 				TestConfiguration.class).properties(
-				"spring.resources.staticLocations:classpath:/custom/").run();
+						"spring.resources.staticLocations:classpath:/custom/").run();
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		this.mockMvc.perform(get("/")).andExpect(status().isOk()).andReturn();
 	}
@@ -76,7 +78,7 @@ public class WelcomePageMockMvcTests {
 	public void homePageCustomLocationNoTrailingSlash() throws Exception {
 		this.wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
 				TestConfiguration.class).properties(
-				"spring.resources.staticLocations:classpath:/custom").run();
+						"spring.resources.staticLocations:classpath:/custom").run();
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		this.mockMvc.perform(get("/")).andExpect(status().isOk()).andReturn();
 	}
@@ -84,18 +86,21 @@ public class WelcomePageMockMvcTests {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
-	@Import({ EmbeddedServletContainerAutoConfiguration.EmbeddedTomcat.class,
-			EmbeddedServletContainerAutoConfiguration.class,
-			ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@Import({ ServerPropertiesAutoConfiguration.class,
+		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class,
+		ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected static @interface MinimalWebConfiguration {
 	}
 
 	@Configuration
 	@MinimalWebConfiguration
 	public static class TestConfiguration {
+
+		@Bean
+		public MockEmbeddedServletContainerFactory embeddedServletContainerFactory() {
+			return new MockEmbeddedServletContainerFactory();
+		}
 
 		// For manual testing
 		public static void main(String[] args) {
