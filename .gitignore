@@ -10,6 +10,7 @@
 .settings
 .metadata
 .factorypath
+.recommenders
 bin
 build
 lib/
