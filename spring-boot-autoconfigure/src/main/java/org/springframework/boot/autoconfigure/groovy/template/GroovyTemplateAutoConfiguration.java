@@ -79,7 +79,7 @@ public class GroovyTemplateAutoConfiguration {
 		public void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(
-						this.properties.getPrefix());
+						this.properties.getResourceLoaderPath());
 				Assert.state(location.exists(this.applicationContext),
 						"Cannot find template location: " + location
 								+ " (please add some templates, check your Groovy "
@@ -115,7 +115,7 @@ public class GroovyTemplateAutoConfiguration {
 		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
 		public GroovyMarkupConfigurer groovyMarkupConfigurer() {
 			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
-			configurer.setResourceLoaderPath(this.properties.getPrefix());
+			configurer.setResourceLoaderPath(this.properties.getResourceLoaderPath());
 			configurer.setCacheTemplates(this.properties.isCache());
 			if (this.templateEngine != null) {
 				configurer.setTemplateEngine(this.templateEngine);
@@ -139,19 +139,8 @@ public class GroovyTemplateAutoConfiguration {
 		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
 		public GroovyMarkupViewResolver groovyMarkupViewResolver() {
 			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();
-			configureViewResolver(resolver);
+			this.properties.applyToViewResolver(resolver);
 			return resolver;
-		}
-
-		private void configureViewResolver(UrlBasedViewResolver resolver) {
-			resolver.setSuffix(this.properties.getSuffix());
-			resolver.setCache(this.properties.isCache());
-			resolver.setContentType(this.properties.getContentType());
-			resolver.setViewNames(this.properties.getViewNames());
-			resolver.setRequestContextAttribute("spring");
-			// This resolver acts as a fallback resolver (e.g. like a
-			// InternalResourceViewResolver) so it needs to have low precedence
-			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 6);
 		}
 
 	}
