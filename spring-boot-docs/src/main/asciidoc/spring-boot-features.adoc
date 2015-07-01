@@ -1175,12 +1175,11 @@ Spring decides not to handle it. Most of the time this will not happen (unless y
 the default MVC configuration) because Spring will always be able to handle requests
 through the `DispatcherServlet`.
 
-You can customize the static resource locations using
-`spring.resources.staticLocations` (replacing the default values with
-a list of directory locations). If you do this the default welcome
-page detection will switch to your custom locations, so if there is an
-`index.html` in any of your locations on startup, it will be the home
-page of the application.
+You can customize the static resource locations using `spring.resources.staticLocations`
+(replacing the default values with a list of directory locations). If you do this the
+default welcome page detection will switch to your custom locations, so if there is an
+`index.html` in any of your locations on startup, it will be the home page of the
+application.
 
 In addition to the '`standard`' static resource locations above, a special case is made
 for http://www.webjars.org/[Webjars content]. Any resources with a path in `+/webjars/**+`

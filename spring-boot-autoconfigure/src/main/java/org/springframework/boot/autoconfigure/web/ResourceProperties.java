@@ -75,8 +75,8 @@ public class ResourceProperties implements ResourceLoaderAware {
 	private final Chain chain = new Chain();
 
 	/**
-	 * Locations of static resources. Defaults to classpath:[/META-INF/resources/, /resources/, /static/, /public/]
-	 * plus context:/ (the root of the servlet context).
+	 * Locations of static resources. Defaults to classpath:[/META-INF/resources/,
+	 * /resources/, /static/, /public/] plus context:/ (the root of the servlet context).
 	 */
 	private String[] staticLocations = RESOURCE_LOCATIONS;
 
@@ -267,9 +267,9 @@ public class ResourceProperties implements ResourceLoaderAware {
 	}
 
 	private String[] getStaticWelcomePageLocations() {
-		String[] result = new String[staticLocations.length];
+		String[] result = new String[this.staticLocations.length];
 		for (int i = 0; i < result.length; i++) {
-			String location = staticLocations[i];
+			String location = this.staticLocations[i];
 			if (!location.endsWith("/")) {
 				location = location + "/";
 			}
@@ -281,7 +281,7 @@ public class ResourceProperties implements ResourceLoaderAware {
 	public List<Resource> getFaviconLocations() {
 		List<Resource> locations = new ArrayList<Resource>(
 				CLASSPATH_RESOURCE_LOCATIONS.length + 1);
-		if (resourceLoader != null) {
+		if (this.resourceLoader != null) {
 			for (String location : CLASSPATH_RESOURCE_LOCATIONS) {
 				locations.add(this.resourceLoader.getResource(location));
 			}

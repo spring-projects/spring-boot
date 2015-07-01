@@ -54,7 +54,7 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER - 1;
 
 	/**
-	 * Management endpoint HTTP port. Use the same port as the applicationby default.
+	 * Management endpoint HTTP port. Use the same port as the application by default.
 	 */
 	private Integer port;
 

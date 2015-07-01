@@ -238,8 +238,10 @@ public class WebMvcAutoConfiguration {
 						.setCachePeriod(cachePeriod));
 			}
 			if (!registry.hasMappingForPattern("/**")) {
-				registerResourceChain(registry.addResourceHandler("/**")
-						.addResourceLocations(resourceProperties.getStaticLocations())
+				registerResourceChain(registry
+						.addResourceHandler("/**")
+						.addResourceLocations(
+								this.resourceProperties.getStaticLocations())
 						.setCachePeriod(cachePeriod));
 			}
 		}
@@ -282,7 +284,7 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addViewControllers(ViewControllerRegistry registry) {
-			Resource page = resourceProperties.getWelcomePage();
+			Resource page = this.resourceProperties.getWelcomePage();
 			if (page != null) {
 				logger.info("Adding welcome page: " + page);
 				registry.addViewController("/").setViewName("forward:index.html");
@@ -308,7 +310,8 @@ public class WebMvcAutoConfiguration {
 			@Bean
 			public ResourceHttpRequestHandler faviconRequestHandler() {
 				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
-				requestHandler.setLocations(resourceProperties.getFaviconLocations());
+				requestHandler
+						.setLocations(this.resourceProperties.getFaviconLocations());
 				return requestHandler;
 			}
 

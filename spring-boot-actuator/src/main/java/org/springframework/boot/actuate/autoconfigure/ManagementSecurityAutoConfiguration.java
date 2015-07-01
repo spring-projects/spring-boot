@@ -26,7 +26,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration.ManagementContextResolver;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
@@ -259,10 +258,10 @@ public class ManagementSecurityAutoConfiguration {
 			if (!this.management.getSecurity().isEnabled()) {
 				return null;
 			}
-			String path = management.getContextPath();
+			String path = this.management.getContextPath();
 			if (StringUtils.hasText(path)) {
 				AntPathRequestMatcher matcher = new AntPathRequestMatcher(
-						server.getPath(path) + "/**");
+						this.server.getPath(path) + "/**");
 				return matcher;
 			}
 			return new EndpointPathRequestMatcher();
@@ -297,30 +296,36 @@ public class ManagementSecurityAutoConfiguration {
 
 			@Override
 			public boolean matches(HttpServletRequest request) {
-				if (endpointHandlerMapping == null && contextResolver != null) {
-					ApplicationContext context = contextResolver.getApplicationContext();
+				EndpointHandlerMapping endpointMapping = ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping;
+				if (endpointMapping == null
+						&& ManagementWebSecurityConfigurerAdapter.this.contextResolver != null) {
+					ApplicationContext context = ManagementWebSecurityConfigurerAdapter.this.contextResolver
+							.getApplicationContext();
 					if (context != null
 							&& context.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
-						endpointHandlerMapping = context
+						ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping = context
 								.getBean(EndpointHandlerMapping.class);
 					}
 				}
-				if (endpointHandlerMapping == null) {
-					endpointHandlerMapping = new EndpointHandlerMapping(
+				if (endpointMapping == null) {
+					ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping = new EndpointHandlerMapping(
 							Collections.<MvcEndpoint> emptySet());
 				}
-				if (delegate == null) {
+				if (this.delegate == null) {
 					List<RequestMatcher> pathMatchers = new ArrayList<RequestMatcher>();
-					String[] paths = !sensitive ? getEndpointPaths(
-							endpointHandlerMapping, false)
-							: getEndpointPaths(endpointHandlerMapping);
+					String[] paths = !this.sensitive ? getEndpointPaths(
+							endpointMapping,
+							false)
+							: getEndpointPaths(endpointMapping);
 					for (String path : paths) {
-						pathMatchers.add(new AntPathRequestMatcher(server.getPath(path)));
+						pathMatchers.add(new AntPathRequestMatcher(
+								ManagementWebSecurityConfigurerAdapter.this.server
+										.getPath(path)));
 					}
-					delegate = pathMatchers.isEmpty() ? AnyRequestMatcher.INSTANCE
+					this.delegate = pathMatchers.isEmpty() ? AnyRequestMatcher.INSTANCE
 							: new OrRequestMatcher(pathMatchers);
 				}
-				return delegate.matches(request);
+				return this.delegate.matches(request);
 			}
 		}
 

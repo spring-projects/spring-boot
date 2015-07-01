@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.web;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -37,6 +34,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * Tests for welcome page using {@link MockMvc} and {@link SpringJUnit4ClassRunner}.
  *
@@ -50,14 +50,14 @@ public class WelcomePageMockMvcTests {
 
 	@After
 	public void close() {
-		if (wac != null) {
-			wac.close();
+		if (this.wac != null) {
+			this.wac.close();
 		}
 	}
 
 	@Test
 	public void homePageNotFound() throws Exception {
-		wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
+		this.wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
 				TestConfiguration.class).run();
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		this.mockMvc.perform(get("/")).andExpect(status().isNotFound()).andReturn();
@@ -65,7 +65,7 @@ public class WelcomePageMockMvcTests {
 
 	@Test
 	public void homePageCustomLocation() throws Exception {
-		wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
+		this.wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
 				TestConfiguration.class).properties(
 				"spring.resources.staticLocations:classpath:/custom/").run();
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
@@ -74,8 +74,9 @@ public class WelcomePageMockMvcTests {
 
 	@Test
 	public void homePageCustomLocationNoTrailingSlash() throws Exception {
-		wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
-				TestConfiguration.class).properties("spring.resources.staticLocations:classpath:/custom").run();
+		this.wac = (ConfigurableWebApplicationContext) new SpringApplicationBuilder(
+				TestConfiguration.class).properties(
+				"spring.resources.staticLocations:classpath:/custom").run();
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 		this.mockMvc.perform(get("/")).andExpect(status().isOk()).andReturn();
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties.Security;
 import org.springframework.boot.actuate.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
@@ -45,12 +46,14 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 
 /**
- * @author Dave Syer
+ * Configuration to expose {@link Endpoint} instances over Spring MVC.
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 @Configuration
 @EnableConfigurationProperties({ HealthMvcEndpointProperties.class,
-	EndpointCorsProperties.class })
+		EndpointCorsProperties.class })
 public class EndpointWebMvcConfiguration {
 
 	@Autowired
@@ -75,7 +78,8 @@ public class EndpointWebMvcConfiguration {
 		CorsConfiguration corsConfiguration = getCorsConfiguration(this.corsProperties);
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
 				corsConfiguration);
-		boolean disabled = this.managementServerProperties.getPort()!=null && this.managementServerProperties.getPort()==-1;
+		boolean disabled = this.managementServerProperties.getPort() != null
+				&& this.managementServerProperties.getPort() == -1;
 		mapping.setDisabled(disabled);
 		if (!disabled) {
 			mapping.setPrefix(this.managementServerProperties.getContextPath());

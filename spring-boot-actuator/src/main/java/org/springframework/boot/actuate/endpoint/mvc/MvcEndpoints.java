@@ -52,8 +52,9 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Collection<MvcEndpoint> existing = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-				this.applicationContext, MvcEndpoint.class).values();
+		Collection<MvcEndpoint> existing = BeanFactoryUtils
+				.beansOfTypeIncludingAncestors(this.applicationContext, MvcEndpoint.class)
+				.values();
 		this.endpoints.addAll(existing);
 		this.customTypes = findEndpointClasses(existing);
 		@SuppressWarnings("rawtypes")

@@ -37,7 +37,7 @@ import org.springframework.web.context.WebApplicationContext;
  * main context.
  *
  * @author Dave Syer
- * @since 1.3.0
+ * @see ConditionalOnManagementMvcContext
  */
 class OnManagementMvcCondition extends SpringBootCondition {
 
@@ -74,18 +74,17 @@ class OnManagementMvcCondition extends SpringBootCondition {
 		if ((managementPort == null)
 				|| (serverPort == null && managementPort.equals(8080))
 				|| (managementPort != 0 && managementPort.equals(serverPort))) {
-			return new ConditionOutcome(true,
-					"The main context is the management context");
+			return ConditionOutcome.match("The main context is the management context");
 		}
-		return new ConditionOutcome(false,
-				"The main context is not the management context");
+		return ConditionOutcome.noMatch("The main context is not the management context");
 	}
 
 	private <T> T getBeanCarefully(ConditionContext context, Class<T> type) {
 		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 				context.getBeanFactory(), type, false, false);
 		if (names.length == 1) {
-			BeanDefinition original = findBeanDefinition(context.getBeanFactory(), names[0]);
+			BeanDefinition original = findBeanDefinition(context.getBeanFactory(),
+					names[0]);
 			if (original instanceof RootBeanDefinition) {
 				DefaultListableBeanFactory temp = new DefaultListableBeanFactory();
 				temp.setParentBeanFactory(context.getBeanFactory());
@@ -100,16 +99,19 @@ class OnManagementMvcCondition extends SpringBootCondition {
 		return null;
 	}
 
-	private BeanDefinition findBeanDefinition(ConfigurableListableBeanFactory beanFactory, String name) {
+	private BeanDefinition findBeanDefinition(
+			ConfigurableListableBeanFactory beanFactory, String name) {
 		BeanDefinition original = null;
-		while (beanFactory!=null && original==null){
+		while (beanFactory != null && original == null) {
 			if (beanFactory.containsLocalBean(name)) {
 				original = beanFactory.getBeanDefinition(name);
-			} else {
+			}
+			else {
 				BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
 				if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
 					beanFactory = (ConfigurableListableBeanFactory) parentBeanFactory;
-				} else {
+				}
+				else {
 					beanFactory = null;
 				}
 			}
