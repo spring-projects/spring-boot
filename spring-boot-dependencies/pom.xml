@@ -570,6 +570,11 @@
 				<version>${json-path.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path-assert</artifactId>
+				<version>${json-path.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.samskivert</groupId>
 				<artifactId>jmustache</artifactId>
 				<version>${jmustache.version}</version>
