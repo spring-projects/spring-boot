@@ -75,7 +75,7 @@
 		<hibernate-validator.version>5.1.3.Final</hibernate-validator.version>
 		<hikaricp.version>2.2.5</hikaricp.version>
 		<hornetq.version>2.4.7.Final</hornetq.version>
-		<hsqldb.version>2.3.2</hsqldb.version>
+		<hsqldb.version>2.3.3</hsqldb.version>
 		<httpasyncclient.version>4.0.2</httpasyncclient.version>
 		<httpclient.version>4.3.6</httpclient.version>
 		<jackson.version>2.4.6</jackson.version>
