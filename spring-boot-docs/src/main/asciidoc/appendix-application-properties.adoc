@@ -205,8 +205,9 @@ content into your application; rather pick only the properties that you need.
 	spring.groovy.template.configuration.*= # See GroovyMarkupConfigurer
 	spring.groovy.template.content-type=text/html
 	spring.groovy.template.enabled=true # enable MVC view resolution
-	spring.groovy.template.prefix=classpath:/templates/
-	spring.groovy.template.suffix=.tpl
+	spring.groovy.template.prefix=
+	spring.groovy.template.resource-loader-path=classpath:/templates/
+    spring.groovy.template.suffix=.tpl
 	spring.groovy.template.view-names= # whitelist of view names that can be resolved
 
 	# VELOCITY TEMPLATES ({sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[VelocityAutoConfiguration])
