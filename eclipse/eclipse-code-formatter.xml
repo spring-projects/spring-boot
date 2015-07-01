@@ -17,7 +17,7 @@
 <setting id="org.eclipse.jdt.core.formatter.insert_space_between_empty_parens_in_annotation_type_member_declaration" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_before_comma_in_method_declaration_throws" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.comment.format_javadoc_comments" value="true"/>
-<setting id="org.eclipse.jdt.core.formatter.indentation.size" value="8"/>
+<setting id="org.eclipse.jdt.core.formatter.indentation.size" value="4"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_after_postfix_operator" value="do not insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_after_comma_in_for_increments" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_after_comma_in_type_arguments" value="insert"/>
