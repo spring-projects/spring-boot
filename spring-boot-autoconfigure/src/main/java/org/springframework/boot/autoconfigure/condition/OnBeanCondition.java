@@ -55,6 +55,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Jakub Kubrynski
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class OnBeanCondition extends SpringBootCondition implements ConfigurationCondition {
@@ -134,6 +135,10 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		boolean considerHierarchy = beans.getStrategy() == SearchStrategy.ALL;
 		for (String type : beans.getTypes()) {
 			beanNames.addAll(getBeanNamesForType(beanFactory, type,
+					context.getClassLoader(), considerHierarchy));
+		}
+		for (String ignoredType : beans.getIgnoredTypes()) {
+			beanNames.removeAll(getBeanNamesForType(beanFactory, ignoredType,
 					context.getClassLoader(), considerHierarchy));
 		}
 		for (String annotation : beans.getAnnotations()) {
@@ -243,6 +248,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 		private final List<String> annotations = new ArrayList<String>();
 
+		private final List<String> ignoredTypes = new ArrayList<String>();
+
 		private final SearchStrategy strategy;
 
 		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
@@ -254,6 +261,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			collect(attributes, "value", this.types);
 			collect(attributes, "type", this.types);
 			collect(attributes, "annotation", this.annotations);
+			collect(attributes, "ignored", this.ignoredTypes);
+			collect(attributes, "ignoredType", this.ignoredTypes);
 			if (this.types.isEmpty() && this.names.isEmpty()) {
 				addDeducedBeanType(context, metadata, this.types);
 			}
@@ -348,6 +357,10 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 		public List<String> getAnnotations() {
 			return this.annotations;
+		}
+
+		public List<String> getIgnoredTypes() {
+			return this.ignoredTypes;
 		}
 
 		@Override
