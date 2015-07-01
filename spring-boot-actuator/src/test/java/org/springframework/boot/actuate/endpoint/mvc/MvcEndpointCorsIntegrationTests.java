@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
@@ -23,6 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfigur
 import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -32,10 +37,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration tests for the actuator endpoints' CORS support
@@ -50,7 +51,7 @@ public class MvcEndpointCorsIntegrationTests {
 	public void createContext() {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(HttpMessageConvertersAutoConfiguration.class,
+		this.context.register(JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -62,7 +63,7 @@ public class MvcEndpointCorsIntegrationTests {
 		createMockMvc().perform(
 				options("/beans").header("Origin", "foo.example.com").header(
 						HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).andExpect(
-				header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
+								header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
 	}
 
 	@Test
@@ -72,7 +73,7 @@ public class MvcEndpointCorsIntegrationTests {
 		createMockMvc().perform(
 				options("/beans").header("Origin", "bar.example.com").header(
 						HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).andExpect(
-				status().isForbidden());
+								status().isForbidden());
 		performAcceptedCorsRequest();
 	}
 
@@ -99,8 +100,8 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allowed-origins:foo.example.com");
 		createMockMvc().perform(
 				options("/beans").header("Origin", "foo.example.com")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
 				.andExpect(status().isForbidden());
 	}
 
@@ -110,15 +111,15 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allowed-origins:foo.example.com",
 				"endpoints.cors.allowed-headers:Alpha,Bravo");
 		createMockMvc()
-				.perform(
-						options("/beans")
-								.header("Origin", "foo.example.com")
-								.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
-								.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
-										"Alpha"))
-				.andExpect(status().isOk())
-				.andExpect(
-						header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Alpha"));
+		.perform(
+				options("/beans")
+				.header("Origin", "foo.example.com")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+						"Alpha"))
+						.andExpect(status().isOk())
+						.andExpect(
+								header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Alpha"));
 	}
 
 	@Test
@@ -128,7 +129,7 @@ public class MvcEndpointCorsIntegrationTests {
 		createMockMvc().perform(
 				options("/health").header(HttpHeaders.ORIGIN, "foo.example.com").header(
 						HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD")).andExpect(
-				status().isForbidden());
+								status().isForbidden());
 	}
 
 	@Test
@@ -137,10 +138,10 @@ public class MvcEndpointCorsIntegrationTests {
 				"endpoints.cors.allowed-origins:foo.example.com",
 				"endpoints.cors.allowed-methods:GET,HEAD");
 		createMockMvc()
-				.perform(
-						options("/health")
-								.header(HttpHeaders.ORIGIN, "foo.example.com")
-								.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD"))
+		.perform(
+				options("/health")
+				.header(HttpHeaders.ORIGIN, "foo.example.com")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD"))
 				.andExpect(status().isOk())
 				.andExpect(
 						header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
@@ -172,7 +173,7 @@ public class MvcEndpointCorsIntegrationTests {
 		createMockMvc().perform(
 				options("/jolokia").header("Origin", "bar.example.com").header(
 						HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).andExpect(
-				status().isForbidden());
+								status().isForbidden());
 		performAcceptedCorsRequest("/jolokia");
 	}
 
@@ -189,10 +190,10 @@ public class MvcEndpointCorsIntegrationTests {
 		return createMockMvc()
 				.perform(
 						options(url).header(HttpHeaders.ORIGIN, "foo.example.com")
-								.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-				.andExpect(
-						header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
-								"foo.example.com")).andExpect(status().isOk());
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+						.andExpect(
+								header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
+										"foo.example.com")).andExpect(status().isOk());
 	}
 
 }

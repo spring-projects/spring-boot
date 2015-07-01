@@ -43,6 +43,10 @@
 		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-hateoas</module>
 		<module>spring-boot-sample-hornetq</module>
+		<module>spring-boot-sample-hypermedia</module>
+		<module>spring-boot-sample-hypermedia-gson</module>
+		<module>spring-boot-sample-hypermedia-jpa</module>
+		<module>spring-boot-sample-hypermedia-ui</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jersey</module>
 		<module>spring-boot-sample-jersey1</module>

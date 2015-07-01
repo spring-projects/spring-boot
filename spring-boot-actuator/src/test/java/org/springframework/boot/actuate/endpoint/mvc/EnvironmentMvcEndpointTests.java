@@ -16,6 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +30,9 @@ import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfigur
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpointTests.TestConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -35,13 +44,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link EnvironmentMvcEndpoint}
@@ -70,13 +72,13 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void home() throws Exception {
 		this.mvc.perform(get("/env")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("systemProperties")));
+		.andExpect(content().string(containsString("systemProperties")));
 	}
 
 	@Test
 	public void sub() throws Exception {
 		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
-				.andExpect(content().string(equalToIgnoringCase("bar")));
+		.andExpect(content().string(equalToIgnoringCase("bar")));
 	}
 
 	@Test
@@ -88,13 +90,15 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void regex() throws Exception {
 		this.mvc.perform(get("/env/foo.*")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("\"foo\":\"bar\"")))
-				.andExpect(content().string(containsString("\"fool\":\"baz\"")));
+		.andExpect(content().string(containsString("\"foo\":\"bar\"")))
+		.andExpect(content().string(containsString("\"fool\":\"baz\"")));
 	}
 
-	@Import({ EndpointWebMvcAutoConfiguration.class,
-			ManagementServerPropertiesAutoConfiguration.class })
-	@EnableWebMvc
+	@Import({ JacksonAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class,
+		WebMvcAutoConfiguration.class,
+		EndpointWebMvcAutoConfiguration.class,
+		ManagementServerPropertiesAutoConfiguration.class })
 	@Configuration
 	public static class TestConfiguration {
 
