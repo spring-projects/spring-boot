@@ -61,6 +61,9 @@ class JmsAnnotationDrivenConfiguration {
 		if (this.transactionManager != null) {
 			factory.setTransactionManager(this.transactionManager);
 		}
+		else {
+			factory.setSessionTransacted(true);
+		}
 		if (this.destinationResolver != null) {
 			factory.setDestinationResolver(this.destinationResolver);
 		}
