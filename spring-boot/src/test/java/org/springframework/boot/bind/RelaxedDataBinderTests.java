@@ -525,6 +525,18 @@ public class RelaxedDataBinderTests {
 		assertThat(target.getFoo(), equalTo("b"));
 	}
 
+	@Test
+	public void testMixed() throws Exception {
+		// gh-3385
+		VanillaTarget target = new VanillaTarget();
+		RelaxedDataBinder binder = getBinder(target, "test");
+		MutablePropertyValues values = new MutablePropertyValues();
+		values.add("test.FOO_BAZ", "boo");
+		values.add("test.foo-baz", "bar");
+		binder.bind(values);
+		assertEquals("boo", target.getFooBaz());
+	}
+
 	private void doTestBindCaseInsensitiveEnums(VanillaTarget target) throws Exception {
 		BindingResult result = bind(target, "bingo: THIS");
 		assertThat(result.getErrorCount(), equalTo(0));
@@ -555,16 +567,6 @@ public class RelaxedDataBinderTests {
 		return bind(target, values, null);
 	}
 
-	private BindingResult bind(DataBinder binder, Object target, String values)
-			throws Exception {
-		Properties properties = PropertiesLoaderUtils
-				.loadProperties(new ByteArrayResource(values.getBytes()));
-		binder.bind(new MutablePropertyValues(properties));
-		binder.validate();
-
-		return binder.getBindingResult();
-	}
-
 	private BindingResult bind(Object target, String values, String namePrefix)
 			throws Exception {
 		return bind(getBinder(target, namePrefix), target, values);
@@ -578,6 +580,16 @@ public class RelaxedDataBinderTests {
 		binder.setValidator(validatorFactoryBean);
 		binder.setConversionService(this.conversionService);
 		return binder;
+	}
+
+	private BindingResult bind(DataBinder binder, Object target, String values)
+			throws Exception {
+		Properties properties = PropertiesLoaderUtils
+				.loadProperties(new ByteArrayResource(values.getBytes()));
+		binder.bind(new MutablePropertyValues(properties));
+		binder.validate();
+
+		return binder.getBindingResult();
 	}
 
 	@Documented

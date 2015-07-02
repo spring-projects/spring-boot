@@ -20,10 +20,12 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -139,10 +141,14 @@ public class RelaxedDataBinder extends DataBinder {
 		wrapper.setConversionService(new RelaxedConversionService(getConversionService()));
 		wrapper.setAutoGrowNestedPaths(true);
 		List<PropertyValue> sortedValues = new ArrayList<PropertyValue>();
+		Set<String> modifiedNames = new HashSet<String>();
 		List<String> sortedNames = getSortedPropertyNames(propertyValues);
 		for (String name : sortedNames) {
-			sortedValues.add(modifyProperty(wrapper,
-					propertyValues.getPropertyValue(name)));
+			PropertyValue propertyValue = propertyValues.getPropertyValue(name);
+			PropertyValue modifiedProperty = modifyProperty(wrapper, propertyValue);
+			if (modifiedNames.add(modifiedProperty.getName())) {
+				sortedValues.add(modifiedProperty);
+			}
 		}
 		return new MutablePropertyValues(sortedValues);
 	}
