@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.activation.MimeType;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
@@ -69,7 +70,19 @@ public class MailSenderAutoConfiguration {
 		else {
 			applyProperties(sender);
 		}
+		validateConnection(sender);
 		return sender;
+	}
+
+	private void validateConnection(JavaMailSenderImpl sender) {
+		if (this.properties.isTestConnection()) {
+			try {
+				sender.testConnection();
+			} catch (MessagingException ex) {
+				throw new IllegalStateException(
+						String.format("Unable to ping to %s", this.properties.getHost()), ex);
+			}
+		}
 	}
 
 	private void applyProperties(JavaMailSenderImpl sender) {
