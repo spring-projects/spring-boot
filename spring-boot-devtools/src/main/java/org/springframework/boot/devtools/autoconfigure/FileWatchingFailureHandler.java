@@ -67,7 +67,6 @@ class FileWatchingFailureHandler implements FailureHandler {
 
 		@Override
 		public void onChange(Set<ChangedFiles> changeSet) {
-			System.out.println("Changes");
 			this.latch.countDown();
 		}
 
