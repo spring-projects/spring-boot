@@ -153,6 +153,9 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertySourcesPropertyResolver resolver,
 			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
 		for (String propertyName : exacts) {
+			if (!source.containsProperty(propertyName)) {
+				continue;
+			}
 			Object value = null;
 			try {
 				value = resolver.getProperty(propertyName, Object.class);

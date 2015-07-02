@@ -58,6 +58,16 @@ public class PropertySourcesBindingTests {
 	}
 
 	@Test
+	public void overridingOfPropertiesOrderOfAtPropertySourcesWherePropertyIsCapitalized() {
+		assertThat(this.properties.getSpam(), is("BUCKET"));
+	}
+
+	@Test
+	public void overridingOfPropertiesOrderOfAtPropertySourcesWherePropertyNamesDiffer() {
+		assertThat(this.properties.getTheName(), is("NAME"));
+	}
+
+	@Test
 	public void overridingOfPropertiesAndBindToAtValue() {
 		assertThat(this.foo, is(this.properties.getFoo()));
 	}
@@ -93,6 +103,10 @@ public class PropertySourcesBindingTests {
 
 		private String bar;
 
+		private String spam;
+
+		private String theName;
+
 		public String getBar() {
 			return this.bar;
 		}
@@ -107,6 +121,22 @@ public class PropertySourcesBindingTests {
 
 		public void setFoo(String foo) {
 			this.foo = foo;
+		}
+
+		public String getSpam() {
+			return this.spam;
+		}
+
+		public void setSpam(String spam) {
+			this.spam = spam;
+		}
+
+		public String getTheName() {
+			return this.theName;
+		}
+
+		public void setTheName(String theName) {
+			this.theName = theName;
 		}
 	}
 
