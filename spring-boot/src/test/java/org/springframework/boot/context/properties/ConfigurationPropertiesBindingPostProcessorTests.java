@@ -236,6 +236,29 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 	}
 
+	@Test
+	public void relaxedPropertyNamesSame() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test1");
+		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test2");
+		this.context.register(RelaxedPropertyNames.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar(),
+				equalTo("test2"));
+	}
+
+	@Test
+	public void relaxedPropertyNamesMixed() throws Exception {
+		// gh-3385
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.foo-bar:test1");
+		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test2");
+		this.context.register(RelaxedPropertyNames.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar(),
+				equalTo("test2"));
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class TestConfigurationWithValidatingSetter {
@@ -465,6 +488,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	public static class ConfigurationPropertiesWithFactoryBean {
 
 		public static boolean factoryBeanInit;
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class RelaxedPropertyNames {
+
+		private String fooBar;
+
+		public String getFooBar() {
+			return this.fooBar;
+		}
+
+		public void setFooBar(String fooBar) {
+			this.fooBar = fooBar;
+		}
 
 	}
 

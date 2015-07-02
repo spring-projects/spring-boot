@@ -139,6 +139,8 @@ public class PropertiesConfigurationFactoryTests {
 
 		private String spring_foo_baz;
 
+		private String fooBar;
+
 		public String getSpringFooBaz() {
 			return this.spring_foo_baz;
 		}
@@ -161,6 +163,14 @@ public class PropertiesConfigurationFactoryTests {
 
 		public void setBar(String bar) {
 			this.bar = bar;
+		}
+
+		public String getFooBar() {
+			return this.fooBar;
+		}
+
+		public void setFooBar(String fooBar) {
+			this.fooBar = fooBar;
 		}
 
 	}
