@@ -54,6 +54,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link JmsAutoConfiguration}.
  *
  * @author Greg Turnquist
+ * @author Stephane Nicoll
  */
 public class JmsAutoConfigurationTests {
 
@@ -150,11 +151,13 @@ public class JmsAutoConfigurationTests {
 				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
 		assertEquals(DefaultJmsListenerContainerFactory.class,
 				jmsListenerContainerFactory.getClass());
-		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory)
-				jmsListenerContainerFactory).createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertFalse("wrong session transacted flag with JTA transactions", listenerContainer.isSessionTransacted());
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertFalse("wrong session transacted flag with JTA transactions",
+				listenerContainer.isSessionTransacted());
 		assertSame(this.context.getBean(JtaTransactionManager.class),
-				new DirectFieldAccessor(listenerContainer).getPropertyValue("transactionManager"));
+				new DirectFieldAccessor(listenerContainer)
+						.getPropertyValue("transactionManager"));
 	}
 
 	@Test
@@ -165,10 +168,12 @@ public class JmsAutoConfigurationTests {
 				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
 		assertEquals(DefaultJmsListenerContainerFactory.class,
 				jmsListenerContainerFactory.getClass());
-		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory)
-				jmsListenerContainerFactory).createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertTrue("wrong session transacted flag with no tx manager", listenerContainer.isSessionTransacted());
-		assertNull(new DirectFieldAccessor(listenerContainer).getPropertyValue("transactionManager"));
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertTrue("wrong session transacted flag with no tx manager",
+				listenerContainer.isSessionTransacted());
+		assertNull(new DirectFieldAccessor(listenerContainer)
+				.getPropertyValue("transactionManager"));
 	}
 
 	@Test
@@ -178,10 +183,12 @@ public class JmsAutoConfigurationTests {
 				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
 		assertEquals(DefaultJmsListenerContainerFactory.class,
 				jmsListenerContainerFactory.getClass());
-		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory)
-				jmsListenerContainerFactory).createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertTrue("wrong session transacted flag with no tx manager", listenerContainer.isSessionTransacted());
-		assertNull(new DirectFieldAccessor(listenerContainer).getPropertyValue("transactionManager"));
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertTrue("wrong session transacted flag with no tx manager",
+				listenerContainer.isSessionTransacted());
+		assertNull(new DirectFieldAccessor(listenerContainer)
+				.getPropertyValue("transactionManager"));
 	}
 
 	@Test

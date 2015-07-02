@@ -54,20 +54,19 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * Looks in various places for a properties file to extract loader settings, defaulting to
  * {@code application.properties} either on the current classpath or in the current
  * working directory. The name of the properties file can be changed by setting a System
- * property {@code loader.config.name} (e.g. {@code -Dloader.config.name=foo}
- * will look for {@code foo.properties}. If that file doesn't exist then tries
+ * property {@code loader.config.name} (e.g. {@code -Dloader.config.name=foo} will look
+ * for {@code foo.properties}. If that file doesn't exist then tries
  * {@code loader.config.location} (with allowed prefixes {@code classpath:} and
- * {@code file:} or any valid URL). Once that file is located turns it into
- * Properties and extracts optional values (which can also be provided overridden as
- * System properties in case the file doesn't exist):
+ * {@code file:} or any valid URL). Once that file is located turns it into Properties and
+ * extracts optional values (which can also be provided overridden as System properties in
+ * case the file doesn't exist):
  * <ul>
  * <li>{@code loader.path}: a comma-separated list of directories to append to the
  * classpath (containing file resources and/or nested archives in *.jar or *.zip).
- * Defaults to {@code lib} (i.e. a directory in the current working directory)</li>
- * <li>{@code loader.main}: the main method to delegate execution to once the class
- * loader is set up. No default, but will fall back to looking for a
- * {@code Start-Class} in a {@code MANIFEST.MF}, if there is one in
- * <code>${loader.home}/META-INF</code>.</li>
+ * Defaults to {@code lib} in your application archive</li>
+ * <li>{@code loader.main}: the main method to delegate execution to once the class loader
+ * is set up. No default, but will fall back to looking for a {@code Start-Class} in a
+ * {@code MANIFEST.MF}, if there is one in <code>${loader.home}/META-INF</code>.</li>
  * </ul>
  *
  * @author Dave Syer
