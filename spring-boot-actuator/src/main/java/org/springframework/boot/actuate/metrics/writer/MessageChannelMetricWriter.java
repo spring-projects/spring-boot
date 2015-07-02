@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.metrics.writer;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.support.MessageBuilder;
 
 /**
  * A {@link MetricWriter} that publishes the metric updates on a {@link MessageChannel}.
@@ -26,12 +25,9 @@ import org.springframework.messaging.support.MessageBuilder;
  * carry an additional header "metricName" with the name of the metric in it.
  *
  * @author Dave Syer
+ * @see MetricWriterMessageHandler
  */
 public class MessageChannelMetricWriter implements MetricWriter {
-
-	private static final String METRIC_NAME = "metricName";
-
-	private final String DELETE = "delete";
 
 	private final MessageChannel channel;
 
@@ -41,20 +37,17 @@ public class MessageChannelMetricWriter implements MetricWriter {
 
 	@Override
 	public void increment(Delta<?> delta) {
-		this.channel.send(MessageBuilder.withPayload(delta)
-				.setHeader(METRIC_NAME, delta.getName()).build());
+		this.channel.send(MetricMessage.forIncrement(delta));
 	}
 
 	@Override
 	public void set(Metric<?> value) {
-		this.channel.send(MessageBuilder.withPayload(value)
-				.setHeader(METRIC_NAME, value.getName()).build());
+		this.channel.send(MetricMessage.forSet(value));
 	}
 
 	@Override
 	public void reset(String metricName) {
-		this.channel.send(MessageBuilder.withPayload(this.DELETE)
-				.setHeader(METRIC_NAME, metricName).build());
+		this.channel.send(MetricMessage.forReset(metricName));
 	}
 
 }
