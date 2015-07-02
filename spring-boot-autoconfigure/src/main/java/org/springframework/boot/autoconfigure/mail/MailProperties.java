@@ -67,6 +67,11 @@ public class MailProperties {
 	 */
 	private String jndiName;
 
+	/**
+	 * Ping to mail server while initializing.
+	 */
+	private boolean testConnection;
+
 	public String getHost() {
 		return this.host;
 	}
@@ -119,4 +124,11 @@ public class MailProperties {
 		return this.jndiName;
 	}
 
+	public boolean isTestConnection() {
+		return this.testConnection;
+	}
+
+	public void setTestConnection(boolean testConnection) {
+		this.testConnection = testConnection;
+	}
 }
