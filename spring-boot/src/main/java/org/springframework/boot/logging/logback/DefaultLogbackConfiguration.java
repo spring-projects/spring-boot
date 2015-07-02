@@ -29,6 +29,7 @@ import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.OptionHelper;
+import org.springframework.boot.logging.LoggingInitializationContext;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -48,11 +49,18 @@ class DefaultLogbackConfiguration {
 	private static final String FILE_LOG_PATTERN = "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p "
 			+ "${PID:- } --- [%t] %-40.40logger{39} : %m%n%wex";
 
+	private static final String CONSOLE_LOG_PATTERN_PROPERTY = "logging.logback.consoleLogPattern";
+
+	private static final String FILE_LOG_PATTERN_PROPERTY = "logging.logback.fileLogPattern";
+
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	private final LogFile logFile;
 
-	public DefaultLogbackConfiguration(LogFile logFile) {
+	private final LoggingInitializationContext initializationContext;
+
+	public DefaultLogbackConfiguration(LoggingInitializationContext initializationContext, LogFile logFile) {
+		this.initializationContext = initializationContext;
 		this.logFile = logFile;
 	}
 
@@ -99,7 +107,9 @@ class DefaultLogbackConfiguration {
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(OptionHelper.substVars(CONSOLE_LOG_PATTERN,
+		String logPattern = initializationContext.getEnvironment().
+				getProperty(CONSOLE_LOG_PATTERN_PROPERTY, CONSOLE_LOG_PATTERN);
+		encoder.setPattern(OptionHelper.substVars(logPattern,
 				config.getContext()));
 		encoder.setCharset(UTF8);
 		config.start(encoder);
@@ -112,7 +122,9 @@ class DefaultLogbackConfiguration {
 			String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<ILoggingEvent>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(OptionHelper.substVars(FILE_LOG_PATTERN, config.getContext()));
+		String logPattern = initializationContext.getEnvironment()
+				.getProperty(FILE_LOG_PATTERN_PROPERTY, FILE_LOG_PATTERN);
+		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		appender.setEncoder(encoder);
 		config.start(encoder);
 
