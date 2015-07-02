@@ -446,7 +446,7 @@ typically in `application.properties` or `application.yml`. For example:
 	server.port=8443
 	server.ssl.key-store=classpath:keystore.jks
 	server.ssl.key-store-password=secret
-	server.ssl.key-password another-secret
+	server.ssl.key-password=another-secret
 ----
 
 See {sc-spring-boot}/context/embedded/Ssl.{sc-ext}[`Ssl`] for details of all of the

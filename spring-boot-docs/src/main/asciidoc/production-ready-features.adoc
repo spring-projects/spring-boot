@@ -872,7 +872,7 @@ The following system metrics are exposed by Spring Boot:
 * The application context uptime in milliseconds (`instance.uptime`)
 * The average system load (`systemload.average`)
 * Heap information in KB (`heap`, `heap.committed`, `heap.init`, `heap.used`)
-* Thread information (`threads`, `thread.peak`, `thead.daemon`)
+* Thread information (`threads`, `thread.peak`, `thread.daemon`)
 * Class load information (`classes`, `classes.loaded`, `classes.unloaded`)
 * Garbage collection information (`gc.xxx.count`, `gc.xxx.time`)
 
