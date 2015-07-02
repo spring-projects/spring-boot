@@ -63,7 +63,7 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * <ul>
  * <li><code>loader.path</code>: a comma-separated list of directories to append to the
  * classpath (containing file resources and/or nested archives in *.jar or *.zip).
- * Defaults to <code>lib</code> (i.e. a directory in the current working directory)</li>
+ * Defaults to <code>lib</code> in your application archive</li>
  * <li><code>loader.main</code>: the main method to delegate execution to once the class
  * loader is set up. No default, but will fall back to looking for a
  * <code>Start-Class</code> in a <code>MANIFEST.MF</code>, if there is one in
