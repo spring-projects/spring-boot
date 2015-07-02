@@ -52,6 +52,7 @@ public class RandomValuePropertySourceTests {
 		Integer value = (Integer) this.source.getProperty("random.int[4,10]");
 		assertNotNull(value);
 		assertTrue(value >= 4);
+		assertTrue(value < 10);
 	}
 
 	@Test
@@ -67,4 +68,18 @@ public class RandomValuePropertySourceTests {
 		assertNotNull(value);
 	}
 
+	@Test
+	public void longRange() {
+		Long value = (Long) this.source.getProperty("random.long[4,10]");
+		assertNotNull(value);
+		assertTrue(Long.toString(value), value >= 4L);
+		assertTrue(Long.toString(value), value < 10L);
+	}
+
+	@Test
+	public void longMax() {
+		Long value = (Long) this.source.getProperty("random.long(10)");
+		assertNotNull(value);
+		assertTrue(value < 10L);
+	}
 }
