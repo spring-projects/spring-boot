@@ -380,10 +380,13 @@ environment variables or system properties.
 [[boot-features-external-config-profile-specific-properties]]
 === Profile-specific properties
 In addition to `application.properties` files, profile-specific properties can also be
-defined using the naming convention `application-{profile}.properties`.
+defined using the naming convention `application-{profile}.properties`. The 
+`Environment` has a set of default profiles (by default `[default]`) which are
+used if no active profiels are set (i.e. if no profiles are explicitly activated
+then properties from `application-default.properties` are loaded).
 
 Profile specific properties are loaded from the same locations as standard
-`application.properties`, with profile-specific files always overriding the default
+`application.properties`, with profile-specific files always overriding the non-specific
 ones irrespective of whether the profile-specific files are inside or outside your
 packaged jar.
 
@@ -518,8 +521,35 @@ using a `spring.profiles` key to indicate when the document applies. For example
 
 In the example above, the `server.address` property will be `127.0.0.1` if the
 `development` profile is active. If the `development` and `production` profiles are *not*
-enabled, then the value for the property will be `192.168.1.100`
+enabled, then the value for the property will be `192.168.1.100`.
 
+The default profiles are activated if none are explicitly active when the application
+context starts. So in this YAML we set a value for `security.user.password` that is
+*only* available in the "default" profile:
+
+[source,yaml,indent=0]
+----
+server:
+  port: 80000
+---
+spring:
+  profiles: default
+security:
+  user:
+    password: weak
+----
+
+whereas in this example, the password is always set because it isn't attached to any profile, 
+and it would have to be explicitly reset in all other profiles as necessary:
+
+[source,yaml,indent=0]
+----
+server:
+  port: 80000
+security:
+  user:
+    password: weak
+----
 
 
 [[boot-features-external-config-yaml-shortcomings]]
