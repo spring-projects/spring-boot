@@ -25,16 +25,19 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Class-level annotation that is used to determine how to load and configure an
- * ApplicationContext for integration tests. Similar to the standard
- * {@link ContextConfiguration} but uses Spring Boot's
- * {@link SpringApplicationContextLoader}.
+ * {@code ApplicationContext} for integration tests.
+ * <p>Similar to the standard {@link ContextConfiguration @ContextConfiguration}
+ * but uses Spring Boot's {@link SpringApplicationContextLoader}.
  *
  * @author Dave Syer
+ * @author Sam Brannen
  * @see SpringApplicationContextLoader
+ * @see ContextConfiguration
  */
 @ContextConfiguration(loader = SpringApplicationContextLoader.class)
 @Documented
@@ -44,39 +47,45 @@ import org.springframework.test.context.ContextConfiguration;
 public @interface SpringApplicationConfiguration {
 
 	/**
-	 * @see ContextConfiguration#locations()
+	 * @see ContextConfiguration#locations
 	 * @return the context configuration locations
 	 */
+	@AliasFor(annotation = ContextConfiguration.class, attribute = "locations")
 	String[] locations() default {};
 
 	/**
-	 * @see ContextConfiguration#classes()
+	 * @see ContextConfiguration#classes
 	 * @return the context configuration classes
 	 */
+	@AliasFor(annotation = ContextConfiguration.class, attribute = "classes")
 	Class<?>[] classes() default {};
 
 	/**
-	 * @see ContextConfiguration#initializers()
+	 * @see ContextConfiguration#initializers
 	 * @return the context configuration initializers
 	 */
+	@AliasFor(annotation = ContextConfiguration.class, attribute = "initializers")
 	Class<? extends ApplicationContextInitializer<? extends ConfigurableApplicationContext>>[] initializers() default {};
 
 	/**
-	 * @see ContextConfiguration#inheritLocations()
-	 * @return if context locations should be inherited
+	 * @see ContextConfiguration#inheritLocations
+	 * @return {@code true} if context locations should be inherited
 	 */
+	@AliasFor(annotation = ContextConfiguration.class, attribute = "inheritLocations")
 	boolean inheritLocations() default true;
 
 	/**
-	 * @see ContextConfiguration#inheritInitializers()
-	 * @return if context initializers should be inherited
+	 * @see ContextConfiguration#inheritInitializers
+	 * @return {@code true} if context initializers should be inherited
 	 */
+	@AliasFor(annotation = ContextConfiguration.class, attribute = "inheritInitializers")
 	boolean inheritInitializers() default true;
 
 	/**
-	 * @see ContextConfiguration#name()
-	 * @return if context configuration name
+	 * @see ContextConfiguration#name
+	 * @return the name of the context hierarchy level
 	 */
+	@AliasFor(annotation = ContextConfiguration.class, attribute = "name")
 	String name() default "";
 
 }
