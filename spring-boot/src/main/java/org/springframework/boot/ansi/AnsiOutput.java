@@ -51,7 +51,7 @@ public abstract class AnsiOutput {
 	}
 
 	/**
-	 * Sets if the System.console() is know to be available.
+	 * Sets if the System.console() is known to be available.
 	 * @param consoleAvailable if the console is known to be available or {@code null} to
 	 * use standard detection logic.
 	 */
