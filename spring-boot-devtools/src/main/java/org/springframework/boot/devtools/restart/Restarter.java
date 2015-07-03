@@ -233,7 +233,7 @@ public class Restarter {
 
 	/**
 	 * Restart the running application.
-	 * @param failureHandler a failure handler to deal with application that don't start
+	 * @param failureHandler a failure handler to deal with application that doesn't start
 	 */
 	public void restart(final FailureHandler failureHandler) {
 		if (!this.enabled) {
@@ -255,7 +255,7 @@ public class Restarter {
 
 	/**
 	 * Start the application.
-	 * @param failureHandler a failure handler for application that wont start
+	 * @param failureHandler a failure handler for application that won't start
 	 * @throws Exception
 	 */
 	protected void start(FailureHandler failureHandler) throws Exception {

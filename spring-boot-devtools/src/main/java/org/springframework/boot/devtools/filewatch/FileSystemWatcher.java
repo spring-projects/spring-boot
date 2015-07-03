@@ -96,7 +96,7 @@ public class FileSystemWatcher {
 	}
 
 	/**
-	 * Add a source folders to monitor. Cannot be called after the watcher has been
+	 * Add source folders to monitor. Cannot be called after the watcher has been
 	 * {@link #start() started}.
 	 * @param folders the folders to monitor
 	 */

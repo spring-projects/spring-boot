@@ -145,7 +145,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(ConditionEvaluationReport.class)
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public AutoConfigurationReportEndpoint autoConfigurationAuditEndpoint() {
+	public AutoConfigurationReportEndpoint autoConfigurationReportEndpoint() {
 		return new AutoConfigurationReportEndpoint();
 	}
 
