@@ -124,6 +124,15 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void loadDefaultPropertiesFile() throws Exception {
+		this.environment.setDefaultProfiles("thedefault");
+		this.initializer.setSearchNames("testprofiles");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("the.property");
+		assertThat(property, equalTo("fromdefaultpropertiesfile"));
+	}
+
+	@Test
 	public void loadTwoPropertiesFile() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
 				+ "classpath:application.properties,classpath:testproperties.properties");
@@ -241,6 +250,33 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(property, equalTo("fromyamlfile"));
 		assertThat(this.environment.getProperty("my.array[0]"), equalTo("1"));
 		assertThat(this.environment.getProperty("my.array"), nullValue(String.class));
+	}
+
+	@Test
+	public void loadProfileEmptySameAsNotSpecified() throws Exception {
+		this.initializer.setSearchNames("testprofilesempty");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("fromemptyprofile"));
+	}
+
+	@Test
+	public void loadDefaultYamlDocument() throws Exception {
+		this.environment.setDefaultProfiles("thedefault");
+		this.initializer.setSearchNames("testprofilesdocument");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("fromdefaultprofile"));
+	}
+
+	@Test
+	public void loadDefaultYamlDocumentNotActivated() throws Exception {
+		this.environment.setDefaultProfiles("thedefault");
+		this.environment.setActiveProfiles("other");
+		this.initializer.setSearchNames("testprofilesdocument");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("fromotherprofile"));
 	}
 
 	@Test

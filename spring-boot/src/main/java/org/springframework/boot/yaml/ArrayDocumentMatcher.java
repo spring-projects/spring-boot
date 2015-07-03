@@ -16,6 +16,7 @@
 
 package org.springframework.boot.yaml;
 
+import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 
@@ -49,6 +50,9 @@ public class ArrayDocumentMatcher implements DocumentMatcher {
 		}
 		Set<String> values = StringUtils.commaDelimitedListToSet(properties
 				.getProperty(this.key));
+		if (values.isEmpty()) {
+			values = Collections.singleton("");
+		}
 		for (String pattern : this.patterns) {
 			for (String value : values) {
 				if (value.matches(pattern)) {

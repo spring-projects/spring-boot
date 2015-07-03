@@ -34,7 +34,7 @@ import org.springframework.core.env.Environment;
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
-	private static final String[] DEFAULT_PROFILES = new String[] { "default" };
+	private static final String[] DEFAULT_PROFILES = new String[] { "^\\s*$" };
 
 	private String[] activeProfiles = new String[0];
 

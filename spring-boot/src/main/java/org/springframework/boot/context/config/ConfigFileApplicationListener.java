@@ -322,6 +322,14 @@ public class ConfigFileApplicationListener implements
 				this.profiles.addAll(list);
 			}
 
+			if (this.profiles.isEmpty()) {
+				for (String defaultProfile : this.environment.getDefaultProfiles()) {
+					if (!this.profiles.contains(defaultProfile)) {
+						this.profiles.add(defaultProfile);
+					}
+				}
+			}
+
 			// The default profile for these purposes is represented as null. We add it
 			// last so that it is first out of the queue (active profiles will then
 			// override any settings in the defaults when the list is reversed later).
@@ -376,7 +384,7 @@ public class ConfigFileApplicationListener implements
 				String profile) throws IOException {
 			Resource resource = this.resourceLoader.getResource(location);
 			PropertySource<?> propertySource = null;
-			if (resource != null) {
+			if (resource != null && resource.exists()) {
 				String name = "applicationConfig: [" + location + "]";
 				String group = "applicationConfig: [" + identifier + "]";
 				propertySource = this.propertiesLoader.load(resource, group, name,
