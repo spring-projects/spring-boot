@@ -166,7 +166,7 @@ class FolderSnapshot {
 
 	@Override
 	public String toString() {
-		return this.folder + " snaphost at " + this.time;
+		return this.folder + " snapshot at " + this.time;
 	}
 
 }
