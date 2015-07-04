@@ -89,7 +89,7 @@ public class MultipartConfigFactory {
 	}
 
 	/**
-	 * Sets the size threshold after which files will be written to disk.
+	 * Sets the size threshold in bytes after which files will be written to disk.
 	 * @param fileSizeThreshold the file size threshold
 	 * @see #setFileSizeThreshold(String)
 	 */
