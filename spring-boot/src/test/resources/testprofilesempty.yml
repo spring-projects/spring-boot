@@ -4,7 +4,7 @@ my:
   other: notempty
 ---
 spring:
-  profiles: 
+  profiles:
 my:
   property: fromemptyprofile
 ---
