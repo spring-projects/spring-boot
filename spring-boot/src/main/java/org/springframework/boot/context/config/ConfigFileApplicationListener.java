@@ -88,6 +88,7 @@ import org.springframework.validation.BindException;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class ConfigFileApplicationListener implements
 		ApplicationListener<ApplicationEvent>, Ordered {
@@ -119,7 +120,7 @@ public class ConfigFileApplicationListener implements
 
 	private final ConversionService conversionService = new DefaultConversionService();
 
-	private final List<Object> debug = new ArrayList<Object>();
+	private final List<LogMessage> logMessages = new ArrayList<LogMessage>();
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -147,19 +148,17 @@ public class ConfigFileApplicationListener implements
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		logDebugMessages();
+		logMessages();
 		addPostProcessors(event.getApplicationContext());
 	}
 
-	private void logDebugMessages() {
-		// Debug logging is deferred because the Logging initialization might not have
+	private void logMessages() {
+		// logging is deferred because the Logging initialization might not have
 		// run at the time that config file decisions are taken
-		if (logger.isDebugEnabled()) {
-			for (Object message : this.debug) {
-				logger.debug(message);
-			}
+		for (LogMessage logMessage : this.logMessages) {
+			logMessage.log(logger);
 		}
-		this.debug.clear();
+		this.logMessages.clear();
 	}
 
 	/**
@@ -292,7 +291,7 @@ public class ConfigFileApplicationListener implements
 
 		private boolean activatedProfiles;
 
-		private final List<Object> debug = ConfigFileApplicationListener.this.debug;
+		private final List<LogMessage> logMessages = ConfigFileApplicationListener.this.logMessages;
 
 		public Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
@@ -411,16 +410,18 @@ public class ConfigFileApplicationListener implements
 			}
 			if (resource == null || !resource.exists()) {
 				msg.append(" resource not found");
+				this.logMessages.add(LogMessage.trace(msg));
+			} else {
+				this.logMessages.add(LogMessage.debug(msg));
 			}
-			this.debug.add(msg);
 			return propertySource;
 		}
 
 		private void maybeActivateProfiles(Object value) {
 			if (this.activatedProfiles) {
 				if (value != null) {
-					this.debug.add("Profiles already activated, '" + value
-							+ "' will not be applied");
+					this.logMessages.add(LogMessage.debug("Profiles already activated, '" + value
+							+ "' will not be applied"));
 				}
 				return;
 			}
@@ -428,8 +429,8 @@ public class ConfigFileApplicationListener implements
 			Set<String> profiles = getProfilesForValue(value);
 			activateProfiles(profiles);
 			if (profiles.size() > 0) {
-				this.debug.add("Activated profiles "
-						+ StringUtils.collectionToCommaDelimitedString(profiles));
+				this.logMessages.add(LogMessage.debug("Activated profiles "
+						+ StringUtils.collectionToCommaDelimitedString(profiles)));
 				this.activatedProfiles = true;
 			}
 		}
@@ -575,6 +576,37 @@ public class ConfigFileApplicationListener implements
 			return this.names;
 		}
 
+	}
+
+	static class LogMessage {
+		private final String level;
+
+		private final Object message;
+
+		public LogMessage(String level, Object message) {
+			this.level = level;
+			this.message = message;
+		}
+
+		public static LogMessage trace(Object message) {
+			return new LogMessage("trace", message);
+		}
+
+		public static LogMessage debug(Object message) {
+			return new LogMessage("debug", message);
+		}
+
+		public void log(Log logger) {
+			if (this.level.equals("trace")) {
+				logger.trace(this.message);
+			}
+			else if (this.level.equals("debug")) {
+				logger.debug(this.message);
+			}
+			else {
+				logger.info(this.message);
+			}
+		}
 	}
 
 }
