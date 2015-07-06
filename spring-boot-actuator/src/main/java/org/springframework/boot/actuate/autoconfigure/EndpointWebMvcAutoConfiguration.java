@@ -88,9 +88,9 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
-	EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
-	ManagementServerPropertiesAutoConfiguration.class,
-	HypermediaAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		ManagementServerPropertiesAutoConfiguration.class,
+		HypermediaAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		SmartInitializingSingleton {
 

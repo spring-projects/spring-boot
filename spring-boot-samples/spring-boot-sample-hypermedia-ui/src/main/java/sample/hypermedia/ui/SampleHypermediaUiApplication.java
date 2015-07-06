@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package demo;
+package sample.hypermedia.ui;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Entity
-public class Book {
-	@Id
-	@GeneratedValue
-	private Long id;
-	private String title;
-	public String getTitle() {
-		return this.title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
+@SpringBootApplication
+public class SampleHypermediaUiApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SampleHypermediaUiApplication.class, args);
 	}
 }

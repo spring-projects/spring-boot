@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +25,15 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * @author Dave Syer
+ * {@link MvcEndpoint} to expose actuator documentation.
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.docs")
 public class ActuatorDocsEndpoint extends WebMvcConfigurerAdapter implements MvcEndpoint {
+
+	private static final String DOCS_LOCATION = "classpath:/META-INF/resources/spring-boot-actuator/docs/";
 
 	private String path = "/docs";
 
@@ -38,31 +41,10 @@ public class ActuatorDocsEndpoint extends WebMvcConfigurerAdapter implements Mvc
 
 	private ManagementServerProperties management;
 
-
 	private Curies curies = new Curies();
 
 	public Curies getCuries() {
 		return this.curies;
-	}
-
-	/**
-	 * Properties of the default CurieProvider (used for adding docs links). If enabled, all
-	 * unqualified rels will pick up a prefix and a curie template pointing to the docs endpoint.
-	 *
-	 */
-	public static class Curies {
-		/**
-		 * Enable the curie generation (off by default).
-		 */
-		private boolean enabled = false;
-
-		public boolean isEnabled() {
-			return this.enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
 	}
 
 	public ActuatorDocsEndpoint(ManagementServerProperties management) {
@@ -82,8 +64,7 @@ public class ActuatorDocsEndpoint extends WebMvcConfigurerAdapter implements Mvc
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler(this.management.getContextPath() + this.path + "/**")
-		.addResourceLocations(
-				"classpath:/META-INF/resources/spring-boot-actuator/docs/");
+				.addResourceLocations(DOCS_LOCATION);
 	}
 
 	public void setPath(String path) {
@@ -107,6 +88,28 @@ public class ActuatorDocsEndpoint extends WebMvcConfigurerAdapter implements Mvc
 	@Override
 	public Class<? extends Endpoint<?>> getEndpointType() {
 		return null;
+	}
+
+	/**
+	 * Properties of the default CurieProvider (used for adding docs links). If enabled,
+	 * all unqualified rels will pick up a prefix and a curie template pointing to the
+	 * docs endpoint.
+	 */
+	public static class Curies {
+
+		/**
+		 * Enable the curie generation (off by default).
+		 */
+		private boolean enabled = false;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
 	}
 
 }

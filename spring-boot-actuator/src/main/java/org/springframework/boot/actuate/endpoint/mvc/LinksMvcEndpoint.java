@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * @author Dave Syer
+ * {@link MvcEndpoint} to add hypermedia links.
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.links")
 public class LinksMvcEndpoint implements MvcEndpoint {
@@ -37,7 +39,7 @@ public class LinksMvcEndpoint implements MvcEndpoint {
 		this.path = defaultPath;
 	}
 
-	@RequestMapping(value = { "/", "" }, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = { "/", "" }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResourceSupport links() {
 		ResourceSupport resource = new ResourceSupport();

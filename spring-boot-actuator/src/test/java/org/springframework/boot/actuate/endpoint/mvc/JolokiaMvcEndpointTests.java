@@ -16,14 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.Set;
 
 import org.hamcrest.Matcher;
@@ -49,6 +41,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link JolokiaMvcEndpoint}
@@ -86,30 +86,30 @@ public class JolokiaMvcEndpointTests {
 	@Test
 	public void search() throws Exception {
 		this.mvc.perform(get("/jolokia/search/java.lang:*")).andExpect(status().isOk())
-		.andExpect(content().string(containsString("GarbageCollector")));
+				.andExpect(content().string(containsString("GarbageCollector")));
 	}
 
 	@Test
 	public void read() throws Exception {
 		this.mvc.perform(get("/jolokia/read/java.lang:type=Memory"))
-		.andExpect(status().isOk())
-		.andExpect(content().string(containsString("NonHeapMemoryUsage")));
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
 	}
 
 	@Test
 	public void list() throws Exception {
 		this.mvc.perform(get("/jolokia/list/java.lang/type=Memory/attr"))
-		.andExpect(status().isOk())
-		.andExpect(content().string(containsString("NonHeapMemoryUsage")));
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("NonHeapMemoryUsage")));
 	}
 
 	@Configuration
 	@EnableConfigurationProperties
 	@EnableWebMvc
 	@Import({ JacksonAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class,
-		EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
-		ManagementServerPropertiesAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, JolokiaAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class })
 	public static class Config {
 
 	}

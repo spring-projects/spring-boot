@@ -16,12 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +38,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link EnvironmentMvcEndpoint}
@@ -72,13 +72,13 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void home() throws Exception {
 		this.mvc.perform(get("/env")).andExpect(status().isOk())
-		.andExpect(content().string(containsString("systemProperties")));
+				.andExpect(content().string(containsString("systemProperties")));
 	}
 
 	@Test
 	public void sub() throws Exception {
 		this.mvc.perform(get("/env/foo")).andExpect(status().isOk())
-		.andExpect(content().string(equalToIgnoringCase("bar")));
+				.andExpect(content().string(equalToIgnoringCase("bar")));
 	}
 
 	@Test
@@ -90,15 +90,14 @@ public class EnvironmentMvcEndpointTests {
 	@Test
 	public void regex() throws Exception {
 		this.mvc.perform(get("/env/foo.*")).andExpect(status().isOk())
-		.andExpect(content().string(containsString("\"foo\":\"bar\"")))
-		.andExpect(content().string(containsString("\"fool\":\"baz\"")));
+				.andExpect(content().string(containsString("\"foo\":\"bar\"")))
+				.andExpect(content().string(containsString("\"fool\":\"baz\"")));
 	}
 
 	@Import({ JacksonAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class,
-		WebMvcAutoConfiguration.class,
-		EndpointWebMvcAutoConfiguration.class,
-		ManagementServerPropertiesAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class })
 	@Configuration
 	public static class TestConfiguration {
 

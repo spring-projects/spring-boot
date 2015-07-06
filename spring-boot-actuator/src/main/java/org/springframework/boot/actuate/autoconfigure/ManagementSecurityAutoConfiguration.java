@@ -103,7 +103,7 @@ public class ManagementSecurityAutoConfiguration {
 
 	@Configuration
 	protected static class ManagementSecurityPropertiesConfiguration implements
-	SecurityPrerequisite {
+			SecurityPrerequisite {
 
 		@Autowired(required = false)
 		private SecurityProperties security;
@@ -115,7 +115,7 @@ public class ManagementSecurityAutoConfiguration {
 		public void init() {
 			if (this.management != null && this.security != null) {
 				this.security.getUser().getRole()
-				.add(this.management.getSecurity().getRole());
+						.add(this.management.getSecurity().getRole());
 			}
 		}
 
@@ -124,7 +124,7 @@ public class ManagementSecurityAutoConfiguration {
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER + 1)
 	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
-	WebSecurityConfigurer<WebSecurity> {
+			WebSecurityConfigurer<WebSecurity> {
 
 		@Autowired(required = false)
 		private ErrorController errorController;
@@ -209,7 +209,7 @@ public class ManagementSecurityAutoConfiguration {
 	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
 	protected static class ManagementWebSecurityConfigurerAdapter extends
-	WebSecurityConfigurerAdapter {
+			WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private SecurityProperties security;
@@ -314,17 +314,15 @@ public class ManagementSecurityAutoConfiguration {
 				}
 				if (this.delegate == null) {
 					List<RequestMatcher> pathMatchers = new ArrayList<RequestMatcher>();
-					String[] paths = !this.sensitive ? getEndpointPaths(
-							endpointMapping,
-							false)
-							: getEndpointPaths(endpointMapping);
-							for (String path : paths) {
-								pathMatchers.add(new AntPathRequestMatcher(
-										ManagementWebSecurityConfigurerAdapter.this.server
+					String[] paths = !this.sensitive ? getEndpointPaths(endpointMapping,
+							false) : getEndpointPaths(endpointMapping);
+					for (String path : paths) {
+						pathMatchers.add(new AntPathRequestMatcher(
+								ManagementWebSecurityConfigurerAdapter.this.server
 										.getPath(path)));
-							}
-							this.delegate = pathMatchers.isEmpty() ? AnyRequestMatcher.INSTANCE
-									: new OrRequestMatcher(pathMatchers);
+					}
+					this.delegate = pathMatchers.isEmpty() ? AnyRequestMatcher.INSTANCE
+							: new OrRequestMatcher(pathMatchers);
 				}
 				return this.delegate.matches(request);
 			}
@@ -354,7 +352,8 @@ public class ManagementSecurityAutoConfiguration {
 					paths.add(path + "/**");
 					// Add Spring MVC-generated additional paths
 					paths.add(path + ".*");
-				} else {
+				}
+				else {
 					paths.add("/");
 				}
 			}

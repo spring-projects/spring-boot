@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorDocsEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HalBrowserEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HypermediaDisabled;
-import org.springframework.boot.actuate.endpoint.mvc.LinksEnhancer;
 import org.springframework.boot.actuate.endpoint.mvc.LinksMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
@@ -78,11 +74,13 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+
 /**
- * Autoconfiguration for hypermedia in HTTP endpoints.
+ * Configuration for hypermedia in HTTP endpoints.
  *
  * @author Dave Syer
- *
+ * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass(Link.class)
@@ -124,10 +122,14 @@ public class EndpointWebMvcHypermediaConfiguration {
 		return new DefaultCurieProvider("boot", new UriTemplate(path));
 	}
 
+	/**
+	 * {@link SpringBootCondition} to detect the Spring Data REST HAL browser.
+	 */
 	@Configuration("EndpointHypermediaAutoConfiguration.MissingResourceCondition")
 	@ConditionalOnResource(resources = "classpath:/META-INF/spring-data-rest/hal-browser/index.html")
 	protected static class MissingSpringDataRestResourceCondition extends
-	SpringBootCondition {
+			SpringBootCondition {
+
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
@@ -136,44 +138,46 @@ public class EndpointWebMvcHypermediaConfiguration {
 				return ConditionOutcome.noMatch("Spring Data REST HAL browser found");
 			}
 			return ConditionOutcome.match("Spring Data REST HAL browser not found");
+
 		}
+
 	}
 
+	/**
+	 * Configuration for Endpoint links.
+	 */
 	@ConditionalOnProperty(value = "endpoints.links.enabled", matchIfMissing = true)
 	public static class LinksConfiguration {
 
 		@Bean
 		public LinksMvcEndpoint linksMvcEndpoint(ResourceProperties resources) {
-			return new LinksMvcEndpoint(resources.getWelcomePage() != null ? "/links"
-					: "");
+			String defaultPath = (resources.getWelcomePage() != null ? "/links" : "");
+			return new LinksMvcEndpoint(defaultPath);
 		}
 
 		/**
 		 * Controller advice that adds links to the home page and/or the management
 		 * context path. The home page is enhanced if it is composed already of a
 		 * {@link ResourceSupport} (e.g. when using Spring Data REST).
-		 *
-		 * @author Dave Syer
-		 *
 		 */
 		@ControllerAdvice
 		public static class HomePageLinksAdvice implements ResponseBodyAdvice<Object> {
 
 			@Autowired
-			MvcEndpoints endpoints;
+			private MvcEndpoints endpoints;
 
 			@Autowired
-			LinksMvcEndpoint linksEndpoint;
+			private LinksMvcEndpoint linksEndpoint;
 
 			@Autowired
-			ManagementServerProperties management;
+			private ManagementServerProperties management;
 
 			private LinksEnhancer linksEnhancer;
 
 			@PostConstruct
 			public void init() {
-				this.linksEnhancer = new LinksEnhancer(this.endpoints,
-						this.management.getContextPath());
+				this.linksEnhancer = new LinksEnhancer(this.management.getContextPath(),
+						this.endpoints);
 			}
 
 			@Override
@@ -196,33 +200,31 @@ public class EndpointWebMvcHypermediaConfiguration {
 			public Object beforeBodyWrite(Object body, MethodParameter returnType,
 					MediaType selectedContentType,
 					Class<? extends HttpMessageConverter<?>> selectedConverterType,
-							ServerHttpRequest request, ServerHttpResponse response) {
-				HttpServletRequest servletRequest = null;
+					ServerHttpRequest request, ServerHttpResponse response) {
 				if (request instanceof ServletServerHttpRequest) {
-					servletRequest = ((ServletServerHttpRequest) request)
-							.getServletRequest();
-					Object pattern = servletRequest
-							.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-					if (pattern != null) {
-						String path = pattern.toString();
-						if (isHomePage(path) || isManagementPath(path)
-								|| isLinksPath(path)) {
-							ResourceSupport resource = (ResourceSupport) body;
-							if (isHomePage(path) && hasManagementPath()) {
-								String rel = this.management.getContextPath()
-										.substring(1);
-								resource.add(linkTo(
-										EndpointWebMvcHypermediaConfiguration.class)
-										.slash(this.management.getContextPath()).withRel(
-												rel));
-							}
-							else {
-								this.linksEnhancer.addEndpointLinks(resource, "");
-							}
+					beforeBodyWrite(body, (ServletServerHttpRequest) request);
+				}
+				return body;
+			}
+
+			private void beforeBodyWrite(Object body, ServletServerHttpRequest request) {
+				Object pattern = request.getServletRequest().getAttribute(
+						HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+				if (pattern != null) {
+					String path = pattern.toString();
+					if (isHomePage(path) || isManagementPath(path) || isLinksPath(path)) {
+						ResourceSupport resource = (ResourceSupport) body;
+						if (isHomePage(path) && hasManagementPath()) {
+							String rel = this.management.getContextPath().substring(1);
+							resource.add(linkTo(
+									EndpointWebMvcHypermediaConfiguration.class).slash(
+									this.management.getContextPath()).withRel(rel));
+						}
+						else {
+							this.linksEnhancer.addEndpointLinks(resource, "");
 						}
 					}
 				}
-				return body;
 			}
 
 			private boolean hasManagementPath() {
@@ -245,29 +247,26 @@ public class EndpointWebMvcHypermediaConfiguration {
 		}
 
 		/**
-		 * Controller advice that adds links to the existing Actuator endpoints. By default
-		 * all the top-level resources are enhanced with a "self" link. Those resources that
-		 * could not be enhanced (e.g. "/env/{name}") because their values are "primitive" are
-		 * ignored. Those that have values of type Collection (e.g. /trace) are transformed in
-		 * to maps, and the original collection value is added with a key equal to the
-		 * endpoint name.
-		 *
-		 * @author Dave Syer
-		 *
+		 * Controller advice that adds links to the existing Actuator endpoints. By
+		 * default all the top-level resources are enhanced with a "self" link. Those
+		 * resources that could not be enhanced (e.g. "/env/{name}") because their values
+		 * are "primitive" are ignored. Those that have values of type Collection (e.g.
+		 * /trace) are transformed in to maps, and the original collection value is added
+		 * with a key equal to the endpoint name.
 		 */
 		@ControllerAdvice(assignableTypes = MvcEndpoint.class)
 		public static class MvcEndpointAdvice implements ResponseBodyAdvice<Object> {
 
 			@Autowired
-			ManagementServerProperties management;
+			private ManagementServerProperties management;
 
 			@Autowired
-			HttpMessageConverters converters;
+			private HttpMessageConverters converters;
 
 			private Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
 
 			@Autowired
-			ObjectMapper mapper;
+			private ObjectMapper mapper;
 
 			@Override
 			public boolean supports(MethodParameter returnType,
@@ -281,69 +280,69 @@ public class EndpointWebMvcHypermediaConfiguration {
 			public Object beforeBodyWrite(Object body, MethodParameter returnType,
 					MediaType selectedContentType,
 					Class<? extends HttpMessageConverter<?>> selectedConverterType,
-							ServerHttpRequest request, ServerHttpResponse response) {
+					ServerHttpRequest request, ServerHttpResponse response) {
+				if (request instanceof ServletServerHttpRequest) {
+					return beforeBodyWrite(body, returnType, selectedContentType,
+							selectedConverterType, (ServletServerHttpRequest) request,
+							response);
+				}
+				return body;
+			}
 
-				if (body == null) {
-					// Assume it already was handled
+			private Object beforeBodyWrite(Object body, MethodParameter returnType,
+					MediaType selectedContentType,
+					Class<? extends HttpMessageConverter<?>> selectedConverterType,
+					ServletServerHttpRequest request, ServerHttpResponse response) {
+				if (body == null || body instanceof Resource) {
+					// Assume it already was handled or it already has its links
 					return body;
 				}
-
-				if (body instanceof Resource) {
-					// Assume it already has its links
-					return body;
-				}
-
-				@SuppressWarnings("unchecked")
-				HttpMessageConverter<Object> converter = (HttpMessageConverter<Object>) findConverter(
+				HttpMessageConverter<Object> converter = findConverter(
 						selectedConverterType, selectedContentType);
-				if (converter == null) {
+				if (converter == null || isHypermediaDisabled(returnType)) {
 					// Not a resource that can be enhanced with a link
 					return body;
 				}
-				if (AnnotationUtils.findAnnotation(returnType.getMethod(),
-						HypermediaDisabled.class) != null
-						|| AnnotationUtils.findAnnotation(returnType.getMethod()
-								.getDeclaringClass(), HypermediaDisabled.class) != null) {
-					return body;
+				String path = getPath(request);
+				try {
+					converter.write(new EndpointResource(body, path),
+							selectedContentType, response);
 				}
-
-				HttpServletRequest servletRequest = null;
-				if (request instanceof ServletServerHttpRequest) {
-					servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
-					String path = (String) servletRequest
-							.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-					if (path == null) {
-						path = "";
-					}
-					try {
-						converter.write(new EndpointResource(body, path),
-								selectedContentType, response);
-					}
-					catch (IOException e) {
-						throw new HttpMessageNotWritableException("Cannot write response", e);
-					}
-					return null;
+				catch (IOException ex) {
+					throw new HttpMessageNotWritableException("Cannot write response", ex);
 				}
-				else {
-					return body;
-				}
-
+				return null;
 			}
 
-			private HttpMessageConverter<?> findConverter(
+			@SuppressWarnings("unchecked")
+			private HttpMessageConverter<Object> findConverter(
 					Class<? extends HttpMessageConverter<?>> selectedConverterType,
-							MediaType mediaType) {
+					MediaType mediaType) {
 				if (this.converterCache.containsKey(mediaType)) {
-					return this.converterCache.get(mediaType);
+					return (HttpMessageConverter<Object>) this.converterCache
+							.get(mediaType);
 				}
 				for (HttpMessageConverter<?> converter : this.converters) {
 					if (selectedConverterType.isAssignableFrom(converter.getClass())
 							&& converter.canWrite(EndpointResource.class, mediaType)) {
 						this.converterCache.put(mediaType, converter);
-						return converter;
+						return (HttpMessageConverter<Object>) converter;
 					}
 				}
 				return null;
+			}
+
+			private boolean isHypermediaDisabled(MethodParameter returnType) {
+				return AnnotationUtils.findAnnotation(returnType.getMethod(),
+						HypermediaDisabled.class) != null
+						|| AnnotationUtils.findAnnotation(returnType.getMethod()
+								.getDeclaringClass(), HypermediaDisabled.class) != null;
+			}
+
+			private String getPath(ServletServerHttpRequest request) {
+				String path = (String) request.getServletRequest().getAttribute(
+						HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+				return (path == null ? "" : path);
 			}
 
 		}

@@ -1,9 +1,20 @@
-package org.springframework.boot.actuate.autoconfigure;
+/*
+ * Copyright 2012-2015 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +35,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SpringBootHypermediaApplication.class)
@@ -47,7 +63,7 @@ public class CustomHomepageHypermediaIntegrationTests {
 	@Test
 	public void links() throws Exception {
 		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
+				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
 	}
 
 	@Test
@@ -56,8 +72,8 @@ public class CustomHomepageHypermediaIntegrationTests {
 			String path = endpoint.getPath();
 			path = path.startsWith("/") ? path.substring(1) : path;
 			this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$._links.%s.href", path).exists());
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$._links.%s.href", path).exists());
 		}
 	}
 
@@ -68,13 +84,15 @@ public class CustomHomepageHypermediaIntegrationTests {
 		@RequestMapping("")
 		public ResourceSupport home() {
 			ResourceSupport resource = new ResourceSupport();
-			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/").withSelfRel());
+			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/")
+					.withSelfRel());
 			return resource;
 		}
 
 		public static void main(String[] args) {
 			SpringApplication.run(SpringBootHypermediaApplication.class, args);
 		}
+
 	}
 
 }
