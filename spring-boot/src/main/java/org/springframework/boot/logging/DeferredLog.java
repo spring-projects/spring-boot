@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Deferred {@link Log} that can be used to store messages that shouldn't be written until
@@ -126,11 +127,19 @@ public class DeferredLog implements Log {
 		this.lines.add(new Line(level, message, t));
 	}
 
-	public void replayTo(Log log) {
+	public void replayTo(Class<?> destination) {
+		replayTo(LogFactory.getLog(destination));
+	}
+
+	public void replayTo(Log destination) {
 		for (Line line : this.lines) {
-			line.replayTo(log);
+			line.replayTo(destination);
 		}
 		this.lines.clear();
+	}
+
+	public static Log replay(Log source, Class<?> destination) {
+		return replay(source, LogFactory.getLog(destination));
 	}
 
 	public static Log replay(Log source, Log destination) {

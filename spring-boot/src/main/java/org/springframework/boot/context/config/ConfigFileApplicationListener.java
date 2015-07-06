@@ -28,7 +28,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -38,6 +37,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.env.PropertySourcesLoader;
+import org.springframework.boot.logging.DeferredLog;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -93,8 +93,6 @@ import org.springframework.validation.BindException;
 public class ConfigFileApplicationListener implements
 		ApplicationListener<ApplicationEvent>, Ordered {
 
-	private static Log logger = LogFactory.getLog(ConfigFileApplicationListener.class);
-
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
 	// Note the order is from least to most specific (last one wins)
@@ -112,6 +110,8 @@ public class ConfigFileApplicationListener implements
 
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
+	private final DeferredLog logger = new DeferredLog();
+
 	private String searchLocations;
 
 	private String names;
@@ -119,8 +119,6 @@ public class ConfigFileApplicationListener implements
 	private int order = DEFAULT_ORDER;
 
 	private final ConversionService conversionService = new DefaultConversionService();
-
-	private final List<LogMessage> logMessages = new ArrayList<LogMessage>();
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -148,17 +146,10 @@ public class ConfigFileApplicationListener implements
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		logMessages();
-		addPostProcessors(event.getApplicationContext());
-	}
-
-	private void logMessages() {
 		// logging is deferred because the Logging initialization might not have
 		// run at the time that config file decisions are taken
-		for (LogMessage logMessage : this.logMessages) {
-			logMessage.log(logger);
-		}
-		this.logMessages.clear();
+		this.logger.replayTo(ConfigFileApplicationListener.class);
+		addPostProcessors(event.getApplicationContext());
 	}
 
 	/**
@@ -281,6 +272,8 @@ public class ConfigFileApplicationListener implements
 	 */
 	private class Loader {
 
+		private final Log logger = ConfigFileApplicationListener.this.logger;
+
 		private final ConfigurableEnvironment environment;
 
 		private final ResourceLoader resourceLoader;
@@ -290,8 +283,6 @@ public class ConfigFileApplicationListener implements
 		private Queue<String> profiles;
 
 		private boolean activatedProfiles;
-
-		private final List<LogMessage> logMessages = ConfigFileApplicationListener.this.logMessages;
 
 		public Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
@@ -410,9 +401,10 @@ public class ConfigFileApplicationListener implements
 			}
 			if (resource == null || !resource.exists()) {
 				msg.append(" resource not found");
-				this.logMessages.add(LogMessage.trace(msg));
-			} else {
-				this.logMessages.add(LogMessage.debug(msg));
+				this.logger.trace(msg);
+			}
+			else {
+				this.logger.debug(msg);
 			}
 			return propertySource;
 		}
@@ -420,8 +412,8 @@ public class ConfigFileApplicationListener implements
 		private void maybeActivateProfiles(Object value) {
 			if (this.activatedProfiles) {
 				if (value != null) {
-					this.logMessages.add(LogMessage.debug("Profiles already activated, '" + value
-							+ "' will not be applied"));
+					this.logger.debug("Profiles already activated, '" + value
+							+ "' will not be applied");
 				}
 				return;
 			}
@@ -429,8 +421,8 @@ public class ConfigFileApplicationListener implements
 			Set<String> profiles = getProfilesForValue(value);
 			activateProfiles(profiles);
 			if (profiles.size() > 0) {
-				this.logMessages.add(LogMessage.debug("Activated profiles "
-						+ StringUtils.collectionToCommaDelimitedString(profiles)));
+				this.logger.debug("Activated profiles "
+						+ StringUtils.collectionToCommaDelimitedString(profiles));
 				this.activatedProfiles = true;
 			}
 		}
@@ -576,37 +568,6 @@ public class ConfigFileApplicationListener implements
 			return this.names;
 		}
 
-	}
-
-	static class LogMessage {
-		private final String level;
-
-		private final Object message;
-
-		public LogMessage(String level, Object message) {
-			this.level = level;
-			this.message = message;
-		}
-
-		public static LogMessage trace(Object message) {
-			return new LogMessage("trace", message);
-		}
-
-		public static LogMessage debug(Object message) {
-			return new LogMessage("debug", message);
-		}
-
-		public void log(Log logger) {
-			if (this.level.equals("trace")) {
-				logger.trace(this.message);
-			}
-			else if (this.level.equals("debug")) {
-				logger.debug(this.message);
-			}
-			else {
-				logger.info(this.message);
-			}
-		}
 	}
 
 }
