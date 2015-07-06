@@ -22,6 +22,9 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
+| http://ha-jdbc.github.io/[HA JDBC]
+| https://github.com/lievendoclo/hajdbc-spring-boot
+
 | https://github.com/jknack/handlebars.java[Handlebars]
 | https://github.com/allegro/handlebars-spring-boot-starter
 
