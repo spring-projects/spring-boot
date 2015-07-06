@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,30 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link PropertySource} that returns a random value for any property that starts with
- * {@literal "random."}. Return a {@code byte[]} unless the property name ends with
- * {@literal ".int} or {@literal ".long"}.
+ * {@literal "random."}. Where the "unqualified property name" is the portion of the
+ * requested property name beyond the "random." prefix, this {@link PropertySource}
+ * returns:
+ * <ul>
+ * <li>When {@literal "int"}, a random {@link Integer} value, restricted by an optionally
+ * specified range.</li>
+ * <li>When {@literal "long"}, a random {@link Long} value, restricted by an optionally
+ * specified range.</li>
+ * <li>Otherwise, a {@code byte[]}.</li>
+ * <ul>
+ * The {@literal "random.int"} and {@literal "random.long"} properties supports a range
+ * suffix whose syntax is:
+ * <p>
+ * {@code OPEN value (,max) CLOSE} where the {@code OPEN,CLOSE} are any character and
+ * {@code value,max} are integers. If {@code max} is provided then {@code value} is the
+ * minimum value and {@code max} is the maximum (exclusive).
+ * </p>
  *
  * @author Dave Syer
+ * @author Matt Benson
  */
 public class RandomValuePropertySource extends PropertySource<Random> {
+
+	private static final String PREFIX = "random.";
 
 	private static Log logger = LogFactory.getLog(RandomValuePropertySource.class);
 
@@ -43,35 +61,66 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 
 	@Override
 	public Object getProperty(String name) {
-		if (!name.startsWith("random.")) {
+		if (!name.startsWith(PREFIX)) {
 			return null;
 		}
 		if (logger.isTraceEnabled()) {
 			logger.trace("Generating random property for '" + name + "'");
 		}
-		if (name.endsWith("int")) {
-			return getSource().nextInt();
-		}
-		if (name.startsWith("random.long")) {
-			return getSource().nextLong();
-		}
-		if (name.startsWith("random.int") && name.length() > "random.int".length() + 1) {
-			String range = name.substring("random.int".length() + 1);
-			range = range.substring(0, range.length() - 1);
-			return getNextInRange(range);
-		}
-		byte[] bytes = new byte[32];
-		getSource().nextBytes(bytes);
-		return DigestUtils.md5DigestAsHex(bytes);
+		return getRandomValue(name.substring(PREFIX.length()));
 	}
 
-	private int getNextInRange(String range) {
+	private Object getRandomValue(String type) {
+		if (type.equals("int")) {
+			return getSource().nextInt();
+		}
+		if (type.equals("long")) {
+			return getSource().nextLong();
+		}
+		String range = getRange(type, "int");
+		if (range != null) {
+			return getNextIntInRange(range);
+		}
+		range = getRange(type, "long");
+		if (range != null) {
+			return getNextLongInRange(range);
+		}
+		return getRandomBytes();
+	}
+
+	private String getRange(String type, String prefix) {
+		if (type.startsWith(prefix)) {
+			int startIndex = prefix.length() + 1;
+			if (type.length() > startIndex) {
+				return type.substring(startIndex, type.length() - 1);
+			}
+		}
+		return null;
+	}
+
+	private int getNextIntInRange(String range) {
 		String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
-		Integer start = Integer.valueOf(tokens[0]);
+		int start = Integer.parseInt(tokens[0]);
 		if (tokens.length == 1) {
 			return getSource().nextInt(start);
 		}
-		return start + getSource().nextInt(Integer.valueOf(tokens[1]) - start);
+		return start + getSource().nextInt(Integer.parseInt(tokens[1]) - start);
+	}
+
+	private long getNextLongInRange(String range) {
+		String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
+		if (tokens.length == 1) {
+			return Math.abs(getSource().nextLong()) % Long.parseLong(tokens[0]);
+		}
+		long lowerBound = Long.parseLong(tokens[0]);
+		long upperBound = Long.parseLong(tokens[1]) - lowerBound;
+		return lowerBound + Math.abs(getSource().nextLong()) % upperBound;
+	}
+
+	private Object getRandomBytes() {
+		byte[] bytes = new byte[32];
+		getSource().nextBytes(bytes);
+		return DigestUtils.md5DigestAsHex(bytes);
 	}
 
 	public static void addToEnvironment(ConfigurableEnvironment environment) {
