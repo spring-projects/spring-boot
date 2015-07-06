@@ -18,23 +18,26 @@ package org.springframework.boot.autoconfigure.mail;
 
 import java.util.Map;
 import java.util.Properties;
-
 import javax.activation.MimeType;
+import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import javax.naming.NamingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration.MailSenderCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -48,67 +51,116 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  */
 @Configuration
 @ConditionalOnClass({ MimeMessage.class, MimeType.class })
-@ConditionalOnMissingBean(MailSender.class)
-@Conditional(MailSenderCondition.class)
 @EnableConfigurationProperties(MailProperties.class)
-@Import(JndiSessionConfiguration.class)
 public class MailSenderAutoConfiguration {
 
-	@Autowired(required = false)
-	private Session session;
+	@Configuration
+	@ConditionalOnClass(Session.class)
+	@ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
+	@ConditionalOnJndi
+	static class JndiSessionConfiguration {
 
-	@Autowired
-	private MailProperties properties;
+		@Autowired
+		private MailProperties properties;
 
-	@Bean
-	public JavaMailSenderImpl mailSender() {
-		JavaMailSenderImpl sender = new JavaMailSenderImpl();
-		if (this.session != null) {
-			sender.setSession(this.session);
+		@Bean
+		@ConditionalOnMissingBean
+		public Session session() {
+			String jndiName = this.properties.getJndiName();
+			try {
+				return new JndiLocatorDelegate().lookup(jndiName, Session.class);
+			}
+			catch (NamingException ex) {
+				throw new IllegalStateException(String.format(
+						"Unable to find Session in JNDI location %s", jndiName), ex);
+			}
 		}
-		else {
-			applyProperties(sender);
-		}
-		return sender;
+
 	}
 
-	private void applyProperties(JavaMailSenderImpl sender) {
-		sender.setHost(this.properties.getHost());
-		if (this.properties.getPort() != null) {
-			sender.setPort(this.properties.getPort());
+	@ConditionalOnMissingBean(MailSender.class)
+	@Conditional(MailSenderConfiguration.MailSenderCondition.class)
+	static class MailSenderConfiguration {
+
+		@Autowired
+		private MailProperties properties;
+
+		@Autowired(required = false)
+		private Session session;
+
+		@Bean
+		public JavaMailSenderImpl mailSender() {
+			JavaMailSenderImpl sender = new JavaMailSenderImpl();
+			if (this.session != null) {
+				sender.setSession(this.session);
+			}
+			else {
+				applyProperties(sender);
+			}
+			return sender;
 		}
-		sender.setUsername(this.properties.getUsername());
-		sender.setPassword(this.properties.getPassword());
-		sender.setDefaultEncoding(this.properties.getDefaultEncoding());
-		if (!this.properties.getProperties().isEmpty()) {
-			sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
+
+		private void applyProperties(JavaMailSenderImpl sender) {
+			sender.setHost(this.properties.getHost());
+			if (this.properties.getPort() != null) {
+				sender.setPort(this.properties.getPort());
+			}
+			sender.setUsername(this.properties.getUsername());
+			sender.setPassword(this.properties.getPassword());
+			sender.setDefaultEncoding(this.properties.getDefaultEncoding());
+			if (!this.properties.getProperties().isEmpty()) {
+				sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
+			}
+		}
+
+		private Properties asProperties(Map<String, String> source) {
+			Properties properties = new Properties();
+			properties.putAll(source);
+			return properties;
+		}
+
+		/**
+		 * Condition to trigger the creation of a {@link JavaMailSenderImpl}. This kicks in if
+		 * either the host or jndi name property is set.
+		 */
+		static class MailSenderCondition extends AnyNestedCondition {
+
+			public MailSenderCondition() {
+				super(ConfigurationPhase.PARSE_CONFIGURATION);
+			}
+
+			@ConditionalOnProperty(prefix = "spring.mail", name = "host")
+			static class HostProperty {
+			}
+
+			@ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
+			static class JndiNameProperty {
+			}
+
 		}
 	}
 
-	private Properties asProperties(Map<String, String> source) {
-		Properties properties = new Properties();
-		properties.putAll(source);
-		return properties;
-	}
+	@Configuration
+	@ConditionalOnSingleCandidate(JavaMailSenderImpl.class)
+	static class MailSenderValidator {
 
-	/**
-	 * Condition to trigger the creation of a {@link JavaMailSenderImpl}. This kicks in if
-	 * either the host or jndi name property is set.
-	 */
-	static class MailSenderCondition extends AnyNestedCondition {
+		@Autowired
+		private MailProperties properties;
 
-		public MailSenderCondition() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		@Autowired
+		private JavaMailSenderImpl mailSender;
+
+		@PostConstruct
+		public void validateConnection() {
+			if (this.properties.isTestConnection()) {
+				try {
+					this.mailSender.testConnection();
+				}
+				catch (MessagingException ex) {
+					throw new IllegalStateException("Mail server is not unavailable", ex);
+				}
+			}
 		}
-
-		@ConditionalOnProperty(prefix = "spring.mail", name = "host")
-		static class HostProperty {
-		}
-
-		@ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
-		static class JndiNameProperty {
-		}
-
 	}
 
 }
