@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemHint;
@@ -52,6 +53,7 @@ import org.springframework.boot.configurationsample.specific.InnerClassAnnotated
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
+import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
@@ -77,6 +79,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private TestCompiler compiler;
 
@@ -344,6 +349,16 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata,
 				containsProperty("foo", String.class)
 						.fromSource(AdditionalMetadata.class));
+	}
+
+	@Test
+	public void mergeOfInvalidAdditionalMetadata() throws IOException {
+		File additionalMetadataFile = createAdditionalMetadataFile();
+		FileCopyUtils.copy("Hello World", new FileWriter(additionalMetadataFile));
+
+		thrown.expect(IllegalStateException.class);
+		thrown.expectMessage("Compilation failed");
+		compile(SimpleProperties.class);
 	}
 
 	@Test

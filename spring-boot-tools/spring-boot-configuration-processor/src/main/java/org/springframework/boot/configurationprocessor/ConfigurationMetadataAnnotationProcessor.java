@@ -47,6 +47,7 @@ import javax.tools.Diagnostic.Kind;
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
 import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCompilerFieldValuesParser;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 
 /**
@@ -354,13 +355,15 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 		catch (FileNotFoundException ex) {
 			// No additional metadata
-			return metadata;
+		}
+		catch (InvalidConfigurationMetadataException e) {
+			log(e.getKind(), e.getMessage());
 		}
 		catch (Exception ex) {
 			logWarning("Unable to merge additional metadata");
 			logWarning(getStackTrace(ex));
-			return metadata;
 		}
+		return metadata;
 	}
 
 	private String getStackTrace(Exception ex) {
@@ -370,7 +373,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void logWarning(String msg) {
-		this.processingEnv.getMessager().printMessage(Kind.WARNING, msg);
+		log(Kind.WARNING, msg);
+	}
+
+	private void log(Kind kind, String msg) {
+		this.processingEnv.getMessager().printMessage(kind, msg);
 	}
 
 }
