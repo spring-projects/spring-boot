@@ -37,14 +37,13 @@ import org.springframework.util.StringUtils;
  * <li>When {@literal "long"}, a random {@link Long} value, restricted by an optionally
  * specified range.</li>
  * <li>Otherwise, a {@code byte[]}.</li>
- * <ul>
+ * </ul>
  * The {@literal "random.int"} and {@literal "random.long"} properties supports a range
  * suffix whose syntax is:
  * <p>
  * {@code OPEN value (,max) CLOSE} where the {@code OPEN,CLOSE} are any character and
  * {@code value,max} are integers. If {@code max} is provided then {@code value} is the
  * minimum value and {@code max} is the maximum (exclusive).
- * </p>
  *
  * @author Dave Syer
  * @author Matt Benson
