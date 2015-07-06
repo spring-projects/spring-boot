@@ -154,6 +154,7 @@
 		<undertow.version>1.2.8.Final</undertow.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
+		<webjars-hal-browser.version>b7669f1-1</webjars-hal-browser.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 	</properties>
 	<prerequisites>
@@ -1850,7 +1851,7 @@
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>hal-browser</artifactId>
-				<version>b7669f1-1</version>
+				<version>${webjars-hal-browser.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>
