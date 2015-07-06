@@ -28,14 +28,30 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link PropertySource} that returns a random value for any property that starts with
- * {@literal "random."}. Return a {@code byte[]} unless the property name ends with
- * {@literal ".int} or {@literal ".long"}.
+ * {@literal "random."}. Where the "unqualified property name" is the portion of the
+ * requested property name beyond the "random." prefix, this {@link PropertySource}
+ * returns:
+ * <ul>
+ * <li>When {@literal "int"}, a random {@link Integer} value, restricted by an optionally
+ * specified range.</li>
+ * <li>When {@literal "long"}, a random {@link Long} value, restricted by an optionally
+ * specified range.</li>
+ * <li>Otherwise, a {@code byte[]}.</li>
+ * <ul>
+ * The {@literal "random.int"} and {@literal "random.long"} properties supports a range
+ * suffix whose syntax is:
+ * <p>
+ * {@code OPEN value (,max) CLOSE} where the {@code OPEN,CLOSE} are any character and
+ * {@code value,max} are integers. If {@code max} is provided then {@code value} is the
+ * minimum value and {@code max} is the maximum (exclusive).
+ * </p>
  *
  * @author Dave Syer
  */
 public class RandomValuePropertySource extends PropertySource<Random> {
 
 	private static Log logger = LogFactory.getLog(RandomValuePropertySource.class);
+	private static final String PREFIX = "random.";
 
 	public RandomValuePropertySource(String name) {
 		super(name, new Random());
@@ -43,35 +59,62 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 
 	@Override
 	public Object getProperty(String name) {
-		if (!name.startsWith("random.")) {
+		if (!name.startsWith(PREFIX)) {
 			return null;
 		}
 		if (logger.isTraceEnabled()) {
 			logger.trace("Generating random property for '" + name + "'");
 		}
-		if (name.endsWith("int")) {
+		String localName = name.substring(PREFIX.length());
+		if (localName.equals("int")) {
 			return getSource().nextInt();
 		}
-		if (name.startsWith("random.long")) {
+		if (localName.equals("long")) {
 			return getSource().nextLong();
 		}
-		if (name.startsWith("random.int") && name.length() > "random.int".length() + 1) {
-			String range = name.substring("random.int".length() + 1);
-			range = range.substring(0, range.length() - 1);
-			return getNextInRange(range);
+		if (localName.startsWith("int")) {
+			int beginRange = "int".length() + 1;
+			if (localName.length() > beginRange) {
+				String range = localName.substring(beginRange, localName.length() - 1);
+				return getNextIntInRange(range);
+			}
+		}
+		if (localName.startsWith("long")) {
+			int beginRange = "long".length() + 1;
+			if (localName.length() > beginRange) {
+				String range = localName.substring(beginRange, localName.length() - 1);
+				return getNextLongInRange(range);
+			}
 		}
 		byte[] bytes = new byte[32];
 		getSource().nextBytes(bytes);
 		return DigestUtils.md5DigestAsHex(bytes);
 	}
 
-	private int getNextInRange(String range) {
+	private int getNextIntInRange(String range) {
 		String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
-		Integer start = Integer.valueOf(tokens[0]);
+		int start = Integer.parseInt(tokens[0]);
 		if (tokens.length == 1) {
 			return getSource().nextInt(start);
 		}
-		return start + getSource().nextInt(Integer.valueOf(tokens[1]) - start);
+		return start + getSource().nextInt(Integer.parseInt(tokens[1]) - start);
+	}
+
+	private long getNextLongInRange(String range) {
+		String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
+
+		long inclusiveLowerBound;
+		long exclusiveUpperBound;
+		if (tokens.length == 1) {
+			inclusiveLowerBound = 0;
+			exclusiveUpperBound = Long.parseLong(tokens[0]);
+		}
+		else {
+			inclusiveLowerBound = Long.parseLong(tokens[0]);
+			exclusiveUpperBound = Long.parseLong(tokens[1]) - inclusiveLowerBound;
+		}
+		return inclusiveLowerBound + Math.abs(getSource().nextLong())
+				% exclusiveUpperBound;
 	}
 
 	public static void addToEnvironment(ConfigurableEnvironment environment) {
