@@ -384,20 +384,26 @@ public class ConfigFileApplicationListener implements
 				String profile) throws IOException {
 			Resource resource = this.resourceLoader.getResource(location);
 			PropertySource<?> propertySource = null;
+			StringBuilder msg = new StringBuilder();
 			if (resource != null && resource.exists()) {
 				String name = "applicationConfig: [" + location + "]";
 				String group = "applicationConfig: [" + identifier + "]";
 				propertySource = this.propertiesLoader.load(resource, group, name,
 						profile);
 				if (propertySource != null) {
+					msg.append("Loaded ");
 					maybeActivateProfiles(propertySource
 							.getProperty(ACTIVE_PROFILES_PROPERTY));
 					addIncludeProfiles(propertySource
 							.getProperty(INCLUDE_PROFILES_PROPERTY));
 				}
+				else {
+					msg.append("Skipped (empty) ");
+				}
 			}
-			StringBuilder msg = new StringBuilder();
-			msg.append(propertySource == null ? "Skipped " : "Loaded ");
+			else {
+				msg.append("Skipped ");
+			}
 			msg.append("config file ");
 			msg.append("'").append(location).append("'");
 			if (StringUtils.hasLength(profile)) {
