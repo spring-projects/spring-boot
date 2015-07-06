@@ -361,6 +361,10 @@ The table below summarizes the list of supported providers:
 |`spring-bean-reference`
 |Auto-complete the available bean names in the current project. Usually constrained
  by a base class that is specified via the `target` parameter.
+
+|`spring-profile-name`
+|Auto-complete the available profile names in the project.
+
 |===
 
 
@@ -586,6 +590,31 @@ that defines the name of the `MBeanServer` bean to use:
 					"parameters": {
 						"target": "javax.management.MBeanServer"
 					}
+				}
+			]
+		}
+	]}
+----
+
+NOTE: The binder is not aware of the meta-data so if you provide that hint, you
+will still need to transform the bean name into an actual Bean reference using
+the `ApplicationContext`.
+
+===== Spring profile name
+The **spring-profile-name** provider auto-completes the Spring profiles that are
+defined in the configuration of the current project.
+
+The meta-data snippet below corresponds to the standard `spring.profiles.active`
+property that defines the name of the Spring profile(s) to enable:
+
+[source,json,indent=0]
+----
+	{"hints": [
+		{
+			"name": "spring.profiles.active",
+			"providers": [
+				{
+					"name": "spring-profile-name"
 				}
 			]
 		}
