@@ -16,46 +16,43 @@
 
 package org.springframework.boot.autoconfigure.groovy.template;
 
-import org.springframework.boot.autoconfigure.template.AbstractViewResolverProperties;
+import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link ConfigurationProperties} for configuring Groovy templates.
  *
  * @author Dave Syer
+ * @author Marten Deinum
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.groovy.template", ignoreUnknownFields = true)
-public class GroovyTemplateProperties extends AbstractViewResolverProperties {
+public class GroovyTemplateProperties extends AbstractTemplateViewResolverProperties {
 
-	public static final String DEFAULT_PREFIX = "classpath:/templates/";
+	public static final String DEFAULT_REQUEST_CONTEXT_ATTRIBUTE="spring";
+
+	public static final String DEFAULT_RESOURCE_LOADER_PATH = "classpath:/templates/";
+
+	public static final String DEFAULT_PREFIX = "";
 
 	public static final String DEFAULT_SUFFIX = ".tpl";
 
 	/**
-	 * Prefix that gets prepended to view names when building a URL.
+	 * Template path.
 	 */
-	private String prefix = DEFAULT_PREFIX;
+	private String resourceLoaderPath = DEFAULT_RESOURCE_LOADER_PATH;
 
-	/**
-	 * Suffix that gets appended to view names when building a URL.
-	 */
-	private String suffix = DEFAULT_SUFFIX;
 
-	public String getPrefix() {
-		return this.prefix;
+	public GroovyTemplateProperties() {
+		super(DEFAULT_PREFIX, DEFAULT_SUFFIX);
+		setRequestContextAttribute(DEFAULT_REQUEST_CONTEXT_ATTRIBUTE);
 	}
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
+	public String getResourceLoaderPath() {
+		return resourceLoaderPath;
 	}
 
-	public String getSuffix() {
-		return this.suffix;
+	public void setResourceLoaderPath(String resourceLoaderPath) {
+		this.resourceLoaderPath = resourceLoaderPath;
 	}
-
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
-
 }
