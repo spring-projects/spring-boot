@@ -208,8 +208,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		}
 		else if (!source.equals(target)) {
 			this.project.getArtifact().setFile(target);
-			getLog().info(
-					"Replacing main artifact " + source + " to " +target);
+			getLog().info("Replacing main artifact " + source + " to " + target);
 		}
 	}
 

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.mail;
 
 import java.util.Properties;
+
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.naming.Context;
@@ -236,6 +237,5 @@ public class MailSenderAutoConfigurationTests {
 		}
 
 	}
-
 
 }

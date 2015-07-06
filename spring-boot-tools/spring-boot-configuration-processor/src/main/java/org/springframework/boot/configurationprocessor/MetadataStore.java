@@ -21,13 +21,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import org.json.JSONException;
-
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
@@ -87,8 +87,9 @@ public class MetadataStore {
 			return null;
 		}
 		catch (JSONException ex) {
-			throw new InvalidConfigurationMetadataException("Invalid additional meta-data in '" +
-					METADATA_PATH + "': " + ex.getMessage(), Diagnostic.Kind.ERROR);
+			throw new InvalidConfigurationMetadataException(
+					"Invalid additional meta-data in '" + METADATA_PATH + "': "
+							+ ex.getMessage(), Diagnostic.Kind.ERROR);
 		}
 		finally {
 			in.close();

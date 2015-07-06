@@ -367,7 +367,6 @@ The table below summarizes the list of supported providers:
 
 |===
 
-
 TIP: No more than one provider can be active for a given property but you can specify
 several providers if they can all manage the property _in some ways_. Make sure to place
 the most powerful provider first as the IDE must use the first one in the JSON section it
@@ -599,6 +598,8 @@ that defines the name of the `MBeanServer` bean to use:
 NOTE: The binder is not aware of the meta-data so if you provide that hint, you
 will still need to transform the bean name into an actual Bean reference using
 the `ApplicationContext`.
+
+
 
 ===== Spring profile name
 The **spring-profile-name** provider auto-completes the Spring profiles that are

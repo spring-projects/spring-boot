@@ -131,4 +131,5 @@ public class MailProperties {
 	public void setTestConnection(boolean testConnection) {
 		this.testConnection = testConnection;
 	}
+
 }

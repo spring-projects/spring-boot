@@ -100,7 +100,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author Greg Turnquist
  * @author Dave Syer
  */
-public class SpringSecurityOAuth2AutoConfigurationTests {
+public class OAuth2AutoConfigurationTests {
 
 	private static final Class<?> RESOURCE_SERVER_CONFIG = OAuth2ResourceServerConfiguration.class;
 

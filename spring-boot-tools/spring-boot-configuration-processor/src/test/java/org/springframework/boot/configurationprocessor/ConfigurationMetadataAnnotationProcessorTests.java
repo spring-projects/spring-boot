@@ -356,8 +356,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		File additionalMetadataFile = createAdditionalMetadataFile();
 		FileCopyUtils.copy("Hello World", new FileWriter(additionalMetadataFile));
 
-		thrown.expect(IllegalStateException.class);
-		thrown.expectMessage("Compilation failed");
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Compilation failed");
 		compile(SimpleProperties.class);
 	}
 

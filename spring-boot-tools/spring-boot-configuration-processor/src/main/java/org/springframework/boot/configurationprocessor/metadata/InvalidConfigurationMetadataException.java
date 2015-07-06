@@ -19,8 +19,8 @@ package org.springframework.boot.configurationprocessor.metadata;
 import javax.tools.Diagnostic;
 
 /**
- * Thrown to indicate that some meta-data is invalid. Define the
- * severity to determine whether it has to fail the build.
+ * Thrown to indicate that some meta-data is invalid. Define the severity to determine
+ * whether it has to fail the build.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -36,7 +36,7 @@ public class InvalidConfigurationMetadataException extends RuntimeException {
 	}
 
 	public Diagnostic.Kind getKind() {
-		return kind;
+		return this.kind;
 	}
 
 }

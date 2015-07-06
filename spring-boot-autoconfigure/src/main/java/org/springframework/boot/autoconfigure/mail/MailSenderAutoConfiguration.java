@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mail;
 
 import java.util.Map;
 import java.util.Properties;
+
 import javax.activation.MimeType;
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
@@ -120,8 +121,8 @@ public class MailSenderAutoConfiguration {
 		}
 
 		/**
-		 * Condition to trigger the creation of a {@link JavaMailSenderImpl}. This kicks in if
-		 * either the host or jndi name property is set.
+		 * Condition to trigger the creation of a {@link JavaMailSenderImpl}. This kicks
+		 * in if either the host or jndi name property is set.
 		 */
 		static class MailSenderCondition extends AnyNestedCondition {
 
@@ -161,6 +162,7 @@ public class MailSenderAutoConfiguration {
 				}
 			}
 		}
+
 	}
 
 }

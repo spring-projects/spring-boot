@@ -356,8 +356,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		catch (FileNotFoundException ex) {
 			// No additional metadata
 		}
-		catch (InvalidConfigurationMetadataException e) {
-			log(e.getKind(), e.getMessage());
+		catch (InvalidConfigurationMetadataException ex) {
+			log(ex.getKind(), ex.getMessage());
 		}
 		catch (Exception ex) {
 			logWarning("Unable to merge additional metadata");
