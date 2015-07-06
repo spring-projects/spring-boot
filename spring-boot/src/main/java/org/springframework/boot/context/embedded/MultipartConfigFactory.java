@@ -22,8 +22,8 @@ import org.springframework.util.Assert;
 
 /**
  * Factory that can be used to create a {@link MultipartConfigElement}. Size values can be
- * set using traditional {@literal long} values or using more readable {@literal String}
- * variants that accept KB or MB suffixes, for example:
+ * set using traditional {@literal long} values which are set in bytes or using more
+ * readable {@literal String} variants that accept KB or MB suffixes, for example:
  *
  * <pre class="code">
  * factory.setMaxFileSize(&quot;10Mb&quot;);
@@ -51,7 +51,7 @@ public class MultipartConfigFactory {
 	}
 
 	/**
-	 * Sets the maximum size allowed for uploaded files.
+	 * Sets the maximum size in bytes allowed for uploaded files.
 	 * @param maxFileSize the maximum file size
 	 * @see #setMaxFileSize(String)
 	 */
@@ -70,7 +70,7 @@ public class MultipartConfigFactory {
 	}
 
 	/**
-	 * Sets the maximum size allowed for multipart/form-data requests.
+	 * Sets the maximum size allowed in bytes for multipart/form-data requests.
 	 * @param maxRequestSize the maximum request size
 	 * @see #setMaxRequestSize(String)
 	 */
@@ -89,7 +89,7 @@ public class MultipartConfigFactory {
 	}
 
 	/**
-	 * Sets the size threshold after which files will be written to disk.
+	 * Sets the size threshold in bytes after which files will be written to disk.
 	 * @param fileSizeThreshold the file size threshold
 	 * @see #setFileSizeThreshold(String)
 	 */
