@@ -68,7 +68,7 @@ public class MailProperties {
 	private String jndiName;
 
 	/**
-	 * Ping to mail server while initializing.
+	 * Test that the mail server is available on startup.
 	 */
 	private boolean testConnection;
 

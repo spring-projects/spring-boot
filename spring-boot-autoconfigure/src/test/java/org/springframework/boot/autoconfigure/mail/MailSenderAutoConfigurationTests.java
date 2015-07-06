@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.mail;
 
 import java.util.Properties;
-
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -40,6 +40,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MailSenderAutoConfiguration}.
@@ -170,6 +174,22 @@ public class MailSenderAutoConfigurationTests {
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
 	}
 
+	@Test
+	public void connectionOnStartup() throws MessagingException {
+		load(MockMailConfiguration.class, "spring.mail.host:10.0.0.23",
+				"spring.mail.test-connection:true");
+		JavaMailSenderImpl mailSender = this.context.getBean(JavaMailSenderImpl.class);
+		verify(mailSender, times(1)).testConnection();
+	}
+
+	@Test
+	public void connectionOnStartupNotCalled() throws MessagingException {
+		load(MockMailConfiguration.class, "spring.mail.host:10.0.0.23",
+				"spring.mail.test-connection:false");
+		JavaMailSenderImpl mailSender = this.context.getBean(JavaMailSenderImpl.class);
+		verify(mailSender, never()).testConnection();
+	}
+
 	private Session configureJndiSession(String name) throws IllegalStateException,
 			NamingException {
 		Properties properties = new Properties();
@@ -206,5 +226,16 @@ public class MailSenderAutoConfigurationTests {
 		}
 
 	}
+
+	@Configuration
+	static class MockMailConfiguration {
+
+		@Bean
+		JavaMailSenderImpl mockMailSender() {
+			return mock(JavaMailSenderImpl.class);
+		}
+
+	}
+
 
 }
