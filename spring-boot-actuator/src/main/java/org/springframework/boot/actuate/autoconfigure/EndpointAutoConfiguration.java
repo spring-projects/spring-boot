@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
@@ -33,6 +34,7 @@ import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEn
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
@@ -70,6 +72,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Greg Turnquist
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @Configuration
 public class EndpointAutoConfiguration {
@@ -159,6 +162,22 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
 		return new ConfigurationPropertiesReportEndpoint();
+	}
+
+	@Configuration
+	@ConditionalOnBean(Flyway.class)
+	@ConditionalOnClass(Flyway.class)
+	static class FlywayProviderConfiguration {
+
+		@Autowired
+		private Flyway flyway;
+
+		@Bean
+		@ConditionalOnMissingBean
+		public FlywayEndpoint flywayEndpoint() {
+			return new FlywayEndpoint(this.flyway);
+		}
+
 	}
 
 	@Configuration

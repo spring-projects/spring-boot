@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
@@ -36,6 +37,7 @@ import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -55,6 +57,7 @@ import static org.junit.Assert.assertTrue;
  * @author Greg Turnquist
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class EndpointAutoConfigurationTests {
 
@@ -154,6 +157,17 @@ public class EndpointAutoConfigurationTests {
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertNotNull(endpoint);
 		assertNull(endpoint.invoke().get("git"));
+	}
+
+	@Test
+	public void testFlywayEndpoint() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
+				EndpointAutoConfiguration.class);
+		this.context.refresh();
+		FlywayEndpoint endpoint = this.context.getBean(FlywayEndpoint.class);
+		assertNotNull(endpoint);
+		assertEquals(1, endpoint.invoke().size());
 	}
 
 	private void load(Class<?>... config) {
