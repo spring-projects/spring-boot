@@ -136,11 +136,9 @@ public abstract class AbstractTemplateViewResolverProperties extends
 	 * Apply the given properties to a {@link AbstractTemplateViewResolver}. Use Object in
 	 * signature to avoid runtime dependency on MVC, which means that the template engine
 	 * can be used in a non-web application.
-	 *
 	 * @param viewResolver the resolver to apply the properties to.
 	 */
 	public void applyToViewResolver(Object viewResolver) {
-
 		Assert.isInstanceOf(AbstractTemplateViewResolver.class, viewResolver,
 				"ViewResolver is not an instance of AbstractTemplateViewResolver :"
 						+ viewResolver);
@@ -158,7 +156,6 @@ public abstract class AbstractTemplateViewResolverProperties extends
 		// The resolver usually acts as a fallback resolver (e.g. like a
 		// InternalResourceViewResolver) so it needs to have low precedence
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
-
 	}
 
 }
