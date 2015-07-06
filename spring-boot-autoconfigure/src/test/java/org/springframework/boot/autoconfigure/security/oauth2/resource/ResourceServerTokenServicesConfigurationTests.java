@@ -19,12 +19,16 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration;
 import org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration;
 import org.springframework.boot.autoconfigure.social.SocialWebAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -37,6 +41,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
@@ -97,6 +102,19 @@ public class ResourceServerTokenServicesConfigurationTests {
 	}
 
 	@Test
+	public void userInfoNoClient() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.oauth2.client.clientId=acme",
+				"spring.oauth2.resource.userInfoUri:http://example.com",
+				"server.port=-1", "debug=true");
+		this.context = new SpringApplicationBuilder(ResourceNoClientConfiguration.class)
+				.environment(this.environment).web(true).run();
+		BeanDefinition bean = ((BeanDefinitionRegistry) this.context)
+				.getBeanDefinition("scopedTarget.oauth2ClientContext");
+		assertEquals("request", bean.getScope());
+	}
+
+	@Test
 	public void preferUserInfo() {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.oauth2.resource.userInfoUri:http://example.com",
@@ -151,6 +169,16 @@ public class ResourceServerTokenServicesConfigurationTests {
 			PropertyPlaceholderAutoConfiguration.class })
 	@EnableConfigurationProperties(OAuth2ClientProperties.class)
 	protected static class ResourceConfiguration {
+
+	}
+
+	@Import({ OAuth2RestOperationsConfiguration.class })
+	protected static class ResourceNoClientConfiguration extends ResourceConfiguration {
+
+		@Bean
+		public MockEmbeddedServletContainerFactory embeddedServletContainerFactory() {
+			return new MockEmbeddedServletContainerFactory();
+		}
 
 	}
 

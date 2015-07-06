@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.authserver.SpringSecurityOAuth2AuthorizationServerConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.authserver.OAuth2AuthorizationServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.method.OAuth2MethodSecurityConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
@@ -104,7 +104,7 @@ public class SpringSecurityOAuth2AutoConfigurationTests {
 
 	private static final Class<?> RESOURCE_SERVER_CONFIG = OAuth2ResourceServerConfiguration.class;
 
-	private static final Class<?> AUTHORIZATION_SERVER_CONFIG = SpringSecurityOAuth2AuthorizationServerConfiguration.class;
+	private static final Class<?> AUTHORIZATION_SERVER_CONFIG = OAuth2AuthorizationServerConfiguration.class;
 
 	private AnnotationConfigEmbeddedWebApplicationContext context;
 

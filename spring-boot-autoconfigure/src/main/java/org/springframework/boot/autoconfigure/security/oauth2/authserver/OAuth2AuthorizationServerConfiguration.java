@@ -60,11 +60,11 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @ConditionalOnMissingBean(AuthorizationServerConfigurer.class)
 @ConditionalOnBean(AuthorizationServerEndpointsConfiguration.class)
 @EnableConfigurationProperties
-public class SpringSecurityOAuth2AuthorizationServerConfiguration extends
+public class OAuth2AuthorizationServerConfiguration extends
 		AuthorizationServerConfigurerAdapter {
 
 	private static final Log logger = LogFactory
-			.getLog(SpringSecurityOAuth2AuthorizationServerConfiguration.class);
+			.getLog(OAuth2AuthorizationServerConfiguration.class);
 
 	@Autowired
 	private BaseClientDetails details;

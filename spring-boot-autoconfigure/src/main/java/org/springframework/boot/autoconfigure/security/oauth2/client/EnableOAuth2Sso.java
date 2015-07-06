@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerTokenServicesConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
@@ -42,6 +43,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @EnableOAuth2Client
+@EnableConfigurationProperties(OAuth2SsoProperties.class)
 @Import({ OAuth2SsoDefaultConfiguration.class, OAuth2SsoCustomConfiguration.class,
 		ResourceServerTokenServicesConfiguration.class })
 public @interface EnableOAuth2Sso {

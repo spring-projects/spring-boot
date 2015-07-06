@@ -138,7 +138,7 @@ public class OAuth2RestOperationsConfiguration {
 	protected static class RequestScopedConfiguration extends BaseConfiguration {
 
 		@Bean
-		@Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
+		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 		public OAuth2ClientContext oauth2ClientContext() {
 			DefaultOAuth2ClientContext context = new DefaultOAuth2ClientContext(
 					new DefaultAccessTokenRequest());
