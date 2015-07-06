@@ -2219,6 +2219,14 @@ When the JMS infrastructure is present, any bean can be annotated with `@JmsList
 create a listener endpoint. If no `JmsListenerContainerFactory` has been defined, a
 default one is configured automatically.
 
+The default factory is transactional by default. If you are running in an infrastructure
+where a `JtaTransactionManager` is present, it will be associated to the listener container
+by default. If not, the `sessionTransacted` flag will be enabled. In that latter scenario,
+you can associate your local data store transaction to the processing of an incoming message
+by adding `@Transactional` on your listener method (or a delegate thereof). This will make
+sure that the incoming message is acknowledged once the local transaction has completed. This
+also includes sending response messages that have been performed on the same JMS session.
+
 The following component creates a listener endpoint on the `someQueue` destination:
 
 [source,java,indent=0]
@@ -2234,7 +2242,7 @@ The following component creates a listener endpoint on the `someQueue` destinati
 	}
 ----
 
-Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the Javadoc of `@EnableJms`] for
+TIP: Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the Javadoc of `@EnableJms`] for
 more details.
 
 
