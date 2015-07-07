@@ -2867,7 +2867,6 @@ locate a JMS `ConnectionFactory` using JNDI. By default the locations `java:/Jms
 
 
 
-[[boot-features-using-jms-template]]
 [[boot-features-using-jms-sending]]
 ==== Sending a message
 Spring's `JmsTemplate` is auto-configured and you can autowire it directly into your own
@@ -2931,6 +2930,100 @@ The following component creates a listener endpoint on the `someQueue` destinati
 
 TIP: Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the Javadoc of `@EnableJms`] for
 more details.
+
+
+
+[[boot-features-amqp]]
+=== AMQP
+The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol
+for message-oriented middleware. The Spring AMQP project applies core Spring concepts to
+the development of AMQP-based messaging solutions.
+
+[[boot-features-rabbitmq]]
+==== RabbitMQ support
+RabbitMQ is a lightweight, reliable, scalable and portable message broker based on the
+AMQP protocol. Spring uses `RabbitMQ` to communicate using the AMQP protocol.
+
+RabbitMQ configuration is controlled by external configuration properties in
+`+spring.rabbitmq.*+`. For example, you might declare the following section in
+`application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.rabbitmq.host=localhost
+	spring.rabbitmq.port=5672
+	spring.rabbitmq.username=admin
+	spring.rabbitmq.password=secret
+----
+
+See
+{sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[`RabbitProperties`]
+for more of the supported options.
+
+TIP: Check http://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ]
+for more details.
+
+[[boot-features-using-amqp-sending]]
+==== Sending a message
+Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured and you can autowire them
+directly into your own beans:
+
+[source,java,indent=0]
+----
+	import org.springframework.amqp.core.AmqpAdmin;
+	import org.springframework.amqp.core.AmqpTemplate;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyBean {
+
+		private final AmqpAdmin amqpAdmin;
+		private final AmqpTemplate amqpTemplate;
+
+		@Autowired
+		public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
+			this.adminTemplate = adminTemplate;
+			this.amqpTemplate = amqpTemplate;
+		}
+
+		// ...
+
+	}
+----
+
+NOTE: {spring-amqp-javadoc}/rabbit/core/RabbitMessagingTemplate.{dc-ext}[`RabbitMessagingTemplate`]
+can be injected in a similar manner.
+
+Any `org.springframework.amqp.core.Queue` that is defined as a bean will be automatically
+used to declare a corresponding queue on the RabbitMQ instance if necessary.
+
+
+[[boot-features-using-amqp-receiving]]
+==== Receiving a message
+
+When the Rabbit infrastructure is present, any bean can be annotated with `@RabbitListener`
+to create a listener endpoint. If no `RabbitListenerContainerFactory` has been defined, a
+default one is configured automatically.
+
+The following component creates a listener endpoint on the `someQueue` queue:
+
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		@RabbitListener(queues = "someQueue")
+		public void processMessage(String content) {
+			// ...
+		}
+
+	}
+----
+
+TIP: Check {spring-amqp-javadoc}/rabbit/annotation/EnableRabbit.{dc-ext}[the Javadoc of `@EnableRabbit`]
+for more details.
 
 
 
