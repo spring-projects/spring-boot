@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @see EnableAutoConfiguration
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
+@Order(Ordered.LOWEST_PRECEDENCE - 1)
 class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 		BeanClassLoaderAware, ResourceLoaderAware, BeanFactoryAware {
 

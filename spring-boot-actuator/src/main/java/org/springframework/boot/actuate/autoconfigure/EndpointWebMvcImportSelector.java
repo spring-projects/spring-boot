@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 
@@ -32,6 +34,7 @@ import org.springframework.core.type.AnnotationMetadata;
  *
  * @author Dave Syer
  */
+@Order(Ordered.LOWEST_PRECEDENCE)
 class EndpointWebMvcImportSelector implements DeferredImportSelector,
 		BeanClassLoaderAware {
 

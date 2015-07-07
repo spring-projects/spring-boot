@@ -29,13 +29,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -49,6 +47,7 @@ import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfigura
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -62,11 +61,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.MethodMetadata;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -92,11 +94,14 @@ import org.springframework.web.servlet.DispatcherServlet;
 		ManagementServerPropertiesAutoConfiguration.class,
 		HypermediaAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
-		SmartInitializingSingleton {
+		BeanFactoryAware, SmartInitializingSingleton {
 
-	private static Log logger = LogFactory.getLog(EndpointWebMvcAutoConfiguration.class);
+	private static final Log logger = LogFactory
+			.getLog(EndpointWebMvcAutoConfiguration.class);
 
 	private ApplicationContext applicationContext;
+
+	private BeanFactory beanFactory;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
@@ -104,10 +109,9 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		this.applicationContext = applicationContext;
 	}
 
-	@Conditional(OnManagementMvcCondition.class)
-	@Configuration
-	@Import(EndpointWebMvcImportSelector.class)
-	protected static class EndpointWebMvcConfiguration {
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
 	}
 
 	@Bean
@@ -117,8 +121,11 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Override
 	public void afterSingletonsInstantiated() {
-		ManagementServerPort managementPort = ManagementServerPort
-				.get(this.applicationContext);
+		ManagementServerPort managementPort = ManagementServerPort.DIFFERENT;
+		if (this.applicationContext instanceof WebApplicationContext) {
+			managementPort = ManagementServerPort.get(
+					this.applicationContext.getEnvironment(), this.beanFactory);
+		}
 		if (managementPort == ManagementServerPort.DIFFERENT
 				&& this.applicationContext instanceof EmbeddedWebApplicationContext
 				&& ((EmbeddedWebApplicationContext) this.applicationContext)
@@ -191,6 +198,12 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	}
 
+	@Configuration
+	@Conditional(OnManagementMvcCondition.class)
+	@Import(EndpointWebMvcImportSelector.class)
+	protected static class EndpointWebMvcConfiguration {
+	}
+
 	/**
 	 * {@link OncePerRequestFilter} to add the {@literal X-Application-Context} if
 	 * required.
@@ -261,122 +274,91 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	}
 
-	protected static enum ManagementServerPort {
+	private static class OnManagementMvcCondition extends SpringBootCondition
+			implements ConfigurationCondition {
 
-		DISABLE, SAME, DIFFERENT;
-
-		public static ManagementServerPort get(BeanFactory beanFactory) {
-			ServerProperties serverProperties;
-			try {
-				serverProperties = beanFactory.getBean(ServerProperties.class);
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				serverProperties = new ServerProperties();
-			}
-			ManagementServerProperties managementServerProperties;
-			try {
-				managementServerProperties = beanFactory
-						.getBean(ManagementServerProperties.class);
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				managementServerProperties = new ManagementServerProperties();
-			}
-			Integer port = managementServerProperties.getPort();
-			if (port != null && port < 0) {
-				return DISABLE;
-			}
-			if (!(beanFactory instanceof WebApplicationContext)) {
-				// Current context is not a webapp
-				return DIFFERENT;
-			}
-			return ((port == null)
-					|| (serverProperties.getPort() == null && port.equals(8080))
-					|| (port != 0 && port.equals(serverProperties.getPort())) ? SAME
-					: DIFFERENT);
+		@Override
+		public ConfigurationPhase getConfigurationPhase() {
+			return ConfigurationPhase.REGISTER_BEAN;
 		}
-
-	}
-
-	private static class OnManagementMvcCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			RelaxedPropertyResolver management = new RelaxedPropertyResolver(
-					context.getEnvironment(), "management.");
-			RelaxedPropertyResolver server = new RelaxedPropertyResolver(
-					context.getEnvironment(), "server.");
-			Integer managementPort = management.getProperty("port", Integer.class);
-			if (managementPort == null) {
-				ManagementServerProperties managementServerProperties = getBeanCarefully(
-						context, ManagementServerProperties.class);
-				if (managementServerProperties != null) {
-					managementPort = managementServerProperties.getPort();
-				}
+			if (!(context.getResourceLoader() instanceof WebApplicationContext)) {
+				return ConditionOutcome.noMatch("Non WebApplicationContext");
+			}
+			ManagementServerPort port = ManagementServerPort.get(
+					context.getEnvironment(), context.getBeanFactory());
+			return new ConditionOutcome(port == ManagementServerPort.SAME,
+					"Management context");
+		}
+
+	}
+
+	protected static enum ManagementServerPort {
+
+		DISABLE, SAME, DIFFERENT;
+
+		public static ManagementServerPort get(Environment environment,
+				BeanFactory beanFactory) {
+			Integer serverPort = getPortProperty(environment, "server.");
+			if (serverPort == null
+					&& hasCustomBeanDefinition(beanFactory, ServerProperties.class,
+							ServerPropertiesAutoConfiguration.class)) {
+				ServerProperties bean = beanFactory.getBean(ServerProperties.class);
+				serverPort = bean.getPort();
+			}
+			Integer managementPort = getPortProperty(environment, "management.");
+			if (managementPort == null
+					&& hasCustomBeanDefinition(beanFactory,
+							ManagementServerProperties.class,
+							ManagementServerPropertiesAutoConfiguration.class)) {
+				ManagementServerProperties bean = beanFactory
+						.getBean(ManagementServerProperties.class);
+				managementPort = bean.getPort();
 			}
 			if (managementPort != null && managementPort < 0) {
-				return new ConditionOutcome(false, "The mangagement port is disabled");
+				return DISABLE;
 			}
-			if (!(context.getResourceLoader() instanceof WebApplicationContext)) {
-				// Current context is not a webapp
-				return new ConditionOutcome(false, "The context is not a webapp");
-			}
-			Integer serverPort = server.getProperty("port", Integer.class);
-			if (serverPort == null) {
-				ServerProperties serverProperties = getBeanCarefully(context,
-						ServerProperties.class);
-				if (serverProperties != null) {
-					serverPort = serverProperties.getPort();
-				}
-			}
-			if ((managementPort == null)
+			return ((managementPort == null)
 					|| (serverPort == null && managementPort.equals(8080))
-					|| (managementPort != 0 && managementPort.equals(serverPort))) {
-				return ConditionOutcome
-						.match("The main context is the management context");
-			}
-			return ConditionOutcome
-					.noMatch("The main context is not the management context");
+					|| (managementPort != 0 && managementPort.equals(serverPort)) ? SAME
+					: DIFFERENT);
 		}
 
-		private <T> T getBeanCarefully(ConditionContext context, Class<T> type) {
-			String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					context.getBeanFactory(), type, false, false);
-			if (names.length == 1) {
-				BeanDefinition original = findBeanDefinition(context.getBeanFactory(),
-						names[0]);
-				if (original instanceof RootBeanDefinition) {
-					DefaultListableBeanFactory temp = new DefaultListableBeanFactory();
-					temp.setParentBeanFactory(context.getBeanFactory());
-					temp.registerBeanDefinition("bean",
-							((RootBeanDefinition) original).cloneBeanDefinition());
-					return temp.getBean(type);
-				}
-				return BeanFactoryUtils.beanOfType(context.getBeanFactory(), type, false,
-						false);
-			}
-			;
-			return null;
+		private static Integer getPortProperty(Environment environment, String prefix) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					prefix);
+			return resolver.getProperty("port", Integer.class);
 		}
 
-		private BeanDefinition findBeanDefinition(
-				ConfigurableListableBeanFactory beanFactory, String name) {
-			BeanDefinition original = null;
-			while (beanFactory != null && original == null) {
-				if (beanFactory.containsLocalBean(name)) {
-					original = beanFactory.getBeanDefinition(name);
-				}
-				else {
-					BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
-					if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-						beanFactory = (ConfigurableListableBeanFactory) parentBeanFactory;
-					}
-					else {
-						beanFactory = null;
-					}
+		private static <T> boolean hasCustomBeanDefinition(BeanFactory beanFactory,
+				Class<T> type, Class<?> configClass) {
+			if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
+				return false;
+			}
+			return hasCustomBeanDefinition((ConfigurableListableBeanFactory) beanFactory,
+					type, configClass);
+		}
+
+		private static <T> boolean hasCustomBeanDefinition(
+				ConfigurableListableBeanFactory beanFactory, Class<T> type,
+				Class<?> configClass) {
+			String[] names = beanFactory.getBeanNamesForType(type, true, false);
+			if (names == null || names.length != 1) {
+				return false;
+			}
+			BeanDefinition definition = beanFactory.getBeanDefinition(names[0]);
+			if (definition instanceof AnnotatedBeanDefinition) {
+				MethodMetadata factoryMethodMetadata = ((AnnotatedBeanDefinition) definition)
+						.getFactoryMethodMetadata();
+				if (factoryMethodMetadata != null) {
+					String className = factoryMethodMetadata.getDeclaringClassName();
+					return !configClass.getName().equals(className);
 				}
 			}
-			return original;
+			return true;
 		}
 
 	}
