@@ -76,7 +76,6 @@ import org.springframework.util.StringUtils;
  * Many aspects of the behavior can be controller with {@link ManagementServerProperties}
  * via externalized application properties (or via an bean definition of that type to set
  * the defaults).
- *
  * <p>
  * The framework {@link Endpoint}s (used to expose application information to operations)
  * include a {@link Endpoint#isSensitive() sensitive} configuration option which will be
@@ -231,6 +230,22 @@ public class ManagementSecurityAutoConfiguration {
 			this.endpointHandlerMapping = endpointHandlerMapping;
 		}
 
+		protected final void deduceEndpointHandlerMappingIfMissing() {
+			if (this.endpointHandlerMapping == null) {
+				ApplicationContext context = (this.contextResolver == null ? null
+						: this.contextResolver.getApplicationContext());
+				if (context != null
+						&& context.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
+					this.endpointHandlerMapping = context
+							.getBean(EndpointHandlerMapping.class);
+				}
+				if (this.endpointHandlerMapping == null) {
+					this.endpointHandlerMapping = new EndpointHandlerMapping(
+							Collections.<MvcEndpoint> emptySet());
+				}
+			}
+		}
+
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			// secure endpoints
@@ -297,35 +312,32 @@ public class ManagementSecurityAutoConfiguration {
 
 			@Override
 			public boolean matches(HttpServletRequest request) {
-				EndpointHandlerMapping endpointMapping = ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping;
-				if (endpointMapping == null
-						&& ManagementWebSecurityConfigurerAdapter.this.contextResolver != null) {
-					ApplicationContext context = ManagementWebSecurityConfigurerAdapter.this.contextResolver
-							.getApplicationContext();
-					if (context != null
-							&& context.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
-						ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping = context
-								.getBean(EndpointHandlerMapping.class);
-					}
-				}
-				if (endpointMapping == null) {
-					ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping = new EndpointHandlerMapping(
-							Collections.<MvcEndpoint> emptySet());
-				}
+				ManagementWebSecurityConfigurerAdapter.this
+						.deduceEndpointHandlerMappingIfMissing();
 				if (this.delegate == null) {
-					List<RequestMatcher> pathMatchers = new ArrayList<RequestMatcher>();
-					String[] paths = !this.sensitive ? getEndpointPaths(endpointMapping,
-							false) : getEndpointPaths(endpointMapping);
-					for (String path : paths) {
-						pathMatchers.add(new AntPathRequestMatcher(
-								ManagementWebSecurityConfigurerAdapter.this.server
-										.getPath(path)));
-					}
-					this.delegate = pathMatchers.isEmpty() ? AnyRequestMatcher.INSTANCE
-							: new OrRequestMatcher(pathMatchers);
+					this.delegate = createDelegate();
 				}
 				return this.delegate.matches(request);
 			}
+
+			private RequestMatcher createDelegate() {
+				ServerProperties server = ManagementWebSecurityConfigurerAdapter.this.server;
+				List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
+				for (String path : getPaths()) {
+					matchers.add(new AntPathRequestMatcher(server.getPath(path)));
+				}
+				return (matchers.isEmpty() ? AnyRequestMatcher.INSTANCE
+						: new OrRequestMatcher(matchers));
+			}
+
+			private String[] getPaths() {
+				EndpointHandlerMapping endpointHandlerMapping = ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping;
+				if (this.sensitive) {
+					return getEndpointPaths(endpointHandlerMapping);
+				}
+				return getEndpointPaths(endpointHandlerMapping, false);
+			}
+
 		}
 
 	}
