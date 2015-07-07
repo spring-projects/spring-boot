@@ -2934,6 +2934,140 @@ more details.
 
 
 
+[[boot-features-amqp]]
+=== AMQP
+The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol for
+message-oriented middleware. The Spring AMQP project applies core Spring concepts to the development of
+AMQP-based messaging solutions.
+
+[[boot-features-rabbitmq]]
+==== RabbitMQ support
+RabbitMQ is a lightweight, reliable, scalable and portable message broker based on the AMQP protocol.
+Spring uses RabbitMQ to communicate using the AMQP protocol.
+
+RabbitMQ configuration is controlled by external configuration properties in
+`+spring.rabbitmq.*+`. For example, you might declare the following section in
+`application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.rabbitmq.host=localhost
+	spring.rabbitmq.port=5672
+	spring.rabbitmq.username=guest
+	spring.rabbitmq.password=guest
+----
+
+See
+{sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[`RabbitProperties`]
+for more of the supported options.
+
+TIP: Check http://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ]
+for more details.
+
+[[boot-features-using-amqp-template]]
+[[boot-features-using-amqp-sending]]
+==== Sending a message
+Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured and you can autowire them directly into your own
+beans:
+
+[source,java,indent=0]
+----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.amqp.core.AmqpAdmin;
+	import org.springframework.amqp.core.AmqpTemplate;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyBean {
+
+		private final AmqpAdmin amqpAdmin;
+
+		private final AmqpTemplate amqpTemplate;
+
+		@Autowired
+		public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
+			this.adminTemplate = adminTemplate;
+			this.amqpTemplate = amqpTemplate;
+		}
+
+		// ...
+
+	}
+----
+
+To send a message you should declare a queue using `AmqpAdmin` and then use `AmqpTemplate` to send
+the message to the declared queue.
+
+[source,java,indent=0]
+----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.amqp.core.AmqpAdmin;
+	import org.springframework.amqp.core.AmqpTemplate;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyBean {
+		// ...
+
+		@PostConstruct
+		public void setUpQueue() {
+			this.amqpAdmin.declareQueue(new Queue("foo"));
+		}
+
+		public void send() {
+			this.rabbitTemplate.convertAndSend("foo", "hello");
+		}
+
+	}
+----
+
+
+[[boot-features-using-amqp-receiving]]
+==== Receiving a message
+Spring's `ConnectionFactory` is auto-configured and you can autowire it directly into your own
+beans.
+
+To receive a message from a queue you should create a `SimpleMessageListenerContainer`
+using the configured `ConnectionFactory`. The `SimpleMessageListenerContainer` is
+responsible for handling incoming messages through it's `MessageListenerAdapter`.
+
+[source,java,indent=0]
+----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+	import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+	import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+
+	@SpringBootApplication
+	public class AmqpDemoApplication {
+
+		@Autowired
+		private ConnectionFactory connectionFactory;
+
+		@Bean
+		public SimpleMessageListenerContainer container() {
+			SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(
+					this.connectionFactory);
+			MessageListenerAdapter adapter = new MessageListenerAdapter(new Object() {
+				public void handleMessage(String msg) {
+					System.out.println(msg);
+				}
+			});
+			container.setMessageListener(adapter);
+			container.setQueueNames("foo");
+			return container;
+		}
+
+		// ...
+
+	}
+----
+
+In the code above the `SimpleMessageListenerContainer` was configured to receive messages from the declared "foo" queue.
+When a message is sent to "foo" queue it will be delivered to the handleMessage(String msg) method.
+
+
+
 [[boot-features-email]]
 == Sending email
 The Spring Framework provides an easy abstraction for sending email using the
