@@ -33,4 +33,3 @@ overridedb.*
 *.jar
 .DS_Store
 .factorypath
-data
