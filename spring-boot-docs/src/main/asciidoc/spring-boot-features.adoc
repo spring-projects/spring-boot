@@ -2894,7 +2894,7 @@ beans:
 ----
 
 NOTE: {spring-javadoc}/jms/core/JmsMessagingTemplate.{dc-ext}[`JmsMessagingTemplate`]
-(new in Spring 4.1) can be injected in a similar manner.
+can be injected in a similar manner.
 
 
 
