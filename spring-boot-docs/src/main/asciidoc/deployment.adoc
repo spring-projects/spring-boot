@@ -1,5 +1,5 @@
 [[deployment]]
-== Deploying Spring Boot applications
+= Deploying Spring Boot applications
 
 [partintro]
 --
