@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
+import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
@@ -39,6 +40,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -166,6 +168,17 @@ public class EndpointAutoConfigurationTests {
 				EndpointAutoConfiguration.class);
 		this.context.refresh();
 		FlywayEndpoint endpoint = this.context.getBean(FlywayEndpoint.class);
+		assertNotNull(endpoint);
+		assertEquals(1, endpoint.invoke().size());
+	}
+
+	@Test
+	public void testLiquibaseEndpoint() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.refresh();
+		LiquibaseEndpoint endpoint = this.context.getBean(LiquibaseEndpoint.class);
 		assertNotNull(endpoint);
 		assertEquals(1, endpoint.invoke().size());
 	}

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,7 @@ import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
+import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
@@ -176,6 +178,22 @@ public class EndpointAutoConfiguration {
 		@ConditionalOnMissingBean
 		public FlywayEndpoint flywayEndpoint() {
 			return new FlywayEndpoint(this.flyway);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(SpringLiquibase.class)
+	@ConditionalOnClass(SpringLiquibase.class)
+	static class LiquibaseProviderConfiguration {
+
+		@Autowired
+		private SpringLiquibase liquibase;
+
+		@Bean
+		@ConditionalOnMissingBean
+		public LiquibaseEndpoint liquibaseEndpoint() {
+			return new LiquibaseEndpoint(this.liquibase);
 		}
 
 	}
