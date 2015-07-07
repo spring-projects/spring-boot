@@ -16,29 +16,21 @@
 
 package sample.amqp;
 
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Date;
+
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@RabbitListener(queues = "foo")
+@EnableScheduling
 public class SampleAmqpSimpleApplication {
-
-	@Autowired
-	private AmqpTemplate amqpTemplate;
-
-	@Autowired
-	private ConnectionFactory connectionFactory;
-
-	@Bean
-	public ScheduledAnnotationBeanPostProcessor scheduledAnnotationBeanPostProcessor() {
-		return new ScheduledAnnotationBeanPostProcessor();
-	}
 
 	@Bean
 	public Sender mySender() {
@@ -46,19 +38,13 @@ public class SampleAmqpSimpleApplication {
 	}
 
 	@Bean
-	public SimpleMessageListenerContainer container() {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(
-				this.connectionFactory);
-		Object listener = new Object() {
-			@SuppressWarnings("unused")
-			public void handleMessage(String foo) {
-				System.out.println(foo);
-			}
-		};
-		MessageListenerAdapter adapter = new MessageListenerAdapter(listener);
-		container.setMessageListener(adapter);
-		container.setQueueNames("foo");
-		return container;
+	public Queue fooQueue() {
+		return new Queue("foo");
+	}
+
+	@RabbitHandler
+	public void process(@Payload String foo) {
+		System.out.println(new Date() + ": " + foo);
 	}
 
 	public static void main(String[] args) throws Exception {
