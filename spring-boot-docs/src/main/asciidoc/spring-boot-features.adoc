@@ -2939,6 +2939,8 @@ The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level p
 for message-oriented middleware. The Spring AMQP project applies core Spring concepts to
 the development of AMQP-based messaging solutions.
 
+
+
 [[boot-features-rabbitmq]]
 ==== RabbitMQ support
 RabbitMQ is a lightweight, reliable, scalable and portable message broker based on the
@@ -2956,12 +2958,13 @@ RabbitMQ configuration is controlled by external configuration properties in
 	spring.rabbitmq.password=secret
 ----
 
-See
-{sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[`RabbitProperties`]
+See {sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[`RabbitProperties`]
 for more of the supported options.
 
 TIP: Check http://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ]
 for more details.
+
+
 
 [[boot-features-using-amqp-sending]]
 ==== Sending a message
@@ -2999,15 +3002,14 @@ Any `org.springframework.amqp.core.Queue` that is defined as a bean will be auto
 used to declare a corresponding queue on the RabbitMQ instance if necessary.
 
 
+
 [[boot-features-using-amqp-receiving]]
 ==== Receiving a message
-
-When the Rabbit infrastructure is present, any bean can be annotated with `@RabbitListener`
-to create a listener endpoint. If no `RabbitListenerContainerFactory` has been defined, a
-default one is configured automatically.
+When the Rabbit infrastructure is present, any bean can be annotated with
+`@RabbitListener` to create a listener endpoint. If no `RabbitListenerContainerFactory`
+has been defined, a default one is configured automatically.
 
 The following component creates a listener endpoint on the `someQueue` queue:
-
 
 [source,java,indent=0]
 ----
