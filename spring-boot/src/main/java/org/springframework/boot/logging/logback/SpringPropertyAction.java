@@ -28,7 +28,7 @@ import ch.qos.logback.core.joran.spi.InterpretationContext;
 import ch.qos.logback.core.util.OptionHelper;
 
 /**
- * Lockback {@link Action} to support {@code <springProperty>} tags. Allows logback
+ * Logback {@link Action} to support {@code <springProperty>} tags. Allows logback
  * properties to be sourced from the Spring environment.
  *
  * @author Phillip Webb
