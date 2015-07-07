@@ -19,19 +19,26 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration.OAuth2ClientIdCondition;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
@@ -48,6 +55,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.OAuth2ClientConfiguration;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration for OAuth2 Single Sign On REST operations.
@@ -57,7 +65,7 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
  */
 @Configuration
 @ConditionalOnClass(EnableOAuth2Client.class)
-@ConditionalOnExpression("'${spring.oauth2.client.clientId:}'!=''")
+@Conditional(OAuth2ClientIdCondition.class)
 public class OAuth2RestOperationsConfiguration {
 
 	@Bean
@@ -158,4 +166,20 @@ public class OAuth2RestOperationsConfiguration {
 
 	}
 
+	/**
+	 * Condition to check if a {@code spring.oauth2.client.client-id} is specified.
+	 */
+	static class OAuth2ClientIdCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			PropertyResolver resolver = new RelaxedPropertyResolver(
+					context.getEnvironment(), "spring.oauth2.client.");
+			String clientId = resolver.getProperty("client-id");
+			return new ConditionOutcome(StringUtils.hasLength(clientId),
+					"Non empty spring.oauth2.client.client-id");
+		}
+
+	}
 }
