@@ -41,7 +41,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -51,10 +50,10 @@ import org.springframework.web.cors.CorsConfiguration;
  * @author Dave Syer
  * @since 1.3.0
  */
-@Configuration
+@ManagementContextConfiguration
 @EnableConfigurationProperties({ HealthMvcEndpointProperties.class,
 		EndpointCorsProperties.class })
-public class EndpointWebMvcConfiguration {
+public class EndpointWebMvcManagementContextConfiguration {
 
 	@Autowired
 	private ApplicationContext applicationContext;

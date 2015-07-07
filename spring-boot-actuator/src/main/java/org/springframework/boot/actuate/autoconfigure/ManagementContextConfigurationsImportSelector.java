@@ -23,19 +23,23 @@ import java.util.List;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
- * Selects configuration classes for the Actuator MVC endpoints. Customize the MVC
- * endpoints by adding an entries to <code>/META-INF/spring.factories</code> under the
- * {@link EndpointWebMvcConfiguration} key.
+ * Selects configuration classes for the management context configuration. Entries are
+ * loaded from {@code /META-INF/spring.factories} under the
+ * {@code org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration}
+ * key.
  *
  * @author Dave Syer
+ * @author Phillip Webb
+ * @see ManagementContextConfiguration
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-class EndpointWebMvcImportSelector implements DeferredImportSelector,
+class ManagementContextConfigurationsImportSelector implements DeferredImportSelector,
 		BeanClassLoaderAware {
 
 	private ClassLoader classLoader;
@@ -44,8 +48,9 @@ class EndpointWebMvcImportSelector implements DeferredImportSelector,
 	public String[] selectImports(AnnotationMetadata metadata) {
 		// Find all possible auto configuration classes, filtering duplicates
 		List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
-				SpringFactoriesLoader.loadFactoryNames(EndpointWebMvcConfiguration.class,
-						this.classLoader)));
+				SpringFactoriesLoader.loadFactoryNames(
+						ManagementContextConfiguration.class, this.classLoader)));
+		AnnotationAwareOrderComparator.sort(factories);
 		return factories.toArray(new String[0]);
 	}
 

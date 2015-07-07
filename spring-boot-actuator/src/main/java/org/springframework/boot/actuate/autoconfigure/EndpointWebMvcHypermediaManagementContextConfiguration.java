@@ -82,13 +82,13 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  * @author Dave Syer
  * @since 1.3.0
  */
-@Configuration
+@ManagementContextConfiguration
 @ConditionalOnClass(Link.class)
 @ConditionalOnWebApplication
 @ConditionalOnBean(HttpMessageConverters.class)
 @ConditionalOnProperty(value = "endpoints.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(ResourceProperties.class)
-public class EndpointWebMvcHypermediaConfiguration {
+public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(value = "endpoints.hal.enabled", matchIfMissing = true)
@@ -217,7 +217,7 @@ public class EndpointWebMvcHypermediaConfiguration {
 						if (isHomePage(path) && hasManagementPath()) {
 							String rel = this.management.getContextPath().substring(1);
 							resource.add(linkTo(
-									EndpointWebMvcHypermediaConfiguration.class).slash(
+									EndpointWebMvcHypermediaManagementContextConfiguration.class).slash(
 									this.management.getContextPath()).withRel(rel));
 						}
 						else {

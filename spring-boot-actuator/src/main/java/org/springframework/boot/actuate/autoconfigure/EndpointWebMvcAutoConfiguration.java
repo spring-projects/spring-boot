@@ -200,7 +200,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Configuration
 	@Conditional(OnManagementMvcCondition.class)
-	@Import(EndpointWebMvcImportSelector.class)
+	@Import(ManagementContextConfigurationsImportSelector.class)
 	protected static class EndpointWebMvcConfiguration {
 	}
 
