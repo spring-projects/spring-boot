@@ -109,7 +109,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private LoggingSystem loggingSystem;
 
-	private int order = Ordered.HIGHEST_PRECEDENCE + 11;
+	private int order = Ordered.HIGHEST_PRECEDENCE + 20;
 
 	private boolean parseArgs = true;
 
