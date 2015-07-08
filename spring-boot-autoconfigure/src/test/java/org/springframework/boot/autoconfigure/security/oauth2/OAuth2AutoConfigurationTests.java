@@ -138,8 +138,8 @@ public class OAuth2AutoConfigurationTests {
 	public void testEnvironmentalOverrides() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.oauth2.client.clientId:myclientid",
-				"spring.oauth2.client.clientSecret:mysecret");
+				"security.oauth2.client.clientId:myclientid",
+				"security.oauth2.client.clientSecret:mysecret");
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		this.context.refresh();
@@ -165,7 +165,7 @@ public class OAuth2AutoConfigurationTests {
 		this.context.register(ResourceServerConfiguration.class,
 				MinimalSecureWebApplication.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.oauth2.resource.jwt.keyValue:DEADBEEF");
+				"security.oauth2.resource.jwt.keyValue:DEADBEEF");
 		this.context.refresh();
 		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(1));
 		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(0));
@@ -190,7 +190,7 @@ public class OAuth2AutoConfigurationTests {
 	public void testAuthorizationServerOverride() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.oauth2.resourceId:resource-id");
+				"security.oauth2.resourceId:resource-id");
 		this.context.register(AuthorizationAndResourceServerConfiguration.class,
 				CustomAuthorizationServer.class, MinimalSecureWebApplication.class);
 		this.context.refresh();

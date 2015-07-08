@@ -83,7 +83,7 @@ public class OAuth2AuthorizationServerConfiguration extends
 
 		@PostConstruct
 		public void init() {
-			String prefix = "spring.oauth2.client";
+			String prefix = "security.oauth2.client";
 			boolean defaultSecret = this.credentials.isDefaultSecret();
 			logger.info(String.format(
 					"Initialized OAuth2 Client\n\n%s.clientId = %s\n%s.secret = %s\n\n",
@@ -101,7 +101,7 @@ public class OAuth2AuthorizationServerConfiguration extends
 		private OAuth2ClientProperties client;
 
 		@Bean
-		@ConfigurationProperties("spring.oauth2.client")
+		@ConfigurationProperties("security.oauth2.client")
 		public BaseClientDetails oauth2ClientDetails() {
 			BaseClientDetails details = new BaseClientDetails();
 			if (this.client.getClientId() == null) {

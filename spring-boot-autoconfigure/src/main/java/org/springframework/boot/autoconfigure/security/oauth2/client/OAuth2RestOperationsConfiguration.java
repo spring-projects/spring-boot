@@ -80,7 +80,7 @@ public class OAuth2RestOperationsConfiguration {
 	protected abstract static class BaseConfiguration {
 
 		@Bean
-		@ConfigurationProperties("spring.oauth2.client")
+		@ConfigurationProperties("security.oauth2.client")
 		@Primary
 		public AuthorizationCodeResourceDetails oauth2RemoteResource() {
 			AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
@@ -94,7 +94,7 @@ public class OAuth2RestOperationsConfiguration {
 	protected static class SingletonScopedConfiguration {
 
 		@Bean
-		@ConfigurationProperties("spring.oauth2.client")
+		@ConfigurationProperties("security.oauth2.client")
 		@Primary
 		public ClientCredentialsResourceDetails oauth2RemoteResource() {
 			ClientCredentialsResourceDetails details = new ClientCredentialsResourceDetails();
@@ -167,7 +167,7 @@ public class OAuth2RestOperationsConfiguration {
 	}
 
 	/**
-	 * Condition to check if a {@code spring.oauth2.client.client-id} is specified.
+	 * Condition to check if a {@code security.oauth2.client.client-id} is specified.
 	 */
 	static class OAuth2ClientIdCondition extends SpringBootCondition {
 
@@ -175,10 +175,10 @@ public class OAuth2RestOperationsConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			PropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), "spring.oauth2.client.");
+					context.getEnvironment(), "security.oauth2.client.");
 			String clientId = resolver.getProperty("client-id");
 			return new ConditionOutcome(StringUtils.hasLength(clientId),
-					"Non empty spring.oauth2.client.client-id");
+					"Non empty security.oauth2.client.client-id");
 		}
 
 	}

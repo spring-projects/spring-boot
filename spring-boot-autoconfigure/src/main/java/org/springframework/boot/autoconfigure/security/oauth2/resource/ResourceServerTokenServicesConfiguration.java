@@ -294,7 +294,7 @@ public class ResourceServerTokenServicesConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"spring.oauth2.resource.");
+					"security.oauth2.resource.");
 			Boolean preferTokenInfo = resolver.getProperty("prefer-token-info",
 					Boolean.class);
 			if (preferTokenInfo == null) {
@@ -321,7 +321,7 @@ public class ResourceServerTokenServicesConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), "spring.oauth2.resource.jwt.");
+					context.getEnvironment(), "security.oauth2.resource.jwt.");
 			String keyValue = resolver.getProperty("key-value");
 			String keyUri = resolver.getProperty("key-uri");
 			if (StringUtils.hasText(keyValue) || StringUtils.hasText(keyUri)) {

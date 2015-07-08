@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @since 1.3.0
  */
-@ConfigurationProperties("spring.oauth2.sso")
+@ConfigurationProperties("security.oauth2.sso")
 public class OAuth2SsoProperties {
 
 	public static final String DEFAULT_LOGIN_PATH = "/login";

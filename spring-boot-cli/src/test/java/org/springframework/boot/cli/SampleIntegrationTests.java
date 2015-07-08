@@ -81,9 +81,9 @@ public class SampleIntegrationTests {
 	public void oauth2Sample() throws Exception {
 		String output = this.cli.run("oauth2.groovy");
 		assertTrue("Wrong output: " + output,
-				output.contains("spring.oauth2.client.clientId"));
+				output.contains("security.oauth2.client.clientId"));
 		assertTrue("Wrong output: " + output,
-				output.contains("spring.oauth2.client.secret ="));
+				output.contains("security.oauth2.client.secret ="));
 	}
 
 	@Test

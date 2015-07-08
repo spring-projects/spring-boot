@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "security", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "security")
 public class SecurityProperties implements SecurityPrerequisite {
 
 	/**
