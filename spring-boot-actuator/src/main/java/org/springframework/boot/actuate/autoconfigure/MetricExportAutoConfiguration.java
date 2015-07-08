@@ -85,18 +85,20 @@ public class MetricExportAutoConfiguration {
 	@Configuration
 	protected static class MetricExportPropertiesConfiguration {
 
-		@Value("spring.metrics.${spring.application.name:application}.${random.value:0000}")
-		private String prefix = "spring.metrics";
+		@Value("${spring.application.name:application}.${random.value:0000}")
+		private String prefix = "";
 
-		@Value("d.d.k.d")
-		private String aggregateKeyPattern = "";
+		private String aggregateKeyPattern = "k.d";
 
 		@Bean(name = "spring.metrics.export.CONFIGURATION_PROPERTIES")
 		@ConditionalOnMissingBean
 		public MetricExportProperties metricExportProperties() {
 			MetricExportProperties export = new MetricExportProperties();
-			export.getRedis().setPrefix(this.prefix);
-			export.getRedis().setAggregateKeyPattern(this.aggregateKeyPattern);
+			export.getRedis().setPrefix(
+					"spring.metrics" + (this.prefix.length() > 0 ? "." : "")
+							+ this.prefix);
+			export.getAggregate().setPrefix(this.prefix);
+			export.getAggregate().setKeyPattern(this.aggregateKeyPattern);
 			return export;
 		}
 

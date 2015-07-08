@@ -39,6 +39,8 @@ public class MetricExportProperties extends TriggerProperties {
 	 */
 	private Map<String, SpecificTriggerProperties> triggers = new LinkedHashMap<String, SpecificTriggerProperties>();
 
+	private Aggregate aggregate = new Aggregate();
+
 	private Redis redis = new Redis();
 
 	@PostConstruct
@@ -85,6 +87,14 @@ public class MetricExportProperties extends TriggerProperties {
 		this.redis = redis;
 	}
 
+	public Aggregate getAggregate() {
+		return this.aggregate;
+	}
+
+	public void setAggregate(Aggregate aggregate) {
+		this.aggregate = aggregate;
+	}
+
 	/**
 	 * Find a matching trigger configuration.
 	 * @param name the bean name to match
@@ -102,29 +112,16 @@ public class MetricExportProperties extends TriggerProperties {
 	public static class Redis {
 
 		/**
-		 * Prefix for redis repository if active. Should be unique for this JVM, but most
-		 * useful if it also has the form "x.y.a.b" where "x.y" is globally unique across
-		 * all processes sharing the same repository, "a" is unique to this logical
-		 * process (this application) and "b" is unique to this physical process. If you
-		 * set spring.application.name elsewhere, then the default will be in the right
-		 * form.
+		 * Prefix for redis repository if active. Should be globally unique across all
+		 * processes sharing the same repository.
 		 */
 		private String prefix = "spring.metrics";
 
 		/**
 		 * Key for redis repository export (if active). Should be globally unique for a
-		 * system sharing a redis repository.
+		 * system sharing a redis repository across multiple processes.
 		 */
 		private String key = "keys.spring.metrics";
-
-		/**
-		 * Pattern that tells the aggregator what to do with the keys from the source
-		 * repository. The keys in the source repository are assumed to be period
-		 * separated, and the pattern is in the same format, e.g. "d.d.k.d". Here "d"
-		 * means "discard" and "k" means "keep" the key segment in the corresponding
-		 * position in the source.
-		 */
-		private String aggregateKeyPattern = "";
 
 		public String getPrefix() {
 			return this.prefix;
@@ -142,24 +139,62 @@ public class MetricExportProperties extends TriggerProperties {
 			this.key = key;
 		}
 
-		public String getAggregateKeyPattern() {
-			return this.aggregateKeyPattern;
-		}
-
-		public void setAggregateKeyPattern(String keyPattern) {
-			this.aggregateKeyPattern = keyPattern;
-		}
-
 		public String getAggregatePrefix() {
+			// The common case including a standalone aggregator would have a prefix that
+			// starts with the end of the key, so strip that bit off and call it the
+			// aggregate prefix.
 			if (this.key.startsWith("keys.")) {
-				return this.key.substring("keys.".length());
+				String candidate = this.key.substring("keys.".length());
+				if (this.prefix.startsWith(candidate)) {
+					return candidate;
+				}
+				return candidate;
 			}
-			// Something that is safe (not empty) but not the whole prefix (on the
-			// assumption that it contains dimension keys)
-			if (this.prefix.contains(".") && !this.prefix.endsWith(".")) {
-				return this.prefix.substring(this.prefix.indexOf("." + 1));
+			// If the user went off piste, choose something that is safe (not empty) but
+			// not the whole prefix (on the assumption that it contains dimension keys)
+			if (this.prefix.contains(".")
+					&& this.prefix.indexOf(".") < this.prefix.length() - 1) {
+				return this.prefix.substring(this.prefix.indexOf(".") + 1);
 			}
 			return this.prefix;
+		}
+
+	}
+
+	public static class Aggregate {
+
+		/**
+		 * Prefix for global repository if active. Should be unique for this JVM, but most
+		 * useful if it also has the form "a.b" where "a" is unique to this logical
+		 * process (this application) and "b" is unique to this physical process. If you
+		 * set spring.application.name elsewhere, then the default will be in the right
+		 * form.
+		 */
+		private String prefix = "";
+
+		/**
+		 * Pattern that tells the aggregator what to do with the keys from the source
+		 * repository. The keys in the source repository are assumed to be period
+		 * separated, and the pattern is in the same format, e.g. "d.d.k.d". Here "d"
+		 * means "discard" and "k" means "keep" the key segment in the corresponding
+		 * position in the source.
+		 */
+		private String keyPattern = "";
+
+		public String getPrefix() {
+			return this.prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getKeyPattern() {
+			return this.keyPattern;
+		}
+
+		public void setKeyPattern(String keyPattern) {
+			this.keyPattern = keyPattern;
 		}
 
 	}
