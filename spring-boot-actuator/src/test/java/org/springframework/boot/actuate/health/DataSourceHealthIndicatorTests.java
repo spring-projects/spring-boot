@@ -22,12 +22,15 @@ import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.actuate.health.DataSourceHealthIndicator.Product;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -95,6 +98,18 @@ public class DataSourceHealthIndicatorTests {
 		Health health = this.indicator.health();
 		assertNotNull(health.getDetails().get("database"));
 		verify(connection, times(2)).close();
+	}
+
+	@Test
+	public void productLooksups() throws Exception {
+		assertThat(Product.forProduct("newone"), nullValue());
+		assertThat(Product.forProduct("HSQL Database Engine"), equalTo(Product.HSQLDB));
+		assertThat(Product.forProduct("Oracle"), equalTo(Product.ORACLE));
+		assertThat(Product.forProduct("Apache Derby"), equalTo(Product.DERBY));
+		assertThat(Product.forProduct("DB2"), equalTo(Product.DB2));
+		assertThat(Product.forProduct("DB2/LINUXX8664"), equalTo(Product.DB2));
+		assertThat(Product.forProduct("Informix Dynamic Server"),
+				equalTo(Product.INFORMIX));
 	}
 
 }
