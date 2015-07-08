@@ -157,6 +157,12 @@
     "type": "java.lang.String",
     "description": "Spring MVC view suffix.",
     "deprecated": true
+  },
+  {
+    "name": "server.session-timeout",
+    "type": "java.lang.Integer",
+    "description": "Session timeout in seconds.",
+    "deprecated": true
   }
 ],"hints": [
   {

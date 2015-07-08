@@ -21,7 +21,12 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
 import javax.validation.constraints.NotNull;
 
 import org.apache.catalina.Context;
@@ -31,6 +36,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Session.Cookie;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -38,6 +44,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.InitParameterConfiguringServletContextInitializer;
 import org.springframework.boot.context.embedded.JspServlet;
+import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
@@ -73,11 +80,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	private InetAddress address;
 
 	/**
-	 * Session timeout in seconds.
-	 */
-	private Integer sessionTimeout;
-
-	/**
 	 * Context path of the application.
 	 */
 	private String contextPath;
@@ -86,6 +88,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 * Display name of the application.
 	 */
 	private String displayName = "application";
+
+	private Session session = new Session();
 
 	@NestedConfigurationProperty
 	private Ssl ssl;
@@ -192,12 +196,28 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		this.address = address;
 	}
 
+	/**
+	 * Set the session timeout
+	 * @return the session timeout
+	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
+	 */
+	@Deprecated
 	public Integer getSessionTimeout() {
-		return this.sessionTimeout;
+		return this.session.getTimeout();
 	}
 
+	/**
+	 * Get the session timeout
+	 * @param sessionTimeout the session timeout
+	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
+	 */
+	@Deprecated
 	public void setSessionTimeout(Integer sessionTimeout) {
-		this.sessionTimeout = sessionTimeout;
+		this.session.setTimeout(sessionTimeout);
+	}
+
+	public Session getSession() {
+		return this.session;
 	}
 
 	public Ssl getSsl() {
@@ -238,8 +258,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		if (getDisplayName() != null) {
 			container.setDisplayName(getDisplayName());
 		}
-		if (getSessionTimeout() != null) {
-			container.setSessionTimeout(getSessionTimeout());
+		if (getSession().getTimeout() != null) {
+			container.setSessionTimeout(getSession().getTimeout());
 		}
 		if (getSsl() != null) {
 			container.setSsl(getSsl());
@@ -258,6 +278,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			getUndertow().customizeUndertow(
 					(UndertowEmbeddedServletContainerFactory) container);
 		}
+		container.addInitializers(new SessionConfiguringInitializer(this.session));
 		container.addInitializers(new InitParameterConfiguringServletContextInitializer(
 				getContextParameters()));
 	}
@@ -286,6 +307,137 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			path = "/" + path;
 		}
 		return prefix + path;
+	}
+
+	public static class Session {
+
+		/**
+		 * Session timeout in seconds.
+		 */
+		private Integer timeout;
+
+		/**
+		 * Session tracking modes (one or more of the following: "cookie", "url", "ssl")
+		 */
+		private Set<SessionTrackingMode> trackingModes;
+
+		private Cookie cookie = new Cookie();
+
+		public Cookie getCookie() {
+			return this.cookie;
+		}
+
+		public Integer getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Integer sessionTimeout) {
+			this.timeout = sessionTimeout;
+		}
+
+		public Set<SessionTrackingMode> getTrackingModes() {
+			return this.trackingModes;
+		}
+
+		public void setTrackingModes(Set<SessionTrackingMode> trackingModes) {
+			this.trackingModes = trackingModes;
+		}
+
+		public static class Cookie {
+
+			/**
+			 * Session cookie name.
+			 */
+			private String name;
+
+			/**
+			 * Domain for the session cookie.
+			 */
+			private String domain;
+
+			/**
+			 * Path of the session cookie.
+			 */
+			private String path;
+
+			/**
+			 * Comment for the session cookie.
+			 */
+			private String comment;
+
+			/**
+			 * "HttpOnly" flag for the session cookie.
+			 */
+			private Boolean httpOnly;
+
+			/**
+			 * "Secure" flag for the session cookie.
+			 */
+			private Boolean secure;
+
+			/**
+			 * Maximum age of the session cookie in seconds.
+			 */
+			private Integer maxAge;
+
+			public String getName() {
+				return this.name;
+			}
+
+			public void setName(String name) {
+				this.name = name;
+			}
+
+			public String getDomain() {
+				return this.domain;
+			}
+
+			public void setDomain(String domain) {
+				this.domain = domain;
+			}
+
+			public String getPath() {
+				return this.path;
+			}
+
+			public void setPath(String path) {
+				this.path = path;
+			}
+
+			public String getComment() {
+				return this.comment;
+			}
+
+			public void setComment(String comment) {
+				this.comment = comment;
+			}
+
+			public Boolean getHttpOnly() {
+				return this.httpOnly;
+			}
+
+			public void setHttpOnly(Boolean httpOnly) {
+				this.httpOnly = httpOnly;
+			}
+
+			public Boolean getSecure() {
+				return this.secure;
+			}
+
+			public void setSecure(Boolean secure) {
+				this.secure = secure;
+			}
+
+			public Integer getMaxAge() {
+				return this.maxAge;
+			}
+
+			public void setMaxAge(Integer maxAge) {
+				this.maxAge = maxAge;
+			}
+
+		}
+
 	}
 
 	public static class Tomcat {
@@ -662,4 +814,51 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	}
 
+	/**
+	 * {@link ServletContextInitializer} to apply appropriate parts of the {@link Session}
+	 * configuration.
+	 */
+	private static class SessionConfiguringInitializer implements
+			ServletContextInitializer {
+
+		private final Session session;
+
+		public SessionConfiguringInitializer(Session session) {
+			this.session = session;
+		}
+
+		@Override
+		public void onStartup(ServletContext servletContext) throws ServletException {
+			if (this.session.getTrackingModes() != null) {
+				servletContext.setSessionTrackingModes(this.session.getTrackingModes());
+			}
+			configureSessionCookie(servletContext.getSessionCookieConfig());
+		}
+
+		private void configureSessionCookie(SessionCookieConfig config) {
+			Cookie cookie = this.session.getCookie();
+			if (cookie.getName() != null) {
+				config.setName(cookie.getName());
+			}
+			if (cookie.getDomain() != null) {
+				config.setDomain(cookie.getDomain());
+			}
+			if (cookie.getPath() != null) {
+				config.setPath(cookie.getPath());
+			}
+			if (cookie.getComment() != null) {
+				config.setComment(cookie.getComment());
+			}
+			if (cookie.getHttpOnly() != null) {
+				config.setHttpOnly(cookie.getHttpOnly());
+			}
+			if (cookie.getSecure() != null) {
+				config.setSecure(cookie.getSecure());
+			}
+			if (cookie.getMaxAge() != null) {
+				config.setMaxAge(cookie.getMaxAge());
+			}
+		}
+
+	}
 }

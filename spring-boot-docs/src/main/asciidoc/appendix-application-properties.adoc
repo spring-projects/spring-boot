@@ -65,7 +65,6 @@ content into your application; rather pick only the properties that you need.
 	# EMBEDDED SERVER CONFIGURATION ({sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[ServerProperties])
 	server.port=8080
 	server.address= # bind to a specific NIC
-	server.session-timeout= # session timeout in seconds
 	server.compression.enabled=false # if response compression is enabled
 	server.compression.mime-types=text/html,text/xml,text/plain,text/css # comma-separated list of MIME types that should be compressed
 	server.compression.min-response-size=2048 # minimum response size that is required for compression to be performed
@@ -76,6 +75,15 @@ content into your application; rather pick only the properties that you need.
 	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.servlet-path= # the servlet path, defaults to '/'
 	server.display-name= # the display name of the application
+	server.session.timeout= # session timeout in seconds
+	server.session.tracking-modes= # tracking modes (one or more of "cookie" ,"url", "ssl")
+	server.session.cookie.name=
+	server.session.cookie.domain=
+	server.session.cookie.path=
+	server.session.cookie.comment=
+	server.session.cookie.http-only=
+	server.session.cookie.secure=
+	server.session.cookie.max-age=
 	server.ssl.enabled=true # if SSL support is enabled
 	server.ssl.client-auth= # want or need
 	server.ssl.key-alias=

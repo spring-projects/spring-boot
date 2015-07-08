@@ -61,10 +61,9 @@ public class SessionAutoConfiguration {
 
 		@PostConstruct
 		public void applyConfigurationProperties() {
-			if (this.serverProperties.getSessionTimeout() != null) {
-				this.sessionRepository
-						.setDefaultMaxInactiveInterval(this.serverProperties
-								.getSessionTimeout());
+			Integer timeout = this.serverProperties.getSession().getTimeout();
+			if (timeout != null) {
+				this.sessionRepository.setDefaultMaxInactiveInterval(timeout);
 			}
 		}
 

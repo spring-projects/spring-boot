@@ -18,21 +18,34 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
+
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -47,6 +60,14 @@ import static org.mockito.Mockito.verify;
 public class ServerPropertiesTests {
 
 	private final ServerProperties properties = new ServerProperties();
+
+	@Captor
+	private ArgumentCaptor<ServletContextInitializer[]> initializersCaptor;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 
 	@Test
 	public void testAddressBinding() throws Exception {
@@ -121,6 +142,53 @@ public class ServerPropertiesTests {
 		this.properties.setDisplayName("TestName");
 		this.properties.customize(factory);
 		verify(factory).setDisplayName("TestName");
+	}
+
+	@Test
+	public void customizeSessionProperties() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.session.timeout", "123");
+		map.put("server.session.tracking-modes", "cookie,url");
+		map.put("server.session.cookie.name", "testname");
+		map.put("server.session.cookie.domain", "testdomain");
+		map.put("server.session.cookie.path", "/testpath");
+		map.put("server.session.cookie.comment", "testcomment");
+		map.put("server.session.cookie.http-only", "true");
+		map.put("server.session.cookie.secure", "true");
+		map.put("server.session.cookie.max-age", "60");
+		bindProperties(map);
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ServletContext servletContext = mock(ServletContext.class);
+		SessionCookieConfig sessionCookieConfig = mock(SessionCookieConfig.class);
+		given(servletContext.getSessionCookieConfig()).willReturn(sessionCookieConfig);
+		this.properties.customize(factory);
+		triggerInitializers(factory, servletContext);
+		verify(factory).setSessionTimeout(123);
+		verify(servletContext).setSessionTrackingModes(
+				EnumSet.of(SessionTrackingMode.COOKIE, SessionTrackingMode.URL));
+		verify(sessionCookieConfig).setName("testname");
+		verify(sessionCookieConfig).setDomain("testdomain");
+		verify(sessionCookieConfig).setPath("/testpath");
+		verify(sessionCookieConfig).setComment("testcomment");
+		verify(sessionCookieConfig).setHttpOnly(true);
+		verify(sessionCookieConfig).setSecure(true);
+		verify(sessionCookieConfig).setMaxAge(60);
+	}
+
+	private void triggerInitializers(ConfigurableEmbeddedServletContainer container,
+			ServletContext servletContext) throws ServletException {
+		verify(container, atLeastOnce()).addInitializers(
+				this.initializersCaptor.capture());
+		for (Object initializers : this.initializersCaptor.getAllValues()) {
+			if (initializers instanceof ServletContextInitializer) {
+				((ServletContextInitializer) initializers).onStartup(servletContext);
+			}
+			else {
+				for (ServletContextInitializer initializer : (ServletContextInitializer[]) initializers) {
+					initializer.onStartup(servletContext);
+				}
+			}
+		}
 	}
 
 	@Test
