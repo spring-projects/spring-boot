@@ -23,10 +23,13 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -41,7 +44,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	protected AnnotationConfigApplicationContext context;
 
-	private final Class<?> configClass;
+	protected final Class<?> configClass;
 
 	private final Class<?> type;
 
@@ -63,7 +66,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Before
 	public void setup() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(this.configClass);
+		this.context.register(JacksonAutoConfiguration.class, this.configClass);
 		this.context.refresh();
 	}
 
@@ -158,6 +161,14 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.register(this.configClass);
 		this.context.refresh();
 		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+	}
+
+	@Test
+	public void serialize() throws Exception {
+		Object result = getEndpointBean().invoke();
+		if (result != null) {
+			this.context.getBean(ObjectMapper.class).writeValue(System.out, result);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
