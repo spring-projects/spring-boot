@@ -52,4 +52,5 @@ public class AggregateMetricsConfiguration {
 		repository.setKeyPattern(this.export.getAggregate().getKeyPattern());
 		return repository;
 	}
+
 }

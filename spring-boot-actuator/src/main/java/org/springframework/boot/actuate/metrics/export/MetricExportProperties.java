@@ -83,16 +83,16 @@ public class MetricExportProperties extends TriggerProperties {
 		return this.redis;
 	}
 
-	public void setRedis(Redis redis) {
-		this.redis = redis;
-	}
-
 	public Aggregate getAggregate() {
 		return this.aggregate;
 	}
 
 	public void setAggregate(Aggregate aggregate) {
 		this.aggregate = aggregate;
+	}
+
+	public void setRedis(Redis redis) {
+		this.redis = redis;
 	}
 
 	/**
@@ -107,6 +107,44 @@ public class MetricExportProperties extends TriggerProperties {
 			}
 		}
 		return this;
+	}
+
+	public static class Aggregate {
+
+		/**
+		 * Prefix for global repository if active. Should be unique for this JVM, but most
+		 * useful if it also has the form "a.b" where "a" is unique to this logical
+		 * process (this application) and "b" is unique to this physical process. If you
+		 * set spring.application.name elsewhere, then the default will be in the right
+		 * form.
+		 */
+		private String prefix = "";
+
+		/**
+		 * Pattern that tells the aggregator what to do with the keys from the source
+		 * repository. The keys in the source repository are assumed to be period
+		 * separated, and the pattern is in the same format, e.g. "d.d.k.d". Here "d"
+		 * means "discard" and "k" means "keep" the key segment in the corresponding
+		 * position in the source.
+		 */
+		private String keyPattern = "";
+
+		public String getPrefix() {
+			return this.prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getKeyPattern() {
+			return this.keyPattern;
+		}
+
+		public void setKeyPattern(String keyPattern) {
+			this.keyPattern = keyPattern;
+		}
+
 	}
 
 	public static class Redis {
@@ -157,44 +195,6 @@ public class MetricExportProperties extends TriggerProperties {
 				return this.prefix.substring(this.prefix.indexOf(".") + 1);
 			}
 			return this.prefix;
-		}
-
-	}
-
-	public static class Aggregate {
-
-		/**
-		 * Prefix for global repository if active. Should be unique for this JVM, but most
-		 * useful if it also has the form "a.b" where "a" is unique to this logical
-		 * process (this application) and "b" is unique to this physical process. If you
-		 * set spring.application.name elsewhere, then the default will be in the right
-		 * form.
-		 */
-		private String prefix = "";
-
-		/**
-		 * Pattern that tells the aggregator what to do with the keys from the source
-		 * repository. The keys in the source repository are assumed to be period
-		 * separated, and the pattern is in the same format, e.g. "d.d.k.d". Here "d"
-		 * means "discard" and "k" means "keep" the key segment in the corresponding
-		 * position in the source.
-		 */
-		private String keyPattern = "";
-
-		public String getPrefix() {
-			return this.prefix;
-		}
-
-		public void setPrefix(String prefix) {
-			this.prefix = prefix;
-		}
-
-		public String getKeyPattern() {
-			return this.keyPattern;
-		}
-
-		public void setKeyPattern(String keyPattern) {
-			this.keyPattern = keyPattern;
 		}
 
 	}

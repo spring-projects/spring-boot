@@ -45,6 +45,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -170,20 +171,22 @@ public class EndpointWebMvcManagementContextConfiguration {
 	}
 
 	private static class LogFileCondition extends SpringBootCondition {
+
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String config = context.getEnvironment().resolvePlaceholders(
-					"${logging.file:}");
+			Environment environment = context.getEnvironment();
+			String config = environment.resolvePlaceholders("${logging.file:}");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome.match("Found logging.file: " + config);
 			}
-			config = context.getEnvironment().resolvePlaceholders("${logging.path:}");
+			config = environment.resolvePlaceholders("${logging.path:}");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome.match("Found logging.path: " + config);
 			}
 			return ConditionOutcome.noMatch("Found no log file configuration");
 		}
+
 	}
 
 }
