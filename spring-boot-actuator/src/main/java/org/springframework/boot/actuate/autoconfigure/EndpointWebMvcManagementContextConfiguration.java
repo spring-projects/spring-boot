@@ -36,12 +36,18 @@ import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 
 /**
@@ -151,6 +157,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnEnabledEndpoint("logfile")
+	@Conditional(LogFileCondition.class)
 	public LogFileMvcEndpoint logfileMvcEndpoint() {
 		return new LogFileMvcEndpoint();
 	}
@@ -160,6 +167,23 @@ public class EndpointWebMvcManagementContextConfiguration {
 	@ConditionalOnEnabledEndpoint(value = "shutdown", enabledByDefault = false)
 	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
 		return new ShutdownMvcEndpoint(delegate);
+	}
+
+	private static class LogFileCondition extends SpringBootCondition {
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			String config = context.getEnvironment().resolvePlaceholders(
+					"${logging.file:}");
+			if (StringUtils.hasText(config)) {
+				return ConditionOutcome.match("Found logging.file: " + config);
+			}
+			config = context.getEnvironment().resolvePlaceholders("${logging.path:}");
+			if (StringUtils.hasText(config)) {
+				return ConditionOutcome.match("Found logging.path: " + config);
+			}
+			return ConditionOutcome.noMatch("Found no log file configuration");
+		}
 	}
 
 }
