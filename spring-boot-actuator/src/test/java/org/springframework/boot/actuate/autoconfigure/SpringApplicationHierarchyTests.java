@@ -42,14 +42,17 @@ public class SpringApplicationHierarchyTests {
 	@Test
 	public void testParent() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Child.class);
+		builder.properties("flyway.enabled=false", "liquibase.enabled=false");
 		builder.parent(Parent.class);
 		this.context = builder.run("--server.port=0");
 	}
 
 	@Test
 	public void testChild() {
-		this.context = new SpringApplicationBuilder(Parent.class).child(Child.class).run(
-				"--server.port=0");
+		SpringApplicationBuilder builder = new SpringApplicationBuilder(Parent.class);
+		builder.properties("flyway.enabled=false", "liquibase.enabled=false");
+		builder.child(Child.class);
+		this.context = builder.run("--server.port=0");
 	}
 
 	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
