@@ -214,6 +214,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				// NOTE: We can't use the logger here to report the problem
 				System.err.println("Logging system failed to initialize "
 						+ "using configuration from '" + logConfig + "'");
+				ex.printStackTrace(System.err);
 				throw new IllegalStateException(ex);
 			}
 		}
