@@ -85,6 +85,10 @@ The following endpoints are available:
 |Exposes properties from Spring's `ConfigurableEnvironment`.
 |true
 
+|`flyway`
+|Shows any Flyway database migrations that have been applied.
+|true
+
 |`health`
 |Shows application health information (when the application is secure, a simple '`status`' when accessed over an
 unauthenticated connection or full message details when authenticated).
@@ -93,6 +97,10 @@ unauthenticated connection or full message details when authenticated).
 |`info`
 |Displays arbitrary application info.
 |false
+
+|`liquibase`
+|Shows any Liquibase database migrations that have been applied.
+|true
 
 |`logfile`
 |Returns the contents of the logfile (if `logging.file` or `logging.path` properties have

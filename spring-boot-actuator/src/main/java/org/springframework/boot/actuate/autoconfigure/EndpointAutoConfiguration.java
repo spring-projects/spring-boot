@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import liquibase.integration.spring.SpringLiquibase;
+
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
@@ -33,8 +36,10 @@ import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEn
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
+import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
@@ -45,12 +50,15 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,8 +78,10 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Greg Turnquist
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @Configuration
+@AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 public class EndpointAutoConfiguration {
 
 	@Autowired
@@ -159,6 +169,32 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
 		return new ConfigurationPropertiesReportEndpoint();
+	}
+
+	@Configuration
+	@ConditionalOnBean(Flyway.class)
+	@ConditionalOnClass(Flyway.class)
+	static class FlywayEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public FlywayEndpoint flywayEndpoint(Flyway flyway) {
+			return new FlywayEndpoint(flyway);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(SpringLiquibase.class)
+	@ConditionalOnClass(SpringLiquibase.class)
+	static class LiquibaseEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public LiquibaseEndpoint liquibaseEndpoint(SpringLiquibase liquibase) {
+			return new LiquibaseEndpoint(liquibase);
+		}
+
 	}
 
 	@Configuration

@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +52,9 @@ public class AutoConfigurationReportEndpointTests extends
 
 	@Test
 	public void invoke() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(this.configClass);
+		this.context.refresh();
 		Report report = getEndpointBean().invoke();
 		assertTrue(report.getPositiveMatches().isEmpty());
 		assertTrue(report.getNegativeMatches().containsKey("a"));
