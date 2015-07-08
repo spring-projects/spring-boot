@@ -61,8 +61,8 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 	}
 
 	/**
-	 * Time to live for cached result. If accessed anonymously, we might need to cache the
-	 * result of this endpoint to prevent a DOS attack.
+	 * Time to live for cached result. This is particularly useful to cache the
+	 * result of this endpoint to prevent a DOS attack if it is accessed anonymously.
 	 * @return time to live in milliseconds (default 1000)
 	 */
 	public long getTimeToLive() {
