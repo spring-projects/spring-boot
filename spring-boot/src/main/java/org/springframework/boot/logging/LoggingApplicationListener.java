@@ -202,7 +202,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				environment);
 		LogFile logFile = LogFile.get(environment);
 		String logConfig = environment.getProperty(CONFIG_PROPERTY);
-		if (StringUtils.hasLength(logConfig)) {
+		if (ignoreLogConfig(logConfig)) {
+			system.initialize(initializationContext, null, logFile);
+		}
+		else {
 			try {
 				ResourceUtils.getURL(logConfig).openStream().close();
 				system.initialize(initializationContext, logConfig, logFile);
@@ -211,13 +214,18 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				// NOTE: We can't use the logger here to report the problem
 				System.err.println("Logging system failed to initialize "
 						+ "using configuration from '" + logConfig + "'");
-				ex.printStackTrace(System.err);
 				throw new IllegalStateException(ex);
 			}
 		}
-		else {
-			system.initialize(initializationContext, null, logFile);
-		}
+	}
+
+	private boolean ignoreLogConfig(String logConfig) {
+		return !StringUtils.hasLength(logConfig)
+				|| isDefaultAzureLoggingConfig(logConfig);
+	}
+
+	private boolean isDefaultAzureLoggingConfig(String candidate) {
+		return candidate.startsWith("-Djava.util.logging.config.file=");
 	}
 
 	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,
