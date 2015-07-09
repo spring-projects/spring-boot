@@ -172,7 +172,6 @@ public class Repackager {
 		try {
 			final List<Library> unpackLibraries = new ArrayList<Library>();
 			final List<Library> standardLibraries = new ArrayList<Library>();
-
 			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
 				public void library(Library library) throws IOException {
