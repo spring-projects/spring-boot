@@ -26,7 +26,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.event.SmartApplicationListener;
-import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -40,7 +39,7 @@ import org.springframework.core.ResolvableType;
 public final class ClasspathLoggingApplicationListener implements
 		GenericApplicationListener {
 
-	private static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 12;
+	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 1;
 
 	private final Log logger = LogFactory.getLog(getClass());
 

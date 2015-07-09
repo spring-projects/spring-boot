@@ -65,6 +65,11 @@ import org.springframework.util.StringUtils;
 public class LoggingApplicationListener implements GenericApplicationListener {
 
 	/**
+	 * The default order for the LoggingApplicationListener.
+	 */
+	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 20;
+
+	/**
 	 * The name of the Spring property that contains a reference to the logging
 	 * configuration to load.
 	 */
@@ -109,7 +114,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private LoggingSystem loggingSystem;
 
-	private int order = Ordered.HIGHEST_PRECEDENCE + 20;
+	private int order = DEFAULT_ORDER;
 
 	private boolean parseArgs = true;
 
