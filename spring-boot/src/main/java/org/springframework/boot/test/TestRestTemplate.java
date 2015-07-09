@@ -94,7 +94,7 @@ public class TestRestTemplate extends RestTemplate {
 	/**
 	 * Options used to customize the Apache Http Client if it is used.
 	 */
-	public static enum HttpClientOption {
+	public enum HttpClientOption {
 
 		/**
 		 * Enable cookies.

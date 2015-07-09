@@ -47,7 +47,7 @@ public interface FailureHandler {
 	/**
 	 * Various outcomes for the handler.
 	 */
-	public static enum Outcome {
+	enum Outcome {
 
 		/**
 		 * Abort the relaunch.

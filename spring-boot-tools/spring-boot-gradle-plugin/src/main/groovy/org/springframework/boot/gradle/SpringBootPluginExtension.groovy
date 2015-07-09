@@ -41,7 +41,7 @@ import org.springframework.boot.loader.tools.Layouts
  */
 public class SpringBootPluginExtension {
 
-	static enum LayoutType {
+	enum LayoutType {
 
 		JAR(new Layouts.Jar()),
 

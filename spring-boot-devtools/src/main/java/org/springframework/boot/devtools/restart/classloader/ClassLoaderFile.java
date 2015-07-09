@@ -90,7 +90,7 @@ public class ClassLoaderFile implements Serializable {
 	/**
 	 * The kinds of class load files.
 	 */
-	public static enum Kind {
+	public enum Kind {
 
 		/**
 		 * The file has been added since the original JAR was created.

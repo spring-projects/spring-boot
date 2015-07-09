@@ -150,7 +150,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 	public static class Headers {
 
-		public static enum HSTS {
+		public enum HSTS {
 			NONE, DOMAIN, ALL
 		}
 

@@ -184,7 +184,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 
 	}
 
-	protected static enum Product {
+	protected enum Product {
 
 		HSQLDB("HSQL Database Engine",
 				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS"),

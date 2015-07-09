@@ -232,7 +232,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		return null;
 	}
 
-	public static enum LayoutType {
+	public enum LayoutType {
 
 		/**
 		 * Jar Layout

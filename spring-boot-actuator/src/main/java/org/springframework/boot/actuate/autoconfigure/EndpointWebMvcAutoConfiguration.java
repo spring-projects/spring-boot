@@ -296,7 +296,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	}
 
-	protected static enum ManagementServerPort {
+	protected enum ManagementServerPort {
 
 		DISABLE, SAME, DIFFERENT;
 
