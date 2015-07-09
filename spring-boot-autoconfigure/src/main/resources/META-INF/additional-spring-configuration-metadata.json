@@ -177,28 +177,6 @@
     ]
   },
   {
-    "name": "server.tomcat.compression",
-    "values": [
-      {
-        "value": "off",
-        "description": "Disable compression."
-      },
-      {
-        "value": "on",
-        "description": "Enable compression of responses over 2048 bytes."
-      },
-      {
-        "value": "force",
-        "description": "Enable compression of all responses."
-      }
-    ],
-    "providers": [
-      {
-        "name": "any"
-      }
-    ]
-  },
-  {
     "name": "spring.cache.jcache.provider",
     "providers": [
       {
