@@ -138,6 +138,7 @@ content into your application; rather pick only the properties that you need.
 	# SPRING RESOURCES HANDLING ({sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[ResourceProperties])
 	spring.resources.cache-period= # cache timeouts in headers sent to browser
 	spring.resources.add-mappings=true # if default mappings should be added
+	spring.resources.static-locations= # comma list of the locations that serve static content (e.g. 'classpath:/resources/')
 	spring.resources.chain.enabled=false # enable the Spring Resource Handling chain (enabled automatically if at least a strategy is enabled)
 	spring.resources.chain.cache=false # enable in-memory caching of resource resolution
 	spring.resources.chain.html-application-cache=false # enable HTML5 appcache manifest rewriting
