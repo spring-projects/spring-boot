@@ -142,7 +142,6 @@ public class RepackagerTests {
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(NO_LIBRARIES);
 		repackager.repackage(NO_LIBRARIES);
-
 		Manifest actualManifest = getManifest(file);
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"),
 				equalTo("org.springframework.boot.loader.JarLauncher"));
@@ -396,7 +395,7 @@ public class RepackagerTests {
 
 	@Test
 	public void unpackLibrariesTakePrecedenceOverExistingSourceEntries() throws Exception {
-		final TestJarFile nested = new TestJarFile(this.temporaryFolder);
+		TestJarFile nested = new TestJarFile(this.temporaryFolder);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		final File nestedFile = nested.getFile();
 		this.testJarFile.addFile("lib/" + nestedFile.getName(), nested.getFile());
@@ -411,7 +410,6 @@ public class RepackagerTests {
 			}
 
 		});
-
 		JarFile jarFile = new JarFile(file);
 		try {
 			assertThat(jarFile.getEntry("lib/" + nestedFile.getName()).getComment(),
@@ -425,16 +423,14 @@ public class RepackagerTests {
 	@Test
 	public void existingSourceEntriesTakePrecedenceOverStandardLibraries()
 			throws Exception {
-		final TestJarFile nested = new TestJarFile(this.temporaryFolder);
+		TestJarFile nested = new TestJarFile(this.temporaryFolder);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		final File nestedFile = nested.getFile();
 		this.testJarFile.addFile("lib/" + nestedFile.getName(), nested.getFile());
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
-
 		long sourceLength = nestedFile.length();
-
 		repackager.repackage(new Libraries() {
 
 			@Override
@@ -446,7 +442,6 @@ public class RepackagerTests {
 			}
 
 		});
-
 		JarFile jarFile = new JarFile(file);
 		try {
 			assertThat(jarFile.getEntry("lib/" + nestedFile.getName()).getSize(),
