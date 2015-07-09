@@ -84,7 +84,7 @@ public class CacheAutoConfiguration {
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 				throws BeansException {
-			for (String name : beanFactory.getBeanNamesForType(CacheAspectSupport.class)) {
+			for (String name : beanFactory.getBeanNamesForType(CacheAspectSupport.class, false, false)) {
 				BeanDefinition definition = beanFactory.getBeanDefinition(name);
 				definition.setDependsOn(append(definition.getDependsOn(),
 						VALIDATOR_BEAN_NAME));
