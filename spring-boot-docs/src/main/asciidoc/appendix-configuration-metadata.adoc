@@ -455,7 +455,9 @@ property that defines the `JspServlet` class name to use:
 
 ===== Enum
 The **enum** provider auto-completes the values of the `Enum` class referenced via the
-`target` parameter. This provider supports these parameters:
+`target` parameter. This may be handy when the property has a `java.lang.String` type
+because you don't want your configuration classes to rely on classes that may not be
+on the classpath. This provider supports these parameters:
 
 [cols="1,1,2,4"]
 |===
@@ -467,6 +469,8 @@ The **enum** provider auto-completes the values of the `Enum` class referenced v
 |The fully qualified name of the `Enum` class. This parameter is mandatory.
 |===
 
+TIP: By all means, try to define the property with the `Enum` type instead as
+no further hint should be required for the IDE to auto-complete the values.
 
 The meta-data snippet below corresponds to the standard `spring.jooq.sql-dialect`
 property that defines the `SQLDialect` class name to use:
@@ -487,9 +491,6 @@ property that defines the `SQLDialect` class name to use:
 		},
     ]}
 ----
-
-TIP: This is useful when you don't want your configuration classes to rely on classes
-that may not be on the classpath.
 
 
 
