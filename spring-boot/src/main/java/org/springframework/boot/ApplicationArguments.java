@@ -31,14 +31,14 @@ public interface ApplicationArguments {
 	 * Return the raw unprocessed arguments that were passed to the application.
 	 * @return the arguments
 	 */
-	public String[] getSourceArgs();
+	String[] getSourceArgs();
 
 	/**
 	 * Return then names of all option arguments. For example, if the arguments were
-	 * "--foo=bar --debug" would return the values {@code ["foo", "bar"]}.
+	 * "--foo=bar --debug" would return the values {@code ["foo", "debug"]}.
 	 * @return the option names or an empty set
 	 */
-	public Set<String> getOptionNames();
+	Set<String> getOptionNames();
 
 	/**
 	 * Return whether the set of option arguments parsed from the arguments contains an
