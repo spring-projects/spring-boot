@@ -184,12 +184,49 @@ TIP: It is often desirable to call `setWebEnvironment(false)` when using
 
 
 
+[[boot-features-application-arguments]]
+=== Accessing application arguments
+If you need to access the application arguments that were passed to
+`SpringApplication.run(...)` you can inject a
+`org.springframework.boot.ApplicationArguments` bean. The `ApplicationArguments` interface
+provides access to both the raw `String[]` arguments as well as parsed `option` and
+`non-option` arguments:
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.*
+	import org.springframework.beans.factory.annotation.*
+	import org.springframework.stereotype.*
+
+	@Component
+	public class MyBean {
+
+		@Autowired
+		public MyBean(ApplicationArguments args) {
+			boolean debug = args.containsOption("debug");
+			List<String> files = args.getNonOptionArgs();
+			// if run with "--debug logfile.txt" debug=true, files=["logfile.txt"]
+		}
+
+	}
+----
+
+TIP: Spring Boot will also register a `CommandLinePropertySource` with the Spring
+`Environment`. This allows you to also inject single application arguments using the
+`@Value` annotation.
+
+
+
 [[boot-features-command-line-runner]]
-=== Using the CommandLineRunner
-If you want access to the raw command line arguments, or you need to run some specific
-code once the `SpringApplication` has started you can implement the `CommandLineRunner`
-interface. The `run(String... args)` method will be called on all Spring beans
-implementing this interface.
+=== Using the ApplicationRunner or CommandLineRunner
+If you need to run some specific code once the `SpringApplication` has started, you can
+implement the `ApplicationRunner` or `CommandLineRunner` interfaces. Both interfaces work
+in the same way and offer a single `run` method which will be called just before
+`SpringApplication.run(...)` completes.
+
+The `CommandLineRunner` interfaces provides access to application arguments as a simple
+string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface
+discussed above.
 
 [source,java,indent=0]
 ----
@@ -199,16 +236,16 @@ implementing this interface.
 	@Component
 	public class MyBean implements CommandLineRunner {
 
-	    public void run(String... args) {
-	        // Do something...
-	    }
+		public void run(String... args) {
+			// Do something...
+		}
 
 	}
 ----
 
 You can additionally implement the `org.springframework.core.Ordered` interface or use the
-`org.springframework.core.annotation.Order` annotation if several `CommandLineRunner`
-beans are defined that must be called in a specific order.
+`org.springframework.core.annotation.Order` annotation if several `CommandLineRunner` or
+`ApplicationRunner` beans are defined that must be called in a specific order.
 
 
 

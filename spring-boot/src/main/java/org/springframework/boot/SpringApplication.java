@@ -271,7 +271,6 @@ public class SpringApplication {
 		listeners.started();
 		try {
 			context = doRun(listeners, args);
-
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(
@@ -328,6 +327,11 @@ public class SpringApplication {
 			logStartupInfo(context.getParent() == null);
 		}
 
+		// Add boot specific singleton beans
+		ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+		context.getBeanFactory().registerSingleton("springApplicationArguments",
+				applicationArguments);
+
 		// Load the sources
 		Set<Object> sources = getSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
@@ -336,7 +340,7 @@ public class SpringApplication {
 
 		// Refresh the context
 		refresh(context);
-		afterRefresh(context, args);
+		afterRefresh(context, applicationArguments);
 		listeners.finished(context, null);
 		return context;
 	}
@@ -654,20 +658,6 @@ public class SpringApplication {
 		return new BeanDefinitionLoader(registry, sources);
 	}
 
-	private void runCommandLineRunners(ApplicationContext context, String... args) {
-		List<CommandLineRunner> runners = new ArrayList<CommandLineRunner>(context
-				.getBeansOfType(CommandLineRunner.class).values());
-		AnnotationAwareOrderComparator.sort(runners);
-		for (CommandLineRunner runner : runners) {
-			try {
-				runner.run(args);
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Failed to execute CommandLineRunner", ex);
-			}
-		}
-	}
-
 	/**
 	 * Refresh the underlying {@link ApplicationContext}.
 	 * @param applicationContext the application context to refresh
@@ -677,8 +667,59 @@ public class SpringApplication {
 		((AbstractApplicationContext) applicationContext).refresh();
 	}
 
+	/**
+	 * Called after the context has been refreshed.
+	 * @param context the application context
+	 * @param args the application argumments
+	 */
+	protected void afterRefresh(ConfigurableApplicationContext context,
+			ApplicationArguments args) {
+		afterRefresh(context, args.getSourceArgs());
+		callRunners(context, args);
+	}
+
+	private void callRunners(ApplicationContext context, ApplicationArguments args) {
+		List<Object> runners = new ArrayList<Object>();
+		runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());
+		runners.addAll(context.getBeansOfType(CommandLineRunner.class).values());
+		AnnotationAwareOrderComparator.sort(runners);
+		for (Object runner : new LinkedHashSet<Object>(runners)) {
+			if (runner instanceof ApplicationRunner) {
+				callRunner((ApplicationRunner) runner, args);
+			}
+			if (runner instanceof CommandLineRunner) {
+				callRunner((CommandLineRunner) runner, args);
+			}
+		}
+	}
+
+	private void callRunner(ApplicationRunner runner, ApplicationArguments args) {
+		try {
+			(runner).run(args);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to execute ApplicationRunner", ex);
+		}
+	}
+
+	private void callRunner(CommandLineRunner runner, ApplicationArguments args) {
+		try {
+			(runner).run(args.getSourceArgs());
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to execute CommandLineRunner", ex);
+		}
+	}
+
+	/**
+	 * Called after the context has been refreshed.
+	 * @param context the application context
+	 * @param args the application argumments
+	 * @deprecated in 1.3 in favor of
+	 * {@link #afterRefresh(ConfigurableApplicationContext, ApplicationArguments)}
+	 */
+	@Deprecated
 	protected void afterRefresh(ConfigurableApplicationContext context, String[] args) {
-		runCommandLineRunners(context, args);
 	}
 
 	/**
