@@ -35,6 +35,7 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 import org.springframework.util.FileCopyUtils;
+import org.zeroturnaround.zip.ZipUtil;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -426,6 +427,69 @@ public class RepackagerTests {
 		}
 		catch (UnsupportedOperationException ex) {
 			// Probably running the test on Windows
+		}
+	}
+
+	@Test
+	public void unpackLibrariesTakePrecedenceOverExistingSourceEntries() throws Exception {
+		final TestJarFile nested = new TestJarFile(this.temporaryFolder);
+		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		final File nestedFile = nested.getFile();
+		this.testJarFile.addFile("lib/" + nestedFile.getName(), nested.getFile());
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		repackager.repackage(new Libraries() {
+
+			@Override
+			public void doWithLibraries(LibraryCallback callback) throws IOException {
+				callback.library(new Library(nestedFile, LibraryScope.COMPILE, true));
+			}
+
+		});
+
+		JarFile jarFile = new JarFile(file);
+		try {
+			assertThat(jarFile.getEntry("lib/" + nestedFile.getName()).getComment(),
+					startsWith("UNPACK:"));
+		}
+		finally {
+			jarFile.close();
+		}
+	}
+
+	@Test
+	public void existingSourceEntriesTakePrecedenceOverStandardLibraries()
+			throws Exception {
+		final TestJarFile nested = new TestJarFile(this.temporaryFolder);
+		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		final File nestedFile = nested.getFile();
+		this.testJarFile.addFile("lib/" + nestedFile.getName(), nested.getFile());
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+
+		long sourceLength = nestedFile.length();
+
+		repackager.repackage(new Libraries() {
+
+			@Override
+			public void doWithLibraries(LibraryCallback callback) throws IOException {
+				nestedFile.delete();
+				File toZip = RepackagerTests.this.temporaryFolder.newFile();
+				ZipUtil.packEntry(toZip, nestedFile);
+				callback.library(new Library(nestedFile, LibraryScope.COMPILE));
+			}
+
+		});
+
+		JarFile jarFile = new JarFile(file);
+		try {
+			assertThat(jarFile.getEntry("lib/" + nestedFile.getName()).getSize(),
+					equalTo(sourceLength));
+		}
+		finally {
+			jarFile.close();
 		}
 	}
 

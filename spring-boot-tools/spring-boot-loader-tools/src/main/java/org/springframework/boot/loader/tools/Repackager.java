@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -166,29 +168,30 @@ public class Repackager {
 
 	private void repackage(JarFile sourceJar, File destination, Libraries libraries,
 			LaunchScript launchScript) throws IOException {
-		final JarWriter writer = new JarWriter(destination, launchScript);
+		JarWriter writer = new JarWriter(destination, launchScript);
 		try {
-			final Set<String> seen = new HashSet<String>();
-			writer.writeManifest(buildManifest(sourceJar));
+			final List<Library> unpackLibraries = new ArrayList<Library>();
+			final List<Library> standardLibraries = new ArrayList<Library>();
+
 			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
 				public void library(Library library) throws IOException {
 					File file = library.getFile();
 					if (isZip(file)) {
-						String destination = Repackager.this.layout
-								.getLibraryDestination(library.getName(),
-										library.getScope());
-						if (destination != null) {
-							if (!seen.add(destination + library.getName())) {
-								throw new IllegalStateException("Duplicate library "
-										+ library.getName());
-							}
-							writer.writeNestedLibrary(destination, library);
+						if (library.isUnpackRequired()) {
+							unpackLibraries.add(library);
+						}
+						else {
+							standardLibraries.add(library);
 						}
 					}
 				}
 			});
+			writer.writeManifest(buildManifest(sourceJar));
+			Set<String> seen = new HashSet<String>();
+			writeNestedLibraries(unpackLibraries, seen, writer);
 			writer.writeEntries(sourceJar);
+			writeNestedLibraries(standardLibraries, seen, writer);
 			if (this.layout.isExecutable()) {
 				writer.writeLoaderClasses();
 			}
@@ -199,6 +202,21 @@ public class Repackager {
 			}
 			catch (Exception ex) {
 				// Ignore
+			}
+		}
+	}
+
+	private void writeNestedLibraries(List<Library> libraries, Set<String> alreadySeen,
+			JarWriter writer) throws IOException {
+		for (Library library : libraries) {
+			String destination = Repackager.this.layout.getLibraryDestination(
+					library.getName(), library.getScope());
+			if (destination != null) {
+				if (!alreadySeen.add(destination + library.getName())) {
+					throw new IllegalStateException("Duplicate library "
+							+ library.getName());
+				}
+				writer.writeNestedLibrary(destination, library);
 			}
 		}
 	}
