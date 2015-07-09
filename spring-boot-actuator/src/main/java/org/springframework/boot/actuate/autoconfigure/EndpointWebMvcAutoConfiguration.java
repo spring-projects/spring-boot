@@ -274,8 +274,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	}
 
-	private static class OnManagementMvcCondition extends SpringBootCondition
-			implements ConfigurationCondition {
+	private static class OnManagementMvcCondition extends SpringBootCondition implements
+			ConfigurationCondition {
 
 		@Override
 		public ConfigurationPhase getConfigurationPhase() {
