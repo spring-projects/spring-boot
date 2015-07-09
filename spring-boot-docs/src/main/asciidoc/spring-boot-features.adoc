@@ -73,7 +73,7 @@ display (surrounded with brackets and prefixed with `v`). For example `(v1.0)`.
 |The Spring Boot version that you are using formatted for display (surrounded with
 brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
 
-|`${Ansi.NAME}`,
+|`${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`)
 |Where `NAME` is the name of an ANSI escape code. See
 {sc-spring-boot}/ansi/AnsiPropertySource.{sc-ext}[`AnsiPropertySource`] for details.
 |===

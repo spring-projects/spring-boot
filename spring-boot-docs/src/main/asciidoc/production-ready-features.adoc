@@ -161,16 +161,16 @@ For example, the following will disable _all_ endpoints except for `info`:
 
 
 [[production-ready-endpoint-hypermedia]]
-=== Hypermedia for MVC Endpoints
+=== Hypermedia for actuator MVC endpoints
 If http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
 through the `spring-boot-starter-hateoas` or if you are using
 http://projects.spring.io/spring-data-rest[Spring Data REST]) then the HTTP endpoints
-from the Actuator are enhanced with hypermedia links, and a "discovery page" is added
-with links to all the endpoints. The "discovery page" is actually an endpoint itself,
+from the Actuator are enhanced with hypermedia links, and a "`discovery page`" is added
+with links to all the endpoints. The "`discovery page`" is actually an endpoint itself,
 so it can be disabled along with the rest of the hypermedia by setting
 `endpoints.links.enabled=false`. If it is not explicitly disabled the links
 endpoint renders a JSON object with a link for each other endpoint, and the default
-path is the same as the `management.contentPath` (so "`/`" by default).
+path is the same as the `management.content-path` (so "`/`" by default).
 
 NOTE: if there is a static home page ("`index.html`") in your application and the links
 endpoint is registered with its default path ("`/`") then content negotiation will kick in
@@ -186,7 +186,7 @@ the other endpoints.
 
 
 [[production-ready-customizing-endpoints-programmatically]]
-=== Adding Custom Endpoints
+=== Adding custom endpoints
 If you add a `@Bean` of type `Endpoint` then it will automatically be exposed over JMX and
 HTTP (if there is an server available). An HTTP endpoints can be customized further by
 creating a bean of type `MvcEndpoint`. Your `MvcEndpoint` is not a `@Controller` but it
