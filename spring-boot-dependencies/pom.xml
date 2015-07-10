@@ -564,6 +564,12 @@
 				<groupId>com.hazelcast</groupId>
 				<artifactId>hazelcast</artifactId>
 				<version>${hazelcast.version}</version>
+				<exclusions> <!-- https://github.com/hazelcast/hazelcast/issues/5678 -->
+					<exclusion>
+						<groupId>org.freemarker</groupId>
+						<artifactId>freemarker</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.hazelcast</groupId>
