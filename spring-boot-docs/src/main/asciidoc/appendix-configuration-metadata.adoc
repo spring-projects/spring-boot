@@ -511,7 +511,7 @@ Since a logger name can be any arbitrary name, really, this provider should allo
 value but could highlight valid packages and class names that are not available in the
 project's classpath.
 
-The meta-data snippet below corresponds to the standard `logger.level` property, keys
+The meta-data snippet below corresponds to the standard `logging.level` property, keys
 are _logger names_ and values correspond to the the standard log levels or any custom
 level:
 
@@ -519,7 +519,7 @@ level:
 ----
 	{"hints": [
 		{
-			"name": "logger.level.keys",
+			"name": "logging.level.keys",
 			"values": [
 				{
 					"value": "root",
@@ -533,7 +533,7 @@ level:
 			]
 		},
 		{
-			"name": "logger.level.values",
+			"name": "logging.level.values",
 			"values": [
 				{
 					"value": "trace"

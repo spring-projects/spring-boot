@@ -115,7 +115,7 @@
   }
 ],"hints": [
   {
-    "name": "logger.level.keys",
+    "name": "logging.level.keys",
     "values": [
       {
         "value": "root",
@@ -129,7 +129,7 @@
     ]
   },
   {
-    "name": "logger.level.values",
+    "name": "logging.level.values",
     "values": [
       {
         "value": "trace"
