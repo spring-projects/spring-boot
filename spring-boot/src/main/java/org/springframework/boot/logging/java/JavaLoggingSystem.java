@@ -72,7 +72,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("logging-file.properties"), logFile);
 		}
