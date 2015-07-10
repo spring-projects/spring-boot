@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded.undertow;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
+import io.undertow.attribute.RequestHeaderAttribute;
 import io.undertow.predicate.Predicate;
 import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpHandler;
@@ -27,6 +28,7 @@ import io.undertow.server.handlers.encoding.ContentEncodingRepository;
 import io.undertow.server.handlers.encoding.EncodingHandler;
 import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.util.HttpString;
 
 import java.lang.reflect.Field;
 import java.net.ServerSocket;
@@ -123,9 +125,20 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 			return servletHandler;
 		}
 		ContentEncodingRepository encodingRepository = new ContentEncodingRepository();
-		Predicate mimeAndSizePredicate = Predicates.and(Predicates
-				.maxContentSize(this.compression.getMinResponseSize()), Predicates
-				.or(new CompressibleMimeTypePredicate(this.compression.getMimeTypes())));
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		predicates.add(Predicates.maxContentSize(this.compression.getMinResponseSize()));
+		predicates
+				.add(new CompressibleMimeTypePredicate(this.compression.getMimeTypes()));
+		if (compression.getExcludedAgents() != null) {
+			RequestHeaderAttribute headerAttribute = new RequestHeaderAttribute(
+					new HttpString(HttpHeaders.USER_AGENT));
+			for (String excludedAgent : compression.getExcludedAgents()) {
+				predicates.add(Predicates.not(Predicates.regex(headerAttribute,
+						excludedAgent)));
+			}
+		}
+		Predicate mimeAndSizePredicate = Predicates.and(predicates
+				.toArray(new Predicate[predicates.size()]));
 		encodingRepository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
 				mimeAndSizePredicate);
 		return new EncodingHandler(encodingRepository).setNext(servletHandler);
