@@ -531,35 +531,43 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void compression() throws Exception {
-		assertTrue(doTestCompression(10000, null));
+		assertTrue(doTestCompression(10000, null, null));
 	}
 
 	@Test
 	public void noCompressionForSmallResponse() throws Exception {
-		assertFalse(doTestCompression(100, null));
+		assertFalse(doTestCompression(100, null, null));
 	}
 
 	@Test
 	public void noCompressionForMimeType() throws Exception {
 		String[] mimeTypes = new String[] { "text/html", "text/xml", "text/css" };
-		assertFalse(doTestCompression(10000, mimeTypes));
+		assertFalse(doTestCompression(10000, mimeTypes, null));
 	}
 
-	private boolean doTestCompression(int contentSize, String[] mimeTypes)
-			throws Exception {
-		String testContent = setUpFactoryForCompression(contentSize, mimeTypes);
+	@Test
+	public void noCompressionForUserAgent() throws Exception {
+		assertFalse(doTestCompression(10000, null, new String[] { "testUserAgent" }));
+	}
+
+	private boolean doTestCompression(int contentSize, String[] mimeTypes,
+			String[] excludedUserAgents) throws Exception {
+		String testContent = setUpFactoryForCompression(contentSize, mimeTypes,
+				excludedUserAgents);
 		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
 		Map<String, InputStreamFactory> contentDecoderMap = singletonMap("gzip",
 				(InputStreamFactory) inputStreamFactory);
-		String response = getResponse(getLocalUrl("/test.txt"),
+		String response = getResponse(
+				getLocalUrl("/test.txt"),
 				new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create()
+						.setUserAgent("testUserAgent")
 						.setContentDecoderRegistry(contentDecoderMap).build()));
 		assertThat(response, equalTo(testContent));
 		return inputStreamFactory.wasCompressionUsed();
 	}
 
-	protected String setUpFactoryForCompression(int contentSize, String[] mimeTypes)
-			throws Exception {
+	protected String setUpFactoryForCompression(int contentSize, String[] mimeTypes,
+			String[] excludedUserAgents) throws Exception {
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
 		String testContent = new String(chars);
@@ -571,6 +579,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		compression.setEnabled(true);
 		if (mimeTypes != null) {
 			compression.setMimeTypes(mimeTypes);
+		}
+		if (excludedUserAgents != null) {
+			compression.setExcludedUserAgents(excludedUserAgents);
 		}
 		factory.setCompression(compression);
 		this.container = factory.getEmbeddedServletContainer();

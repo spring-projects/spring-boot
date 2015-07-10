@@ -280,6 +280,11 @@ public class TomcatEmbeddedServletContainerFactory extends
 			protocol.setCompressionMinSize(compression.getMinResponseSize());
 			protocol.setCompressableMimeTypes(StringUtils
 					.arrayToCommaDelimitedString(compression.getMimeTypes()));
+			if (getCompression().getExcludedUserAgents() != null) {
+				protocol.setNoCompressionUserAgents(StringUtils
+						.arrayToCommaDelimitedString(getCompression()
+								.getExcludedUserAgents()));
+			}
 		}
 	}
 

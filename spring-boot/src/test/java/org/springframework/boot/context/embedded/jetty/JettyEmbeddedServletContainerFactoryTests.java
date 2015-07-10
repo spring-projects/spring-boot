@@ -186,8 +186,8 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 	@Override
 	@SuppressWarnings("serial")
 	// Workaround for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646
-	protected String setUpFactoryForCompression(final int contentSize, String[] mimeTypes)
-			throws Exception {
+	protected String setUpFactoryForCompression(final int contentSize,
+			String[] mimeTypes, String[] excludedUserAgents) throws Exception {
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
 		final String testContent = new String(chars);
@@ -196,6 +196,9 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		compression.setEnabled(true);
 		if (mimeTypes != null) {
 			compression.setMimeTypes(mimeTypes);
+		}
+		if (excludedUserAgents != null) {
+			compression.setExcludedUserAgents(excludedUserAgents);
 		}
 		factory.setCompression(compression);
 		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
