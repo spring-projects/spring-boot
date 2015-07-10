@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -68,7 +69,7 @@ public class MessageSourceAutoConfiguration {
 	/**
 	 * Message bundles encoding.
 	 */
-	private String encoding = "utf-8";
+	private Charset encoding = Charset.forName("UTF-8");
 
 	/**
 	 * Loaded resource bundle files cache expiration, in seconds. When set to -1, bundles
@@ -83,7 +84,7 @@ public class MessageSourceAutoConfiguration {
 			messageSource
 					.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(this.basename)));
 		}
-		messageSource.setDefaultEncoding(this.encoding);
+		messageSource.setDefaultEncoding(this.encoding.name());
 		messageSource.setCacheSeconds(this.cacheSeconds);
 		return messageSource;
 	}
@@ -96,11 +97,11 @@ public class MessageSourceAutoConfiguration {
 		this.basename = basename;
 	}
 
-	public String getEncoding() {
+	public Charset getEncoding() {
 		return this.encoding;
 	}
 
-	public void setEncoding(String encoding) {
+	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
 	}
 

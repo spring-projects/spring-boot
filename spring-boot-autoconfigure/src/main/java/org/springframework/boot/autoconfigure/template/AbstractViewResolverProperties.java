@@ -16,7 +16,14 @@
 
 package org.springframework.boot.autoconfigure.template;
 
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.MimeType;
 import org.springframework.web.servlet.ViewResolver;
 
 /**
@@ -28,6 +35,10 @@ import org.springframework.web.servlet.ViewResolver;
  * @see AbstractTemplateViewResolverProperties
  */
 public abstract class AbstractViewResolverProperties {
+
+	private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");
+
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	/**
 	 * Enable MVC view resolution for this technology.
@@ -42,12 +53,12 @@ public abstract class AbstractViewResolverProperties {
 	/**
 	 * Content-Type value.
 	 */
-	private String contentType = "text/html";
+	private MimeType contentType = DEFAULT_CONTENT_TYPE;
 
 	/**
 	 * Template encoding.
 	 */
-	private String charset = "UTF-8";
+	private Charset charset = DEFAULT_CHARSET;
 
 	/**
 	 * White list of view names that can be resolved.
@@ -91,22 +102,32 @@ public abstract class AbstractViewResolverProperties {
 		this.cache = cache;
 	}
 
-	public String getContentType() {
-		return this.contentType
-				+ (this.contentType.contains(";charset=") ? "" : ";charset="
-						+ this.charset);
+	public MimeType getContentType() {
+		return (this.contentType.getCharSet() != null ? this.contentType :
+				new MimeType(this.contentType, cloneParametersWithCustomCharset(this.contentType, this.charset)));
 	}
 
-	public void setContentType(String contentType) {
+	public void setContentType(MimeType contentType) {
 		this.contentType = contentType;
 	}
 
-	public String getCharset() {
+	public Charset getCharset() {
 		return this.charset;
 	}
 
-	public void setCharset(String charset) {
+	public String getCharsetName() {
+		return (this.charset != null ? this.charset.name() : null);
+	}
+
+	public void setCharset(Charset charset) {
 		this.charset = charset;
+	}
+
+	private static Map<String,String> cloneParametersWithCustomCharset(MimeType contentType, Charset charset) {
+		LinkedHashMap<String,String> clone = new LinkedHashMap<String, String>();
+		clone.put("charset", charset.name());
+		clone.putAll(contentType.getParameters());
+		return clone;
 	}
 
 }

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -508,7 +509,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		/**
 		 * Character encoding to use to decode the URI.
 		 */
-		private String uriEncoding;
+		private Charset uriEncoding;
 
 		public int getMaxThreads() {
 			return this.maxThreads;
@@ -598,11 +599,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.remoteIpHeader = remoteIpHeader;
 		}
 
-		public String getUriEncoding() {
+		public Charset getUriEncoding() {
 			return this.uriEncoding;
 		}
 
-		public void setUriEncoding(String uriEncoding) {
+		public void setUriEncoding(Charset uriEncoding) {
 			this.uriEncoding = uriEncoding;
 		}
 

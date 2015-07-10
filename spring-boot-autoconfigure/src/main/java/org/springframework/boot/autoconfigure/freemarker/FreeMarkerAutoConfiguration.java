@@ -92,7 +92,7 @@ public class FreeMarkerAutoConfiguration {
 		protected void applyProperties(FreeMarkerConfigurationFactory factory) {
 			factory.setTemplateLoaderPaths(this.properties.getTemplateLoaderPath());
 			factory.setPreferFileSystemAccess(this.properties.isPreferFileSystemAccess());
-			factory.setDefaultEncoding(this.properties.getCharset());
+			factory.setDefaultEncoding(this.properties.getCharsetName());
 			Properties settings = new Properties();
 			settings.putAll(this.properties.getSettings());
 			factory.setFreemarkerSettings(settings);

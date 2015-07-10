@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded.tomcat;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -226,7 +227,7 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	@Test
 	public void uriEncoding() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		factory.setUriEncoding("US-ASCII");
+		factory.setUriEncoding(Charset.forName("US-ASCII"));
 		Tomcat tomcat = getTomcat(factory);
 		assertEquals("US-ASCII", tomcat.getConnector().getURIEncoding());
 	}

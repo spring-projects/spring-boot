@@ -12,7 +12,7 @@
   },
   {
     "name": "banner.location",
-    "type": "java.lang.String",
+    "type": "org.springframework.core.io.Resource",
     "description": "Banner file location.",
     "defaultValue": "classpath:banner.txt"
   },

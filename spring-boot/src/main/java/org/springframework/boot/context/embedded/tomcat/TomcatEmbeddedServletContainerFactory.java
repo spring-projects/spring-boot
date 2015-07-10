@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -89,6 +89,8 @@ import org.springframework.util.StringUtils;
 public class TomcatEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
 	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
@@ -111,7 +113,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private String tldSkip;
 
-	private String uriEncoding = "UTF-8";
+	private Charset uriEncoding = DEFAULT_CHARSET;
 
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
@@ -237,7 +239,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
 		}
 		if (getUriEncoding() != null) {
-			connector.setURIEncoding(getUriEncoding());
+			connector.setURIEncoding(getUriEncoding().name());
 		}
 
 		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
@@ -614,7 +616,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * be used.
 	 * @param uriEncoding the uri encoding to set
 	 */
-	public void setUriEncoding(String uriEncoding) {
+	public void setUriEncoding(Charset uriEncoding) {
 		this.uriEncoding = uriEncoding;
 	}
 
@@ -622,7 +624,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * Returns the character encoding to use for URL decoding.
 	 * @return the URI encoding
 	 */
-	public String getUriEncoding() {
+	public Charset getUriEncoding() {
 		return this.uriEncoding;
 	}
 

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
@@ -39,6 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
+import org.springframework.util.MimeType;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect;
@@ -95,7 +97,7 @@ public class ThymeleafAutoConfiguration {
 			resolver.setPrefix(this.properties.getPrefix());
 			resolver.setSuffix(this.properties.getSuffix());
 			resolver.setTemplateMode(this.properties.getMode());
-			resolver.setCharacterEncoding(this.properties.getEncoding());
+			resolver.setCharacterEncoding(this.properties.getEncoding().name());
 			resolver.setCacheable(this.properties.isCache());
 			return resolver;
 		}
@@ -195,7 +197,7 @@ public class ThymeleafAutoConfiguration {
 		public ThymeleafViewResolver thymeleafViewResolver() {
 			ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 			resolver.setTemplateEngine(this.templateEngine);
-			resolver.setCharacterEncoding(this.properties.getEncoding());
+			resolver.setCharacterEncoding(this.properties.getEncoding().name());
 			resolver.setContentType(appendCharset(this.properties.getContentType(),
 					resolver.getCharacterEncoding()));
 			resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
@@ -206,11 +208,14 @@ public class ThymeleafAutoConfiguration {
 			return resolver;
 		}
 
-		private String appendCharset(String type, String charset) {
-			if (type.contains("charset=")) {
-				return type;
+		private String appendCharset(MimeType type, String charset) {
+			if (type.getCharSet() != null) {
+				return type.toString();
 			}
-			return type + ";charset=" + charset;
+			LinkedHashMap<String,String> clone = new LinkedHashMap<String, String>();
+			clone.put("charset", charset);
+			clone.putAll(type.getParameters());
+			return new MimeType(type, clone).toString();
 		}
 
 	}

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -204,7 +205,7 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.uriEncoding", "US-ASCII");
 		bindProperties(map);
-		assertEquals("US-ASCII", this.properties.getTomcat().getUriEncoding());
+		assertEquals(Charset.forName("US-ASCII"), this.properties.getTomcat().getUriEncoding());
 	}
 
 	@Test

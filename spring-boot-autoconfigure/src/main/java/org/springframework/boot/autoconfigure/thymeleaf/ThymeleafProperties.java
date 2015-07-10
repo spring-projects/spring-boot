@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@
 
 package org.springframework.boot.autoconfigure.thymeleaf;
 
+import java.nio.charset.Charset;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.MimeType;
 
 /**
  * Properties for Thymeleaf.
@@ -26,6 +29,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("spring.thymeleaf")
 public class ThymeleafProperties {
+
+	private static final Charset DEFAULT_ENCODING = Charset.forName("UTF-8");
+
+	private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
 
@@ -54,12 +61,12 @@ public class ThymeleafProperties {
 	/**
 	 * Template encoding.
 	 */
-	private String encoding = "UTF-8";
+	private Charset encoding  = DEFAULT_ENCODING;
 
 	/**
 	 * Content-Type value.
 	 */
-	private String contentType = "text/html";
+	private MimeType contentType = DEFAULT_CONTENT_TYPE;
 
 	/**
 	 * Enable template caching.
@@ -121,19 +128,19 @@ public class ThymeleafProperties {
 		this.mode = mode;
 	}
 
-	public String getEncoding() {
+	public Charset getEncoding() {
 		return this.encoding;
 	}
 
-	public void setEncoding(String encoding) {
+	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
 	}
 
-	public String getContentType() {
+	public MimeType getContentType() {
 		return this.contentType;
 	}
 
-	public void setContentType(String contentType) {
+	public void setContentType(MimeType contentType) {
 		this.contentType = contentType;
 	}
 
