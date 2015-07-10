@@ -19,7 +19,6 @@ package org.springframework.boot.context.embedded.tomcat;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -259,7 +258,7 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 
 	@Test
 	public void primaryConnectorPortClashThrowsIllegalStateException()
-			throws InterruptedException, UnknownHostException, IOException {
+			throws InterruptedException, IOException {
 		final int port = SocketUtils.findAvailableTcpPort(40000);
 
 		doWithBlockedPort(port, new Runnable() {
@@ -286,7 +285,7 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 
 	@Test
 	public void additionalConnectorPortClashThrowsIllegalStateException()
-			throws InterruptedException, UnknownHostException, IOException {
+			throws InterruptedException, IOException {
 		final int port = SocketUtils.findAvailableTcpPort(40000);
 
 		doWithBlockedPort(port, new Runnable() {
