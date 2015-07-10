@@ -351,8 +351,8 @@ The table below summarizes the list of supported providers:
 |Auto-complete the classes available in the project. Usually constrained by a base
  class that is specified via the `target` parameter.
 
-|`enum`
-|Auto-complete the values of an enum given by the mandatory `target` parameter.
+|`handle-as`
+|Handle the property as if it was defined by the type defined via the mandatory `target` parameter.
 
 |`logger-name`
 |Auto-complete valid logger names. Typically, package and class names available in
@@ -453,9 +453,9 @@ property that defines the `JspServlet` class name to use:
 
 
 
-===== Enum
-The **enum** provider auto-completes the values of the `Enum` class referenced via the
-`target` parameter. This may be handy when the property has a `java.lang.String` type
+===== Handle As
+The **handle-as** provider allows you to substitute the type of the property to a more
+high-level type. This typically happens when the property has a `java.lang.String` type
 because you don't want your configuration classes to rely on classes that may not be
 on the classpath. This provider supports these parameters:
 
@@ -464,13 +464,21 @@ on the classpath. This provider supports these parameters:
 |Parameter |Type |Default value |Description
 
 | **`target`**
-| `String` (`Enum`)
+| `String` (`Class`)
 |_none_
-|The fully qualified name of the `Enum` class. This parameter is mandatory.
+|The fully qualified name of the type to consider for the property. This parameter is mandatory.
 |===
 
-TIP: By all means, try to define the property with the `Enum` type instead as
-no further hint should be required for the IDE to auto-complete the values.
+The following types can be used:
+
+* Any `java.lang.Enum` that list the possible values for the property (By all means, try to
+  define the property with the `Enum` type instead as no further hint should be required for
+  the IDE to auto-complete the values).
+* `java.nio.charset.Charset`: auto-completion of charset/encoding values
+* `java.util.Locale`: auto-completion of locales
+* `org.springframework.util.MimeType`: auto-completion of content type values
+* `org.springframework.core.io.Resource`: auto-completion of Spring’s Resource abstraction to
+  refer to a file on the filesystem or on the classpath.
 
 The meta-data snippet below corresponds to the standard `spring.jooq.sql-dialect`
 property that defines the `SQLDialect` class name to use:
@@ -482,7 +490,7 @@ property that defines the `SQLDialect` class name to use:
 			"name": "spring.jooq.sql-dialect",
 			"providers": [
 			  {
-				"name": "enum",
+				"name": "handle-as",
 				"parameters": {
 				  "target": "org.jooq.SQLDialect"
 				}

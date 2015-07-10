@@ -229,7 +229,7 @@
     "name": "spring.jooq.sql-dialect",
     "providers": [
       {
-        "name": "enum",
+        "name": "handle-as",
         "parameters": {
           "target": "org.jooq.SQLDialect"
         }
