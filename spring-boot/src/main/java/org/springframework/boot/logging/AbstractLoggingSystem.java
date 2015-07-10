@@ -71,7 +71,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 			loadConfiguration(initializationContext, config, logFile);
 			return;
 		}
-		loadDefaults(logFile);
+		loadDefaults(initializationContext, logFile);
 	}
 
 	/**
@@ -129,9 +129,11 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	/**
 	 * Load sensible defaults for the logging system.
+	 * @param initializationContext the logging initialization context
 	 * @param logFile the file to load or {@code null} if no log file is to be written
 	 */
-	protected abstract void loadDefaults(LogFile logFile);
+	protected abstract void loadDefaults(
+			LoggingInitializationContext initializationContext, LogFile logFile);
 
 	/**
 	 * Load a specific configuration.

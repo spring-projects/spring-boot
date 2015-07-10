@@ -70,7 +70,8 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext,
+			LogFile logFile) {
 		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("log4j-file.properties"), logFile);
 		}

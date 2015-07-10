@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
@@ -30,10 +31,12 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import ch.qos.logback.classic.Logger;
@@ -87,6 +90,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
+		assertTrue("Wrong output pattern:\n" + output,
+				getLineWithText(output, "Hello world").contains("INFO"));
 		assertFalse(new File(tmpDir() + "/spring.log").exists());
 	}
 
@@ -98,9 +103,14 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
+		File file = new File(tmpDir() + "/spring.log");
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
-		assertTrue(new File(tmpDir() + "/spring.log").exists());
+		assertTrue("Wrong console output pattern:\n" + output,
+				getLineWithText(output, "Hello world").contains("INFO"));
+		assertTrue(file.exists());
+		assertTrue("Wrong file output pattern:\n" + output,
+				getLineWithText(file, "Hello world").contains("INFO"));
 	}
 
 	@Test
@@ -195,6 +205,51 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			}
 		}
 		return false;
+	}
+
+	@Test
+	public void testConsolePatternProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.pattern.console", "%logger %msg");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello world");
+		String output = this.output.toString().trim();
+		assertFalse("Wrong output pattern:\n" + output,
+				getLineWithText(output, "Hello world").contains("INFO"));
+	}
+
+	@Test
+	public void testFilePatternProperty() throws Exception {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.pattern.file", "%logger %msg");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		String output = this.output.toString().trim();
+		assertTrue("Wrong console output pattern:\n" + output,
+				getLineWithText(output, "Hello world").contains("INFO"));
+		assertFalse("Wrong file output pattern:\n" + output,
+				getLineWithText(file, "Hello world").contains("INFO"));
+	}
+
+	private String getLineWithText(File file, String outputSearch) throws Exception {
+		return getLineWithText(FileCopyUtils.copyToString(new FileReader(file)),
+				outputSearch);
+	}
+
+	private String getLineWithText(String output, String outputSearch) {
+		String[] lines = output.split("\\r?\\n");
+		for (String line : lines) {
+			if (line.contains(outputSearch)) {
+				return line;
+			}
+		}
+		return null;
 	}
 
 }
