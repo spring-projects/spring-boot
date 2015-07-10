@@ -2245,8 +2245,8 @@ application `DataSource`. To use the `DSLContext` you can just `@Autowire` it:
 		private final DSLContext create;
 
 		@Autowired
-		public JooqExample(DSLContext dlsContext) {
-			this.create = dlsContext;
+		public JooqExample(DSLContext dslContext) {
+			this.create = dslContext;
 		}
 
 	}
