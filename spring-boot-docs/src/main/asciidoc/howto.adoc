@@ -1845,7 +1845,7 @@ The `spring-boot-devtools` module includes support for automatic application res
 Whilst not as fast a technologies such as http://zeroturnaround.com/software/jrebel/[JRebel]
 or https://github.com/spring-projects/spring-loaded[Spring Loaded] it's usually
 significantly faster than a "`cold start`". You should probably give it a try before
-investigating some of the more complex reload options discussed bellow.
+investigating some of the more complex reload options discussed below.
 
 For more details see the <<using-spring-boot.adoc#using-boot-devtools>> section.
 
