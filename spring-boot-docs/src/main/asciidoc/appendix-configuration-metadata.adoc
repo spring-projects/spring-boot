@@ -217,8 +217,8 @@ The JSON object contained in the `hints` array can contain the following attribu
   the value and may have a description
 
 |`providers`
-| ProviderHint[]
-| A list of providers as defined by the `ValueHint` object (see below). Each entry defines
+| ValueProvider[]
+| A list of providers as defined by the `ValueProvider` object (see below). Each entry defines
   the name of the provider and its parameters, if any.
 
 |===
@@ -283,7 +283,7 @@ property, you can provide additional meta-data that:
    can discover the list of potential values based on the project's context.
 
 
-==== Value hints
+==== Value hint
 The `name` attribute of each hint refers to the `name` of a property. In the initial
 example above, we provide 3 values for the `server.tomcat.compression` property: `on`,
 `off` and `force`.
@@ -330,7 +330,7 @@ the most effective approach to auto-completion if your IDE supports it.
 
 
 
-==== Provider hints
+==== Value provider
 Providers are a powerful way of attaching semantics to a property. We define in the section
 below the official providers that you can use for your own hints. Bare in mind however that
 your favorite IDE may implement some of these or none of them. It could eventually provide
@@ -345,7 +345,7 @@ The table below summarizes the list of supported providers:
 |Name | Description
 
 |`any`
-|Permit any additional values to be provided.
+|Permit any additional value to be provided.
 
 |`class-reference`
 |Auto-complete the classes available in the project. Usually constrained by a base
@@ -363,7 +363,7 @@ The table below summarizes the list of supported providers:
  by a base class that is specified via the `target` parameter.
 
 |`spring-profile-name`
-|Auto-complete the available profile names in the project.
+|Auto-complete the available Spring profile names in the project.
 
 |===
 

@@ -107,20 +107,20 @@ public class JsonMarshaller {
 		}
 		if (!hint.getProviders().isEmpty()) {
 			JSONArray providersArray = new JSONArray();
-			for (ItemHint.ProviderHint providerHint : hint.getProviders()) {
-				JSONObject providerHintObject = new JSONOrderedObject();
-				providerHintObject.put("name", providerHint.getName());
-				if (providerHint.getParameters() != null
-						&& !providerHint.getParameters().isEmpty()) {
+			for (ItemHint.ValueProvider valueProvider : hint.getProviders()) {
+				JSONObject valueProviderObject = new JSONOrderedObject();
+				valueProviderObject.put("name", valueProvider.getName());
+				if (valueProvider.getParameters() != null
+						&& !valueProvider.getParameters().isEmpty()) {
 					JSONObject parametersObject = new JSONOrderedObject();
-					for (Map.Entry<String, Object> entry : providerHint.getParameters()
+					for (Map.Entry<String, Object> entry : valueProvider.getParameters()
 							.entrySet()) {
 						parametersObject.put(entry.getKey(),
 								extractItemValue(entry.getValue()));
 					}
-					providerHintObject.put("parameters", parametersObject);
+					valueProviderObject.put("parameters", parametersObject);
 				}
-				providersArray.put(providerHintObject);
+				providersArray.put(valueProviderObject);
 			}
 			jsonObject.put("providers", providersArray);
 		}
@@ -203,11 +203,11 @@ public class JsonMarshaller {
 				values.add(toValueHint((JSONObject) valuesArray.get(i)));
 			}
 		}
-		List<ItemHint.ProviderHint> providers = new ArrayList<ItemHint.ProviderHint>();
+		List<ItemHint.ValueProvider> providers = new ArrayList<ItemHint.ValueProvider>();
 		if (object.has("providers")) {
 			JSONArray providersObject = object.getJSONArray("providers");
 			for (int i = 0; i < providersObject.length(); i++) {
-				providers.add(toProviderHint((JSONObject) providersObject.get(i)));
+				providers.add(toValueProvider((JSONObject) providersObject.get(i)));
 			}
 		}
 		return new ItemHint(name, values, providers);
@@ -219,7 +219,7 @@ public class JsonMarshaller {
 		return new ItemHint.ValueHint(value, description);
 	}
 
-	private ItemHint.ProviderHint toProviderHint(JSONObject object) {
+	private ItemHint.ValueProvider toValueProvider(JSONObject object) {
 		String name = object.getString("name");
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		if (object.has("parameters")) {
@@ -230,7 +230,7 @@ public class JsonMarshaller {
 				parameters.put(key, value);
 			}
 		}
-		return new ItemHint.ProviderHint(name, parameters);
+		return new ItemHint.ValueProvider(name, parameters);
 	}
 
 	private Object readItemValue(Object value) {

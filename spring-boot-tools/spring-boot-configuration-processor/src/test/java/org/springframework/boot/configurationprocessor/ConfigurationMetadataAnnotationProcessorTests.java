@@ -384,9 +384,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void mergingOfHintWithProvider() throws Exception {
 		writeAdditionalHints(new ItemHint("simple.theName",
 				Collections.<ItemHint.ValueHint> emptyList(), Arrays.asList(
-						new ItemHint.ProviderHint("first", Collections
+						new ItemHint.ValueProvider("first", Collections
 								.<String, Object> singletonMap("target", "org.foo")),
-						new ItemHint.ProviderHint("second", null))));
+						new ItemHint.ValueProvider("second", null))));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata,
 				containsHint("simple.the-name")
