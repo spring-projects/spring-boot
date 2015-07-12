@@ -2274,7 +2274,7 @@ your `application.properties`. For example, to specify Postgres you would add:
 
 [source,properties,indent=0]
 ----
-	spring.jooq.sql-dialect=Postgres
+	spring.jooq.sql-dialect=POSTGRES
 ----
 
 More advanced customizations can be achieved by defining your own `@Bean` definitions
