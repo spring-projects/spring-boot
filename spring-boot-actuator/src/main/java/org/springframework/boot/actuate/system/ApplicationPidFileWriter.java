@@ -200,12 +200,12 @@ public class ApplicationPidFileWriter implements
 	 */
 	private static class SpringProperty implements Property {
 
-		private final String prexfix;
+		private final String prefix;
 
 		private final String key;
 
 		public SpringProperty(String prefix, String key) {
-			this.prexfix = prefix;
+			this.prefix = prefix;
 			this.key = key;
 		}
 
@@ -215,7 +215,7 @@ public class ApplicationPidFileWriter implements
 			if (environment == null) {
 				return null;
 			}
-			return new RelaxedPropertyResolver(environment, this.prexfix)
+			return new RelaxedPropertyResolver(environment, this.prefix)
 					.getProperty(this.key);
 		}
 
