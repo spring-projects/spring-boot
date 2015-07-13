@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Configuration for Spring AMQP annotation driven endpoints.
@@ -38,15 +38,16 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 class RabbitAnnotationDrivenConfiguration {
 
 	@Autowired(required = false)
-	private JtaTransactionManager transactionManager;
+	private PlatformTransactionManager transactionManager;
 
 	@Bean
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-			ConnectionFactory connectionFactory) {
+			ConnectionFactory connectionFactory, RabbitProperties config) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
-		if (this.transactionManager != null) {
+		if (this.transactionManager != null
+				&& config.getListener().isUseTransactionManager()) {
 			factory.setTransactionManager(this.transactionManager);
 		}
 		return factory;
