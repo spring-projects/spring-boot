@@ -237,17 +237,6 @@
     ]
   },
   {
-    "name": "spring.jooq.sql-dialect",
-    "providers": [
-      {
-        "name": "handle-as",
-        "parameters": {
-          "target": "org.jooq.SQLDialect"
-        }
-      }
-    ]
-  },
-  {
     "name": "spring.jmx.server",
     "providers": [
       {
