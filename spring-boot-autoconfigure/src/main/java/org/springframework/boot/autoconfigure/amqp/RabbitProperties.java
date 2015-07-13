@@ -62,12 +62,6 @@ public class RabbitProperties {
 	 */
 	private String addresses;
 
-	private Listener listener = new Listener();
-
-	public Listener getListener() {
-		return this.listener;
-	}
-
 	public String getHost() {
 		if (this.addresses == null) {
 			return this.host;
@@ -160,18 +154,6 @@ public class RabbitProperties {
 
 	public void setVirtualHost(String virtualHost) {
 		this.virtualHost = ("".equals(virtualHost) ? "/" : virtualHost);
-	}
-
-	public static class Listener {
-		private boolean useTransactionManager = false;
-
-		public boolean isUseTransactionManager() {
-			return this.useTransactionManager;
-		}
-
-		public void setUseTransactionManager(boolean useTransactionManager) {
-			this.useTransactionManager = useTransactionManager;
-		}
 	}
 
 }
