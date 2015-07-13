@@ -20,6 +20,7 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Listener;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +42,22 @@ class RabbitAnnotationDrivenConfiguration {
 			ConnectionFactory connectionFactory, RabbitProperties config) {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
+		Listener listenerConfig = config.getListener();
+		if (listenerConfig.getAckMode() != null) {
+			factory.setAcknowledgeMode(listenerConfig.getAckMode());
+		}
+		if (listenerConfig.getConcurrency() != null) {
+			factory.setConcurrentConsumers(listenerConfig.getConcurrency());
+		}
+		if (listenerConfig.getMaxConcurrency() != null) {
+			factory.setMaxConcurrentConsumers(listenerConfig.getMaxConcurrency());
+		}
+		if (listenerConfig.getPrefetch() != null) {
+			factory.setPrefetchCount(listenerConfig.getPrefetch());
+		}
+		if (listenerConfig.getTxSize() != null) {
+			factory.setTxSize(listenerConfig.getTxSize());
+		}
 		return factory;
 	}
 

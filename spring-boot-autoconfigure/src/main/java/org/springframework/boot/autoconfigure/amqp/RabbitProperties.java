@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -73,6 +74,11 @@ public class RabbitProperties {
 	 * Requested heartbeat timeout, in seconds; zero for none.
 	 */
 	private Integer requestedHeartbeat;
+
+	/**
+	 * Listener container configuration.
+	 */
+	private final Listener listener = new Listener();
 
 	public String getHost() {
 		if (this.addresses == null) {
@@ -180,6 +186,10 @@ public class RabbitProperties {
 		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
+	public Listener getListener() {
+		return listener;
+	}
+
 	public static class Ssl {
 
 		/**
@@ -271,4 +281,73 @@ public class RabbitProperties {
 		}
 
 	}
+
+	public static class Listener {
+
+		/**
+		 * Acknowledge mode of container.
+		 */
+		private AcknowledgeMode ackMode;
+
+		/**
+		 * Minimum number of consumers.
+		 */
+		private Integer concurrency;
+
+		/**
+		 * Maximum number of consumers.
+		 */
+		private Integer maxConcurrency;
+
+		/**
+		 * Message prefetch count.
+		 */
+		private Integer prefetch;
+
+		/**
+		 * Number of messages in a transaction.
+		 */
+		private Integer txSize;
+
+		public AcknowledgeMode getAckMode() {
+			return ackMode;
+		}
+
+		public void setAckMode(AcknowledgeMode ackMode) {
+			this.ackMode = ackMode;
+		}
+
+		public Integer getConcurrency() {
+			return concurrency;
+		}
+
+		public void setConcurrency(Integer concurrency) {
+			this.concurrency = concurrency;
+		}
+
+		public Integer getMaxConcurrency() {
+			return maxConcurrency;
+		}
+
+		public void setMaxConcurrency(Integer maxConcurrency) {
+			this.maxConcurrency = maxConcurrency;
+		}
+
+		public Integer getPrefetch() {
+			return prefetch;
+		}
+
+		public void setPrefetch(Integer prefetch) {
+			this.prefetch = prefetch;
+		}
+
+		public Integer getTxSize() {
+			return txSize;
+		}
+
+		public void setTxSize(Integer txSize) {
+			this.txSize = txSize;
+		}
+	}
+
 }
