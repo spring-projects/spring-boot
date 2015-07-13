@@ -136,8 +136,8 @@ public class ItemHint implements Comparable<ItemHint> {
 
 		@Override
 		public String toString() {
-			return "ValueProvider{" + "name='" + this.name + "', parameters=" + this.parameters
-					+ '}';
+			return "ValueProvider{" + "name='" + this.name + "', parameters="
+					+ this.parameters + '}';
 		}
 
 	}

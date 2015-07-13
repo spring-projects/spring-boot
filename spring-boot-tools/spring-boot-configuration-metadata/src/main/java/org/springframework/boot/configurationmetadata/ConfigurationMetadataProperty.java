@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Define a configuration property. Each property is fully identified by
- * its {@link #getId() id} who is composed of a namespace prefix (the
- * {@link ConfigurationMetadataGroup#getId() group id}), if any and the
- * {@link #getName() name} of the property.
+ * Define a configuration property. Each property is fully identified by its
+ * {@link #getId() id} who is composed of a namespace prefix (the
+ * {@link ConfigurationMetadataGroup#getId() group id}), if any and the {@link #getName()
+ * name} of the property.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -49,7 +49,9 @@ public class ConfigurationMetadataProperty {
 	private boolean deprecated;
 
 	/**
-	 * The full identifier of the property, in lowercase dashed form (e.g. my.group.simple-property)
+	 * The full identifier of the property, in lowercase dashed form (e.g.
+	 * my.group.simple-property)
+	 * @return the property id
 	 */
 	public String getId() {
 		return this.id;
@@ -60,8 +62,9 @@ public class ConfigurationMetadataProperty {
 	}
 
 	/**
-	 * The name of the property, in lowercase dashed form (e.g. simple-property). If this item
-	 * does not belong to any group, the id is returned.
+	 * The name of the property, in lowercase dashed form (e.g. simple-property). If this
+	 * item does not belong to any group, the id is returned.
+	 * @return the property name
 	 */
 	public String getName() {
 		return this.name;
@@ -72,13 +75,18 @@ public class ConfigurationMetadataProperty {
 	}
 
 	/**
-	 * The class name of the data type of the property. For example, {@code java.lang.String}.
-	 * <p>For consistency, the type of a primitive is specified using its wrapper counterpart,
-	 * i.e. {@code boolean} becomes {@code java.lang.Boolean}. If the type holds generic
-	 * information, these are provided as  well, i.e. a {@code HashMap} of String to Integer
-	 * would be defined as {@code java.util.HashMap<java.lang.String,java.lang.Integer>}.
-	 * <p>Note that this class may be a complex type that gets converted from a String as values
-	 * are bound.
+	 * The class name of the data type of the property. For example,
+	 * {@code java.lang.String}.
+	 * <p>
+	 * For consistency, the type of a primitive is specified using its wrapper
+	 * counterpart, i.e. {@code boolean} becomes {@code java.lang.Boolean}. If the type
+	 * holds generic information, these are provided as well, i.e. a {@code HashMap} of
+	 * String to Integer would be defined as
+	 * {@code java.util.HashMap<java.lang.String,java.lang.Integer>}.
+	 * <p>
+	 * Note that this class may be a complex type that gets converted from a String as
+	 * values are bound.
+	 * @return the property type
 	 */
 	public String getType() {
 		return this.type;
@@ -90,6 +98,7 @@ public class ConfigurationMetadataProperty {
 
 	/**
 	 * A description of the property, if any. Can be multi-lines.
+	 * @return the property description
 	 * @see #getShortDescription()
 	 */
 	public String getDescription() {
@@ -102,10 +111,11 @@ public class ConfigurationMetadataProperty {
 
 	/**
 	 * A single-line, single-sentence description of this property, if any.
+	 * @return the property short description
 	 * @see #getDescription()
 	 */
 	public String getShortDescription() {
-		return shortDescription;
+		return this.shortDescription;
 	}
 
 	public void setShortDescription(String shortDescription) {
@@ -114,6 +124,7 @@ public class ConfigurationMetadataProperty {
 
 	/**
 	 * The default value, if any.
+	 * @return the default value
 	 */
 	public Object getDefaultValue() {
 		return this.defaultValue;
@@ -124,24 +135,28 @@ public class ConfigurationMetadataProperty {
 	}
 
 	/**
-	 * The list of well-defined values, if any. If no extra {@link ValueProvider provider} is
-	 * specified, these values  are to be considered a closed-set of the available values
-	 * for this item.
+	 * The list of well-defined values, if any. If no extra {@link ValueProvider provider}
+	 * is specified, these values are to be considered a closed-set of the available
+	 * values for this item.
+	 * @return the value hints
 	 */
 	public List<ValueHint> getValueHints() {
-		return valueHints;
+		return this.valueHints;
 	}
 
 	/**
-	 * The value providers that are applicable to this item. Only one {@link ValueProvider} is
-	 * enabled for an item: the first in the list that is supported should be used.
+	 * The value providers that are applicable to this item. Only one
+	 * {@link ValueProvider} is enabled for an item: the first in the list that is
+	 * supported should be used.
+	 * @return the value providers
 	 */
 	public List<ValueProvider> getValueProviders() {
-		return valueProviders;
+		return this.valueProviders;
 	}
 
 	/**
 	 * Specify if the property is deprecated.
+	 * @return if the property is deprecated
 	 */
 	public boolean isDeprecated() {
 		return this.deprecated;

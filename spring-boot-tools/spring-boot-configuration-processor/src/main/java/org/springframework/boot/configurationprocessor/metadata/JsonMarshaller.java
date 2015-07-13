@@ -96,35 +96,48 @@ public class JsonMarshaller {
 		JSONObject jsonObject = new JSONOrderedObject();
 		jsonObject.put("name", hint.getName());
 		if (!hint.getValues().isEmpty()) {
-			JSONArray valuesArray = new JSONArray();
-			for (ItemHint.ValueHint valueHint : hint.getValues()) {
-				JSONObject valueObject = new JSONOrderedObject();
-				putHintValue(valueObject, valueHint.getValue());
-				putIfPresent(valueObject, "description", valueHint.getDescription());
-				valuesArray.put(valueObject);
-			}
-			jsonObject.put("values", valuesArray);
+			jsonObject.put("values", getItemHintValues(hint));
 		}
 		if (!hint.getProviders().isEmpty()) {
-			JSONArray providersArray = new JSONArray();
-			for (ItemHint.ValueProvider valueProvider : hint.getProviders()) {
-				JSONObject valueProviderObject = new JSONOrderedObject();
-				valueProviderObject.put("name", valueProvider.getName());
-				if (valueProvider.getParameters() != null
-						&& !valueProvider.getParameters().isEmpty()) {
-					JSONObject parametersObject = new JSONOrderedObject();
-					for (Map.Entry<String, Object> entry : valueProvider.getParameters()
-							.entrySet()) {
-						parametersObject.put(entry.getKey(),
-								extractItemValue(entry.getValue()));
-					}
-					valueProviderObject.put("parameters", parametersObject);
-				}
-				providersArray.put(valueProviderObject);
-			}
-			jsonObject.put("providers", providersArray);
+			jsonObject.put("providers", getItemHintProviders(hint));
 		}
 		return jsonObject;
+	}
+
+	private JSONArray getItemHintValues(ItemHint hint) {
+		JSONArray values = new JSONArray();
+		for (ItemHint.ValueHint value : hint.getValues()) {
+			values.put(getItemHintValue(value));
+		}
+		return values;
+	}
+
+	private JSONObject getItemHintValue(ItemHint.ValueHint value) {
+		JSONObject result = new JSONOrderedObject();
+		putHintValue(result, value.getValue());
+		putIfPresent(result, "description", value.getDescription());
+		return result;
+	}
+
+	private JSONArray getItemHintProviders(ItemHint hint) {
+		JSONArray providers = new JSONArray();
+		for (ItemHint.ValueProvider provider : hint.getProviders()) {
+			providers.put(getItemHintProvider(provider));
+		}
+		return providers;
+	}
+
+	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) {
+		JSONObject result = new JSONOrderedObject();
+		result.put("name", provider.getName());
+		if (provider.getParameters() != null && !provider.getParameters().isEmpty()) {
+			JSONObject parameters = new JSONOrderedObject();
+			for (Map.Entry<String, Object> entry : provider.getParameters().entrySet()) {
+				parameters.put(entry.getKey(), extractItemValue(entry.getValue()));
+			}
+			result.put("parameters", parameters);
+		}
+		return result;
 	}
 
 	private void putIfPresent(JSONObject jsonObject, String name, Object value) {

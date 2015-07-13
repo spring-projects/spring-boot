@@ -79,23 +79,17 @@ public class MetricExportAutoConfiguration {
 			reader = new CompositeMetricReader(
 					this.readers.toArray(new MetricReader[this.readers.size()]));
 		}
-		MetricExporters exporters = null;
+		if (reader == null && this.exporters.isEmpty()) {
+			return new NoOpSchedulingConfigurer();
+		}
+		MetricExporters exporters = new MetricExporters(this.properties);
 		if (reader != null) {
-			exporters = new MetricExporters(this.properties);
 			writers.putAll(this.writers);
 			exporters.setReader(reader);
 			exporters.setWriters(writers);
 		}
-		if (!this.exporters.isEmpty()) {
-			if (exporters==null) {
-				exporters = new MetricExporters(this.properties);
-			}
-			exporters.setExporters(this.exporters);
-		}
-		if (exporters!=null) {
-			return exporters;
-		}
-		return new NoOpSchedulingConfigurer();
+		exporters.setExporters(this.exporters);
+		return exporters;
 	}
 
 	@Configuration

@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link SessionAutoConfiguration}.
+ *
  * @author Dave Syer
  * @since 1.3.0
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Gather a collection of {@link ConfigurationMetadataProperty properties} that
- * are sharing  a {@link #getId() common prefix}. Provide access to all the
- * {@link ConfigurationMetadataSource sources} that have contributed properties
- * to the group.
+ * Gather a collection of {@link ConfigurationMetadataProperty properties} that are
+ * sharing a {@link #getId() common prefix}. Provide access to all the
+ * {@link ConfigurationMetadataSource sources} that have contributed properties to the
+ * group.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -32,27 +32,27 @@ public class ConfigurationMetadataGroup {
 
 	private final String id;
 
-	private final Map<String, ConfigurationMetadataSource> sources =
-			new HashMap<String, ConfigurationMetadataSource>();
+	private final Map<String, ConfigurationMetadataSource> sources = new HashMap<String, ConfigurationMetadataSource>();
 
-	private final Map<String, ConfigurationMetadataProperty> properties =
-			new HashMap<String, ConfigurationMetadataProperty>();
+	private final Map<String, ConfigurationMetadataProperty> properties = new HashMap<String, ConfigurationMetadataProperty>();
 
 	public ConfigurationMetadataGroup(String id) {
 		this.id = id;
 	}
 
 	/**
-	 * Return the id of the group, used as a common prefix for all properties
-	 * associated to it.
+	 * Return the id of the group, used as a common prefix for all properties associated
+	 * to it.
+	 * @return the id of the group
 	 */
 	public String getId() {
 		return this.id;
 	}
 
 	/**
-	 * Return the {@link ConfigurationMetadataSource sources} defining
-	 * the properties of this group.
+	 * Return the {@link ConfigurationMetadataSource sources} defining the properties of
+	 * this group.
+	 * @return the sources of the group
 	 */
 	public Map<String, ConfigurationMetadataSource> getSources() {
 		return this.sources;
@@ -60,8 +60,11 @@ public class ConfigurationMetadataGroup {
 
 	/**
 	 * Return the {@link ConfigurationMetadataProperty properties} defined in this group.
-	 * <p>A property may appear more than once for a given source, potentially with conflicting
-	 * type or documentation. This is a "merged" view of the properties of this group.
+	 * <p>
+	 * A property may appear more than once for a given source, potentially with
+	 * conflicting type or documentation. This is a "merged" view of the properties of
+	 * this group.
+	 * @return the properties of the group
 	 * @see ConfigurationMetadataSource#getProperties()
 	 */
 	public Map<String, ConfigurationMetadataProperty> getProperties() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,9 +37,10 @@ class JsonReader {
 
 	private static final int BUFFER_SIZE = 4096;
 
-	private static final String NEW_LINE = System.getProperty("line.separator");
+	private final DescriptionExtractor descriptionExtractor = new DescriptionExtractor();
 
-	public RawConfigurationMetadata read(InputStream in, Charset charset) throws IOException {
+	public RawConfigurationMetadata read(InputStream in, Charset charset)
+			throws IOException {
 		JSONObject json = readJson(in, charset);
 		List<ConfigurationMetadataSource> groups = parseAllSources(json);
 		List<ConfigurationMetadataItem> items = parseAllItems(json);
@@ -94,7 +93,8 @@ class JsonReader {
 		source.setType(json.optString("type", null));
 		String description = json.optString("description", null);
 		source.setDescription(description);
-		source.setShortDescription(extractShortDescription(description));
+		source.setShortDescription(this.descriptionExtractor
+				.getShortDescription(description));
 		source.setSourceType(json.optString("sourceType", null));
 		source.setSourceMethod(json.optString("sourceMethod", null));
 		return source;
@@ -106,7 +106,8 @@ class JsonReader {
 		item.setType(json.optString("type", null));
 		String description = json.optString("description", null);
 		item.setDescription(description);
-		item.setShortDescription(extractShortDescription(description));
+		item.setShortDescription(this.descriptionExtractor
+				.getShortDescription(description));
 		item.setDefaultValue(readItemValue(json.opt("defaultValue")));
 		item.setDeprecated(json.optBoolean("deprecated", false));
 		item.setSourceType(json.optString("sourceType", null));
@@ -125,7 +126,8 @@ class JsonReader {
 				valueHint.setValue(readItemValue(value.get("value")));
 				String description = value.optString("description", null);
 				valueHint.setDescription(description);
-				valueHint.setShortDescription(extractShortDescription(description));
+				valueHint.setShortDescription(this.descriptionExtractor
+						.getShortDescription(description));
 				hint.getValueHints().add(valueHint);
 			}
 		}
@@ -140,7 +142,8 @@ class JsonReader {
 					Iterator<?> keys = parameters.keys();
 					while (keys.hasNext()) {
 						String key = (String) keys.next();
-						valueProvider.getParameters().put(key, readItemValue(parameters.get(key)));
+						valueProvider.getParameters().put(key,
+								readItemValue(parameters.get(key)));
 					}
 				}
 				hint.getValueProviders().add(valueProvider);
@@ -159,32 +162,6 @@ class JsonReader {
 			return content;
 		}
 		return value;
-	}
-
-	static String extractShortDescription(String description) {
-		if (description == null) {
-			return null;
-		}
-		int dot = description.indexOf(".");
-		if (dot != -1) {
-			BreakIterator breakIterator = BreakIterator.getSentenceInstance(Locale.US);
-			breakIterator.setText(description);
-			String text = description.substring(breakIterator.first(), breakIterator.next()).trim();
-			return removeSpaceBetweenLine(text);
-		}
-		else {
-			String[] lines = description.split(NEW_LINE);
-			return lines[0].trim();
-		}
-	}
-
-	private static String removeSpaceBetweenLine(String text) {
-		String[] lines = text.split(NEW_LINE);
-		StringBuilder sb = new StringBuilder();
-		for (String line : lines) {
-			sb.append(line.trim()).append(" ");
-		}
-		return sb.toString().trim();
 	}
 
 	private JSONObject readJson(InputStream in, Charset charset) throws IOException {

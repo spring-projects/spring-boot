@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A source of configuration metadata. Also defines where the source is declared,
- * for instance if it is defined as a {@code @Bean}.
+ * A source of configuration metadata. Also defines where the source is declared, for
+ * instance if it is defined as a {@code @Bean}.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -40,11 +40,11 @@ public class ConfigurationMetadataSource {
 
 	private String sourceMethod;
 
-	private final Map<String, ConfigurationMetadataProperty> properties
-			= new HashMap<String, ConfigurationMetadataProperty>();
+	private final Map<String, ConfigurationMetadataProperty> properties = new HashMap<String, ConfigurationMetadataProperty>();
 
 	/**
 	 * The identifier of the group to which this source is associated
+	 * @return the group id
 	 */
 	public String getGroupId() {
 		return this.groupId;
@@ -55,9 +55,9 @@ public class ConfigurationMetadataSource {
 	}
 
 	/**
-	 * The type of the source. Usually this is the fully qualified name of a
-	 * class that defines configuration items. This class may or may not be
-	 * available at runtime.
+	 * The type of the source. Usually this is the fully qualified name of a class that
+	 * defines configuration items. This class may or may not be available at runtime.
+	 * @return the type
 	 */
 	public String getType() {
 		return this.type;
@@ -69,6 +69,7 @@ public class ConfigurationMetadataSource {
 
 	/**
 	 * A description of this source, if any. Can be multi-lines.
+	 * @return the description
 	 * @see #getShortDescription()
 	 */
 	public String getDescription() {
@@ -81,10 +82,11 @@ public class ConfigurationMetadataSource {
 
 	/**
 	 * A single-line, single-sentence description of this source, if any.
+	 * @return the short description
 	 * @see #getDescription()
 	 */
 	public String getShortDescription() {
-		return shortDescription;
+		return this.shortDescription;
 	}
 
 	public void setShortDescription(String shortDescription) {
@@ -92,8 +94,9 @@ public class ConfigurationMetadataSource {
 	}
 
 	/**
-	 * The type where this source is defined. This can be identical
-	 * to the {@link #getType() type} if the source is self-defined.
+	 * The type where this source is defined. This can be identical to the
+	 * {@link #getType() type} if the source is self-defined.
+	 * @return the source type
 	 */
 	public String getSourceType() {
 		return this.sourceType;
@@ -105,6 +108,7 @@ public class ConfigurationMetadataSource {
 
 	/**
 	 * The method name that defines this source, if any.
+	 * @return the source method
 	 */
 	public String getSourceMethod() {
 		return this.sourceMethod;
@@ -116,6 +120,7 @@ public class ConfigurationMetadataSource {
 
 	/**
 	 * Return the properties defined by this source.
+	 * @return the properties
 	 */
 	public Map<String, ConfigurationMetadataProperty> getProperties() {
 		return this.properties;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package org.springframework.boot.configurationmetadata;
 
 /**
- * An extension of {@link ConfigurationMetadataProperty} that provides the
- * a reference to its source.
+ * An extension of {@link ConfigurationMetadataProperty} that provides the a reference to
+ * its source.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -30,9 +30,10 @@ class ConfigurationMetadataItem extends ConfigurationMetadataProperty {
 	private String sourceMethod;
 
 	/**
-	 * The class name of the source that contributed this property. For example, if the property
-	 * was from a class annotated with {@code @ConfigurationProperties} this attribute would
-	 * contain the fully qualified name of that class.
+	 * The class name of the source that contributed this property. For example, if the
+	 * property was from a class annotated with {@code @ConfigurationProperties} this
+	 * attribute would contain the fully qualified name of that class.
+	 * @return the source type
 	 */
 	public String getSourceType() {
 		return this.sourceType;
@@ -43,9 +44,10 @@ class ConfigurationMetadataItem extends ConfigurationMetadataProperty {
 	}
 
 	/**
-	 * The full name of the method (including parenthesis and argument types) that contributed this
-	 * property. For example, the name of a getter in a {@code @ConfigurationProperties} annotated
-	 * class.
+	 * The full name of the method (including parenthesis and argument types) that
+	 * contributed this property. For example, the name of a getter in a
+	 * {@code @ConfigurationProperties} annotated class.
+	 * @return the source method
 	 */
 	public String getSourceMethod() {
 		return this.sourceMethod;

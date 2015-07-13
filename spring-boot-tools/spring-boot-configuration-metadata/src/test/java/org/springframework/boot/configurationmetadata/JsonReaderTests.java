@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 
 	@Test
 	public void invalidMetadata() throws IOException {
-		thrown.expect(JSONException.class);
+		this.thrown.expect(JSONException.class);
 		readFor("invalid");
 	}
 
@@ -70,7 +70,8 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertProperty(item, "spring.foo.name", "name", String.class, null);
 		assertItem(item, "org.acme.Foo");
 		ConfigurationMetadataItem item2 = items.get(1);
-		assertProperty(item2, "spring.foo.description", "description", String.class, "FooBar");
+		assertProperty(item2, "spring.foo.description", "description", String.class,
+				"FooBar");
 		assertEquals("Foo description.", item2.getDescription());
 		assertEquals("Foo description.", item2.getShortDescription());
 		assertNull(item2.getSourceMethod());
@@ -125,44 +126,8 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertEquals(0, sources.size());
 		List<ConfigurationMetadataItem> items = rawMetadata.getItems();
 		assertEquals(2, items.size());
-
 		ConfigurationMetadataItem item = items.get(0);
 		assertProperty(item, "spring.root.name", "spring.root.name", String.class, null);
-	}
-
-	@Test
-	public void extractShortDescription() {
-		assertEquals("My short description.", JsonReader.extractShortDescription(
-				"My short description. More stuff."));
-	}
-
-	@Test
-	public void extractShortDescriptionNewLineBeforeDot() {
-		assertEquals("My short description.", JsonReader.extractShortDescription(
-				"My short\ndescription.\nMore stuff."));
-	}
-
-	@Test
-	public void extractShortDescriptionNewLineBeforeDotWithSpaces() {
-		assertEquals("My short description.", JsonReader.extractShortDescription(
-				"My short  \n description.  \nMore stuff."));
-	}
-
-	@Test
-	public void extractShortDescriptionNoDot() {
-		assertEquals("My short description", JsonReader.extractShortDescription(
-				"My short description"));
-	}
-
-	@Test
-	public void extractShortDescriptionNoDotMultipleLines() {
-		assertEquals("My short description", JsonReader.extractShortDescription(
-				"My short description  \n More stuff"));
-	}
-
-	@Test
-	public void extractShortDescriptionNull() {
-		assertEquals(null, JsonReader.extractShortDescription(null));
 	}
 
 	RawConfigurationMetadata readFor(String path) throws IOException {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.io.InputStream;
 
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -29,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Base for configuration meta-data tests.
  *
  * @author Stephane Nicoll
  */
@@ -37,15 +37,16 @@ public abstract class AbstractConfigurationMetadataTests {
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
-	protected void assertSource(ConfigurationMetadataSource actual, String groupId, String type, String sourceType) {
+	protected void assertSource(ConfigurationMetadataSource actual, String groupId,
+			String type, String sourceType) {
 		assertNotNull(actual);
 		assertEquals(groupId, actual.getGroupId());
 		assertEquals(type, actual.getType());
 		assertEquals(sourceType, actual.getSourceType());
 	}
 
-	protected void assertProperty(ConfigurationMetadataProperty actual, String id, String name,
-			Class<?> type, Object defaultValue) {
+	protected void assertProperty(ConfigurationMetadataProperty actual, String id,
+			String name, Class<?> type, Object defaultValue) {
 		assertNotNull(actual);
 		assertEquals(id, actual.getId());
 		assertEquals(name, actual.getName());
@@ -60,7 +61,9 @@ public abstract class AbstractConfigurationMetadataTests {
 	}
 
 	protected InputStream getInputStreamFor(String name) throws IOException {
-		Resource r = new ClassPathResource("metadata/configuration-metadata-" + name + ".json");
+		Resource r = new ClassPathResource("metadata/configuration-metadata-" + name
+				+ ".json");
 		return r.getInputStream();
 	}
+
 }
