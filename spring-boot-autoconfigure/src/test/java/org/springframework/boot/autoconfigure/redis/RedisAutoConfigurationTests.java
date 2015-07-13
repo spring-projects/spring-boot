@@ -95,7 +95,6 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testRedisConfigurationWithSentinel() throws Exception {
 		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
-
 		if (isAtLeastOneSentinelAvailable(sentinels)) {
 			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
 					+ StringUtils.collectionToCommaDelimitedString(sentinels));

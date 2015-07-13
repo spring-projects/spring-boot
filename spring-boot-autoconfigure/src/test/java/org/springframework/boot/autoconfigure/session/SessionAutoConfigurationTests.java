@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.session;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
@@ -25,6 +26,7 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
+import org.springframework.boot.redis.RedisTestServer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +40,9 @@ import static org.junit.Assert.assertNotNull;
  * @since 1.3.0
  */
 public class SessionAutoConfigurationTests {
+
+	@Rule
+	public RedisTestServer redis = new RedisTestServer();
 
 	private AnnotationConfigEmbeddedWebApplicationContext context;
 
