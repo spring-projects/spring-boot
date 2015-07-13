@@ -24,6 +24,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
+import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.reader.CompositeMetricReader;
@@ -66,6 +67,9 @@ public class MetricExportAutoConfiguration {
 	@ExportMetricWriter
 	private Map<String, MetricWriter> writers = Collections.emptyMap();
 
+	@Autowired(required = false)
+	private Map<String, Exporter> exporters = Collections.emptyMap();
+
 	@Bean
 	@ConditionalOnMissingBean(name = "metricWritersMetricExporter")
 	public SchedulingConfigurer metricWritersMetricExporter() {
@@ -75,9 +79,21 @@ public class MetricExportAutoConfiguration {
 			reader = new CompositeMetricReader(
 					this.readers.toArray(new MetricReader[this.readers.size()]));
 		}
+		MetricExporters exporters = null;
 		if (reader != null) {
+			exporters = new MetricExporters(this.properties);
 			writers.putAll(this.writers);
-			return new MetricExporters(reader, writers, this.properties);
+			exporters.setReader(reader);
+			exporters.setWriters(writers);
+		}
+		if (!this.exporters.isEmpty()) {
+			if (exporters==null) {
+				exporters = new MetricExporters(this.properties);
+			}
+			exporters.setExporters(this.exporters);
+		}
+		if (exporters!=null) {
+			return exporters;
 		}
 		return new NoOpSchedulingConfigurer();
 	}

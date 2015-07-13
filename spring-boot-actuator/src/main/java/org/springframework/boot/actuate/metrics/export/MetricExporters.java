@@ -34,23 +34,43 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
  */
 public class MetricExporters implements SchedulingConfigurer {
 
-	private final MetricReader reader;
+	private MetricReader reader;
 
-	private final Map<String, MetricWriter> writers;
+	private Map<String, MetricWriter> writers = new HashMap<String, MetricWriter>();
 
 	private final MetricExportProperties properties;
 
 	private final Map<String, Exporter> exporters = new HashMap<String, Exporter>();
 
-	public MetricExporters(MetricReader reader, Map<String, MetricWriter> writers,
-			MetricExportProperties properties) {
-		this.reader = reader;
-		this.writers = writers;
+	public MetricExporters(MetricExportProperties properties) {
 		this.properties = properties;
+	}
+
+	public void setReader(MetricReader reader) {
+		this.reader = reader;
+	}
+
+	public void setWriters(Map<String, MetricWriter> writers) {
+		this.writers.putAll(writers);
+	}
+
+	public void setExporters(Map<String, Exporter> exporters) {
+		this.exporters.putAll(exporters);
 	}
 
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+		for (Entry<String, Exporter> entry : this.exporters.entrySet()) {
+			String name = entry.getKey();
+			Exporter exporter = entry.getValue();
+			TriggerProperties trigger = this.properties.findTrigger(name);
+			if (trigger != null) {
+				ExportRunner runner = new ExportRunner(exporter);
+				IntervalTask task = new IntervalTask(runner, trigger.getDelayMillis(),
+						trigger.getDelayMillis());
+				taskRegistrar.addFixedDelayTask(task);
+			}
+		}
 		for (Entry<String, MetricWriter> entry : this.writers.entrySet()) {
 			String name = entry.getKey();
 			MetricWriter writer = entry.getValue();
@@ -80,9 +100,9 @@ public class MetricExporters implements SchedulingConfigurer {
 
 	private static class ExportRunner implements Runnable {
 
-		private final MetricCopyExporter exporter;
+		private final Exporter exporter;
 
-		public ExportRunner(MetricCopyExporter exporter) {
+		public ExportRunner(Exporter exporter) {
 			this.exporter = exporter;
 		}
 
