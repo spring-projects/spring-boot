@@ -168,6 +168,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		getLoggerContext().reset();
+		getLoggerContext().getStatusManager().clear();
 		loadConfiguration(initializationContext, getSelfInitializationConfig(), null);
 	}
 
