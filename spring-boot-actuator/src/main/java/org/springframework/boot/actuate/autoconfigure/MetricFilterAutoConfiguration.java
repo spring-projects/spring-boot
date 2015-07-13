@@ -46,7 +46,7 @@ import org.springframework.web.servlet.HandlerMapping;
 @ConditionalOnClass({ Servlet.class, ServletRegistration.class,
 		OncePerRequestFilter.class, HandlerMapping.class })
 @AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
-@ConditionalOnProperty(name="endpoints.metrics.filter.enabled", matchIfMissing=true)
+@ConditionalOnProperty(name = "endpoints.metrics.filter.enabled", matchIfMissing = true)
 public class MetricFilterAutoConfiguration {
 
 	@Autowired
@@ -59,4 +59,5 @@ public class MetricFilterAutoConfiguration {
 	public Filter metricFilter() {
 		return new MetricsFilter(this.counterService, this.gaugeService);
 	}
+
 }
