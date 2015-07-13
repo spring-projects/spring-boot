@@ -24,9 +24,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.session.Session;
@@ -42,10 +44,10 @@ import org.springframework.session.data.redis.config.annotation.web.http.RedisHt
  */
 @Configuration
 @ConditionalOnClass(Session.class)
-@EnableConfigurationProperties(ServerProperties.class)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 public class SessionAutoConfiguration {
 
+	@EnableConfigurationProperties
 	@ConditionalOnClass(RedisConnectionFactory.class)
 	@ConditionalOnWebApplication
 	@ConditionalOnMissingBean(RedisHttpSessionConfiguration.class)
@@ -65,6 +67,19 @@ public class SessionAutoConfiguration {
 			if (timeout != null) {
 				this.sessionRepository.setDefaultMaxInactiveInterval(timeout);
 			}
+		}
+
+		@Configuration
+		@ConditionalOnMissingBean(value = ServerProperties.class, search = SearchStrategy.CURRENT)
+		// Just in case user switches off ServerPropertiesAutoConfiguration
+		public static class ServerPropertiesConfiguration {
+
+			@Bean
+			// Use the same bean name as the default one for any old webapp
+			public ServerProperties serverProperties() {
+				return new ServerProperties();
+			}
+
 		}
 
 	}
