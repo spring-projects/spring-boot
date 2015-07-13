@@ -480,8 +480,10 @@ The following types can be used:
 * `org.springframework.core.io.Resource`: auto-completion of Spring’s Resource abstraction to
   refer to a file on the filesystem or on the classpath.
 
-The meta-data snippet below corresponds to the standard `spring.jooq.sql-dialect`
-property that defines the `SQLDialect` class name to use:
+The meta-data snippet below corresponds to the standard `liquibase.change-log`
+property that defines the path to the changelog to use. It is actually used internally as a
+`org.springframework.core.io.Resource` but cannot be exposed as such as we need to keep the
+original String value to pass it to the Liquibase API.
 
 [source,json,indent=0]
 ----
