@@ -23,7 +23,6 @@ import org.jooq.DSLContext;
 import org.jooq.ExecuteListenerProvider;
 import org.jooq.RecordListenerProvider;
 import org.jooq.RecordMapperProvider;
-import org.jooq.SQLDialect;
 import org.jooq.TransactionProvider;
 import org.jooq.VisitListenerProvider;
 import org.jooq.conf.Settings;
@@ -43,7 +42,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for JOOQ.
@@ -113,8 +111,8 @@ public class JooqAutoConfiguration {
 		@ConditionalOnMissingBean(org.jooq.Configuration.class)
 		public DefaultConfiguration jooqConfiguration() {
 			DefaultConfiguration configuration = new DefaultConfiguration();
-			if (!StringUtils.isEmpty(this.properties.getSqlDialect())) {
-				configuration.set(SQLDialect.valueOf(this.properties.getSqlDialect()));
+			if (this.properties.getSqlDialect() != null) {
+				configuration.set(this.properties.getSqlDialect());
 			}
 			configuration.set(this.connectionProvider);
 			if (this.transactionProvider != null) {
