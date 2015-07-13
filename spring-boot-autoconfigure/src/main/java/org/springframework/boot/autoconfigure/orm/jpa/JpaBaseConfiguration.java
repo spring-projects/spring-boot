@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.springframework.beans.BeansException;
@@ -105,7 +106,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean({ LocalContainerEntityManagerFactoryBean.class,
+			EntityManagerFactory.class })
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
 			EntityManagerFactoryBuilder factoryBuilder) {
 		Map<String, Object> vendorProperties = getVendorProperties();
