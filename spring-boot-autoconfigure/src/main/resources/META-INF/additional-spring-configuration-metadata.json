@@ -166,6 +166,17 @@
   }
 ],"hints": [
   {
+    "name": "liquibase.change-log",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.springframework.core.io.Resource"
+        }
+      }
+    ]
+  },
+  {
     "name": "server.jsp-servlet.class-name",
     "providers": [
       {

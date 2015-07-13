@@ -367,6 +367,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				"boot", "Bla bla"), new ItemHint.ValueHint("spring", null)));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata,
+				containsProperty("simple.the-name", String.class)
+						.fromSource(SimpleProperties.class)
+						.withDescription("The name of this simple properties.")
+						.withDefaultValue(is("boot")).withDeprecated());
+		assertThat(metadata,
 				containsHint("simple.the-name").withValue(0, "boot", "Bla bla")
 						.withValue(1, "spring", null));
 	}
@@ -376,6 +381,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		writeAdditionalHints(ItemHint.newHint("simple.theName", new ItemHint.ValueHint(
 				"boot", "Bla bla")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(metadata,
+				containsProperty("simple.the-name", String.class)
+						.fromSource(SimpleProperties.class)
+						.withDescription("The name of this simple properties.")
+						.withDefaultValue(is("boot")).withDeprecated());
 		assertThat(metadata,
 				containsHint("simple.the-name").withValue(0, "boot", "Bla bla"));
 	}
@@ -388,6 +398,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 								.<String, Object> singletonMap("target", "org.foo")),
 						new ItemHint.ValueProvider("second", null))));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(metadata,
+				containsProperty("simple.the-name", String.class)
+						.fromSource(SimpleProperties.class)
+						.withDescription("The name of this simple properties.")
+						.withDefaultValue(is("boot")).withDeprecated());
 		assertThat(metadata,
 				containsHint("simple.the-name")
 						.withProvider("first", "target", "org.foo")

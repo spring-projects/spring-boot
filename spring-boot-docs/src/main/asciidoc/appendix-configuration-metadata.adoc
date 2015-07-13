@@ -487,17 +487,17 @@ property that defines the `SQLDialect` class name to use:
 ----
 	{"hints": [
 		{
-			"name": "spring.jooq.sql-dialect",
+			"name": "liquibase.change-log",
 			"providers": [
-			  {
-				"name": "handle-as",
-				"parameters": {
-				  "target": "org.jooq.SQLDialect"
+				{
+					"name": "handle-as",
+					"parameters": {
+						"target": "org.springframework.core.io.Resource"
+					}
 				}
-			  }
 			]
-		},
-    ]}
+		}
+	]}
 ----
 
 
