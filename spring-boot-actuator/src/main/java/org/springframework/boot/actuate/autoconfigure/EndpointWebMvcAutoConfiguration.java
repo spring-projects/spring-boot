@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -90,11 +91,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
-		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
-		ManagementServerPropertiesAutoConfiguration.class,
-		HypermediaAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+	EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
+	ManagementServerPropertiesAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class,
+	HypermediaAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
-		BeanFactoryAware, SmartInitializingSingleton {
+BeanFactoryAware, SmartInitializingSingleton {
 
 	private static final Log logger = LogFactory
 			.getLog(EndpointWebMvcAutoConfiguration.class);
@@ -129,7 +130,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		if (managementPort == ManagementServerPort.DIFFERENT
 				&& this.applicationContext instanceof EmbeddedWebApplicationContext
 				&& ((EmbeddedWebApplicationContext) this.applicationContext)
-						.getEmbeddedServletContainer() != null) {
+				.getEmbeddedServletContainer() != null) {
 			createChildManagementContext();
 		}
 		if (managementPort == ManagementServerPort.SAME
@@ -149,7 +150,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		CloseEventPropagationListener
-				.addIfPossible(this.applicationContext, childContext);
+		.addIfPossible(this.applicationContext, childContext);
 		try {
 			childContext.refresh();
 			managementContextResolver().setApplicationContext(childContext);
@@ -221,7 +222,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain filterChain)
-				throws ServletException, IOException {
+						throws ServletException, IOException {
 			if (this.properties == null) {
 				this.properties = this.applicationContext
 						.getBean(ManagementServerProperties.class);
@@ -240,7 +241,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	 * parent to a child.
 	 */
 	private static class CloseEventPropagationListener implements
-			ApplicationListener<ContextClosedEvent> {
+	ApplicationListener<ContextClosedEvent> {
 
 		private final ApplicationContext parentContext;
 
@@ -275,7 +276,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	}
 
 	private static class OnManagementMvcCondition extends SpringBootCondition implements
-			ConfigurationCondition {
+	ConfigurationCondition {
 
 		@Override
 		public ConfigurationPhase getConfigurationPhase() {
@@ -324,7 +325,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			return ((managementPort == null)
 					|| (serverPort == null && managementPort.equals(8080))
 					|| (managementPort != 0 && managementPort.equals(serverPort)) ? SAME
-					: DIFFERENT);
+							: DIFFERENT);
 		}
 
 		private static Integer getPortProperty(Environment environment, String prefix) {
