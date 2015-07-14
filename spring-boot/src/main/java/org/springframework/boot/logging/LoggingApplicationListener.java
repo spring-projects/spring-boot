@@ -65,6 +65,11 @@ import org.springframework.util.StringUtils;
 public class LoggingApplicationListener implements GenericApplicationListener {
 
 	/**
+	 * The default order for the LoggingApplicationListener.
+	 */
+	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 20;
+
+	/**
 	 * The name of the Spring property that contains a reference to the logging
 	 * configuration to load.
 	 */
@@ -109,7 +114,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private LoggingSystem loggingSystem;
 
-	private int order = Ordered.HIGHEST_PRECEDENCE + 11;
+	private int order = DEFAULT_ORDER;
 
 	private boolean parseArgs = true;
 
@@ -202,7 +207,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				environment);
 		LogFile logFile = LogFile.get(environment);
 		String logConfig = environment.getProperty(CONFIG_PROPERTY);
-		if (StringUtils.hasLength(logConfig)) {
+		if (ignoreLogConfig(logConfig)) {
+			system.initialize(initializationContext, null, logFile);
+		}
+		else {
 			try {
 				ResourceUtils.getURL(logConfig).openStream().close();
 				system.initialize(initializationContext, logConfig, logFile);
@@ -215,9 +223,15 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				throw new IllegalStateException(ex);
 			}
 		}
-		else {
-			system.initialize(initializationContext, null, logFile);
-		}
+	}
+
+	private boolean ignoreLogConfig(String logConfig) {
+		return !StringUtils.hasLength(logConfig)
+				|| isDefaultAzureLoggingConfig(logConfig);
+	}
+
+	private boolean isDefaultAzureLoggingConfig(String candidate) {
+		return candidate.startsWith("-Djava.util.logging.config.file=");
 	}
 
 	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment,

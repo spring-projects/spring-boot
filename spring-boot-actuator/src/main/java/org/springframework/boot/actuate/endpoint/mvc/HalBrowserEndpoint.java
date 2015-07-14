@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,18 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * @author Dave Syer
+ * {@link MvcEndpoint} to support the Spring Data HAL browser.
  *
+ * @author Dave Syer
+ * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.hal")
 public class HalBrowserEndpoint extends WebMvcConfigurerAdapter implements MvcEndpoint {
 
 	private static final String HAL_BROWSER_VERSION = "b7669f1-1";
+
+	private static final String HAL_BROWSER_LOCATION = "classpath:/META-INF/resources/webjars/hal-browser/"
+			+ HAL_BROWSER_VERSION + "/";
 
 	private String path = "";
 
@@ -58,16 +63,11 @@ public class HalBrowserEndpoint extends WebMvcConfigurerAdapter implements MvcEn
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		// Make sure the root path is not cached otherwise the browser won't come back for
-		// the JSON
+		// Make sure the root path is not cached so the browser comes back for the JSON
 		registry.addResourceHandler(this.management.getContextPath() + this.path + "/")
-		.addResourceLocations(
-				"classpath:/META-INF/resources/webjars/hal-browser/"
-						+ HAL_BROWSER_VERSION + "/").setCachePeriod(0);
+				.addResourceLocations(HAL_BROWSER_LOCATION).setCachePeriod(0);
 		registry.addResourceHandler(this.management.getContextPath() + this.path + "/**")
-		.addResourceLocations(
-				"classpath:/META-INF/resources/webjars/hal-browser/"
-						+ HAL_BROWSER_VERSION + "/");
+				.addResourceLocations(HAL_BROWSER_LOCATION);
 	}
 
 	public void setPath(String path) {

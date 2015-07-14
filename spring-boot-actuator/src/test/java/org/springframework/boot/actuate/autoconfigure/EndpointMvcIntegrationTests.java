@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 
 package org.springframework.boot.actuate.autoconfigure;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -63,6 +60,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Integration tests for MVC {@link Endpoint}s.
  *
@@ -94,19 +94,19 @@ public class EndpointMvcIntegrationTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-		ServerPropertiesAutoConfiguration.class,
-		DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-		JacksonAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class,
-		ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected static @interface MinimalWebConfiguration {
 
 	}
 
 	@Configuration
 	@MinimalWebConfiguration
-	@Import({ ManagementServerPropertiesAutoConfiguration.class, JacksonAutoConfiguration.class,
-		EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class })
+	@Import({ ManagementServerPropertiesAutoConfiguration.class,
+			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class })
 	@RestController
 	protected static class Application {
 

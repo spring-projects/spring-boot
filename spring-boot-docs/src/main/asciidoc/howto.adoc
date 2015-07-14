@@ -185,6 +185,9 @@ No matter what you set in the environment, Spring Boot will always load
 `application.properties` as described above. If YAML is used then files with the '`.yml`'
 extension are also added to the list by default.
 
+Spring Boot logs the configuration files that are loaded at `DEBUG` level and the
+candidates it has not found at `TRACE` level.
+
 See {sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[`ConfigFileApplicationListener`]
 for more detail.
 
@@ -1842,7 +1845,7 @@ The `spring-boot-devtools` module includes support for automatic application res
 Whilst not as fast a technologies such as http://zeroturnaround.com/software/jrebel/[JRebel]
 or https://github.com/spring-projects/spring-loaded[Spring Loaded] it's usually
 significantly faster than a "`cold start`". You should probably give it a try before
-investigating some of the more complex reload options discussed bellow.
+investigating some of the more complex reload options discussed below.
 
 For more details see the <<using-spring-boot.adoc#using-boot-devtools>> section.
 

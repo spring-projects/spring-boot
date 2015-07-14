@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.export;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -47,7 +48,9 @@ public class MetricExportersTests {
 
 	@Test
 	public void emptyWriters() {
-		this.exporters = new MetricExporters(this.reader, this.writers, this.export);
+		this.exporters = new MetricExporters(this.export);
+		this.exporters.setReader(this.reader);
+		this.exporters.setWriters(this.writers);
 		this.exporters.configureTasks(new ScheduledTaskRegistrar());
 		assertNotNull(this.exporters.getExporters());
 		assertEquals(0, this.exporters.getExporters().size());
@@ -57,7 +60,20 @@ public class MetricExportersTests {
 	public void oneWriter() {
 		this.export.setUpDefaults();
 		this.writers.put("foo", this.writer);
-		this.exporters = new MetricExporters(this.reader, this.writers, this.export);
+		this.exporters = new MetricExporters(this.export);
+		this.exporters.setReader(this.reader);
+		this.exporters.setWriters(this.writers);
+		this.exporters.configureTasks(new ScheduledTaskRegistrar());
+		assertNotNull(this.exporters.getExporters());
+		assertEquals(1, this.exporters.getExporters().size());
+	}
+
+	@Test
+	public void exporter() {
+		this.export.setUpDefaults();
+		this.exporters = new MetricExporters(this.export);
+		this.exporters.setExporters(Collections.<String, Exporter> singletonMap("foo",
+				new MetricCopyExporter(this.reader, this.writer)));
 		this.exporters.configureTasks(new ScheduledTaskRegistrar());
 		assertNotNull(this.exporters.getExporters());
 		assertEquals(1, this.exporters.getExporters().size());

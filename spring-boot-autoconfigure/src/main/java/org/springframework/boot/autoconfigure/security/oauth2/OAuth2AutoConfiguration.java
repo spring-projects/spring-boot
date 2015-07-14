@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.oauth2.authserver.SpringSecurityOAuth2AuthorizationServerConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.authserver.OAuth2AuthorizationServerConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2RestOperationsConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.method.OAuth2MethodSecurityConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration;
@@ -46,7 +46,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 @Configuration
 @ConditionalOnClass({ OAuth2AccessToken.class, WebMvcConfigurerAdapter.class })
-@Import({ SpringSecurityOAuth2AuthorizationServerConfiguration.class,
+@Import({ OAuth2AuthorizationServerConfiguration.class,
 		OAuth2MethodSecurityConfiguration.class, OAuth2ResourceServerConfiguration.class,
 		OAuth2RestOperationsConfiguration.class })
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)

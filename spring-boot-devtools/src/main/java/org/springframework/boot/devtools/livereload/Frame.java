@@ -107,7 +107,7 @@ class Frame {
 		return new Frame(Type.forCode(firstByte & 0x0F), payload);
 	}
 
-	public static enum Type {
+	public enum Type {
 
 		/**
 		 * Continuation frame.

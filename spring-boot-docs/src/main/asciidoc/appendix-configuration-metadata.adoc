@@ -217,8 +217,8 @@ The JSON object contained in the `hints` array can contain the following attribu
   the value and may have a description
 
 |`providers`
-| ProviderHint[]
-| A list of providers as defined by the `ValueHint` object (see below). Each entry defines
+| ValueProvider[]
+| A list of providers as defined by the `ValueProvider` object (see below). Each entry defines
   the name of the provider and its parameters, if any.
 
 |===
@@ -283,7 +283,7 @@ property, you can provide additional meta-data that:
    can discover the list of potential values based on the project's context.
 
 
-==== Value hints
+==== Value hint
 The `name` attribute of each hint refers to the `name` of a property. In the initial
 example above, we provide 3 values for the `server.tomcat.compression` property: `on`,
 `off` and `force`.
@@ -330,7 +330,7 @@ the most effective approach to auto-completion if your IDE supports it.
 
 
 
-==== Provider hints
+==== Value provider
 Providers are a powerful way of attaching semantics to a property. We define in the section
 below the official providers that you can use for your own hints. Bare in mind however that
 your favorite IDE may implement some of these or none of them. It could eventually provide
@@ -345,14 +345,14 @@ The table below summarizes the list of supported providers:
 |Name | Description
 
 |`any`
-|Permit any additional values to be provided.
+|Permit any additional value to be provided.
 
 |`class-reference`
 |Auto-complete the classes available in the project. Usually constrained by a base
  class that is specified via the `target` parameter.
 
-|`enum`
-|Auto-complete the values of an enum given by the mandatory `target` parameter.
+|`handle-as`
+|Handle the property as if it was defined by the type defined via the mandatory `target` parameter.
 
 |`logger-name`
 |Auto-complete valid logger names. Typically, package and class names available in
@@ -361,8 +361,11 @@ The table below summarizes the list of supported providers:
 |`spring-bean-reference`
 |Auto-complete the available bean names in the current project. Usually constrained
  by a base class that is specified via the `target` parameter.
-|===
 
+|`spring-profile-name`
+|Auto-complete the available Spring profile names in the project.
+
+|===
 
 TIP: No more than one provider can be active for a given property but you can specify
 several providers if they can all manage the property _in some ways_. Make sure to place
@@ -450,43 +453,54 @@ property that defines the `JspServlet` class name to use:
 
 
 
-===== Enum
-The **enum** provider auto-completes the values of the `Enum` class referenced via the
-`target` parameter. This provider supports these parameters:
+===== Handle As
+The **handle-as** provider allows you to substitute the type of the property to a more
+high-level type. This typically happens when the property has a `java.lang.String` type
+because you don't want your configuration classes to rely on classes that may not be
+on the classpath. This provider supports these parameters:
 
 [cols="1,1,2,4"]
 |===
 |Parameter |Type |Default value |Description
 
 | **`target`**
-| `String` (`Enum`)
+| `String` (`Class`)
 |_none_
-|The fully qualified name of the `Enum` class. This parameter is mandatory.
+|The fully qualified name of the type to consider for the property. This parameter is mandatory.
 |===
 
+The following types can be used:
 
-The meta-data snippet below corresponds to the standard `spring.jooq.sql-dialect`
-property that defines the `SQLDialect` class name to use:
+* Any `java.lang.Enum` that list the possible values for the property (By all means, try to
+  define the property with the `Enum` type instead as no further hint should be required for
+  the IDE to auto-complete the values).
+* `java.nio.charset.Charset`: auto-completion of charset/encoding values
+* `java.util.Locale`: auto-completion of locales
+* `org.springframework.util.MimeType`: auto-completion of content type values
+* `org.springframework.core.io.Resource`: auto-completion of Spring’s Resource abstraction to
+  refer to a file on the filesystem or on the classpath.
+
+The meta-data snippet below corresponds to the standard `liquibase.change-log`
+property that defines the path to the changelog to use. It is actually used internally as a
+`org.springframework.core.io.Resource` but cannot be exposed as such as we need to keep the
+original String value to pass it to the Liquibase API.
 
 [source,json,indent=0]
 ----
 	{"hints": [
 		{
-			"name": "spring.jooq.sql-dialect",
+			"name": "liquibase.change-log",
 			"providers": [
-			  {
-				"name": "enum",
-				"parameters": {
-				  "target": "org.jooq.SQLDialect"
+				{
+					"name": "handle-as",
+					"parameters": {
+						"target": "org.springframework.core.io.Resource"
+					}
 				}
-			  }
 			]
-		},
-    ]}
+		}
+	]}
 ----
-
-TIP: This is useful when you don't want your configuration classes to rely on classes
-that may not be on the classpath.
 
 
 
@@ -499,7 +513,7 @@ Since a logger name can be any arbitrary name, really, this provider should allo
 value but could highlight valid packages and class names that are not available in the
 project's classpath.
 
-The meta-data snippet below corresponds to the standard `logger.level` property, keys
+The meta-data snippet below corresponds to the standard `logging.level` property, keys
 are _logger names_ and values correspond to the the standard log levels or any custom
 level:
 
@@ -507,7 +521,7 @@ level:
 ----
 	{"hints": [
 		{
-			"name": "logger.level.keys",
+			"name": "logging.level.keys",
 			"values": [
 				{
 					"value": "root",
@@ -521,7 +535,7 @@ level:
 			]
 		},
 		{
-			"name": "logger.level.values",
+			"name": "logging.level.values",
 			"values": [
 				{
 					"value": "trace"
@@ -586,6 +600,33 @@ that defines the name of the `MBeanServer` bean to use:
 					"parameters": {
 						"target": "javax.management.MBeanServer"
 					}
+				}
+			]
+		}
+	]}
+----
+
+NOTE: The binder is not aware of the meta-data so if you provide that hint, you
+will still need to transform the bean name into an actual Bean reference using
+the `ApplicationContext`.
+
+
+
+===== Spring profile name
+The **spring-profile-name** provider auto-completes the Spring profiles that are
+defined in the configuration of the current project.
+
+The meta-data snippet below corresponds to the standard `spring.profiles.active`
+property that defines the name of the Spring profile(s) to enable:
+
+[source,json,indent=0]
+----
+	{"hints": [
+		{
+			"name": "spring.profiles.active",
+			"providers": [
+				{
+					"name": "spring-profile-name"
 				}
 			]
 		}

@@ -424,7 +424,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	}
 
-	static enum FooEnum {
+	enum FooEnum {
 		FOO, BAZ, BAR
 	}
 

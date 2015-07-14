@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
- * Configures the {@link LocalContainerEntityManagerFactoryBean} to to scan for entity
+ * Configures the {@link LocalContainerEntityManagerFactoryBean} to scan for entity
  * classes in the classpath. This annotation provides an alternative to manually setting
  * {@link LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)} and is
  * particularly useful if you want to configure entity scanning in a type-safe way, or if

@@ -12,7 +12,7 @@
   },
   {
     "name": "banner.location",
-    "type": "java.lang.String",
+    "type": "org.springframework.core.io.Resource",
     "description": "Banner file location.",
     "defaultValue": "classpath:banner.txt"
   },
@@ -112,6 +112,69 @@
     "name": "spring.profiles.include",
     "type": "java.lang.String",
     "description": "Unconditionally activate the specified comma separated profiles."
+  }
+],"hints": [
+  {
+    "name": "logging.level.keys",
+    "values": [
+      {
+        "value": "root",
+        "description": "Root logger used to assign the default logging level."
+      }
+    ],
+    "providers": [
+      {
+        "name": "logger-name"
+      }
+    ]
+  },
+  {
+    "name": "logging.level.values",
+    "values": [
+      {
+        "value": "trace"
+      },
+      {
+        "value": "debug"
+      },
+      {
+        "value": "info"
+      },
+      {
+        "value": "warn"
+      },
+      {
+        "value": "error"
+      },
+      {
+        "value": "fatal"
+      },
+      {
+        "value": "off"
+      }
+
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.profiles.active",
+    "providers": [
+      {
+        "name": "spring-profile-name"
+      }
+    ]
+  },
+  {
+    "name": "spring.profiles.include",
+    "providers": [
+      {
+        "name": "spring-profile-name"
+      }
+    ]
   }
 ]}
 

@@ -1,4 +1,4 @@
-spring:
+security:
   oauth2:
     client:
       clientId: bd1c0a783ccdd1c9b9e4

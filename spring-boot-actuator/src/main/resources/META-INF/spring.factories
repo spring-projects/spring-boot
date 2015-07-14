@@ -18,6 +18,6 @@ org.springframework.boot.actuate.autoconfigure.PublicMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration
 
-org.springframework.boot.actuate.autoconfigure.EndpointWebMvcConfiguration=\
-org.springframework.boot.actuate.autoconfigure.EndpointWebMvcConfiguration,\
-org.springframework.boot.actuate.autoconfigure.EndpointWebMvcHypermediaConfiguration
+org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration=\
+org.springframework.boot.actuate.autoconfigure.EndpointWebMvcManagementContextConfiguration,\
+org.springframework.boot.actuate.autoconfigure.EndpointWebMvcHypermediaManagementContextConfiguration

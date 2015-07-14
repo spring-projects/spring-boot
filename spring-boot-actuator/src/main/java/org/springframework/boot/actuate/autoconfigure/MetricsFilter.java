@@ -99,6 +99,9 @@ final class MetricsFilter extends OncePerRequestFilter {
 		if (is4xxClientError(status)) {
 			return UNKNOWN_PATH_SUFFIX;
 		}
+		if (is3xxRedirection(status)) {
+			return UNKNOWN_PATH_SUFFIX;
+		}
 		return path;
 	}
 
@@ -120,6 +123,15 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private boolean is4xxClientError(int status) {
 		try {
 			return HttpStatus.valueOf(status).is4xxClientError();
+		}
+		catch (Exception ex) {
+			return false;
+		}
+	}
+
+	private boolean is3xxRedirection(int status) {
+		try {
+			return HttpStatus.valueOf(status).is3xxRedirection();
 		}
 		catch (Exception ex) {
 			return false;

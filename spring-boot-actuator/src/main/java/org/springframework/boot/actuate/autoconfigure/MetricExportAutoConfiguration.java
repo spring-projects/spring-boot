@@ -24,6 +24,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
+import org.springframework.boot.actuate.metrics.export.Exporter;
 import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.reader.CompositeMetricReader;
@@ -66,6 +67,9 @@ public class MetricExportAutoConfiguration {
 	@ExportMetricWriter
 	private Map<String, MetricWriter> writers = Collections.emptyMap();
 
+	@Autowired(required = false)
+	private Map<String, Exporter> exporters = Collections.emptyMap();
+
 	@Bean
 	@ConditionalOnMissingBean(name = "metricWritersMetricExporter")
 	public SchedulingConfigurer metricWritersMetricExporter() {
@@ -75,28 +79,36 @@ public class MetricExportAutoConfiguration {
 			reader = new CompositeMetricReader(
 					this.readers.toArray(new MetricReader[this.readers.size()]));
 		}
+		if (reader == null && this.exporters.isEmpty()) {
+			return new NoOpSchedulingConfigurer();
+		}
+		MetricExporters exporters = new MetricExporters(this.properties);
 		if (reader != null) {
 			writers.putAll(this.writers);
-			return new MetricExporters(reader, writers, this.properties);
+			exporters.setReader(reader);
+			exporters.setWriters(writers);
 		}
-		return new NoOpSchedulingConfigurer();
+		exporters.setExporters(this.exporters);
+		return exporters;
 	}
 
 	@Configuration
 	protected static class MetricExportPropertiesConfiguration {
 
-		@Value("spring.metrics.${spring.application.name:application}.${random.value:0000}")
-		private String prefix = "spring.metrics";
+		@Value("${spring.application.name:application}.${random.value:0000}")
+		private String prefix = "";
 
-		@Value("d.d.k.d")
-		private String aggregateKeyPattern = "";
+		private String aggregateKeyPattern = "k.d";
 
 		@Bean(name = "spring.metrics.export.CONFIGURATION_PROPERTIES")
 		@ConditionalOnMissingBean
 		public MetricExportProperties metricExportProperties() {
 			MetricExportProperties export = new MetricExportProperties();
-			export.getRedis().setPrefix(this.prefix);
-			export.getRedis().setAggregateKeyPattern(this.aggregateKeyPattern);
+			export.getRedis().setPrefix(
+					"spring.metrics" + (this.prefix.length() > 0 ? "." : "")
+							+ this.prefix);
+			export.getAggregate().setPrefix(this.prefix);
+			export.getAggregate().setKeyPattern(this.aggregateKeyPattern);
 			return export;
 		}
 

@@ -70,7 +70,7 @@ public final class RelaxedNames implements Iterable<String> {
 		}
 	}
 
-	static enum Variation {
+	enum Variation {
 
 		NONE {
 			@Override
@@ -97,7 +97,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 	}
 
-	static enum Manipulation {
+	enum Manipulation {
 
 		NONE {
 			@Override

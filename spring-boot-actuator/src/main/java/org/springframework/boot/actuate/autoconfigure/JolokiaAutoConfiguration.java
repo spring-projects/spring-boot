@@ -20,18 +20,24 @@ import java.util.Properties;
 
 import org.jolokia.http.AgentServlet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration.JolokiaCondition;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedding Jolokia, a JMX-HTTP
@@ -55,7 +61,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ AgentServlet.class })
-@ConditionalOnExpression("${endpoints.jolokia.enabled:${endpoints.enabled:true}}")
+@Conditional(JolokiaCondition.class)
 @AutoConfigureBefore(ManagementSecurityAutoConfiguration.class)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 @EnableConfigurationProperties(JolokiaProperties.class)
@@ -76,6 +82,28 @@ public class JolokiaAutoConfiguration {
 		Properties initParameters = new Properties();
 		initParameters.putAll(this.properties.getConfig());
 		return initParameters;
+	}
+
+	/**
+	 * Condition to check that the Jolokia endpoint is enabled.
+	 */
+	static class JolokiaCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			boolean endpointsEnabled = isEnabled(context, "endpoints.", true);
+			boolean enabled = isEnabled(context, "endpoints.jolokia.", endpointsEnabled);
+			return new ConditionOutcome(enabled, "Jolokia enabled");
+		}
+
+		private boolean isEnabled(ConditionContext context, String prefix,
+				boolean defaultValue) {
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
+					context.getEnvironment(), prefix);
+			return resolver.getProperty("enabled", Boolean.class, defaultValue);
+		}
+
 	}
 
 }

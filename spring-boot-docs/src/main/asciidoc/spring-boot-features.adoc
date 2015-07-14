@@ -73,7 +73,7 @@ display (surrounded with brackets and prefixed with `v`). For example `(v1.0)`.
 |The Spring Boot version that you are using formatted for display (surrounded with
 brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
 
-|`${Ansi.NAME}`,
+|`${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`)
 |Where `NAME` is the name of an ANSI escape code. See
 {sc-spring-boot}/ansi/AnsiPropertySource.{sc-ext}[`AnsiPropertySource`] for details.
 |===
@@ -184,12 +184,49 @@ TIP: It is often desirable to call `setWebEnvironment(false)` when using
 
 
 
+[[boot-features-application-arguments]]
+=== Accessing application arguments
+If you need to access the application arguments that were passed to
+`SpringApplication.run(...)` you can inject a
+`org.springframework.boot.ApplicationArguments` bean. The `ApplicationArguments` interface
+provides access to both the raw `String[]` arguments as well as parsed `option` and
+`non-option` arguments:
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.*
+	import org.springframework.beans.factory.annotation.*
+	import org.springframework.stereotype.*
+
+	@Component
+	public class MyBean {
+
+		@Autowired
+		public MyBean(ApplicationArguments args) {
+			boolean debug = args.containsOption("debug");
+			List<String> files = args.getNonOptionArgs();
+			// if run with "--debug logfile.txt" debug=true, files=["logfile.txt"]
+		}
+
+	}
+----
+
+TIP: Spring Boot will also register a `CommandLinePropertySource` with the Spring
+`Environment`. This allows you to also inject single application arguments using the
+`@Value` annotation.
+
+
+
 [[boot-features-command-line-runner]]
-=== Using the CommandLineRunner
-If you want access to the raw command line arguments, or you need to run some specific
-code once the `SpringApplication` has started you can implement the `CommandLineRunner`
-interface. The `run(String... args)` method will be called on all Spring beans
-implementing this interface.
+=== Using the ApplicationRunner or CommandLineRunner
+If you need to run some specific code once the `SpringApplication` has started, you can
+implement the `ApplicationRunner` or `CommandLineRunner` interfaces. Both interfaces work
+in the same way and offer a single `run` method which will be called just before
+`SpringApplication.run(...)` completes.
+
+The `CommandLineRunner` interfaces provides access to application arguments as a simple
+string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface
+discussed above.
 
 [source,java,indent=0]
 ----
@@ -199,16 +236,16 @@ implementing this interface.
 	@Component
 	public class MyBean implements CommandLineRunner {
 
-	    public void run(String... args) {
-	        // Do something...
-	    }
+		public void run(String... args) {
+			// Do something...
+		}
 
 	}
 ----
 
 You can additionally implement the `org.springframework.core.Ordered` interface or use the
-`org.springframework.core.annotation.Order` annotation if several `CommandLineRunner`
-beans are defined that must be called in a specific order.
+`org.springframework.core.annotation.Order` annotation if several `CommandLineRunner` or
+`ApplicationRunner` beans are defined that must be called in a specific order.
 
 
 
@@ -380,7 +417,7 @@ environment variables or system properties.
 [[boot-features-external-config-profile-specific-properties]]
 === Profile-specific properties
 In addition to `application.properties` files, profile-specific properties can also be
-defined using the naming convention `application-{profile}.properties`. The 
+defined using the naming convention `application-{profile}.properties`. The
 `Environment` has a set of default profiles (by default `[default]`) which are
 used if no active profiels are set (i.e. if no profiles are explicitly activated
 then properties from `application-default.properties` are loaded).
@@ -529,27 +566,28 @@ context starts. So in this YAML we set a value for `security.user.password` that
 
 [source,yaml,indent=0]
 ----
-server:
-  port: 80000
----
-spring:
-  profiles: default
-security:
-  user:
-    password: weak
+	server:
+	  port: 80000
+	---
+	spring:
+	  profiles: default
+	security:
+	  user:
+	    password: weak
 ----
 
-whereas in this example, the password is always set because it isn't attached to any profile, 
-and it would have to be explicitly reset in all other profiles as necessary:
+whereas in this example, the password is always set because it isn't attached to any
+profile, and it would have to be explicitly reset in all other profiles as necessary:
 
 [source,yaml,indent=0]
 ----
-server:
-  port: 80000
-security:
-  user:
-    password: weak
+	server:
+	  port: 80000
+	security:
+	  user:
+	    password: weak
 ----
+
 
 
 [[boot-features-external-config-yaml-shortcomings]]
@@ -1293,7 +1331,7 @@ templates will be picked up automatically from `src/main/resources/templates`.
 TIP: IntelliJ IDEA orders the classpath differently depending on how you run your
 application. Running your application in the IDE via its main method will result in a
 different ordering to when you run your application using Maven or Gradle or from its
-pacakaged jar. This can cause Spring Boot to fail to find the templates on the classpath.
+packaged jar. This can cause Spring Boot to fail to find the templates on the classpath.
 If you're affected by this problem you can reorder the classpath in the IDE to place the
 module's classes and resources first. Alternatively, you can configure the template prefix
 to search every templates directory on the classpath: `classpath*:/templates/`.
@@ -1639,8 +1677,8 @@ auto-configuration to make it easy to set up Authorization or Resource Server.
 [[boot-features-security-oauth2-authorization-server]]
 ==== Authorization Server
 To create an Authorization Server and grant access tokens you need to use
-`@EnableAuthorizationServer` and provide `spring.oauth2.client.client-id` and
-`spring.oauth2.client.client-secret]` properties. The client will be registered for you
+`@EnableAuthorizationServer` and provide `security.oauth2.client.client-id` and
+`security.oauth2.client.client-secret]` properties. The client will be registered for you
 in an in-memory repository.
 
 Having done that you will be able to use the client credentials to create an access token,
@@ -1669,21 +1707,21 @@ access tokens. If your appplication is also an Authorization Server it already k
 to decode tokens, so there is nothing else to do. If your app is a standalone service then you
 need to give it some more configuration, one of the following options:
 
-* `spring.oauth2.resource.user-info-uri` to use the `/me` resource (e.g.
+* `security.oauth2.resource.user-info-uri` to use the `/me` resource (e.g.
 `https://uaa.run.pivotal.io/userinfo` on PWS)
 
-* `spring.oauth2.resource.token-info-uri` to use the token decoding endpoint (e.g.
+* `security.oauth2.resource.token-info-uri` to use the token decoding endpoint (e.g.
 `https://uaa.run.pivotal.io/check_token` on PWS).
 
 If you specify both the `user-info-uri` and the `token-info-uri` then you can set a flag
 to say that one is preferred over the other (`prefer-token-info=true` is the default).
 
 Alternatively (instead of `user-info-uri` or `token-info-uri`) if the tokens are JWTs you
-can configure a `spring.oauth2.resource.jwt.key-value` to decode them locally (where the
+can configure a `security.oauth2.resource.jwt.key-value` to decode them locally (where the
 key is a verification key). The verification key value is either a symmetric secret or
 PEM-encoded RSA public key. If you don't have the key and it's public you can provide a
 URI where it can be downloaded (as a JSON object with a "`value`" field) with
-`spring.oauth2.resource.jwt.key-uri`. E.g. on PWS:
+`security.oauth2.resource.jwt.key-uri`. E.g. on PWS:
 
 [indent=0]
 ----
@@ -1691,7 +1729,7 @@ URI where it can be downloaded (as a JSON object with a "`value`" field) with
 	{"alg":"SHA256withRSA","value":"-----BEGIN PUBLIC KEY-----\nMIIBI...\n-----END PUBLIC KEY-----\n"}
 ----
 
-WARNING: If you use the `spring.oauth2.resource.jwt.key-uri` the authorization server
+WARNING: If you use the `security.oauth2.resource.jwt.key-uri` the authorization server
 needs to be running when your application starts up. It will log a warning if it can't
 find the key, and tell you what to do to fix it.
 
@@ -1702,7 +1740,7 @@ find the key, and tell you what to do to fix it.
 Google, and certain other 3rd party identity providers, are more strict about the token
 type name that is sent in the headers to the user info endpoint. The default is "`Bearer`"
 which suits most providers and matches the spec, but if you need to change it you can set
-`spring.oauth2.resource.token-type`.
+`security.oauth2.resource.token-type`.
 
 
 
@@ -1726,13 +1764,14 @@ language feature). Example:
 
 [source,yaml,indent=0]
 ----
-	oauth2:
-		resource:
-			jwt:
-				keyValue: |
-					-----BEGIN PUBLIC KEY-----
-					MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC...
-					-----END PUBLIC KEY-----
+	security:
+		oauth2:
+			resource:
+				jwt:
+					keyValue: |
+						-----BEGIN PUBLIC KEY-----
+						MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC...
+						-----END PUBLIC KEY-----
 ----
 ====
 
@@ -1742,21 +1781,21 @@ language feature). Example:
 ==== Client
 To make your webapp into an OAuth2 client you can simply add `@EnableOAuth2Client` and
 Spring Boot will create an `OAuth2RestTemplate` for you to `@Autowire`. It uses the
-`spring.oauth2.client.*` as credentials (the same as you might be using in the
+`security.oauth2.client.*` as credentials (the same as you might be using in the
 Authorization Server), but in addition it will need to know the authorization and token
 URIs in the Authorization Server. For example:
 
 .application.yml
 [source,yaml,indent=0]
 ----
-spring:
-	oauth2:
-		client:
-			clientId: bd1c0a783ccdd1c9b9e4
-			clientSecret: 1a9030fbca47a5b2c28e92f19050bb77824b5ad1
-			accessTokenUri: https://github.com/login/oauth/access_token
-			userAuthorizationUri: https://github.com/login/oauth/authorize
-			clientAuthenticationScheme: form
+	security:
+		oauth2:
+			client:
+				clientId: bd1c0a783ccdd1c9b9e4
+				clientSecret: 1a9030fbca47a5b2c28e92f19050bb77824b5ad1
+				accessTokenUri: https://github.com/login/oauth/access_token
+				userAuthorizationUri: https://github.com/login/oauth/authorize
+				clientAuthenticationScheme: form
 ----
 
 An application with this configuration will redirect to Github for authorization when you
@@ -1766,21 +1805,21 @@ application is running on port 8080 (register your own client app in Github or o
 provider for more flexibility).
 
 To limit the scope that the client asks for when it obtains an access token you can set
-`spring.oauth2.client.scope` (comma separated or an array in YAML). By default the scope
+`security.oauth2.client.scope` (comma separated or an array in YAML). By default the scope
 is empty and it is up to to Authorization Server to decide what the defaults should be,
 usually depending on the settings in the client registration that it holds.
 
-NOTE: There is also a setting for `spring.oauth2.client.client-authentication-scheme`
+NOTE: There is also a setting for `security.oauth2.client.client-authentication-scheme`
 which defaults to "`header`" (but you might need to set it to "`form`" if, like Github for
 instance, your OAuth2 provider doesn't like header authentication). In fact, the
-`spring.oauth2.client.*` properties are bound to an instance of
+`security.oauth2.client.*` properties are bound to an instance of
 `AuthorizationCodeResourceDetails` so all its properties can be specified.
 
 TIP: In a non-web application you can still `@Autowire` an `OAuth2RestOperations` and it
-is still wired into the `spring.oauth2.client.*` configuration. In this case it is a
+is still wired into the `security.oauth2.client.*` configuration. In this case it is a
 "`client credentials token grant`" you will be asking for if you use it (and there is no
 need to use `@EnableOAuth2Client` or `@EnableOAuth2Sso`). To switch it off, just remove
-the `spring.oauth2.client.client-id` from your configuration (or make it the empty
+the `security.oauth2.client.client-id` from your configuration (or make it the empty
 string).
 
 
@@ -1794,12 +1833,12 @@ for a Single Sign On (SSO) protocol based on OAuth2, and Spring Boot makes it ea
 participate by providing an annotation `@EnableOAuth2Sso`. The Github client above can
 protect all its resources and authenticate using the Github `/user/` endpoint, by adding
 that annotation and declaring where to find the endpoint (in addition to the
-`spring.oauth2.client.*` configuration already listed above):
+`security.oauth2.client.*` configuration already listed above):
 
 .application.yml
 [source,yaml,indent=0]]
 ----
-	spring:
+	security:
 		oauth2:
 	...
 		resource:
@@ -1809,7 +1848,7 @@ that annotation and declaring where to find the endpoint (in addition to the
 
 Since all paths are secure by default, there is no "`home`" page that you can show to
 unauthenticated users and invite them to login (by visiting the `/login` path, or the
-path specified by `spring.oauth2.sso.login-path`).
+path specified by `security.oauth2.sso.login-path`).
 
 To customize the access rules or paths to protect, so you can add a "`home`" page for
 instance, `@EnableOAuth2Sso` can be added to a `WebSecurityConfigurerAdapter` and the
@@ -2206,8 +2245,8 @@ application `DataSource`. To use the `DSLContext` you can just `@Autowire` it:
 		private final DSLContext create;
 
 		@Autowired
-		public JooqExample(DSLContext dlsContext) {
-			this.create = dlsContext;
+		public JooqExample(DSLContext dslContext) {
+			this.create = dslContext;
 		}
 
 	}
@@ -2866,7 +2905,6 @@ locate a JMS `ConnectionFactory` using JNDI. By default the locations `java:/Jms
 
 
 
-[[boot-features-using-jms-template]]
 [[boot-features-using-jms-sending]]
 ==== Sending a message
 Spring's `JmsTemplate` is auto-configured and you can autowire it directly into your own
@@ -2894,7 +2932,7 @@ beans:
 ----
 
 NOTE: {spring-javadoc}/jms/core/JmsMessagingTemplate.{dc-ext}[`JmsMessagingTemplate`]
-(new in Spring 4.1) can be injected in a similar manner.
+can be injected in a similar manner.
 
 
 
@@ -2904,6 +2942,14 @@ NOTE: {spring-javadoc}/jms/core/JmsMessagingTemplate.{dc-ext}[`JmsMessagingTempl
 When the JMS infrastructure is present, any bean can be annotated with `@JmsListener` to
 create a listener endpoint. If no `JmsListenerContainerFactory` has been defined, a
 default one is configured automatically.
+
+The default factory is transactional by default. If you are running in an infrastructure
+where a `JtaTransactionManager` is present, it will be associated to the listener container
+by default. If not, the `sessionTransacted` flag will be enabled. In that latter scenario,
+you can associate your local data store transaction to the processing of an incoming message
+by adding `@Transactional` on your listener method (or a delegate thereof). This will make
+sure that the incoming message is acknowledged once the local transaction has completed. This
+also includes sending response messages that have been performed on the same JMS session.
 
 The following component creates a listener endpoint on the `someQueue` destination:
 
@@ -2920,8 +2966,104 @@ The following component creates a listener endpoint on the `someQueue` destinati
 	}
 ----
 
-Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the Javadoc of `@EnableJms`] for
+TIP: Check {spring-javadoc}/jms/annotation/EnableJms.{dc-ext}[the Javadoc of `@EnableJms`] for
 more details.
+
+
+
+[[boot-features-amqp]]
+=== AMQP
+The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol
+for message-oriented middleware. The Spring AMQP project applies core Spring concepts to
+the development of AMQP-based messaging solutions.
+
+
+
+[[boot-features-rabbitmq]]
+==== RabbitMQ support
+RabbitMQ is a lightweight, reliable, scalable and portable message broker based on the
+AMQP protocol. Spring uses `RabbitMQ` to communicate using the AMQP protocol.
+
+RabbitMQ configuration is controlled by external configuration properties in
+`+spring.rabbitmq.*+`. For example, you might declare the following section in
+`application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.rabbitmq.host=localhost
+	spring.rabbitmq.port=5672
+	spring.rabbitmq.username=admin
+	spring.rabbitmq.password=secret
+----
+
+See {sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[`RabbitProperties`]
+for more of the supported options.
+
+TIP: Check http://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ]
+for more details.
+
+
+
+[[boot-features-using-amqp-sending]]
+==== Sending a message
+Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured and you can autowire them
+directly into your own beans:
+
+[source,java,indent=0]
+----
+	import org.springframework.amqp.core.AmqpAdmin;
+	import org.springframework.amqp.core.AmqpTemplate;
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyBean {
+
+		private final AmqpAdmin amqpAdmin;
+		private final AmqpTemplate amqpTemplate;
+
+		@Autowired
+		public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
+			this.adminTemplate = adminTemplate;
+			this.amqpTemplate = amqpTemplate;
+		}
+
+		// ...
+
+	}
+----
+
+NOTE: {spring-amqp-javadoc}/rabbit/core/RabbitMessagingTemplate.{dc-ext}[`RabbitMessagingTemplate`]
+can be injected in a similar manner.
+
+Any `org.springframework.amqp.core.Queue` that is defined as a bean will be automatically
+used to declare a corresponding queue on the RabbitMQ instance if necessary.
+
+
+
+[[boot-features-using-amqp-receiving]]
+==== Receiving a message
+When the Rabbit infrastructure is present, any bean can be annotated with
+`@RabbitListener` to create a listener endpoint. If no `RabbitListenerContainerFactory`
+has been defined, a default one is configured automatically.
+
+The following component creates a listener endpoint on the `someQueue` queue:
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+		@RabbitListener(queues = "someQueue")
+		public void processMessage(String content) {
+			// ...
+		}
+
+	}
+----
+
+TIP: Check {spring-amqp-javadoc}/rabbit/annotation/EnableRabbit.{dc-ext}[the Javadoc of `@EnableRabbit`]
+for more details.
 
 
 

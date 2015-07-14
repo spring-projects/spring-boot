@@ -442,12 +442,13 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void runCommandLineRunners() throws Exception {
+	public void runCommandLineRunnersAndApplicationRunners() throws Exception {
 		SpringApplication application = new SpringApplication(CommandLineRunConfig.class);
 		application.setWebEnvironment(false);
 		this.context = application.run("arg");
 		assertTrue(this.context.getBean("runnerA", TestCommandLineRunner.class).hasRun());
-		assertTrue(this.context.getBean("runnerB", TestCommandLineRunner.class).hasRun());
+		assertTrue(this.context.getBean("runnerB", TestApplicationRunner.class).hasRun());
+		assertTrue(this.context.getBean("runnerC", TestCommandLineRunner.class).hasRun());
 	}
 
 	@Test
@@ -604,6 +605,16 @@ public class SpringApplicationTests {
 		assertThat(System.getProperty("java.awt.headless"), equalTo("false"));
 	}
 
+	@Test
+	public void getApplicationArgumentsBean() throws Exception {
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		this.context = application.run("--debug", "spring", "boot");
+		ApplicationArguments args = this.context.getBean(ApplicationArguments.class);
+		assertThat(args.getNonOptionArgs(), equalTo(Arrays.asList("spring", "boot")));
+		assertThat(args.containsOption("debug"), equalTo(true));
+	}
+
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
 			Class<?> propertySourceClass, String name) {
 		for (PropertySource<?> source : environment.getPropertySources()) {
@@ -715,8 +726,14 @@ public class SpringApplicationTests {
 	static class CommandLineRunConfig {
 
 		@Bean
-		public TestCommandLineRunner runnerB() {
-			return new TestCommandLineRunner(Ordered.LOWEST_PRECEDENCE, "runnerA");
+		public TestCommandLineRunner runnerC() {
+			return new TestCommandLineRunner(Ordered.LOWEST_PRECEDENCE, "runnerB",
+					"runnerA");
+		}
+
+		@Bean
+		public TestApplicationRunner runnerB() {
+			return new TestApplicationRunner(Ordered.LOWEST_PRECEDENCE - 1, "runnerA");
 		}
 
 		@Bean
@@ -725,18 +742,17 @@ public class SpringApplicationTests {
 		}
 	}
 
-	static class TestCommandLineRunner implements CommandLineRunner,
-			ApplicationContextAware, Ordered {
+	static class AbstractTestRunner implements ApplicationContextAware, Ordered {
 
 		private final String[] expectedBefore;
 
 		private ApplicationContext applicationContext;
 
-		private String[] args;
-
 		private final int order;
 
-		public TestCommandLineRunner(int order, String... expectedBefore) {
+		private boolean run;
+
+		public AbstractTestRunner(int order, String... expectedBefore) {
 			this.expectedBefore = expectedBefore;
 			this.order = order;
 		}
@@ -752,18 +768,45 @@ public class SpringApplicationTests {
 			return this.order;
 		}
 
-		@Override
-		public void run(String... args) {
-			this.args = args;
+		public void markAsRan() {
+			this.run = true;
 			for (String name : this.expectedBefore) {
-				TestCommandLineRunner bean = this.applicationContext.getBean(name,
-						TestCommandLineRunner.class);
+				AbstractTestRunner bean = this.applicationContext.getBean(name,
+						AbstractTestRunner.class);
 				assertTrue(bean.hasRun());
 			}
 		}
 
 		public boolean hasRun() {
-			return this.args != null;
+			return this.run;
+		}
+
+	}
+
+	private static class TestCommandLineRunner extends AbstractTestRunner implements
+			CommandLineRunner {
+
+		public TestCommandLineRunner(int order, String... expectedBefore) {
+			super(order, expectedBefore);
+		}
+
+		@Override
+		public void run(String... args) {
+			markAsRan();
+		}
+
+	}
+
+	private static class TestApplicationRunner extends AbstractTestRunner implements
+			ApplicationRunner {
+
+		public TestApplicationRunner(int order, String... expectedBefore) {
+			super(order, expectedBefore);
+		}
+
+		@Override
+		public void run(ApplicationArguments args) {
+			markAsRan();
 		}
 
 	}

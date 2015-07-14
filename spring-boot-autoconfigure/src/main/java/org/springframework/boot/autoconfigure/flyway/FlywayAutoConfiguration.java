@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -53,7 +54,8 @@ import org.springframework.util.Assert;
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "flyway", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class })
 public class FlywayAutoConfiguration {
 
 	@Configuration

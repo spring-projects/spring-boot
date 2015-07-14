@@ -107,7 +107,7 @@ class OnClassCondition extends SpringBootCondition {
 		}
 	}
 
-	private static enum MatchType {
+	private enum MatchType {
 
 		PRESENT {
 			@Override

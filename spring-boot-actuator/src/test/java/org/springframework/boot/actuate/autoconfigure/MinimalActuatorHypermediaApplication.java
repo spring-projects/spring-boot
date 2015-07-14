@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,20 +36,19 @@ import org.springframework.context.annotation.Import;
 
 /**
  * @author Dave Syer
- *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration
 @Import({ ServerPropertiesAutoConfiguration.class,
-	ManagementServerPropertiesAutoConfiguration.class,
-	EmbeddedServletContainerAutoConfiguration.class,
-	DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
-	HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-	HypermediaAutoConfiguration.class, EndpointAutoConfiguration.class,
-	EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
-	PropertyPlaceholderAutoConfiguration.class })
+		ManagementServerPropertiesAutoConfiguration.class,
+		EmbeddedServletContainerAutoConfiguration.class,
+		DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		HypermediaAutoConfiguration.class, EndpointAutoConfiguration.class,
+		EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+		PropertyPlaceholderAutoConfiguration.class })
 public @interface MinimalActuatorHypermediaApplication {
 
 }

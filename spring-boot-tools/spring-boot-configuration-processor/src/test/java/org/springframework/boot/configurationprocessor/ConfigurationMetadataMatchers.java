@@ -209,15 +209,15 @@ public class ConfigurationMetadataMatchers {
 
 		private final List<ValueHintMatcher> values;
 
-		private final List<ProviderHintMatcher> providers;
+		private final List<ValueProviderMatcher> providers;
 
 		public ContainsHintMatcher(String name) {
 			this(name, new ArrayList<ValueHintMatcher>(),
-					new ArrayList<ProviderHintMatcher>());
+					new ArrayList<ValueProviderMatcher>());
 		}
 
 		public ContainsHintMatcher(String name, List<ValueHintMatcher> values,
-				List<ProviderHintMatcher> providers) {
+				List<ValueProviderMatcher> providers) {
 			this.name = name;
 			this.values = values;
 			this.providers = providers;
@@ -238,7 +238,7 @@ public class ConfigurationMetadataMatchers {
 					return false;
 				}
 			}
-			for (ProviderHintMatcher provider : this.providers) {
+			for (ValueProviderMatcher provider : this.providers) {
 				if (!provider.matches(itemHint)) {
 					return false;
 				}
@@ -277,9 +277,9 @@ public class ConfigurationMetadataMatchers {
 
 		public ContainsHintMatcher withProvider(int index, String provider,
 				Map<String, Object> parameters) {
-			List<ProviderHintMatcher> providers = new ArrayList<ProviderHintMatcher>(
+			List<ValueProviderMatcher> providers = new ArrayList<ValueProviderMatcher>(
 					this.providers);
-			providers.add(new ProviderHintMatcher(index, provider, parameters));
+			providers.add(new ValueProviderMatcher(index, provider, parameters));
 			return new ContainsHintMatcher(this.name, this.values, providers);
 		}
 
@@ -347,12 +347,12 @@ public class ConfigurationMetadataMatchers {
 
 	}
 
-	public static class ProviderHintMatcher extends BaseMatcher<ItemHint> {
+	public static class ValueProviderMatcher extends BaseMatcher<ItemHint> {
 		private final int index;
 		private final String name;
 		private final Map<String, Object> parameters;
 
-		public ProviderHintMatcher(int index, String name, Map<String, Object> parameters) {
+		public ValueProviderMatcher(int index, String name, Map<String, Object> parameters) {
 			this.index = index;
 			this.name = name;
 			this.parameters = parameters;
@@ -364,14 +364,14 @@ public class ConfigurationMetadataMatchers {
 			if (this.index + 1 > hint.getProviders().size()) {
 				return false;
 			}
-			ItemHint.ProviderHint providerHint = hint.getProviders().get(this.index);
-			if (this.name != null && !this.name.equals(providerHint.getName())) {
+			ItemHint.ValueProvider valueProvider = hint.getProviders().get(this.index);
+			if (this.name != null && !this.name.equals(valueProvider.getName())) {
 				return false;
 			}
 			if (this.parameters != null) {
 				for (Map.Entry<String, Object> entry : this.parameters.entrySet()) {
 					if (!IsMapContaining.hasEntry(entry.getKey(), entry.getValue())
-							.matches(providerHint.getParameters())) {
+							.matches(valueProvider.getParameters())) {
 						return false;
 					}
 				}
@@ -381,7 +381,7 @@ public class ConfigurationMetadataMatchers {
 
 		@Override
 		public void describeTo(Description description) {
-			description.appendText("provider hint ");
+			description.appendText("value provider ");
 			if (this.name != null) {
 				description.appendText(" name ").appendValue(this.name);
 			}

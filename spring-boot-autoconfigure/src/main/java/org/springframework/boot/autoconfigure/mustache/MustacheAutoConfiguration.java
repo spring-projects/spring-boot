@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ public class MustacheAutoConfiguration {
 	public MustacheResourceTemplateLoader mustacheTemplateLoader() {
 		MustacheResourceTemplateLoader loader = new MustacheResourceTemplateLoader(
 				this.mustache.getPrefix(), this.mustache.getSuffix());
-		loader.setCharset(this.mustache.getCharset());
+		loader.setCharset(this.mustache.getCharsetName());
 		return loader;
 	}
 
@@ -107,8 +107,8 @@ public class MustacheAutoConfiguration {
 			resolver.setSuffix(this.mustache.getSuffix());
 			resolver.setCache(this.mustache.isCache());
 			resolver.setViewNames(this.mustache.getViewNames());
-			resolver.setContentType(this.mustache.getContentType());
-			resolver.setCharset(this.mustache.getCharset());
+			resolver.setContentType(this.mustache.getContentType().toString());
+			resolver.setCharset(this.mustache.getCharsetName());
 			resolver.setCompiler(mustacheCompiler);
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 			return resolver;

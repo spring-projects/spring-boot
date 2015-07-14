@@ -16,13 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import javax.servlet.Filter;
 
 import org.hamcrest.Matchers;
@@ -59,6 +52,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ManagementSecurityAutoConfiguration}.
@@ -111,8 +111,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(EndpointAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class,
-				JacksonAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				SecurityAutoConfiguration.class,
@@ -122,7 +121,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		UserDetails user = getUser();
 		assertTrue(user.getAuthorities().containsAll(
 				AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN")));
+						.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN")));
 	}
 
 	private UserDetails getUser() {
@@ -157,8 +156,8 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(HttpMessageConvertersAutoConfiguration.class,
-				JacksonAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				SecurityAutoConfiguration.class,
 				ManagementSecurityAutoConfiguration.class,
@@ -205,15 +204,16 @@ public class ManagementSecurityAutoConfigurationTests {
 	public void realmSameForManagement() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(AuthenticationConfig.class,
-				SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class,
-				JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				WebMvcAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context
+				.register(AuthenticationConfig.class, SecurityAutoConfiguration.class,
+						ManagementSecurityAutoConfiguration.class,
+						JacksonAutoConfiguration.class,
+						HttpMessageConvertersAutoConfiguration.class,
+						EndpointAutoConfiguration.class,
+						EndpointWebMvcAutoConfiguration.class,
+						ManagementServerPropertiesAutoConfiguration.class,
+						WebMvcAutoConfiguration.class,
+						PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 
 		Filter filter = this.context.getBean("springSecurityFilterChain", Filter.class);
@@ -222,8 +222,8 @@ public class ManagementSecurityAutoConfigurationTests {
 
 		// no user (Main)
 		mockMvc.perform(MockMvcRequestBuilders.get("/home"))
-		.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-		.andExpect(springAuthenticateRealmHeader());
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(springAuthenticateRealmHeader());
 
 		// invalid user (Main)
 		mockMvc.perform(
@@ -233,8 +233,8 @@ public class ManagementSecurityAutoConfigurationTests {
 
 		// no user (Management)
 		mockMvc.perform(MockMvcRequestBuilders.get("/beans"))
-		.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-		.andExpect(springAuthenticateRealmHeader());
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andExpect(springAuthenticateRealmHeader());
 
 		// invalid user (Management)
 		mockMvc.perform(
@@ -254,7 +254,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		@Autowired
 		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 			auth.inMemoryAuthentication().withUser("user").password("password")
-			.roles("USER");
+					.roles("USER");
 		}
 	}
 

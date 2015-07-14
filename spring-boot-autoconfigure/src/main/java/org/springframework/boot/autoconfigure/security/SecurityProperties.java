@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "security", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "security")
 public class SecurityProperties implements SecurityPrerequisite {
 
 	/**
@@ -150,7 +150,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 	public static class Headers {
 
-		public static enum HSTS {
+		public enum HSTS {
 			NONE, DOMAIN, ALL
 		}
 

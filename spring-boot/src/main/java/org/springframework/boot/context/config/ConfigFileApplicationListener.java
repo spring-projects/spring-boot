@@ -28,7 +28,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -38,6 +37,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.env.PropertySourcesLoader;
+import org.springframework.boot.logging.DeferredLog;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -88,11 +88,10 @@ import org.springframework.validation.BindException;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class ConfigFileApplicationListener implements
 		ApplicationListener<ApplicationEvent>, Ordered {
-
-	private static Log logger = LogFactory.getLog(ConfigFileApplicationListener.class);
 
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
@@ -111,6 +110,8 @@ public class ConfigFileApplicationListener implements
 
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
+	private final DeferredLog logger = new DeferredLog();
+
 	private String searchLocations;
 
 	private String names;
@@ -118,8 +119,6 @@ public class ConfigFileApplicationListener implements
 	private int order = DEFAULT_ORDER;
 
 	private final ConversionService conversionService = new DefaultConversionService();
-
-	private final List<Object> debug = new ArrayList<Object>();
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -147,19 +146,10 @@ public class ConfigFileApplicationListener implements
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		logDebugMessages();
-		addPostProcessors(event.getApplicationContext());
-	}
-
-	private void logDebugMessages() {
-		// Debug logging is deferred because the Logging initialization might not have
+		// logging is deferred because the Logging initialization might not have
 		// run at the time that config file decisions are taken
-		if (logger.isDebugEnabled()) {
-			for (Object message : this.debug) {
-				logger.debug(message);
-			}
-		}
-		this.debug.clear();
+		this.logger.replayTo(ConfigFileApplicationListener.class);
+		addPostProcessors(event.getApplicationContext());
 	}
 
 	/**
@@ -282,6 +272,8 @@ public class ConfigFileApplicationListener implements
 	 */
 	private class Loader {
 
+		private final Log logger = ConfigFileApplicationListener.this.logger;
+
 		private final ConfigurableEnvironment environment;
 
 		private final ResourceLoader resourceLoader;
@@ -291,8 +283,6 @@ public class ConfigFileApplicationListener implements
 		private Queue<String> profiles;
 
 		private boolean activatedProfiles;
-
-		private final List<Object> debug = ConfigFileApplicationListener.this.debug;
 
 		public Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
@@ -384,20 +374,26 @@ public class ConfigFileApplicationListener implements
 				String profile) throws IOException {
 			Resource resource = this.resourceLoader.getResource(location);
 			PropertySource<?> propertySource = null;
+			StringBuilder msg = new StringBuilder();
 			if (resource != null && resource.exists()) {
 				String name = "applicationConfig: [" + location + "]";
 				String group = "applicationConfig: [" + identifier + "]";
 				propertySource = this.propertiesLoader.load(resource, group, name,
 						profile);
 				if (propertySource != null) {
+					msg.append("Loaded ");
 					maybeActivateProfiles(propertySource
 							.getProperty(ACTIVE_PROFILES_PROPERTY));
 					addIncludeProfiles(propertySource
 							.getProperty(INCLUDE_PROFILES_PROPERTY));
 				}
+				else {
+					msg.append("Skipped (empty) ");
+				}
 			}
-			StringBuilder msg = new StringBuilder();
-			msg.append(propertySource == null ? "Skipped " : "Loaded ");
+			else {
+				msg.append("Skipped ");
+			}
 			msg.append("config file ");
 			msg.append("'").append(location).append("'");
 			if (StringUtils.hasLength(profile)) {
@@ -405,15 +401,18 @@ public class ConfigFileApplicationListener implements
 			}
 			if (resource == null || !resource.exists()) {
 				msg.append(" resource not found");
+				this.logger.trace(msg);
 			}
-			this.debug.add(msg);
+			else {
+				this.logger.debug(msg);
+			}
 			return propertySource;
 		}
 
 		private void maybeActivateProfiles(Object value) {
 			if (this.activatedProfiles) {
 				if (value != null) {
-					this.debug.add("Profiles already activated, '" + value
+					this.logger.debug("Profiles already activated, '" + value
 							+ "' will not be applied");
 				}
 				return;
@@ -422,7 +421,7 @@ public class ConfigFileApplicationListener implements
 			Set<String> profiles = getProfilesForValue(value);
 			activateProfiles(profiles);
 			if (profiles.size() > 0) {
-				this.debug.add("Activated profiles "
+				this.logger.debug("Activated profiles "
 						+ StringUtils.collectionToCommaDelimitedString(profiles));
 				this.activatedProfiles = true;
 			}

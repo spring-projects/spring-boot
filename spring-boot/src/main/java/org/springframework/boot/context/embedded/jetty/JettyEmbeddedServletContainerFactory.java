@@ -588,6 +588,12 @@ public class JettyEmbeddedServletContainerFactory extends
 						.invoke(handler,
 								new HashSet<String>(Arrays.asList(compression
 										.getMimeTypes())));
+				if (compression.getExcludedUserAgents() != null) {
+					ReflectionUtils.findMethod(handlerClass, "setExcluded", Set.class)
+							.invoke(handler,
+									new HashSet<String>(Arrays.asList(compression
+											.getExcludedUserAgents())));
+				}
 				return handler;
 			}
 			catch (Exception ex) {
@@ -605,6 +611,10 @@ public class JettyEmbeddedServletContainerFactory extends
 			gzipHandler.setMinGzipSize(compression.getMinResponseSize());
 			gzipHandler.setMimeTypes(new HashSet<String>(Arrays.asList(compression
 					.getMimeTypes())));
+			if (compression.getExcludedUserAgents() != null) {
+				gzipHandler.setExcluded(new HashSet<String>(Arrays.asList(compression
+						.getExcludedUserAgents())));
+			}
 			return gzipHandler;
 		}
 
@@ -623,6 +633,11 @@ public class JettyEmbeddedServletContainerFactory extends
 				ReflectionUtils.findMethod(handlerClass, "setIncludedMimeTypes",
 						String[].class).invoke(handler,
 						new Object[] { compression.getMimeTypes() });
+				if (compression.getExcludedUserAgents() != null) {
+					ReflectionUtils.findMethod(handlerClass, "setExcludedAgentPatterns",
+							String[].class).invoke(handler,
+							new Object[] { compression.getExcludedUserAgents() });
+				}
 				return handler;
 			}
 			catch (Exception ex) {

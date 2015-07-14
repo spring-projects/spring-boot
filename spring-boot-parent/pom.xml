@@ -20,7 +20,6 @@
 		<main.basedir>..</main.basedir>
 		<java.version>1.6</java.version>
 		<aether.version>1.0.2.v20150114</aether.version>
-		<json.version>20140107</json.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
@@ -194,11 +193,6 @@
 				<groupId>org.gradle</groupId>
 				<artifactId>gradle-plugins</artifactId>
 				<version>${gradle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.json</groupId>
-				<artifactId>json</artifactId>
-				<version>${json.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.projectlombok</groupId>

@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemHint;
@@ -52,6 +53,7 @@ import org.springframework.boot.configurationsample.specific.InnerClassAnnotated
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
+import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
@@ -77,6 +79,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private TestCompiler compiler;
 
@@ -347,10 +352,26 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	}
 
 	@Test
+	public void mergeOfInvalidAdditionalMetadata() throws IOException {
+		File additionalMetadataFile = createAdditionalMetadataFile();
+		FileCopyUtils.copy("Hello World", new FileWriter(additionalMetadataFile));
+
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Compilation failed");
+		compile(SimpleProperties.class);
+	}
+
+	@Test
 	public void mergingOfSimpleHint() throws Exception {
 		writeAdditionalHints(ItemHint.newHint("simple.the-name", new ItemHint.ValueHint(
 				"boot", "Bla bla"), new ItemHint.ValueHint("spring", null)));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(
+				metadata,
+				containsProperty("simple.the-name", String.class)
+						.fromSource(SimpleProperties.class)
+						.withDescription("The name of this simple properties.")
+						.withDefaultValue(is("boot")).withDeprecated());
 		assertThat(metadata,
 				containsHint("simple.the-name").withValue(0, "boot", "Bla bla")
 						.withValue(1, "spring", null));
@@ -361,6 +382,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		writeAdditionalHints(ItemHint.newHint("simple.theName", new ItemHint.ValueHint(
 				"boot", "Bla bla")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(
+				metadata,
+				containsProperty("simple.the-name", String.class)
+						.fromSource(SimpleProperties.class)
+						.withDescription("The name of this simple properties.")
+						.withDefaultValue(is("boot")).withDeprecated());
 		assertThat(metadata,
 				containsHint("simple.the-name").withValue(0, "boot", "Bla bla"));
 	}
@@ -369,10 +396,16 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void mergingOfHintWithProvider() throws Exception {
 		writeAdditionalHints(new ItemHint("simple.theName",
 				Collections.<ItemHint.ValueHint> emptyList(), Arrays.asList(
-						new ItemHint.ProviderHint("first", Collections
+						new ItemHint.ValueProvider("first", Collections
 								.<String, Object> singletonMap("target", "org.foo")),
-						new ItemHint.ProviderHint("second", null))));
+						new ItemHint.ValueProvider("second", null))));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(
+				metadata,
+				containsProperty("simple.the-name", String.class)
+						.fromSource(SimpleProperties.class)
+						.withDescription("The name of this simple properties.")
+						.withDefaultValue(is("boot")).withDeprecated());
 		assertThat(metadata,
 				containsHint("simple.the-name")
 						.withProvider("first", "target", "org.foo")

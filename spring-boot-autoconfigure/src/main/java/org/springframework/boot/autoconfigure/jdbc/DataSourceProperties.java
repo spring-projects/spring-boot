@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -100,7 +101,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	/**
 	 * SQL scripts encoding.
 	 */
-	private String sqlScriptEncoding;
+	private Charset sqlScriptEncoding;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
@@ -256,11 +257,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		this.separator = separator;
 	}
 
-	public String getSqlScriptEncoding() {
+	public Charset getSqlScriptEncoding() {
 		return this.sqlScriptEncoding;
 	}
 
-	public void setSqlScriptEncoding(String sqlScriptEncoding) {
+	public void setSqlScriptEncoding(Charset sqlScriptEncoding) {
 		this.sqlScriptEncoding = sqlScriptEncoding;
 	}
 

@@ -16,12 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +43,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * Tests for {@link MetricsMvcEndpoint}
  *
@@ -74,7 +74,7 @@ public class MetricsMvcEndpointTests {
 	@Test
 	public void home() throws Exception {
 		this.mvc.perform(get("/metrics")).andExpect(status().isOk())
-		.andExpect(content().string(containsString("\"foo\":1")));
+				.andExpect(content().string(containsString("\"foo\":1")));
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class MetricsMvcEndpointTests {
 	@Test
 	public void specificMetric() throws Exception {
 		this.mvc.perform(get("/metrics/foo")).andExpect(status().isOk())
-		.andExpect(content().string(equalTo("1")));
+				.andExpect(content().string(equalTo("1")));
 	}
 
 	@Test
@@ -104,35 +104,34 @@ public class MetricsMvcEndpointTests {
 	public void regexAll() throws Exception {
 		String expected = "\"foo\":1,\"group1.a\":1,\"group1.b\":1,\"group2.a\":1,\"group2_a\":1";
 		this.mvc.perform(get("/metrics/.*")).andExpect(status().isOk())
-		.andExpect(content().string(containsString(expected)));
+				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void regexGroupDot() throws Exception {
 		String expected = "\"group1.a\":1,\"group1.b\":1,\"group2.a\":1";
 		this.mvc.perform(get("/metrics/group[0-9]+\\..*")).andExpect(status().isOk())
-		.andExpect(content().string(containsString(expected)));
+				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void regexGroup1() throws Exception {
 		String expected = "\"group1.a\":1,\"group1.b\":1";
 		this.mvc.perform(get("/metrics/group1\\..*")).andExpect(status().isOk())
-		.andExpect(content().string(containsString(expected)));
+				.andExpect(content().string(containsString(expected)));
 	}
 
 	@Test
 	public void specificMetricWithDot() throws Exception {
 		this.mvc.perform(get("/metrics/group2.a")).andExpect(status().isOk())
-		.andExpect(content().string(containsString("1")));
+				.andExpect(content().string(containsString("1")));
 
 	}
 
 	@Import({ JacksonAutoConfiguration.class,
-		HttpMessageConvertersAutoConfiguration.class,
-		EndpointWebMvcAutoConfiguration.class,
-		WebMvcAutoConfiguration.class,
-		ManagementServerPropertiesAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class })
 	@Configuration
 	public static class TestConfiguration {
 

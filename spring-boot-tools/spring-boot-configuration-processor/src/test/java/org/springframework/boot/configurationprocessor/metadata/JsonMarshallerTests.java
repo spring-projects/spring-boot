@@ -58,9 +58,9 @@ public class JsonMarshallerTests {
 		metadata.add(ItemHint.newHint("a.b"));
 		metadata.add(ItemHint.newHint("c", new ItemHint.ValueHint(123, "hey"),
 				new ItemHint.ValueHint(456, null)));
-		metadata.add(new ItemHint("d", null, Arrays.asList(new ItemHint.ProviderHint(
+		metadata.add(new ItemHint("d", null, Arrays.asList(new ItemHint.ValueProvider(
 				"first", Collections.<String, Object> singletonMap("target", "foo")),
-				new ItemHint.ProviderHint("second", null))));
+				new ItemHint.ValueProvider("second", null))));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);

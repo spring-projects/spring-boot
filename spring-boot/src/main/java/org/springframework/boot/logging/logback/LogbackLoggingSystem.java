@@ -103,12 +103,14 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	protected void loadDefaults(LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext,
+			LogFile logFile) {
 		LoggerContext context = getLoggerContext();
 		context.stop();
 		context.reset();
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
-		new DefaultLogbackConfiguration(logFile).apply(configurator);
+		new DefaultLogbackConfiguration(initializationContext, logFile)
+				.apply(configurator);
 	}
 
 	@Override
@@ -166,6 +168,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		getLoggerContext().reset();
+		getLoggerContext().getStatusManager().clear();
 		loadConfiguration(initializationContext, getSelfInitializationConfig(), null);
 	}
 
@@ -210,4 +213,5 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		}
 		return "unknown location";
 	}
+
 }

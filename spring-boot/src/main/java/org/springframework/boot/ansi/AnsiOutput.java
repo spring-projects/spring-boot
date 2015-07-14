@@ -155,7 +155,7 @@ public abstract class AnsiOutput {
 	 * Possible values to pass to {@link AnsiOutput#setEnabled}. Determines when to output
 	 * ANSI escape sequences for coloring application output.
 	 */
-	public static enum Enabled {
+	public enum Enabled {
 
 		/**
 		 * Try to detect whether ANSI coloring capabilities are available. The default

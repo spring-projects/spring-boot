@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2SsoDefaultConfiguration.NeedsWebSecurityCondition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -41,46 +41,39 @@ import org.springframework.util.ClassUtils;
  * @since 1.3.0
  */
 @Configuration
-@EnableConfigurationProperties(OAuth2SsoProperties.class)
-public class OAuth2SsoDefaultConfiguration {
+@Conditional(NeedsWebSecurityCondition.class)
+public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter implements
+		Ordered {
 
-	@Configuration
-	@Conditional(NeedsWebSecurityCondition.class)
-	protected static class WebSecurityConfiguration extends WebSecurityConfigurerAdapter
-			implements Ordered {
+	@Autowired
+	BeanFactory beanFactory;
 
-		@Autowired
-		BeanFactory beanFactory;
+	@Autowired
+	OAuth2SsoProperties sso;
 
-		@Autowired
-		OAuth2SsoProperties sso;
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
-			new SsoSecurityConfigurer(this.beanFactory).configure(http);
-		}
-
-		@Override
-		public int getOrder() {
-			if (this.sso.getFilterOrder() != null) {
-				return this.sso.getFilterOrder();
-			}
-			if (ClassUtils
-					.isPresent(
-							"org.springframework.boot.actuate.autoconfigure.ManagementServerProperties",
-							null)) {
-				// If > BASIC_AUTH_ORDER then the existing rules for the actuator
-				// endpoints
-				// will take precedence. This value is < BASIC_AUTH_ORDER.
-				return SecurityProperties.ACCESS_OVERRIDE_ORDER - 5;
-			}
-			return SecurityProperties.ACCESS_OVERRIDE_ORDER;
-		}
-
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.antMatcher("/**").authorizeRequests().anyRequest().authenticated();
+		new SsoSecurityConfigurer(this.beanFactory).configure(http);
 	}
 
-	private static class NeedsWebSecurityCondition extends SpringBootCondition {
+	@Override
+	public int getOrder() {
+		if (this.sso.getFilterOrder() != null) {
+			return this.sso.getFilterOrder();
+		}
+		if (ClassUtils
+				.isPresent(
+						"org.springframework.boot.actuate.autoconfigure.ManagementServerProperties",
+						null)) {
+			// If > BASIC_AUTH_ORDER then the existing rules for the actuator
+			// endpoints will take precedence. This value is < BASIC_AUTH_ORDER.
+			return SecurityProperties.ACCESS_OVERRIDE_ORDER - 5;
+		}
+		return SecurityProperties.ACCESS_OVERRIDE_ORDER;
+	}
+
+	protected static class NeedsWebSecurityCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,

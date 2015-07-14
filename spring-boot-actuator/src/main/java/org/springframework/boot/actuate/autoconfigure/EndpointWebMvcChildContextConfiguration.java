@@ -73,7 +73,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  */
 @Configuration
 @EnableWebMvc
-@Import(EndpointWebMvcImportSelector.class)
+@Import(ManagementContextConfigurationsImportSelector.class)
 public class EndpointWebMvcChildContextConfiguration {
 
 	private static Log logger = LogFactory

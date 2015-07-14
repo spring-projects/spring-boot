@@ -113,6 +113,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<optional>true</optional>
@@ -120,6 +125,11 @@
 		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-spring4</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

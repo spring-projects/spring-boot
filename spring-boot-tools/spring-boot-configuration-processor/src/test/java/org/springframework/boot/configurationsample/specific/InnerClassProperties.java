@@ -93,7 +93,7 @@ public class InnerClassProperties {
 
 	}
 
-	public static enum Fourth {
+	public enum Fourth {
 		YES, NO
 	}
 

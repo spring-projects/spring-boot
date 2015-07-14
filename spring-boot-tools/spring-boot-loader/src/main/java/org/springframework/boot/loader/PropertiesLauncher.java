@@ -448,8 +448,6 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		addParentClassLoaderEntries(lib);
-		// Entries are reversed when added to the actual classpath
-		Collections.reverse(lib);
 		return lib;
 	}
 

@@ -53,7 +53,7 @@ public interface RandomAccessData {
 	/**
 	 * Lock modes for accessing the underlying resource.
 	 */
-	public static enum ResourceAccess {
+	enum ResourceAccess {
 
 		/**
 		 * Obtain access to the underlying resource once and keep it until the stream is

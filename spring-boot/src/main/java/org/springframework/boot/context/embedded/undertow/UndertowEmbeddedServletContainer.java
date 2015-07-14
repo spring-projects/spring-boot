@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded.undertow;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
+import io.undertow.attribute.RequestHeaderAttribute;
 import io.undertow.predicate.Predicate;
 import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpHandler;
@@ -27,6 +28,7 @@ import io.undertow.server.handlers.encoding.ContentEncodingRepository;
 import io.undertow.server.handlers.encoding.EncodingHandler;
 import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.util.HttpString;
 
 import java.lang.reflect.Field;
 import java.net.ServerSocket;
@@ -100,8 +102,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private Undertow createUndertowServer() {
 		try {
-			HttpHandler servletHandler = this.manager.start();
-			this.builder.setHandler(getContextHandler(servletHandler));
+			HttpHandler httpHandler = this.manager.start();
+			this.builder.setHandler(getContextHandler(httpHandler));
 			return this.builder.build();
 		}
 		catch (ServletException ex) {
@@ -110,25 +112,36 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		}
 	}
 
-	private HttpHandler getContextHandler(HttpHandler servletHandler) {
-		HttpHandler contextHandler = configurationCompressionIfNecessary(servletHandler);
+	private HttpHandler getContextHandler(HttpHandler httpHandler) {
+		HttpHandler contextHandler = configurationCompressionIfNecessary(httpHandler);
 		if (StringUtils.isEmpty(this.contextPath)) {
 			return contextHandler;
 		}
 		return Handlers.path().addPrefixPath(this.contextPath, contextHandler);
 	}
 
-	private HttpHandler configurationCompressionIfNecessary(HttpHandler servletHandler) {
+	private HttpHandler configurationCompressionIfNecessary(HttpHandler httpHandler) {
 		if (this.compression == null || !this.compression.getEnabled()) {
-			return servletHandler;
+			return httpHandler;
 		}
-		ContentEncodingRepository encodingRepository = new ContentEncodingRepository();
-		Predicate mimeAndSizePredicate = Predicates.and(Predicates
-				.maxContentSize(this.compression.getMinResponseSize()), Predicates
-				.or(new CompressibleMimeTypePredicate(this.compression.getMimeTypes())));
-		encodingRepository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
-				mimeAndSizePredicate);
-		return new EncodingHandler(encodingRepository).setNext(servletHandler);
+		ContentEncodingRepository repository = new ContentEncodingRepository();
+		repository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
+				Predicates.and(getCompressionPredicates(this.compression)));
+		return new EncodingHandler(repository).setNext(httpHandler);
+	}
+
+	private Predicate[] getCompressionPredicates(Compression compression) {
+		List<Predicate> predicates = new ArrayList<Predicate>();
+		predicates.add(Predicates.maxContentSize(compression.getMinResponseSize()));
+		predicates.add(new CompressibleMimeTypePredicate(compression.getMimeTypes()));
+		if (compression.getExcludedUserAgents() != null) {
+			for (String agent : compression.getExcludedUserAgents()) {
+				RequestHeaderAttribute agentHeader = new RequestHeaderAttribute(
+						new HttpString(HttpHeaders.USER_AGENT));
+				predicates.add(Predicates.not(Predicates.regex(agentHeader, agent)));
+			}
+		}
+		return predicates.toArray(new Predicate[predicates.size()]);
 	}
 
 	private String getPortsDescription() {

@@ -52,7 +52,6 @@ import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -187,8 +186,7 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnMissingBean(LocaleResolver.class)
 		@ConditionalOnProperty(prefix = "spring.mvc", name = "locale")
 		public LocaleResolver localeResolver() {
-			return new FixedLocaleResolver(
-					StringUtils.parseLocaleString(this.mvcProperties.getLocale()));
+			return new FixedLocaleResolver(this.mvcProperties.getLocale());
 		}
 
 		@Bean

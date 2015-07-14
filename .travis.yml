@@ -1,7 +1,9 @@
 language: java
 jdk:
   - oraclejdk8
-services: mongodb
+services:
+  - mongodb
+  - redis
 
 install: true
 before_script:

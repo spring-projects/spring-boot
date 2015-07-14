@@ -96,35 +96,48 @@ public class JsonMarshaller {
 		JSONObject jsonObject = new JSONOrderedObject();
 		jsonObject.put("name", hint.getName());
 		if (!hint.getValues().isEmpty()) {
-			JSONArray valuesArray = new JSONArray();
-			for (ItemHint.ValueHint valueHint : hint.getValues()) {
-				JSONObject valueObject = new JSONOrderedObject();
-				putHintValue(valueObject, valueHint.getValue());
-				putIfPresent(valueObject, "description", valueHint.getDescription());
-				valuesArray.put(valueObject);
-			}
-			jsonObject.put("values", valuesArray);
+			jsonObject.put("values", getItemHintValues(hint));
 		}
 		if (!hint.getProviders().isEmpty()) {
-			JSONArray providersArray = new JSONArray();
-			for (ItemHint.ProviderHint providerHint : hint.getProviders()) {
-				JSONObject providerHintObject = new JSONOrderedObject();
-				providerHintObject.put("name", providerHint.getName());
-				if (providerHint.getParameters() != null
-						&& !providerHint.getParameters().isEmpty()) {
-					JSONObject parametersObject = new JSONOrderedObject();
-					for (Map.Entry<String, Object> entry : providerHint.getParameters()
-							.entrySet()) {
-						parametersObject.put(entry.getKey(),
-								extractItemValue(entry.getValue()));
-					}
-					providerHintObject.put("parameters", parametersObject);
-				}
-				providersArray.put(providerHintObject);
-			}
-			jsonObject.put("providers", providersArray);
+			jsonObject.put("providers", getItemHintProviders(hint));
 		}
 		return jsonObject;
+	}
+
+	private JSONArray getItemHintValues(ItemHint hint) {
+		JSONArray values = new JSONArray();
+		for (ItemHint.ValueHint value : hint.getValues()) {
+			values.put(getItemHintValue(value));
+		}
+		return values;
+	}
+
+	private JSONObject getItemHintValue(ItemHint.ValueHint value) {
+		JSONObject result = new JSONOrderedObject();
+		putHintValue(result, value.getValue());
+		putIfPresent(result, "description", value.getDescription());
+		return result;
+	}
+
+	private JSONArray getItemHintProviders(ItemHint hint) {
+		JSONArray providers = new JSONArray();
+		for (ItemHint.ValueProvider provider : hint.getProviders()) {
+			providers.put(getItemHintProvider(provider));
+		}
+		return providers;
+	}
+
+	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) {
+		JSONObject result = new JSONOrderedObject();
+		result.put("name", provider.getName());
+		if (provider.getParameters() != null && !provider.getParameters().isEmpty()) {
+			JSONObject parameters = new JSONOrderedObject();
+			for (Map.Entry<String, Object> entry : provider.getParameters().entrySet()) {
+				parameters.put(entry.getKey(), extractItemValue(entry.getValue()));
+			}
+			result.put("parameters", parameters);
+		}
+		return result;
 	}
 
 	private void putIfPresent(JSONObject jsonObject, String name, Object value) {
@@ -203,11 +216,11 @@ public class JsonMarshaller {
 				values.add(toValueHint((JSONObject) valuesArray.get(i)));
 			}
 		}
-		List<ItemHint.ProviderHint> providers = new ArrayList<ItemHint.ProviderHint>();
+		List<ItemHint.ValueProvider> providers = new ArrayList<ItemHint.ValueProvider>();
 		if (object.has("providers")) {
 			JSONArray providersObject = object.getJSONArray("providers");
 			for (int i = 0; i < providersObject.length(); i++) {
-				providers.add(toProviderHint((JSONObject) providersObject.get(i)));
+				providers.add(toValueProvider((JSONObject) providersObject.get(i)));
 			}
 		}
 		return new ItemHint(name, values, providers);
@@ -219,7 +232,7 @@ public class JsonMarshaller {
 		return new ItemHint.ValueHint(value, description);
 	}
 
-	private ItemHint.ProviderHint toProviderHint(JSONObject object) {
+	private ItemHint.ValueProvider toValueProvider(JSONObject object) {
 		String name = object.getString("name");
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		if (object.has("parameters")) {
@@ -230,7 +243,7 @@ public class JsonMarshaller {
 				parameters.put(key, value);
 			}
 		}
-		return new ItemHint.ProviderHint(name, parameters);
+		return new ItemHint.ValueProvider(name, parameters);
 	}
 
 	private Object readItemValue(Object value) {

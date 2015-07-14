@@ -99,7 +99,7 @@
 		<jmustache.version>1.10</jmustache.version>
 		<joda-time.version>2.8.1</joda-time.version>
 		<jolokia.version>1.3.1</jolokia.version>
-		<json.version>20141113</json.version>
+		<json.version>20140107</json.version>
 		<jooq.version>3.6.2</jooq.version>
 		<json-path.version>2.0.0</json-path.version>
 		<jstl.version>1.2</jstl.version>
@@ -114,8 +114,8 @@
 		<mysql.version>5.1.35</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<postgresql.version>9.4-1201-jdbc41</postgresql.version>
-		<reactor.version>2.0.3.RELEASE</reactor.version>
-		<reactor-spring.version>2.0.3.RELEASE</reactor-spring.version>
+		<reactor.version>2.0.4.RELEASE</reactor.version>
+		<reactor-spring.version>2.0.4.RELEASE</reactor-spring.version>
 		<sendgrid.version>2.2.2</sendgrid.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<simple-json.version>1.1.1</simple-json.version>
@@ -129,9 +129,9 @@
 		<spring-batch.version>3.0.4.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Gosling-BUILD-SNAPSHOT</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.17.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>4.2.0.BUILD-SNAPSHOT</spring-integration.version>
+		<spring-integration.version>4.2.0.M2</spring-integration.version>
 		<spring-loaded.version>1.2.3.RELEASE</spring-loaded.version>
-		<spring-mobile.version>1.1.4.RELEASE</spring-mobile.version>
+		<spring-mobile.version>1.1.5.RELEASE</spring-mobile.version>
 		<spring-plugin.version>1.2.0.RELEASE</spring-plugin.version>
 		<spring-retry.version>1.1.2.RELEASE</spring-retry.version>
 		<spring-security.version>4.0.1.RELEASE</spring-security.version>
@@ -154,6 +154,7 @@
 		<undertow.version>1.2.8.Final</undertow.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
+		<webjars-hal-browser.version>b7669f1-1</webjars-hal-browser.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 	</properties>
 	<prerequisites>
@@ -186,6 +187,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-autoconfigure</artifactId>
+				<version>1.3.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-configuration-metadata</artifactId>
 				<version>1.3.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -563,6 +569,12 @@
 				<groupId>com.hazelcast</groupId>
 				<artifactId>hazelcast</artifactId>
 				<version>${hazelcast.version}</version>
+				<exclusions> <!-- https://github.com/hazelcast/hazelcast/issues/5678 -->
+					<exclusion>
+						<groupId>org.freemarker</groupId>
+						<artifactId>freemarker</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.hazelcast</groupId>
@@ -1850,7 +1862,7 @@
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>hal-browser</artifactId>
-				<version>b7669f1-1</version>
+				<version>${webjars-hal-browser.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>

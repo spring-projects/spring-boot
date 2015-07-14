@@ -199,12 +199,16 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		catch (IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
-		if (!source.equals(target)) {
+		if (this.classifier != null) {
 			getLog().info(
 					"Attaching archive: " + target + ", with classifier: "
 							+ this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
 					this.classifier, target);
+		}
+		else if (!source.equals(target)) {
+			this.project.getArtifact().setFile(target);
+			getLog().info("Replacing main artifact " + source + " to " + target);
 		}
 	}
 
@@ -228,7 +232,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		return null;
 	}
 
-	public static enum LayoutType {
+	public enum LayoutType {
 
 		/**
 		 * Jar Layout

@@ -47,7 +47,7 @@ import org.springframework.web.util.UrlPathHelper;
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
 @HypermediaDisabled
 public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
-ApplicationContextAware, ServletContextAware {
+		ApplicationContextAware, ServletContextAware {
 
 	/**
 	 * Endpoint URL path.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,11 +136,9 @@ public abstract class AbstractTemplateViewResolverProperties extends
 	 * Apply the given properties to a {@link AbstractTemplateViewResolver}. Use Object in
 	 * signature to avoid runtime dependency on MVC, which means that the template engine
 	 * can be used in a non-web application.
-	 *
 	 * @param viewResolver the resolver to apply the properties to.
 	 */
 	public void applyToViewResolver(Object viewResolver) {
-
 		Assert.isInstanceOf(AbstractTemplateViewResolver.class, viewResolver,
 				"ViewResolver is not an instance of AbstractTemplateViewResolver :"
 						+ viewResolver);
@@ -148,7 +146,7 @@ public abstract class AbstractTemplateViewResolverProperties extends
 		resolver.setPrefix(getPrefix());
 		resolver.setSuffix(getSuffix());
 		resolver.setCache(isCache());
-		resolver.setContentType(getContentType());
+		resolver.setContentType(getContentType().toString());
 		resolver.setViewNames(getViewNames());
 		resolver.setExposeRequestAttributes(isExposeRequestAttributes());
 		resolver.setAllowRequestOverride(isAllowRequestOverride());
@@ -158,7 +156,6 @@ public abstract class AbstractTemplateViewResolverProperties extends
 		// The resolver usually acts as a fallback resolver (e.g. like a
 		// InternalResourceViewResolver) so it needs to have low precedence
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
-
 	}
 
 }

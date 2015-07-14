@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jooq;
 
+import org.jooq.SQLDialect;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -31,13 +32,13 @@ public class JooqProperties {
 	 * SQLDialect JOOQ used when communicating with the configured datasource, for
 	 * instance "POSTGRES".
 	 */
-	private String sqlDialect;
+	private SQLDialect sqlDialect;
 
-	public String getSqlDialect() {
+	public SQLDialect getSqlDialect() {
 		return this.sqlDialect;
 	}
 
-	public void setSqlDialect(String sqlDialect) {
+	public void setSqlDialect(SQLDialect sqlDialect) {
 		this.sqlDialect = sqlDialect;
 	}
 

@@ -48,6 +48,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -57,6 +58,7 @@ import static org.junit.Assert.fail;
  *
  * @author Andreas Ahlenstorf
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class JooqAutoConfigurationTests {
 
@@ -153,6 +155,15 @@ public class JooqAutoConfigurationTests {
 		assertThat(dsl.configuration().recordListenerProviders().length, equalTo(1));
 		assertThat(dsl.configuration().executeListenerProviders().length, equalTo(2));
 		assertThat(dsl.configuration().visitListenerProviders().length, equalTo(1));
+	}
+
+	@Test
+	public void relaxedBindingOfSqlDialect() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jooq.sql-dialect:PoSTGrES");
+		registerAndRefresh(JooqDataSourceConfiguration.class, JooqAutoConfiguration.class);
+		assertThat(this.context.getBean(org.jooq.Configuration.class).dialect(),
+				is(equalTo(SQLDialect.POSTGRES)));
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {

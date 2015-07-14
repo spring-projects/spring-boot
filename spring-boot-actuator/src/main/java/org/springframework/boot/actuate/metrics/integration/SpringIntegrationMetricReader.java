@@ -55,6 +55,8 @@ public class SpringIntegrationMetricReader implements MetricReader {
 			String prefix = "integration.channel." + name;
 			metrics.addAll(getStatistics(prefix + ".errorRate",
 					exporter.getChannelErrorRate(name)));
+			metrics.add(new Metric<Integer>(prefix + ".sendCount", exporter
+					.getChannelSendCount(name)));
 			metrics.addAll(getStatistics(prefix + ".sendRate",
 					exporter.getChannelSendRate(name)));
 			metrics.add(new Metric<Long>(prefix + ".receiveCount", exporter

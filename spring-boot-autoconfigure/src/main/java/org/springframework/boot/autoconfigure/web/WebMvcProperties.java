@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -39,7 +41,7 @@ public class WebMvcProperties {
 	/**
 	 * Locale to use.
 	 */
-	private String locale;
+	private Locale locale;
 
 	/**
 	 * Date format to use (e.g. dd/MM/yyyy).
@@ -65,11 +67,11 @@ public class WebMvcProperties {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
-	public String getLocale() {
+	public Locale getLocale() {
 		return this.locale;
 	}
 
-	public void setLocale(String locale) {
+	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
 

@@ -950,7 +950,7 @@ public class RelaxedDataBinderTests {
 
 	}
 
-	static enum Bingo {
+	enum Bingo {
 		THIS, or, THAT, THE_OTHER
 	}
 

@@ -49,6 +49,8 @@ public class AggregateMetricsConfiguration {
 	private MetricReader aggregatesMetricReader() {
 		AggregateMetricReader repository = new AggregateMetricReader(
 				globalMetricsForAggregation());
+		repository.setKeyPattern(this.export.getAggregate().getKeyPattern());
 		return repository;
 	}
+
 }

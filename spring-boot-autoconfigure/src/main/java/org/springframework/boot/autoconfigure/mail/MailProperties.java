@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "spring.mail")
 public class MailProperties {
+
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	/**
 	 * SMTP server host.
@@ -55,7 +58,7 @@ public class MailProperties {
 	/**
 	 * Default MimeMessage encoding.
 	 */
-	private String defaultEncoding = "UTF-8";
+	private Charset defaultEncoding = DEFAULT_CHARSET;
 
 	/**
 	 * Additional JavaMail session properties.
@@ -66,6 +69,11 @@ public class MailProperties {
 	 * Session JNDI name. When set, takes precedence to others mail settings.
 	 */
 	private String jndiName;
+
+	/**
+	 * Test that the mail server is available on startup.
+	 */
+	private boolean testConnection;
 
 	public String getHost() {
 		return this.host;
@@ -99,11 +107,11 @@ public class MailProperties {
 		this.password = password;
 	}
 
-	public String getDefaultEncoding() {
+	public Charset getDefaultEncoding() {
 		return this.defaultEncoding;
 	}
 
-	public void setDefaultEncoding(String defaultEncoding) {
+	public void setDefaultEncoding(Charset defaultEncoding) {
 		this.defaultEncoding = defaultEncoding;
 	}
 
@@ -117,6 +125,14 @@ public class MailProperties {
 
 	public String getJndiName() {
 		return this.jndiName;
+	}
+
+	public boolean isTestConnection() {
+		return this.testConnection;
+	}
+
+	public void setTestConnection(boolean testConnection) {
+		this.testConnection = testConnection;
 	}
 
 }
