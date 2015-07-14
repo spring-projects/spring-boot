@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,10 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("integerObject"), equalToObject(3));
 		assertThat(values.get("integerObjectNone"), nullValue());
 		assertThat(values.get("integerObjectConst"), equalToObject(4));
+		assertThat(values.get("charset"), equalToObject("US-ASCII"));
+		assertThat(values.get("charsetConst"), equalToObject("UTF-8"));
+		assertThat(values.get("mimeType"), equalToObject("text/html"));
+		assertThat(values.get("mimeTypeConst"), equalToObject("text/plain"));
 		assertThat(values.get("object"), equalToObject(123));
 		assertThat(values.get("objectNone"), nullValue());
 		assertThat(values.get("objectConst"), equalToObject("c"));

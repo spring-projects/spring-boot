@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
  * Reflection based access to {@code com.sun.source.tree.ExpressionTree}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.2.0
  */
 class ExpressionTree extends ReflectionWrapper {
@@ -31,6 +32,10 @@ class ExpressionTree extends ReflectionWrapper {
 	private final Class<?> literalTreeType = findClass("com.sun.source.tree.LiteralTree");
 
 	private final Method literalValueMethod = findMethod(this.literalTreeType, "getValue");
+
+	private final Class<?> methodInvocationTreeType = findClass("com.sun.source.tree.MethodInvocationTree");
+
+	private final Method methodInvocationArgumentsMethod = findMethod(this.methodInvocationTreeType, "getArguments");
 
 	private final Class<?> newArrayTreeType = findClass("com.sun.source.tree.NewArrayTree");
 
@@ -48,6 +53,16 @@ class ExpressionTree extends ReflectionWrapper {
 	public Object getLiteralValue() throws Exception {
 		if (this.literalTreeType.isAssignableFrom(getInstance().getClass())) {
 			return this.literalValueMethod.invoke(getInstance());
+		}
+		return null;
+	}
+
+	public Object getFactoryValue() throws Exception {
+		if (this.methodInvocationTreeType.isAssignableFrom(getInstance().getClass())) {
+			List<?> arguments = (List<?>) this.methodInvocationArgumentsMethod.invoke(getInstance());
+			if (arguments.size() == 1) {
+				return new ExpressionTree(arguments.get(0)).getLiteralValue();
+			}
 		}
 		return null;
 	}
