@@ -16,38 +16,11 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.List;
-
-import org.apache.maven.settings.Mirror;
-import org.apache.maven.settings.Proxy;
-import org.apache.maven.settings.Server;
-import org.apache.maven.settings.Settings;
-import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
-import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
-import org.apache.maven.settings.building.SettingsBuildingException;
-import org.apache.maven.settings.building.SettingsBuildingRequest;
-import org.apache.maven.settings.crypto.DefaultSettingsDecrypter;
-import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
-import org.apache.maven.settings.crypto.SettingsDecrypter;
-import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.repository.Authentication;
-import org.eclipse.aether.repository.AuthenticationSelector;
 import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.repository.MirrorSelector;
-import org.eclipse.aether.repository.ProxySelector;
-import org.eclipse.aether.util.repository.AuthenticationBuilder;
-import org.eclipse.aether.util.repository.ConservativeAuthenticationSelector;
-import org.eclipse.aether.util.repository.DefaultAuthenticationSelector;
-import org.eclipse.aether.util.repository.DefaultMirrorSelector;
-import org.eclipse.aether.util.repository.DefaultProxySelector;
-import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
-import org.sonatype.plexus.components.cipher.PlexusCipherException;
-import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
-import org.springframework.boot.cli.util.Log;
+import org.springframework.boot.cli.compiler.MavenSettings;
+import org.springframework.boot.cli.compiler.MavenSettingsReader;
 
 /**
  * Auto-configuration for a RepositorySystemSession that uses Maven's settings.xml to
@@ -58,32 +31,16 @@ import org.springframework.boot.cli.util.Log;
 public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		RepositorySystemSessionAutoConfiguration {
 
-	private final String homeDir;
-
-	public SettingsXmlRepositorySystemSessionAutoConfiguration() {
-		this(System.getProperty("user.home"));
-	}
-
-	SettingsXmlRepositorySystemSessionAutoConfiguration(String homeDir) {
-		this.homeDir = homeDir;
-	}
-
 	@Override
 	public void apply(DefaultRepositorySystemSession session,
 			RepositorySystem repositorySystem) {
 
-		Settings settings = loadSettings();
-		SettingsDecryptionResult decryptionResult = decryptSettings(settings);
-		if (!decryptionResult.getProblems().isEmpty()) {
-			Log.error("Maven settings decryption failed. Some Maven repositories may be inaccessible");
-			// Continue - the encrypted credentials may not be used
-		}
+		MavenSettings settings = new MavenSettingsReader().readSettings();
 
-		session.setOffline(settings.isOffline());
-		session.setMirrorSelector(createMirrorSelector(settings));
-		session.setAuthenticationSelector(createAuthenticationSelector(decryptionResult
-				.getServers()));
-		session.setProxySelector(createProxySelector(decryptionResult.getProxies()));
+		session.setOffline(settings.getOffline());
+		session.setMirrorSelector(settings.getMirrorSelector());
+		session.setAuthenticationSelector(settings.getAuthenticationSelector());
+		session.setProxySelector(settings.getProxySelector());
 
 		String localRepository = settings.getLocalRepository();
 		if (localRepository != null) {
@@ -92,92 +49,4 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		}
 	}
 
-	private Settings loadSettings() {
-		File settingsFile = new File(this.homeDir, ".m2/settings.xml");
-		SettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
-		request.setUserSettingsFile(settingsFile);
-		request.setSystemProperties(System.getProperties());
-		try {
-			return new DefaultSettingsBuilderFactory().newInstance().build(request)
-					.getEffectiveSettings();
-		}
-		catch (SettingsBuildingException ex) {
-			throw new IllegalStateException("Failed to build settings from "
-					+ settingsFile, ex);
-		}
-	}
-
-	private SettingsDecryptionResult decryptSettings(Settings settings) {
-		DefaultSettingsDecryptionRequest request = new DefaultSettingsDecryptionRequest(
-				settings);
-
-		return createSettingsDecrypter().decrypt(request);
-	}
-
-	private SettingsDecrypter createSettingsDecrypter() {
-		SettingsDecrypter settingsDecrypter = new DefaultSettingsDecrypter();
-		setField(DefaultSettingsDecrypter.class, "securityDispatcher", settingsDecrypter,
-				new SpringBootSecDispatcher());
-		return settingsDecrypter;
-	}
-
-	private void setField(Class<?> clazz, String fieldName, Object target, Object value) {
-		try {
-			Field field = clazz.getDeclaredField(fieldName);
-			field.setAccessible(true);
-			field.set(target, value);
-		}
-		catch (Exception e) {
-			throw new IllegalStateException("Failed to set field '" + fieldName
-					+ "' on '" + target + "'", e);
-		}
-	}
-
-	private MirrorSelector createMirrorSelector(Settings settings) {
-		DefaultMirrorSelector selector = new DefaultMirrorSelector();
-		for (Mirror mirror : settings.getMirrors()) {
-			selector.add(mirror.getId(), mirror.getUrl(), mirror.getLayout(), false,
-					mirror.getMirrorOf(), mirror.getMirrorOfLayouts());
-		}
-		return selector;
-	}
-
-	private AuthenticationSelector createAuthenticationSelector(List<Server> servers) {
-		DefaultAuthenticationSelector selector = new DefaultAuthenticationSelector();
-		for (Server server : servers) {
-			AuthenticationBuilder auth = new AuthenticationBuilder();
-			auth.addUsername(server.getUsername()).addPassword(server.getPassword());
-			auth.addPrivateKey(server.getPrivateKey(), server.getPassphrase());
-			selector.add(server.getId(), auth.build());
-		}
-		return new ConservativeAuthenticationSelector(selector);
-	}
-
-	private ProxySelector createProxySelector(List<Proxy> proxies) {
-		DefaultProxySelector selector = new DefaultProxySelector();
-		for (Proxy proxy : proxies) {
-			Authentication authentication = new AuthenticationBuilder()
-					.addUsername(proxy.getUsername()).addPassword(proxy.getPassword())
-					.build();
-			selector.add(new org.eclipse.aether.repository.Proxy(proxy.getProtocol(),
-					proxy.getHost(), proxy.getPort(), authentication), proxy
-					.getNonProxyHosts());
-		}
-		return selector;
-	}
-
-	private class SpringBootSecDispatcher extends DefaultSecDispatcher {
-
-		public SpringBootSecDispatcher() {
-			this._configurationFile = new File(
-					SettingsXmlRepositorySystemSessionAutoConfiguration.this.homeDir,
-					".m2/settings-security.xml").getAbsolutePath();
-			try {
-				this._cipher = new DefaultPlexusCipher();
-			}
-			catch (PlexusCipherException e) {
-				throw new IllegalStateException(e);
-			}
-		}
-	}
 }
