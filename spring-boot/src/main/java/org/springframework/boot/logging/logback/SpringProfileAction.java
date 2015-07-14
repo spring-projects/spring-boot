@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.xml.sax.Attributes;
 
 import ch.qos.logback.core.joran.action.Action;
@@ -36,6 +37,7 @@ import ch.qos.logback.core.util.OptionHelper;
  * logback configuration to only be enabled when a specific profile is active.
  *
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 class SpringProfileAction extends Action implements InPlayListener {
 
@@ -65,11 +67,14 @@ class SpringProfileAction extends Action implements InPlayListener {
 	}
 
 	private boolean acceptsProfiles(InterpretationContext ic, Attributes attributes) {
-		String profileName = attributes.getValue(NAME_ATTRIBUTE);
-		if (!OptionHelper.isEmpty(profileName)) {
-			OptionHelper.substVars(profileName, ic, this.context);
+		String[] profileNames = StringUtils.commaDelimitedListToStringArray(attributes
+				.getValue(NAME_ATTRIBUTE));
+		if (profileNames.length != 0) {
+			for (String profileName : profileNames) {
+				OptionHelper.substVars(profileName, ic, this.context);
+			}
 			return this.environment != null
-					&& this.environment.acceptsProfiles(profileName);
+					&& this.environment.acceptsProfiles(profileNames);
 		}
 		return false;
 	}
