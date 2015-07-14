@@ -93,7 +93,7 @@ requests. If you want to raise an issue, please follow the recommendations bello
 You don't need to build from source to use Spring Boot (binaries in
 http://repo.spring.io[repo.spring.io], but if you want to try out the latest and greatest,
 Spring Boot can be http://maven.apache.org/run-maven/index.html[built with maven]
-v3.0.5 or above. You also need JDK 1.7 (although Boot applications can run on Java 1.6).
+v3.0.5 or above. You also need JDK 1.8 (although Boot applications can run on Java 1.6).
 
 [indent=0]
 ----
