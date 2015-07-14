@@ -43,6 +43,7 @@ import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.info.InfoProvider;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -84,6 +85,10 @@ public class EndpointAutoConfiguration {
 	private Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
 
 	@Autowired(required = false)
+	private Map<String, InfoProvider> infoProviders = new HashMap<String, InfoProvider>();
+
+	
+	@Autowired(required = false)
 	private Collection<PublicMetrics> publicMetrics;
 
 	@Autowired(required = false)
@@ -116,7 +121,7 @@ public class EndpointAutoConfiguration {
 		if (gitInfo.getBranch() != null) {
 			info.put("git", gitInfo);
 		}
-		return new InfoEndpoint(info);
+		return new InfoEndpoint(info, infoProviders);
 	}
 
 	@Bean

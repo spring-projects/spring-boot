@@ -16,10 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.springframework.boot.actuate.info.InfoProvider;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
@@ -32,14 +34,17 @@ import org.springframework.util.Assert;
 public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final Map<String, ? extends Object> info;
+	private final Map<String, InfoProvider> infoProviders;
 
 	/**
 	 * Create a new {@link InfoEndpoint} instance.
 	 *
 	 * @param info the info to expose
 	 */
-	public InfoEndpoint(Map<String, ? extends Object> info) {
+	public InfoEndpoint(Map<String, ? extends Object> info,
+			Map<String, InfoProvider> infoProviders) {
 		super("info", false);
+		this.infoProviders = infoProviders;
 		Assert.notNull(info, "Info must not be null");
 		this.info = info;
 	}
@@ -52,7 +57,11 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	protected Map<String, Object> getAdditionalInfo() {
-		return Collections.emptyMap();
+		Map<String, Object> result = new HashMap<String, Object>();
+		for (Entry<String, InfoProvider> keyValuePair : infoProviders.entrySet()) {
+			result.put(keyValuePair.getKey(), keyValuePair.getValue().provide());
+		}
+		
+		return result;
 	}
-
 }
