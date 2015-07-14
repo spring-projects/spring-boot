@@ -20,13 +20,13 @@ import java.text.BreakIterator;
 import java.util.Locale;
 
 /**
- * Utility to extract a descriptions.
+ * Utility to extract a description.
  *
  * @author Stephane Nicoll
  */
 class DescriptionExtractor {
 
-	private static final String NEW_LINE = System.getProperty("line.separator");
+	static final String NEW_LINE = System.getProperty("line.separator");
 
 	public String getShortDescription(String description) {
 		if (description == null) {
