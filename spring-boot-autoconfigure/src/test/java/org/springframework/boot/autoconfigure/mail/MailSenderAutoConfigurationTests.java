@@ -209,6 +209,7 @@ public class MailSenderAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.register(configs);
 		applicationContext.register(MailSenderAutoConfiguration.class);
+		applicationContext.register(MailSenderValidatorAutoConfiguration.class);
 		applicationContext.refresh();
 		return applicationContext;
 	}
