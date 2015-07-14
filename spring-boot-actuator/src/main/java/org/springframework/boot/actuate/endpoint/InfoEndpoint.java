@@ -16,43 +16,57 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.info.Info;
+import org.springframework.boot.actuate.info.InfoProvider;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose arbitrary application information.
+ * 
+ * The information, which the {@link InfoEndpoint} can provide can be customized to display any informations,
+ * however initially the info endpoint will provide git version information (if available) and environment information,
+ * whose entries are prefixed with info.
+ *
+ * In order to add additional information to the endpoint, one has to implement a class, which implements the {@link org.springframework.boot.actuate.info.InfoProvider}
+ * interface and register it in the application context. The InfoEndpoint will automatically pick it up, when it is being instantiated.
+ *
+ * The standard InfoProvider for GIT is registered as the scmInfoProvider, and the registration can be changed
+ * in case standard provider does not meet ones requirements.
+ *
+ * @see org.springframework.boot.actuate.info.ScmGitPropertiesInfoProvider
+ * @see org.springframework.boot.actuate.info.EnvironmentInfoProvider
  *
  * @author Dave Syer
+ * @author Meang Akira Tanaka
  */
-@ConfigurationProperties(prefix = "endpoints.info")
-public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
+@ConfigurationProperties(prefix = "endpoints.info", ignoreUnknownFields = false)
+public class InfoEndpoint extends AbstractEndpoint<Info> {
 
-	private final Map<String, ? extends Object> info;
+	private final Map<String, InfoProvider> infoProviders;
 
 	/**
 	 * Create a new {@link InfoEndpoint} instance.
 	 *
-	 * @param info the info to expose
+	 * @param infoProviders the infoProviders to be used
 	 */
-	public InfoEndpoint(Map<String, ? extends Object> info) {
+	public InfoEndpoint(Map<String, InfoProvider> infoProviders) {
 		super("info", false);
-		Assert.notNull(info, "Info must not be null");
-		this.info = info;
+		Assert.notNull(infoProviders, "Info providers must not be null");
+		this.infoProviders = infoProviders;
 	}
 
 	@Override
-	public Map<String, Object> invoke() {
-		Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
-		info.putAll(getAdditionalInfo());
-		return info;
+	public Info invoke() {
+		Info result = new Info();
+		for (InfoProvider provider : infoProviders.values()) {
+			Info info = provider.provide();
+			if(info != null) {
+				result.put(provider.name(), info);
+			}
+		}
+		return result;
 	}
-
-	protected Map<String, Object> getAdditionalInfo() {
-		return Collections.emptyMap();
-	}
-
 }
