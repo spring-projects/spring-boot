@@ -26,7 +26,6 @@ assert out.contains('Hello Embedded Foo!'),
 	'With loader.path=.,lib should use the application.properties from the local filesystem\n' + out
 
 new File("${basedir}/target/application.properties").withWriter { it -> it << "message: Spam" }
-
 out = exec("java -Dloader.path=target,.,lib -jar ${jarfile}")
 assert out.contains('Hello Embedded Spam!'),
 	'With loader.path=target,.,lib should use the application.properties from the target directory\n' + out
