@@ -165,7 +165,9 @@ public class MavenSettings {
 		for (Profile profile : profiles) {
 			org.apache.maven.model.Profile modelProfile = new org.apache.maven.model.Profile();
 			modelProfile.setId(profile.getId());
-			modelProfile.setActivation(createModelActivation(profile.getActivation()));
+			if (profile.getActivation() != null) {
+				modelProfile.setActivation(createModelActivation(profile.getActivation()));
+			}
 			modelProfiles.add(modelProfile);
 		}
 		return modelProfiles;
