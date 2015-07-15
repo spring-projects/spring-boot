@@ -133,7 +133,7 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.date-format= # set fixed date format, e.g. dd/MM/yyyy
 	spring.mvc.favicon.enabled=true
 	spring.mvc.message-codes-resolver-format= # PREFIX_ERROR_CODE / POSTFIX_ERROR_CODE
-	spring.mvc.ignore-default-model-on-redirect=true # if the the content of the "default" model should be ignored redirects
+	spring.mvc.ignore-default-model-on-redirect=true # if the content of the "default" model should be ignored redirects
 	spring.mvc.async.request-timeout= # async request timeout in milliseconds
 	spring.mvc.view.prefix= # MVC view prefix
 	spring.mvc.view.suffix= # ... and suffix

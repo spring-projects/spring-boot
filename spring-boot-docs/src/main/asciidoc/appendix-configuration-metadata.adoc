@@ -538,7 +538,7 @@ value but could highlight valid packages and class names that are not available 
 project's classpath.
 
 The meta-data snippet below corresponds to the standard `logging.level` property, keys
-are _logger names_ and values correspond to the the standard log levels or any custom
+are _logger names_ and values correspond to the standard log levels or any custom
 level:
 
 [source,json,indent=0]
