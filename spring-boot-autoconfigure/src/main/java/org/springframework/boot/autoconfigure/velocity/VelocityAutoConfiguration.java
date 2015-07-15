@@ -45,7 +45,6 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.view.velocity.VelocityConfig;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
-import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Velocity.
@@ -130,7 +129,7 @@ public class VelocityAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "velocityViewResolver")
 		@ConditionalOnProperty(name = "spring.velocity.enabled", matchIfMissing = true)
-		public VelocityViewResolver velocityViewResolver() {
+		public EmbeddedVelocityViewResolver velocityViewResolver() {
 			EmbeddedVelocityViewResolver resolver = new EmbeddedVelocityViewResolver();
 			this.properties.applyToViewResolver(resolver);
 			return resolver;

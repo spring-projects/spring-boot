@@ -132,8 +132,8 @@ public class RedisAutoConfiguration {
 			AbstractRedisConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public RedisConnectionFactory redisConnectionFactory()
+		@ConditionalOnMissingBean(RedisConnectionFactory.class)
+		public JedisConnectionFactory redisConnectionFactory()
 				throws UnknownHostException {
 			return applyProperties(new JedisConnectionFactory(getSentinelConfig()));
 		}
@@ -149,8 +149,8 @@ public class RedisAutoConfiguration {
 			AbstractRedisConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public RedisConnectionFactory redisConnectionFactory()
+		@ConditionalOnMissingBean(RedisConnectionFactory.class)
+		public JedisConnectionFactory redisConnectionFactory()
 				throws UnknownHostException {
 			return applyProperties(createJedisConnectionFactory());
 		}

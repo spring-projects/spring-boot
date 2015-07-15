@@ -37,6 +37,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.StringUtils;
 
+import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.jndi.BitronixContext;
 
@@ -80,16 +81,16 @@ class BitronixJtaConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public TransactionManager bitronixTransactionManager(
+	@ConditionalOnMissingBean(TransactionManager.class)
+	public BitronixTransactionManager bitronixTransactionManager(
 			bitronix.tm.Configuration configuration) {
 		// Inject configuration to force ordering
 		return TransactionManagerServices.getTransactionManager();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public XADataSourceWrapper xaDataSourceWrapper() {
+	@ConditionalOnMissingBean(XADataSourceWrapper.class)
+	public BitronixXADataSourceWrapper xaDataSourceWrapper() {
 		return new BitronixXADataSourceWrapper();
 	}
 
@@ -108,8 +109,8 @@ class BitronixJtaConfiguration {
 	static class BitronixJtaJmsConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public XAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
+		@ConditionalOnMissingBean(XAConnectionFactoryWrapper.class)
+		public BitronixXAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
 			return new BitronixXAConnectionFactoryWrapper();
 		}
 	}

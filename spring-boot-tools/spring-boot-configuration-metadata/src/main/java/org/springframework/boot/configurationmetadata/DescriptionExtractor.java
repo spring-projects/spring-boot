@@ -20,7 +20,7 @@ import java.text.BreakIterator;
 import java.util.Locale;
 
 /**
- * Utility to extract a descriptions.
+ * Utility to extract a description.
  *
  * @author Stephane Nicoll
  */

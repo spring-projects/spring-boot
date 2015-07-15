@@ -1,0 +1,22 @@
+{
+	"properties": [
+		{
+			"name": "server.port",
+			"type": "java.lang.Integer",
+			"deprecation": {
+				"reason": "Server namespace has moved to spring.server",
+				"replacement": "server.spring.port"
+			}
+		},
+		{
+			"name": "server.cluster-name",
+			"type": "java.lang.String",
+			"deprecated": true
+		},
+		{
+			"name": "spring.server.name",
+			"type": "java.lang.String",
+			"deprecated": false
+		}
+	]
+}

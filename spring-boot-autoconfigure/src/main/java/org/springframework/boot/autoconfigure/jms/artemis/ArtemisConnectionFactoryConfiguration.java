@@ -35,8 +35,8 @@ import org.springframework.context.annotation.Configuration;
 class ArtemisConnectionFactoryConfiguration {
 
 	@Bean
-	public ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory,
-			ArtemisProperties properties) {
+	public ActiveMQConnectionFactory jmsConnectionFactory(
+			ListableBeanFactory beanFactory, ArtemisProperties properties) {
 		return new ArtemisConnectionFactoryFactory(beanFactory, properties)
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}

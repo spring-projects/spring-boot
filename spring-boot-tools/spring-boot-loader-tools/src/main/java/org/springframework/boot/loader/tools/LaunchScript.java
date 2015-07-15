@@ -25,7 +25,7 @@ package org.springframework.boot.loader.tools;
 public interface LaunchScript {
 
 	/**
-	 * The the content of the launch script as a byte array.
+	 * The content of the launch script as a byte array.
 	 * @return the script bytes
 	 */
 	byte[] toByteArray();

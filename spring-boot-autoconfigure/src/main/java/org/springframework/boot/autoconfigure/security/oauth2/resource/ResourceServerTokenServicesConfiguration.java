@@ -146,7 +146,7 @@ public class ResourceServerTokenServicesConfiguration {
 			private ResourceServerProperties resource;
 
 			@Bean
-			public ResourceServerTokenServices remoteTokenServices() {
+			public RemoteTokenServices remoteTokenServices() {
 				RemoteTokenServices services = new RemoteTokenServices();
 				services.setCheckTokenEndpointUrl(this.resource.getTokenInfoUri());
 				services.setClientId(this.resource.getClientId());
@@ -182,7 +182,7 @@ public class ResourceServerTokenServicesConfiguration {
 			@Bean
 			@ConditionalOnMissingBean({ ConnectionFactoryLocator.class,
 					ResourceServerTokenServices.class })
-			public ResourceServerTokenServices userInfoTokenServices() {
+			public UserInfoTokenServices userInfoTokenServices() {
 				UserInfoTokenServices services = new UserInfoTokenServices(
 						this.sso.getUserInfoUri(), this.sso.getClientId());
 				services.setTokenType(this.sso.getTokenType());
@@ -206,7 +206,7 @@ public class ResourceServerTokenServicesConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean(ResourceServerTokenServices.class)
-			public ResourceServerTokenServices userInfoTokenServices() {
+			public UserInfoTokenServices userInfoTokenServices() {
 				UserInfoTokenServices services = new UserInfoTokenServices(
 						this.sso.getUserInfoUri(), this.sso.getClientId());
 				services.setRestTemplate(this.restTemplate);
@@ -233,7 +233,7 @@ public class ResourceServerTokenServicesConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ResourceServerTokenServices.class)
-		public ResourceServerTokenServices jwtTokenServices() {
+		public DefaultTokenServices jwtTokenServices() {
 			DefaultTokenServices services = new DefaultTokenServices();
 			services.setTokenStore(jwtTokenStore());
 			return services;

@@ -79,8 +79,8 @@ class JmsAnnotationDrivenConfiguration {
 	protected static class JndiConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public DestinationResolver destinationResolver() {
+		@ConditionalOnMissingBean(DestinationResolver.class)
+		public JndiDestinationResolver destinationResolver() {
 			JndiDestinationResolver resolver = new JndiDestinationResolver();
 			resolver.setFallbackToDynamicDestination(true);
 			return resolver;

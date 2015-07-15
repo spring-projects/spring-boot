@@ -374,6 +374,34 @@ public class JacksonAutoConfigurationTests {
 				is(JsonInclude.Include.NON_NULL));
 	}
 
+	@Test
+	public void customTimeZoneFormattingADateTime() throws JsonProcessingException {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.time-zone:America/Los_Angeles");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.date-format:zzzz");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context.getBean(
+				Jackson2ObjectMapperBuilder.class).build();
+		DateTime dateTime = new DateTime(1436966242231L, DateTimeZone.UTC);
+		assertEquals("\"Pacific Daylight Time\"",
+				objectMapper.writeValueAsString(dateTime));
+	}
+
+	@Test
+	public void customTimeZoneFormattingADate() throws JsonProcessingException {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.time-zone:GMT+10");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.date-format:z");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context.getBean(
+				Jackson2ObjectMapperBuilder.class).build();
+		Date date = new Date(1436966242231L);
+		assertEquals("\"GMT+10:00\"", objectMapper.writeValueAsString(date));
+	}
+
 	@Configuration
 	protected static class MockObjectMapperConfig {
 

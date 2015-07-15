@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 
 /**
- * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the the
+ * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the
  * value of the property {@code spring.output.ansi.enabled}. See {@link Enabled} for valid
  * values.
  *

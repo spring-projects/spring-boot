@@ -97,7 +97,7 @@ public class JacksonAutoConfiguration {
 		private JacksonProperties jacksonProperties;
 
 		@Bean
-		public Module jodaDateTimeSerializationModule() {
+		public SimpleModule jodaDateTimeSerializationModule() {
 			SimpleModule module = new SimpleModule();
 			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
 			if (jacksonJodaFormat != null) {
@@ -150,6 +150,9 @@ public class JacksonAutoConfiguration {
 			if (this.jacksonProperties.getSerializationInclusion() != null) {
 				builder.serializationInclusion(this.jacksonProperties
 						.getSerializationInclusion());
+			}
+			if (this.jacksonProperties.getTimeZone() != null) {
+				builder.timeZone(this.jacksonProperties.getTimeZone());
 			}
 			configureFeatures(builder, this.jacksonProperties.getDeserialization());
 			configureFeatures(builder, this.jacksonProperties.getSerialization());

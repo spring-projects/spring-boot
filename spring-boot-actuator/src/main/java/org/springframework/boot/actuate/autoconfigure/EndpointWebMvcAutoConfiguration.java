@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -42,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -92,7 +92,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
 		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
 		ManagementServerPropertiesAutoConfiguration.class,
-		HypermediaAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+		RepositoryRestMvcAutoConfiguration.class, HypermediaAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		BeanFactoryAware, SmartInitializingSingleton {
 
@@ -192,7 +193,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean
-		public Filter applicationContextIdFilter(ApplicationContext context) {
+		public ApplicationContextHeaderFilter applicationContextIdFilter(
+				ApplicationContext context) {
 			return new ApplicationContextHeaderFilter(context);
 		}
 

@@ -48,6 +48,7 @@ import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesPa
 import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCompilerFieldValuesParser;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
+import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 
 /**
@@ -211,7 +212,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 						|| hasDeprecateAnnotation(element);
 				this.metadataCollector.add(ItemMetadata
 						.newProperty(prefix, name, dataType, sourceType, null,
-								description, defaultValue, deprecated));
+								description, defaultValue,
+								deprecated ? new ItemDeprecation() : null));
 			}
 		}
 	}
@@ -240,7 +242,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 						|| hasDeprecateAnnotation(element);
 				this.metadataCollector.add(ItemMetadata
 						.newProperty(prefix, name, dataType, sourceType, null,
-								description, defaultValue, deprecated));
+								description, defaultValue,
+								deprecated ? new ItemDeprecation() : null));
 			}
 		}
 	}

@@ -20,7 +20,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
 
 /**
- * Demonstrate the auto-detection of a inner config classes.
+ * Demonstrate the auto-detection of inner config classes.
  *
  * @author Stephane Nicoll
  */

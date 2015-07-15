@@ -109,7 +109,7 @@ class JsonReader {
 		item.setShortDescription(this.descriptionExtractor
 				.getShortDescription(description));
 		item.setDefaultValue(readItemValue(json.opt("defaultValue")));
-		item.setDeprecated(json.optBoolean("deprecated", false));
+		item.setDeprecation(parseDeprecation(json));
 		item.setSourceType(json.optString("sourceType", null));
 		item.setSourceMethod(json.optString("sourceMethod", null));
 		return item;
@@ -150,6 +150,17 @@ class JsonReader {
 			}
 		}
 		return hint;
+	}
+
+	private Deprecation parseDeprecation(JSONObject object) {
+		if (object.has("deprecation")) {
+			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
+			Deprecation deprecation = new Deprecation();
+			deprecation.setReason(deprecationJsonObject.optString("reason", null));
+			deprecation.setReplacement(deprecationJsonObject.optString("replacement", null));
+			return deprecation;
+		}
+		return (object.optBoolean("deprecated") ? new Deprecation() : null);
 	}
 
 	private Object readItemValue(Object value) {

@@ -74,8 +74,9 @@ public class MavenSettings {
 	private final List<Profile> activeProfiles;
 
 	/**
-	 * @param settings
-	 * @param decryptedSettings
+	 * Create a new {@link MavenSettings} instance.
+	 * @param settings the source settings
+	 * @param decryptedSettings the decrypted settings
 	 */
 	public MavenSettings(Settings settings, SettingsDecryptionResult decryptedSettings) {
 		this.offline = settings.isOffline();
@@ -166,7 +167,8 @@ public class MavenSettings {
 			org.apache.maven.model.Profile modelProfile = new org.apache.maven.model.Profile();
 			modelProfile.setId(profile.getId());
 			if (profile.getActivation() != null) {
-				modelProfile.setActivation(createModelActivation(profile.getActivation()));
+				modelProfile
+						.setActivation(createModelActivation(profile.getActivation()));
 			}
 			modelProfiles.add(modelProfile);
 		}

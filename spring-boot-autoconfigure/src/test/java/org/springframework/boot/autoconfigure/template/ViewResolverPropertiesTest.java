@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.template;
 import java.nio.charset.Charset;
 
 import org.junit.Test;
-
 import org.springframework.util.MimeTypeUtils;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,10 +31,10 @@ import static org.hamcrest.Matchers.hasToString;
  */
 public class ViewResolverPropertiesTest {
 
-
 	@Test
 	public void defaultContentType() {
-		assertThat(new ViewResolverProperties().getContentType(), hasToString("text/html;charset=UTF-8"));
+		assertThat(new ViewResolverProperties().getContentType(),
+				hasToString("text/html;charset=UTF-8"));
 	}
 
 	@Test
@@ -65,11 +64,12 @@ public class ViewResolverPropertiesTest {
 		ViewResolverProperties properties = new ViewResolverProperties();
 		properties.setContentType(MimeTypeUtils.parseMimeType("text/plain;foo=bar"));
 		properties.setCharset(Charset.forName("UTF-16"));
-		assertThat(properties.getContentType(), hasToString("text/plain;charset=UTF-16;foo=bar"));
+		assertThat(properties.getContentType(),
+				hasToString("text/plain;charset=UTF-16;foo=bar"));
 	}
 
-
 	private static class ViewResolverProperties extends AbstractViewResolverProperties {
+
 	}
 
 }

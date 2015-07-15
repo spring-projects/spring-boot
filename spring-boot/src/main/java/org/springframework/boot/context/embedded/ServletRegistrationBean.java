@@ -153,8 +153,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Set the the {@link MultipartConfigElement multi-part configuration}.
-	 * @param multipartConfig the muti-part configuration to set or {@code null}
+	 * Set the {@link MultipartConfigElement multi-part configuration}.
+	 * @param multipartConfig the multi-part configuration to set or {@code null}
 	 */
 	public void setMultipartConfig(MultipartConfigElement multipartConfig) {
 		this.multipartConfig = multipartConfig;

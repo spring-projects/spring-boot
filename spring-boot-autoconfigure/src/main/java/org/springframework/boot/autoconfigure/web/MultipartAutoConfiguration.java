@@ -62,7 +62,7 @@ public class MultipartAutoConfiguration {
 	}
 
 	@Bean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
-	@ConditionalOnMissingBean(value = MultipartResolver.class)
+	@ConditionalOnMissingBean(MultipartResolver.class)
 	public StandardServletMultipartResolver multipartResolver() {
 		return new StandardServletMultipartResolver();
 	}

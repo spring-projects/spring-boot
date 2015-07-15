@@ -64,12 +64,13 @@ public class JooqAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(PlatformTransactionManager.class)
-	public TransactionProvider transactionProvider(PlatformTransactionManager txManager) {
+	public SpringTransactionProvider transactionProvider(
+			PlatformTransactionManager txManager) {
 		return new SpringTransactionProvider(txManager);
 	}
 
 	@Bean
-	public ExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider() {
+	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider() {
 		return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
 	}
 

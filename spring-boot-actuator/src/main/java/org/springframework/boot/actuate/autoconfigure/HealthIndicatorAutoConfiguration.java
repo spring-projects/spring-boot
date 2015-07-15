@@ -92,8 +92,8 @@ public class HealthIndicatorAutoConfiguration {
 	private HealthIndicatorAutoConfigurationProperties configurationProperties = new HealthIndicatorAutoConfigurationProperties();
 
 	@Bean
-	@ConditionalOnMissingBean
-	public HealthAggregator healthAggregator() {
+	@ConditionalOnMissingBean(HealthAggregator.class)
+	public OrderedHealthAggregator healthAggregator() {
 		OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
 		if (this.configurationProperties.getOrder() != null) {
 			healthAggregator.setStatusOrder(this.configurationProperties.getOrder());
@@ -103,7 +103,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HealthIndicator.class)
-	public HealthIndicator applicationHealthIndicator() {
+	public ApplicationHealthIndicator applicationHealthIndicator() {
 		return new ApplicationHealthIndicator();
 	}
 
@@ -264,7 +264,7 @@ public class HealthIndicatorAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "diskSpaceHealthIndicator")
-		public HealthIndicator diskSpaceHealthIndicator(
+		public DiskSpaceHealthIndicator diskSpaceHealthIndicator(
 				DiskSpaceHealthIndicatorProperties properties) {
 			return new DiskSpaceHealthIndicator(properties);
 		}

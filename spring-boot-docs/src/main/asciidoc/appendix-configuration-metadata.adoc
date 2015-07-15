@@ -29,10 +29,10 @@ categorized under "hints":
 			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
 		},
 		{
-			"name": "server.tomcat",
-			"type": "org.springframework.boot.autoconfigure.web.ServerProperties$Tomcat",
-			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
-			"sourceMethod": "getTomcat()"
+			"name": "spring.jpa.hibernate",
+			"type": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties$Hibernate",
+			"sourceType": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties",
+			"sourceMethod": "getHibernate()"
 		}
 		...
 	],"properties": [
@@ -47,34 +47,36 @@ categorized under "hints":
 			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
 			"defaultValue": "/"
 		},
-        {
-            "name": "server.tomcat.compression",
-            "type": "java.lang.String",
-            "description": "Controls response compression.",
-            "sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties$Tomcat",
-            "defaultValue": "off"
-        }
+		{
+			  "name": "spring.jpa.hibernate.ddl-auto",
+			  "type": "java.lang.String",
+			  "description": "DDL mode. This is actually a shortcut for the \"hibernate.hbm2ddl.auto\" property.",
+			  "sourceType": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties$Hibernate"
+		}
 		...
 	],"hints": [
 		{
-			"name": "server.tomcat.compression",
+			"name": "spring.jpa.hibernate.ddl-auto",
 			"values": [
 				{
-					"value": "off",
-					"description": "Disable compression."
+					"value": "none",
+					"description": "Disable DDL handling."
 				},
 				{
-					"value": "on",
-					"description": "Enable compression of responses over 2048 byte."
+					"value": "validate",
+					"description": "Validate the schema, make no changes to the database."
 				},
 				{
-					"value": "force",
-					"description": "Enable compression of all responses."
+					"value": "update",
+					"description": "Update the schema if necessary."
 				},
-			],
-			"providers": [
 				{
-					"name": "any"
+					"value": "create",
+					"description": "Create the schema and destroy previous data."
+				},
+				{
+					"value": "create-drop",
+					"description": "Create and then destroy the schema at the end of the session."
 				}
 			]
 		}
@@ -99,8 +101,9 @@ NOTE: It is not required that every "`property`" has a "`group`", some propertie
 just exist in their own right.
 
 Finally, "`hints`" are additional information used to assist the user in configuring a
-given property. When configuring the `server.tomcat.compression` property, a tool can
-use it to offer some auto-completion help for the `off`, `on` and `force` values.
+given property. When configuring the `spring.jpa.hibernate.ddl-auto` property, a tool can
+use it to offer some auto-completion help for the `none`, `validate`, `update`, `create`
+and `create-drop` values.
 
 
 
@@ -188,12 +191,36 @@ The JSON object contained in the `properties` array can contain the following at
   array of value(s) if the type of the property is an array. May be omitted if the default
   value is not known.
 
-|`deprecated`
-| boolean
+|`deprecation`
+| Deprecation
 | Specify if the property is deprecated. May be omitted if the field is not deprecated
-  or if that information is not known.
+  or if that information is not known. See below for more details.
 |===
 
+The JSON object contained in the `deprecation` attribute of each `properties` element can
+contain the following attributes:
+
+[cols="1,1,4"]
+|===
+|Name | Type |Purpose
+
+|`reason`
+| String
+| A short description of the reason why the property was deprecated. May be omitted if no
+  reason is available. It is recommended that descriptions are a short paragraphs,
+  with the first line providing a concise summary. The last line in the description should
+  end with a period (`.`).
+
+|`replacement`
+| String
+| The full name of the property that is _replacing_ this deprecated property. May be omitted
+  if there is no replacement for this property.
+|===
+
+NOTE: Prior to Spring Boot 1.3, a single `deprecated` boolean attribute can be used instead of
+the `deprecation` element. This is still supported in a deprecated fashion and should no longer
+be used. If no reason and replacement are available, an empty `deprecation` object should be
+set.
 
 
 [[configuration-metadata-hints-attributes]]
@@ -223,7 +250,7 @@ The JSON object contained in the `hints` array can contain the following attribu
 
 |===
 
-The JSON object contained in the `values` array of each `hint` element can contain the
+The JSON object contained in the `values` attribute of each `hint` element can contain the
 following attributes:
 
 [cols="1,1,4"]
@@ -243,7 +270,7 @@ following attributes:
   end with a period (`.`).
 |===
 
-The JSON object contained in the `providers` array of each `hint` element can contain the
+The JSON object contained in the `providers` attribute of each `hint` element can contain the
 following attributes:
 
 [cols="1,1,4"]
@@ -285,8 +312,9 @@ property, you can provide additional meta-data that:
 
 ==== Value hint
 The `name` attribute of each hint refers to the `name` of a property. In the initial
-example above, we provide 3 values for the `server.tomcat.compression` property: `on`,
-`off` and `force`.
+example above, we provide 5 values for the `spring.jpa.hibernate.ddl-auto` property:
+`none`, `validate`, `update`, `create` and `create-drop`. Each value may have a
+description as well.
 
 If your property is of type `Map`, you can provide hints for both the keys and the
 values (but not for the map itself). The special `.keys` and `.values` suffixes must
@@ -474,11 +502,14 @@ The following types can be used:
 * Any `java.lang.Enum` that list the possible values for the property (By all means, try to
   define the property with the `Enum` type instead as no further hint should be required for
   the IDE to auto-complete the values).
-* `java.nio.charset.Charset`: auto-completion of charset/encoding values
-* `java.util.Locale`: auto-completion of locales
-* `org.springframework.util.MimeType`: auto-completion of content type values
+* `java.nio.charset.Charset`: auto-completion of charset/encoding values (e.g. `UTF-8`)
+* `java.util.Locale`: auto-completion of locales (e.g. `en_US`)
+* `org.springframework.util.MimeType`: auto-completion of content type values (e.g. `text/plain`)
 * `org.springframework.core.io.Resource`: auto-completion of Spring’s Resource abstraction to
-  refer to a file on the filesystem or on the classpath.
+  refer to a file on the filesystem or on the classpath. (e.g. `classpath:/foo.properties`)
+
+NOTE: If multiple values can be provided, use a `Collection` or _Array_ type to teach the IDE
+about it.
 
 The meta-data snippet below corresponds to the standard `liquibase.change-log`
 property that defines the path to the changelog to use. It is actually used internally as a
@@ -514,7 +545,7 @@ value but could highlight valid packages and class names that are not available 
 project's classpath.
 
 The meta-data snippet below corresponds to the standard `logging.level` property, keys
-are _logger names_ and values correspond to the the standard log levels or any custom
+are _logger names_ and values correspond to the standard log levels or any custom
 level:
 
 [source,json,indent=0]

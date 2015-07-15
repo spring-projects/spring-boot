@@ -61,7 +61,7 @@ public class ThymeleafProperties {
 	/**
 	 * Template encoding.
 	 */
-	private Charset encoding  = DEFAULT_ENCODING;
+	private Charset encoding = DEFAULT_ENCODING;
 
 	/**
 	 * Content-Type value.

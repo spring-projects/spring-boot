@@ -286,7 +286,7 @@ values can be injected directly into your beans using the `@Value` annotation, a
 via Spring's `Environment` abstraction or bound to structured objects.
 
 Spring Boot uses a very particular `PropertySource` order that is designed to allow
-sensible overriding of values, properties are considered in the the following order:
+sensible overriding of values, properties are considered in the following order:
 
 . Command line arguments.
 . JNDI attributes from `java:comp/env`.
@@ -2639,7 +2639,7 @@ TIP: It is also possible to {spring-reference}/#cache-annotations-put[update] or
 
 
 === Supported cache providers
-The cache abstraction does not provide an actual store and relies on a abstraction
+The cache abstraction does not provide an actual store and relies on abstraction
 materialized by the `org.springframework.cache.Cache` and
 `org.springframework.cache.CacheManager` interfaces. Spring Boot auto-configures a
 suitable `CacheManager` according to the implementation as long as the caching support is

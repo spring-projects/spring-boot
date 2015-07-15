@@ -50,7 +50,6 @@ import org.springframework.social.connect.web.SignInAdapter;
 import org.springframework.social.connect.web.thymeleaf.SpringSocialDialect;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
@@ -98,9 +97,9 @@ public class SocialWebAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(BeanNameViewResolver.class)
+		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
-		public ViewResolver beanNameViewResolver() {
+		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver viewResolver = new BeanNameViewResolver();
 			viewResolver.setOrder(Integer.MIN_VALUE);
 			return viewResolver;
@@ -108,7 +107,7 @@ public class SocialWebAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(SignInAdapter.class)
-		@ConditionalOnMissingBean(ProviderSignInController.class)
+		@ConditionalOnMissingBean
 		public ProviderSignInController signInController(
 				ConnectionFactoryLocator factoryLocator,
 				UsersConnectionRepository usersRepository, SignInAdapter signInAdapter) {

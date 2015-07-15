@@ -91,15 +91,16 @@ public class MavenSettingsReader {
 		return settingsDecrypter;
 	}
 
-	private void setField(Class<?> clazz, String fieldName, Object target, Object value) {
+	private void setField(Class<?> sourceClass, String fieldName, Object target,
+			Object value) {
 		try {
-			Field field = clazz.getDeclaredField(fieldName);
+			Field field = sourceClass.getDeclaredField(fieldName);
 			field.setAccessible(true);
 			field.set(target, value);
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			throw new IllegalStateException("Failed to set field '" + fieldName
-					+ "' on '" + target + "'", e);
+					+ "' on '" + target + "'", ex);
 		}
 	}
 

@@ -30,7 +30,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 import org.springframework.boot.configurationprocessor.metadata.ItemHint;
+import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
@@ -106,12 +108,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("simple.the-name", String.class)
 						.fromSource(SimpleProperties.class)
 						.withDescription("The name of this simple properties.")
-						.withDefaultValue(is("boot")).withDeprecated());
+						.withDefaultValue(is("boot")).withDeprecation(null, null));
 		assertThat(
 				metadata,
 				containsProperty("simple.flag", Boolean.class)
 						.fromSource(SimpleProperties.class)
-						.withDescription("A simple flag.").withDeprecated());
+						.withDescription("A simple flag.").withDeprecation(null, null));
 		assertThat(metadata, containsProperty("simple.comparator"));
 		assertThat(metadata, not(containsProperty("simple.counter")));
 		assertThat(metadata, not(containsProperty("simple.size")));
@@ -181,9 +183,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata, containsGroup("deprecated").fromSource(type));
 		assertThat(metadata, containsProperty("deprecated.name", String.class)
-				.fromSource(type).withDeprecated());
+				.fromSource(type).withDeprecation(null, null));
 		assertThat(metadata, containsProperty("deprecated.description", String.class)
-				.fromSource(type).withDeprecated());
+				.fromSource(type).withDeprecation(null, null));
 	}
 
 	@Test
@@ -371,7 +373,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("simple.the-name", String.class)
 						.fromSource(SimpleProperties.class)
 						.withDescription("The name of this simple properties.")
-						.withDefaultValue(is("boot")).withDeprecated());
+						.withDefaultValue(is("boot")).withDeprecation(null, null));
 		assertThat(metadata,
 				containsHint("simple.the-name").withValue(0, "boot", "Bla bla")
 						.withValue(1, "spring", null));
@@ -387,7 +389,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("simple.the-name", String.class)
 						.fromSource(SimpleProperties.class)
 						.withDescription("The name of this simple properties.")
-						.withDefaultValue(is("boot")).withDeprecated());
+						.withDefaultValue(is("boot")).withDeprecation(null, null));
 		assertThat(metadata,
 				containsHint("simple.the-name").withValue(0, "boot", "Bla bla"));
 	}
@@ -405,11 +407,22 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("simple.the-name", String.class)
 						.fromSource(SimpleProperties.class)
 						.withDescription("The name of this simple properties.")
-						.withDefaultValue(is("boot")).withDeprecated());
+						.withDefaultValue(is("boot")).withDeprecation(null, null));
 		assertThat(metadata,
 				containsHint("simple.the-name")
 						.withProvider("first", "target", "org.foo")
 						.withProvider("second"));
+	}
+
+	@Test
+	public void mergingOfAdditionalDeprecation() throws Exception {
+		writePropertyDeprecation(ItemMetadata.newProperty("simple", "wrongName", "java.lang.String",
+				null, null, null, null, new ItemDeprecation("Lame name.", "simple.the-name")));
+		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(
+				metadata,
+				containsProperty("simple.wrong-name", String.class)
+						.withDeprecation("Lame name.", "simple.the-name"));
 	}
 
 	@Test
@@ -496,7 +509,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsProperty(prefix + ".description"));
 		assertThat(metadata, containsProperty(prefix + ".counter"));
 		assertThat(metadata, containsProperty(prefix + ".number").fromSource(source)
-				.withDefaultValue(is(0)).withDeprecated());
+				.withDefaultValue(is(0)).withDeprecation(null, null));
 		assertThat(metadata, containsProperty(prefix + ".items"));
 		assertThat(metadata, not(containsProperty(prefix + ".ignored")));
 	}
@@ -510,26 +523,38 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	private void writeAdditionalHints(ItemHint... hints) throws IOException {
 		File additionalMetadataFile = createAdditionalMetadataFile();
-
-		JSONArray hintsArray = new JSONArray();
-		for (ItemHint hint : hints) {
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("name", hint.getName());
-			JSONArray valuesArray = new JSONArray();
-			for (ItemHint.ValueHint valueHint : hint.getValues()) {
-				JSONObject valueJsonObject = new JSONObject();
-				valueJsonObject.put("value", valueHint.getValue());
-				String description = valueHint.getDescription();
-				if (description != null) {
-					valueJsonObject.put("description", description);
-				}
-				valuesArray.put(valueJsonObject);
-			}
-			jsonObject.put("values", valuesArray);
-			hintsArray.put(jsonObject);
-		}
 		JSONObject additionalMetadata = new JSONObject();
 		additionalMetadata.put("hints", hints);
+		writeMetadata(additionalMetadataFile, additionalMetadata);
+	}
+
+	private void writePropertyDeprecation(ItemMetadata... items) throws IOException {
+		File additionalMetadataFile = createAdditionalMetadataFile();
+
+		JSONArray propertiesArray = new JSONArray();
+		for (ItemMetadata item : items) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("name", item.getName());
+			if (item.getType() != null) {
+				jsonObject.put("type", item.getType());
+			}
+			ItemDeprecation deprecation = item.getDeprecation();
+			if (deprecation != null) {
+				JSONObject deprecationJson = new JSONObject();
+				if (deprecation.getReason() != null) {
+					deprecationJson.put("reason", deprecation.getReason());
+				}
+				if (deprecation.getReplacement() != null) {
+					deprecationJson.put("replacement", deprecation.getReplacement());
+				}
+				jsonObject.put("deprecation", deprecationJson);
+			}
+			propertiesArray.put(jsonObject);
+
+		}
+		JSONObject additionalMetadata = new JSONObject();
+		additionalMetadata.put("properties", propertiesArray);
+		System.out.println(additionalMetadata);
 		writeMetadata(additionalMetadataFile, additionalMetadata);
 	}
 

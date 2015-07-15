@@ -508,6 +508,8 @@ to configure Aether. The following configuration settings are honored by the CLI
 Please refer to https://maven.apache.org/settings.html[Maven's settings documentation] for
 further information.
 
+
+
 [[cli-whats-next]]
 == What to read next
 There are some {github-code}/spring-boot-cli/samples[sample groovy
