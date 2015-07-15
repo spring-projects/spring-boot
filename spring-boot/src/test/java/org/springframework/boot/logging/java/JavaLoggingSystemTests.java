@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class JavaLoggerSystemTests extends AbstractLoggingSystemTests {
+public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private static final FileFilter SPRING_LOG_FILTER = new FileFilter() {
 

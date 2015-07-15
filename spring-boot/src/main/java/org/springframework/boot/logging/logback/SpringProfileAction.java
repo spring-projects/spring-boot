@@ -32,7 +32,7 @@ import ch.qos.logback.core.joran.spi.Interpreter;
 import ch.qos.logback.core.util.OptionHelper;
 
 /**
- * Lockback {@link Action} to support {@code <springProfile>} tags. Allows section of a
+ * Logback {@link Action} to support {@code <springProfile>} tags. Allows section of a
  * logback configuration to only be enabled when a specific profile is active.
  *
  * @author Phillip Webb
