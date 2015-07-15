@@ -16,24 +16,24 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoProvider;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose arbitrary application information.
+ * 
+ * TODO how to extends
  *
  * @author Dave Syer
+ * @author Meang Akira Tanaka
  */
 @ConfigurationProperties(prefix = "endpoints.info", ignoreUnknownFields = false)
-public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
+public class InfoEndpoint extends AbstractEndpoint<Info> {
 
-	private final Map<String, ? extends Object> info;
 	private final Map<String, InfoProvider> infoProviders;
 
 	/**
@@ -41,27 +41,21 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 *
 	 * @param info the info to expose
 	 */
-	public InfoEndpoint(Map<String, ? extends Object> info,
-			Map<String, InfoProvider> infoProviders) {
+	public InfoEndpoint(Map<String, InfoProvider> infoProviders) {
 		super("info", false);
+		Assert.notNull(infoProviders, "Info providers must not be null");
 		this.infoProviders = infoProviders;
-		Assert.notNull(info, "Info must not be null");
-		this.info = info;
 	}
 
 	@Override
-	public Map<String, Object> invoke() {
-		Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
-		info.putAll(getAdditionalInfo());
-		return info;
-	}
-
-	protected Map<String, Object> getAdditionalInfo() {
-		Map<String, Object> result = new HashMap<String, Object>();
-		for (Entry<String, InfoProvider> keyValuePair : infoProviders.entrySet()) {
-			result.put(keyValuePair.getKey(), keyValuePair.getValue().provide());
+	public Info invoke() {
+		Info result = new Info();
+		for (InfoProvider provider : infoProviders.values()) {
+			Info info = provider.provide();
+			if(info != null) {
+				result.put(provider.name(), info);
+			}
 		}
-		
 		return result;
 	}
 }

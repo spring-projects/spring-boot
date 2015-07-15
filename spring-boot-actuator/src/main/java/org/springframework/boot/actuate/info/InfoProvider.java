@@ -1,7 +1,5 @@
 package org.springframework.boot.actuate.info;
 
-import java.util.Map;
-
 /**
  * information provider for the info endpoint
  *
@@ -9,9 +7,11 @@ import java.util.Map;
  */
 public interface InfoProvider {
 
+	String name();
+	
 	/**
 	 * @return a collection of information
 	 */
-	Map<String, Object> provide();
+	Info provide();
 
 }

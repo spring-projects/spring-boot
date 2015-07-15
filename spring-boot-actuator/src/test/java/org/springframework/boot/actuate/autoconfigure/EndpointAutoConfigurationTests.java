@@ -137,6 +137,7 @@ public class EndpointAutoConfigurationTests {
 		assertNotNull(this.context.getBean(AutoConfigurationReportEndpoint.class));
 	}
 
+	// A
 	@Test
 	public void testInfoEndpointConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();

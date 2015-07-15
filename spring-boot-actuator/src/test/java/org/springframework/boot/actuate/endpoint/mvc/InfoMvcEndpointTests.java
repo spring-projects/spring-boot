@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.elasticsearch.common.collect.Maps;
@@ -17,6 +16,7 @@ import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfigur
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.InfoMvcEndpointTests.TestConfiguration;
+import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoProvider;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
@@ -25,6 +25,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -39,6 +40,7 @@ import org.springframework.web.context.WebApplicationContext;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { TestConfiguration.class })
 @WebAppConfiguration
+@TestPropertySource(properties = {"info.app.name=MyService"})
 public class InfoMvcEndpointTests {
 	@Autowired
 	private WebApplicationContext context;
@@ -72,11 +74,16 @@ public class InfoMvcEndpointTests {
 			InfoProvider infoProvider1 = new InfoProvider() {
 				
 				@Override
-				public Map<String, Object> provide() {
-					Map<String, Object> result = Maps.newHashMap();
+				public Info provide() {
+					Info result = new Info();
 					result.put("key11", "value11");
 					result.put("key12", "value12");
 					return result;
+				}
+
+				@Override
+				public String name() {
+					return "beanName1";
 				}
 			};
 			infoProviders.put("beanName1", infoProvider1);
@@ -84,11 +91,16 @@ public class InfoMvcEndpointTests {
 			InfoProvider infoProvider2 = new InfoProvider() {
 				
 				@Override
-				public Map<String, Object> provide() {
-					Map<String, Object> result = Maps.newHashMap();
+				public Info provide() {
+					Info result = new Info();
 					result.put("key21", "value21");
 					result.put("key22", "value22");
 					return result;
+				}
+
+				@Override
+				public String name() {
+					return "beanName2";
 				}
 			};
 			infoProviders.put("beanName2", infoProvider2);
@@ -96,9 +108,8 @@ public class InfoMvcEndpointTests {
 		
 		@Bean
 		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(new HashMap<String, String>(), infoProviders);
+			return new InfoEndpoint(infoProviders);
 		}
-
 	}
 	
 }

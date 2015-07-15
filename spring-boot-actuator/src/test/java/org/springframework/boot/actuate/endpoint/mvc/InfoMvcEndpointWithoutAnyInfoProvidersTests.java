@@ -1,8 +1,6 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.HashMap;
@@ -69,7 +67,7 @@ public class InfoMvcEndpointWithoutAnyInfoProvidersTests {
 
 		@Bean
 		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(new HashMap<String, String>(), infoProviders);
+			return new InfoEndpoint(infoProviders);
 		}
 
 	}

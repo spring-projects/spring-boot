@@ -80,13 +80,15 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Meang Akira Tanaka
+ * 
  */
 @Configuration
 @AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 public class EndpointAutoConfiguration {
 
-	@Autowired
-	private InfoPropertiesConfiguration properties;
+//	@Autowired
+//	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
 	private HealthAggregator healthAggregator = new OrderedHealthAggregator();
@@ -96,7 +98,6 @@ public class EndpointAutoConfiguration {
 
 	@Autowired(required = false)
 	private Map<String, InfoProvider> infoProviders = new HashMap<String, InfoProvider>();
-
 	
 	@Autowired(required = false)
 	private Collection<PublicMetrics> publicMetrics;
@@ -125,13 +126,15 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InfoEndpoint infoEndpoint() throws Exception {
-		LinkedHashMap<String, Object> info = new LinkedHashMap<String, Object>();
+/*		LinkedHashMap<String, Object> info = new LinkedHashMap<String, Object>();
 		info.putAll(this.properties.infoMap());
 		GitInfo gitInfo = this.properties.gitInfo();
 		if (gitInfo.getBranch() != null) {
 			info.put("git", gitInfo);
 		}
-		return new InfoEndpoint(info, infoProviders);
+*/		
+		
+		return new InfoEndpoint(infoProviders);
 	}
 
 	@Bean
@@ -215,7 +218,7 @@ public class EndpointAutoConfiguration {
 
 	}
 
-	@Configuration
+/*	@Configuration
 	protected static class InfoPropertiesConfiguration {
 
 		@Autowired
@@ -290,5 +293,5 @@ public class EndpointAutoConfiguration {
 		}
 
 	}
-
+*/
 }
