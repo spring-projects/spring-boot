@@ -230,9 +230,6 @@ public class ConfigurationMetadataMatchers {
 			if (itemHint == null) {
 				return false;
 			}
-			if (this.name != null && !this.name.equals(itemHint.getName())) {
-				return false;
-			}
 			for (ValueHintMatcher value : this.values) {
 				if (!value.matches(itemHint)) {
 					return false;
