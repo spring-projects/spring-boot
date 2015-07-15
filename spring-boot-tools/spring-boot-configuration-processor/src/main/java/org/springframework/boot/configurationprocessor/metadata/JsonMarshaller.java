@@ -86,8 +86,17 @@ public class JsonMarshaller {
 		if (defaultValue != null) {
 			putDefaultValue(jsonObject, defaultValue);
 		}
-		if (item.isDeprecated()) {
-			jsonObject.put("deprecated", true);
+		ItemDeprecation deprecation = item.getDeprecation();
+		if (deprecation != null) {
+			jsonObject.put("deprecated", true); // backward compat
+			JSONObject deprecationJsonObject = new JSONObject();
+			if (deprecation.getReason() != null) {
+				deprecationJsonObject.put("reason", deprecation.getReason());
+			}
+			if (deprecation.getReplacement() != null) {
+				deprecationJsonObject.put("replacement", deprecation.getReplacement());
+			}
+			jsonObject.put("deprecation", deprecationJsonObject);
 		}
 		return jsonObject;
 	}
@@ -202,9 +211,20 @@ public class JsonMarshaller {
 		String sourceType = object.optString("sourceType", null);
 		String sourceMethod = object.optString("sourceMethod", null);
 		Object defaultValue = readItemValue(object.opt("defaultValue"));
-		boolean deprecated = object.optBoolean("deprecated");
+		ItemDeprecation deprecation = toItemDeprecation(object);
 		return new ItemMetadata(itemType, name, null, type, sourceType, sourceMethod,
-				description, defaultValue, deprecated);
+				description, defaultValue, deprecation);
+	}
+
+	private ItemDeprecation toItemDeprecation(JSONObject object) {
+		if (object.has("deprecation")) {
+			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
+			ItemDeprecation deprecation = new ItemDeprecation();
+			deprecation.setReason(deprecationJsonObject.optString("reason", null));
+			deprecation.setReplacement(deprecationJsonObject.optString("replacement", null));
+			return deprecation;
+		}
+		return (object.optBoolean("deprecated") ? new ItemDeprecation() : null);
 	}
 
 	private ItemHint toItemHint(JSONObject object) {

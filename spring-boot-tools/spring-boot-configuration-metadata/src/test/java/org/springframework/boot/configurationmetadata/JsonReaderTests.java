@@ -24,7 +24,9 @@ import org.json.JSONException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link JsonReader}
@@ -128,6 +130,30 @@ public class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		assertEquals(2, items.size());
 		ConfigurationMetadataItem item = items.get(0);
 		assertProperty(item, "spring.root.name", "spring.root.name", String.class, null);
+	}
+
+	@Test
+	public void deprecatedMetadata() throws IOException {
+		RawConfigurationMetadata rawMetadata = readFor("deprecated");
+		List<ConfigurationMetadataItem> items = rawMetadata.getItems();
+		assertEquals(3, items.size());
+
+		ConfigurationMetadataItem item = items.get(0);
+		assertProperty(item, "server.port", "server.port", Integer.class, null);
+		assertTrue(item.isDeprecated());
+		assertEquals("Server namespace has moved to spring.server", item.getDeprecation().getReason());
+		assertEquals("server.spring.port", item.getDeprecation().getReplacement());
+
+		ConfigurationMetadataItem item2 = items.get(1);
+		assertProperty(item2, "server.cluster-name", "server.cluster-name", String.class, null);
+		assertTrue(item2.isDeprecated());
+		assertEquals(null, item2.getDeprecation().getReason());
+		assertEquals(null, item2.getDeprecation().getReplacement());
+
+		ConfigurationMetadataItem item3 = items.get(2);
+		assertProperty(item3, "spring.server.name", "spring.server.name", String.class, null);
+		assertFalse(item3.isDeprecated());
+		assertEquals(null, item3.getDeprecation());
 	}
 
 	RawConfigurationMetadata readFor(String path) throws IOException {

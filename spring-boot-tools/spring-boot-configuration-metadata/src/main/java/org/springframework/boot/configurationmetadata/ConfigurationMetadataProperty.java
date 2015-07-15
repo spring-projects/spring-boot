@@ -46,7 +46,7 @@ public class ConfigurationMetadataProperty {
 
 	private final List<ValueProvider> valueProviders = new ArrayList<ValueProvider>();
 
-	private boolean deprecated;
+	private Deprecation deprecation;
 
 	/**
 	 * The full identifier of the property, in lowercase dashed form (e.g.
@@ -155,15 +155,25 @@ public class ConfigurationMetadataProperty {
 	}
 
 	/**
-	 * Specify if the property is deprecated.
-	 * @return if the property is deprecated
+	 * The {@link Deprecation} for this property, if any.
+	 * @return the deprecation
+	 * @see #isDeprecated()
 	 */
-	public boolean isDeprecated() {
-		return this.deprecated;
+	public Deprecation getDeprecation() {
+		return deprecation;
 	}
 
-	public void setDeprecated(boolean deprecated) {
-		this.deprecated = deprecated;
+	public void setDeprecation(Deprecation deprecation) {
+		this.deprecation = deprecation;
+	}
+
+	/**
+	 * Specify if the property is deprecated.
+	 * @return if the property is deprecated
+	 * @see #getDeprecation()
+	 */
+	public boolean isDeprecated() {
+		return this.deprecation != null;
 	}
 
 }
