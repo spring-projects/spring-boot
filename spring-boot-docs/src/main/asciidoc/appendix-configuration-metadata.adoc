@@ -29,10 +29,10 @@ categorized under "hints":
 			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
 		},
 		{
-			"name": "server.tomcat",
-			"type": "org.springframework.boot.autoconfigure.web.ServerProperties$Tomcat",
-			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
-			"sourceMethod": "getTomcat()"
+			"name": "spring.jpa.hibernate",
+			"type": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties$Hibernate",
+			"sourceType": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties",
+			"sourceMethod": "getHibernate()"
 		}
 		...
 	],"properties": [
@@ -47,34 +47,36 @@ categorized under "hints":
 			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
 			"defaultValue": "/"
 		},
-        {
-            "name": "server.tomcat.compression",
-            "type": "java.lang.String",
-            "description": "Controls response compression.",
-            "sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties$Tomcat",
-            "defaultValue": "off"
-        }
+		{
+			  "name": "spring.jpa.hibernate.ddl-auto",
+			  "type": "java.lang.String",
+			  "description": "DDL mode. This is actually a shortcut for the \"hibernate.hbm2ddl.auto\" property.",
+			  "sourceType": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties$Hibernate"
+		}
 		...
 	],"hints": [
 		{
-			"name": "server.tomcat.compression",
+			"name": "spring.jpa.hibernate.ddl-auto",
 			"values": [
 				{
-					"value": "off",
-					"description": "Disable compression."
+					"value": "none",
+					"description": "Disable DDL handling."
 				},
 				{
-					"value": "on",
-					"description": "Enable compression of responses over 2048 byte."
+					"value": "validate",
+					"description": "Validate the schema, make no changes to the database."
 				},
 				{
-					"value": "force",
-					"description": "Enable compression of all responses."
+					"value": "update",
+					"description": "Update the schema if necessary."
 				},
-			],
-			"providers": [
 				{
-					"name": "any"
+					"value": "create",
+					"description": "Create the schema and destroy previous data."
+				},
+				{
+					"value": "create-drop",
+					"description": "Create and then destroy the schema at the end of the session."
 				}
 			]
 		}
@@ -99,8 +101,9 @@ NOTE: It is not required that every "`property`" has a "`group`", some propertie
 just exist in their own right.
 
 Finally, "`hints`" are additional information used to assist the user in configuring a
-given property. When configuring the `server.tomcat.compression` property, a tool can
-use it to offer some auto-completion help for the `off`, `on` and `force` values.
+given property. When configuring the `spring.jpa.hibernate.ddl-auto` property, a tool can
+use it to offer some auto-completion help for the `none`, `validate`, `update`, `create`
+and `create-drop` values.
 
 
 
@@ -309,8 +312,9 @@ property, you can provide additional meta-data that:
 
 ==== Value hint
 The `name` attribute of each hint refers to the `name` of a property. In the initial
-example above, we provide 3 values for the `server.tomcat.compression` property: `on`,
-`off` and `force`.
+example above, we provide 5 values for the `spring.jpa.hibernate.ddl-auto` property:
+`none`, `validate`, `update`, `create` and `create-drop`. Each value may have a
+description as well.
 
 If your property is of type `Map`, you can provide hints for both the keys and the
 values (but not for the map itself). The special `.keys` and `.values` suffixes must
