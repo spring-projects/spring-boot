@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.template;
 
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -103,8 +101,13 @@ public abstract class AbstractViewResolverProperties {
 	}
 
 	public MimeType getContentType() {
-		return (this.contentType.getCharSet() != null ? this.contentType :
-				new MimeType(this.contentType, cloneParametersWithCustomCharset(this.contentType, this.charset)));
+		if (this.contentType.getCharSet() == null) {
+			Map<String, String> parameters = new LinkedHashMap<String, String>();
+			parameters.put("charset", this.charset.name());
+			parameters.putAll(this.contentType.getParameters());
+			return new MimeType(this.contentType, parameters);
+		}
+		return this.contentType;
 	}
 
 	public void setContentType(MimeType contentType) {
@@ -121,13 +124,6 @@ public abstract class AbstractViewResolverProperties {
 
 	public void setCharset(Charset charset) {
 		this.charset = charset;
-	}
-
-	private static Map<String,String> cloneParametersWithCustomCharset(MimeType contentType, Charset charset) {
-		LinkedHashMap<String,String> clone = new LinkedHashMap<String, String>();
-		clone.put("charset", charset.name());
-		clone.putAll(contentType.getParameters());
-		return clone;
 	}
 
 }

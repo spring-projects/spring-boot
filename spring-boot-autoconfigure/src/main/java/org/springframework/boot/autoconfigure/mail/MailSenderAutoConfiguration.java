@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mail;
 
 import java.util.Map;
 import java.util.Properties;
+
 import javax.activation.MimeType;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -78,7 +79,9 @@ public class MailSenderAutoConfiguration {
 		}
 		sender.setUsername(this.properties.getUsername());
 		sender.setPassword(this.properties.getPassword());
-		sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
+		if (this.properties.getDefaultEncoding() != null) {
+			sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
+		}
 		if (!this.properties.getProperties().isEmpty()) {
 			sender.setJavaMailProperties(asProperties(this.properties.getProperties()));
 		}
@@ -90,10 +93,9 @@ public class MailSenderAutoConfiguration {
 		return properties;
 	}
 
-
 	/**
-	 * Condition to trigger the creation of a {@link JavaMailSenderImpl}. This kicks
-	 * in if either the host or jndi name property is set.
+	 * Condition to trigger the creation of a {@link JavaMailSenderImpl}. This kicks in if
+	 * either the host or jndi name property is set.
 	 */
 	static class MailSenderCondition extends AnyNestedCondition {
 

@@ -26,7 +26,7 @@ import java.util.Locale;
  */
 class DescriptionExtractor {
 
-	static final String NEW_LINE = System.getProperty("line.separator");
+	private static final String NEW_LINE = System.getProperty("line.separator");
 
 	public String getShortDescription(String description) {
 		if (description == null) {

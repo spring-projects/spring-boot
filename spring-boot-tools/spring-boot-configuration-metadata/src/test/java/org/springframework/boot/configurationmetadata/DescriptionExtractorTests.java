@@ -27,41 +27,42 @@ import static org.junit.Assert.assertEquals;
  */
 public class DescriptionExtractorTests {
 
+	private static final String NEW_LINE = System.getProperty("line.separator");
+
 	private DescriptionExtractor extractor = new DescriptionExtractor();
 
 	@Test
 	public void extractShortDescription() {
-		assertEquals("My short description.",
-				this.extractor.getShortDescription("My short description. More stuff."));
+		String description = this.extractor.getShortDescription("My short "
+				+ "description. More stuff.");
+		assertEquals("My short description.", description);
 	}
 
 	@Test
 	public void extractShortDescriptionNewLineBeforeDot() {
-		assertEquals("My short description.",
-				this.extractor.getShortDescription("My short" + DescriptionExtractor.NEW_LINE +
-						"description." + DescriptionExtractor.NEW_LINE + "More stuff."));
+		String description = this.extractor.getShortDescription("My short" + NEW_LINE
+				+ "description." + NEW_LINE + "More stuff.");
+		assertEquals("My short description.", description);
 	}
 
 	@Test
 	public void extractShortDescriptionNewLineBeforeDotWithSpaces() {
-		assertEquals("My short description.",
-				this.extractor
-						.getShortDescription("My short  "
-								+ DescriptionExtractor.NEW_LINE + " description.  "
-								+ DescriptionExtractor.NEW_LINE + "More stuff."));
+		String description = this.extractor.getShortDescription("My short  " + NEW_LINE
+				+ " description.  " + NEW_LINE + "More stuff.");
+		assertEquals("My short description.", description);
 	}
 
 	@Test
 	public void extractShortDescriptionNoDot() {
-		assertEquals("My short description",
-				this.extractor.getShortDescription("My short description"));
+		String description = this.extractor.getShortDescription("My short description");
+		assertEquals("My short description", description);
 	}
 
 	@Test
 	public void extractShortDescriptionNoDotMultipleLines() {
-		assertEquals("My short description",
-				this.extractor.getShortDescription("My short description "
-						+ DescriptionExtractor.NEW_LINE + " More stuff"));
+		String description = this.extractor.getShortDescription("My short description "
+				+ NEW_LINE + " More stuff");
+		assertEquals("My short description", description);
 	}
 
 	@Test

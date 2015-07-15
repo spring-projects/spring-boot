@@ -33,7 +33,6 @@ import org.springframework.jndi.JndiLocatorDelegate;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass(Session.class)

@@ -35,7 +35,8 @@ class ExpressionTree extends ReflectionWrapper {
 
 	private final Class<?> methodInvocationTreeType = findClass("com.sun.source.tree.MethodInvocationTree");
 
-	private final Method methodInvocationArgumentsMethod = findMethod(this.methodInvocationTreeType, "getArguments");
+	private final Method methodInvocationArgumentsMethod = findMethod(
+			this.methodInvocationTreeType, "getArguments");
 
 	private final Class<?> newArrayTreeType = findClass("com.sun.source.tree.NewArrayTree");
 
@@ -59,7 +60,8 @@ class ExpressionTree extends ReflectionWrapper {
 
 	public Object getFactoryValue() throws Exception {
 		if (this.methodInvocationTreeType.isAssignableFrom(getInstance().getClass())) {
-			List<?> arguments = (List<?>) this.methodInvocationArgumentsMethod.invoke(getInstance());
+			List<?> arguments = (List<?>) this.methodInvocationArgumentsMethod
+					.invoke(getInstance());
 			if (arguments.size() == 1) {
 				return new ExpressionTree(arguments.get(0)).getLiteralValue();
 			}

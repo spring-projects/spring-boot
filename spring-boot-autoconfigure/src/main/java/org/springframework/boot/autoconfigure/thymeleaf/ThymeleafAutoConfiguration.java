@@ -97,7 +97,9 @@ public class ThymeleafAutoConfiguration {
 			resolver.setPrefix(this.properties.getPrefix());
 			resolver.setSuffix(this.properties.getSuffix());
 			resolver.setTemplateMode(this.properties.getMode());
-			resolver.setCharacterEncoding(this.properties.getEncoding().name());
+			if (this.properties.getEncoding() != null) {
+				resolver.setCharacterEncoding(this.properties.getEncoding().name());
+			}
 			resolver.setCacheable(this.properties.isCache());
 			return resolver;
 		}
@@ -212,10 +214,10 @@ public class ThymeleafAutoConfiguration {
 			if (type.getCharSet() != null) {
 				return type.toString();
 			}
-			LinkedHashMap<String,String> clone = new LinkedHashMap<String, String>();
-			clone.put("charset", charset);
-			clone.putAll(type.getParameters());
-			return new MimeType(type, clone).toString();
+			LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
+			parameters.put("charset", charset);
+			parameters.putAll(type.getParameters());
+			return new MimeType(type, parameters).toString();
 		}
 
 	}

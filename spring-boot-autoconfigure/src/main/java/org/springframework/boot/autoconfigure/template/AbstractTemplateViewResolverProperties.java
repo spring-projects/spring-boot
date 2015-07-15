@@ -146,7 +146,9 @@ public abstract class AbstractTemplateViewResolverProperties extends
 		resolver.setPrefix(getPrefix());
 		resolver.setSuffix(getSuffix());
 		resolver.setCache(isCache());
-		resolver.setContentType(getContentType().toString());
+		if (getContentType() != null) {
+			resolver.setContentType(getContentType().toString());
+		}
 		resolver.setViewNames(getViewNames());
 		resolver.setExposeRequestAttributes(isExposeRequestAttributes());
 		resolver.setAllowRequestOverride(isAllowRequestOverride());

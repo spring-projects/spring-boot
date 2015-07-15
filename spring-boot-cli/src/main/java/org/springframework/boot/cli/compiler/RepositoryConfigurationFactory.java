@@ -44,7 +44,6 @@ public final class RepositoryConfigurationFactory {
 			"spring-snapshot", URI.create("http://repo.spring.io/snapshot"), true);
 
 	private RepositoryConfigurationFactory() {
-
 	}
 
 	/**

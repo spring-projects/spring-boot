@@ -84,7 +84,9 @@ public class MessageSourceAutoConfiguration {
 			messageSource
 					.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(this.basename)));
 		}
-		messageSource.setDefaultEncoding(this.encoding.name());
+		if (this.encoding != null) {
+			messageSource.setDefaultEncoding(this.encoding.name());
+		}
 		messageSource.setCacheSeconds(this.cacheSeconds);
 		return messageSource;
 	}
