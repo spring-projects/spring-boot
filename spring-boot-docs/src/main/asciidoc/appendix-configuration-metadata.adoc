@@ -247,7 +247,7 @@ The JSON object contained in the `hints` array can contain the following attribu
 
 |===
 
-The JSON object contained in the `values` array of each `hint` element can contain the
+The JSON object contained in the `values` attribute of each `hint` element can contain the
 following attributes:
 
 [cols="1,1,4"]
@@ -267,7 +267,7 @@ following attributes:
   end with a period (`.`).
 |===
 
-The JSON object contained in the `providers` array of each `hint` element can contain the
+The JSON object contained in the `providers` attribute of each `hint` element can contain the
 following attributes:
 
 [cols="1,1,4"]
@@ -498,11 +498,14 @@ The following types can be used:
 * Any `java.lang.Enum` that list the possible values for the property (By all means, try to
   define the property with the `Enum` type instead as no further hint should be required for
   the IDE to auto-complete the values).
-* `java.nio.charset.Charset`: auto-completion of charset/encoding values
-* `java.util.Locale`: auto-completion of locales
-* `org.springframework.util.MimeType`: auto-completion of content type values
+* `java.nio.charset.Charset`: auto-completion of charset/encoding values (e.g. `UTF-8`)
+* `java.util.Locale`: auto-completion of locales (e.g. `en_US`)
+* `org.springframework.util.MimeType`: auto-completion of content type values (e.g. `text/plain`)
 * `org.springframework.core.io.Resource`: auto-completion of Spring’s Resource abstraction to
-  refer to a file on the filesystem or on the classpath.
+  refer to a file on the filesystem or on the classpath. (e.g. `classpath:/foo.properties`)
+
+NOTE: If multiple values can be provided, use a `Collection` or _Array_ type to teach the IDE
+about it.
 
 The meta-data snippet below corresponds to the standard `liquibase.change-log`
 property that defines the path to the changelog to use. It is actually used internally as a
