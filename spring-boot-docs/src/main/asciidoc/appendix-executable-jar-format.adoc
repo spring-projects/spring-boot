@@ -21,7 +21,7 @@ without unpacking.
 To solve this problem, many developers use "`shaded`" jars. A shaded jar simply packages
 all classes, from all jars, into a single 'uber jar'. The problem with shaded jars is
 that it becomes hard to see which libraries you are actually using in your application.
-It can also be problematic if the the same filename is used (but with different content)
+It can also be problematic if the same filename is used (but with different content)
 in multiple jars. Spring Boot takes a different approach and allows you to actually nest
 jars directly.
 

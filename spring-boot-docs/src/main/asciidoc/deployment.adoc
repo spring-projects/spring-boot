@@ -348,7 +348,7 @@ or `systemd`.
 
 
 [[deployment-initd-service]]
-==== Installation as a init.d service (System V)
+==== Installation as an init.d service (System V)
 The default executable script that can be embedded into Spring Boot jars will act as an
 `init.d` script when it is symlinked to `/etc/init.d`. The standard `start`, `stop`,
 `restart` and `status` commands can be used. The script supports the following features:

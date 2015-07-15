@@ -49,7 +49,7 @@ public class WebMvcProperties {
 	private String dateFormat;
 
 	/**
-	 * If the the content of the "default" model should be ignored during redirect
+	 * If the content of the "default" model should be ignored during redirect
 	 * scenarios.
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
@@ -127,7 +127,7 @@ public class WebMvcProperties {
 		private String prefix;
 
 		/**
-		 * Spring MVC view suffx.
+		 * Spring MVC view suffix.
 		 */
 		@Value("${spring.view.suffix:}")
 		private String suffix;
