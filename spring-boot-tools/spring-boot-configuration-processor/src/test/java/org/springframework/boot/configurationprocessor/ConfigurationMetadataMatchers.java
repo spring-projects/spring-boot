@@ -26,6 +26,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.collection.IsMapContaining;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 import org.springframework.boot.configurationprocessor.metadata.ItemHint;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
@@ -80,22 +81,22 @@ public class ConfigurationMetadataMatchers {
 
 		private final Matcher<?> defaultValue;
 
-		private final boolean deprecated;
+		private final ItemDeprecation deprecation;
 
 		public ContainsItemMatcher(ItemType itemType, String name) {
-			this(itemType, name, null, null, null, null, false);
+			this(itemType, name, null, null, null, null, null);
 		}
 
 		public ContainsItemMatcher(ItemType itemType, String name, String type,
 				Class<?> sourceType, String description, Matcher<?> defaultValue,
-				boolean deprecated) {
+				ItemDeprecation deprecation) {
 			this.itemType = itemType;
 			this.name = name;
 			this.type = type;
 			this.sourceType = sourceType;
 			this.description = description;
 			this.defaultValue = defaultValue;
-			this.deprecated = deprecated;
+			this.deprecation = deprecation;
 		}
 
 		@Override
@@ -120,7 +121,8 @@ public class ConfigurationMetadataMatchers {
 					&& !this.description.equals(itemMetadata.getDescription())) {
 				return false;
 			}
-			if (this.deprecated != itemMetadata.isDeprecated()) {
+			if (this.deprecation != null
+					&& !this.deprecation.equals(itemMetadata.getDeprecation())) {
 				return false;
 			}
 			return true;
@@ -156,39 +158,39 @@ public class ConfigurationMetadataMatchers {
 			if (this.description != null) {
 				description.appendText(" description ").appendValue(this.description);
 			}
-			if (this.deprecated) {
-				description.appendText(" deprecated ").appendValue(true);
+			if (this.deprecation != null) {
+				description.appendText(" deprecation ").appendValue(this.deprecation);
 			}
 		}
 
 		public ContainsItemMatcher ofType(Class<?> dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType.getName(),
-					this.sourceType, this.description, this.defaultValue, this.deprecated);
+					this.sourceType, this.description, this.defaultValue, this.deprecation);
 		}
 
 		public ContainsItemMatcher ofType(String dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType,
-					this.sourceType, this.description, this.defaultValue, this.deprecated);
+					this.sourceType, this.description, this.defaultValue, this.deprecation);
 		}
 
 		public ContainsItemMatcher fromSource(Class<?> sourceType) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					sourceType, this.description, this.defaultValue, this.deprecated);
+					sourceType, this.description, this.defaultValue, this.deprecation);
 		}
 
 		public ContainsItemMatcher withDescription(String description) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					this.sourceType, description, this.defaultValue, this.deprecated);
+					this.sourceType, description, this.defaultValue, this.deprecation);
 		}
 
 		public ContainsItemMatcher withDefaultValue(Matcher<?> defaultValue) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					this.sourceType, this.description, defaultValue, this.deprecated);
+					this.sourceType, this.description, defaultValue, this.deprecation);
 		}
 
-		public ContainsItemMatcher withDeprecated() {
+		public ContainsItemMatcher withDeprecation(String reason, String replacement) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					this.sourceType, this.description, this.defaultValue, true);
+					this.sourceType, this.description, this.defaultValue, new ItemDeprecation(reason, replacement));
 		}
 
 		private ItemMetadata getFirstItemWithName(ConfigurationMetadata metadata,
