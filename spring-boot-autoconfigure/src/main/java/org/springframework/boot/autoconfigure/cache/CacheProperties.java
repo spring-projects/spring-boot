@@ -94,7 +94,7 @@ public class CacheProperties {
 	 * Resolve the config location if set.
 	 * @param config the config resource
 	 * @return the location or {@code null} if it is not set
-	 * @throws IllegalArgumentException if the config attribute is set to a unknown
+	 * @throws IllegalArgumentException if the config attribute is set to an unknown
 	 * location
 	 */
 	public Resource resolveConfigLocation(Resource config) {

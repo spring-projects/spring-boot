@@ -50,7 +50,7 @@ public interface GemstoneService {
 
 	/**
 	 * Return a listing of Gemstones currently stored in the GemFire Cache.
-	 * @return a Iterable object to iterate over the list of Gemstones currently stored in
+	 * @return an Iterable object to iterate over the list of Gemstones currently stored in
 	 * the GemFire Cache.
 	 * @see java.lang.Iterable
 	 * @see sample.data.gemfire.domain.Gemstone

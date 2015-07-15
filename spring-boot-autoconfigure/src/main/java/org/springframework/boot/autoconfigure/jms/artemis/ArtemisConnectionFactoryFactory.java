@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * Factory to create a Artemis {@link ActiveMQConnectionFactory} instance from properties
+ * Factory to create an Artemis {@link ActiveMQConnectionFactory} instance from properties
  * defined in {@link ArtemisProperties}.
  *
  * @author Eddú Meléndez
