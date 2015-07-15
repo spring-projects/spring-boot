@@ -151,6 +151,9 @@ public class JacksonAutoConfiguration {
 				builder.serializationInclusion(this.jacksonProperties
 						.getSerializationInclusion());
 			}
+			if (this.jacksonProperties.getTimeZone() != null) {
+				builder.timeZone(this.jacksonProperties.getTimeZone());
+			}
 			configureFeatures(builder, this.jacksonProperties.getDeserialization());
 			configureFeatures(builder, this.jacksonProperties.getSerialization());
 			configureFeatures(builder, this.jacksonProperties.getMapper());
