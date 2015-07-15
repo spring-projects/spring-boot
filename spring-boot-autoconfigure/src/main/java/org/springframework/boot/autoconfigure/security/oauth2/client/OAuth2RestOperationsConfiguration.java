@@ -102,7 +102,7 @@ public class OAuth2RestOperationsConfiguration {
 		}
 
 		@Bean
-		public OAuth2ClientContext oauth2ClientContext() {
+		public DefaultOAuth2ClientContext oauth2ClientContext() {
 			return new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest());
 		}
 
@@ -119,7 +119,7 @@ public class OAuth2RestOperationsConfiguration {
 
 		@Bean
 		@Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
-		public OAuth2ClientContext oauth2ClientContext() {
+		public DefaultOAuth2ClientContext oauth2ClientContext() {
 			return new DefaultOAuth2ClientContext(this.accessTokenRequest);
 		}
 
@@ -147,7 +147,7 @@ public class OAuth2RestOperationsConfiguration {
 
 		@Bean
 		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
-		public OAuth2ClientContext oauth2ClientContext() {
+		public DefaultOAuth2ClientContext oauth2ClientContext() {
 			DefaultOAuth2ClientContext context = new DefaultOAuth2ClientContext(
 					new DefaultAccessTokenRequest());
 			Authentication principal = SecurityContextHolder.getContext()

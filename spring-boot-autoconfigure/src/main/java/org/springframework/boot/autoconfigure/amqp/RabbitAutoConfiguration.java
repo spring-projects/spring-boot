@@ -106,7 +106,7 @@ public class RabbitAutoConfiguration {
 	protected static class RabbitConnectionFactoryCreator {
 
 		@Bean
-		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config)
+		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
 				throws Exception {
 			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
 			if (config.getHost() != null) {

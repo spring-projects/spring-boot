@@ -29,7 +29,6 @@ import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.SimpleJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -93,7 +92,7 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ExitCodeGenerator jobExecutionExitCodeGenerator() {
+	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
 	}
 
@@ -112,9 +111,10 @@ public class BatchAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public JobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
-			ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
+	@ConditionalOnMissingBean(JobOperator.class)
+	public SimpleJobOperator jobOperator(JobExplorer jobExplorer,
+			JobLauncher jobLauncher, ListableJobLocator jobRegistry,
+			JobRepository jobRepository) throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
 		factory.setJobExplorer(jobExplorer);
 		factory.setJobLauncher(jobLauncher);
@@ -139,7 +139,7 @@ public class BatchAutoConfiguration {
 		// Boot in the JPA auto configuration.
 		@Bean
 		@ConditionalOnBean(name = "entityManagerFactory")
-		public BatchConfigurer jpaBatchConfigurer(DataSource dataSource,
+		public BasicBatchConfigurer jpaBatchConfigurer(DataSource dataSource,
 				EntityManagerFactory entityManagerFactory) {
 			return new BasicBatchConfigurer(this.properties, dataSource,
 					entityManagerFactory);
@@ -147,7 +147,7 @@ public class BatchAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "entityManagerFactory")
-		public BatchConfigurer basicBatchConfigurer(DataSource dataSource) {
+		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource) {
 			return new BasicBatchConfigurer(this.properties, dataSource);
 		}
 

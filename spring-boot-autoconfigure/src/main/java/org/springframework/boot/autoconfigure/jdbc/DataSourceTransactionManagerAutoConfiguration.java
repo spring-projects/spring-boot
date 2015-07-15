@@ -52,9 +52,9 @@ public class DataSourceTransactionManagerAutoConfiguration implements Ordered {
 	private DataSource dataSource;
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	@ConditionalOnBean(DataSource.class)
-	public PlatformTransactionManager transactionManager() {
+	public DataSourceTransactionManager transactionManager() {
 		return new DataSourceTransactionManager(this.dataSource);
 	}
 

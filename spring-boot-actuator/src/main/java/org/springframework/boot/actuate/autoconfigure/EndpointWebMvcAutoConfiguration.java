@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -91,11 +90,12 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
-	EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
-	ManagementServerPropertiesAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class,
-	HypermediaAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		ManagementServerPropertiesAutoConfiguration.class,
+		RepositoryRestMvcAutoConfiguration.class, HypermediaAutoConfiguration.class,
+		HttpMessageConvertersAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
-BeanFactoryAware, SmartInitializingSingleton {
+		BeanFactoryAware, SmartInitializingSingleton {
 
 	private static final Log logger = LogFactory
 			.getLog(EndpointWebMvcAutoConfiguration.class);
@@ -130,7 +130,7 @@ BeanFactoryAware, SmartInitializingSingleton {
 		if (managementPort == ManagementServerPort.DIFFERENT
 				&& this.applicationContext instanceof EmbeddedWebApplicationContext
 				&& ((EmbeddedWebApplicationContext) this.applicationContext)
-				.getEmbeddedServletContainer() != null) {
+						.getEmbeddedServletContainer() != null) {
 			createChildManagementContext();
 		}
 		if (managementPort == ManagementServerPort.SAME
@@ -150,7 +150,7 @@ BeanFactoryAware, SmartInitializingSingleton {
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class);
 		CloseEventPropagationListener
-		.addIfPossible(this.applicationContext, childContext);
+				.addIfPossible(this.applicationContext, childContext);
 		try {
 			childContext.refresh();
 			managementContextResolver().setApplicationContext(childContext);
@@ -193,7 +193,8 @@ BeanFactoryAware, SmartInitializingSingleton {
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean
-		public Filter applicationContextIdFilter(ApplicationContext context) {
+		public ApplicationContextHeaderFilter applicationContextIdFilter(
+				ApplicationContext context) {
 			return new ApplicationContextHeaderFilter(context);
 		}
 
@@ -222,7 +223,7 @@ BeanFactoryAware, SmartInitializingSingleton {
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain filterChain)
-						throws ServletException, IOException {
+				throws ServletException, IOException {
 			if (this.properties == null) {
 				this.properties = this.applicationContext
 						.getBean(ManagementServerProperties.class);
@@ -241,7 +242,7 @@ BeanFactoryAware, SmartInitializingSingleton {
 	 * parent to a child.
 	 */
 	private static class CloseEventPropagationListener implements
-	ApplicationListener<ContextClosedEvent> {
+			ApplicationListener<ContextClosedEvent> {
 
 		private final ApplicationContext parentContext;
 
@@ -276,7 +277,7 @@ BeanFactoryAware, SmartInitializingSingleton {
 	}
 
 	private static class OnManagementMvcCondition extends SpringBootCondition implements
-	ConfigurationCondition {
+			ConfigurationCondition {
 
 		@Override
 		public ConfigurationPhase getConfigurationPhase() {
@@ -325,7 +326,7 @@ BeanFactoryAware, SmartInitializingSingleton {
 			return ((managementPort == null)
 					|| (serverPort == null && managementPort.equals(8080))
 					|| (managementPort != 0 && managementPort.equals(serverPort)) ? SAME
-							: DIFFERENT);
+					: DIFFERENT);
 		}
 
 		private static Integer getPortProperty(Environment environment, String prefix) {
