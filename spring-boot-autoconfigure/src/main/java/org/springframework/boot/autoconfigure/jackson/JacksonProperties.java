@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jackson;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -88,6 +89,12 @@ public class JacksonProperties {
 	 */
 	private JsonInclude.Include serializationInclusion;
 
+	/**
+	 * Time zone used when formatting dates. Configured using any recognized time zone
+	 * identifier, for example "America/Los_Angeles" or "GMT+10".
+	 */
+	private TimeZone timeZone = null;
+
 	public String getDateFormat() {
 		return this.dateFormat;
 	}
@@ -140,4 +147,11 @@ public class JacksonProperties {
 		this.serializationInclusion = serializationInclusion;
 	}
 
+	public TimeZone getTimeZone() {
+		return this.timeZone;
+	}
+
+	public void setTimeZone(TimeZone timeZone) {
+		this.timeZone = timeZone;
+	}
 }
