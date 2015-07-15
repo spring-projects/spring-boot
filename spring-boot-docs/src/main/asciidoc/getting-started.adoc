@@ -705,7 +705,7 @@ distribute a self-contained application.
 To solve this problem, many developers use "`uber`" jars. An uber jar simply packages
 all classes, from all jars, into a single archive. The problem with this approach is that
 it becomes hard to see which libraries you are actually using in your application. It can
-also be problematic if the the same filename is used (but with different content) in
+also be problematic if the same filename is used (but with different content) in
 multiple jars.
 
 Spring Boot takes a <<appendix-executable-jar-format.adoc#executable-jar, different
