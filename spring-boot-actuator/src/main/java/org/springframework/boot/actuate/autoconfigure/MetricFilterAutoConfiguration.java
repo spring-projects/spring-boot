@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 
@@ -56,7 +55,7 @@ public class MetricFilterAutoConfiguration {
 	private GaugeService gaugeService;
 
 	@Bean
-	public Filter metricFilter() {
+	public MetricsFilter metricFilter() {
 		return new MetricsFilter(this.counterService, this.gaugeService);
 	}
 

@@ -54,8 +54,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SecurityAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public AuthenticationEventPublisher authenticationEventPublisher(
+	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)
+	public DefaultAuthenticationEventPublisher authenticationEventPublisher(
 			ApplicationEventPublisher publisher) {
 		return new DefaultAuthenticationEventPublisher(publisher);
 	}

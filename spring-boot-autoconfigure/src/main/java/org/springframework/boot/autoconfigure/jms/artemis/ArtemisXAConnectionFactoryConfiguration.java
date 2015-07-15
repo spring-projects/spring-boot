@@ -53,8 +53,8 @@ class ArtemisXAConnectionFactoryConfiguration {
 	}
 
 	@Bean
-	public ConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory,
-			ArtemisProperties properties) {
+	public ActiveMQXAConnectionFactory nonXaJmsConnectionFactory(
+			ListableBeanFactory beanFactory, ArtemisProperties properties) {
 		return new ArtemisConnectionFactoryFactory(beanFactory, properties)
 				.createConnectionFactory(ActiveMQXAConnectionFactory.class);
 	}

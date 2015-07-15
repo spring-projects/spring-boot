@@ -147,7 +147,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(InternalResourceViewResolver.class)
+		@ConditionalOnMissingBean
 		public InternalResourceViewResolver defaultViewResolver() {
 			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 			resolver.setPrefix(this.mvcProperties.getView().getPrefix());
@@ -156,7 +156,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(RequestContextListener.class)
+		@ConditionalOnMissingBean
 		public RequestContextListener requestContextListener() {
 			return new RequestContextListener();
 		}
@@ -183,7 +183,7 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(LocaleResolver.class)
+		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "spring.mvc", name = "locale")
 		public LocaleResolver localeResolver() {
 			return new FixedLocaleResolver(this.mvcProperties.getLocale());

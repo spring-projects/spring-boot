@@ -38,7 +38,6 @@ import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.GenericConnectionStatusView;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
-import org.springframework.web.servlet.View;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
@@ -74,7 +73,7 @@ public class FacebookAutoConfiguration {
 
 		@Bean(name = { "connect/facebookConnect", "connect/facebookConnected" })
 		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
-		public View facebookConnectView() {
+		public GenericConnectionStatusView facebookConnectView() {
 			return new GenericConnectionStatusView("facebook", "Facebook");
 		}
 

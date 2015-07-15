@@ -91,14 +91,14 @@ public class MetricRepositoryAutoConfiguration {
 		private MetricWriter writer;
 
 		@Bean
-		@ConditionalOnMissingBean
-		public CounterService counterService() {
+		@ConditionalOnMissingBean(CounterService.class)
+		public DefaultCounterService counterService() {
 			return new DefaultCounterService(this.writer);
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
-		public GaugeService gaugeService() {
+		@ConditionalOnMissingBean(GaugeService.class)
+		public DefaultGaugeService gaugeService() {
 			return new DefaultGaugeService(this.writer);
 		}
 
@@ -130,14 +130,14 @@ public class MetricRepositoryAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
-		public CounterService counterService(CounterBuffers writer) {
+		@ConditionalOnMissingBean(CounterService.class)
+		public BufferCounterService counterService(CounterBuffers writer) {
 			return new BufferCounterService(writer);
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
-		public GaugeService gaugeService(GaugeBuffers writer) {
+		@ConditionalOnMissingBean(GaugeService.class)
+		public BufferGaugeService gaugeService(GaugeBuffers writer) {
 			return new BufferGaugeService(writer);
 		}
 	}

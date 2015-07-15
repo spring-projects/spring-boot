@@ -124,28 +124,28 @@ public class CrshAutoConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "jaas")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties jaasAuthenticationProperties() {
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public JaasAuthenticationProperties jaasAuthenticationProperties() {
 		return new JaasAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "key")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties keyAuthenticationProperties() {
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public KeyAuthenticationProperties keyAuthenticationProperties() {
 		return new KeyAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "simple", matchIfMissing = true)
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties simpleAuthenticationProperties() {
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public SimpleAuthenticationProperties simpleAuthenticationProperties() {
 		return new SimpleAuthenticationProperties();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ PluginLifeCycle.class })
-	public PluginLifeCycle shellBootstrap() {
+	@ConditionalOnMissingBean(PluginLifeCycle.class)
+	public CrshBootstrapBean shellBootstrap() {
 		CrshBootstrapBean bootstrapBean = new CrshBootstrapBean();
 		bootstrapBean.setConfig(this.properties.asCrshShellConfig());
 		return bootstrapBean;
@@ -156,7 +156,7 @@ public class CrshAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "spring", matchIfMissing = true)
-	@ConditionalOnBean({ AuthenticationManager.class })
+	@ConditionalOnBean(AuthenticationManager.class)
 	@AutoConfigureAfter(CrshAutoConfiguration.class)
 	public static class AuthenticationManagerAdapterAutoConfiguration {
 
@@ -164,13 +164,13 @@ public class CrshAutoConfiguration {
 		private ManagementServerProperties management;
 
 		@Bean
-		public CRaSHPlugin<?> shellAuthenticationManager() {
+		public AuthenticationManagerAdapter shellAuthenticationManager() {
 			return new AuthenticationManagerAdapter();
 		}
 
 		@Bean
-		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-		public CrshShellAuthenticationProperties springAuthenticationProperties() {
+		@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+		public SpringAuthenticationProperties springAuthenticationProperties() {
 			// In case no shell.auth property is provided fall back to Spring Security
 			// based authentication and get role to access shell from
 			// ManagementServerProperties.

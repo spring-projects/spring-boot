@@ -97,7 +97,7 @@ public class JacksonAutoConfiguration {
 		private JacksonProperties jacksonProperties;
 
 		@Bean
-		public Module jodaDateTimeSerializationModule() {
+		public SimpleModule jodaDateTimeSerializationModule() {
 			SimpleModule module = new SimpleModule();
 			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat();
 			if (jacksonJodaFormat != null) {

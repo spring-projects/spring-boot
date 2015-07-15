@@ -66,7 +66,7 @@ public class CacheAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public static BeanFactoryPostProcessor cacheAutoConfigurationValidatorPostProcessor() {
+	public static CacheManagerValidatorPostProcessor cacheAutoConfigurationValidatorPostProcessor() {
 		return new CacheManagerValidatorPostProcessor();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,22 +32,34 @@ import org.springframework.context.annotation.Configuration;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class ActiveMQConnectionFactoryConfiguration {
 
-	@Bean
-	public ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(
-				properties).createConnectionFactory(ActiveMQConnectionFactory.class);
-		if (properties.isPooled()) {
-			PooledConnectionFactory pool = new PooledConnectionFactory();
-			pool.setConnectionFactory(connectionFactory);
-			return pool;
+	@ConditionalOnClass(PooledConnectionFactory.class)
+	static class PooledConnectionFactoryConfiguration {
+
+		@Bean
+		@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "true", matchIfMissing = false)
+		public PooledConnectionFactory pooledJmsConnectionFactory(
+				ActiveMQProperties properties) {
+			PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
+			pooledConnectionFactory
+					.setConnectionFactory(new ActiveMQConnectionFactoryFactory(properties)
+							.createConnectionFactory(ActiveMQConnectionFactory.class));
+			return pooledConnectionFactory;
+
 		}
-		return connectionFactory;
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "false", matchIfMissing = true)
+	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
+		return new ActiveMQConnectionFactoryFactory(properties)
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
 }

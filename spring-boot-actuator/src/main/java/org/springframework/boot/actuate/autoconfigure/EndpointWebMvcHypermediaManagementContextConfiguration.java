@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -84,6 +82,8 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+
 /**
  * Configuration for hypermedia in HTTP endpoints.
  *
@@ -136,7 +136,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	@Configuration("EndpointHypermediaAutoConfiguration.MissingResourceCondition")
 	@ConditionalOnResource(resources = "classpath:/META-INF/spring-data-rest/hal-browser/index.html")
 	protected static class MissingSpringDataRestResourceCondition extends
-	SpringBootCondition {
+			SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -175,7 +175,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		}
 
 		private static class NotSpringDataRestHomePageCondition extends
-		SpringBootCondition {
+				SpringBootCondition {
 
 			@Override
 			public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -302,7 +302,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			public Object beforeBodyWrite(Object body, MethodParameter returnType,
 					MediaType selectedContentType,
 					Class<? extends HttpMessageConverter<?>> selectedConverterType,
-							ServerHttpRequest request, ServerHttpResponse response) {
+					ServerHttpRequest request, ServerHttpResponse response) {
 				if (request instanceof ServletServerHttpRequest) {
 					beforeBodyWrite(body, (ServletServerHttpRequest) request);
 				}
@@ -383,7 +383,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			public Object beforeBodyWrite(Object body, MethodParameter returnType,
 					MediaType selectedContentType,
 					Class<? extends HttpMessageConverter<?>> selectedConverterType,
-							ServerHttpRequest request, ServerHttpResponse response) {
+					ServerHttpRequest request, ServerHttpResponse response) {
 				if (request instanceof ServletServerHttpRequest) {
 					return beforeBodyWrite(body, returnType, selectedContentType,
 							selectedConverterType, (ServletServerHttpRequest) request,
@@ -395,7 +395,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			private Object beforeBodyWrite(Object body, MethodParameter returnType,
 					MediaType selectedContentType,
 					Class<? extends HttpMessageConverter<?>> selectedConverterType,
-							ServletServerHttpRequest request, ServerHttpResponse response) {
+					ServletServerHttpRequest request, ServerHttpResponse response) {
 				if (body == null || body instanceof Resource) {
 					// Assume it already was handled or it already has its links
 					return body;
@@ -420,7 +420,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			@SuppressWarnings("unchecked")
 			private HttpMessageConverter<Object> findConverter(
 					Class<? extends HttpMessageConverter<?>> selectedConverterType,
-							MediaType mediaType) {
+					MediaType mediaType) {
 				if (this.converterCache.containsKey(mediaType)) {
 					return (HttpMessageConverter<Object>) this.converterCache
 							.get(mediaType);

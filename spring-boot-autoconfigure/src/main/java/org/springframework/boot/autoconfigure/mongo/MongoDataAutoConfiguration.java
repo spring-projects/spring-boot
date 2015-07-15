@@ -102,8 +102,8 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public MongoDbFactory mongoDbFactory(MongoClient mongo) throws Exception {
+	@ConditionalOnMissingBean(MongoDbFactory.class)
+	public SimpleMongoDbFactory mongoDbFactory(MongoClient mongo) throws Exception {
 		String database = this.properties.getMongoClientDatabase();
 		return new SimpleMongoDbFactory(mongo, database);
 	}
