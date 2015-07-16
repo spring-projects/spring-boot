@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -50,6 +51,9 @@ public class MongoAutoConfiguration {
 	@Autowired(required = false)
 	private MongoClientOptions options;
 
+	@Autowired
+	private Environment environment;
+
 	private MongoClient mongo;
 
 	@PreDestroy
@@ -62,7 +66,7 @@ public class MongoAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MongoClient mongo() throws UnknownHostException {
-		this.mongo = this.properties.createMongoClient(this.options);
+		this.mongo = this.properties.createMongoClient(this.options, this.environment);
 		return this.mongo;
 	}
 

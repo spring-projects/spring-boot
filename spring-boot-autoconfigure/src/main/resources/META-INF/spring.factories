@@ -46,6 +46,7 @@ org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration
 org.springframework.boot.autoconfigure.mobile.DeviceResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.SitePreferenceAutoConfiguration,\
+org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\

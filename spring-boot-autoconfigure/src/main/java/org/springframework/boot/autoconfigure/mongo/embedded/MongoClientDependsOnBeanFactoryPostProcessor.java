@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa;
-
-import javax.persistence.EntityManagerFactory;
+package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
-import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.data.mongodb.core.MongoClientFactoryBean;
+
+import com.mongodb.MongoClient;
 
 /**
- * {@link BeanFactoryPostProcessor} that can be used to dynamically declare that all
- * {@link EntityManagerFactory} beans should "depend on" one or more specific beans.
+ * {@link BeanFactoryPostProcessor} to automatically set up the recommended
+ * {@link BeanDefinition#setDependsOn(String[]) dependsOn} configuration for Mongo clients
+ * when used embedded Mongo.
  *
- * @author Marcel Overdijk
- * @author Dave Syer
- * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.1.0
- * @see BeanDefinition#setDependsOn(String[])
+ * @since 1.3.0
  */
-public class EntityManagerFactoryDependsOnPostProcessor extends
+@Order(Ordered.LOWEST_PRECEDENCE)
+public class MongoClientDependsOnBeanFactoryPostProcessor extends
 		AbstractDependsOnBeanFactoryPostProcessor {
 
-	public EntityManagerFactoryDependsOnPostProcessor(String... dependsOn) {
-		super(EntityManagerFactory.class, AbstractEntityManagerFactoryBean.class,
-				dependsOn);
+	public MongoClientDependsOnBeanFactoryPostProcessor(String... dependsOn) {
+		super(MongoClient.class, MongoClientFactoryBean.class, dependsOn);
 	}
 
 }
