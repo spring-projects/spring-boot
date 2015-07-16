@@ -84,22 +84,21 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-compiler-plugin
-										</artifactId>
-										<versionRange>
-											[2.10,)
-										</versionRange>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-compiler-plugin</artifactId>
+										<versionRange>[2.10,)</versionRange>
 										<goals>
 											<goal>compile</goal>
 											<goal>testCompile</goal>
 										</goals>
+										<parameters>
+											<compilerId>groovy-eclipse-compiler</compilerId>
+										</parameters>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<configurator>
+											<id>org.codehaus.groovy.m2eclipse.configurator</id>
+										</configurator>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
