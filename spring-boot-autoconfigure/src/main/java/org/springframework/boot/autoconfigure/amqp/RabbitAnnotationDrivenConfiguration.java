@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
  * Configuration for Spring AMQP annotation driven endpoints.
  *
  * @author Stephane Nicoll
+ * @author Josh Thornhill
  * @since 1.2.0
  */
 @Configuration
@@ -43,8 +44,8 @@ class RabbitAnnotationDrivenConfiguration {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
 		Listener listenerConfig = config.getListener();
-		if (listenerConfig.getAckMode() != null) {
-			factory.setAcknowledgeMode(listenerConfig.getAckMode());
+		if (listenerConfig.getAcknowledgeMode() != null) {
+			factory.setAcknowledgeMode(listenerConfig.getAcknowledgeMode());
 		}
 		if (listenerConfig.getConcurrency() != null) {
 			factory.setConcurrentConsumers(listenerConfig.getConcurrency());
@@ -55,8 +56,8 @@ class RabbitAnnotationDrivenConfiguration {
 		if (listenerConfig.getPrefetch() != null) {
 			factory.setPrefetchCount(listenerConfig.getPrefetch());
 		}
-		if (listenerConfig.getTxSize() != null) {
-			factory.setTxSize(listenerConfig.getTxSize());
+		if (listenerConfig.getTransactionSize() != null) {
+			factory.setTxSize(listenerConfig.getTransactionSize());
 		}
 		return factory;
 	}

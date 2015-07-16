@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Josh Thornhill
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -187,7 +188,7 @@ public class RabbitProperties {
 	}
 
 	public Listener getListener() {
-		return listener;
+		return this.listener;
 	}
 
 	public static class Ssl {
@@ -287,7 +288,7 @@ public class RabbitProperties {
 		/**
 		 * Acknowledge mode of container.
 		 */
-		private AcknowledgeMode ackMode;
+		private AcknowledgeMode acknowledgeMode;
 
 		/**
 		 * Minimum number of consumers.
@@ -300,25 +301,27 @@ public class RabbitProperties {
 		private Integer maxConcurrency;
 
 		/**
-		 * Message prefetch count.
+		 * Number of messages to be handled in a single request.  It should be greater than
+		 * or equal to the transaction size (if used).
 		 */
 		private Integer prefetch;
 
 		/**
-		 * Number of messages in a transaction.
+		 * Number of messages to be processed in a transaction. For best results it should
+		 * be less than or equal to the prefetch count.
 		 */
-		private Integer txSize;
+		private Integer transactionSize;
 
-		public AcknowledgeMode getAckMode() {
-			return ackMode;
+		public AcknowledgeMode getAcknowledgeMode() {
+			return this.acknowledgeMode;
 		}
 
-		public void setAckMode(AcknowledgeMode ackMode) {
-			this.ackMode = ackMode;
+		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			this.acknowledgeMode = acknowledgeMode;
 		}
 
 		public Integer getConcurrency() {
-			return concurrency;
+			return this.concurrency;
 		}
 
 		public void setConcurrency(Integer concurrency) {
@@ -326,7 +329,7 @@ public class RabbitProperties {
 		}
 
 		public Integer getMaxConcurrency() {
-			return maxConcurrency;
+			return this.maxConcurrency;
 		}
 
 		public void setMaxConcurrency(Integer maxConcurrency) {
@@ -334,19 +337,19 @@ public class RabbitProperties {
 		}
 
 		public Integer getPrefetch() {
-			return prefetch;
+			return this.prefetch;
 		}
 
 		public void setPrefetch(Integer prefetch) {
 			this.prefetch = prefetch;
 		}
 
-		public Integer getTxSize() {
-			return txSize;
+		public Integer getTransactionSize() {
+			return this.transactionSize;
 		}
 
-		public void setTxSize(Integer txSize) {
-			this.txSize = txSize;
+		public void setTransactionSize(Integer transactionSize) {
+			this.transactionSize = transactionSize;
 		}
 	}
 

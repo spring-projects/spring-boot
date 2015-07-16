@@ -469,6 +469,11 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.port= # connection port
 	spring.rabbitmq.password= # login password
 	spring.rabbitmq.requested-heartbeat= # requested heartbeat timeout, in seconds; zero for none
+	spring.rabbitmq.listener.acknowledge-mode= # acknowledge mode of container
+	spring.rabbitmq.listener.concurrency= # minimum number of consumers
+	spring.rabbitmq.listener.max-concurrency= # maximum number of consumers
+	spring.rabbitmq.listener.prefetch= # number of messages to be handled in a single request
+	spring.rabbitmq.listener.transaction-size= # number of messages to be processed in a transaction
 	spring.rabbitmq.ssl.enabled=false # enable SSL support
 	spring.rabbitmq.ssl.key-store= # path to the key store that holds the SSL certificate
 	spring.rabbitmq.ssl.key-store-password= # password used to access the key store

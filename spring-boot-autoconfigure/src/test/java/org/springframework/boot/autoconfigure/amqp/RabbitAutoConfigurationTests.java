@@ -188,6 +188,26 @@ public class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	public void testRabbitListenerContainerFactoryWithCustomSettings() {
+		load(TestConfiguration.class,
+				"spring.rabbitmq.listener.acknowledgeMode:manual",
+				"spring.rabbitmq.listener.concurrency:5",
+				"spring.rabbitmq.listener.maxConcurrency:10",
+				"spring.rabbitmq.listener.prefetch=40",
+				"spring.rabbitmq.listener.transactionSize:20");
+		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
+				.getBean("rabbitListenerContainerFactory",
+						SimpleRabbitListenerContainerFactory.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertEquals(AcknowledgeMode.MANUAL,
+				dfa.getPropertyValue("acknowledgeMode"));
+		assertEquals(5, dfa.getPropertyValue("concurrentConsumers"));
+		assertEquals(10, dfa.getPropertyValue("maxConcurrentConsumers"));
+		assertEquals(40, dfa.getPropertyValue("prefetchCount"));
+		assertEquals(20, dfa.getPropertyValue("txSize"));
+	}
+
+	@Test
 	public void enableRabbitAutomatically() throws Exception {
 		load(NoEnableRabbitConfiguration.class);
 		AnnotationConfigApplicationContext ctx = this.context;
@@ -228,28 +248,6 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.ssl.keyStorePassword=secret",
 				"spring.rabbitmq.ssl.trustStore=bar",
 				"spring.rabbitmq.ssl.trustStorePassword=secret");
-	}
-
-	@Test
-	public void testRabbitListenerContainerFactoryOverrides() {
-		load(TestConfiguration.class, "spring.rabbitmq.listener.prefetch:20",
-				"spring.rabbitmq.listener.ackMode:MANUAL",
-				"spring.rabbitmq.listener.concurrency:10",
-				"spring.rabbitmq.listener.maxConcurrency:10",
-				"spring.rabbitmq.listener.txSize:20");
-		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
-				.getBean("rabbitListenerContainerFactory",
-						SimpleRabbitListenerContainerFactory.class);
-		assertEquals(new Integer(20), (Integer)
-				new DirectFieldAccessor(rabbitListenerContainerFactory).getPropertyValue("prefetchCount"));
-		assertEquals(AcknowledgeMode.MANUAL, (AcknowledgeMode)
-				new DirectFieldAccessor(rabbitListenerContainerFactory).getPropertyValue("acknowledgeMode"));
-		assertEquals(new Integer(10), (Integer)
-				new DirectFieldAccessor(rabbitListenerContainerFactory).getPropertyValue("concurrentConsumers"));
-		assertEquals(new Integer(10), (Integer)
-				new DirectFieldAccessor(rabbitListenerContainerFactory).getPropertyValue("maxConcurrentConsumers"));
-		assertEquals(new Integer(20), (Integer)
-				new DirectFieldAccessor(rabbitListenerContainerFactory).getPropertyValue("txSize"));
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory() {
