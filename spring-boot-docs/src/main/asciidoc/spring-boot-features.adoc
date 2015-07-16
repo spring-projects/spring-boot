@@ -1429,6 +1429,43 @@ described above.
 
 
 
+[[boot-features-cors]]
+==== CORS support
+
+http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
+(CORS) is a http://www.w3.org/TR/cors/[W3C specification] implemented by
+http://caniuse.com/#feat=cors[most browsers] that allows you to specify in a flexible
+way what kind of cross domain requests are authorized, instead of using some less secure
+and less powerful approaches like IFRAME or JSONP.
+
+As of version 4.2, Spring MVC {spring-reference}/#cors[supports CORS] out of the box.
+Using {spring-reference}/#_controller_method_cors_configuration[controller method CORS
+configuration] with
+{spring-javadoc}/org/springframework/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`]
+annotations in your Spring Boot application does not require any specific configuration.
+{spring-reference}/#_global_cors_configuration[Global CORS configuration] can be defined
+by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)`
+method:
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class MyConfiguration {
+
+		@Bean
+		public WebMvcConfigurer corsConfigurer() {
+			return new WebMvcConfigurerAdapter() {
+				@Override
+				public void addCorsMappings(CorsRegistry registry) {
+					registry.addMapping("/api/**");
+				}
+			};
+		}
+	}
+----
+
+
+
 [[boot-features-jersey]]
 === JAX-RS and Jersey
 If you prefer the JAX-RS programming model for REST endpoints you can use one of the
