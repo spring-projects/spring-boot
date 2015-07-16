@@ -63,10 +63,10 @@ public class JmsProperties {
 	public static class Listener {
 
 		/**
-		 * Acknowledgment mode of the container. By default, the listener is
+		 * Acknowledge mode of the container. By default, the listener is
 		 * transacted with automatic acknowledgment.
 		 */
-		private AcknowledgmentMode acknowledgmentMode;
+		private AcknowledgeMode acknowledgeMode;
 
 		/**
 		 * Minimum number of concurrent consumers.
@@ -78,12 +78,12 @@ public class JmsProperties {
 		 */
 		private Integer maxConcurrency;
 
-		public AcknowledgmentMode getAcknowledgmentMode() {
-			return acknowledgmentMode;
+		public AcknowledgeMode getAcknowledgeMode() {
+			return acknowledgeMode;
 		}
 
-		public void setAcknowledgmentMode(AcknowledgmentMode acknowledgmentMode) {
-			this.acknowledgmentMode = acknowledgmentMode;
+		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			this.acknowledgeMode = acknowledgeMode;
 		}
 
 		public Integer getConcurrency() {
@@ -112,12 +112,12 @@ public class JmsProperties {
 	}
 
 	/**
-	 * Translate the acknowledgment modes defined on the {@link javax.jms.Session}.
+	 * Translate the acknowledge modes defined on the {@link javax.jms.Session}.
 	 *
 	 * <p>{@link javax.jms.Session#SESSION_TRANSACTED} is not defined as we take
 	 * care of this already via a call to {@code setSessionTransacted}.
 	 */
-	public enum AcknowledgmentMode {
+	public enum AcknowledgeMode {
 
 		/**
 		 * Messages sent or received from the session are automatically acknowledged. This
@@ -141,7 +141,7 @@ public class JmsProperties {
 
 		private final int mode;
 
-		AcknowledgmentMode(int mode) {
+		AcknowledgeMode(int mode) {
 			this.mode = mode;
 		}
 
