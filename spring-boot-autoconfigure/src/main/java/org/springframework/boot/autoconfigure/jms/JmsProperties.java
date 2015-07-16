@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ public class JmsProperties {
 	 */
 	private String jndiName;
 
+	private final Listener listener = new Listener();
+
 	public boolean isPubSubDomain() {
 		return this.pubSubDomain;
 	}
@@ -52,6 +54,100 @@ public class JmsProperties {
 
 	public void setJndiName(String jndiName) {
 		this.jndiName = jndiName;
+	}
+
+	public Listener getListener() {
+		return listener;
+	}
+
+	public static class Listener {
+
+		/**
+		 * Acknowledgment mode of the container. By default, the listener is
+		 * transacted with automatic acknowledgment.
+		 */
+		private AcknowledgmentMode acknowledgmentMode;
+
+		/**
+		 * Minimum number of concurrent consumers.
+		 */
+		private Integer concurrency;
+
+		/**
+		 * Maximum number of concurrent consumers.
+		 */
+		private Integer maxConcurrency;
+
+		public AcknowledgmentMode getAcknowledgmentMode() {
+			return acknowledgmentMode;
+		}
+
+		public void setAcknowledgmentMode(AcknowledgmentMode acknowledgmentMode) {
+			this.acknowledgmentMode = acknowledgmentMode;
+		}
+
+		public Integer getConcurrency() {
+			return this.concurrency;
+		}
+
+		public void setConcurrency(Integer concurrency) {
+			this.concurrency = concurrency;
+		}
+
+		public Integer getMaxConcurrency() {
+			return this.maxConcurrency;
+		}
+
+		public void setMaxConcurrency(Integer maxConcurrency) {
+			this.maxConcurrency = maxConcurrency;
+		}
+
+		public String formatConcurrency() {
+			if (this.concurrency == null) {
+				return (this.maxConcurrency != null ? "1-" + this.maxConcurrency : null);
+			}
+			return (this.maxConcurrency != null ? this.concurrency + "-" +
+					this.maxConcurrency : String.valueOf(this.concurrency));
+		}
+	}
+
+	/**
+	 * Translate the acknowledgment modes defined on the {@link javax.jms.Session}.
+	 *
+	 * <p>{@link javax.jms.Session#SESSION_TRANSACTED} is not defined as we take
+	 * care of this already via a call to {@code setSessionTransacted}.
+	 */
+	public enum AcknowledgmentMode {
+
+		/**
+		 * Messages sent or received from the session are automatically acknowledged. This
+		 * is the simplest mode and enables once-only message delivery guarantee.
+		 */
+		AUTO(1),
+
+		/**
+		 * Messages are acknowledged once the message listener implementation has 
+		 * called {@link javax.jms.Message#acknowledge()}. This mode gives the application
+		 * (rather than the JMS provider) complete control over message acknowledgement.
+		 */
+		CLIENT(2),
+
+		/**
+		 * Similar to auto acknowledgment except that said acknowledgment is lazy. As a
+		 * consequence, the messages might be delivered more than once. This mode enables
+		 * at-least-once message delivery guarantee.
+		 */
+		DUPS_OK(3);
+
+		private final int mode;
+
+		AcknowledgmentMode(int mode) {
+			this.mode = mode;
+		}
+
+		public int getMode() {
+			return mode;
+		}
 	}
 
 }

@@ -67,6 +67,14 @@ class JmsAnnotationDrivenConfiguration {
 		if (this.destinationResolver != null) {
 			factory.setDestinationResolver(this.destinationResolver);
 		}
+		JmsProperties.Listener listener = this.properties.getListener();
+		if (listener.getAcknowledgmentMode() != null) {
+			factory.setSessionAcknowledgeMode(listener.getAcknowledgmentMode().getMode());
+		}
+		String concurrency = listener.formatConcurrency();
+		if (concurrency != null) {
+			factory.setConcurrency(concurrency);
+		}
 		return factory;
 	}
 
