@@ -1074,12 +1074,17 @@ it's loaded too early. You need to either use `logback-spring.xml` or define a
 The `<springProfile>` tag allows you to optionally include or exclude sections of
 configuration based on the active Spring profiles. Profile sections are supported anywhere
 within the `<configuration>` element. Use the `name` attribute to specify which profile
-accepts the configuration.
+accepts the configuration. Multiple profiles can be specified using a comma-separated
+list.
 
 [source,xml,indent=0]
 ----
 	<springProfile name="staging">
 		<!-- configuration to be enabled when the "staging" profile is active -->
+	</springProfile>
+
+	<springProfile name="dev, staging">
+		<!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
 	</springProfile>
 
 	<springProfile name="!production">
