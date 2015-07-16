@@ -31,6 +31,13 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 
 	private static final AsciiBytes LIB = new AsciiBytes("lib/");
 
+	public JarLauncher() {
+	}
+
+	protected JarLauncher(Archive archive) {
+		super(archive);
+	}
+
 	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
 		return !entry.isDirectory() && entry.getName().startsWith(LIB);
