@@ -2482,7 +2482,7 @@ documentation].
 [[boot-features-mongo-embedded]]
 ==== Embedded Mongo
 Spring Boot offers auto-configuration for
-[https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo] Embedded Mongo. To use
+https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo[Embedded Mongo]. To use
 it in your Spring Boot application add a dependency on
 `de.flapdoodle.embed:de.flapdoodle.embed.mongo`.
 
