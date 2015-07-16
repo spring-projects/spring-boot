@@ -29,26 +29,6 @@
     </div>
 </script>
 
-<script type="text/html" id="project-courses-widget-template">
-    <h2>Related Courseware</h2>
-    {@ if(hasCourses) { @}
-        <h3 id="education">Pivotal Education</h3>
-        <ul>
-        {@ _.each(courses, function(course) { @}
-          <li><a href="{@= course.url @}">{@= course.name @}</a></li>
-        {@ }); @}
-        </ul>
-    {@ } @}
-    {@ if(hasTalks) { @}
-        <h3 id="talks">Engineering Talks</h3>
-        <ul>
-        {@ _.each(talks, function(talk) { @}
-          <li><a href="{@= talk.url @}">{@= talk.name @}</a></li>
-        {@ }); @}
-        </ul>
-    {@ } @}
-</script>
-
 <script type="text/html" id="project-download-widget-controls-template">
     <div class="js-download-widget-selector">
         <select class='selector selectpicker'>
