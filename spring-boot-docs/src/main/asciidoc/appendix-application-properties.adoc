@@ -335,8 +335,8 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.field-naming-strategy= # fully qualified name of the FieldNamingStrategy to use
 
 	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProerties.{sc-ext}[EmbeddedMongoProperties])
-	spring.embedded-mongodb.version=2.6.10 # version of Mongo to use
-	spring.embedded-mongodb.features=SYNC_DELAY # comma-separated list of features to enable
+	spring.mongodb.embedded.version=2.6.10 # version of Mongo to use
+	spring.mongodb.embedded.features=SYNC_DELAY # comma-separated list of features to enable
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.jpa.properties.*= # properties to set on the JPA connection

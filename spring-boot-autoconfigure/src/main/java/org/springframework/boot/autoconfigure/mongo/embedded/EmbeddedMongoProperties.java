@@ -30,7 +30,7 @@ import de.flapdoodle.embed.mongo.distribution.Feature;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.embedded-mongodb")
+@ConfigurationProperties(prefix = "spring.mongodb.embedded")
 public class EmbeddedMongoProperties {
 
 	/**

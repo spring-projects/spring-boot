@@ -73,7 +73,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		int mongoPort = findAvailableTcpPort();
 		addEnvironment(this.context, "spring.data.mongodb.port=" + mongoPort,
-				"spring.embedded-mongodb.features=TEXT_SEARCH, SYNC_DELAY");
+				"spring.mongodb.embedded.features=TEXT_SEARCH, SYNC_DELAY");
 		this.context.register(EmbeddedMongoAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures(),
@@ -100,7 +100,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		int mongoPort = findAvailableTcpPort();
 		addEnvironment(this.context, "spring.data.mongodb.port=" + mongoPort);
 		if (configuredVersion != null) {
-			addEnvironment(this.context, "spring.embedded-mongodb.version="
+			addEnvironment(this.context, "spring.mongodb.embedded.version="
 					+ configuredVersion);
 		}
 		this.context.register(MongoAutoConfiguration.class,
