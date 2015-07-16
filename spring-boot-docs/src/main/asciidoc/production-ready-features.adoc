@@ -7,10 +7,10 @@ Spring Boot includes a number of additional features to help you monitor and man
 application when it's pushed to production. You can choose to manage and monitor your
 application using HTTP endpoints, with JMX or even by remote shell (SSH or Telnet).
 Auditing, health and metrics gathering can be automatically applied to your application.
---
 
-NOTE: Actuator HTTP endpoints are only available with a Spring MVC-based application. In
+Actuator HTTP endpoints are only available with a Spring MVC-based application. In
 particular, it will not work with Jersey unless you enable Spring MVC as well.
+--
 
 
 [[production-ready-enabling]]
