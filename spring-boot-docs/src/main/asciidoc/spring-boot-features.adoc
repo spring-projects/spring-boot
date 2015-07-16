@@ -912,6 +912,7 @@ The following items are output:
 * Logger name -- This is usually the source class name (often abbreviated).
 * The log message.
 
+NOTE: Logback does not have a `FATAL` level (it is mapped to `ERROR`)
 
 
 [[boot-features-logging-console-output]]
@@ -1073,12 +1074,17 @@ it's loaded too early. You need to either use `logback-spring.xml` or define a
 The `<springProfile>` tag allows you to optionally include or exclude sections of
 configuration based on the active Spring profiles. Profile sections are supported anywhere
 within the `<configuration>` element. Use the `name` attribute to specify which profile
-accepts the configuration.
+accepts the configuration. Multiple profiles can be specified using a comma-separated
+list.
 
 [source,xml,indent=0]
 ----
 	<springProfile name="staging">
 		<!-- configuration to be enabled when the "staging" profile is active -->
+	</springProfile>
+
+	<springProfile name="dev, staging">
+		<!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
 	</springProfile>
 
 	<springProfile name="!production">
@@ -1420,6 +1426,43 @@ marshal responses into the desired representation. The `ObjectMapper` will be cu
 You can take control of Spring HATEOAS's configuration by using
 `@EnableHypermediaSupport`. Note that this will disable the `ObjectMapper` customization
 described above.
+
+
+
+[[boot-features-cors]]
+==== CORS support
+
+http://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing]
+(CORS) is a http://www.w3.org/TR/cors/[W3C specification] implemented by
+http://caniuse.com/#feat=cors[most browsers] that allows you to specify in a flexible
+way what kind of cross domain requests are authorized, instead of using some less secure
+and less powerful approaches like IFRAME or JSONP.
+
+As of version 4.2, Spring MVC {spring-reference}/#cors[supports CORS] out of the box.
+Using {spring-reference}/#_controller_method_cors_configuration[controller method CORS
+configuration] with
+{spring-javadoc}/org/springframework/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`]
+annotations in your Spring Boot application does not require any specific configuration.
+{spring-reference}/#_global_cors_configuration[Global CORS configuration] can be defined
+by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)`
+method:
+
+[source,java,indent=0]
+----
+	@Configuration
+	public class MyConfiguration {
+
+		@Bean
+		public WebMvcConfigurer corsConfigurer() {
+			return new WebMvcConfigurerAdapter() {
+				@Override
+				public void addCorsMappings(CorsRegistry registry) {
+					registry.addMapping("/api/**");
+				}
+			};
+		}
+	}
+----
 
 
 
@@ -2475,6 +2518,26 @@ is now a Mongo data class rather than a JPA `@Entity`, it will work in the same 
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping
 technologies, refer to their http://projects.spring.io/spring-data-mongodb/[reference
 documentation].
+
+
+
+[[boot-features-mongo-embedded]]
+==== Embedded Mongo
+Spring Boot offers auto-configuration for
+https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo[Embedded Mongo]. To use
+it in your Spring Boot application add a dependency on
+`de.flapdoodle.embed:de.flapdoodle.embed.mongo`.
+
+The port that Mongo will listen on can be configured using the `spring.data.mongodb.port`
+property. To use a randomly allocated free port use a value of zero. The `MongoClient`
+created by `MongoAutoConfiguration` will be automatically configured to use the randomly
+allocated port.
+
+If you have SLF4J on the classpath, output produced by Mongo will be automatically routed
+to a logger named `org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongo`.
+
+You can declare your own `IMongodConfig` and `IRuntimeConfig` beans to take control of the
+Mongo instance's configuration and logging routing.
 
 
 

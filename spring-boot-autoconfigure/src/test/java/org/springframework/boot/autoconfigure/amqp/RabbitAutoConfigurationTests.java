@@ -23,6 +23,8 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
@@ -183,6 +185,26 @@ public class RabbitAutoConfigurationTests {
 						SimpleRabbitListenerContainerFactory.class);
 		rabbitListenerContainerFactory.setTxSize(10);
 		verify(rabbitListenerContainerFactory).setTxSize(10);
+	}
+
+	@Test
+	public void testRabbitListenerContainerFactoryWithCustomSettings() {
+		load(TestConfiguration.class,
+				"spring.rabbitmq.listener.acknowledgeMode:manual",
+				"spring.rabbitmq.listener.concurrency:5",
+				"spring.rabbitmq.listener.maxConcurrency:10",
+				"spring.rabbitmq.listener.prefetch=40",
+				"spring.rabbitmq.listener.transactionSize:20");
+		SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = this.context
+				.getBean("rabbitListenerContainerFactory",
+						SimpleRabbitListenerContainerFactory.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertEquals(AcknowledgeMode.MANUAL,
+				dfa.getPropertyValue("acknowledgeMode"));
+		assertEquals(5, dfa.getPropertyValue("concurrentConsumers"));
+		assertEquals(10, dfa.getPropertyValue("maxConcurrentConsumers"));
+		assertEquals(40, dfa.getPropertyValue("prefetchCount"));
+		assertEquals(20, dfa.getPropertyValue("txSize"));
 	}
 
 	@Test

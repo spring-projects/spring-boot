@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.env.Environment;
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 
 import com.mongodb.MongoClient;
@@ -42,7 +43,10 @@ import com.mongodb.ServerAddress;
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
 
-	private static final int DEFAULT_PORT = 27017;
+	/**
+	 * Default port used when the configured port is {@code null}.
+	 */
+	public static final int DEFAULT_PORT = 27017;
 
 	/**
 	 * Mongo server host.
@@ -178,8 +182,34 @@ public class MongoProperties {
 		return new MongoClientURI(this.uri).getDatabase();
 	}
 
+	/**
+	 * Creates a {@link MongoClient} using the given {@code options}
+	 *
+	 * @param options the options
+	 * @return the Mongo client
+	 * @throws UnknownHostException if the configured host is unknown
+	 * @deprecated Since 1.3.0 in favour of
+	 * {@link #createMongoClient(MongoClientOptions, Environment)}
+	 */
+	@Deprecated
 	public MongoClient createMongoClient(MongoClientOptions options)
 			throws UnknownHostException {
+		return this.createMongoClient(options, null);
+	}
+
+	/**
+	 * Creates a {@link MongoClient} using the given {@code options} and
+	 * {@code environment}. If the configured port is zero, the value of the
+	 * {@code local.server.port} property retrieved from the {@code environment} is used
+	 * to configure the client.
+	 *
+	 * @param options the options
+	 * @param environment the environment
+	 * @return the Mongo client
+	 * @throws UnknownHostException if the configured host is unknown
+	 */
+	public MongoClient createMongoClient(MongoClientOptions options,
+			Environment environment) throws UnknownHostException {
 		try {
 			if (hasCustomAddress() || hasCustomCredentials()) {
 				if (options == null) {
@@ -193,7 +223,7 @@ public class MongoProperties {
 							this.username, database, this.password));
 				}
 				String host = this.host == null ? "localhost" : this.host;
-				int port = this.port == null ? DEFAULT_PORT : this.port;
+				int port = determinePort(environment);
 				return new MongoClient(Arrays.asList(new ServerAddress(host, port)),
 						credentials, options);
 			}
@@ -211,6 +241,24 @@ public class MongoProperties {
 
 	private boolean hasCustomCredentials() {
 		return this.username != null && this.password != null;
+	}
+
+	private int determinePort(Environment environment) {
+		if (this.port == null) {
+			return DEFAULT_PORT;
+		}
+		if (this.port == 0) {
+			if (environment != null) {
+				String localPort = environment.getProperty("local.mongo.port");
+				if (localPort != null) {
+					return Integer.valueOf(localPort);
+				}
+			}
+			throw new IllegalStateException(
+					"spring.data.mongodb.port=0 and no local mongo port configuration "
+							+ "is available");
+		}
+		return this.port;
 	}
 
 	private Builder builder(MongoClientOptions options) {

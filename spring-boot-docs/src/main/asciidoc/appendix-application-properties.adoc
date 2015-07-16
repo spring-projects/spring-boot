@@ -334,6 +334,10 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.repositories.enabled=true # if spring data repository support is enabled
 	spring.data.mongodb.field-naming-strategy= # fully qualified name of the FieldNamingStrategy to use
 
+	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProerties.{sc-ext}[EmbeddedMongoProperties])
+	spring.mongodb.embedded.version=2.6.10 # version of Mongo to use
+	spring.mongodb.embedded.features=SYNC_DELAY # comma-separated list of features to enable
+
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.jpa.properties.*= # properties to set on the JPA connection
 	spring.jpa.open-in-view=true
@@ -469,6 +473,11 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.port= # connection port
 	spring.rabbitmq.password= # login password
 	spring.rabbitmq.requested-heartbeat= # requested heartbeat timeout, in seconds; zero for none
+	spring.rabbitmq.listener.acknowledge-mode= # acknowledge mode of container
+	spring.rabbitmq.listener.concurrency= # minimum number of consumers
+	spring.rabbitmq.listener.max-concurrency= # maximum number of consumers
+	spring.rabbitmq.listener.prefetch= # number of messages to be handled in a single request
+	spring.rabbitmq.listener.transaction-size= # number of messages to be processed in a transaction
 	spring.rabbitmq.ssl.enabled=false # enable SSL support
 	spring.rabbitmq.ssl.key-store= # path to the key store that holds the SSL certificate
 	spring.rabbitmq.ssl.key-store-password= # password used to access the key store
@@ -523,6 +532,9 @@ content into your application; rather pick only the properties that you need.
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # JNDI location of a JMS ConnectionFactory
+	spring.jms.listener.acknowledge-mode= # session acknowledgment mode
+	spring.jms.listener.concurrency= # minimum number of concurrent consumers
+	spring.jms.listener.max-concurrency= # maximum number of concurrent consumers
 	spring.jms.pub-sub-domain= # false for queue (default), true for topic
 
 	# Email ({sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[MailProperties])

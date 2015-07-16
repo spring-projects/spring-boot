@@ -40,6 +40,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link SpringBootJoranConfigurator}.
  *
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 public class SpringBootJoranConfiguratorTests {
 
@@ -75,6 +76,22 @@ public class SpringBootJoranConfiguratorTests {
 	public void profileActive() throws Exception {
 		this.environment.setActiveProfiles("production");
 		initialize("production-profile.xml");
+		this.logger.trace("Hello");
+		this.out.expect(containsString("Hello"));
+	}
+
+	@Test
+	public void multipleNamesFirstProfileActive() throws Exception {
+		this.environment.setActiveProfiles("production");
+		initialize("multi-profile-names.xml");
+		this.logger.trace("Hello");
+		this.out.expect(containsString("Hello"));
+	}
+
+	@Test
+	public void multipleNamesSecondProfileActive() throws Exception {
+		this.environment.setActiveProfiles("test");
+		initialize("multi-profile-names.xml");
 		this.logger.trace("Hello");
 		this.out.expect(containsString("Hello"));
 	}

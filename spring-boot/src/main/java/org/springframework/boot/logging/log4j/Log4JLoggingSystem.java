@@ -49,7 +49,7 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 		levels.put(LogLevel.INFO, Level.INFO);
 		levels.put(LogLevel.WARN, Level.WARN);
 		levels.put(LogLevel.ERROR, Level.ERROR);
-		levels.put(LogLevel.FATAL, Level.ERROR);
+		levels.put(LogLevel.FATAL, Level.FATAL);
 		levels.put(LogLevel.OFF, Level.OFF);
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
