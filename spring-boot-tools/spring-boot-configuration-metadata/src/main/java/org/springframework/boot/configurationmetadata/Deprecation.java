@@ -34,7 +34,7 @@ public class Deprecation {
 	 * @return the deprecation reason
 	 */
 	public String getReason() {
-		return reason;
+		return this.reason;
 	}
 
 	public void setReason(String reason) {
@@ -42,11 +42,12 @@ public class Deprecation {
 	}
 
 	/**
-	 * The full name of the property that replaces the related deprecated property, if any.
+	 * The full name of the property that replaces the related deprecated property, if
+	 * any.
 	 * @return the replacement property name
 	 */
 	public String getReplacement() {
-		return replacement;
+		return this.replacement;
 	}
 
 	public void setReplacement(String replacement) {
@@ -55,7 +56,8 @@ public class Deprecation {
 
 	@Override
 	public String toString() {
-		return "Deprecation{" + "reason='" + reason + '\'' + ", replacement='" + replacement + '\'' + '}';
+		return "Deprecation{" + "reason='" + this.reason + '\'' + ", replacement='"
+				+ this.replacement + '\'' + '}';
 	}
 
 }

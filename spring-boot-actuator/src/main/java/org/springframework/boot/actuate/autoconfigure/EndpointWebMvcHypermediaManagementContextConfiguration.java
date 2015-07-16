@@ -177,66 +177,67 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private static class NotSpringDataRestHomePageCondition extends
 				SpringBootCondition {
 
+			private static final String REST_CONFIGURATION_CLASS = "org.springframework."
+					+ "data.rest.core.config.RepositoryRestConfiguration";
+
 			@Override
 			public ConditionOutcome getMatchOutcome(ConditionContext context,
 					AnnotatedTypeMetadata metadata) {
-				if (!ClassUtils
-						.isPresent(
-								"org.springframework.data.rest.core.config.RepositoryRestConfiguration",
-								null)) {
+				if (!ClassUtils.isPresent(REST_CONFIGURATION_CLASS, null)) {
 					return ConditionOutcome.match("Spring Data REST is not present");
 				}
-				Class<?> type = ClassUtils
-						.resolveClassName(
-								"org.springframework.data.rest.core.config.RepositoryRestConfiguration",
-								null);
+				return getMatchOutcome(context,
+						ClassUtils.resolveClassName(REST_CONFIGURATION_CLASS, null));
+			}
+
+			private ConditionOutcome getMatchOutcome(ConditionContext context,
+					Class<?> configurationClass) {
 				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-				if (beanFactory.getBeanNamesForType(type, true, false).length == 0) {
+				if (beanFactory.getBeanNamesForType(configurationClass, true, false).length == 0) {
 					return ConditionOutcome.match("Spring Data REST is not configured");
 				}
 				Environment environment = context.getEnvironment();
+				String path = getManagementContextPath(beanFactory, environment);
+				if (isHome(path)) {
+					path = getProperty(environment, "endpoints.links.", "path");
+					if (isHome(path)) {
+						return ConditionOutcome.noMatch("Management context path "
+								+ "is home and so is links path");
+					}
+					return ConditionOutcome.match("Management context path "
+							+ "is home but links path is not: '" + path + "'");
+				}
+				// N.B. we don't cover the case where the user has Spring Data REST
+				// but changes *its* home page - you'd have to instantiate the
+				// RepositoryRestConfiguration and look at it's basePath for that.
+				return ConditionOutcome.match("Management context path "
+						+ "is not home: '" + path + "'");
+			}
+
+			private String getManagementContextPath(
+					ConfigurableListableBeanFactory beanFactory, Environment environment) {
 				String path = getProperty(environment, "management.", "contextPath");
 				if (path == null
 						&& hasCustomBeanDefinition(beanFactory,
 								ManagementServerProperties.class,
 								ManagementServerPropertiesAutoConfiguration.class)) {
-					ManagementServerProperties bean = beanFactory
-							.getBean(ManagementServerProperties.class);
-					path = bean.getContextPath();
+					path = beanFactory.getBean(ManagementServerProperties.class)
+							.getContextPath();
 				}
-				if (isHome(path)) {
-					path = getProperty(environment, "endpoints.links.", "path");
-					if (isHome(path)) {
-						return ConditionOutcome
-								.noMatch("Management context path is home and so is links path");
-					}
-					else {
-						return ConditionOutcome
-								.match("Management context path is home but links path is not: '"
-										+ path + "'");
-					}
-				}
-				else {
-					// N.B. we don't cover the case where the user has Spring Data REST
-					// but changes *its* home page - you'd have to instantiate the
-					// RepositoryRestConfiguration and look at it's basePath for that.
-					return ConditionOutcome
-							.match("Management context path is not home: '" + path + "'");
-				}
+				return path;
 			}
 
-			private static boolean isHome(String path) {
+			private boolean isHome(String path) {
 				return path == null || "".equals(path) || "/".equals(path);
 			}
 
-			private static String getProperty(Environment environment, String prefix,
-					String name) {
+			private String getProperty(Environment environment, String prefix, String name) {
 				RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 						environment, prefix);
 				return resolver.getProperty(name, String.class);
 			}
 
-			private static <T> boolean hasCustomBeanDefinition(
+			private <T> boolean hasCustomBeanDefinition(
 					ConfigurableListableBeanFactory beanFactory, Class<T> type,
 					Class<?> configClass) {
 				String[] names = beanFactory.getBeanNamesForType(type, true, false);

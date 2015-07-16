@@ -37,7 +37,7 @@ public class ItemDeprecation {
 	}
 
 	public String getReason() {
-		return reason;
+		return this.reason;
 	}
 
 	public void setReason(String reason) {
@@ -45,7 +45,7 @@ public class ItemDeprecation {
 	}
 
 	public String getReplacement() {
-		return replacement;
+		return this.replacement;
 	}
 
 	public void setReplacement(String replacement) {
@@ -54,26 +54,42 @@ public class ItemDeprecation {
 
 	@Override
 	public String toString() {
-		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", " +
-				"replacement='" + this.replacement + '\'' + '}';
+		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", "
+				+ "replacement='" + this.replacement + '\'' + '}';
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		ItemDeprecation that = (ItemDeprecation) o;
-
-		if (reason != null ? !reason.equals(that.reason) : that.reason != null) return false;
-		return !(replacement != null ? !replacement.equals(that.replacement) : that.replacement != null);
-
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		ItemDeprecation other = (ItemDeprecation) o;
+		return nullSafeEquals(this.reason, other.reason)
+				&& nullSafeEquals(this.replacement, other.replacement);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = reason != null ? reason.hashCode() : 0;
-		result = 31 * result + (replacement != null ? replacement.hashCode() : 0);
+		int result = nullSafeHashCode(this.reason);
+		result = 31 * result + nullSafeHashCode(this.replacement);
 		return result;
 	}
+
+	private boolean nullSafeEquals(Object o1, Object o2) {
+		if (o1 == o2) {
+			return true;
+		}
+		if (o1 == null || o2 == null) {
+			return false;
+		}
+		return o1.equals(o2);
+	}
+
+	private int nullSafeHashCode(Object o) {
+		return (o == null ? 0 : o.hashCode());
+	}
+
 }

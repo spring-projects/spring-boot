@@ -210,10 +210,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				boolean deprecated = hasDeprecateAnnotation(getter)
 						|| hasDeprecateAnnotation(setter)
 						|| hasDeprecateAnnotation(element);
-				this.metadataCollector.add(ItemMetadata
-						.newProperty(prefix, name, dataType, sourceType, null,
-								description, defaultValue,
-								deprecated ? new ItemDeprecation() : null));
+				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
+						dataType, sourceType, null, description, defaultValue,
+						(deprecated ? new ItemDeprecation() : null)));
 			}
 		}
 	}
@@ -240,10 +239,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				Object defaultValue = fieldValues.get(name);
 				boolean deprecated = hasDeprecateAnnotation(field)
 						|| hasDeprecateAnnotation(element);
-				this.metadataCollector.add(ItemMetadata
-						.newProperty(prefix, name, dataType, sourceType, null,
-								description, defaultValue,
-								deprecated ? new ItemDeprecation() : null));
+				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
+						dataType, sourceType, null, description, defaultValue,
+						(deprecated ? new ItemDeprecation() : null)));
 			}
 		}
 	}

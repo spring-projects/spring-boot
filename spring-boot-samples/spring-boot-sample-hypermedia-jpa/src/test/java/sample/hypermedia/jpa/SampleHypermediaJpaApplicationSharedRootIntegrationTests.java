@@ -16,10 +16,6 @@
 
 package sample.hypermedia.jpa;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,12 +32,16 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = SampleHypermediaJpaApplication.class)
 @DirtiesContext
-@TestPropertySource(properties = { "endpoints.links.path=/admin", "management.contextPath=",
-"endpoints.docs.curies.enabled=false" })
+@TestPropertySource(properties = { "endpoints.links.path=/admin",
+		"management.contextPath=", "endpoints.docs.curies.enabled=false" })
 public class SampleHypermediaJpaApplicationSharedRootIntegrationTests {
 
 	@Autowired
@@ -60,24 +60,24 @@ public class SampleHypermediaJpaApplicationSharedRootIntegrationTests {
 	@Test
 	public void home() throws Exception {
 		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists())
-		.andExpect(jsonPath("$._links.health").exists())
-		.andExpect(jsonPath("$._links.admin").exists())
-		.andExpect(jsonPath("$._links.books").exists());
+				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists())
+				.andExpect(jsonPath("$._links.health").exists())
+				.andExpect(jsonPath("$._links.admin").exists())
+				.andExpect(jsonPath("$._links.books").exists());
 	}
 
 	@Test
 	public void health() throws Exception {
 		this.mockMvc.perform(get("/health").accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
+				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
 	}
 
 	@Test
 	public void links() throws Exception {
 		this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
-		.andExpect(status().isOk())
-		.andExpect(jsonPath("$._links.health").exists())
-		.andExpect(jsonPath("$._links").exists());
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$._links.health").exists())
+				.andExpect(jsonPath("$._links").exists());
 	}
 
 	@Test

@@ -157,7 +157,8 @@ class JsonReader {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			Deprecation deprecation = new Deprecation();
 			deprecation.setReason(deprecationJsonObject.optString("reason", null));
-			deprecation.setReplacement(deprecationJsonObject.optString("replacement", null));
+			deprecation.setReplacement(deprecationJsonObject.optString("replacement",
+					null));
 			return deprecation;
 		}
 		return (object.optBoolean("deprecated") ? new Deprecation() : null);

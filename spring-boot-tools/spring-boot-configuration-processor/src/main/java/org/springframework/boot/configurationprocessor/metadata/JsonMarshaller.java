@@ -221,7 +221,8 @@ public class JsonMarshaller {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			ItemDeprecation deprecation = new ItemDeprecation();
 			deprecation.setReason(deprecationJsonObject.optString("reason", null));
-			deprecation.setReplacement(deprecationJsonObject.optString("replacement", null));
+			deprecation.setReplacement(deprecationJsonObject.optString("replacement",
+					null));
 			return deprecation;
 		}
 		return (object.optBoolean("deprecated") ? new ItemDeprecation() : null);

@@ -416,13 +416,12 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void mergingOfAdditionalDeprecation() throws Exception {
-		writePropertyDeprecation(ItemMetadata.newProperty("simple", "wrongName", "java.lang.String",
-				null, null, null, null, new ItemDeprecation("Lame name.", "simple.the-name")));
+		writePropertyDeprecation(ItemMetadata.newProperty("simple", "wrongName",
+				"java.lang.String", null, null, null, null, new ItemDeprecation(
+						"Lame name.", "simple.the-name")));
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
-		assertThat(
-				metadata,
-				containsProperty("simple.wrong-name", String.class)
-						.withDeprecation("Lame name.", "simple.the-name"));
+		assertThat(metadata, containsProperty("simple.wrong-name", String.class)
+				.withDeprecation("Lame name.", "simple.the-name"));
 	}
 
 	@Test

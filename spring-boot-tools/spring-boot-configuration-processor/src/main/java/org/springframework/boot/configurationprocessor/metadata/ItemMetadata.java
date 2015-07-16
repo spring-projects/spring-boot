@@ -97,7 +97,7 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 	}
 
 	public ItemDeprecation getDeprecation() {
-		return deprecation;
+		return this.deprecation;
 	}
 
 	@Override

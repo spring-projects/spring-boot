@@ -165,12 +165,14 @@ public class ConfigurationMetadataMatchers {
 
 		public ContainsItemMatcher ofType(Class<?> dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType.getName(),
-					this.sourceType, this.description, this.defaultValue, this.deprecation);
+					this.sourceType, this.description, this.defaultValue,
+					this.deprecation);
 		}
 
 		public ContainsItemMatcher ofType(String dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType,
-					this.sourceType, this.description, this.defaultValue, this.deprecation);
+					this.sourceType, this.description, this.defaultValue,
+					this.deprecation);
 		}
 
 		public ContainsItemMatcher fromSource(Class<?> sourceType) {
@@ -190,7 +192,8 @@ public class ConfigurationMetadataMatchers {
 
 		public ContainsItemMatcher withDeprecation(String reason, String replacement) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.type,
-					this.sourceType, this.description, this.defaultValue, new ItemDeprecation(reason, replacement));
+					this.sourceType, this.description, this.defaultValue,
+					new ItemDeprecation(reason, replacement));
 		}
 
 		private ItemMetadata getFirstItemWithName(ConfigurationMetadata metadata,

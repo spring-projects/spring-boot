@@ -13,6 +13,7 @@ particular, it will not work with Jersey unless you enable Spring MVC as well.
 --
 
 
+
 [[production-ready-enabling]]
 == Enabling production-ready features
 The {github-code}/spring-boot-actuator[`spring-boot-actuator`] module provides all of

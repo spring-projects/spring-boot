@@ -50,7 +50,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Dave Syer
  */
 public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
-ApplicationContextAware {
+		ApplicationContextAware {
 
 	private final Set<MvcEndpoint> endpoints;
 

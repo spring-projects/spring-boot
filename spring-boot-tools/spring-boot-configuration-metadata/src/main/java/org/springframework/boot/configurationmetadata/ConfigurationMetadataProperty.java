@@ -160,7 +160,7 @@ public class ConfigurationMetadataProperty {
 	 * @see #isDeprecated()
 	 */
 	public Deprecation getDeprecation() {
-		return deprecation;
+		return this.deprecation;
 	}
 
 	public void setDeprecation(Deprecation deprecation) {
