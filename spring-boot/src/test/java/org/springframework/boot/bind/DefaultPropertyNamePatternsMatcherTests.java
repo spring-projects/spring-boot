@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link DefaultPropertyNamePatternsMatcher}.
  *
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class DefaultPropertyNamePatternsMatcherTests {
 
@@ -42,9 +43,21 @@ public class DefaultPropertyNamePatternsMatcherTests {
 	}
 
 	@Test
+	public void namesArrayMatch() {
+		assertTrue(new DefaultPropertyNamePatternsMatcher("aaaa", "bbbb", "cccc")
+				.matches("bbbb[0]"));
+	}
+
+	@Test
 	public void namesLonger() {
 		assertFalse(new DefaultPropertyNamePatternsMatcher("aaaaa", "bbbbb", "ccccc")
 				.matches("bbbb"));
+	}
+
+	@Test
+	public void namesLongerWithSeparatorInPattern() {
+		assertTrue(new DefaultPropertyNamePatternsMatcher("aaaa.bar", "bbbb.FOO", "cccc.bar")
+				.matches("bbbb.foo"));
 	}
 
 	@Test
@@ -60,10 +73,34 @@ public class DefaultPropertyNamePatternsMatcherTests {
 	}
 
 	@Test
+	public void nameWithDotAndUnderscore() throws Exception {
+		assertTrue(new DefaultPropertyNamePatternsMatcher("aaaa", "bbbb", "cccc")
+				.matches("bbbb.foo_bar"));
+	}
+
+	@Test
+	public void nameWithDotAndUnderscoreUppercase() throws Exception {
+		assertTrue(new DefaultPropertyNamePatternsMatcher("aaaa", "bbbb", "cccc")
+				.matches("bbbb.FOO_BAR"));
+	}
+
+	@Test
 	public void namesMatchWithDifferentLengths() throws Exception {
 		assertTrue(new DefaultPropertyNamePatternsMatcher("aaa", "bbbb", "ccccc")
 				.matches("bbbb"));
 
+	}
+
+	@Test
+	public void patternWithDotAndUnderscore() throws Exception {
+		assertTrue(new DefaultPropertyNamePatternsMatcher("aaaa.spam", "bbbb.fooBar", "cccc.bucket")
+				.matches("bbbb.foo_bar"));
+	}
+
+	@Test
+	public void patternWithDotAndUnderscoreUppercase() throws Exception {
+		assertTrue(new DefaultPropertyNamePatternsMatcher("aaaa.spam", "bbbb.fooBar", "cccc.bucket")
+				.matches("bbbb.FOO_BAR"));
 	}
 
 }

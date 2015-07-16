@@ -33,6 +33,15 @@ interface PropertyNamePatternsMatcher {
 
 	};
 
+	PropertyNamePatternsMatcher ALL = new PropertyNamePatternsMatcher() {
+
+		@Override
+		public boolean matches(String propertyName) {
+			return true;
+		}
+
+	};
+
 	/**
 	 * Return {@code true} of the property name matches.
 	 * @param propertyName the property name

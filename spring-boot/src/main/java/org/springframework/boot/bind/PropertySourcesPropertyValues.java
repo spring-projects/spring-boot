@@ -16,7 +16,6 @@
 
 package org.springframework.boot.bind;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -30,7 +29,6 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.validation.DataBinder;
 
 /**
@@ -45,10 +43,6 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
 
 	private final PropertySources propertySources;
-
-	private static final Collection<String> PATTERN_MATCHED_PROPERTY_SOURCES = Arrays
-			.asList(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-					StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
@@ -83,7 +77,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertyNamePatternsMatcher includes, Collection<String> names) {
 		this.propertySources = propertySources;
 		if (includes == null) {
-			includes = PropertyNamePatternsMatcher.NONE;
+			includes = PropertyNamePatternsMatcher.ALL;
 		}
 		if (names == null) {
 			names = Collections.emptySet();
@@ -117,12 +111,11 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertySourcesPropertyResolver resolver, PropertyNamePatternsMatcher includes) {
 		if (source.getPropertyNames().length > 0) {
 			for (String propertyName : source.getPropertyNames()) {
-				if (PropertySourcesPropertyValues.PATTERN_MATCHED_PROPERTY_SOURCES
-						.contains(source.getName()) && !includes.matches(propertyName)) {
+				if (!includes.matches(propertyName)) {
 					continue;
 				}
-				Object value = getEnumerableProperty(source, resolver, propertyName);
 				if (!this.propertyValues.containsKey(propertyName)) {
+					Object value = getEnumerableProperty(source, resolver, propertyName);
 					this.propertyValues.put(propertyName, new PropertyValue(propertyName,
 							value));
 				}
@@ -154,6 +147,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
 		for (String propertyName : exacts) {
 			if (!source.containsProperty(propertyName)) {
+				// Make sure we only process properties that are in this source, otherwise
+				// the order is lost
 				continue;
 			}
 			Object value = null;

@@ -42,45 +42,38 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 
 	@Override
 	public boolean matches(String propertyName) {
-		char[] propertNameChars = propertyName.toCharArray();
-		boolean[] match = new boolean[this.names.length];
-		boolean noneMatched = true;
+		if (propertyName.contains("[")) {
+			propertyName = propertyName.substring(0, propertyName.indexOf("["));
+		}
 		for (int i = 0; i < this.names.length; i++) {
-			if (this.names[i].length() <= propertNameChars.length) {
-				match[i] = true;
-				noneMatched = false;
-			}
-		}
-		if (noneMatched) {
-			return false;
-		}
-		for (int charIndex = 0; charIndex < propertNameChars.length; charIndex++) {
-			noneMatched = true;
-			for (int nameIndex = 0; nameIndex < this.names.length; nameIndex++) {
-				if (match[nameIndex]) {
-					if (charIndex < this.names[nameIndex].length()) {
-						if (this.names[nameIndex].charAt(charIndex) == propertNameChars[charIndex]) {
-							match[nameIndex] = true;
-							noneMatched = false;
-						}
-					}
-					else {
-						char charAfter = propertNameChars[this.names[nameIndex].length()];
-						if (charAfter == '.' || charAfter == '_') {
-							match[nameIndex] = true;
-							noneMatched = false;
-						}
-					}
+			for (String relaxedName : new RelaxedNames(names[i])) {
+				if (relaxedName.equals(propertyName)) {
+					return true;
 				}
 			}
-			if (noneMatched) {
-				return false;
-			}
-		}
-		for (int i = 0; i < match.length; i++) {
-			if (match[i]) {
+			if (matchWithSeparator(names[i], propertyName, "[\\._]")) {
 				return true;
 			}
+		}
+		return false;
+	}
+
+	private boolean matchWithSeparator(String targetName, String propertyName,
+			String separator) {
+		String[] targetNameTokens = targetName.split(separator);
+		String[] propertyNameTokens = propertyName.split(separator);
+		for (int j = 0; j < propertyNameTokens.length; j++) {
+			if (j >= targetNameTokens.length) {
+				// No match and nothing left to match on
+				break;
+			}
+			String name = propertyNameTokens[j];
+			for (String relaxedName : new RelaxedNames(targetNameTokens[j])) {
+				if (relaxedName.equals(name)) {
+					return true;
+				}
+			}
+
 		}
 		return false;
 	}
