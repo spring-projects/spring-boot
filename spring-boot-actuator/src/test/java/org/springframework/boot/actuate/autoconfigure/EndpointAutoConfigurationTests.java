@@ -36,6 +36,7 @@ import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -60,6 +61,8 @@ import static org.junit.Assert.assertTrue;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Meang Akira Tanaka
+ * 
  */
 public class EndpointAutoConfigurationTests {
 
@@ -137,17 +140,19 @@ public class EndpointAutoConfigurationTests {
 		assertNotNull(this.context.getBean(AutoConfigurationReportEndpoint.class));
 	}
 
-	// A
 	@Test
 	public void testInfoEndpointConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "info.foo:bar");
-		this.context.register(EndpointAutoConfiguration.class);
+		this.context.register(InfoProviderAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
+		
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertNotNull(endpoint);
-		assertNotNull(endpoint.invoke().get("git"));
-		assertEquals("bar", endpoint.invoke().get("foo"));
+		Info actual = endpoint.invoke();
+		assertNotNull(actual.get("git"));
+		Info environment = actual.get("environment");
+		assertEquals("bar", environment.get("foo"));
 	}
 
 	@Test
@@ -155,7 +160,7 @@ public class EndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.git.properties:classpath:nonexistent");
-		this.context.register(EndpointAutoConfiguration.class);
+		this.context.register(InfoProviderAutoConfiguration.class, EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertNotNull(endpoint);

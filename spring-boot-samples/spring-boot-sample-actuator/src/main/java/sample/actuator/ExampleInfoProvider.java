@@ -14,4 +14,8 @@ public class ExampleInfoProvider implements InfoProvider {
 		return result;
 	}
 
+	@Override
+	public String name() {
+		return "example";
+	}
 }

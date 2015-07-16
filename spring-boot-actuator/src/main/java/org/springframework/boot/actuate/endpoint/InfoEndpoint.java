@@ -26,7 +26,18 @@ import org.springframework.util.Assert;
 /**
  * {@link Endpoint} to expose arbitrary application information.
  * 
- * TODO how to extends
+ * The information, which the {@link InfoEndpoint} can provide can be customized to display any informations, 
+ * however initially the info endpoint will provide git version information (if available) and environment information,
+ * whose entries are prefixed with info.
+ * 
+ * In order to add additional information to the endpoint, one has to implement a class, which implements the {@link org.springframework.boot.actuate.info.InfoProvider}
+ * interface and register it in the application context. The InfoEndpoint will automatically pick it up, when it is being instantiated.  
+ *
+ * The standard InfoProvider for GIT is registered as the scmInfoProvider, and the registration can be changed 
+ * in case standard provider does not meet ones requirements.
+ *
+ * @see org.springframework.boot.actuate.info.ScmGitPropertiesInfoProvider
+ * @see org.springframework.boot.actuate.info.EnvironmentInfoProvider
  *
  * @author Dave Syer
  * @author Meang Akira Tanaka
@@ -39,7 +50,7 @@ public class InfoEndpoint extends AbstractEndpoint<Info> {
 	/**
 	 * Create a new {@link InfoEndpoint} instance.
 	 *
-	 * @param info the info to expose
+	 * @param infoProviders the infoProviders to be used
 	 */
 	public InfoEndpoint(Map<String, InfoProvider> infoProviders) {
 		super("info", false);

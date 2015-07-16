@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.info.EnvironmentInfoProvider;
 import org.springframework.boot.actuate.info.InfoProvider;
 import org.springframework.boot.actuate.info.ScmGitPropertiesInfoProvider;

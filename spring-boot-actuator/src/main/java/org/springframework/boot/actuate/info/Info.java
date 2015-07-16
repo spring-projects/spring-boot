@@ -24,14 +24,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * Carries information for a specific component or subsystem.
- * 
- * Please note that the information should not be 
- * 
- * <p>
- * <pre class="code">
- * 
- * </pre>
+ * Carries information from a specific info provider
+ *
+ * @see org.springframework.boot.actuate.endpoint.InfoEndpoint
  *
  * @author Meang Akira Tanaka
  * @since 1.3.0
