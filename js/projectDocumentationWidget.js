@@ -11,18 +11,13 @@ Spring.ProjectDocumentationWidget = function () {
   var quickStartEl = $('[data-download-widget-controls]');
   var mavenWidgetEl = $('.js-download-maven-widget');
   var documentationEl = $('.js-documentation-widget');
-  var resourcesEl = $('.project-sidebar-resource--wrapper');
 
   var projectUrl = apiBaseUrl + "/project_metadata/" + projectId;
   var promise = Spring.loadProject(projectUrl);
-  var coursesPromise = Spring.loadCourses("https://pivotallms.biglms.com/api/courses");
 
   promise.then(function (project) {
     Spring.buildDocumentationWidget(documentationEl, project);
     Spring.buildQuickStartWidget(quickStartEl, mavenWidgetEl, project);
-  });
-  coursesPromise.then(function(courseware) {
-    Spring.buildCoursesWidget(resourcesEl, courseware);
   });
 };
 
@@ -33,17 +28,6 @@ Spring.buildDocumentationWidget = function (documentationEl, project) {
     template: $("#project-documentation-widget-template").text()
   }).render();
 
-}
-Spring.buildCoursesWidget = function (resourcesEl, courseware) {
-  if(courseware.hasContent) {
-    var tpl = $("#project-courses-widget-template").text();
-    var view = new Spring.CoursesWidgetView({
-      el: resourcesEl,
-      model: courseware,
-      template: $("#project-courses-widget-template").text()
-    });
-    view.render();
-  }
 }
 Spring.buildQuickStartWidget = function (quickStartEl, mavenWidgetEl, project) {
   new Spring.QuickStartSelectorView({
@@ -63,13 +47,6 @@ Spring.loadProject = function (url) {
     });
 }
 
-Spring.loadCourses = function (url) {
-  return $.getJSON(url)
-    .then(function(data) {
-      return new Spring.Courseware(data);
-  });
-}
-
 Spring.Release = function (data) {
   _.extend(this, data);
 }
@@ -85,15 +62,6 @@ Spring.Release.prototype = {
     }
   }
 }
-
-Spring.Courseware = function (data) {
-  this.courses = data["edu1"];
-  this.talks = data["eng1"];
-  this.hasCourses = this.courses != null;
-  this.hasTalks = this.talks != null;
-  this.hasContent = this.hasTalks || this.hasCourses;
-  return this;
-};
 
 Spring.Project = function (data) {
   _.extend(this, data);
@@ -113,20 +81,6 @@ Spring.DocumentationWidgetView = Backbone.View.extend({
 
   render: function () {
     this.$el.html(
-      this.template(this.model)
-    );
-    return this;
-  }
-});
-
-Spring.CoursesWidgetView = Backbone.View.extend({
-  initialize: function () {
-    this.template = _.template(this.options.template);
-    _.bindAll(this, "render");
-  },
-
-  render: function () {
-    this.$el.append(
       this.template(this.model)
     );
     return this;
