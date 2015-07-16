@@ -34,12 +34,12 @@ import de.flapdoodle.embed.mongo.distribution.Feature;
 public class EmbeddedMongoProperties {
 
 	/**
-	 * Version of Mongo to use
+	 * Version of Mongo to use.
 	 */
 	private String version = "2.6.10";
 
 	/**
-	 * Comma-separated list of features to enable
+	 * Comma-separated list of features to enable.
 	 */
 	private Set<Feature> features = new HashSet<Feature>(
 			Arrays.asList(Feature.SYNC_DELAY));
