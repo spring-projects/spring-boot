@@ -18,6 +18,7 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
+		<java.classpath.jre>1.7</java.classpath.jre>
 	</properties>
 	<dependencies>
 		<!-- Compile -->
