@@ -912,6 +912,7 @@ The following items are output:
 * Logger name -- This is usually the source class name (often abbreviated).
 * The log message.
 
+NOTE: Logback does not have a `FATAL` level (it is mapped to `ERROR`)
 
 
 [[boot-features-logging-console-output]]
