@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +31,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Josh Thornhill
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -73,6 +75,11 @@ public class RabbitProperties {
 	 * Requested heartbeat timeout, in seconds; zero for none.
 	 */
 	private Integer requestedHeartbeat;
+
+	/**
+	 * Listener container configuration.
+	 */
+	private final Listener listener = new Listener();
 
 	public String getHost() {
 		if (this.addresses == null) {
@@ -180,6 +187,10 @@ public class RabbitProperties {
 		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
+	public Listener getListener() {
+		return this.listener;
+	}
+
 	public static class Ssl {
 
 		/**
@@ -271,4 +282,75 @@ public class RabbitProperties {
 		}
 
 	}
+
+	public static class Listener {
+
+		/**
+		 * Acknowledge mode of container.
+		 */
+		private AcknowledgeMode acknowledgeMode;
+
+		/**
+		 * Minimum number of consumers.
+		 */
+		private Integer concurrency;
+
+		/**
+		 * Maximum number of consumers.
+		 */
+		private Integer maxConcurrency;
+
+		/**
+		 * Number of messages to be handled in a single request.  It should be greater than
+		 * or equal to the transaction size (if used).
+		 */
+		private Integer prefetch;
+
+		/**
+		 * Number of messages to be processed in a transaction. For best results it should
+		 * be less than or equal to the prefetch count.
+		 */
+		private Integer transactionSize;
+
+		public AcknowledgeMode getAcknowledgeMode() {
+			return this.acknowledgeMode;
+		}
+
+		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			this.acknowledgeMode = acknowledgeMode;
+		}
+
+		public Integer getConcurrency() {
+			return this.concurrency;
+		}
+
+		public void setConcurrency(Integer concurrency) {
+			this.concurrency = concurrency;
+		}
+
+		public Integer getMaxConcurrency() {
+			return this.maxConcurrency;
+		}
+
+		public void setMaxConcurrency(Integer maxConcurrency) {
+			this.maxConcurrency = maxConcurrency;
+		}
+
+		public Integer getPrefetch() {
+			return this.prefetch;
+		}
+
+		public void setPrefetch(Integer prefetch) {
+			this.prefetch = prefetch;
+		}
+
+		public Integer getTransactionSize() {
+			return this.transactionSize;
+		}
+
+		public void setTransactionSize(Integer transactionSize) {
+			this.transactionSize = transactionSize;
+		}
+	}
+
 }
