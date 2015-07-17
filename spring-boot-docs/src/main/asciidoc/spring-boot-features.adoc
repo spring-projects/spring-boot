@@ -3087,7 +3087,7 @@ directly into your own beans:
 
 		@Autowired
 		public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
-			this.adminTemplate = adminTemplate;
+			this.amqpAdmin = amqpAdmin;
 			this.amqpTemplate = amqpTemplate;
 		}
 
