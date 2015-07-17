@@ -78,7 +78,7 @@ content into your application; rather pick only the properties that you need.
 	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.servlet-path= # the servlet path, defaults to '/'
 	server.display-name= # the display name of the application
-	server.session.persistent= # true if session should be saved across restarts
+	server.session.persistent=false # true if session should be saved across restarts
 	server.session.timeout= # session timeout in seconds
 	server.session.tracking-modes= # tracking modes (one or more of "cookie" ,"url", "ssl")
 	server.session.cookie.name= # session cookie name
