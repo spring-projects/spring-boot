@@ -40,6 +40,7 @@ import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
@@ -50,6 +51,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -277,10 +279,29 @@ public class JettyEmbeddedServletContainerFactory extends
 		Configuration[] configurations = getWebAppContextConfigurations(context,
 				initializersToUse);
 		context.setConfigurations(configurations);
-		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
-		SessionManager sessionManager = context.getSessionHandler().getSessionManager();
-		sessionManager.setMaxInactiveInterval(sessionTimeout);
+		configureSession(context);
 		postProcessWebAppContext(context);
+	}
+
+	private void configureSession(WebAppContext context) {
+		SessionManager sessionManager = context.getSessionHandler().getSessionManager();
+		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
+		sessionManager.setMaxInactiveInterval(sessionTimeout);
+		if (isPersistSession()) {
+			Assert.isInstanceOf(HashSessionManager.class, sessionManager,
+					"Unable to use persistent sessions");
+			configurePersistSession(sessionManager);
+		}
+	}
+
+	private void configurePersistSession(SessionManager sessionManager) {
+		try {
+			File storeDirectory = new ApplicationTemp().getFolder("jetty-sessions");
+			((HashSessionManager) sessionManager).setStoreDirectory(storeDirectory);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	private File getTempDirectory() {

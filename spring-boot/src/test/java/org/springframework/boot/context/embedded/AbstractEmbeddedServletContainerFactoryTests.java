@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -38,13 +39,17 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.InputStreamFactory;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.After;
 import org.junit.Rule;
@@ -95,6 +100,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	protected EmbeddedServletContainer container;
+
+	private final HttpClientContext httpClientContext = HttpClientContext.create();
 
 	@After
 	public void teardown() {
@@ -530,6 +537,28 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
+	public void persistSession() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setPersistSession(true);
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		String s1 = getResponse(getLocalUrl("/session"));
+		String s2 = getResponse(getLocalUrl("/session"));
+		this.container.stop();
+		this.container = factory
+				.getEmbeddedServletContainer(sessionServletRegistration());
+		this.container.start();
+		String s3 = getResponse(getLocalUrl("/session"));
+		System.out.println(s1);
+		System.out.println(s2);
+		System.out.println(s3);
+		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
+		assertThat(message, s2.split(":")[0], equalTo(s1.split(":")[1]));
+		assertThat(message, s3.split(":")[0], equalTo(s2.split(":")[1]));
+	}
+
+	@Test
 	public void compression() throws Exception {
 		assertTrue(doTestCompression(10000, null, null));
 	}
@@ -632,7 +661,14 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected ClientHttpResponse getClientResponse(String url) throws IOException,
 			URISyntaxException {
-		return getClientResponse(url, new HttpComponentsClientHttpRequestFactory());
+		return getClientResponse(url, new HttpComponentsClientHttpRequestFactory() {
+
+			@Override
+			protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
+				return AbstractEmbeddedServletContainerFactoryTests.this.httpClientContext;
+			}
+
+		});
 	}
 
 	protected ClientHttpResponse getClientResponse(String url,
@@ -640,6 +676,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			URISyntaxException {
 		ClientHttpRequest request = requestFactory.createRequest(new URI(url),
 				HttpMethod.GET);
+		request.getHeaders().add("Cookie", "JSESSIONID=" + "123");
 		ClientHttpResponse response = request.execute();
 		return response;
 	}
@@ -655,13 +692,34 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@SuppressWarnings("serial")
 	private ServletContextInitializer errorServletRegistration() {
 		ServletRegistrationBean bean = new ServletRegistrationBean(new ExampleServlet() {
+
 			@Override
 			public void service(ServletRequest request, ServletResponse response)
 					throws ServletException, IOException {
 				throw new RuntimeException("Planned");
 			}
+
 		}, "/bang");
 		bean.setName("error");
+		return bean;
+	}
+
+	private ServletContextInitializer sessionServletRegistration() {
+		ServletRegistrationBean bean = new ServletRegistrationBean(new ExampleServlet() {
+
+			@Override
+			public void service(ServletRequest request, ServletResponse response)
+					throws ServletException, IOException {
+				HttpSession session = ((HttpServletRequest) request).getSession(true);
+				long value = System.currentTimeMillis();
+				Object existing = session.getAttribute("boot");
+				session.setAttribute("boot", value);
+				PrintWriter writer = response.getWriter();
+				writer.append(String.valueOf(existing) + ":" + value);
+			}
+
+		}, "/session");
+		bean.setName("session");
 		return bean;
 	}
 

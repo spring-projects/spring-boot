@@ -74,6 +74,12 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setSessionTimeout(int sessionTimeout, TimeUnit timeUnit);
 
 	/**
+	 * Sets if session data should be persisted between restarts.
+	 * @param persistSession {@code true} if session data should be persisted
+	 */
+	void setPersistSession(boolean persistSession);
+
+	/**
 	 * Sets the specific network address that the server should bind to.
 	 * @param address the address to set (defaults to {@code null})
 	 */

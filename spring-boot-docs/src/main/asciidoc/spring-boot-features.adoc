@@ -1581,7 +1581,7 @@ Common server settings include:
 
 * `server.port` -- The listen port for incoming HTTP requests.
 * `server.address` -- The interface address to bind to.
-* `server.sessionTimeout` -- A session timeout.
+* `server.session.timeout` -- A session timeout.
 
 See the {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`]
 class for a complete list.

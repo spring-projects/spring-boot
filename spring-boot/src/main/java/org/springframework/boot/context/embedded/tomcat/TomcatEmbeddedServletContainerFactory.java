@@ -39,10 +39,12 @@ import org.apache.catalina.Host;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Manager;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.loader.WebappLoader;
+import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
@@ -50,6 +52,7 @@ import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -379,15 +382,36 @@ public class TomcatEmbeddedServletContainerFactory extends
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
-		long sessionTimeout = getSessionTimeout();
-		if (sessionTimeout > 0) {
-			// Tomcat timeouts are in minutes
-			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
-		}
-		context.setSessionTimeout((int) sessionTimeout);
+		configureSession(context);
 		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
 			customizer.customize(context);
 		}
+	}
+
+	private void configureSession(Context context) {
+		long sessionTimeout = getSessionTimeoutInMinutes();
+		context.setSessionTimeout((int) sessionTimeout);
+		if (isPersistSession()) {
+			Manager manager = context.getManager();
+			if (manager == null) {
+				manager = new StandardManager();
+				context.setManager(manager);
+			}
+			Assert.state(manager instanceof StandardManager,
+					"Unable to persist HTTP session state using manager type "
+							+ manager.getClass().getName());
+			File folder = new ApplicationTemp().getFolder("tomcat-sessions");
+			File file = new File(folder, "SESSIONS.ser");
+			((StandardManager) manager).setPathname(file.getAbsolutePath());
+		}
+	}
+
+	private long getSessionTimeoutInMinutes() {
+		long sessionTimeout = getSessionTimeout();
+		if (sessionTimeout > 0) {
+			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
+		}
+		return sessionTimeout;
 	}
 
 	/**

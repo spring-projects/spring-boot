@@ -64,6 +64,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
 
+	private boolean persistSession;
+
 	private Ssl ssl;
 
 	private JspServlet jspServlet = new JspServlet();
@@ -176,6 +178,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	 */
 	public int getSessionTimeout() {
 		return this.sessionTimeout;
+	}
+
+	@Override
+	public void setPersistSession(boolean persistSession) {
+		this.persistSession = persistSession;
+	}
+
+	public boolean isPersistSession() {
+		return this.persistSession;
 	}
 
 	@Override

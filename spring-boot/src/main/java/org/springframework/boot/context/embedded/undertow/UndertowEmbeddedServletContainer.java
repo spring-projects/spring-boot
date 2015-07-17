@@ -213,8 +213,14 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	@Override
 	public synchronized void stop() throws EmbeddedServletContainerException {
 		if (this.started) {
-			this.started = false;
-			this.undertow.stop();
+			try {
+				this.started = false;
+				this.manager.stop();
+				this.undertow.stop();
+			}
+			catch (Exception ex) {
+				throw new EmbeddedServletContainerException("Unable to stop undertow", ex);
+			}
 		}
 	}
 

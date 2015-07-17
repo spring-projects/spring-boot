@@ -62,6 +62,7 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -354,6 +355,10 @@ public class UndertowEmbeddedServletContainerFactory extends
 		}
 		if (isAccessLogEnabled()) {
 			configureAccessLog(deployment);
+		}
+		if (isPersistSession()) {
+			File folder = new ApplicationTemp().getFolder("undertow-sessions");
+			deployment.setSessionPersistenceManager(new FileSessionPersistence(folder));
 		}
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
 		manager.deploy();

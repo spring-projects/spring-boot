@@ -262,6 +262,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		if (getSession().getTimeout() != null) {
 			container.setSessionTimeout(getSession().getTimeout());
 		}
+		container.setPersistSession(getSession().isPersistent());
 		if (getSsl() != null) {
 			container.setSsl(getSsl());
 		}
@@ -322,6 +323,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		 */
 		private Set<SessionTrackingMode> trackingModes;
 
+		/**
+		 * Persist session data between restarts.
+		 */
+		private boolean persistent;
+
 		private Cookie cookie = new Cookie();
 
 		public Cookie getCookie() {
@@ -342,6 +348,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		public void setTrackingModes(Set<SessionTrackingMode> trackingModes) {
 			this.trackingModes = trackingModes;
+		}
+
+		public boolean isPersistent() {
+			return this.persistent;
+		}
+
+		public void setPersistent(boolean persistent) {
+			this.persistent = persistent;
 		}
 
 		public static class Cookie {
