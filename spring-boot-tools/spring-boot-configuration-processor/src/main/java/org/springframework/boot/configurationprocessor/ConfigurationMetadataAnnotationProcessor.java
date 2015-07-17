@@ -69,6 +69,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.NestedConfigurationProperty";
 
+	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
+			+ "context.properties.DeprecatedConfigurationProperty";
+
 	static final String LOMBOK_DATA_ANNOTATION = "lombok.Data";
 
 	static final String LOMBOK_GETTER_ANNOTATION = "lombok.Getter";
@@ -91,6 +94,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	protected String nestedConfigurationPropertyAnnotation() {
 		return NESTED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	protected String deprecatedConfigurationPropertyAnnotation() {
+		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
 	}
 
 	@Override
@@ -207,14 +214,27 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				String sourceType = this.typeUtils.getType(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
-				boolean deprecated = hasDeprecateAnnotation(getter)
-						|| hasDeprecateAnnotation(setter)
-						|| hasDeprecateAnnotation(element);
+				boolean deprecated = isDeprecated(getter) || isDeprecated(setter)
+						|| isDeprecated(element);
 				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
 						dataType, sourceType, null, description, defaultValue,
-						(deprecated ? new ItemDeprecation() : null)));
+						(deprecated ? getItemDeprecation(getter) : null)));
 			}
 		}
+	}
+
+	private ItemDeprecation getItemDeprecation(ExecutableElement getter) {
+		AnnotationMirror annotation = getAnnotation(getter,
+				deprecatedConfigurationPropertyAnnotation());
+		String reason = null;
+		String replacement = null;
+		if (annotation != null) {
+			Map<String, Object> elementValues = getAnnotationElementValues(annotation);
+			reason = (String) elementValues.get("reason");
+			replacement = (String) elementValues.get("replacement");
+		}
+		return new ItemDeprecation(("".equals(reason) ? null : reason),
+				("".equals(replacement) ? null : replacement));
 	}
 
 	private void processLombokTypes(String prefix, TypeElement element,
@@ -237,8 +257,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				String sourceType = this.typeUtils.getType(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
-				boolean deprecated = hasDeprecateAnnotation(field)
-						|| hasDeprecateAnnotation(element);
+				boolean deprecated = isDeprecated(field) || isDeprecated(element);
 				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
 						dataType, sourceType, null, description, defaultValue,
 						(deprecated ? new ItemDeprecation() : null)));
@@ -291,8 +310,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				&& returnType.getKind() != ElementKind.ENUM;
 	}
 
-	private boolean hasDeprecateAnnotation(Element element) {
-		return hasAnnotation(element, "java.lang.Deprecated");
+	private boolean isDeprecated(Element element) {
+		return hasAnnotation(element, "java.lang.Deprecated")
+				|| hasAnnotation(element, deprecatedConfigurationPropertyAnnotation());
 	}
 
 	private boolean hasAnnotation(Element element, String type) {

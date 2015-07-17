@@ -41,6 +41,8 @@ public class TestConfigurationMetadataAnnotationProcessor extends
 
 	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.NestedConfigurationProperty";
 
+	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.DeprecatedConfigurationProperty";
+
 	private ConfigurationMetadata metadata;
 
 	private final File outputLocation;
@@ -57,6 +59,11 @@ public class TestConfigurationMetadataAnnotationProcessor extends
 	@Override
 	protected String nestedConfigurationPropertyAnnotation() {
 		return NESTED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	@Override
+	protected String deprecatedConfigurationPropertyAnnotation() {
+		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
 	}
 
 	@Override

@@ -43,6 +43,7 @@ import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
 import org.springframework.boot.configurationsample.method.MethodAndClassConfig;
 import org.springframework.boot.configurationsample.method.SimpleMethodConfig;
+import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
 import org.springframework.boot.configurationsample.simple.SimpleCollectionProperties;
@@ -186,6 +187,17 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(type).withDeprecation(null, null));
 		assertThat(metadata, containsProperty("deprecated.description", String.class)
 				.fromSource(type).withDeprecation(null, null));
+	}
+
+	@Test
+	public void singleDeprecatedProprety() throws Exception {
+		Class<?> type = DeprecatedSingleProperty.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata, containsGroup("singledeprecated").fromSource(type));
+		assertThat(metadata, containsProperty("singledeprecated.new-name", String.class)
+				.fromSource(type));
+		assertThat(metadata, containsProperty("singledeprecated.name", String.class)
+				.fromSource(type).withDeprecation("renamed", "singledeprecated.new-name"));
 	}
 
 	@Test

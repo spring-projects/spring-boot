@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,34 +17,35 @@
 package org.springframework.boot.configurationsample.simple;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.DeprecatedConfigurationProperty;
 
 /**
- * Deprecated configuration properties.
+ * Configuration properties with a single deprecated element.
  *
- * @author Stephane Nicoll
+ * @author Phillip Webb
  */
-@Deprecated
-@ConfigurationProperties(prefix = "deprecated")
-public class DeprecatedProperties {
+@ConfigurationProperties("singledeprecated")
+public class DeprecatedSingleProperty {
 
-	private String name;
+	private String newName;
 
-	private String description;
-
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "renamed", replacement = "singledeprecated.new-name")
 	public String getName() {
-		return this.name;
+		return getNewName();
 	}
 
+	@Deprecated
 	public void setName(String name) {
-		this.name = name;
+		setNewName(name);
 	}
 
-	public String getDescription() {
-		return this.description;
+	public String getNewName() {
+		return this.newName;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setNewName(String newName) {
+		this.newName = newName;
 	}
 
 }
