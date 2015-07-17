@@ -161,15 +161,6 @@
     "deprecation": {
       "replacement": "spring.mvc.view.suffix"
     }
-  },
-  {
-    "name": "server.session-timeout",
-    "type": "java.lang.Integer",
-    "description": "Session timeout in seconds.",
-    "sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties",
-    "deprecation": {
-      "replacement": "server.session.timeout"
-    }
   }
 ],"hints": [
   {

@@ -52,6 +52,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
@@ -195,6 +196,17 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	public void setAddress(InetAddress address) {
 		this.address = address;
+	}
+
+	/**
+	 * Set the session timeout
+	 * @return the session timeout
+	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
+	 */
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "server.session.timeout")
+	public Integer getSessionTimeout() {
+		return this.session.getTimeout();
 	}
 
 	/**
