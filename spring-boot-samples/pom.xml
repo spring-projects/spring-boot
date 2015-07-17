@@ -67,6 +67,7 @@
 		<module>spring-boot-sample-metrics-redis</module>
 		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
+		<module>spring-boot-sample-property-validation</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-secure-oauth2</module>
 		<module>spring-boot-sample-servlet</module>

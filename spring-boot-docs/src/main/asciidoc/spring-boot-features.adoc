@@ -782,7 +782,9 @@ annotations to your `@ConfigurationProperties` class:
 ----
 
 You can also add a custom Spring `Validator` by creating a bean definition called
-`configurationPropertiesValidator`.
+`configurationPropertiesValidator`. There is a
+{github-code}/spring-boot-samples/spring-boot-sample-property-validation[Validation sample]
+so you can see how to set things up.
 
 TIP: The `spring-boot-actuator` module includes an endpoint that exposes all
 `@ConfigurationProperties` beans. Simply point your web browser to `/configprops`
