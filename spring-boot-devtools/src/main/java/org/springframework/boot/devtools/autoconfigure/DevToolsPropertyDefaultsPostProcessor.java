@@ -46,6 +46,7 @@ class DevToolsPropertyDefaultsPostProcessor implements BeanFactoryPostProcessor,
 		properties.put("spring.groovy.template.cache", "false");
 		properties.put("spring.velocity.cache", "false");
 		properties.put("spring.mustache.cache", "false");
+		properties.put("server.session.persistent", "true");
 		PROPERTIES = Collections.unmodifiableMap(properties);
 	}
 

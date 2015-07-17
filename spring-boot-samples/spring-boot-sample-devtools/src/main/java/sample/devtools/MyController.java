@@ -16,6 +16,10 @@
 
 package sample.devtools;
 
+import java.util.Date;
+
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +29,15 @@ import org.springframework.web.servlet.ModelAndView;
 public class MyController {
 
 	@RequestMapping("/")
-	public ModelAndView get() {
-		ModelMap model = new ModelMap("message", Message.MESSAGE);
+	public ModelAndView get(HttpSession session) {
+		Object sessionVar = session.getAttribute("var");
+		if (sessionVar == null) {
+			sessionVar = new Date();
+			session.setAttribute("var", sessionVar);
+		}
+		ModelMap model = new ModelMap("message", Message.MESSAGE).addAttribute(
+				"sessionVar", sessionVar);
 		return new ModelAndView("hello", model);
-
 	}
 
 }
