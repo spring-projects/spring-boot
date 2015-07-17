@@ -70,6 +70,8 @@
   -- A spring integration application
 * link:spring-boot-sample-profile[spring-boot-sample-profile]
   -- example showing Spring's `@profile` support
+* link:spring-boot-sample-property-validation[spring-boot-sample-property-validation]
+  -- example showing the usage of @ConfigurationProperties` with a Spring's `Validator`
 * link:spring-boot-sample-parent-context[spring-boot-sample-parent-context]
   -- example showing an `ApplicationContext` with a parent
 * link:spring-boot-sample-aop[spring-boot-sample-aop]
