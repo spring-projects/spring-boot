@@ -110,6 +110,8 @@ public class DataSourceHealthIndicatorTests {
 		assertThat(Product.forProduct("DB2/LINUXX8664"), equalTo(Product.DB2));
 		assertThat(Product.forProduct("Informix Dynamic Server"),
 				equalTo(Product.INFORMIX));
+		assertThat(Product.forProduct("Firebird 2.5.WI"), equalTo(Product.FIREBIRD));
+		assertThat(Product.forProduct("Firebird 2.1.LI"), equalTo(Product.FIREBIRD));
 	}
 
 }
