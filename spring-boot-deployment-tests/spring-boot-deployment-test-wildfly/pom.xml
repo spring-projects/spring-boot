@@ -52,6 +52,7 @@
 							<portNames>
 								<portName>appserver.port</portName>
 								<portName>appserver.ajp.port</portName>
+								<portName>appserver.transaction.port</portName>
 							</portNames>
 						</configuration>
 					</execution>
@@ -72,6 +73,9 @@
 						<properties>
 							<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
 							<cargo.jboss.ajp.port>${appserver.ajp.port}</cargo.jboss.ajp.port>
+							<cargo.jboss.transaction.statusManager.port>
+								${appserver.transaction.port}
+							</cargo.jboss.transaction.statusManager.port>
 							<cargo.jboss.configuration>standalone-full</cargo.jboss.configuration>
 						</properties>
 					</configuration>
