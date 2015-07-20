@@ -115,12 +115,14 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	}
 
 	public void setContextPath(String contextPath) {
+		this.contextPath = cleanContextPath(contextPath);
+	}
+
+	private String cleanContextPath(String contextPath) {
 		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
-			this.contextPath = contextPath.substring(0, contextPath.length() - 1);
+			return contextPath.substring(0, contextPath.length() - 1);
 		}
-		else {
-			this.contextPath = contextPath;
-		}
+		return contextPath;
 	}
 
 	public Security getSecurity() {
