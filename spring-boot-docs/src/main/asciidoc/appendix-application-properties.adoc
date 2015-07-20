@@ -682,7 +682,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.trace.enabled=true
 	
 	# HYPERMEDIA ENDPOINTS
-	endpoints.docs.enabled=false
+	endpoints.docs.enabled=true
 	endpoints.docs.curies.enabled=false
 	endpoints.hal.enabled=true
 	endpoints.links.enable=true
