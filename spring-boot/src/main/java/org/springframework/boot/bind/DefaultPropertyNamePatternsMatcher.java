@@ -42,11 +42,11 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 
 	@Override
 	public boolean matches(String propertyName) {
-		char[] propertNameChars = propertyName.toCharArray();
+		char[] propertyNameChars = propertyName.toCharArray();
 		boolean[] match = new boolean[this.names.length];
 		boolean noneMatched = true;
 		for (int i = 0; i < this.names.length; i++) {
-			if (this.names[i].length() <= propertNameChars.length) {
+			if (this.names[i].length() <= propertyNameChars.length) {
 				match[i] = true;
 				noneMatched = false;
 			}
@@ -54,18 +54,18 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 		if (noneMatched) {
 			return false;
 		}
-		for (int charIndex = 0; charIndex < propertNameChars.length; charIndex++) {
+		for (int charIndex = 0; charIndex < propertyNameChars.length; charIndex++) {
 			noneMatched = true;
 			for (int nameIndex = 0; nameIndex < this.names.length; nameIndex++) {
 				if (match[nameIndex]) {
 					if (charIndex < this.names[nameIndex].length()) {
-						if (this.names[nameIndex].charAt(charIndex) == propertNameChars[charIndex]) {
+						if (this.names[nameIndex].charAt(charIndex) == propertyNameChars[charIndex]) {
 							match[nameIndex] = true;
 							noneMatched = false;
 						}
 					}
 					else {
-						char charAfter = propertNameChars[this.names[nameIndex].length()];
+						char charAfter = propertyNameChars[this.names[nameIndex].length()];
 						if (charAfter == '.' || charAfter == '_') {
 							match[nameIndex] = true;
 							noneMatched = false;
