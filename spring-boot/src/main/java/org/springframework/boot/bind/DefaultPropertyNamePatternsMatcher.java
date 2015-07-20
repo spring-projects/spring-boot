@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.util.StringUtils;
+
 /**
  * Default {@link PropertyNamePatternsMatcher} that matches when a property name exactly
  * matches one of the given names, or starts with one of the given names followed by '.'
@@ -32,12 +34,15 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 
 	private final String[] names;
 
+	private final RelaxedNames[] relaxed;
+
 	public DefaultPropertyNamePatternsMatcher(String... names) {
 		this(new HashSet<String>(Arrays.asList(names)));
 	}
 
 	public DefaultPropertyNamePatternsMatcher(Set<String> names) {
 		this.names = names.toArray(new String[names.size()]);
+		this.relaxed = new RelaxedNames[this.names.length];
 	}
 
 	@Override
@@ -46,12 +51,15 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 			propertyName = propertyName.substring(0, propertyName.indexOf("["));
 		}
 		for (int i = 0; i < this.names.length; i++) {
-			for (String relaxedName : new RelaxedNames(names[i])) {
+			if (this.relaxed[i] == null) {
+				this.relaxed[i] = new RelaxedNames(this.names[i]);
+			}
+			for (String relaxedName : this.relaxed[i]) {
 				if (relaxedName.equals(propertyName)) {
 					return true;
 				}
 			}
-			if (matchWithSeparator(names[i], propertyName, "[\\._]")) {
+			if (matchWithSeparator(this.names[i], propertyName, "._")) {
 				return true;
 			}
 		}
@@ -60,20 +68,18 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 
 	private boolean matchWithSeparator(String targetName, String propertyName,
 			String separator) {
-		String[] targetNameTokens = targetName.split(separator);
-		String[] propertyNameTokens = propertyName.split(separator);
+		String[] targetNameTokens = StringUtils.tokenizeToStringArray(targetName,
+				separator);
+		String[] propertyNameTokens = StringUtils.tokenizeToStringArray(propertyName,
+				separator);
 		for (int j = 0; j < propertyNameTokens.length; j++) {
 			if (j >= targetNameTokens.length) {
 				// No match and nothing left to match on
 				break;
 			}
-			String name = propertyNameTokens[j];
-			for (String relaxedName : new RelaxedNames(targetNameTokens[j])) {
-				if (relaxedName.equals(name)) {
-					return true;
-				}
+			if (targetNameTokens[j].equalsIgnoreCase(propertyNameTokens[j])) {
+				return true;
 			}
-
 		}
 		return false;
 	}
