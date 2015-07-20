@@ -680,7 +680,7 @@ content into your application; rather pick only the properties that you need.
 	endpoints.trace.id=trace
 	endpoints.trace.sensitive=true
 	endpoints.trace.enabled=true
-	
+
 	# HYPERMEDIA ENDPOINTS
 	endpoints.docs.enabled=true
 	endpoints.docs.curies.enabled=false

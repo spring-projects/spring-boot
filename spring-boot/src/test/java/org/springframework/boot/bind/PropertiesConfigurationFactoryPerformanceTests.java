@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,7 @@ public class PropertiesConfigurationFactoryPerformanceTests {
 
 	// Foo needs to be public and to have setters for all properties
 	public static class Foo {
+
 		@NotNull
 		private String name;
 

@@ -112,6 +112,7 @@ public class OAuth2MethodSecurityConfiguration implements BeanFactoryPostProcess
 			}
 			return null;
 		}
+
 	}
 
 }
