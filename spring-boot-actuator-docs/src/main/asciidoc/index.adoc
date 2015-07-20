@@ -100,7 +100,7 @@ For example in Maven:
 ----
 
 
-or in Gradle
+or in Gradle:
 
 [source,groovy,indent=0]
 ----
@@ -111,7 +111,7 @@ or in Gradle
 	}
 ----
 
-NOTE: if you are using Spring Data REST, then a dependency on the
+NOTE: If you are using Spring Data REST, then a dependency on the
 `spring-data-rest-hal-browser` will have an equivalent effect.
 
 If you do that then a new endpoint will appear at `/` or `/hal` (relative to the
@@ -139,17 +139,17 @@ For example in Maven:
 ----
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-hypermedia-docs</artifactId>
+		<artifactId>spring-boot-actuator-docs</artifactId>
 	</dependency>
 ----
 
-or in Gradle
+or in Gradle:
 
 [source,groovy,indent=0]
 ----
 	dependencies {
 		...
-		compile('org.springframework.boot:spring-boot-hypermedia-docs')
+		compile('org.springframework.boot:spring-boot-actuator-docs')
 		...
 	}
 ----
