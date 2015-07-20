@@ -26,11 +26,13 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Properties for the management server (e.g. port and path settings).
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @see ServerProperties
  */
 @ConfigurationProperties(prefix = "management", ignoreUnknownFields = true)
@@ -103,12 +105,22 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 		this.address = address;
 	}
 
+	/**
+	 * Return the context path with no trailing slash (i.e. the '/' root context is
+	 * represented as the empty string).
+	 * @return the context path (no trailing slash)
+	 */
 	public String getContextPath() {
 		return this.contextPath;
 	}
 
 	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
+		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+			this.contextPath = contextPath.substring(0, contextPath.length() - 1);
+		}
+		else {
+			this.contextPath = contextPath;
+		}
 	}
 
 	public Security getSecurity() {
