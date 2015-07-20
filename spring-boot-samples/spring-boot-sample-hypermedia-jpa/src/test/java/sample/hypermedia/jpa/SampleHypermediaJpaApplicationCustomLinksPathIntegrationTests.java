@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = SampleHypermediaJpaApplication.class)
 @DirtiesContext
-@TestPropertySource(properties = { "debug=true", "management.contextPath=",
+@TestPropertySource(properties = { "debug=true", "management.context-path=",
 		"endpoints.docs.curies.enabled=false" })
 public class SampleHypermediaJpaApplicationCustomLinksPathIntegrationTests {
 

@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleHypermediaUiApplication.class)
 @WebAppConfiguration
-@IntegrationTest({ "management.contextPath=", "server.port=0" })
+@IntegrationTest({ "management.context-path=", "server.port=0" })
 public class SampleHypermediaUiApplicationTests {
 
 	@Value("${local.server.port}")

@@ -54,7 +54,7 @@ Example enhanced "/metrics" endpoint with additional "_links":
 include::{generated}/metrics/hypermedia/http-response.adoc[]
 
 WARNING: Beware of Actuator endpoint paths clashing with application endpoints.
-The easiest way to avoid that is to use a `management.contextPath`, e.g. "/admin".
+The easiest way to avoid that is to use a `management.context-path`, e.g. "/admin".
 
 TIP: You can disable the hypermedia support in Actuator endpoints by setting
 `endpoints.links.enabled=false`.
@@ -62,13 +62,13 @@ TIP: You can disable the hypermedia support in Actuator endpoints by setting
 
 
 === Default home page
-If the `management.contextPath` is empty, or if the home page provided by the application
+If the `management.context-path` is empty, or if the home page provided by the application
 happens to be a response body of type `ResourceSupport`, then it will be enhanced with
 links to the actuator endpoints. The latter would happen for instance if you use Spring
 Data REST to expose `Repository` endpoints.
 
-Example vanilla "/" endpoint if the `management.contextPath` is empty (the "/admin" page
-would be the same with different links if `management.contextPath=/admin`):
+Example vanilla "/" endpoint if the `management.context-path` is empty (the "/admin" page
+would be the same with different links if `management.context-path=/admin`):
 
 include::{generated}/admin/http-response.adoc[]
 
@@ -115,10 +115,10 @@ NOTE: if you are using Spring Data REST, then a dependency on the
 `spring-data-rest-hal-browser` will have an equivalent effect.
 
 If you do that then a new endpoint will appear at `/` or `/hal` (relative to the
-`management.contextPath`) serving up a static HTML page with some JavaScript that lets you
+`management.context-path`) serving up a static HTML page with some JavaScript that lets you
 browse the available resources. The default endpoint path depends on whether or not there
 is already a static home page ("`index.html`") - if there is not and the
-`management.contextPath` is empty, then the HAL browser shows up on the home page.
+`management.context-path` is empty, then the HAL browser shows up on the home page.
 
 Example:
 
@@ -155,7 +155,7 @@ or in Gradle
 ----
 
 If you do that then a new endpoint at `/` or `/docs` (relative to the
-`management.contextPath`) will serve up a static HTML page with this documentation in it.
+`management.context-path`) will serve up a static HTML page with this documentation in it.
 The default endpoint path depends on whether or not there is already a static home page
-("index.html" or a HAL browser) - if there is not and the `management.contextPath` is
+("index.html" or a HAL browser) - if there is not and the `management.context-path` is
 empty, then the docs browser shows up on the home page.

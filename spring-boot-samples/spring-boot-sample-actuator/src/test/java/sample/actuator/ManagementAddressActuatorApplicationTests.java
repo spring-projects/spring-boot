@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "management.port=0", "management.address=127.0.0.1",
-		"management.contextPath:/admin" })
+		"management.context-path:/admin" })
 @DirtiesContext
 public class ManagementAddressActuatorApplicationTests {
 

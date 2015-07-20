@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringApplicationConfiguration(classes = SampleHypermediaJpaApplication.class)
 @DirtiesContext
 @TestPropertySource(properties = { "endpoints.links.path=/admin",
-		"management.contextPath=", "endpoints.docs.curies.enabled=false" })
+		"management.context-path=", "endpoints.docs.curies.enabled=false" })
 public class SampleHypermediaJpaApplicationSharedRootIntegrationTests {
 
 	@Autowired
