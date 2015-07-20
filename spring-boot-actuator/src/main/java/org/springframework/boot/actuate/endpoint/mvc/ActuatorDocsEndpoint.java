@@ -98,7 +98,7 @@ public class ActuatorDocsEndpoint extends WebMvcConfigurerAdapter implements Mvc
 	public static class Curies {
 
 		/**
-		 * Enable the curie generation (off by default).
+		 * Enable the curie generation.
 		 */
 		private boolean enabled = false;
 
