@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus.Series;
 import org.springframework.util.StopWatch;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -96,10 +97,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 		if (bestMatchingPattern != null) {
 			return fixSpecialCharacters(bestMatchingPattern.toString());
 		}
-		if (is4xxClientError(status)) {
-			return UNKNOWN_PATH_SUFFIX;
-		}
-		if (is3xxRedirection(status)) {
+		Series series = getSeries(status);
+		if (Series.CLIENT_ERROR.equals(series) || Series.REDIRECTION.equals(series)) {
 			return UNKNOWN_PATH_SUFFIX;
 		}
 		return path;
@@ -120,22 +119,14 @@ final class MetricsFilter extends OncePerRequestFilter {
 		return result;
 	}
 
-	private boolean is4xxClientError(int status) {
+	private Series getSeries(int status) {
 		try {
-			return HttpStatus.valueOf(status).is4xxClientError();
+			return HttpStatus.valueOf(status).series();
 		}
 		catch (Exception ex) {
-			return false;
+			return null;
 		}
-	}
 
-	private boolean is3xxRedirection(int status) {
-		try {
-			return HttpStatus.valueOf(status).is3xxRedirection();
-		}
-		catch (Exception ex) {
-			return false;
-		}
 	}
 
 	private String getKey(String string) {
