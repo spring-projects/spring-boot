@@ -92,17 +92,6 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void propertiesStillAppliedWithCustomBootConfig() {
-		load(TestConfigurationWithRestMvcBootConfig.class,
-				"spring.data.rest.base-path:foo");
-		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
-		RepositoryRestConfiguration bean = this.context
-				.getBean(RepositoryRestConfiguration.class);
-		assertEquals("Custom base URI should have been set", URI.create("/foo"),
-				bean.getBaseUri());
-	}
-
-	@Test
 	public void objectMappersAreConfiguredUsingObjectMapperBuilder()
 			throws JsonProcessingException {
 		load(TestConfigurationWithObjectMapperBuilder.class);
@@ -141,11 +130,6 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	@Import({ TestConfiguration.class, RepositoryRestMvcConfiguration.class })
 	protected static class TestConfigurationWithRestMvcConfig {
-
-	}
-
-	@Import({ TestConfiguration.class, SpringBootRepositoryRestMvcConfiguration.class })
-	protected static class TestConfigurationWithRestMvcBootConfig {
 
 	}
 
