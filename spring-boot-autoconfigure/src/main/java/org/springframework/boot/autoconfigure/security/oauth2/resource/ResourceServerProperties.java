@@ -165,10 +165,14 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 
 	@Override
 	public void validate(Object target, Errors errors) {
-		if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory,
-				AuthorizationServerEndpointsConfiguration.class).length > 0) {
+		if (countBeans(AuthorizationServerEndpointsConfiguration.class) > 0) {
 			// If we are an authorization server we don't need remote resource token
 			// services
+			return;
+		}
+		if (countBeans(ResourceServerTokenServicesConfiguration.class) == 0) {
+			// If we are not a resource server or an SSO client we don't need remote
+			// resource token services
 			return;
 		}
 		ResourceServerProperties resource = (ResourceServerProperties) target;
@@ -195,6 +199,11 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 				}
 			}
 		}
+	}
+
+	private int countBeans(Class<?> type) {
+		return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory,
+				type, true, false).length;
 	}
 
 	public class Jwt {
@@ -235,7 +244,7 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 			}
 			if (ResourceServerProperties.this.tokenInfoUri != null
 					&& ResourceServerProperties.this.tokenInfoUri
-							.endsWith("/check_token")) {
+					.endsWith("/check_token")) {
 				return ResourceServerProperties.this.userInfoUri.replace("/check_token",
 						"/token_key");
 			}

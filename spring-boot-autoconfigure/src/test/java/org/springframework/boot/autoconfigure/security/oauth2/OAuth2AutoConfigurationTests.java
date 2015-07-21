@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -60,9 +63,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.codec.Base64;
+import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -88,9 +93,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Verify Spring Security OAuth2 auto-configuration secures end points properly, accepts
@@ -157,6 +159,18 @@ public class OAuth2AutoConfigurationTests {
 		this.context.refresh();
 		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(0));
 		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(1));
+	}
+
+	@Test
+	public void testClientIsNotResourceServer() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(ClientConfiguration.class,
+				MinimalSecureWebApplication.class);
+		this.context.refresh();
+		assertThat(countBeans(RESOURCE_SERVER_CONFIG), equalTo(0));
+		assertThat(countBeans(AUTHORIZATION_SERVER_CONFIG), equalTo(0));
+		// Scoped target and proxy:
+		assertThat(countBeans(OAuth2ClientContext.class), equalTo(2));
 	}
 
 	@Test
@@ -344,9 +358,9 @@ public class OAuth2AutoConfigurationTests {
 
 	@Configuration
 	@Import({ UseFreePortEmbeddedContainerConfiguration.class,
-			SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, OAuth2AutoConfiguration.class,
-			WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+		SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
+		DispatcherServletAutoConfiguration.class, OAuth2AutoConfiguration.class,
+		WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 	protected static class MinimalSecureWebApplication {
 
 	}
@@ -373,11 +387,16 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	@Configuration
+	@EnableOAuth2Client
+	protected static class ClientConfiguration extends TestSecurityConfiguration {
+	}
+
+	@Configuration
 	@EnableAuthorizationServer
 	@EnableResourceServer
 	@EnableGlobalMethodSecurity(prePostEnabled = true)
 	protected static class AuthorizationAndResourceServerConfiguration extends
-			TestSecurityConfiguration {
+	TestSecurityConfiguration {
 
 	}
 
@@ -400,7 +419,7 @@ public class OAuth2AutoConfigurationTests {
 	@Configuration
 	@EnableAuthorizationServer
 	protected static class AuthorizationServerConfiguration extends
-			TestSecurityConfiguration {
+	TestSecurityConfiguration {
 
 	}
 
@@ -455,7 +474,7 @@ public class OAuth2AutoConfigurationTests {
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests().anyRequest().authenticated().and().httpBasic().and()
-					.csrf().disable();
+			.csrf().disable();
 		}
 
 	}
@@ -463,7 +482,7 @@ public class OAuth2AutoConfigurationTests {
 	@Configuration
 	@EnableAuthorizationServer
 	protected static class CustomAuthorizationServer extends
-			AuthorizationServerConfigurerAdapter {
+	AuthorizationServerConfigurerAdapter {
 
 		@Autowired
 		private AuthenticationManager authenticationManager;
@@ -483,9 +502,9 @@ public class OAuth2AutoConfigurationTests {
 		@Override
 		public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 			clients.inMemory().withClient("client").secret("secret")
-					.resourceIds("resource-id").authorizedGrantTypes("password")
-					.authorities("USER").scopes("read")
-					.redirectUris("http://localhost:8080");
+			.resourceIds("resource-id").authorizedGrantTypes("password")
+			.authorities("USER").scopes("read")
+			.redirectUris("http://localhost:8080");
 		}
 
 		@Override
