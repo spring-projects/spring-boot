@@ -27,11 +27,11 @@ import org.springframework.util.PatternMatchUtils;
  * @author Phillip Webb
  * @since 1.2.0
  */
-class SimplePropertyNamePatternsMatcher implements PropertyNamePatternsMatcher {
+class PatternPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher {
 
 	private final String[] patterns;
 
-	public SimplePropertyNamePatternsMatcher(Collection<String> patterns) {
+	public PatternPropertyNamePatternsMatcher(Collection<String> patterns) {
 		this.patterns = (patterns == null ? new String[] {} : patterns
 				.toArray(new String[patterns.size()]));
 	}

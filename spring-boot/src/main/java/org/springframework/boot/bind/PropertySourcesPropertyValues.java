@@ -16,7 +16,6 @@
 
 package org.springframework.boot.bind;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -30,7 +29,7 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
-import org.springframework.core.env.StandardEnvironment;
+import org.springframework.util.Assert;
 import org.springframework.validation.DataBinder;
 
 /**
@@ -46,17 +45,16 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private final PropertySources propertySources;
 
-	private static final Collection<String> PATTERN_MATCHED_PROPERTY_SOURCES = Arrays
-			.asList(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-					StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
+	private final Collection<String> propertyNames;
+
+	private final PropertyNamePatternsMatcher includes;
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
 	 * @param propertySources a PropertySources instance
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
-		this(propertySources, (PropertyNamePatternsMatcher) null,
-				(Collection<String>) null);
+		this(propertySources, (Collection<String>) null, PropertyNamePatternsMatcher.ALL);
 	}
 
 	/**
@@ -64,52 +62,55 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	 * @param propertySources a PropertySources instance
 	 * @param includePatterns property name patterns to include from system properties and
 	 * environment variables
-	 * @param names exact property names to include
+	 * @param propertyNames the property names to used in lieu of an
+	 * {@link EnumerablePropertySource}.
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources,
-			Collection<String> includePatterns, Collection<String> names) {
-		this(propertySources, new SimplePropertyNamePatternsMatcher(includePatterns),
-				names);
+			Collection<String> includePatterns, Collection<String> propertyNames) {
+		this(propertySources, propertyNames, new PatternPropertyNamePatternsMatcher(
+				includePatterns));
 	}
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
 	 * @param propertySources a PropertySources instance
-	 * @param includes property name patterns to include from system properties and
-	 * environment variables
-	 * @param names exact property names to include
+	 * @param propertyNames the property names to used in lieu of an
+	 * {@link EnumerablePropertySource}.
+	 * @param includes the property name patterns to include
 	 */
 	PropertySourcesPropertyValues(PropertySources propertySources,
-			PropertyNamePatternsMatcher includes, Collection<String> names) {
+			Collection<String> propertyNames, PropertyNamePatternsMatcher includes) {
+		Assert.notNull(propertySources, "PropertySources must not be null");
+		Assert.notNull(includes, "Includes must not be null");
 		this.propertySources = propertySources;
-		if (includes == null) {
-			includes = PropertyNamePatternsMatcher.NONE;
-		}
-		if (names == null) {
-			names = Collections.emptySet();
-		}
+		this.propertyNames = (propertyNames == null ? Collections.<String> emptySet()
+				: propertyNames);
+		this.includes = includes;
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 				propertySources);
 		for (PropertySource<?> source : propertySources) {
-			processPropertySource(source, resolver, includes, names);
+			processPropertySource(source, resolver);
 		}
 	}
 
 	private void processPropertySource(PropertySource<?> source,
-			PropertySourcesPropertyResolver resolver,
-			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
+			PropertySourcesPropertyResolver resolver) {
 		if (source instanceof CompositePropertySource) {
-			processCompositePropertySource((CompositePropertySource) source, resolver,
-					includes, exacts);
+			processCompositePropertySource((CompositePropertySource) source, resolver);
 		}
 		else if (source instanceof EnumerablePropertySource) {
 			processEnumerablePropertySource((EnumerablePropertySource<?>) source,
-					resolver, includes);
+					resolver, this.includes);
 		}
 		else {
-			// We can only do exact matches for non-enumerable property names, but
-			// that's better than nothing...
-			processDefaultPropertySource(source, resolver, includes, exacts);
+			processNonEnumerablePropertySource(source, resolver);
+		}
+	}
+
+	private void processCompositePropertySource(CompositePropertySource source,
+			PropertySourcesPropertyResolver resolver) {
+		for (PropertySource<?> nested : source.getPropertySources()) {
+			processPropertySource(nested, resolver);
 		}
 	}
 
@@ -117,14 +118,9 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertySourcesPropertyResolver resolver, PropertyNamePatternsMatcher includes) {
 		if (source.getPropertyNames().length > 0) {
 			for (String propertyName : source.getPropertyNames()) {
-				if (PropertySourcesPropertyValues.PATTERN_MATCHED_PROPERTY_SOURCES
-						.contains(source.getName()) && !includes.matches(propertyName)) {
-					continue;
-				}
-				Object value = getEnumerableProperty(source, resolver, propertyName);
-				if (!this.propertyValues.containsKey(propertyName)) {
-					this.propertyValues.put(propertyName, new PropertyValue(propertyName,
-							value));
+				if (includes.matches(propertyName)) {
+					Object value = getEnumerableProperty(source, resolver, propertyName);
+					putIfAbsent(propertyName, value);
 				}
 			}
 		}
@@ -141,18 +137,11 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		}
 	}
 
-	private void processCompositePropertySource(CompositePropertySource source,
-			PropertySourcesPropertyResolver resolver,
-			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
-		for (PropertySource<?> nested : source.getPropertySources()) {
-			processPropertySource(nested, resolver, includes, exacts);
-		}
-	}
-
-	private void processDefaultPropertySource(PropertySource<?> source,
-			PropertySourcesPropertyResolver resolver,
-			PropertyNamePatternsMatcher includes, Collection<String> exacts) {
-		for (String propertyName : exacts) {
+	private void processNonEnumerablePropertySource(PropertySource<?> source,
+			PropertySourcesPropertyResolver resolver) {
+		// We can only do exact matches for non-enumerable property names, but
+		// that's better than nothing...
+		for (String propertyName : this.propertyNames) {
 			if (!source.containsProperty(propertyName)) {
 				continue;
 			}
@@ -166,11 +155,13 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			if (value == null) {
 				value = source.getProperty(propertyName.toUpperCase());
 			}
-			if (value != null && !this.propertyValues.containsKey(propertyName)) {
-				this.propertyValues.put(propertyName, new PropertyValue(propertyName,
-						value));
-				continue;
-			}
+			putIfAbsent(propertyName, value);
+		}
+	}
+
+	private void putIfAbsent(String propertyName, Object value) {
+		if (value != null && !this.propertyValues.containsKey(propertyName)) {
+			this.propertyValues.put(propertyName, new PropertyValue(propertyName, value));
 		}
 	}
 

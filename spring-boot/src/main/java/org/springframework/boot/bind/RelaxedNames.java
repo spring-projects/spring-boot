@@ -188,4 +188,13 @@ public final class RelaxedNames implements Iterable<String> {
 		}
 	}
 
+	/**
+	 * Return a {@link RelaxedNames} for the given source camelCase source name
+	 * @param name the source name in camelCase
+	 * @return the relaxed names
+	 */
+	public static RelaxedNames forCamelCase(String name) {
+		return new RelaxedNames(Manipulation.CAMELCASE_TO_HYPHEN.apply(name));
+	}
+
 }

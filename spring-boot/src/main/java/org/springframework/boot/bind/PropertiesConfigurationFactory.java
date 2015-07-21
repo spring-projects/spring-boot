@@ -17,8 +17,9 @@
 package org.springframework.boot.bind;
 
 import java.beans.PropertyDescriptor;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -34,6 +35,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
@@ -50,6 +52,10 @@ import org.springframework.validation.Validator;
  */
 public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		MessageSourceAware, InitializingBean {
+
+	private static final char[] EXACT_DELIMETERS = { '_', '.', '[' };
+
+	private static final char[] TARGET_NAME_DELIMETERS = { '_', '.' };
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -257,16 +263,28 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	private Set<String> getNames() {
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new LinkedHashSet<String>();
 		if (this.target != null) {
+			Iterable<String> prefixes = (StringUtils.hasLength(this.targetName) ? new RelaxedNames(
+					this.targetName) : null);
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
-			String prefix = (this.targetName != null ? this.targetName + "." : "");
 			for (PropertyDescriptor descriptor : descriptors) {
 				String name = descriptor.getName();
 				if (!name.equals("class")) {
-					for (String relaxedName : new RelaxedNames(prefix + name)) {
-						names.add(relaxedName);
+					RelaxedNames relaxedNames = RelaxedNames.forCamelCase(name);
+					if (prefixes == null) {
+						for (String relaxedName : relaxedNames) {
+							names.add(relaxedName);
+						}
+					}
+					else {
+						for (String prefix : prefixes) {
+							for (String relaxedName : relaxedNames) {
+								names.add(prefix + "." + relaxedName);
+								names.add(prefix + "_" + relaxedName);
+							}
+						}
 					}
 				}
 			}
@@ -278,8 +296,33 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		if (this.properties != null) {
 			return new MutablePropertyValues(this.properties);
 		}
-		return new PropertySourcesPropertyValues(this.propertySources,
-				new DefaultPropertyNamePatternsMatcher(names), names);
+		return getPropertySourcesPropertyValues(names);
+	}
+
+	private PropertyValues getPropertySourcesPropertyValues(Set<String> names) {
+		PropertyNamePatternsMatcher includes = getPropertyNamePatternsMatcher(names);
+		return new PropertySourcesPropertyValues(this.propertySources, names, includes);
+	}
+
+	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(Set<String> names) {
+		if (this.ignoreUnknownFields && !isMapTarget()) {
+			// Since unknown fields are ignored we can filter them out early to save
+			// unnecessary calls to the PropertySource.
+			return new DefaultPropertyNamePatternsMatcher(EXACT_DELIMETERS, true, names);
+		}
+		if (this.targetName != null) {
+			// We can filter properties to those starting with the target name, but
+			// we can't do a complete filter since we need to trigger the
+			// unknown fields check
+			return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMETERS,
+					this.targetName);
+		}
+		// Not ideal, we basically can't filter anything
+		return PropertyNamePatternsMatcher.ALL;
+	}
+
+	private boolean isMapTarget() {
+		return this.target != null && Map.class.isAssignableFrom(this.target.getClass());
 	}
 
 	private void validate(RelaxedDataBinder dataBinder) throws BindException {

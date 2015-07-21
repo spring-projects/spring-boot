@@ -103,6 +103,20 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindToCamelCaseFromEnvironmentStyleWithPrefix() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "TEST_FOO_BAZ: bar", "test");
+		assertEquals("bar", target.getFooBaz());
+	}
+
+	@Test
+	public void testBindToCamelCaseFromEnvironmentStyle() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "test.FOO_BAZ: bar", "test");
+		assertEquals("bar", target.getFooBaz());
+	}
+
+	@Test
 	public void testBindFromEnvironmentStyleWithNestedPrefix() throws Exception {
 		VanillaTarget target = new VanillaTarget();
 		bind(target, "TEST_IT_FOO: bar", "test.it");
