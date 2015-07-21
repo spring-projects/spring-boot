@@ -16,11 +16,15 @@
 
 package sample.propertyvalidation;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Component(value = "configurationPropertiesValidator")
@@ -30,11 +34,23 @@ public class ConfigurationPropertiesValidator implements Validator {
 
 	final Pattern pattern = Pattern.compile(IP_REGEX);
 
-	@Override public boolean supports(Class<?> aClass) {
-		return SampleProperties.class.equals(aClass);
+	private Set<String> validatedClasses = new HashSet<String>() {{
+		add(SampleProperties.class.getName());
+	}};
+
+	@Override
+	public boolean supports(Class<?> aClass) {
+		return AnnotationUtils.findAnnotation(aClass, ConfigurationProperties.class) != null;
 	}
 
-	@Override public void validate(Object o, Errors errors) {
+	@Override
+	public void validate(Object o, Errors errors) {
+		if(validatedClasses.contains(o.getClass().getName())) {
+			doValidation(o, errors);
+		}
+	}
+
+	private void doValidation(Object o, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "host", "host.empty");
 		ValidationUtils.rejectIfEmpty(errors, "port", "port.empty");
 

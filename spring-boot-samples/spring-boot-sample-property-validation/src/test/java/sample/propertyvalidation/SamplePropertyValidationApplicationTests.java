@@ -18,6 +18,7 @@ package sample.propertyvalidation;
 
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -55,6 +56,20 @@ public class SamplePropertyValidationApplicationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "host:xxxxxx");
 		EnvironmentTestUtils.addEnvironment(this.context, "port:8080");
 		this.context.refresh();
+	}
+
+	@Test
+	public void testBindingValidPropertiesWithMultipleConfigurationPropertiesClasses() {
+		this.context.register(TestConfiguration.class);
+		this.context.register(ServerProperties.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "host:192.168.0.1");
+		EnvironmentTestUtils.addEnvironment(this.context, "port:8080");
+		this.context.refresh();
+
+		assertEquals(1, this.context.getBeanNamesForType(SampleProperties.class).length);
+		SampleProperties properties = this.context.getBean(SampleProperties.class);
+		assertEquals("192.168.0.1", properties.getHost());
+		assertEquals(8080, (int) properties.getPort());
 	}
 
 	@Configuration
