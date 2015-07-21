@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ConfigurationProperties("endpoints.links")
 public class LinksMvcEndpoint implements MvcEndpoint {
 
-	private String path = "";
+	private String path;
 	private boolean sensitive = false;
 
 	public LinksMvcEndpoint(String defaultPath) {

@@ -38,7 +38,7 @@ public class HalBrowserEndpoint extends WebMvcConfigurerAdapter implements MvcEn
 	private static final String HAL_BROWSER_LOCATION = "classpath:/META-INF/resources/webjars/hal-browser/"
 			+ HAL_BROWSER_VERSION + "/";
 
-	private String path = "";
+	private String path;
 
 	private ManagementServerProperties management;
 
