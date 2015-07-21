@@ -780,6 +780,32 @@ annotations to your `@ConfigurationProperties` class:
 
 	}
 ----
+In order to validate values of nested properties, you must annotate the static nested
+class as `@Valid`. For example, building upon the above `@ConfigurationProperties` class:
+
+[source,java,indent=0]
+----
+	@Component
+	@ConfigurationProperties(prefix="connection")
+	public class ConnectionSettings {
+
+		@NotNull
+		@Valid
+		private InetAddress remoteAddress;
+
+		// ... getters and setters
+
+		private static class InetAddress {
+
+			@NotEmpty
+			public String hostname;
+
+			// ... getters and setters
+
+		}
+
+	}
+----
 
 You can also add a custom Spring `Validator` by creating a bean definition called
 `configurationPropertiesValidator`. There is a
