@@ -50,7 +50,7 @@ public class JsonMarshaller {
 
 	public void write(ConfigurationMetadata metadata, OutputStream outputStream)
 			throws IOException {
-		JSONObject object = new JSONObject();
+		JSONObject object = new JSONOrderedObject();
 		object.put("groups", toJsonArray(metadata, ItemType.GROUP));
 		object.put("properties", toJsonArray(metadata, ItemType.PROPERTY));
 		object.put("hints", toJsonArray(metadata.getHints()));
