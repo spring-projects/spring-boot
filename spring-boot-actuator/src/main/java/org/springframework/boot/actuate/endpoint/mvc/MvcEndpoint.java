@@ -34,7 +34,7 @@ import org.springframework.http.ResponseEntity;
  */
 public interface MvcEndpoint {
 
-	public static final ResponseEntity<Map<String, String>> DISABLED_RESPONSE = new ResponseEntity<Map<String, String>>(
+	ResponseEntity<Map<String, String>> DISABLED_RESPONSE = new ResponseEntity<Map<String, String>>(
 			Collections.singletonMap("message", "This endpoint is disabled"),
 			HttpStatus.NOT_FOUND);
 
