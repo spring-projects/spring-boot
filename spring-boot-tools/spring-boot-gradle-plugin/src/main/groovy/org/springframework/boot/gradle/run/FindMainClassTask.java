@@ -22,6 +22,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.ApplicationPluginConvention;
+import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
@@ -33,14 +34,24 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class FindMainClassTask extends DefaultTask {
 
 	@TaskAction
 	public void setMainClassNameProperty() {
 		Project project = getProject();
-		if (project.property("mainClassName") == null) {
-			project.setProperty("mainClassName", findMainClass());
+		if (!project.hasProperty("mainClassName")
+				|| project.property("mainClassName") == null) {
+			String mainClass = findMainClass();
+			if (project.hasProperty("mainClassName")) {
+				project.setProperty("mainClassName", mainClass);
+			}
+			else {
+				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) project
+						.getExtensions().getByName("ext");
+				extraProperties.set("mainClassName", mainClass);
+			}
 		}
 	}
 
@@ -58,13 +69,14 @@ public class FindMainClassTask extends DefaultTask {
 
 		ApplicationPluginConvention application = (ApplicationPluginConvention) project
 				.getConvention().getPlugins().get("application");
-		// Try the Application extension setting
-		if (mainClass == null && application.getMainClassName() != null) {
+
+		if (mainClass == null && application != null) {
+			// Try the Application extension setting
 			mainClass = application.getMainClassName();
 		}
 
-		Task runTask = getProject().getTasks().getByName("run");
-		if (mainClass == null && runTask.hasProperty("main")) {
+		Task runTask = project.getTasks().findByName("run");
+		if (mainClass == null && runTask != null) {
 			mainClass = (String) runTask.property("main");
 		}
 
@@ -91,10 +103,10 @@ public class FindMainClassTask extends DefaultTask {
 		if (bootExtension.getMainClass() == null) {
 			bootExtension.setMainClass(mainClass);
 		}
-		if (application.getMainClassName() == null) {
+		if (application != null && application.getMainClassName() == null) {
 			application.setMainClassName(mainClass);
 		}
-		if (!runTask.hasProperty("main")) {
+		if (runTask != null && !runTask.hasProperty("main")) {
 			runTask.setProperty("main", mainClass);
 		}
 
