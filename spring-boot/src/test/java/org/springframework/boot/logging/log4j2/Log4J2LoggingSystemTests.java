@@ -36,12 +36,13 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -128,6 +129,17 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
 				equalTo(1));
+	}
+
+	@Test
+	public void setLevelOfUnconfiguredLoggerDoesNotAffectRootConfiguration()
+			throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		LogManager.getRootLogger().debug("Hello");
+		this.loggingSystem.setLogLevel("foo.bar.baz", LogLevel.DEBUG);
+		LogManager.getRootLogger().debug("Hello");
+		assertThat(this.output.toString(), not(containsString("Hello")));
 	}
 
 	@Test

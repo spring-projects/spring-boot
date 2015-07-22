@@ -125,13 +125,13 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	public void beforeInitialize() {
 		super.beforeInitialize();
-		getLoggerConfig(null).addFilter(FILTER);
+		getRootLoggerConfig().addFilter(FILTER);
 	}
 
 	@Override
 	public void initialize(LoggingInitializationContext initializationContext,
 			String configLocation, LogFile logFile) {
-		getLoggerConfig(null).removeFilter(FILTER);
+		getRootLoggerConfig().removeFilter(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
 	}
 
@@ -183,15 +183,25 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	public void setLogLevel(String loggerName, LogLevel level) {
-		getLoggerConfig(loggerName).setLevel(LEVELS.get(level));
+	public void setLogLevel(String loggerName, LogLevel logLevel) {
+		Level level = LEVELS.get(logLevel);
+		LoggerConfig loggerConfig = getLoggerConfig(loggerName);
+		if (loggerConfig == null) {
+			loggerConfig = new LoggerConfig(loggerName, level, true);
+			getLoggerContext().getConfiguration().addLogger(loggerName, loggerConfig);
+		}
+		else {
+			loggerConfig.setLevel(level);
+		}
 		getLoggerContext().updateLoggers();
 	}
 
+	private LoggerConfig getRootLoggerConfig() {
+		return getLoggerContext().getConfiguration().getLoggerConfig("");
+	}
+
 	private LoggerConfig getLoggerConfig(String loggerName) {
-		LoggerConfig loggerConfig = getLoggerContext().getConfiguration()
-				.getLoggerConfig(loggerName == null ? "" : loggerName);
-		return loggerConfig;
+		return getLoggerContext().getConfiguration().getLoggers().get(loggerName);
 	}
 
 	private LoggerContext getLoggerContext() {
