@@ -23,7 +23,8 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.ApplicationPluginConvention;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
-import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.api.tasks.TaskAction;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.MainClassFinder;
@@ -37,6 +38,14 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @author Andy Wilkinson
  */
 public class FindMainClassTask extends DefaultTask {
+
+	@Input
+	private SourceSetOutput mainClassSourceSetOutput;
+
+	public void setMainClassSourceSetOutput(SourceSetOutput sourceSetOutput) {
+		this.mainClassSourceSetOutput = sourceSetOutput;
+		this.dependsOn(this.mainClassSourceSetOutput.getBuildDependencies());
+	}
 
 	@TaskAction
 	public void setMainClassNameProperty() {
@@ -81,15 +90,22 @@ public class FindMainClassTask extends DefaultTask {
 		}
 
 		if (mainClass == null) {
+			Task bootRunTask = project.getTasks().findByName("bootRun");
+			if (bootRunTask != null) {
+				mainClass = (String) bootRunTask.property("main");
+			}
+		}
+
+		if (mainClass == null) {
 			// Search
-			SourceSet mainSourceSet = SourceSets.findMainSourceSet(project);
-			if (mainSourceSet != null) {
+			if (this.mainClassSourceSetOutput != null) {
 				project.getLogger().debug(
 						"Looking for main in: "
-								+ mainSourceSet.getOutput().getClassesDir());
+								+ this.mainClassSourceSetOutput.getClassesDir());
 				try {
-					mainClass = MainClassFinder.findSingleMainClass(mainSourceSet
-							.getOutput().getClassesDir());
+					mainClass = MainClassFinder
+							.findSingleMainClass(this.mainClassSourceSetOutput
+									.getClassesDir());
 					project.getLogger().info("Computed main class: " + mainClass);
 				}
 				catch (IOException ex) {

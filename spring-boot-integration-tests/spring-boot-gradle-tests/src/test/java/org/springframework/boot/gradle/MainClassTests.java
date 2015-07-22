@@ -23,7 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests for using the Gradle plugin's support for installing artifacts
+ * Tests for configuring a project's main class
  *
  * @author Dave Syer
  */
@@ -35,11 +35,11 @@ public class MainClassTests {
 
 	@BeforeClass
 	public static void createProject() throws IOException {
-		project = new ProjectCreator().createProject("main-in-run");
+		project = new ProjectCreator().createProject("main-in-boot-run");
 	}
 
 	@Test
-	public void buildFromRunTask() {
+	public void mainFromBootRun() {
 		project.newBuild().forTasks("build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--info").run();
 	}

@@ -14,7 +14,7 @@ apply plugin: 'spring-boot'
 group = 'installer'
 version = '0.0.0'
 
-run {
+bootRun {
   main = 'org.springframework.boot.SpringApplication'
 }
 

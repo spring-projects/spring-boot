@@ -31,6 +31,7 @@ import org.gradle.api.tasks.TaskDependency;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.PluginFeatures;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.boot.gradle.run.FindMainClassTask;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.util.StringUtils;
@@ -69,6 +70,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 				runtimeProjectDependencyJarTasks);
 		registerOutput(project, task);
 		ensureTaskRunsOnAssembly(project, task);
+		ensureMainClassHasBeenFound(project, task);
 	}
 
 	private void registerOutput(Project project, final RepackageTask task) {
@@ -87,6 +89,10 @@ public class RepackagePluginFeatures implements PluginFeatures {
 
 	private void ensureTaskRunsOnAssembly(Project project, Task task) {
 		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(task);
+	}
+
+	private void ensureMainClassHasBeenFound(Project project, Task task) {
+		task.dependsOn(project.getTasks().withType(FindMainClassTask.class));
 	}
 
 	/**

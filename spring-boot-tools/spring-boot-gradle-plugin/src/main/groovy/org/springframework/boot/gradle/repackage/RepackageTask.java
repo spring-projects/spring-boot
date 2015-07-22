@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
+import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
@@ -194,16 +196,27 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		private void setMainClass(Repackager repackager) {
-			String mainClass = (String) getProject().property("mainClassName");
+			String mainClass;
+			if (getProject().hasProperty("mainClassName")) {
+				mainClass = (String) getProject().property("mainClassName");
+			}
+			else {
+				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) getProject()
+						.getExtensions().getByName("ext");
+				mainClass = (String) extraProperties.get("mainClassName");
+			}
 			if (RepackageTask.this.mainClass != null) {
 				mainClass = RepackageTask.this.mainClass;
 			}
 			else if (this.extension.getMainClass() != null) {
 				mainClass = this.extension.getMainClass();
 			}
-			else if (getProject().getTasks().getByName("run").hasProperty("main")) {
-				mainClass = (String) getProject().getTasks().getByName("run")
-						.property("main");
+			else {
+				Task runTask = getProject().getTasks().findByName("run");
+				if (runTask != null && runTask.hasProperty("main")) {
+					mainClass = (String) getProject().getTasks().getByName("run")
+							.property("main");
+				}
 			}
 			getLogger().info("Setting mainClass: " + mainClass);
 			repackager.setMainClass(mainClass);
@@ -211,7 +224,7 @@ public class RepackageTask extends DefaultTask {
 
 		private LaunchScript getLaunchScript() throws IOException {
 			if (this.extension.isExecutable()
-					|| extension.getEmbeddedLaunchScript() != null) {
+					|| this.extension.getEmbeddedLaunchScript() != null) {
 				return new DefaultLaunchScript(this.extension.getEmbeddedLaunchScript(),
 						this.extension.getEmbeddedLaunchScriptProperties());
 			}

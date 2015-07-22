@@ -10,11 +10,12 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'spring-boot'
+apply plugin: 'application'
 
 group = 'installer'
 version = '0.0.0'
 
-run {
+bootRun {
   main = 'org.springframework.boot.SpringApplication'
 }
 

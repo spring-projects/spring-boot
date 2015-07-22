@@ -43,8 +43,7 @@ public class InstallTests {
 		// "install" from the application plugin was renamed "installApp" in Gradle
 		// 1.0
 		this.project.newBuild().forTasks("installApp")
-				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info")
-				.run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}
 
 }
