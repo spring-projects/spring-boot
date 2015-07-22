@@ -565,7 +565,6 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		}
 		JSONObject additionalMetadata = new JSONObject();
 		additionalMetadata.put("properties", propertiesArray);
-		System.out.println(additionalMetadata);
 		writeMetadata(additionalMetadataFile, additionalMetadata);
 	}
 
