@@ -52,6 +52,7 @@ import org.springframework.util.ResourceUtils;
  * @author Daniel Fullarton
  * @author Andy Wilkinson
  * @author Alexander Heusingfeld
+ * @author Vladmir Tsanev
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
@@ -184,7 +185,13 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
-		getLoggerConfig(loggerName).setLevel(LEVELS.get(level));
+		final LoggerConfig loggerConfig = getLoggerConfig(loggerName);
+		if (loggerName != null && !loggerConfig.getName().equals(loggerName)) {
+			LoggerConfig newLoggerConfig = new LoggerConfig(loggerName, LEVELS.get(level), true);
+			getLoggerContext().getConfiguration().addLogger(loggerName, newLoggerConfig);
+		} else {
+			loggerConfig.setLevel(LEVELS.get(level));
+		}
 		getLoggerContext().updateLoggers();
 	}
 

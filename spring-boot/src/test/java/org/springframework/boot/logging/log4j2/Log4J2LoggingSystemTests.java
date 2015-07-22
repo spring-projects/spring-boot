@@ -52,6 +52,7 @@ import static org.junit.Assert.assertTrue;
  * @author Daniel Fullarton
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Vladimir Tsanev
  */
 public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
@@ -128,6 +129,21 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
 				equalTo(1));
+	}
+
+	@Test
+	public void testSetLevelDoesNotAffectRootLevel() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		final String loggerName = "some.undefined.logger";
+		Logger logger = LogManager.getLogger(loggerName);
+		Logger rootLogger = LogManager.getRootLogger();
+		logger.debug("Hello");
+		rootLogger.debug("Hello");
+		loggingSystem.setLogLevel(loggerName, LogLevel.DEBUG);
+		logger.debug("Hello");
+		rootLogger.debug("Hello");
+		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"), equalTo(1));
 	}
 
 	@Test
