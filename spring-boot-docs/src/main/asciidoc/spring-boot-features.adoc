@@ -780,8 +780,11 @@ annotations to your `@ConfigurationProperties` class:
 
 	}
 ----
-In order to validate values of nested properties, you must annotate the static nested
-class as `@Valid`. For example, building upon the above `@ConfigurationProperties` class:
+
+
+In order to validate values of nested properties, you must annotate the associated field
+as `@Valid` to trigger its validation. For example, building upon the above
+`ConnectionSettings` example:
 
 [source,java,indent=0]
 ----
@@ -791,11 +794,11 @@ class as `@Valid`. For example, building upon the above `@ConfigurationPropertie
 
 		@NotNull
 		@Valid
-		private InetAddress remoteAddress;
+		private RemoteAddress remoteAddress;
 
 		// ... getters and setters
 
-		private static class InetAddress {
+		private static class RemoteAddress {
 
 			@NotEmpty
 			public String hostname;
