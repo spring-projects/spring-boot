@@ -66,6 +66,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
 		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
@@ -322,13 +323,15 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private Validator determineValidator(Object bean) {
+		boolean globalValidatorSupportBean = (this.validator != null
+				&& this.validator.supports(bean.getClass()));
 		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {
-			if (this.validator == null) {
+			if (!globalValidatorSupportBean) {
 				return (Validator) bean;
 			}
 			return new ChainingValidator(this.validator, (Validator) bean);
 		}
-		return this.validator;
+		return globalValidatorSupportBean ? this.validator : null;
 	}
 
 	private PropertySources loadPropertySources(String[] locations,
