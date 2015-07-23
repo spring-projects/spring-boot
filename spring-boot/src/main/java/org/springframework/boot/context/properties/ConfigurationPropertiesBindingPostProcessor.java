@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
 		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
@@ -321,13 +322,15 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private Validator determineValidator(Object bean) {
+		boolean globalValidatorSupportBean = (this.validator != null
+				&& this.validator.supports(bean.getClass()));
 		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {
-			if (this.validator == null) {
+			if (!globalValidatorSupportBean) {
 				return (Validator) bean;
 			}
 			return new ChainingValidator(this.validator, (Validator) bean);
 		}
-		return this.validator;
+		return globalValidatorSupportBean ? this.validator : null;
 	}
 
 	private PropertySources loadPropertySources(String[] locations,

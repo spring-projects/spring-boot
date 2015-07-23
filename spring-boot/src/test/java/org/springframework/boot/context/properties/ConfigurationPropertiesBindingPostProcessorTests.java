@@ -54,6 +54,7 @@ import static org.junit.Assert.fail;
  *
  * @author Christian Dupuis
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class ConfigurationPropertiesBindingPostProcessorTests {
 
@@ -131,6 +132,39 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfigurationWithInitializer.class);
 		this.context.refresh();
+	}
+
+	@Test
+	public void testValidationWithCustomValidator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfigurationWithCustomValidator.class);
+		try {
+			this.context.refresh();
+			fail("Expected exception");
+		}
+		catch (BeanCreationException ex) {
+			BindException bex = (BindException) ex.getRootCause();
+			assertEquals(1, bex.getErrorCount());
+		}
+	}
+
+	@Test
+	public void testValidationWithCustomValidatorNotSupported() {
+		MockEnvironment env = new MockEnvironment();
+		env.setProperty("test.foo", "bar");
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setEnvironment(env);
+		this.context.register(TestConfigurationWithCustomValidator.class,
+				PropertyWithValidatingSetter.class);
+		try {
+			// PropertyWithValidatingSetter should not use validator
+			this.context.refresh();
+			fail("Expected exception");
+		}
+		catch (BeanCreationException ex) {
+			BindException bex = (BindException) ex.getRootCause();
+			assertEquals(1, bex.getErrorCount());
+		}
 	}
 
 	@Test
@@ -369,6 +403,50 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		public String getBar() {
 			return this.bar;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class TestConfigurationWithCustomValidator {
+
+		@Bean
+		public PropertyWithCustomValidator propertyWithCustomValidator() {
+			return new PropertyWithCustomValidator();
+		}
+
+		@Bean
+		public Validator configurationPropertiesValidator() {
+			return new CustomPropertyValidator();
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "custom")
+	public static class PropertyWithCustomValidator {
+
+		private String foo;
+
+		public String getFoo() {
+			return foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
+	}
+
+	public static class CustomPropertyValidator implements Validator {
+
+		@Override
+		public boolean supports(Class<?> aClass) {
+			return aClass == PropertyWithCustomValidator.class;
+		}
+
+		@Override
+		public void validate(Object o, Errors errors) {
+			ValidationUtils.rejectIfEmpty(errors, "foo", "TEST1");
 		}
 
 	}
