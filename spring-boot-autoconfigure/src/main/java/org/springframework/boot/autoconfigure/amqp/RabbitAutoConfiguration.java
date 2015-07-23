@@ -97,7 +97,7 @@ public class RabbitAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RabbitTemplate.class)
-	public RabbitTemplate rabbitTemplate(RabbitProperties config) {
+	public RabbitTemplate rabbitTemplate() {
 		return new RabbitTemplate(this.connectionFactory);
 	}
 
