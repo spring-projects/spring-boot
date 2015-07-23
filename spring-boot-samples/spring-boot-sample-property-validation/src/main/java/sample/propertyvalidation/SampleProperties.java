@@ -20,12 +20,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties
+@ConfigurationProperties(prefix = "sample")
 public class SampleProperties {
 
+	/**
+	 * Sample host.
+	 */
 	private String host;
 
-	private Integer port;
+	/**
+	 * Sample port.
+	 */
+	private Integer port = 8080;
 
 	public String getHost() {
 		return host;

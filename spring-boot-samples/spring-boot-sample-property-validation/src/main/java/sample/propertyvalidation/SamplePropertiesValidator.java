@@ -16,46 +16,29 @@
 
 package sample.propertyvalidation;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Component;
+import java.util.regex.Pattern;
+
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
+public class SamplePropertiesValidator implements Validator {
 
-@Component(value = "configurationPropertiesValidator")
-public class ConfigurationPropertiesValidator implements Validator {
-
-	public static final String IP_REGEX = "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
-
-	final Pattern pattern = Pattern.compile(IP_REGEX);
-
-	private Set<String> validatedClasses = new HashSet<String>() {{
-		add(SampleProperties.class.getName());
-	}};
+	final Pattern pattern = Pattern.compile("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$");
 
 	@Override
-	public boolean supports(Class<?> aClass) {
-		return AnnotationUtils.findAnnotation(aClass, ConfigurationProperties.class) != null;
+	public boolean supports(Class<?> type) {
+		return type == SampleProperties.class;
 	}
 
 	@Override
 	public void validate(Object o, Errors errors) {
-		if(validatedClasses.contains(o.getClass().getName())) {
-			doValidation(o, errors);
-		}
-	}
-
-	private void doValidation(Object o, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "host", "host.empty");
 		ValidationUtils.rejectIfEmpty(errors, "port", "port.empty");
 
 		SampleProperties properties = (SampleProperties) o;
-		if(!pattern.matcher(properties.getHost()).matches()) {
+		if (properties.getHost() != null &&
+				!pattern.matcher(properties.getHost()).matches()) {
 			errors.rejectValue("host", "Invalid host");
 		}
 	}

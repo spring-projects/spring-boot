@@ -16,15 +16,15 @@
 
 package sample.propertyvalidation;
 
+import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.validation.Validator;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,54 +32,64 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link SamplePropertyValidationApplication}.
  *
  * @author Lucas Saldanha
+ * @author Stephane Nicoll
  */
 public class SamplePropertyValidationApplicationTests {
 
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
+
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Test
-	public void testBindingValidProperties() {
-		this.context.register(TestConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "host:192.168.0.1");
-		EnvironmentTestUtils.addEnvironment(this.context, "port:8080");
-		this.context.refresh();
-
-		assertEquals(1, this.context.getBeanNamesForType(SampleProperties.class).length);
-		SampleProperties properties = this.context.getBean(SampleProperties.class);
-		assertEquals("192.168.0.1", properties.getHost());
-		assertEquals(8080, (int) properties.getPort());
-	}
-
-	@Test(expected = BeanCreationException.class)
-	public void testBindingInvalidProperties() {
-		this.context.register(TestConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "host:xxxxxx");
-		EnvironmentTestUtils.addEnvironment(this.context, "port:8080");
-		this.context.refresh();
+	@After
+	public void closeContext() {
+		context.close();
 	}
 
 	@Test
-	public void testBindingValidPropertiesWithMultipleConfigurationPropertiesClasses() {
-		this.context.register(TestConfiguration.class);
-		this.context.register(ServerProperties.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "host:192.168.0.1");
-		EnvironmentTestUtils.addEnvironment(this.context, "port:8080");
+	public void bindValidProperties() {
+		this.context.register(SamplePropertyValidationApplication.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"sample.host:192.168.0.1", "sample.port:9090");
 		this.context.refresh();
 
-		assertEquals(1, this.context.getBeanNamesForType(SampleProperties.class).length);
 		SampleProperties properties = this.context.getBean(SampleProperties.class);
 		assertEquals("192.168.0.1", properties.getHost());
-		assertEquals(8080, (int) properties.getPort());
+		assertEquals(Integer.valueOf(9090), properties.getPort());
 	}
 
-	@Configuration
-	@EnableConfigurationProperties(SampleProperties.class)
-	protected static class TestConfiguration {
+	@Test
+	public void bindInvalidHost() {
+		this.context.register(SamplePropertyValidationApplication.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"sample.host:xxxxxx", "sample.port:9090");
 
-		@Bean
-		public Validator configurationPropertiesValidator() {
-			return new ConfigurationPropertiesValidator();
-		}
+		thrown.expect(BeanCreationException.class);
+		thrown.expectMessage("xxxxxx");
+		this.context.refresh();
+	}
+
+	@Test
+	public void bindNullHost() {
+		this.context.register(SamplePropertyValidationApplication.class);
+
+		thrown.expect(BeanCreationException.class);
+		thrown.expectMessage("null");
+		thrown.expectMessage("host");
+		this.context.refresh();
+	}
+
+	@Test
+	public void validatorOnlyCalledOnSupportedClass() {
+		this.context.register(SamplePropertyValidationApplication.class);
+		this.context.register(ServerProperties.class); // our validator will not apply here
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"sample.host:192.168.0.1", "sample.port:9090");
+		this.context.refresh();
+
+		SampleProperties properties = this.context.getBean(SampleProperties.class);
+		assertEquals("192.168.0.1", properties.getHost());
+		assertEquals(Integer.valueOf(9090), properties.getPort());
 	}
 
 }

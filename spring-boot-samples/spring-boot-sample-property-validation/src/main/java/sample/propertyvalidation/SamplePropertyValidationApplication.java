@@ -18,26 +18,42 @@ package sample.propertyvalidation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.Validator;
 
 @SpringBootApplication
 @EnableConfigurationProperties
-public class SamplePropertyValidationApplication implements CommandLineRunner {
+public class SamplePropertyValidationApplication {
 
-	@Autowired
-	private SampleProperties properties;
+	@Bean
+	public Validator configurationPropertiesValidator() {
+		return new SamplePropertiesValidator();
+	}
 
-	@Override
-	public void run(String... args) {
-		System.out.println("host: " + this.properties.getHost());
-		System.out.println("port:" + this.properties.getPort());
+	@Service
+	@Profile("app")
+	static class Startup implements CommandLineRunner {
+
+		@Autowired
+		private SampleProperties properties;
+
+		@Override
+		public void run(String... args) {
+			System.out.println("=========================================");
+			System.out.println("Sample host: " + this.properties.getHost());
+			System.out.println("Sample port: " + this.properties.getPort());
+			System.out.println("=========================================");
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SamplePropertyValidationApplication.class, args);
+		new SpringApplicationBuilder(SamplePropertyValidationApplication.class)
+				.profiles("app").run(args);
 	}
 
 }
