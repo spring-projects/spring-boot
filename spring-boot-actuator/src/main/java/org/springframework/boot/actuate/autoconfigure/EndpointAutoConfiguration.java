@@ -173,7 +173,6 @@ public class EndpointAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(Flyway.class)
-	@ConditionalOnClass(Flyway.class)
 	static class FlywayEndpointConfiguration {
 
 		@Bean
@@ -186,7 +185,6 @@ public class EndpointAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(SpringLiquibase.class)
-	@ConditionalOnClass(SpringLiquibase.class)
 	static class LiquibaseEndpointConfiguration {
 
 		@Bean
