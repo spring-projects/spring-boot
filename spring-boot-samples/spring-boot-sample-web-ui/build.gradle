@@ -23,7 +23,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
-mainClassName = "sample.ui.SampleWebUiApplication"
+mainClassName = "sample.web.ui.SampleWebUiApplication"
 
 springBoot {
     classifier = 'exec'
