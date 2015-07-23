@@ -139,7 +139,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	}
 
 	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
+		this.contextPath = cleanContextPath(contextPath);
+	}
+
+	private String cleanContextPath(String contextPath) {
+		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+			return contextPath.substring(0, contextPath.length() - 1);
+		}
+		return contextPath;
 	}
 
 	public String getDisplayName() {

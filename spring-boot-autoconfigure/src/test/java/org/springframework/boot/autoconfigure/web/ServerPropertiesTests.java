@@ -41,6 +41,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -121,6 +122,20 @@ public class ServerPropertiesTests {
 				.getProtocolHeader());
 		assertEquals("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", this.properties.getTomcat()
 				.getInternalProxies());
+	}
+
+	@Test
+	public void testTrailingSlashOfContextPathIsRemoved() {
+		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
+				Collections.singletonMap("server.contextPath", "/foo/")));
+		assertThat(this.properties.getContextPath(), equalTo("/foo"));
+	}
+
+	@Test
+	public void testSlashOfContextPathIsDefaultValue() {
+		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
+				Collections.singletonMap("server.contextPath", "/")));
+		assertThat(this.properties.getContextPath(), equalTo(""));
 	}
 
 	@Test
