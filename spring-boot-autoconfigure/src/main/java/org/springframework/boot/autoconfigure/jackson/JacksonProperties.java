@@ -95,6 +95,11 @@ public class JacksonProperties {
 	 */
 	private TimeZone timeZone = null;
 
+	/**
+	 * Locale used for formatting.
+	 */
+	private String locale;
+
 	public String getDateFormat() {
 		return this.dateFormat;
 	}
@@ -153,6 +158,14 @@ public class JacksonProperties {
 
 	public void setTimeZone(TimeZone timeZone) {
 		this.timeZone = timeZone;
+	}
+
+	public String getLocale() {
+		return this.locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 
 }
