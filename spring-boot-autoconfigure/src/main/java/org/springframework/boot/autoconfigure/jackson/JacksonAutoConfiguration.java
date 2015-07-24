@@ -162,6 +162,7 @@ public class JacksonAutoConfiguration {
 			configureDateFormat(builder);
 			configurePropertyNamingStrategy(builder);
 			configureModules(builder);
+			configureLocale(builder);
 			return builder;
 		}
 
@@ -235,6 +236,13 @@ public class JacksonAutoConfiguration {
 			Collection<Module> moduleBeans = getBeans(this.applicationContext,
 					Module.class);
 			builder.modulesToInstall(moduleBeans.toArray(new Module[moduleBeans.size()]));
+		}
+
+		private void configureLocale(Jackson2ObjectMapperBuilder builder) {
+			String locale = this.jacksonProperties.getLocale();
+			if (locale != null) {
+				builder.locale(locale);
+			}
 		}
 
 		private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
