@@ -286,6 +286,11 @@ public class RabbitProperties {
 	public static class Listener {
 
 		/**
+		 * Start the container automatically on startup.
+		 */
+		private boolean autoStartup = true;
+
+		/**
 		 * Acknowledge mode of container.
 		 */
 		private AcknowledgeMode acknowledgeMode;
@@ -311,6 +316,14 @@ public class RabbitProperties {
 		 * be less than or equal to the prefetch count.
 		 */
 		private Integer transactionSize;
+
+		public boolean isAutoStartup() {
+			return autoStartup;
+		}
+
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
+		}
 
 		public AcknowledgeMode getAcknowledgeMode() {
 			return this.acknowledgeMode;

@@ -475,6 +475,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.password= # login password
 	spring.rabbitmq.requested-heartbeat= # requested heartbeat timeout, in seconds; zero for none
 	spring.rabbitmq.listener.acknowledge-mode= # acknowledge mode of container
+	spring.rabbitmq.listener.auto-startup=true # start the container automatically on startup
 	spring.rabbitmq.listener.concurrency= # minimum number of consumers
 	spring.rabbitmq.listener.max-concurrency= # maximum number of consumers
 	spring.rabbitmq.listener.prefetch= # number of messages to be handled in a single request
@@ -534,6 +535,7 @@ content into your application; rather pick only the properties that you need.
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsProperties.{sc-ext}[JmsProperties])
 	spring.jms.jndi-name= # JNDI location of a JMS ConnectionFactory
 	spring.jms.listener.acknowledge-mode= # session acknowledgment mode
+	spring.jms.listener.auto-startup=true # start the container automatically on startup
 	spring.jms.listener.concurrency= # minimum number of concurrent consumers
 	spring.jms.listener.max-concurrency= # maximum number of concurrent consumers
 	spring.jms.pub-sub-domain= # false for queue (default), true for topic

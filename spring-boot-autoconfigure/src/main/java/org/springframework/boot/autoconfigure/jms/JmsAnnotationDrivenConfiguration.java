@@ -68,6 +68,7 @@ class JmsAnnotationDrivenConfiguration {
 			factory.setDestinationResolver(this.destinationResolver);
 		}
 		JmsProperties.Listener listener = this.properties.getListener();
+		factory.setAutoStartup(listener.isAutoStartup());
 		if (listener.getAcknowledgeMode() != null) {
 			factory.setSessionAcknowledgeMode(listener.getAcknowledgeMode().getMode());
 		}

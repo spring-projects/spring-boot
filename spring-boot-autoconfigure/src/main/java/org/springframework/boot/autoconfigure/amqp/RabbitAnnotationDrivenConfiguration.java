@@ -44,6 +44,7 @@ class RabbitAnnotationDrivenConfiguration {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
 		Listener listenerConfig = config.getListener();
+		factory.setAutoStartup(listenerConfig.isAutoStartup());
 		if (listenerConfig.getAcknowledgeMode() != null) {
 			factory.setAcknowledgeMode(listenerConfig.getAcknowledgeMode());
 		}

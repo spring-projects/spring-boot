@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Greg Turnquist
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "spring.jms")
 public class JmsProperties {
@@ -63,6 +64,11 @@ public class JmsProperties {
 	public static class Listener {
 
 		/**
+		 * Start the container automatically on startup.
+		 */
+		private boolean autoStartup = true;
+
+		/**
 		 * Acknowledge mode of the container. By default, the listener is
 		 * transacted with automatic acknowledgment.
 		 */
@@ -77,6 +83,14 @@ public class JmsProperties {
 		 * Maximum number of concurrent consumers.
 		 */
 		private Integer maxConcurrency;
+
+		public boolean isAutoStartup() {
+			return autoStartup;
+		}
+
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
+		}
 
 		public AcknowledgeMode getAcknowledgeMode() {
 			return acknowledgeMode;

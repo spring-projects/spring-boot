@@ -190,6 +190,7 @@ public class RabbitAutoConfigurationTests {
 	@Test
 	public void testRabbitListenerContainerFactoryWithCustomSettings() {
 		load(TestConfiguration.class,
+				"spring.rabbitmq.listener.autoStartup:false",
 				"spring.rabbitmq.listener.acknowledgeMode:manual",
 				"spring.rabbitmq.listener.concurrency:5",
 				"spring.rabbitmq.listener.maxConcurrency:10",
@@ -199,6 +200,7 @@ public class RabbitAutoConfigurationTests {
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
+		assertEquals(false, dfa.getPropertyValue("autoStartup"));
 		assertEquals(AcknowledgeMode.MANUAL,
 				dfa.getPropertyValue("acknowledgeMode"));
 		assertEquals(5, dfa.getPropertyValue("concurrentConsumers"));
