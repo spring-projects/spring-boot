@@ -38,7 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
@@ -56,6 +55,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Phillip Webb
  * @author Dave Syer
  * @author Oliver Gierke
+ * @author Arnost Havelka
  */
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
@@ -80,7 +80,9 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	public PlatformTransactionManager transactionManager() {
-		return new JpaTransactionManager();
+		return new SpringBootJpaTransactionManager(jpaProperties);
+// #3301 due to setup the default isolation level in the transaction manager
+//		return new JpaTransactionManager();
 	}
 
 	@Bean
