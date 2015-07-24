@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Documented;
@@ -57,7 +58,7 @@ public @interface ConditionalOnJava {
 	/**
 	 * Range options.
 	 */
-	public enum Range {
+	enum Range {
 
 		/**
 		 * Equal to, or newer than the specified {@link JavaVersion}.
@@ -74,7 +75,7 @@ public @interface ConditionalOnJava {
 	/**
 	 * Java versions.
 	 */
-	public enum JavaVersion {
+	enum JavaVersion {
 
 		/**
 		 * Java 1.6.

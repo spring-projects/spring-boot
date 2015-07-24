@@ -30,6 +30,6 @@ public interface PluginFeatures {
 	 * Apply the features to the specified project.
 	 * @param project the project to apply features to
 	 */
-	public void apply(Project project);
+	void apply(Project project);
 
 }

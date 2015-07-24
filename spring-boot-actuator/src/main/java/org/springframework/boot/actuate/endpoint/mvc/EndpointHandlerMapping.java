@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
@@ -49,8 +48,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author Christian Dupuis
  * @author Dave Syer
  */
-public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
-		ApplicationContextAware {
+public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 
 	private final Set<MvcEndpoint> endpoints;
 

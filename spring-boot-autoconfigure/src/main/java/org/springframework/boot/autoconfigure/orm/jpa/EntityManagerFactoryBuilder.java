@@ -194,7 +194,7 @@ public class EntityManagerFactoryBuilder {
 	/**
 	 * A callback for new entity manager factory beans created by a Builder.
 	 */
-	public static interface EntityManagerFactoryBeanCallback {
+	public interface EntityManagerFactoryBeanCallback {
 
 		void execute(LocalContainerEntityManagerFactoryBean factory);
 

@@ -41,12 +41,12 @@ public @interface ConditionalOnClass {
 	 * classpath.
 	 * @return the classes that must be present
 	 */
-	public Class<?>[] value() default {};
+	Class<?>[] value() default {};
 
 	/**
 	 * The classes names that must be present.
 	 * @return the class names that must be present.
 	 */
-	public String[] name() default {};
+	String[] name() default {};
 
 }

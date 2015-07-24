@@ -104,7 +104,7 @@ public abstract class Archive {
 	/**
 	 * Represents a single entry in the archive.
 	 */
-	public static interface Entry {
+	public interface Entry {
 
 		/**
 		 * Returns {@code true} if the entry represents a directory.
@@ -123,7 +123,7 @@ public abstract class Archive {
 	/**
 	 * Strategy interface to filter {@link Entry Entries}.
 	 */
-	public static interface EntryFilter {
+	public interface EntryFilter {
 
 		/**
 		 * Apply the jar entry filter.
@@ -137,7 +137,7 @@ public abstract class Archive {
 	/**
 	 * Strategy interface to filter or rename {@link Entry Entries}.
 	 */
-	public static interface EntryRenameFilter {
+	public interface EntryRenameFilter {
 
 		/**
 		 * Apply the jar entry filter.

@@ -248,7 +248,7 @@ public class JarWriter {
 	/**
 	 * Interface used to write jar entry date.
 	 */
-	private static interface EntryWriter {
+	private interface EntryWriter {
 
 		/**
 		 * Write entry data to the specified output stream

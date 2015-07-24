@@ -29,7 +29,7 @@ public interface AccessManager {
 	/**
 	 * {@link AccessManager} that permits all requests.
 	 */
-	public static final AccessManager PERMIT_ALL = new AccessManager() {
+	AccessManager PERMIT_ALL = new AccessManager() {
 
 		@Override
 		public boolean isAllowed(ServerHttpRequest request) {

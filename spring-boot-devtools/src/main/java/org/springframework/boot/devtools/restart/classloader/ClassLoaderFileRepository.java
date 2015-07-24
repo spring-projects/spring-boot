@@ -30,7 +30,7 @@ public interface ClassLoaderFileRepository {
 	/**
 	 * Empty {@link ClassLoaderFileRepository} implementation.
 	 */
-	public static final ClassLoaderFileRepository NONE = new ClassLoaderFileRepository() {
+	ClassLoaderFileRepository NONE = new ClassLoaderFileRepository() {
 
 		@Override
 		public ClassLoaderFile getFile(String name) {

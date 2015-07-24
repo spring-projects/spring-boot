@@ -28,7 +28,7 @@ public interface Libraries {
 	/**
 	 * Represents no libraries.
 	 */
-	public static Libraries NONE = new Libraries() {
+	Libraries NONE = new Libraries() {
 		@Override
 		public void doWithLibraries(LibraryCallback callback) throws IOException {
 		}

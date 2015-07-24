@@ -66,7 +66,7 @@ abstract class NamePatternFilter<T> {
 
 	protected abstract Object getValue(T source, String name);
 
-	protected static interface NameCallback {
+	protected interface NameCallback {
 
 		void addName(String name);
 

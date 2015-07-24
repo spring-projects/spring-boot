@@ -227,7 +227,7 @@ class ServletContextInitializerBeans extends
 	 * Adapter to convert a given Bean type into a {@link RegistrationBean} (and hence a
 	 * {@link ServletContextInitializer}.
 	 */
-	private static interface RegistrationBeanAdapter<T> {
+	private interface RegistrationBeanAdapter<T> {
 
 		RegistrationBean createRegistrationBean(String name, T source,
 				int totalNumberOfSourceBeans);

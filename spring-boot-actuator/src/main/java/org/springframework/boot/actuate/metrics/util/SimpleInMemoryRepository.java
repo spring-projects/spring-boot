@@ -36,7 +36,7 @@ public class SimpleInMemoryRepository<T> {
 
 	private final ConcurrentMap<String, Object> locks = new ConcurrentReferenceHashMap<String, Object>();
 
-	public static interface Callback<T> {
+	public interface Callback<T> {
 		T modify(T current);
 	}
 

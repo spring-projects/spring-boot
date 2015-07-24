@@ -108,7 +108,7 @@ public class MustacheWebIntegrationTests {
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+	protected @interface MinimalWebConfiguration {
 	}
 
 	@Configuration

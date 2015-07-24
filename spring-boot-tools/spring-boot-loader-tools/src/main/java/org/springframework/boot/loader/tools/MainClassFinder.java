@@ -313,7 +313,7 @@ public abstract class MainClassFinder {
 	 * Callback interface used to receive class names.
 	 * @param <T> the result type
 	 */
-	public static interface ClassNameCallback<T> {
+	public interface ClassNameCallback<T> {
 
 		/**
 		 * Handle the specified class name

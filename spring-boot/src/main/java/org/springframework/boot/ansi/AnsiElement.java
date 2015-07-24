@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,96 +27,96 @@ public interface AnsiElement {
 	 * @deprecated in 1.3.0 in favor of {@link AnsiStyle#NORMAL}
 	 */
 	@Deprecated
-	public static final AnsiElement NORMAL = new DefaultAnsiElement("0");
+	AnsiElement NORMAL = new DefaultAnsiElement("0");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiStyle#BOLD}
 	 */
 	@Deprecated
-	public static final AnsiElement BOLD = new DefaultAnsiElement("1");
+	AnsiElement BOLD = new DefaultAnsiElement("1");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiStyle#FAINT}
 	 */
 	@Deprecated
-	public static final AnsiElement FAINT = new DefaultAnsiElement("2");
+	AnsiElement FAINT = new DefaultAnsiElement("2");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiStyle#ITALIC}
 	 */
 	@Deprecated
-	public static final AnsiElement ITALIC = new DefaultAnsiElement("3");
+	AnsiElement ITALIC = new DefaultAnsiElement("3");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiStyle#UNDERLINE}
 	 */
 	@Deprecated
-	public static final AnsiElement UNDERLINE = new DefaultAnsiElement("4");
+	AnsiElement UNDERLINE = new DefaultAnsiElement("4");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiColor#BLACK}
 	 */
 	@Deprecated
-	public static final AnsiElement BLACK = new DefaultAnsiElement("30");
+	AnsiElement BLACK = new DefaultAnsiElement("30");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiColor#RED}
 	 */
 	@Deprecated
-	public static final AnsiElement RED = new DefaultAnsiElement("31");
+	AnsiElement RED = new DefaultAnsiElement("31");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiColor#GREEN}
 	 */
 	@Deprecated
-	public static final AnsiElement GREEN = new DefaultAnsiElement("32");
+	AnsiElement GREEN = new DefaultAnsiElement("32");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiColor#YELLOW}
 	 */
 	@Deprecated
-	public static final AnsiElement YELLOW = new DefaultAnsiElement("33");
+	AnsiElement YELLOW = new DefaultAnsiElement("33");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiColor#BLUE}
 	 */
 	@Deprecated
-	public static final AnsiElement BLUE = new DefaultAnsiElement("34");
+	AnsiElement BLUE = new DefaultAnsiElement("34");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiColor#MAGENTA}
 	 */
 	@Deprecated
-	public static final AnsiElement MAGENTA = new DefaultAnsiElement("35");
+	AnsiElement MAGENTA = new DefaultAnsiElement("35");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiColor#CYAN}
 	 */
 	@Deprecated
-	public static final AnsiElement CYAN = new DefaultAnsiElement("36");
+	AnsiElement CYAN = new DefaultAnsiElement("36");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiColor#WHITE}
 	 */
 	@Deprecated
-	public static final AnsiElement WHITE = new DefaultAnsiElement("37");
+	AnsiElement WHITE = new DefaultAnsiElement("37");
 
 	/**
 	 * @deprecated in 1.3.0 in favor of {@link AnsiColor#DEFAULT}
 	 */
 	@Deprecated
-	public static final AnsiElement DEFAULT = new DefaultAnsiElement("39");
+	AnsiElement DEFAULT = new DefaultAnsiElement("39");
 
 	/**
 	 * @return the ANSI escape code
 	 */
 	@Override
-	public String toString();
+	String toString();
 
 	/**
 	 * Internal default {@link AnsiElement} implementation.
 	 */
-	static class DefaultAnsiElement implements AnsiElement {
+	class DefaultAnsiElement implements AnsiElement {
 
 		private final String code;
 

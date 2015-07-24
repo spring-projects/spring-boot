@@ -110,7 +110,7 @@ public class EndpointMvcIntegrationTests {
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+	protected @interface MinimalWebConfiguration {
 
 	}
 

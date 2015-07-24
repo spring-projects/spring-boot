@@ -27,7 +27,7 @@ public interface FailureHandler {
 	/**
 	 * {@link FailureHandler} that always aborts.
 	 */
-	public static final FailureHandler NONE = new FailureHandler() {
+	FailureHandler NONE = new FailureHandler() {
 
 		@Override
 		public Outcome handle(Throwable failure) {
