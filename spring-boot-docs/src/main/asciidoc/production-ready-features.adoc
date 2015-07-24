@@ -1032,7 +1032,40 @@ for all supported data sources; you can add additional `DataSourcePoolMetadataPr
 beans if your favorite data source isn't supported out of the box. See
 `DataSourcePoolMetadataProvidersConfiguration` for examples.
 
+[[production-ready-hibernate-metrics]]
+=== Hibernate metrics
+The following metrics are exposed for each supported `EntityManagerFactory` defined in your
+application:
 
+* The start time of each `EntityManagerFactory` (`hibernate.xxx.start-time`)
+* The number of sessions opened (`hibernate.xxx.sessions.open`)
+* The number of sessions closed (`hibernate.xxx.sessions.close`)
+* The total number of transactions (`hibernate.xxx.transactions`)
+* The total number of succesful transactions (`hibernate.xxx.transactions.success`)
+* The number of optimistic locking failures (`hibernate.xxx.optimistic_failure_count`)
+* The number of flushes (`hibernate.xxx.flushes`)
+* The number of connections obtained (`hibernate.xxx.connections.obtained`)
+* The number of statements prepared (`hibernate.xxx.statements.prepared`)
+* The number of statements closed (`hibernate.xxx.statements.closed`)
+* The second level cache hits/misses/puts (`hibernate.xxx.cache.second_level.[hits|misses|puts]`)
+* The natural id cache hits/misses/puts (`hibernate.xxx.cache.natural_id.[hits|misses|puts]`)
+* The query cache hits/misses/puts (`hibernate.xxx.query.natural_id.[hits|misses|puts]`)
+* The timestamp cache hits/misses/puts (`hibernate.xxx.query.update_timestamps.[hits|misses|puts]`)
+* The number of entities deleted/fetched/inserted/loaded/updated (`hibernate.xxx.entities.[deleted|fetched|inserted|loaded|updated]`)
+* The number of collections removed/fetched/loaded/recreated/updated (`hibernate.xxx.collections.[removed|fetched|loaded|recreated|updated]`)
+* The query execution count and max execution time (`hibernate.xxx.query.[count|max_time]`)
+
+
+All Hibernate metrics share the `hibernate.` prefix. The prefix is further qualified for
+each `EntityManagerFactory`:
+
+* If the `EntityManagerFactory` is the primary one (that is either the only available
+`EntityManagerFactory` or the one flagged `@Primary` amongst existing ones), the prefix
+is `hibernate.primary.`.
+* In all other cases, the name of the bean is used.
+
+It is possible to override part or all of those defaults by registering a bean with a
+customized version of `HibernatePublicMetrics`.
 
 [[production-ready-datasource-cache]]
 === Cache metrics

@@ -20,15 +20,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.Servlet;
 import javax.sql.DataSource;
 
 import org.apache.catalina.startup.Tomcat;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
+import org.springframework.boot.actuate.endpoint.HibernatePublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RichGaugeReaderPublicMetrics;
@@ -164,5 +168,18 @@ public class PublicMetricsAutoConfiguration {
 		}
 
 	}
+
+	@Configuration
+	@ConditionalOnClass({SessionFactory.class, Statistics.class})
+	static class HibernateMetricsConfiguraton {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnBean({EntityManagerFactory.class})
+		public HibernatePublicMetrics hibernateMetrics() {
+			return new HibernatePublicMetrics();
+		}
+	}
+
 
 }

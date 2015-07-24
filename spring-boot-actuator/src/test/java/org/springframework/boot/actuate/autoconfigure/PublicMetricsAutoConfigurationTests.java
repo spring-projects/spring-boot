@@ -23,15 +23,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.assertj.core.api.Fail;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.After;
 import org.junit.Test;
 
+import org.mockito.Mockito;
 import org.springframework.boot.actuate.endpoint.CachePublicMetrics;
 import org.springframework.boot.actuate.endpoint.DataSourcePublicMetrics;
+import org.springframework.boot.actuate.endpoint.HibernatePublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RichGaugeReaderPublicMetrics;
@@ -40,9 +49,11 @@ import org.springframework.boot.actuate.endpoint.TomcatPublicMetrics;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.rich.RichGauge;
 import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
@@ -63,6 +74,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link PublicMetricsAutoConfiguration}.
@@ -70,6 +82,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Marten Deinum
  */
 public class PublicMetricsAutoConfigurationTests {
 
@@ -215,6 +228,53 @@ public class PublicMetricsAutoConfigurationTests {
 		Collection<Metric<?>> metrics = bean.metrics();
 		assertMetrics(metrics, "cache.books.size", "cache.second_speakers.size",
 				"cache.first_speakers.size", "cache.users.size");
+	}
+
+	@Test
+	public void noEntityManagerFactory() {
+		load();
+		assertThat(this.context.getBeansOfType(HibernatePublicMetrics.class)).hasSize(0);
+	}
+
+	@Test
+	public void autoEntityManagerFactory() {
+		load(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class, HibernateEntityManagerConfiguration.class);
+		assertThat(this.context.getBeansOfType(HibernatePublicMetrics.class)).hasSize(1);
+	}
+
+	@Test
+	public void multipleEntityManagerFactories() {
+		load(MultipleEntityManagerFactoriesConfiguration.class);
+		assertThat(this.context.getBeansOfType(HibernatePublicMetrics.class)).hasSize(1);
+
+		HibernatePublicMetrics metrics = this.context.getBean(HibernatePublicMetrics.class);
+		assertMetrics(metrics.metrics(), "hibernate.firstEntityManagerFactory.start-time", "hibernate.secondEntityManagerFactory.start-time");
+	}
+
+	@Test
+	public void multipleEntityManagerFactoriesWithPrimary() {
+		load(MultipleEntityManagerFactoriesConfigurationWithPrimary.class);
+		assertThat(this.context.getBeansOfType(HibernatePublicMetrics.class)).hasSize(1);
+
+		HibernatePublicMetrics metrics = this.context.getBean(HibernatePublicMetrics.class);
+		assertMetrics(metrics.metrics(), "hibernate.primary.start-time", "hibernate.secondEntityManagerFactory.start-time");
+	}
+
+	@Test
+	public void multipleEntityManagerFactoriesWithPrimaryAndStatisticsDisabled() {
+		load(MultipleEntityManagerFactoriesConfigurationWithPrimaryAndDisabledStatistics.class);
+		assertThat(this.context.getBeansOfType(HibernatePublicMetrics.class)).hasSize(1);
+
+		HibernatePublicMetrics hibernateMetrics = this.context.getBean(HibernatePublicMetrics.class);
+		Collection<Metric<?>> metrics = hibernateMetrics.metrics();
+		assertMetrics(metrics, "hibernate.primary.start-time", "hibernate.secondEntityManagerFactory.start-time");
+
+		for (Metric<?> metric : metrics) {
+			if ("hibernate.thirdEntityManagerFactory.start-time".equals(metric.getName())) {
+				Fail.fail("Bean named 'thirdEntityManagerFactory' has statistics disabled, should not show up as metric.");
+			}
+		}
+
 	}
 
 	private void assertHasMetric(Collection<Metric<?>> metrics, Metric<?> metric) {
@@ -381,6 +441,63 @@ public class PublicMetricsAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	static class MultipleEntityManagerFactoriesConfiguration {
+
+		@Bean
+		public EntityManagerFactory firstEntityManagerFactory() {
+			return createEntityManagerFactoryMock(true);
+		}
+
+		@Bean
+		public EntityManagerFactory secondEntityManagerFactory() {
+			return createEntityManagerFactoryMock(true);
+		}
+
+	}
+
+	@Configuration
+	static class MultipleEntityManagerFactoriesConfigurationWithPrimary {
+
+		@Bean
+		@Primary
+		public EntityManagerFactory firstEntityManagerFactory() {
+			return createEntityManagerFactoryMock(true);
+		}
+
+		@Bean
+		public EntityManagerFactory secondEntityManagerFactory() {
+			return createEntityManagerFactoryMock(true);
+		}
+	}
+
+	@Configuration
+	static class MultipleEntityManagerFactoriesConfigurationWithPrimaryAndDisabledStatistics {
+
+		@Bean
+		@Primary
+		public EntityManagerFactory firstEntityManagerFactory() {
+			return createEntityManagerFactoryMock(true);
+		}
+
+		@Bean
+		public EntityManagerFactory secondEntityManagerFactory() {
+			return createEntityManagerFactoryMock(true);
+		}
+
+		@Bean
+		public EntityManagerFactory thirdEntityManagerFactory() {
+			return createEntityManagerFactoryMock(false);
+		}
+	}
+
+	@Configuration
+	@EntityScan(basePackageClasses = TestEntity.class)
+	static class HibernateEntityManagerConfiguration {
+
+	}
+
+
 	private static class InitializedBuilder {
 
 		public static DataSourceBuilder create() {
@@ -388,6 +505,26 @@ public class PublicMetricsAutoConfigurationTests {
 					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
 					.url("jdbc:hsqldb:mem:test").username("sa");
 		}
+
+	}
+
+	private static EntityManagerFactory createEntityManagerFactoryMock(final boolean statsEnabled) {
+		EntityManagerFactory emf = Mockito.mock(EntityManagerFactory.class);
+		SessionFactory sf = Mockito.mock(SessionFactory.class);
+		Statistics stats = Mockito.mock(Statistics.class);
+		when(emf.unwrap(SessionFactory.class)).thenReturn(sf);
+		when(sf.getStatistics()).thenReturn(stats);
+		when(stats.isStatisticsEnabled()).thenReturn(statsEnabled);
+		return emf;
+	}
+
+
+	@Entity
+	@Table(name="TEST_ENTITY")
+	public static class TestEntity {
+
+		@Id
+		private long id;
 
 	}
 
