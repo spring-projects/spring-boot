@@ -86,7 +86,7 @@ enum DatabaseDriver {
 	/**
 	 * SQL Server
 	 */
-	SQLSERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+	SQLSERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver", "com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
 
 	private final String driverClassName;
 
