@@ -176,6 +176,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jackson.deserialization.*= # see Jackson's DeserializationFeature
 	spring.jackson.generator.*= # see Jackson's JsonGenerator.Feature
 	spring.jackson.joda-date-time-format= # Joda date time format string
+	spring.jackson.locale= # locale used for formatting
 	spring.jackson.mapper.*= # see Jackson's MapperFeature
 	spring.jackson.parser.*= # see Jackson's JsonParser.Feature
 	spring.jackson.serialization.*= # see Jackson's SerializationFeature
