@@ -87,12 +87,13 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 	@Test
 	public void jettyCustomizations() throws Exception {
 		JettyEmbeddedServletContainerFactory factory = getFactory();
-		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
+		JettyServerCustomizer[] configurations = new JettyServerCustomizer[6];
 		for (int i = 0; i < configurations.length; i++) {
 			configurations[i] = mock(JettyServerCustomizer.class);
 		}
 		factory.setServerCustomizers(Arrays.asList(configurations[0], configurations[1]));
 		factory.addServerCustomizers(configurations[2], configurations[3]);
+		factory.addServerCustomizers(Arrays.asList(configurations[4], configurations[5]));
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) configurations);
 		for (JettyServerCustomizer configuration : configurations) {

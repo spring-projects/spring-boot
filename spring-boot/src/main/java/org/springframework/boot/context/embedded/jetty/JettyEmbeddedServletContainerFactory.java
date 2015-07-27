@@ -480,6 +480,16 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	/**
+	 * Add {@link JettyServerCustomizer}s that will be applied to the {@link Server}
+	 * before it is started.
+	 * @param customizers the customizers to add
+	 */
+	public void addServerCustomizers(Collection<JettyServerCustomizer> customizers) {
+		Assert.notNull(customizers, "Customizers must not be null");
+		this.jettyServerCustomizers.addAll(customizers);
+	}
+
+	/**
 	 * Sets Jetty {@link Configuration}s that will be applied to the {@link WebAppContext}
 	 * before the server is created. Calling this method will replace any existing
 	 * configurations.
