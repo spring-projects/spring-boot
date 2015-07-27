@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -64,6 +65,7 @@ import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
+ * @author Johannes Stelzer
  * @since 1.1.0
  */
 @Configuration
@@ -239,7 +241,7 @@ public class JacksonAutoConfiguration {
 		}
 
 		private void configureLocale(Jackson2ObjectMapperBuilder builder) {
-			String locale = this.jacksonProperties.getLocale();
+			Locale locale = this.jacksonProperties.getLocale();
 			if (locale != null) {
 				builder.locale(locale);
 			}

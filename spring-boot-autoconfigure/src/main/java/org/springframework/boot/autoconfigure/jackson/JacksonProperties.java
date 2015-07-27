@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jackson;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  *
  * @author Andy Wilkinson
  * @author Marcel Overdijk
+ * @author Johannes Stelzer
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.jackson")
@@ -98,7 +100,7 @@ public class JacksonProperties {
 	/**
 	 * Locale used for formatting.
 	 */
-	private String locale;
+	private Locale locale;
 
 	public String getDateFormat() {
 		return this.dateFormat;
@@ -160,11 +162,11 @@ public class JacksonProperties {
 		this.timeZone = timeZone;
 	}
 
-	public String getLocale() {
+	public Locale getLocale() {
 		return this.locale;
 	}
 
-	public void setLocale(String locale) {
+	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
 
