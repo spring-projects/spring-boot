@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.util.StringUtils;
 
 /**
@@ -31,6 +33,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Arnost Havelka
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.jpa")
@@ -62,6 +65,11 @@ public class JpaProperties {
 	 * Enable logging of SQL statements.
 	 */
 	private boolean showSql = false;
+	
+	/**
+	 * Define default isolation level for JpaTransactionManager.
+	 */
+	private int defaultIsolationLevel = TransactionDefinition.ISOLATION_DEFAULT;
 
 	private Hibernate hibernate = new Hibernate();
 
@@ -103,6 +111,56 @@ public class JpaProperties {
 
 	public void setShowSql(boolean showSql) {
 		this.showSql = showSql;
+	}
+
+	public int getDefaultIsolationLevel() {
+		return defaultIsolationLevel;
+	}
+
+	public void setDefaultIsolationLevel(String defaultIsolationLevel) {
+		this.defaultIsolationLevel = getIsolationLevelValue(defaultIsolationLevel);
+	}
+
+	/**
+	 * Parse configuration value for isolation levels ("none", "read_uncommited", "read_commited", "repeatable_read", "serializable") 
+	 * or its equal integer constant from class <code>java.sql.Connection</code>.
+	 */
+	private int getIsolationLevelValue(String item) {
+		if (StringUtils.isEmpty(item)) {
+			return -1;
+		}
+		try {
+			int intValue = Integer.parseInt(item);
+			switch (intValue) {
+			case Connection.TRANSACTION_NONE:
+			case Connection.TRANSACTION_READ_UNCOMMITTED:
+			case Connection.TRANSACTION_READ_COMMITTED:
+			case Connection.TRANSACTION_REPEATABLE_READ:
+			case Connection.TRANSACTION_SERIALIZABLE:
+				return intValue;
+			default:
+				return -1;
+			}
+		} catch (NumberFormatException ex) {
+			// Configuration is not done by number (according constant)
+			if ("none".equals(item)) {
+				return Connection.TRANSACTION_NONE;
+			}
+			if ("read_uncommited".equals(item)) {
+				return Connection.TRANSACTION_READ_UNCOMMITTED;
+			}
+			if ("read_commited".equals(item)) {
+				return Connection.TRANSACTION_READ_COMMITTED;
+			}
+			if ("repeatable_read".equals(item)) {
+				return Connection.TRANSACTION_REPEATABLE_READ;
+			}
+			if ("serializable".equals(item)) {
+				return Connection.TRANSACTION_SERIALIZABLE;
+			}
+		}
+		// anything else is also considered as wrong configuration
+		return -1;
 	}
 
 	public Hibernate getHibernate() {
