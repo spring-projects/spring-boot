@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -64,6 +65,7 @@ import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
+ * @author Johannes Stelzer
  * @since 1.1.0
  */
 @Configuration
@@ -162,6 +164,7 @@ public class JacksonAutoConfiguration {
 			configureDateFormat(builder);
 			configurePropertyNamingStrategy(builder);
 			configureModules(builder);
+			configureLocale(builder);
 			return builder;
 		}
 
@@ -235,6 +238,13 @@ public class JacksonAutoConfiguration {
 			Collection<Module> moduleBeans = getBeans(this.applicationContext,
 					Module.class);
 			builder.modulesToInstall(moduleBeans.toArray(new Module[moduleBeans.size()]));
+		}
+
+		private void configureLocale(Jackson2ObjectMapperBuilder builder) {
+			Locale locale = this.jacksonProperties.getLocale();
+			if (locale != null) {
+				builder.locale(locale);
+			}
 		}
 
 		private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
