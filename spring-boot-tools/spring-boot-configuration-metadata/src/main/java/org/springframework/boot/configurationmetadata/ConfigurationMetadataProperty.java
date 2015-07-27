@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * Define a configuration property. Each property is fully identified by its
- * {@link #getId() id} who is composed of a namespace prefix (the
+ * {@link #getId() id} which is composed of a namespace prefix (the
  * {@link ConfigurationMetadataGroup#getId() group id}), if any and the {@link #getName()
  * name} of the property.
  *
