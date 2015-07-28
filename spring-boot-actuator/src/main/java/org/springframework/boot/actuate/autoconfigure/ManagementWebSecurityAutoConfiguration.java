@@ -90,7 +90,7 @@ import org.springframework.util.StringUtils;
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 @AutoConfigureBefore(FallbackWebSecurityAutoConfiguration.class)
 @EnableConfigurationProperties
-public class ManagementSecurityAutoConfiguration {
+public class ManagementWebSecurityAutoConfiguration {
 
 	private static final String[] NO_PATHS = new String[0];
 

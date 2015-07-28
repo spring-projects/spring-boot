@@ -61,12 +61,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link ManagementSecurityAutoConfiguration}.
+ * Tests for {@link ManagementWebSecurityAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ManagementSecurityAutoConfigurationTests {
+public class ManagementWebSecurityAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -82,7 +82,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class,
+				ManagementWebSecurityAutoConfiguration.class,
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
@@ -115,7 +115,7 @@ public class ManagementSecurityAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class,
+				ManagementWebSecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
@@ -140,7 +140,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class,
+				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -160,7 +160,7 @@ public class ManagementSecurityAutoConfigurationTests {
 				EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class,
+				ManagementWebSecurityAutoConfiguration.class,
 				FallbackWebSecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
@@ -176,7 +176,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class,
+				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -190,7 +190,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class,
+				ManagementWebSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -206,7 +206,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context
 				.register(AuthenticationConfig.class, SecurityAutoConfiguration.class,
-						ManagementSecurityAutoConfiguration.class,
+						ManagementWebSecurityAutoConfiguration.class,
 						JacksonAutoConfiguration.class,
 						HttpMessageConvertersAutoConfiguration.class,
 						EndpointAutoConfiguration.class,

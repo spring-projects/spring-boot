@@ -32,7 +32,7 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.ManagementSecurityAutoConfiguration.ManagementWebSecurityConfigurerAdapter;
+import org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration.ManagementWebSecurityConfigurerAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementErrorEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
