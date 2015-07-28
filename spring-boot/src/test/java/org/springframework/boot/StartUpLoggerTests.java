@@ -28,6 +28,7 @@ import org.junit.Test;
  * Tests for {@link StartupInfoLogger}.
  *
  * @author Dave Syer
+ * @author Arnost Havelka
  */
 public class StartUpLoggerTests {
 
