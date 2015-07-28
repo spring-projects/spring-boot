@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
@@ -32,6 +33,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Arnost Havelka
  */
 class StartupInfoLogger {
 
@@ -42,12 +44,23 @@ class StartupInfoLogger {
 	}
 
 	public void logStarting(Log log) {
+		logSpringBootStarting(log);
+		if (log.isDebugEnabled()) {
+			log.debug(getRunningMessage());
+		}
+	}
+
+	private void logSpringBootStarting(Log log) {
 		Assert.notNull(log, "Log must not be null");
 		if (log.isInfoEnabled()) {
 			log.info(getStartupMessage());
 		}
-		if (log.isDebugEnabled()) {
-			log.debug(getRunningMessage());
+	}
+
+	public void logStartingWithVersions(Log log) {
+		logSpringBootStarting(log);
+		if (log.isInfoEnabled()) {
+			log.info(getVersionsMessage(log));
 		}
 	}
 
@@ -68,12 +81,35 @@ class StartupInfoLogger {
 		return message.toString();
 	}
 
+    private void addVersions(Log log, StringBuilder message) {
+    	Map<String, String> versions = new ManifestReader().getVersions();
+    	message.append(": ");
+    	boolean isFirst = true;
+    	for (Map.Entry<String, String> item : versions.entrySet()) {
+    		if (isFirst) {
+    			isFirst = false;
+    		} else {
+    			message.append(", ");
+    		}
+    		message.append(item.getValue());
+    	}
+    }	
+	
 	private StringBuilder getRunningMessage() {
 		StringBuilder message = new StringBuilder();
 		message.append("Running with Spring Boot");
 		message.append(getVersion(getClass()));
 		message.append(", Spring");
 		message.append(getVersion(ApplicationContext.class));
+		return message;
+	}
+
+	private StringBuilder getVersionsMessage(Log log) {
+		StringBuilder message = new StringBuilder();
+		message.append("Running with Spring Boot");
+		message.append(getVersion(getClass()));
+		message.append(" and these libraries");
+		addVersions(log, message);
 		return message;
 	}
 

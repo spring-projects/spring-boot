@@ -138,6 +138,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Andy Wilkinson
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Arnost Havelka
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -164,6 +165,8 @@ public class SpringApplication {
 	private Class<?> mainApplicationClass;
 
 	private boolean showBanner = true;
+	
+	private boolean showVersions = false;
 
 	private boolean logStartupInfo = true;
 
@@ -323,9 +326,8 @@ public class SpringApplication {
 		postProcessApplicationContext(context);
 		applyInitializers(context);
 		listeners.contextPrepared(context);
-		if (this.logStartupInfo) {
-			logStartupInfo(context.getParent() == null);
-		}
+		// #27 (configuration spring.main.show-versions)
+		logStartupInfo(context, !this.showVersions);
 
 		// Add boot specific singleton beans
 		ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
@@ -567,13 +569,36 @@ public class SpringApplication {
 	 * Called to log startup information, subclasses may override to add additional
 	 * logging.
 	 * @param isRoot true if this application is the root of a context hierarchy
+	 * @deprecated in 1.3.0 in favor of {@link logStartupInfo(ConfigurableApplicationContext, boolean)}
 	 */
+	@Deprecated
 	protected void logStartupInfo(boolean isRoot) {
 		if (isRoot) {
 			new StartupInfoLogger(this.mainApplicationClass)
 					.logStarting(getApplicationLog());
 		}
 	}
+
+	/**
+	 * Called to log startup information, subclasses may override to add additional
+	 * logging.
+	 * @param context the application context
+	 * @param simpleOutput true if only basic (simple) information should be shown
+	 */
+	protected void logStartupInfo(ConfigurableApplicationContext context, boolean simpleOutput) {
+		if (context.getParent() != null) {
+			// do logging only for root application context
+			return;
+		}
+
+		if (simpleOutput) {
+			new StartupInfoLogger(this.mainApplicationClass).logStarting(getApplicationLog());
+		} else {
+			new StartupInfoLogger(this.mainApplicationClass).logStartingWithVersions(getApplicationLog());
+		}
+		
+	}
+	
 
 	/**
 	 * Returns the {@link Log} for the application. By default will be deduced.
@@ -776,6 +801,15 @@ public class SpringApplication {
 	 */
 	public void setShowBanner(boolean showBanner) {
 		this.showBanner = showBanner;
+	}
+
+	/**
+	 * Sets if the Spring versions should be displayed when the application runs. If so then method {@code logStartupInfo}
+	 * is skipped. Defaults to {@code false}.
+	 * @param showVersions if the versions should be shown
+	 */
+	public void setShowVersions(boolean showVersions) {
+		this.showVersions = showVersions;
 	}
 
 	/**
