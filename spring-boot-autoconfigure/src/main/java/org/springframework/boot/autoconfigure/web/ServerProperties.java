@@ -206,7 +206,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	}
 
 	/**
-	 * Set the session timeout
+	 * Get the session timeout
 	 * @return the session timeout
 	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
 	 */
@@ -217,7 +217,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	}
 
 	/**
-	 * Get the session timeout
+	 * Set the session timeout
 	 * @param sessionTimeout the session timeout
 	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
 	 */

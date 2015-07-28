@@ -36,7 +36,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -71,9 +70,6 @@ import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
 public class JacksonAutoConfiguration {
-
-	@Autowired
-	private ListableBeanFactory beanFactory;
 
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
@@ -136,9 +132,9 @@ public class JacksonAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	@EnableConfigurationProperties(JacksonProperties.class)
-	static class JacksonObjectMapperBuilderConfiguration implements
-			ApplicationContextAware {
+	static class JacksonObjectMapperBuilderConfiguration {
 
+		@Autowired
 		private ApplicationContext applicationContext;
 
 		@Autowired
@@ -253,10 +249,6 @@ public class JacksonAutoConfiguration {
 					.values();
 		}
 
-		@Override
-		public void setApplicationContext(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
 	}
 
 }
