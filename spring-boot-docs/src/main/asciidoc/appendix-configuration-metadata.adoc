@@ -499,7 +499,7 @@ on the classpath. This provider supports these parameters:
 
 The following types can be used:
 
-* Any `java.lang.Enum` that list the possible values for the property (By all means, try to
+* Any `java.lang.Enum` that lists the possible values for the property (By all means, try to
   define the property with the `Enum` type instead as no further hint should be required for
   the IDE to auto-complete the values).
 * `java.nio.charset.Charset`: auto-completion of charset/encoding values (e.g. `UTF-8`)
