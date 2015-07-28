@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Provides access to the arguments that were used run a {@link SpringApplication}.
+ * Provides access to the arguments that were used to run a {@link SpringApplication}.
  *
  * @author Phillip Webb
  * @since 1.3.0
@@ -44,7 +44,7 @@ public interface ApplicationArguments {
 	 * Return whether the set of option arguments parsed from the arguments contains an
 	 * option with the given name.
 	 * @param name the name to check
-	 * @return {@code true} if the arguments contains an option with the given name
+	 * @return {@code true} if the arguments contain an option with the given name
 	 */
 	boolean containsOption(String name);
 

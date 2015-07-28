@@ -21,7 +21,7 @@ import org.springframework.core.annotation.Order;
 
 /**
  * Interface used to indicate that a bean should <em>run</em> when it is contained within
- * a {@link SpringApplication}. Multiple {@link ApplicationArguments} beans can be defined
+ * a {@link SpringApplication}. Multiple {@link ApplicationRunner} beans can be defined
  * within the same application context and can be ordered using the {@link Ordered}
  * interface or {@link Order @Order} annotation.
  *
