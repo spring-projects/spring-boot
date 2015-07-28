@@ -16,14 +16,6 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -33,9 +25,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
-import org.hibernate.Session;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -46,7 +36,12 @@ import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.Transactional;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
@@ -165,34 +160,6 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 				equalTo(TestJtaPlatform.class.getName()));
 	}
 
-	@Test
-	@Transactional()
-	@Ignore // not working properly in this dummy setup
-	public void testDefaultIsolationLevel() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.data:classpath:/city.sql",
-				"spring.datasource.schema:classpath:/ddl.sql",
-				// default isolation level:
-				"spring.jpa.defaultIsolationLevel:4");
-		setupTestConfiguration();
-		this.context.refresh();
-		// validate defined isolation level
-		LocalContainerEntityManagerFactoryBean bean = this.context
-				.getBean(LocalContainerEntityManagerFactoryBean.class);
-		
-		Session session = bean.nativeEntityManagerFactory.createEntityManager().unwrap(Session.class);
-		session.doWork(new org.hibernate.jdbc.Work() {
-			@Override
-			public void execute(Connection connection) throws SQLException {
-				assertThat(connection.getTransactionIsolation(), equalTo(4));
-			}
-		});
-		
-		DataSource datasource = bean.getDataSource();
-		assertThat(datasource.getConnection().getTransactionIsolation(), equalTo(4));
-	}
-	
-	
 	public static class TestJtaPlatform implements JtaPlatform {
 
 		@Override
