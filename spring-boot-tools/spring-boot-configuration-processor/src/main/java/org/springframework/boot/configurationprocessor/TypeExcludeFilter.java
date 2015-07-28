@@ -22,7 +22,7 @@ import java.util.Set;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * Filter to excluded elements that don't make sense to process.
+ * Filter to exclude elements that don't make sense to process.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
