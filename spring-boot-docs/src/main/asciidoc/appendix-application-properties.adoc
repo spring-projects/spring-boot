@@ -194,6 +194,7 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.encoding=UTF-8
 	spring.thymeleaf.content-type=text/html # ;charset=<encoding> is added
 	spring.thymeleaf.cache=true # set to false for hot refresh
+	spring.thymeleaf.template-resolver-order= #  order of the template resolver in the chain
 
 	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration])
 	spring.freemarker.allow-request-override=false

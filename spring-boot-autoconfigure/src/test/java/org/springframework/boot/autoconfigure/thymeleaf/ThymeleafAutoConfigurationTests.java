@@ -51,6 +51,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link ThymeleafAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class ThymeleafAutoConfigurationTests {
 
@@ -90,6 +91,18 @@ public class ThymeleafAutoConfigurationTests {
 		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertEquals("UTF-16", views.getCharacterEncoding());
 		assertEquals("text/html;charset=UTF-16", views.getContentType());
+	}
+
+	@Test
+	public void overrideTemplateResolverOrder() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.thymeleaf.templateResolverOrder:25");
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		this.context.getBean(TemplateEngine.class).initialize();
+		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
+		assertEquals(Integer.valueOf(25), resolver.getOrder());
 	}
 
 	@Test

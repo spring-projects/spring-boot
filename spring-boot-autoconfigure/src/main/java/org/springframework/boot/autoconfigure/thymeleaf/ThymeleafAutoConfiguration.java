@@ -101,6 +101,10 @@ public class ThymeleafAutoConfiguration {
 				resolver.setCharacterEncoding(this.properties.getEncoding().name());
 			}
 			resolver.setCacheable(this.properties.isCache());
+			Integer order = this.properties.getTemplateResolverOrder();
+			if (order != null) {
+				resolver.setOrder(order);
+			}
 			return resolver;
 		}
 
