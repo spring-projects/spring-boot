@@ -86,6 +86,13 @@
     "defaultValue": true
   },
   {
+    "name": "spring.main.show-versions",
+    "type": "java.lang.Boolean",
+    "sourceType": "org.springframework.boot.SpringApplication",
+    "description": "Display the spring versions when the application runs.",
+    "defaultValue": false
+  },
+  {
     "name": "spring.main.sources",
     "type": "java.util.Set<java.lang.Object>",
     "sourceType": "org.springframework.boot.SpringApplication",
