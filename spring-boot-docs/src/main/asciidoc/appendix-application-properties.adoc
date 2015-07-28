@@ -716,6 +716,7 @@ content into your application; rather pick only the properties that you need.
 	management.health.elasticsearch.enabled=true
 	management.health.elasticsearch.indices=  # comma-separated index names
 	management.health.elasticsearch.response-timeout=100 # the time, in milliseconds, to wait for a response from the cluster
+	management.health.defaults.enabled=true # enable default health indicators
 	management.health.diskspace.enabled=true
 	management.health.diskspace.path=.
 	management.health.diskspace.threshold=10485760

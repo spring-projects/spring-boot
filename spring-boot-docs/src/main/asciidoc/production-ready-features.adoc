@@ -260,6 +260,8 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |Checks that a Solr server is up.
 |===
 
+TIP: It is possible to disable them all using the `management.health.defaults.enabled`
+property.
 
 
 ==== Writing custom HealthIndicators

@@ -59,6 +59,12 @@
     "defaultValue": true
   },
   {
+    "name": "management.health.defaults.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable default health indicators.",
+    "defaultValue": true
+  },
+  {
     "name": "management.health.diskspace.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable disk space health check.",
