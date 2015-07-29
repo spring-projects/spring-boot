@@ -16,6 +16,8 @@
 
 package org.springframework.boot.configurationmetadata;
 
+import java.io.Serializable;
+
 /**
  * Hint for a value a given property may have. Provide the value and an optional
  * description.
@@ -23,7 +25,8 @@ package org.springframework.boot.configurationmetadata;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class ValueHint {
+@SuppressWarnings("serial")
+public class ValueHint implements Serializable {
 
 	private Object value;
 

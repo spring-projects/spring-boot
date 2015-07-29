@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationmetadata;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,8 @@ import java.util.Map;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class ConfigurationMetadataSource {
+@SuppressWarnings("serial")
+public class ConfigurationMetadataSource implements Serializable {
 
 	private String groupId;
 

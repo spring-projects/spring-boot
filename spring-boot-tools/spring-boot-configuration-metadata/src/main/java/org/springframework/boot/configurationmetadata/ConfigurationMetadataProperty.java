@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationmetadata;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,8 @@ import java.util.List;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class ConfigurationMetadataProperty {
+@SuppressWarnings("serial")
+public class ConfigurationMetadataProperty implements Serializable {
 
 	private String id;
 
