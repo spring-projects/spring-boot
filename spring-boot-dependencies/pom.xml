@@ -159,7 +159,7 @@
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 	</properties>
 	<prerequisites>
-		<maven>3.0.2</maven>
+		<maven>3.2.1</maven>
 	</prerequisites>
 	<dependencyManagement>
 		<dependencies>
