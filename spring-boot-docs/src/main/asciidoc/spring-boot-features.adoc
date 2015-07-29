@@ -1880,7 +1880,7 @@ provider for more flexibility).
 
 To limit the scope that the client asks for when it obtains an access token you can set
 `security.oauth2.client.scope` (comma separated or an array in YAML). By default the scope
-is empty and it is up to to Authorization Server to decide what the defaults should be,
+is empty and it is up to Authorization Server to decide what the defaults should be,
 usually depending on the settings in the client registration that it holds.
 
 NOTE: There is also a setting for `security.oauth2.client.client-authentication-scheme`

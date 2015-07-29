@@ -16,19 +16,21 @@
 
 package org.springframework.boot.configurationmetadata;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Define a configuration property. Each property is fully identified by its
- * {@link #getId() id} who is composed of a namespace prefix (the
+ * {@link #getId() id} which is composed of a namespace prefix (the
  * {@link ConfigurationMetadataGroup#getId() group id}), if any and the {@link #getName()
  * name} of the property.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class ConfigurationMetadataProperty {
+@SuppressWarnings("serial")
+public class ConfigurationMetadataProperty implements Serializable {
 
 	private String id;
 

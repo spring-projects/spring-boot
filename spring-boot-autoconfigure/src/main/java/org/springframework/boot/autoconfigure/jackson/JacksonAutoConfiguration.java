@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -35,7 +36,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -64,14 +64,12 @@ import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
+ * @author Johannes Stelzer
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
 public class JacksonAutoConfiguration {
-
-	@Autowired
-	private ListableBeanFactory beanFactory;
 
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
@@ -134,9 +132,9 @@ public class JacksonAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	@EnableConfigurationProperties(JacksonProperties.class)
-	static class JacksonObjectMapperBuilderConfiguration implements
-			ApplicationContextAware {
+	static class JacksonObjectMapperBuilderConfiguration {
 
+		@Autowired
 		private ApplicationContext applicationContext;
 
 		@Autowired
@@ -162,6 +160,7 @@ public class JacksonAutoConfiguration {
 			configureDateFormat(builder);
 			configurePropertyNamingStrategy(builder);
 			configureModules(builder);
+			configureLocale(builder);
 			return builder;
 		}
 
@@ -237,16 +236,19 @@ public class JacksonAutoConfiguration {
 			builder.modulesToInstall(moduleBeans.toArray(new Module[moduleBeans.size()]));
 		}
 
+		private void configureLocale(Jackson2ObjectMapperBuilder builder) {
+			Locale locale = this.jacksonProperties.getLocale();
+			if (locale != null) {
+				builder.locale(locale);
+			}
+		}
+
 		private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory,
 				Class<T> type) {
 			return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type)
 					.values();
 		}
 
-		@Override
-		public void setApplicationContext(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
 	}
 
 }

@@ -24,9 +24,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
 	</properties>
-	<prerequisites>
-		<maven>3.0.2</maven>
-	</prerequisites>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
 		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>

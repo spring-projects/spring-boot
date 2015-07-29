@@ -42,7 +42,7 @@ public class DefaultApplicationArgumentsTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void argumentsMustNoBeNull() throws Exception {
+	public void argumentsMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Args must not be null");
 		new DefaultApplicationArguments(null);

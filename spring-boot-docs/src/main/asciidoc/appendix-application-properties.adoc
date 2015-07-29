@@ -176,6 +176,7 @@ content into your application; rather pick only the properties that you need.
 	spring.jackson.deserialization.*= # see Jackson's DeserializationFeature
 	spring.jackson.generator.*= # see Jackson's JsonGenerator.Feature
 	spring.jackson.joda-date-time-format= # Joda date time format string
+	spring.jackson.locale= # locale used for formatting
 	spring.jackson.mapper.*= # see Jackson's MapperFeature
 	spring.jackson.parser.*= # see Jackson's JsonParser.Feature
 	spring.jackson.serialization.*= # see Jackson's SerializationFeature
@@ -193,6 +194,7 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.encoding=UTF-8
 	spring.thymeleaf.content-type=text/html # ;charset=<encoding> is added
 	spring.thymeleaf.cache=true # set to false for hot refresh
+	spring.thymeleaf.template-resolver-order= #  order of the template resolver in the chain
 
 	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration])
 	spring.freemarker.allow-request-override=false

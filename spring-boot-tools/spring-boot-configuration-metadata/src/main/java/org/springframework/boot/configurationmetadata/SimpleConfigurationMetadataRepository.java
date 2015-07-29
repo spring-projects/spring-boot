@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationmetadata;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,8 +28,9 @@ import java.util.Map;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
+@SuppressWarnings("serial")
 public class SimpleConfigurationMetadataRepository implements
-		ConfigurationMetadataRepository {
+		ConfigurationMetadataRepository, Serializable {
 
 	private final Map<String, ConfigurationMetadataGroup> allGroups = new HashMap<String, ConfigurationMetadataGroup>();
 

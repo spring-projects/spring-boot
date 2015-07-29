@@ -72,6 +72,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  * @author Sebastien Deleuze
+ * @author Johannes Stelzer
  */
 public class JacksonAutoConfigurationTests {
 
@@ -381,6 +382,7 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.time-zone:America/Los_Angeles");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jackson.date-format:zzzz");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.locale:en");
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean(
 				Jackson2ObjectMapperBuilder.class).build();
@@ -400,6 +402,21 @@ public class JacksonAutoConfigurationTests {
 				Jackson2ObjectMapperBuilder.class).build();
 		Date date = new Date(1436966242231L);
 		assertEquals("\"GMT+10:00\"", objectMapper.writeValueAsString(date));
+	}
+
+	@Test
+	public void customLocale() throws JsonProcessingException {
+		this.context.register(JacksonAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jackson.locale:de");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jackson.date-format:zzzz");
+		this.context.refresh();
+		ObjectMapper objectMapper = this.context
+				.getBean(Jackson2ObjectMapperBuilder.class).build();
+
+		DateTime dateTime = new DateTime(1436966242231L, DateTimeZone.UTC);
+		assertEquals("\"Koordinierte Universalzeit\"",
+				objectMapper.writeValueAsString(dateTime));
 	}
 
 	@Configuration

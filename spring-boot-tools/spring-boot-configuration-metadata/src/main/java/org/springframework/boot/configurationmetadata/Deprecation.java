@@ -16,6 +16,8 @@
 
 package org.springframework.boot.configurationmetadata;
 
+import java.io.Serializable;
+
 /**
  * Indicate that a property is deprecated. Provide additional information about the
  * deprecation.
@@ -23,7 +25,8 @@ package org.springframework.boot.configurationmetadata;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class Deprecation {
+@SuppressWarnings("serial")
+public class Deprecation implements Serializable {
 
 	private String reason;
 
