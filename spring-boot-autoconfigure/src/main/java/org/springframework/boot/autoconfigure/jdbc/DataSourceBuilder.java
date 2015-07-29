@@ -37,6 +37,7 @@ import org.springframework.util.ClassUtils;
  * {@code @ConfigurationProperties}.
  *
  * @author Dave Syer
+ * @author Arnost Havelka
  * @since 1.1.0
  */
 public class DataSourceBuilder {
@@ -69,13 +70,11 @@ public class DataSourceBuilder {
 
 	public DataSource build() {
 		Class<? extends DataSource> type = getType();
-		if (this.isolationLevel != null) {
-		}
 		DataSource result = BeanUtils.instantiate(type);
 		maybeGetDriverClassName();
 		bind(result);
 		if (this.isolationLevel != null && this.isolationLevel != TransactionDefinition.ISOLATION_DEFAULT) {
-			// apply isolation level by wrapping datasource
+			// apply isolation level by wrapping datasource (when properly configured)
 			result = applyIsolationLevel(result);
 		}
 		return result;
@@ -124,6 +123,9 @@ public class DataSourceBuilder {
 		return this;
 	}
 
+	/**
+	 * @since 1.3.0
+	 */
 	public DataSourceBuilder isolationLevel(int isolationLevel) {
 		if (isolationLevel != TransactionDefinition.ISOLATION_DEFAULT) {
 			this.isolationLevel = isolationLevel;
