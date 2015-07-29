@@ -42,6 +42,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.datasource.isolation-level",
+    "type": "java.lang.Integer",
+    "description": "Enable define default isolation level.",
+    "defaultValue": -1
+  },
+  {
     "name": "spring.datasource.jmx-enabled",
     "type": "java.lang.Boolean",
     "description": "Enable JMX support (if provided by the underlying pool).",
