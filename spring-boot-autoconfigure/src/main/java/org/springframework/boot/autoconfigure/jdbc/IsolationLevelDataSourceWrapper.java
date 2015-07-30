@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.lang.UsesJava7;
 
 /**
  * {@link DataSource} wrapper to allow define default isolation level (on returned {@link Connection} instance).
@@ -93,6 +94,7 @@ public class IsolationLevelDataSourceWrapper implements DataSource {
 		return datasource.getLoginTimeout();
 	}
 
+	@UsesJava7
 	@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		return datasource.getParentLogger();
