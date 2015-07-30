@@ -19,9 +19,11 @@ org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration,\
 org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration,\
 org.springframework.boot.autoconfigure.cloud.CloudAutoConfiguration,\
 org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration,\
+org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.dao.PersistenceExceptionTranslationAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.cassandra.CassandraRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration,\
