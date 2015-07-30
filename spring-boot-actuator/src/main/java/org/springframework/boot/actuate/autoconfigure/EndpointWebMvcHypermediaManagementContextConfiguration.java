@@ -157,12 +157,6 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	@ConditionalOnProperty(value = "endpoints.links.enabled", matchIfMissing = true)
 	public static class LinksConfiguration {
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
-
-		@Autowired
-		private ManagementServerProperties management;
-
 		@Bean
 		@Conditional(NotSpringDataRestHomePageCondition.class)
 		public LinksMvcEndpoint linksMvcEndpoint(ResourceProperties resources) {
