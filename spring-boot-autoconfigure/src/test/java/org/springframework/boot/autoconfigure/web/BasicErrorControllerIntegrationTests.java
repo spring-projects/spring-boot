@@ -93,6 +93,18 @@ public class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
+	public void testErrorForAnnotatedNoReasonException() throws Exception {
+		ResponseEntity<?> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/annotatedNoReason", Object.class);
+		assertThat(
+				entity.getBody().toString(),
+				endsWith("status=406, "
+						+ "error=Not Acceptable, "
+						+ "exception=org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests$TestConfiguration$Errors$NoReasonExpectedException, "
+						+ "message=Expected message, " + "path=/annotatedNoReason}"));
+	}
+
+	@Test
 	@SuppressWarnings("rawtypes")
 	public void testBindingExceptionForMachineClient() throws Exception {
 		RequestEntity request = RequestEntity
@@ -144,6 +156,11 @@ public class BasicErrorControllerIntegrationTests {
 				throw new ExpectedException();
 			}
 
+			@RequestMapping("/annotatedNoReason")
+			public String annotatedNoReason() {
+				throw new NoReasonExpectedException("Expected message");
+			}
+
 			@RequestMapping("/bind")
 			public String bind(HttpServletRequest request) throws Exception {
 				BindException error = new BindException(this, "test");
@@ -155,6 +172,15 @@ public class BasicErrorControllerIntegrationTests {
 			@SuppressWarnings("serial")
 			private static class ExpectedException extends RuntimeException {
 
+			}
+
+			@ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
+			@SuppressWarnings("serial")
+			private static class NoReasonExpectedException extends RuntimeException {
+
+				public NoReasonExpectedException(String message) {
+					super(message);
+				}
 			}
 
 		}
