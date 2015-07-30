@@ -68,6 +68,7 @@ public class IsolationLevelDataSourceWrapperTests {
 	public void testIsolationLevelWrapper() throws SQLException {
 		int expectedIsolationLevel = 4;
 		
+		assertThat(this.datasource.getConnection().getTransactionIsolation(), equalTo(-1));
 		IsolationLevelDataSourceWrapper ildw = new IsolationLevelDataSourceWrapper(datasource, expectedIsolationLevel);
 		Connection connection = ildw.getConnection();
 		assertThat(connection.getTransactionIsolation(), equalTo(expectedIsolationLevel));

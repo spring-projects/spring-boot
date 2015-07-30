@@ -65,4 +65,11 @@ public class DataSourcePropertiesTests {
 		assertThat(configuration.getIsolationLevel(), equalTo(8));
 	}
 
+	@Test
+	public void isolationLevelWrongConfiguration() {
+		DataSourceProperties configuration = new DataSourceProperties();
+		configuration.setIsolationLevel("5");
+		assertThat(configuration.getIsolationLevel(), equalTo(-1));
+	}
+
 }

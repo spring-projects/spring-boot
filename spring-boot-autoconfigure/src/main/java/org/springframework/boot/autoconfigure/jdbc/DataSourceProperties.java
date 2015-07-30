@@ -21,6 +21,8 @@ import java.sql.Connection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,6 +41,8 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 public class DataSourceProperties implements BeanClassLoaderAware, InitializingBean {
+	
+	private final Log log = LogFactory.getLog(getClass());
 
 	public static final String PREFIX = "spring.datasource";
 
@@ -273,7 +277,13 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	public void setIsolationLevel(String isolationLevel) {
-		this.isolationLevel = getIsolationLevelValue(isolationLevel);
+		int newValue = getIsolationLevelValue(isolationLevel);
+		if (newValue < 0) {
+			log.warn(String.format("Configuration item 'spring.datasource.isolation-level' does not support value '%s'!", isolationLevel));
+			// nothing to change
+			return;
+		}
+		this.isolationLevel = newValue;
 	}
 
 	/**
