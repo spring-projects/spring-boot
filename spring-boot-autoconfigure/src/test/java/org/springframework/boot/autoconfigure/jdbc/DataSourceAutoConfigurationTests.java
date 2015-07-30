@@ -16,6 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -43,14 +51,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import com.zaxxer.hikari.HikariDataSource;
-
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DataSourceAutoConfiguration}.
@@ -213,6 +213,22 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(NamedParameterJdbcOperations.class));
+	}
+
+	@Test
+	public void isolationLevelDefinedByConst() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+				"spring.datasource.isolation-level:4");
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource bean = this.context.getBean(DataSource.class);
+		assertNotNull(bean);
+		Connection connection = bean.getConnection();
+		assertNotNull(connection);
+		assertEquals(connection.getTransactionIsolation(), 4);
 	}
 
 	@SuppressWarnings("unchecked")
