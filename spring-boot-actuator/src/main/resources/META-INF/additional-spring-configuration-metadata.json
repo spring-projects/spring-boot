@@ -18,9 +18,33 @@
     "description": "Keys that should be sanitized. Keys can be simple strings that the property ends with or regex expressions."
   },
   {
+    "name": "endpoints.docs.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable actuator docs endpoint.",
+    "defaultValue": true
+  },
+  {
+    "name": "endpoints.hal.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Spring Data HAL browser endpoint.",
+    "defaultValue": true
+  },
+  {
     "name": "endpoints.jmx.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable JMX export of all endpoints.",
+    "defaultValue": true
+  },
+  {
+    "name": "endpoints.jolokia.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Jolokia endpoint.",
+    "defaultValue": true
+  },
+  {
+    "name": "endpoints.links.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable hypermedia links endpoint.",
     "defaultValue": true
   },
   {
