@@ -273,6 +273,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-couchbase</artifactId>
+				<version>1.4.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
 				<version>1.4.0.BUILD-SNAPSHOT</version>
 			</dependency>
@@ -1792,10 +1797,21 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-couchbase</artifactId>
+				<version>${spring-data-couchbase.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-releasetrain</artifactId>
 				<version>${spring-data-releasetrain.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework.data</groupId>
+						<artifactId>spring-data-couchbase</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.hateoas</groupId>

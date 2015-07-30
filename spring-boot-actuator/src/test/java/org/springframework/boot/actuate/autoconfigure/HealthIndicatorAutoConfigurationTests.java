@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.CassandraHealthIndicator;
+import org.springframework.boot.actuate.health.CouchbaseHealthIndicator;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.DiskSpaceHealthIndicator;
 import org.springframework.boot.actuate.health.ElasticsearchHealthIndicator;
@@ -56,6 +57,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
+import org.springframework.data.couchbase.core.CouchbaseOperations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -66,6 +68,7 @@ import static org.mockito.Mockito.mock;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Eddú Meléndez
  */
 public class HealthIndicatorAutoConfigurationTests {
 
@@ -436,6 +439,19 @@ public class HealthIndicatorAutoConfigurationTests {
 				.isEqualTo(CassandraHealthIndicator.class);
 	}
 
+	@Test
+	public void couchbaseHealthIndicator() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.health.diskspace.enabled:false");
+		this.context.register(CouchbaseConfiguration.class,
+				ManagementServerProperties.class, HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertThat(beans.size()).isEqualTo(1);
+		assertThat(beans.values().iterator().next().getClass()).isEqualTo(CouchbaseHealthIndicator.class);
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	protected static class DataSourceConfig {
@@ -471,6 +487,17 @@ public class HealthIndicatorAutoConfigurationTests {
 		@Bean
 		public CassandraOperations cassandraOperations() {
 			CassandraOperations operations = mock(CassandraOperations.class);
+			return operations;
+		}
+
+	}
+
+	@Configuration
+	protected static class CouchbaseConfiguration {
+
+		@Bean
+		public CouchbaseOperations couchbaseOperations() {
+			CouchbaseOperations operations = mock(CouchbaseOperations.class);
 			return operations;
 		}
 
