@@ -104,9 +104,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@After
 	public void close() {
-		if (this.applicationContext != null) {
-			this.applicationContext.close();
-		}
+		this.applicationContext.close();
 	}
 
 	@Test
