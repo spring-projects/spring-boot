@@ -1,4 +1,4 @@
-=== /health
+=== Link: health
 This endpoint is an indication of the health of the application. It has an overall status
 ("UP", "DOWN" etc.), which is the only thing you see unless either you are authenticated
 or the endpoint is marked as `sensitive=false` (`endpoints.health.sensitive=false`).

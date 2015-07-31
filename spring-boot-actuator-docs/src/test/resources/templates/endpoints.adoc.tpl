@@ -2,7 +2,7 @@
   if (endpoint.custom) { %>
 include::{docs}/${endpoint.custom}[]
 <% } else { %>
-=== ${endpoint.title}
+=== Link: ${endpoint.title}
 
 Example curl request:
 include::{generated}${endpoint.path}/curl-request.adoc[]

@@ -1,4 +1,4 @@
-=== /configprops
+=== Link: configprops
 This endpoint is a report on the Spring Boot `@ConfigurationProperties` beans. Beans with
 this annotation are bound to the `Environment` on startup, so they reflect the
 externalised configuration of the application. Beans are listed by name. A bean that is

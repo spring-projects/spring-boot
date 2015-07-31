@@ -17,7 +17,7 @@ include::{generated}/endpoints.adoc[]
 
 
 
-=== /logfile
+=== Link: logfile
 This endpoint (if available) contains the plain text logfile configured by the user
 using `logging.file` or `logging.path` (by default logs are only emitted on stdout
 so one of these properties has to be set for this endpoint to be active).
@@ -33,7 +33,7 @@ include::{generated}/logfile/http-response.adoc[]
 
 
 
-=== /docs
+=== Link: docs
 This endpoint (if available) contains HTML documemtation for the other endpoints. Its path
 can be "/docs" (if there is an existing home page) or "/" (otherwise, including if the
 HAL browser is not active).

@@ -1,4 +1,4 @@
-=== /info
+=== Link: info
 This endpoint is empty and marked as `sensitive=false` by default (so it is
 unauthenticated by default if Spring Security is in use). It reflects the content of the
 `info.*` properties  in the `Environment`, as well as the properties in `git.properties`

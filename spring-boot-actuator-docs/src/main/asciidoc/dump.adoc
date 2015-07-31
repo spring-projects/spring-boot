@@ -1,4 +1,4 @@
-=== /dump
+=== Link: dump
 This endpoint is a thread dump: the result is a list of threads each with their name,
 monitor state and stack. It is the same information as you would get from `kill -3` of a
 running Java process. Can be very useful for detecting issues at runtime, especially

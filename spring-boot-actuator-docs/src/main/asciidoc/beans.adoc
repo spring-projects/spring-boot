@@ -1,4 +1,4 @@
-=== /beans
+=== Link: beans
 This endpoint is a report on the Spring Boot `ApplicationContext`. It lists the beans in
 the context and their dependencies, detailing the names and concrete classes of each bean.
 

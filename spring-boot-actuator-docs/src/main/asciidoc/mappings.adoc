@@ -1,4 +1,4 @@
-=== /mappings
+=== Link: mappings
 This endpoint lists the Spring MVC request mappings, so users can see the handlers
 registered for requests by path, method, media type, etc.
 
