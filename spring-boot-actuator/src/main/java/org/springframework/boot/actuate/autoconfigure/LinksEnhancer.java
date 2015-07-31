@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.hateoas.ResourceSupport;
@@ -24,7 +27,7 @@ import org.springframework.util.StringUtils;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
- * Adds enpoints links to {@link ResourceSupport}.
+ * Adds endpoints links to {@link ResourceSupport}.
  *
  * @author Dave Syer
  */
@@ -44,10 +47,12 @@ class LinksEnhancer {
 			resource.add(linkTo(LinksEnhancer.class).slash(this.rootPath + self)
 					.withSelfRel());
 		}
+		Set<String> added = new HashSet<String>();
 		for (MvcEndpoint endpoint : this.endpoints.getEndpoints()) {
-			if (!endpoint.getPath().equals(self)) {
+			if (!endpoint.getPath().equals(self) && !added.contains(endpoint.getPath())) {
 				addEndpointLink(resource, endpoint);
 			}
+			added.add(endpoint.getPath());
 		}
 	}
 
