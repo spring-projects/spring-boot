@@ -53,7 +53,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	 * Endpoint URL path.
 	 */
 	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
+	@Pattern(regexp = "/[^?#]*", message = "Path must start with /")
 	private String path;
 
 	/**
