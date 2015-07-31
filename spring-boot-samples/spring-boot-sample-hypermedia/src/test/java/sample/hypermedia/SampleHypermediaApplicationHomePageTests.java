@@ -36,7 +36,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleHypermediaApplication.class)
+@SpringApplicationConfiguration(SampleHypermediaApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port=0")
 public class SampleHypermediaApplicationHomePageTests {

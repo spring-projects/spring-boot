@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleGithubSecureApplication.class)
+@SpringApplicationConfiguration(SampleGithubSecureApplication.class)
 @WebAppConfiguration
 @DirtiesContext
 public class SampleGithubApplicationTests {

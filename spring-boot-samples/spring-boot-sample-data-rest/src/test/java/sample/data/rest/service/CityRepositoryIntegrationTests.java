@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleDataRestApplication.class)
+@SpringApplicationConfiguration(SampleDataRestApplication.class)
 public class CityRepositoryIntegrationTests {
 
 	@Autowired

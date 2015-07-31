@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleJetty8Application.class)
+@SpringApplicationConfiguration(SampleJetty8Application.class)
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 @DirtiesContext

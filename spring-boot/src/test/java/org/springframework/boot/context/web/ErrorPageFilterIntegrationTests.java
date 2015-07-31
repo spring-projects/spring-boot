@@ -60,7 +60,7 @@ import static org.junit.Assert.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TomcatConfig.class)
+@SpringApplicationConfiguration(TomcatConfig.class)
 @IntegrationTest
 @WebAppConfiguration
 public class ErrorPageFilterIntegrationTests {

@@ -45,7 +45,7 @@ import static org.junit.Assert.assertEquals;
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleTomcatApplication.class)
+@SpringApplicationConfiguration(SampleTomcatApplication.class)
 @WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleTomcatApplicationTests {

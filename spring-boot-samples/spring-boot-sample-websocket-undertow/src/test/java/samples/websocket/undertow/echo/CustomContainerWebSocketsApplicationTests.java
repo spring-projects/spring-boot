@@ -50,7 +50,7 @@ import samples.websocket.undertow.echo.CustomContainerWebSocketsApplicationTests
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { SampleUndertowWebSocketsApplication.class,
+@SpringApplicationConfiguration({ SampleUndertowWebSocketsApplication.class,
 		CustomContainerConfiguration.class })
 @WebAppConfiguration
 @IntegrationTest

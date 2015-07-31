@@ -3462,7 +3462,7 @@ For example:
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+	@SpringApplicationConfiguration(SampleDataJpaApplication.class)
 	public class CityRepositoryIntegrationTests {
 
 		@Autowired
@@ -3487,7 +3487,7 @@ interaction. For example:
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+	@SpringApplicationConfiguration(SampleDataJpaApplication.class)
 	@WebIntegrationTest
 	public class CityRepositoryIntegrationTests {
 
@@ -3514,7 +3514,7 @@ in order to run your integration tests using random ports. For example:
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(classes = MyApplication.class)
+	@SpringApplicationConfiguration(MyApplication.class)
 	@WebIntegrationTest({"server.port=0", "management.port=0"})
 	public class SomeIntegrationTests {
 

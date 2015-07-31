@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { SampleCacheApplication.class })
+@SpringApplicationConfiguration(SampleCacheApplication.class)
 public class SampleCacheApplicationTests {
 
 	@Autowired

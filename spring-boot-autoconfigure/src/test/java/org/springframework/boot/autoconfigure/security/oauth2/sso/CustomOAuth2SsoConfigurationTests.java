@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
 @TestPropertySource(properties = { "security.oauth2.client.clientId=client",
 		"security.oauth2.client.clientSecret=secret",

@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleActuatorUiApplication.class)
+@SpringApplicationConfiguration(SampleActuatorUiApplication.class)
 @IntegrationTest("server.port=0")
 @WebAppConfiguration
 @DirtiesContext

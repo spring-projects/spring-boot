@@ -46,7 +46,7 @@ import samples.websocket.tomcat.client.SimpleGreetingService;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleTomcatWebSocketApplication.class)
+@SpringApplicationConfiguration(SampleTomcatWebSocketApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 @DirtiesContext

@@ -34,7 +34,7 @@ import static org.testng.Assert.assertEquals;
  *
  * @author Phillip Webb
  */
-@SpringApplicationConfiguration(classes = SampleTestNGApplication.class)
+@SpringApplicationConfiguration(SampleTestNGApplication.class)
 @WebIntegrationTest("server.port:0")
 @DirtiesContext
 public class SampleTestNGApplicationTests extends AbstractTestNGSpringContextTests {

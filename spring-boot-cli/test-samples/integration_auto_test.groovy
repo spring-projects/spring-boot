@@ -1,4 +1,4 @@
-@SpringApplicationConfiguration(classes=ReactorApplication)
+@SpringApplicationConfiguration(ReactorApplication)
 @IntegrationTest('server.port:0')
 class RestTests {
 

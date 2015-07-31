@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleActuatorNoWebApplication.class)
+@SpringApplicationConfiguration(SampleActuatorNoWebApplication.class)
 @DirtiesContext
 public class SampleActuatorNoWebApplicationTests {
 

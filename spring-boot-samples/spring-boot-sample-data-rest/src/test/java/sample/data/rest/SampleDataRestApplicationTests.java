@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleDataRestApplication.class)
+@SpringApplicationConfiguration(SampleDataRestApplication.class)
 @WebAppConfiguration
 @ActiveProfiles("scratch")
 // Separate profile for web tests to avoid clashing databases

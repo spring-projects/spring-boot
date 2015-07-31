@@ -52,7 +52,7 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(Application.class)
 @IntegrationTest("server.port=0")
 @WebAppConfiguration
 public class JerseyAutoConfigurationDefaultServletPathTests {

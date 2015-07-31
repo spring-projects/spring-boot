@@ -47,7 +47,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleAtmosphereApplication.class)
+@SpringApplicationConfiguration(SampleAtmosphereApplication.class)
 @WebIntegrationTest(randomPort = true)
 @DirtiesContext
 public class SampleAtmosphereApplicationTests {

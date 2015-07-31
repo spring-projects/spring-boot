@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
  * @author Eddú Meléndez
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { SampleActiveMQApplication.class })
+@SpringApplicationConfiguration(SampleActiveMQApplication.class)
 public class SampleActiveMqTests {
 
 	@Rule

@@ -39,7 +39,7 @@ import sample.tomcat.ssl.SampleTomcatSslApplication;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleTomcatSslApplication.class)
+@SpringApplicationConfiguration(SampleTomcatSslApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 @DirtiesContext

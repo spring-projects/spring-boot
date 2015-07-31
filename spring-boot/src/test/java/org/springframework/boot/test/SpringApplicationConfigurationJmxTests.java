@@ -33,7 +33,7 @@ import static org.junit.Assert.assertFalse;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Config.class)
+@SpringApplicationConfiguration(Config.class)
 @IntegrationTest
 public class SpringApplicationConfigurationJmxTests {
 

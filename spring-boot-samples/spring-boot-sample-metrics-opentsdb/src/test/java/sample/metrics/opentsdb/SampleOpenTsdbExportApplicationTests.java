@@ -30,7 +30,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleOpenTsdbExportApplication.class)
+@SpringApplicationConfiguration(SampleOpenTsdbExportApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port=0")
 @DirtiesContext

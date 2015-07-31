@@ -422,7 +422,7 @@ and then inject the actual ('`local`') port as a `@Value`. For example:
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+	@SpringApplicationConfiguration(SampleDataJpaApplication.class)
 	@WebIntegrationTest("server.port:0")
 	public class CityRepositoryIntegrationTests {
 

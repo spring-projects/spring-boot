@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleSimpleApplication.class)
+@SpringApplicationConfiguration(SampleSimpleApplication.class)
 public class SpringTestSampleSimpleApplicationTests {
 
 	@Autowired

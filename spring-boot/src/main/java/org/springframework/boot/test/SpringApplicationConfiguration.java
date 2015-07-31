@@ -48,6 +48,13 @@ import org.springframework.test.context.ContextConfiguration;
 public @interface SpringApplicationConfiguration {
 
 	/**
+	 * @see ContextConfiguration#classes()
+	 * @return the context configuration classes
+	 */
+	@AliasFor("classes")
+	Class<?>[] value() default {};
+
+	/**
 	 * @see ContextConfiguration#locations()
 	 * @return the context configuration locations
 	 */
@@ -58,7 +65,7 @@ public @interface SpringApplicationConfiguration {
 	 * @see ContextConfiguration#classes()
 	 * @return the context configuration classes
 	 */
-	@AliasFor(annotation = ContextConfiguration.class, attribute = "classes")
+	@AliasFor("value")
 	Class<?>[] classes() default {};
 
 	/**

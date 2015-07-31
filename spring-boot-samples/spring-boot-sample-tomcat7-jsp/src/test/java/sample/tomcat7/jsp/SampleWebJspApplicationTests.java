@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleTomcat7JspApplication.class)
+@SpringApplicationConfiguration(SampleTomcat7JspApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 @DirtiesContext

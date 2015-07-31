@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotEquals;
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Config.class)
+@SpringApplicationConfiguration(Config.class)
 @WebIntegrationTest({ "server.port=0", "value=123" })
 public class SpringApplicationWebIntegrationTestTests {
 

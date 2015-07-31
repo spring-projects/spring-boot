@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(classes = { Config.class,
+@SpringApplicationConfiguration({ Config.class,
 		MessageSourceAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("switch-messages")

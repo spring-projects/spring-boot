@@ -37,7 +37,7 @@ import static org.junit.Assert.assertFalse;
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
+@SpringApplicationConfiguration(SampleActuatorApplication.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "endpoints.health.sensitive=false" })
 @DirtiesContext

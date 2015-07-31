@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @IntegrationTest("spring.jmx.enabled=true")
 @DirtiesContext
 public class SpringIntegrationMetricReaderTests {

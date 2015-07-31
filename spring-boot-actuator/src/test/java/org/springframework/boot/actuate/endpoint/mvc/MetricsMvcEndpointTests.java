@@ -56,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Sergei Egorov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { TestConfiguration.class })
+@SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
 public class MetricsMvcEndpointTests {
 

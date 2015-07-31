@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
+@SpringApplicationConfiguration(SampleActuatorApplication.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "management.port=0", "management.address=127.0.0.1",
 		"management.context-path:/admin" })

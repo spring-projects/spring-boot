@@ -50,7 +50,7 @@ import samples.websocket.tomcat.echo.CustomContainerWebSocketsApplicationTests.C
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { SampleTomcatWebSocketApplication.class,
+@SpringApplicationConfiguration({ SampleTomcatWebSocketApplication.class,
 		CustomContainerConfiguration.class })
 @WebAppConfiguration
 @IntegrationTest

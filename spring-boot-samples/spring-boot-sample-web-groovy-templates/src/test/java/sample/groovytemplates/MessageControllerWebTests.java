@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@SpringApplicationConfiguration(classes = SampleGroovyTemplateApplication.class)
+@SpringApplicationConfiguration(SampleGroovyTemplateApplication.class)
 @DirtiesContext
 public class MessageControllerWebTests {
 

@@ -39,7 +39,7 @@ import static org.junit.Assert.assertNotNull;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleActuatorLog4JApplication.class)
+@SpringApplicationConfiguration(SampleActuatorLog4JApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port=0")
 @DirtiesContext

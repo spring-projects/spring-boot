@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = HelloWebSecurityApplication.class)
+@SpringApplicationConfiguration(HelloWebSecurityApplication.class)
 @WebIntegrationTest(randomPort = true)
 public class HelloWebSecurityApplicationTests {
 

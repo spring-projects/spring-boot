@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleMongoApplication.class)
+@SpringApplicationConfiguration(SampleMongoApplication.class)
 @IntegrationTest
 public class SampleMongoApplicationTests {
 

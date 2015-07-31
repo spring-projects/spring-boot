@@ -51,7 +51,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SpringBootHypermediaApplication.class)
+@SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.port=0", "management.port=0" })
 @DirtiesContext

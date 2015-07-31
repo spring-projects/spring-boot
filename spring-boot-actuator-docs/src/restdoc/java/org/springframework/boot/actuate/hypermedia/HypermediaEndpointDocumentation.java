@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SpringBootHypermediaApplication.class)
+@SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
 @WebAppConfiguration
 @TestPropertySource(properties = "spring.jackson.serialization.indent_output=true")
 @DirtiesContext

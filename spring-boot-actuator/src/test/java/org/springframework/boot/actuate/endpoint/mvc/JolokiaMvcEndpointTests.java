@@ -57,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { Config.class })
+@SpringApplicationConfiguration(Config.class)
 @WebAppConfiguration
 public class JolokiaMvcEndpointTests {
 

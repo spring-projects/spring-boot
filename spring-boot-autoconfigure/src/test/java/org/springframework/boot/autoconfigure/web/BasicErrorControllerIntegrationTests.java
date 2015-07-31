@@ -59,7 +59,7 @@ import static org.junit.Assert.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
 @DirtiesContext
 @IntegrationTest("server.port=0")

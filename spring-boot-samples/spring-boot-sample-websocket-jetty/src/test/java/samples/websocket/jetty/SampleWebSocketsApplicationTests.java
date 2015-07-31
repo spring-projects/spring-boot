@@ -46,7 +46,7 @@ import samples.websocket.jetty.client.SimpleGreetingService;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleJettyWebSocketsApplication.class)
+@SpringApplicationConfiguration(SampleJettyWebSocketsApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 @DirtiesContext

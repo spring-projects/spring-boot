@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@SpringApplicationConfiguration(classes = SampleSecureOAuth2Application.class)
+@SpringApplicationConfiguration(SampleSecureOAuth2Application.class)
 @IntegrationTest("server.port:0")
 public class SampleSecureOAuth2ApplicationTests {
 

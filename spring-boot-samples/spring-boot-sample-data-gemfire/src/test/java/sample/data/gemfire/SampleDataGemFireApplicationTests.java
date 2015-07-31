@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
  * @author John Blum
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleDataGemFireApplication.class)
+@SpringApplicationConfiguration(SampleDataGemFireApplication.class)
 public class SampleDataGemFireApplicationTests {
 
 	@Autowired

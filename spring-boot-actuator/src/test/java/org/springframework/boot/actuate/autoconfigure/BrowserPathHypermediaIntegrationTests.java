@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SpringBootHypermediaApplication.class)
+@SpringApplicationConfiguration(SpringBootHypermediaApplication.class)
 @WebAppConfiguration
 @TestPropertySource(properties = "endpoints.actuator.path=/actuator")
 @DirtiesContext
