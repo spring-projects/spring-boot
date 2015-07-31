@@ -19,7 +19,6 @@ package org.springframework.boot.context.web;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -29,7 +28,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
@@ -115,7 +113,7 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		try {
 			chain.doFilter(request, wrapped);
 			int status = wrapped.getStatus();
-			if (status >= 400) {
+			if (status >= 400 && wrapped.hasErrorToSend) {
 				handleErrorStatus(request, response, status, wrapped.getMessage());
 				response.flushBuffer();
 			}

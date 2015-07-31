@@ -17,7 +17,8 @@
 package org.springframework.boot.context.web;
 
 import java.io.IOException;
-
+import java.io.PrintWriter;
+        
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -44,6 +45,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -145,6 +147,36 @@ public class ErrorPageFilterTests {
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
 		assertThat(this.response.getForwardedUrl(), is(nullValue()));
+		assertTrue(this.response.isCommitted());
+	}
+        
+        @Test
+	public void errorButAlreadyHandled() throws Exception {
+		this.filter.addErrorPages(new ErrorPage("/error"));
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				final HttpServletResponse httpResponse = (HttpServletResponse) response;
+				httpResponse.setStatus(400);
+                                PrintWriter writer = httpResponse.getWriter();
+                                try{
+                                    writer.write("Custom error page");
+                                }finally{
+                                    writer.close();
+                                }
+				super.doFilter(request, response);
+				response.flushBuffer();
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
+				equalTo(400));
+		assertThat(this.response.getForwardedUrl(), is(nullValue()));
+                assertEquals("Custom error page", this.response.getContentAsString());
 		assertTrue(this.response.isCommitted());
 	}
 
