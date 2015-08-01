@@ -118,17 +118,17 @@ public class SpringBootWebSecurityConfiguration {
 			writer.setRequestMatcher(AnyRequestMatcher.INSTANCE);
 			configurer.addHeaderWriter(writer);
 		}
-		if (headers.isContentType()) {
-			configurer.contentTypeOptions();
+		if (!headers.isContentType()) {
+			configurer.contentTypeOptions().disable();
 		}
-		if (headers.isXss()) {
-			configurer.xssProtection();
+		if (!headers.isXss()) {
+			configurer.xssProtection().disable();
 		}
-		if (headers.isCache()) {
-			configurer.cacheControl();
+		if (!headers.isCache()) {
+			configurer.cacheControl().disable();
 		}
-		if (headers.isFrame()) {
-			configurer.frameOptions();
+		if (!headers.isFrame()) {
+			configurer.frameOptions().disable();
 		}
 	}
 
