@@ -42,6 +42,18 @@
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
+    "name": "logging.pattern.console",
+    "type": "java.lang.String",
+    "description": "Appender pattern for output to the console. Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
+    "name": "logging.pattern.file",
+    "type": "java.lang.String",
+    "description": "Appender pattern for output to the file. Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
     "name": "logging.path",
     "type": "java.lang.String",
     "description": "Location of the log file.",
