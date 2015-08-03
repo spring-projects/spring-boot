@@ -66,4 +66,5 @@ class LinksEnhancer {
 			resource.add(linkTo(type).slash(fullPath).withRel(rel));
 		}
 	}
+
 }

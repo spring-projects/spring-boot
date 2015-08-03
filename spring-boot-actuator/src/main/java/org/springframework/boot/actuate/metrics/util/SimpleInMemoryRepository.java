@@ -36,10 +36,6 @@ public class SimpleInMemoryRepository<T> {
 
 	private final ConcurrentMap<String, Object> locks = new ConcurrentReferenceHashMap<String, Object>();
 
-	public interface Callback<T> {
-		T modify(T current);
-	}
-
 	public T update(String name, Callback<T> callback) {
 		Object lock = this.locks.putIfAbsent(name, new Object());
 		if (lock == null) {
@@ -99,6 +95,10 @@ public class SimpleInMemoryRepository<T> {
 
 	protected NavigableMap<String, T> getValues() {
 		return this.values;
+	}
+
+	public interface Callback<T> {
+		T modify(T current);
 	}
 
 }

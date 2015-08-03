@@ -1476,7 +1476,6 @@ respectively.
 
 [[howto-use-exposing-spring-data-repositories-rest-endpoint]]
 === Expose Spring Data repositories as REST endpoint
-
 Spring Data REST can expose the `Repository` implementations as REST endpoints for you as
 long as Spring MVC has been enabled for the application.
 

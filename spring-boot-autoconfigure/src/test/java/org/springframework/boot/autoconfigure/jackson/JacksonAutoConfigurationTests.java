@@ -76,7 +76,7 @@ import static org.mockito.Mockito.mock;
  */
 public class JacksonAutoConfigurationTests {
 
-	AnnotationConfigApplicationContext context;
+	private AnnotationConfigApplicationContext context;
 
 	@Before
 	public void setUp() {
@@ -411,8 +411,8 @@ public class JacksonAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jackson.date-format:zzzz");
 		this.context.refresh();
-		ObjectMapper objectMapper = this.context
-				.getBean(Jackson2ObjectMapperBuilder.class).build();
+		ObjectMapper objectMapper = this.context.getBean(
+				Jackson2ObjectMapperBuilder.class).build();
 
 		DateTime dateTime = new DateTime(1436966242231L, DateTimeZone.UTC);
 		assertEquals("\"Koordinierte Universalzeit\"",

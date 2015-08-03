@@ -20,7 +20,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -43,16 +42,15 @@ public class SamplePropertyValidationApplicationTests {
 
 	@After
 	public void closeContext() {
-		context.close();
+		this.context.close();
 	}
 
 	@Test
 	public void bindValidProperties() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"sample.host:192.168.0.1", "sample.port:9090");
+		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:192.168.0.1",
+				"sample.port:9090");
 		this.context.refresh();
-
 		SampleProperties properties = this.context.getBean(SampleProperties.class);
 		assertEquals("192.168.0.1", properties.getHost());
 		assertEquals(Integer.valueOf(9090), properties.getPort());
@@ -61,32 +59,29 @@ public class SamplePropertyValidationApplicationTests {
 	@Test
 	public void bindInvalidHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"sample.host:xxxxxx", "sample.port:9090");
-
-		thrown.expect(BeanCreationException.class);
-		thrown.expectMessage("xxxxxx");
+		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:xxxxxx",
+				"sample.port:9090");
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("xxxxxx");
 		this.context.refresh();
 	}
 
 	@Test
 	public void bindNullHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
-
-		thrown.expect(BeanCreationException.class);
-		thrown.expectMessage("null");
-		thrown.expectMessage("host");
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("null");
+		this.thrown.expectMessage("host");
 		this.context.refresh();
 	}
 
 	@Test
 	public void validatorOnlyCalledOnSupportedClass() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		this.context.register(ServerProperties.class); // our validator will not apply here
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"sample.host:192.168.0.1", "sample.port:9090");
+		this.context.register(ServerProperties.class); // our validator will not apply
+		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:192.168.0.1",
+				"sample.port:9090");
 		this.context.refresh();
-
 		SampleProperties properties = this.context.getBean(SampleProperties.class);
 		assertEquals("192.168.0.1", properties.getHost());
 		assertEquals(Integer.valueOf(9090), properties.getPort());

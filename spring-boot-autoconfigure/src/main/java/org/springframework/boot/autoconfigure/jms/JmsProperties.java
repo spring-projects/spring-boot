@@ -58,7 +58,7 @@ public class JmsProperties {
 	}
 
 	public Listener getListener() {
-		return listener;
+		return this.listener;
 	}
 
 	public static class Listener {
@@ -69,8 +69,8 @@ public class JmsProperties {
 		private boolean autoStartup = true;
 
 		/**
-		 * Acknowledge mode of the container. By default, the listener is
-		 * transacted with automatic acknowledgment.
+		 * Acknowledge mode of the container. By default, the listener is transacted with
+		 * automatic acknowledgment.
 		 */
 		private AcknowledgeMode acknowledgeMode;
 
@@ -85,7 +85,7 @@ public class JmsProperties {
 		private Integer maxConcurrency;
 
 		public boolean isAutoStartup() {
-			return autoStartup;
+			return this.autoStartup;
 		}
 
 		public void setAutoStartup(boolean autoStartup) {
@@ -93,7 +93,7 @@ public class JmsProperties {
 		}
 
 		public AcknowledgeMode getAcknowledgeMode() {
-			return acknowledgeMode;
+			return this.acknowledgeMode;
 		}
 
 		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
@@ -120,16 +120,17 @@ public class JmsProperties {
 			if (this.concurrency == null) {
 				return (this.maxConcurrency != null ? "1-" + this.maxConcurrency : null);
 			}
-			return (this.maxConcurrency != null ? this.concurrency + "-" +
-					this.maxConcurrency : String.valueOf(this.concurrency));
+			return (this.maxConcurrency != null ? this.concurrency + "-"
+					+ this.maxConcurrency : String.valueOf(this.concurrency));
 		}
 	}
 
 	/**
 	 * Translate the acknowledge modes defined on the {@link javax.jms.Session}.
 	 *
-	 * <p>{@link javax.jms.Session#SESSION_TRANSACTED} is not defined as we take
-	 * care of this already via a call to {@code setSessionTransacted}.
+	 * <p>
+	 * {@link javax.jms.Session#SESSION_TRANSACTED} is not defined as we take care of this
+	 * already via a call to {@code setSessionTransacted}.
 	 */
 	public enum AcknowledgeMode {
 
@@ -140,8 +141,8 @@ public class JmsProperties {
 		AUTO(1),
 
 		/**
-		 * Messages are acknowledged once the message listener implementation has 
-		 * called {@link javax.jms.Message#acknowledge()}. This mode gives the application
+		 * Messages are acknowledged once the message listener implementation has called
+		 * {@link javax.jms.Message#acknowledge()}. This mode gives the application
 		 * (rather than the JMS provider) complete control over message acknowledgement.
 		 */
 		CLIENT(2),
@@ -160,7 +161,7 @@ public class JmsProperties {
 		}
 
 		public int getMode() {
-			return mode;
+			return this.mode;
 		}
 	}
 

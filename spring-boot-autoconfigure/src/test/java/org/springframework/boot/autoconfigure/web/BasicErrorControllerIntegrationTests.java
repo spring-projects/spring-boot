@@ -181,6 +181,7 @@ public class BasicErrorControllerIntegrationTests {
 				public NoReasonExpectedException(String message) {
 					super(message);
 				}
+
 			}
 
 		}

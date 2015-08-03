@@ -244,7 +244,7 @@ public class ResourceServerProperties implements Validator, BeanFactoryAware {
 			}
 			if (ResourceServerProperties.this.tokenInfoUri != null
 					&& ResourceServerProperties.this.tokenInfoUri
-					.endsWith("/check_token")) {
+							.endsWith("/check_token")) {
 				return ResourceServerProperties.this.userInfoUri.replace("/check_token",
 						"/token_key");
 			}

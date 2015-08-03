@@ -74,9 +74,9 @@ public class ThymeleafProperties {
 	private boolean cache = true;
 
 	/**
-	 * Order of the template resolver in the chain. By default, the template resolver
-	 * is first in the chain. Order start at 1 and should only be set if you have
-	 * defined additional "TemplateResolver" beans.
+	 * Order of the template resolver in the chain. By default, the template resolver is
+	 * first in the chain. Order start at 1 and should only be set if you have defined
+	 * additional "TemplateResolver" beans.
 	 */
 	private Integer templateResolverOrder;
 
@@ -160,7 +160,7 @@ public class ThymeleafProperties {
 	}
 
 	public Integer getTemplateResolverOrder() {
-		return templateResolverOrder;
+		return this.templateResolverOrder;
 	}
 
 	public void setTemplateResolverOrder(Integer templateResolverOrder) {

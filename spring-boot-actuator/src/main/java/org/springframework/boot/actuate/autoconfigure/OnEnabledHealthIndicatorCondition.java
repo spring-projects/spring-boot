@@ -28,37 +28,38 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * {@link Condition} that checks if a health indicator is enabled.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 class OnEnabledHealthIndicatorCondition extends SpringBootCondition {
 
-	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(ConditionalOnEnablednHealthIndicator.class.getName()));
+	private static final String ANNOTATION_CLASS = ConditionalOnEnablednHealthIndicator.class
+			.getName();
 
+	@Override
+	public ConditionOutcome getMatchOutcome(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
+		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata
+				.getAnnotationAttributes(ANNOTATION_CLASS));
 		String endpointName = annotationAttributes.getString("value");
-		ConditionOutcome outcome = determineHealthIndicatorOutcome(endpointName, context);
+		ConditionOutcome outcome = getHealthIndicatorOutcome(context, endpointName);
 		if (outcome != null) {
 			return outcome;
 		}
-		return determineDefaultIndicatorsOutcome(context);
+		return getDefaultIndicatorsOutcome(context);
 	}
 
-	private ConditionOutcome determineHealthIndicatorOutcome(String endpointName,
-			ConditionContext context) {
+	private ConditionOutcome getHealthIndicatorOutcome(ConditionContext context,
+			String endpointName) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), "management.health." + endpointName + ".");
 		if (resolver.containsProperty("enabled")) {
-			boolean match = resolver.getProperty("enabled", Boolean.class,
-					true);
-			return new ConditionOutcome(match, "The health indicator " + endpointName +
-					" is " + (match ? "enabled" : "disabled"));
+			boolean match = resolver.getProperty("enabled", Boolean.class, true);
+			return new ConditionOutcome(match, "The health indicator " + endpointName
+					+ " is " + (match ? "enabled" : "disabled"));
 		}
 		return null;
 	}
 
-	private ConditionOutcome determineDefaultIndicatorsOutcome(ConditionContext context) {
+	private ConditionOutcome getDefaultIndicatorsOutcome(ConditionContext context) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), "management.health.defaults.");
 		boolean match = Boolean.valueOf(resolver.getProperty("enabled", "true"));

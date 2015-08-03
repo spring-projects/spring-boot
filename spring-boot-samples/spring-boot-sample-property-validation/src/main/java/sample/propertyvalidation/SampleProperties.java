@@ -34,7 +34,7 @@ public class SampleProperties {
 	private Integer port = 8080;
 
 	public String getHost() {
-		return host;
+		return this.host;
 	}
 
 	public void setHost(String host) {
@@ -42,10 +42,11 @@ public class SampleProperties {
 	}
 
 	public Integer getPort() {
-		return port;
+		return this.port;
 	}
 
 	public void setPort(Integer port) {
 		this.port = port;
 	}
+
 }

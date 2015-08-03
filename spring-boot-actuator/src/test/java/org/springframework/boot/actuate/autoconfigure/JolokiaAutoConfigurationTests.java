@@ -135,11 +135,13 @@ public class JolokiaAutoConfigurationTests {
 
 	@Configuration
 	protected static class EndpointsConfig extends Config {
+
 		@Bean
 		public EndpointHandlerMapping endpointHandlerMapping(
 				Collection<? extends MvcEndpoint> endpoints) {
 			return new EndpointHandlerMapping(endpoints);
 		}
+
 	}
 
 	@Configuration

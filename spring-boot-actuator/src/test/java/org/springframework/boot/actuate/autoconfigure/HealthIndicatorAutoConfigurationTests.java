@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Map;
+
 import javax.sql.DataSource;
 
 import org.junit.After;
@@ -105,16 +106,15 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void defaultHealthIndicatorsDisabledWithCustomOne() {
 		this.context.register(CustomHealthIndicator.class,
-				HealthIndicatorAutoConfiguration.class,
-				ManagementServerProperties.class);
+				HealthIndicatorAutoConfiguration.class, ManagementServerProperties.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.health.defaults.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertSame(this.context.getBean("customHealthIndicator"), beans.values().
-				iterator().next());
+		assertSame(this.context.getBean("customHealthIndicator"), beans.values()
+				.iterator().next());
 	}
 
 	@Test
@@ -445,6 +445,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				}
 			};
 		}
+
 	}
 
 }

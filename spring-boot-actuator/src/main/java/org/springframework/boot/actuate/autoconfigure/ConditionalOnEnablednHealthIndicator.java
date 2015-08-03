@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,9 +34,10 @@ import org.springframework.context.annotation.Conditional;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Conditional(OnEnabledHealthIndicatorCondition.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Documented
+@Conditional(OnEnabledHealthIndicatorCondition.class)
 public @interface ConditionalOnEnablednHealthIndicator {
 
 	/**

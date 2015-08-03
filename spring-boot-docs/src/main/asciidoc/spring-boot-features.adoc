@@ -781,7 +781,6 @@ annotations to your `@ConfigurationProperties` class:
 	}
 ----
 
-
 In order to validate values of nested properties, you must annotate the associated field
 as `@Valid` to trigger its validation. For example, building upon the above
 `ConnectionSettings` example:

@@ -101,33 +101,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		if (this.rootClassLoader == null) {
 			return findResources(name);
 		}
-
-		final Enumeration<URL> rootResources = this.rootClassLoader.getResources(name);
-		final Enumeration<URL> localResources = findResources(name);
-
-		return new Enumeration<URL>() {
-
-			@Override
-			public boolean hasMoreElements() {
-				try {
-					Handler.setUseFastConnectionExceptions(true);
-					return rootResources.hasMoreElements()
-							|| localResources.hasMoreElements();
-				}
-				finally {
-					Handler.setUseFastConnectionExceptions(false);
-				}
-			}
-
-			@Override
-			public URL nextElement() {
-				if (rootResources.hasMoreElements()) {
-					return rootResources.nextElement();
-				}
-				return localResources.nextElement();
-			}
-
-		};
+		return new ResourceEnumeration(this.rootClassLoader.getResources(name),
+				findResources(name));
 	}
 
 	/**
@@ -266,5 +241,42 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 
 	}
+
+	/**
+	 * {@link Enumeration} implementation used for {@code getResources()}.
+	 */
+	private static class ResourceEnumeration implements Enumeration<URL> {
+
+		private final Enumeration<URL> rootResources;
+
+		private final Enumeration<URL> localResources;
+
+		public ResourceEnumeration(Enumeration<URL> rootResources,
+				Enumeration<URL> localResources) {
+			this.rootResources = rootResources;
+			this.localResources = localResources;
+		}
+
+		@Override
+		public boolean hasMoreElements() {
+			try {
+				Handler.setUseFastConnectionExceptions(true);
+				return this.rootResources.hasMoreElements()
+						|| this.localResources.hasMoreElements();
+			}
+			finally {
+				Handler.setUseFastConnectionExceptions(false);
+			}
+		}
+
+		@Override
+		public URL nextElement() {
+			if (this.rootResources.hasMoreElements()) {
+				return this.rootResources.nextElement();
+			}
+			return this.localResources.nextElement();
+		}
+
+	};
 
 }

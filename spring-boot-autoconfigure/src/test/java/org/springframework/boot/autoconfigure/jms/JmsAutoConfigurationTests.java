@@ -146,8 +146,7 @@ public class JmsAutoConfigurationTests {
 
 	@Test
 	public void testJmsListenerContainerFactoryWithCustomSettings() {
-		load(EnableJmsConfiguration.class,
-				"spring.jms.listener.autoStartup=false",
+		load(EnableJmsConfiguration.class, "spring.jms.listener.autoStartup=false",
 				"spring.jms.listener.acknowledgeMode=client",
 				"spring.jms.listener.concurrency=2",
 				"spring.jms.listener.maxConcurrency=10");
@@ -155,10 +154,11 @@ public class JmsAutoConfigurationTests {
 				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
 		assertEquals(DefaultJmsListenerContainerFactory.class,
 				jmsListenerContainerFactory.getClass());
-		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory)
-				jmsListenerContainerFactory).createListenerContainer(mock(JmsListenerEndpoint.class));
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
 		assertEquals(false, listenerContainer.isAutoStartup());
-		assertEquals(Session.CLIENT_ACKNOWLEDGE, listenerContainer.getSessionAcknowledgeMode());
+		assertEquals(Session.CLIENT_ACKNOWLEDGE,
+				listenerContainer.getSessionAcknowledgeMode());
 		assertEquals(2, listenerContainer.getConcurrentConsumers());
 		assertEquals(10, listenerContainer.getMaxConcurrentConsumers());
 	}

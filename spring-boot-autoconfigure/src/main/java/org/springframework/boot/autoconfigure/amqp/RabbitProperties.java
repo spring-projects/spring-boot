@@ -306,7 +306,7 @@ public class RabbitProperties {
 		private Integer maxConcurrency;
 
 		/**
-		 * Number of messages to be handled in a single request.  It should be greater than
+		 * Number of messages to be handled in a single request. It should be greater than
 		 * or equal to the transaction size (if used).
 		 */
 		private Integer prefetch;
@@ -318,7 +318,7 @@ public class RabbitProperties {
 		private Integer transactionSize;
 
 		public boolean isAutoStartup() {
-			return autoStartup;
+			return this.autoStartup;
 		}
 
 		public void setAutoStartup(boolean autoStartup) {

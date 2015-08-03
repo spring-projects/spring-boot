@@ -355,11 +355,11 @@ public class RelaxedDataBinderTests {
 		bind(target, "nested.foo: bar.key\n" + "nested[bar.key].spam: bucket\n"
 				+ "nested[bar.key].value: 123\nnested[bar.key].foo: crap");
 		assertEquals(2, target.getNested().size());
-		Map<String, Object> nestedMap = (Map<String, Object>) target.getNested().get("bar.key");
+		Map<String, Object> nestedMap = (Map<String, Object>) target.getNested().get(
+				"bar.key");
 		assertNotNull("nested map should be registered with 'bar.key'", nestedMap);
 		assertEquals(3, nestedMap.size());
-		assertEquals("123",
-				nestedMap.get("value"));
+		assertEquals("123", nestedMap.get("value"));
 		assertEquals("bar.key", target.getNested().get("foo"));
 		assertFalse(target.getNested().containsValue(target.getNested()));
 	}
