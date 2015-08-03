@@ -83,11 +83,6 @@
   	"description": "Preferred JSON mapper to use for HTTP message conversion."
   },
   {
-  	"name": "spring.http.gzip.enabled",
-  	"type": "java.lang.Boolean",
-  	"description": "Enable gzip filter support."
-  },
-  {
     "name": "spring.jmx.default-domain",
     "type": "java.lang.String",
     "description": "JMX domain name."
