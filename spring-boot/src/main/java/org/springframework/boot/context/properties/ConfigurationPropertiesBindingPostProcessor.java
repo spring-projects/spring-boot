@@ -323,15 +323,15 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private Validator determineValidator(Object bean) {
-		boolean globalValidatorSupportBean = (this.validator != null
-				&& this.validator.supports(bean.getClass()));
+		boolean globalValidatorSupportBean = (this.validator != null && this.validator
+				.supports(bean.getClass()));
 		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {
 			if (!globalValidatorSupportBean) {
 				return (Validator) bean;
 			}
 			return new ChainingValidator(this.validator, (Validator) bean);
 		}
-		return globalValidatorSupportBean ? this.validator : null;
+		return (globalValidatorSupportBean ? this.validator : null);
 	}
 
 	private PropertySources loadPropertySources(String[] locations,
