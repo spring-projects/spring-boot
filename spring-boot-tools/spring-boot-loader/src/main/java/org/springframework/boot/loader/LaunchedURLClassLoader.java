@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.loader.jar.JarFile;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
@@ -107,8 +108,14 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 			@Override
 			public boolean hasMoreElements() {
-				return rootResources.hasMoreElements()
-						|| localResources.hasMoreElements();
+				try {
+					Handler.setUseFastConnectionExceptions(true);
+					return rootResources.hasMoreElements()
+							|| localResources.hasMoreElements();
+				}
+				finally {
+					Handler.setUseFastConnectionExceptions(false);
+				}
 			}
 
 			@Override
