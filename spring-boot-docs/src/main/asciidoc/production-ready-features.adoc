@@ -247,6 +247,15 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 |{sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
 |Checks that a connection to `DataSource` can be obtained.
 
+|{sc-spring-boot-actuator}/health/ElasticsearchHealthIndicator.{sc-ext}[`ElasticsearchHealthIndicator`]
+|Checks that an ElasticSearch cluster is up.
+
+|{sc-spring-boot-actuator}/health/JmsHealthIndicator.{sc-ext}[`JmsHealthIndicator`]
+|Checks that a JMS broker is up.
+
+|{sc-spring-boot-actuator}/health/MailHealthIndicator.{sc-ext}[`MailHealthIndicator`]
+|Checks that a mail server is up.
+
 |{sc-spring-boot-actuator}/health/MongoHealthIndicator.{sc-ext}[`MongoHealthIndicator`]
 |Checks that a Mongo database is up.
 
