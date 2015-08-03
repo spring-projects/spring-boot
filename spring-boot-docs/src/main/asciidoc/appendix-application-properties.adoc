@@ -713,13 +713,13 @@ content into your application; rather pick only the properties that you need.
 
 	# HEALTH INDICATORS (previously health.*)
 	management.health.db.enabled=true
-	management.health.elasticsearch.enabled=true
-	management.health.elasticsearch.indices=  # comma-separated index names
-	management.health.elasticsearch.response-timeout=100 # the time, in milliseconds, to wait for a response from the cluster
 	management.health.defaults.enabled=true # enable default health indicators
 	management.health.diskspace.enabled=true
 	management.health.diskspace.path=.
 	management.health.diskspace.threshold=10485760
+	management.health.elasticsearch.enabled=true
+	management.health.elasticsearch.indices=  # comma-separated index names
+	management.health.elasticsearch.response-timeout=100 # the time, in milliseconds, to wait for a response from the cluster
 	management.health.jms.enabled=true
 	management.health.mail.enabled=true
 	management.health.mongo.enabled=true
