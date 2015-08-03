@@ -79,6 +79,9 @@ public class MailSenderAutoConfiguration {
 		}
 		sender.setUsername(this.properties.getUsername());
 		sender.setPassword(this.properties.getPassword());
+                if (this.properties.getProtocol() != null) {
+                        sender.setProtocol(this.properties.getProtocol());
+                }
 		if (this.properties.getDefaultEncoding() != null) {
 			sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
 		}
