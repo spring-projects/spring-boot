@@ -259,6 +259,18 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	public void parseLevelsMapsFalseToOff() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.level.org.springframework.boot=false");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		this.logger.fatal("testatfatal");
+		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+		assertThat(this.outputCapture.toString(), not(containsString("testatfatal")));
+	}
+
+	@Test
 	public void parseArgsDisabled() throws Exception {
 		this.initializer.setParseArgs(false);
 		EnvironmentTestUtils.addEnvironment(this.context, "debug");

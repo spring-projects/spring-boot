@@ -246,16 +246,18 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 				name = null;
 			}
 			level = environment.resolvePlaceholders(level);
-			if (Boolean.toString(false).equalsIgnoreCase(level)) {
-				system.setLogLevel(name, LogLevel.OFF);
-			}
-			else {
-				system.setLogLevel(name, LogLevel.valueOf(level.toUpperCase()));
-			}
+			system.setLogLevel(name, coerceLogLevel(level));
 		}
 		catch (RuntimeException ex) {
 			this.logger.error("Cannot set level: " + level + " for '" + name + "'");
 		}
+	}
+
+	private LogLevel coerceLogLevel(String level) {
+		if ("false".equalsIgnoreCase(level)) {
+			return LogLevel.OFF;
+		}
+		return LogLevel.valueOf(level.toUpperCase());
 	}
 
 	public void setOrder(int order) {
