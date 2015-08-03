@@ -56,6 +56,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
@@ -64,6 +65,7 @@ import static org.junit.Assert.assertThat;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class RelaxedDataBinderTests {
 
@@ -344,6 +346,22 @@ public class RelaxedDataBinderTests {
 		TargetWithNestedMap target = new TargetWithNestedMap();
 		bind(target, "nested[foo]: bar\n" + "nested[foo.value]: 123");
 		assertEquals("123", target.getNested().get("foo.value"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testBindDoubleNestedMapWithDotInKeys() throws Exception {
+		TargetWithNestedMap target = new TargetWithNestedMap();
+		bind(target, "nested.foo: bar.key\n" + "nested[bar.key].spam: bucket\n"
+				+ "nested[bar.key].value: 123\nnested[bar.key].foo: crap");
+		assertEquals(2, target.getNested().size());
+		Map<String, Object> nestedMap = (Map<String, Object>) target.getNested().get("bar.key");
+		assertNotNull("nested map should be registered with 'bar.key'", nestedMap);
+		assertEquals(3, nestedMap.size());
+		assertEquals("123",
+				nestedMap.get("value"));
+		assertEquals("bar.key", target.getNested().get("foo"));
+		assertFalse(target.getNested().containsValue(target.getNested()));
 	}
 
 	@SuppressWarnings("unchecked")
