@@ -429,7 +429,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		private String foo;
 
 		public String getFoo() {
-			return foo;
+			return this.foo;
 		}
 
 		public void setFoo(String foo) {
