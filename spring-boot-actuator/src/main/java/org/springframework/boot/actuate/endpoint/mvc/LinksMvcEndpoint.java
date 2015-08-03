@@ -42,8 +42,7 @@ public class LinksMvcEndpoint implements MvcEndpoint {
 	@RequestMapping(value = { "/", "" }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResourceSupport links() {
-		ResourceSupport resource = new ResourceSupport();
-		return resource;
+		return new ResourceSupport();
 	}
 
 	public void setPath(String path) {
