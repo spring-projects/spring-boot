@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,11 +30,14 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -50,9 +54,11 @@ import org.springframework.util.Assert;
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 1)
 class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
-		BeanClassLoaderAware, ResourceLoaderAware, BeanFactoryAware {
+		BeanClassLoaderAware, ResourceLoaderAware, BeanFactoryAware, EnvironmentAware {
 
 	private ConfigurableListableBeanFactory beanFactory;
+
+	private Environment environment;
 
 	private ClassLoader beanClassLoader;
 
@@ -78,6 +84,7 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 			Set<String> excluded = new LinkedHashSet<String>();
 			excluded.addAll(Arrays.asList(attributes.getStringArray("exclude")));
 			excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
+			excluded.addAll(getExcludeAutoConfigurationsProperty());
 			factories.removeAll(excluded);
 			ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
 			ConditionEvaluationReport.get(this.beanFactory).recordEvaluationCandidates(
@@ -94,6 +101,16 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 		}
 	}
 
+	private List<String> getExcludeAutoConfigurationsProperty() {
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(this.environment,
+				"spring.autoconfigure.");
+		String[] value = resolver.getProperty("exclude", String[].class);
+		if (value != null) {
+			return Arrays.asList(value);
+		}
+		return Collections.emptyList();
+	}
+
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;
@@ -108,6 +125,11 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		Assert.isInstanceOf(ConfigurableListableBeanFactory.class, beanFactory);
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 }

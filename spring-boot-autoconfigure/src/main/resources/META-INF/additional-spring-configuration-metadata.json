@@ -30,6 +30,11 @@
     "defaultValue": "org.springframework.boot:type=Admin,name=SpringApplication"
   },
   {
+    "name": "spring.autoconfigure.exclude",
+    "type": "java.lang.Class[]",
+    "description": "Auto-configuration classes to exclude."
+  },
+  {
     "name": "spring.batch.job.enabled",
     "type": "java.lang.Boolean",
     "description": "Execute all Spring Batch jobs in the context on startup.",

@@ -602,7 +602,7 @@ report to the console.
 
 
 
-[[using-boot-disabling-specific-auto-configutation]]
+[[using-boot-disabling-specific-auto-configuration]]
 === Disabling specific auto-configuration
 If you find that specific auto-configure classes are being applied that you don't want,
 you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
@@ -619,7 +619,12 @@ you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
 	}
 ----
 
+If the class is not on the classpath, you can use the `excludeName` attribute of
+the annotation and specify the fully qualified name instead. Finally, you can also
+control the list of auto-configuration classes to excludes via the
+`spring.autoconfigure.exclude` property.
 
+TIP: You can define exclusions both at the annotation level and using the property.
 
 [[using-boot-spring-beans-and-dependency-injection]]
 == Spring Beans and dependency injection
