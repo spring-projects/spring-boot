@@ -34,6 +34,7 @@ import org.springframework.lang.UsesJava7;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
@@ -108,8 +109,14 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 			@Override
 			public boolean hasMoreElements() {
-				return rootResources.hasMoreElements()
-						|| localResources.hasMoreElements();
+				try {
+					Handler.setUseFastConnectionExceptions(true);
+					return rootResources.hasMoreElements()
+							|| localResources.hasMoreElements();
+				}
+				finally {
+					Handler.setUseFastConnectionExceptions(false);
+				}
 			}
 
 			@Override
