@@ -760,6 +760,8 @@ content into your application; rather pick only the properties that you need.
 	shell.auth.spring.roles=
 
 	# METRICS EXPORT ({sc-spring-boot-actuator}/metrics/export/MetricExportProperties.{sc-ext}[MetricExportProperties])
+	spring.metrics.export.aggregate.key-pattern= # pattern that tells the aggregator what to do with the keys from the source repository
+	spring.metrics.export.aggregate.prefix= # prefix for global repository if active
 	spring.metrics.export.enabled=true # flag to disable all metric exports (assuming any MetricWriters are available)
 	spring.metrics.export.delay-millis=5000 # delay in milliseconds between export ticks
 	spring.metrics.export.send-latest=true # flag to switch off any available optimizations based on not exporting unchanged metric values
