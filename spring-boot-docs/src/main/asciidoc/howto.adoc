@@ -1934,7 +1934,8 @@ automatically compile your code whenever a file is saved.
 
 
 [[howto-customize-dependency-versions-with-maven]]
-=== Customize dependency versions with Maven
+[[howto-customize-dependency-versions]]
+=== Customize dependency versions
 If you use a Maven build that inherits directly or indirectly from `spring-boot-dependencies`
 (for instance `spring-boot-starter-parent`) but you want to override a specific
 third-party dependency you can add appropriate `<properties>` elements. Browse
@@ -1952,12 +1953,21 @@ you would add the following:
 NOTE: This only works if your Maven project inherits (directly or indirectly) from
 `spring-boot-dependencies`. If you have added `spring-boot-dependencies` in your
 own `dependencyManagement` section with `<scope>import</scope>` you have to redefine
-the artifact yourself instead of overriding the property	.
+the artifact yourself instead of overriding the property.
 
 WARNING: Each Spring Boot release is designed and tested against a specific set of
 third-party dependencies. Overriding versions may cause compatibility issues.
 
+To override dependency versions in Gradle, you can specify a version as shown below:
 
+[source,groovy,indent=0]
+----
+	ext['slf4j.version'] = '1.7.5'
+----
+
+For additional information, please refer to the
+https://github.com/spring-gradle-plugins/dependency-management-plugin[Gradle Dependency
+Management Plugin documentation].
 
 [[howto-create-an-executable-jar-with-maven]]
 === Create an executable JAR with Maven
