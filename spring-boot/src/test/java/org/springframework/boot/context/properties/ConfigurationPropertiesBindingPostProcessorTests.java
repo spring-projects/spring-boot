@@ -173,10 +173,22 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void testRelaxedPropertyWithEnum() throws Exception {
+	public void testRelaxedPropertyWithEnumDotHyphen() throws Exception {
 		doEnumTest("test.the-value:FoO");
+	}
+
+	@Test
+	public void testRelaxedPropertyWithEnumUnderscoresUpperCase() throws Exception {
 		doEnumTest("TEST_THE_VALUE:FoO");
+	}
+
+	@Test
+	public void testRelaxedPropertyWithEnumDotUnderscore() throws Exception {
 		doEnumTest("test.THE_VALUE:FoO");
+	}
+
+	@Test
+	public void testRelaxedPropertyWithEnumUnderscores() throws Exception {
 		doEnumTest("test_the_value:FoO");
 	}
 

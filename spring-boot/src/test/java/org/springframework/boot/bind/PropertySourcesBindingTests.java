@@ -16,6 +16,9 @@
 
 package org.springframework.boot.bind;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +36,6 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 /**
  * Tests for {@link PropertySourcesPropertyValues} binding.
  *
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertThat;
 @IntegrationTest
 public class PropertySourcesBindingTests {
 
-	@Value("${foo:}")
+	@Value("${psbt.foo}")
 	private String foo;
 
 	@Autowired
@@ -97,7 +97,7 @@ public class PropertySourcesBindingTests {
 	public static class SomeConfig {
 	}
 
-	@ConfigurationProperties
+	@ConfigurationProperties("psbt")
 	public static class Wrapper {
 		private String foo;
 

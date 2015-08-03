@@ -265,9 +265,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 			for (PropertyDescriptor descriptor : descriptors) {
 				String name = descriptor.getName();
 				if (!name.equals("class")) {
-					for (String relaxedName : new RelaxedNames(prefix + name)) {
-						names.add(relaxedName);
-					}
+					names.add(prefix + name);
 				}
 			}
 		}
