@@ -18,8 +18,12 @@
                             <div class="spring-icon {@= release.statusIconClass() @}"></div>
                         </div>
                         <div class="item--right-column">
-                            <a href='{@= release.refDocUrl @}' class="docs-link reference-link">Reference</a>
-                            <a href='{@= release.apiDocUrl @}' class="docs-link api-link">API</a>
+                            {@ if (release.refDocUrl !== '') { @}
+                                <a href='{@= release.refDocUrl @}' class="docs-link reference-link">Reference</a>
+                            {@ }; @}
+                            {@ if (release.apiDocUrl !== '') { @}
+                                <a href='{@= release.apiDocUrl @}' class="docs-link api-link">API</a>
+                            {@ }; @}
                         </div>
                     </div>
                     {@ }); @}
