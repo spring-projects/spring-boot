@@ -551,7 +551,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
-	public void testBindWithoutAlais() throws Exception {
+	public void testBindWithoutAlias() throws Exception {
 		VanillaTarget target = new VanillaTarget();
 		MutablePropertyValues properties = new MutablePropertyValues();
 		properties.add("flub", "a");
