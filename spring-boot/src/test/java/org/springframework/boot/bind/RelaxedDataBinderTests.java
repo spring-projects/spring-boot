@@ -335,6 +335,15 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedMapOfEnumRelaxedNames() throws Exception {
+		this.conversionService = new DefaultConversionService();
+		TargetWithNestedMapOfEnum target = new TargetWithNestedMapOfEnum();
+		bind(target, "nested.the-other: bar\n" + "nested.that_other: 123");
+		assertEquals("bar", target.getNested().get(Bingo.THE_OTHER));
+		assertEquals("123", target.getNested().get(Bingo.THAT_OTHER));
+	}
+
+	@Test
 	public void testBindNestedMapBracketReferenced() throws Exception {
 		TargetWithNestedMap target = new TargetWithNestedMap();
 		bind(target, "nested[foo]: bar\n" + "nested[value]: 123");
@@ -969,7 +978,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	enum Bingo {
-		THIS, or, THAT, THE_OTHER
+		THIS, or, THAT, THE_OTHER, THAT_OTHER
 	}
 
 	public static class ValidatedTarget {
