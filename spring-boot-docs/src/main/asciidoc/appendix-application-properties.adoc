@@ -548,6 +548,7 @@ content into your application; rather pick only the properties that you need.
 	# Email ({sc-spring-boot-autoconfigure}/mail/MailProperties.{sc-ext}[MailProperties])
 	spring.mail.host=smtp.acme.org # mail server host
 	spring.mail.port= # mail server port
+	spring.mail.protocol=smtp # mail server protocol
 	spring.mail.username=
 	spring.mail.password=
 	spring.mail.default-encoding=UTF-8 # encoding to use for MimeMessages

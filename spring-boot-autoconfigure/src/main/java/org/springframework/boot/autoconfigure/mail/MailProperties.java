@@ -55,10 +55,10 @@ public class MailProperties {
 	 */
 	private String password;
 
-        /**
-         * Protocol used by the SMTP server.
-         */
-        private String protocol;
+	/**
+	 * Protocol used by the SMTP server.
+	 */
+	private String protocol = "smtp";
 
 	/**
 	 * Default MimeMessage encoding.
@@ -112,13 +112,13 @@ public class MailProperties {
 		this.password = password;
 	}
 
-        public String getProtocol() {
-                return this.protocol;
-        }
+	public String getProtocol() {
+		return this.protocol;
+	}
 
-        public void setProtocol(String protocol) {
-                this.protocol = protocol;
-        }
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
 
 	public Charset getDefaultEncoding() {
 		return this.defaultEncoding;
