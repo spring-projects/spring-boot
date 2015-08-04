@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.mail;
 
 import java.util.Map;
 import java.util.Properties;
-
 import javax.activation.MimeType;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -79,6 +78,7 @@ public class MailSenderAutoConfiguration {
 		}
 		sender.setUsername(this.properties.getUsername());
 		sender.setPassword(this.properties.getPassword());
+		sender.setProtocol(this.properties.getProtocol());
 		if (this.properties.getDefaultEncoding() != null) {
 			sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
 		}
