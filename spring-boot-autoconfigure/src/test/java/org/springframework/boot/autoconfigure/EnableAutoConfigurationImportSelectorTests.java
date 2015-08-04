@@ -109,8 +109,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 
 	@Test
 	public void propertyExclusionsAreApplied() {
-		configureExclusions(new String[0], new String[0], new String[] {
-				FreeMarkerAutoConfiguration.class.getName()});
+		configureExclusions(new String[0], new String[0],
+				new String[] { FreeMarkerAutoConfiguration.class.getName() });
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
 				is(equalTo(getAutoConfigurationClassNames().size() - 1)));
@@ -121,8 +121,8 @@ public class EnableAutoConfigurationImportSelectorTests {
 	@Test
 	public void severalPropertyExclusionsAreApplied() {
 		configureExclusions(new String[0], new String[0], new String[] {
-				FreeMarkerAutoConfiguration.class.getName(), VelocityAutoConfiguration
-				.class.getName()});
+				FreeMarkerAutoConfiguration.class.getName(),
+				VelocityAutoConfiguration.class.getName() });
 
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
 		assertThat(imports.length,
@@ -160,8 +160,7 @@ public class EnableAutoConfigurationImportSelectorTests {
 				nameExclusion);
 		if (propertyExclusion.length > 0) {
 			String value = StringUtils.arrayToCommaDelimitedString(propertyExclusion);
-			this.environment.setProperty("spring.autoconfigure.exclude",
-					value);
+			this.environment.setProperty("spring.autoconfigure.exclude", value);
 		}
 	}
 

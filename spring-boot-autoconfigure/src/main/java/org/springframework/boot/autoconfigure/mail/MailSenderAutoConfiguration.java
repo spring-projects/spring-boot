@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mail;
 
 import java.util.Map;
 import java.util.Properties;
+
 import javax.activation.MimeType;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;

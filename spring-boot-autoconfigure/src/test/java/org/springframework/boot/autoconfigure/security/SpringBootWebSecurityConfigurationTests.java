@@ -170,19 +170,19 @@ public class SpringBootWebSecurityConfigurationTests {
 
 	// gh-3447
 	@Test
-	public void testHiddenHttpMethodFilterOrderedFirst()
-			throws Exception {
+	public void testHiddenHttpMethodFilterOrderedFirst() throws Exception {
 		this.context = SpringApplication.run(DenyPostRequestConfig.class,
 				"--server.port=0");
-		int port = Integer.parseInt(this.context.getEnvironment().getProperty("local.server.port"));
+		int port = Integer.parseInt(this.context.getEnvironment().getProperty(
+				"local.server.port"));
 		TestRestTemplate rest = new TestRestTemplate();
 
 		// not overriding causes forbidden
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 
-		ResponseEntity<Object> result = rest.postForEntity("http://localhost:" + port + "/", form, Object.class);
+		ResponseEntity<Object> result = rest.postForEntity("http://localhost:" + port
+				+ "/", form, Object.class);
 		assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
-
 
 		// override method with GET
 		form = new LinkedMultiValueMap<String, String>();
@@ -257,9 +257,8 @@ public class SpringBootWebSecurityConfigurationTests {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http
-				.authorizeRequests()
-					.antMatchers(HttpMethod.POST, "/**").denyAll();
+			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**").denyAll();
 		}
+
 	}
 }

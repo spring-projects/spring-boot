@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -104,11 +103,8 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 	private List<String> getExcludeAutoConfigurationsProperty() {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(this.environment,
 				"spring.autoconfigure.");
-		String[] value = resolver.getProperty("exclude", String[].class);
-		if (value != null) {
-			return Arrays.asList(value);
-		}
-		return Collections.emptyList();
+		String[] exclude = resolver.getProperty("exclude", String[].class);
+		return (Arrays.asList(exclude == null ? new String[0] : exclude));
 	}
 
 	@Override

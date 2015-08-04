@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link ConfigurationProperties}
- * annotated beans. Automatically any bean annotated with {@code @ConfigurationProperties}.
+ * beans. Automatically any bean annotated with {@code @ConfigurationProperties}.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
