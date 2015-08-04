@@ -66,8 +66,23 @@ public abstract class LoggingSystem {
 	 * @param logFile the log output file that should be written or {@code null} for
 	 * console only output
 	 */
-	public abstract void initialize(LoggingInitializationContext initializationContext,
-			String configLocation, LogFile logFile);
+	public void initialize(LoggingInitializationContext initializationContext,
+			String configLocation, LogFile logFile) {
+		initialize(configLocation, logFile);
+	}
+
+	/**
+	 * Fully initialize the logging system.
+	 * @param configLocation a log configuration location or {@code null} if default
+	 * initialization is required
+	 * @param logFile the log output file that should be written or {@code null} for
+	 * console only output
+	 * @deprecated since 1.3 in favor of
+	 * {@link #initialize(LoggingInitializationContext, String, LogFile)}
+	 */
+	@Deprecated
+	public void initialize(String configLocation, LogFile logFile) {
+	}
 
 	/**
 	 * Clean up the logging system. The default implementation does nothing. Subclasses
