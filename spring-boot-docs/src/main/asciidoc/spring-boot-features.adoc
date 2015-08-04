@@ -2258,6 +2258,45 @@ Hibernate autoconfig is active because the `ddl-auto` settings are more fine-gra
 
 
 
+[[boot-features-sql-h2-console]]
+=== Using H2's web console
+The http://www.h2database.com[H2 database] provides a
+http://www.h2database.com/html/quickstart.html#h2_console[browser-based console] that
+Spring Boot can auto-configure for you. The console will be auto-configured when the
+following conditions are met:
+
+* You are developing a web application
+* `com.h2database:h2` is on the classpath
+* You are using <<using-spring-boot.adoc#using-boot-devtools,Spring Boot's developer
+  tools>>
+
+TIP: If you are not using Spring Boot's developer tools, but would still like to make use
+of H2's console, then you can do so by configuring the `spring.h2.console.enabled`
+property with a value of `true`. The H2 console is only intended for use during
+development so care should be taken to ensure that `spring.h2.console.enabled` is not set
+to `true` in production.
+
+
+
+[[boot-features-sql-h2-console-custom-path]]
+==== Changing the H2 console's path
+By default the console will be available at `/h2-console`. You can customize the console's
+path using the `spring.h2.console.path` property.
+
+
+
+[[boot-features-sql-h2-console-securing]]
+==== Securing the H2 console
+When Spring Security is one the and basic auth is enabled, the H2 console will be
+automatically secured using basic auth. The following properties can be used to customize
+the security configuration:
+
+* `security.user.role`
+* `security.basic.authorize-mode`
+* `security.basic.enabled`
+
+
+
 [[boot-features-jooq]]
 == Using jOOQ
 Java Object Oriented Querying (http://www.jooq.org/[jOOQ]) is a popular product from

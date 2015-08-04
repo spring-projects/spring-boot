@@ -22,6 +22,7 @@ org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfigurat
 org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration,\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
+org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
