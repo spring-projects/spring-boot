@@ -18,9 +18,11 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -128,6 +130,17 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
+	public void testOnMissingBeanConditionWithFactoryBeanWithBeanMethodArguments() {
+		this.context.register(FactoryBeanWithBeanMethodArgumentsConfiguration.class,
+				ConditionalOnFactoryBean.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "theValue:foo");
+		this.context.refresh();
+		assertThat(this.context.getBean(ExampleBean.class).toString(),
+				equalTo("fromFactory"));
+	}
+
+	@Test
 	public void testOnMissingBeanConditionWithConcreteFactoryBean() {
 		this.context.register(ConcreteFactoryBeanConfiguration.class,
 				ConditionalOnFactoryBean.class,
@@ -224,6 +237,15 @@ public class ConditionalOnMissingBeanTests {
 		@Bean
 		public FactoryBean<ExampleBean> exampleBeanFactoryBean() {
 			return new ExampleFactoryBean("foo");
+		}
+	}
+
+	@Configuration
+	protected static class FactoryBeanWithBeanMethodArgumentsConfiguration {
+		@Bean
+		public FactoryBean<ExampleBean> exampleBeanFactoryBean(
+				@Value("${theValue}") String value) {
+			return new ExampleFactoryBean(value);
 		}
 	}
 
