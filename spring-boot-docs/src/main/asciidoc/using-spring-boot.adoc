@@ -867,6 +867,10 @@ on the classpath change. This can be a useful feature when working in an IDE as 
 a very fast feedback loop for code changes. By default, any entry on the classpath that
 points to a folder will be monitored for changes.
 
+NOTE: You can also start your application via the supported build plugins (i.e. Maven and
+Gradle) as long as forking is enabled since DevTools need an isolated application classloader
+to operate properly.
+
 TIP: Automatic restart works very well when used with LiveReload.
 <<using-boot-devtools-livereload,See below>> for details.
 
