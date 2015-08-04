@@ -630,9 +630,9 @@ Nested POJO properties can also be created (so a setter is not mandatory) if the
 default constructor, or a constructor accepting a single value that can be coerced from
 String. Some people use Project Lombok to add getters and setters automatically.
 
-When the `@EnableConfigurationProperties` annotation is applied to your `@Configuration`,
-any beans annotated with `@ConfigurationProperties` will be automatically configured from
-the `Environment` properties. This style of configuration works particularly well with the
+The `@EnableConfigurationProperties` annotation is automatically applied to your project
+so that any beans annotated with `@ConfigurationProperties` will be configured from the
+`Environment` properties. This style of configuration works particularly well with the
 `SpringApplication` external YAML configuration:
 
 [source,yaml,indent=0]
