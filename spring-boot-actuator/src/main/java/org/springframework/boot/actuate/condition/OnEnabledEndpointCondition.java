@@ -31,11 +31,14 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 class OnEnabledEndpointCondition extends SpringBootCondition {
 
+	private static final String ANNOTATION_CLASS = ConditionalOnEnabledEndpoint.class
+			.getName();
+
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(ConditionalOnEnabledEndpoint.class.getName()));
+				.getAnnotationAttributes(ANNOTATION_CLASS));
 		String endpointName = annotationAttributes.getString("value");
 		boolean enabledByDefault = annotationAttributes.getBoolean("enabledByDefault");
 		ConditionOutcome outcome = determineEndpointOutcome(endpointName,
@@ -53,7 +56,7 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		if (resolver.containsProperty("enabled") || !enabledByDefault) {
 			boolean match = resolver.getProperty("enabled", Boolean.class,
 					enabledByDefault);
-			return new ConditionOutcome(match, "The " + endpointName + " is "
+			return new ConditionOutcome(match, "The endpoint " + endpointName + " is "
 					+ (match ? "enabled" : "disabled"));
 		}
 		return null;
