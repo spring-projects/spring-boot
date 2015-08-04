@@ -819,6 +819,7 @@ devtools support, simply add the module dependency to your build:
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
 		</dependency>
 	</dependencies>
 ----
@@ -831,10 +832,13 @@ devtools support, simply add the module dependency to your build:
 	}
 ----
 
-
 NOTE: Developer tools are automatically disabled when running a fully packaged
 application. If your application is launched using `java -jar` or if it's started using a
-special classloader, then it is considered a "`production application`".
+special classloader, then it is considered a "`production application`". Flagging the
+dependency as optional is a best practice that prevents devtools from being transitively
+applied to other modules using your project. Gradle does not support `optional`
+dependencies out-of-the-box so you may want to have a look to the
+{propdeps-plugin}[`propdeps-plugin`] in the meantime.
 
 
 
