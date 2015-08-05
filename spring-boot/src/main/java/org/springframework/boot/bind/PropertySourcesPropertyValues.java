@@ -62,7 +62,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	 * @param propertySources a PropertySources instance
 	 * @param includePatterns property name patterns to include from system properties and
 	 * environment variables
-	 * @param propertyNames the property names to used in lieu of an
+	 * @param propertyNames the property names to use in lieu of an
 	 * {@link EnumerablePropertySource}.
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources,
@@ -74,7 +74,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	/**
 	 * Create a new PropertyValues from the given PropertySources
 	 * @param propertySources a PropertySources instance
-	 * @param propertyNames the property names to used in lieu of an
+	 * @param propertyNames the property names to use in lieu of an
 	 * {@link EnumerablePropertySource}.
 	 * @param includes the property name patterns to include
 	 */
