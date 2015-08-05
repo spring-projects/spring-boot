@@ -75,12 +75,14 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 					+ " annotated with @EnableAutoConfiguration?");
 
 			// Find all possible auto configuration classes, filtering duplicates
-			List<String> factories = getFactories(attributes);
+			List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
+					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
+							this.beanClassLoader)));
 
 			// Remove those specifically excluded
 			Set<String> excluded = new LinkedHashSet<String>();
-			excluded.addAll(asList(attributes, "exclude"));
-			excluded.addAll(asList(attributes, "excludeName"));
+			excluded.addAll(Arrays.asList(attributes.getStringArray("exclude")));
+			excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
 			excluded.addAll(getExcludeAutoConfigurationsProperty());
 			factories.removeAll(excluded);
 			ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
@@ -96,20 +98,6 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
-	}
-
-	private List<String> getFactories(AnnotationAttributes attributes) {
-		List<String> factories = asList(attributes, "include");
-		if (factories.isEmpty()) {
-			factories = SpringFactoriesLoader.loadFactoryNames(
-					EnableAutoConfiguration.class, this.beanClassLoader);
-		}
-		return new ArrayList<String>(new LinkedHashSet<String>(factories));
-	}
-
-	private List<String> asList(AnnotationAttributes attributes, String name) {
-		String[] value = attributes.getStringArray(name);
-		return Arrays.asList(value == null ? new String[0] : value);
 	}
 
 	private List<String> getExcludeAutoConfigurationsProperty() {

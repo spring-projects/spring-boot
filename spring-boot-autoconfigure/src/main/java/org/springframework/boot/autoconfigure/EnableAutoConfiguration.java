@@ -76,15 +76,6 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 public @interface EnableAutoConfiguration {
 
 	/**
-	 * Include only the specified auto-configuration classes and do not attempt full
-	 * auto-configuration. Using this attribute means that {@code spring.factories} files
-	 * will not be considered. This attribute should not generally be specified in
-	 * production applications, however, it is useful for tests.
-	 * @return the classes to include
-	 */
-	Class<?>[] include() default {};
-
-	/**
 	 * Exclude specific auto-configuration classes such that they will never be applied.
 	 * @return the classes to exclude
 	 */

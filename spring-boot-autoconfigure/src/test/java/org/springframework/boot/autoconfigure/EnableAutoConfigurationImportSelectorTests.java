@@ -148,18 +148,6 @@ public class EnableAutoConfigurationImportSelectorTests {
 						ThymeleafAutoConfiguration.class.getName()));
 	}
 
-	@Test
-	public void classIncludesAreApplied() throws Exception {
-		given(
-				this.annotationMetadata.getAnnotationAttributes(
-						EnableAutoConfiguration.class.getName(), true)).willReturn(
-				this.annotationAttributes);
-		given(this.annotationAttributes.getStringArray("include")).willReturn(
-				new String[] { FreeMarkerAutoConfiguration.class.getName() });
-		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports.length, is(equalTo(1)));
-	}
-
 	private void configureExclusions(String[] classExclusion, String[] nameExclusion,
 			String[] propertyExclusion) {
 		given(
@@ -180,5 +168,4 @@ public class EnableAutoConfigurationImportSelectorTests {
 		return SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
 				getClass().getClassLoader());
 	}
-
 }
