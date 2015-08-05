@@ -105,8 +105,11 @@ content into your application; rather pick only the properties that you need.
 	server.ssl.trust-store-password=
 	server.ssl.trust-store-provider=
 	server.ssl.trust-store-type=
-	server.tomcat.access-log-pattern= # log pattern of the access log
-	server.tomcat.access-log-enabled=false # is access logging enabled
+	server.tomcat.accesslog.directory=logs # directory in which log files are created
+	server.tomcat.accesslog.enabled=false # is access logging enabled
+	server.tomcat.accesslog.pattern= # log pattern of the access log
+	server.tomcat.accesslog.prefix=access_log # log file name prefix
+	server.tomcat.accesslog.suffix=.log # log file name suffix
 	server.tomcat.internal-proxies=10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\
 			192\\.168\\.\\d{1,3}\\.\\d{1,3}|\\
 			169\\.254\\.\\d{1,3}\\.\\d{1,3}|\\
