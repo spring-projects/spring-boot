@@ -93,7 +93,7 @@
 		<jaxen.version>1.1.6</jaxen.version>
 		<jaybird.version>2.2.8</jaybird.version>
 		<jdom2.version>2.0.6</jdom2.version>
-		<jedis.version>2.7.2</jedis.version>
+		<jedis.version>2.7.3</jedis.version>
 		<jersey.version>2.19</jersey.version>
 		<jetty.version>9.2.13.v20150730</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
