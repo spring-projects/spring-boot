@@ -43,6 +43,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Arthur Kalimullin
  * @since 1.1.0
  */
 public class DataSourceHealthIndicator extends AbstractHealthIndicator implements
@@ -210,7 +211,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 			@Override
 			protected boolean matchesProduct(String product) {
 				return super.matchesProduct(product)
-						||	product.toLowerCase().startsWith("firebird");
+						|| product.toLowerCase().startsWith("firebird");
 			}
 		};
 
