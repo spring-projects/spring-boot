@@ -113,6 +113,8 @@
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>2.13.2</mongodb.version>
 		<mysql.version>5.1.36</mysql.version>
+		<mybatis.version>3.3.0</mybatis.version>
+		<mybatis-spring.version>1.2.3</mybatis-spring.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<postgresql.version>9.4-1201-jdbc41</postgresql.version>
 		<reactor.version>2.0.4.RELEASE</reactor.version>
@@ -379,6 +381,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-mustache</artifactId>
+				<version>1.3.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-mybatis</artifactId>
 				<version>1.3.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -1539,6 +1546,16 @@
 				<groupId>org.mongodb</groupId>
 				<artifactId>mongo-java-driver</artifactId>
 				<version>${mongodb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis</artifactId>
+				<version>${mybatis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis-spring</artifactId>
+				<version>${mybatis-spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>

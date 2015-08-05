@@ -332,6 +332,11 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.max-wait=
 	spring.datasource.jmx-enabled=false # Export JMX MBeans (if supported)
 
+	# Mybatis ({sc-spring-boot-autoconfigure}/mybatis/MybatisProperties.{sc-ext}[MybatisProperties]
+	spring.mybatis.config= # mybatis config file
+	spring.mybatis.check-config-location= # check the mybatis configuration exists
+	spring.mybatis.executor-type= # mode of execution. Default is SIMPLE
+
 	# DAO ({sc-spring-boot-autoconfigure}/dao/PersistenceExceptionTranslationAutoConfiguration.{sc-ext}[PersistenceExceptionTranslationAutoConfiguration])
 	spring.dao.exceptiontranslation.enabled=true
 
