@@ -79,7 +79,7 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 					}
 					else {
 						char charAfter = propertyNameChars[this.names[nameIndex].length()];
-						if (isDelimeter(charAfter)) {
+						if (isDelimiter(charAfter)) {
 							match[nameIndex] = true;
 							noneMatched = false;
 						}
@@ -105,7 +105,7 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 		return c1 == c2;
 	}
 
-	private boolean isDelimeter(char c) {
+	private boolean isDelimiter(char c) {
 		for (char delimiter : this.delimiters) {
 			if (c == delimiter) {
 				return true;

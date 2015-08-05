@@ -69,9 +69,9 @@ public class DefaultPropertyNamePatternsMatcherTests {
 
 	@Test
 	public void withSquareBrackets() throws Exception {
-		char[] delimeters = "._[".toCharArray();
+		char[] delimiters = "._[".toCharArray();
 		PropertyNamePatternsMatcher matcher = new DefaultPropertyNamePatternsMatcher(
-				delimeters, "aaa", "bbbb", "ccccc");
+				delimiters, "aaa", "bbbb", "ccccc");
 		assertTrue(matcher.matches("bbbb"));
 		assertTrue(matcher.matches("bbbb[4]"));
 		assertFalse(matcher.matches("bbb[4]"));
