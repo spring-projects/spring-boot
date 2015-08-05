@@ -2505,9 +2505,16 @@ server using the URL `mongodb://localhost/test`:
 	}
 ----
 
-You can set `spring.data.mongodb.uri` property to change the `url`, or alternatively
-specify a `host`/`port`. For example, you might declare the following in your
-`application.properties`:
+You can set `spring.data.mongodb.uri` property to change the `url` and configure
+additional settings such as the _replica set_:
+
+[source,properties,indent=0]
+----
+	spring.data.mongodb.uri=mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test
+----
+
+Alternatively, specify a `host`/`port`. For example, you might declare the following in
+your `application.properties`:
 
 [source,properties,indent=0]
 ----
