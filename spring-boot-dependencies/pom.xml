@@ -152,7 +152,7 @@
 		<thymeleaf-layout-dialect.version>1.2.9</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>1.3</thymeleaf-extras-data-attribute.version>
 		<tomcat.version>8.0.23</tomcat.version>
-		<undertow.version>1.2.8.Final</undertow.version>
+		<undertow.version>1.2.10.Final</undertow.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
 		<webjars-hal-browser.version>b7669f1-1</webjars-hal-browser.version>
