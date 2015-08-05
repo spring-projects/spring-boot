@@ -126,9 +126,9 @@ content into your application; rather pick only the properties that you need.
 	server.tomcat.max-http-header-size= # maximum size in bytes of the HTTP message header
 	server.tomcat.max-threads = 0 # number of threads in protocol handler
 	server.tomcat.uri-encoding = UTF-8 # character encoding to use for URL decoding
-	server.undertow.access-log-enabled=false # if access logging is enabled
-	server.undertow.access-log-pattern=common # log pattern of the access log
-	server.undertow.access-log-dir=logs # access logs directory
+	server.undertow.accesslog.enabled=false # if access logging is enabled
+	server.undertow.accesslog.pattern=common # log pattern of the access log
+	server.undertow.accesslog.dir=logs # access logs directory
 	server.undertow.buffer-size= # size of each buffer in bytes
     server.undertow.buffers-per-region= # number of buffer per region
     server.undertow.direct-buffers=false # allocate buffers outside the Java heap
