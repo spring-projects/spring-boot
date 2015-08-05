@@ -109,4 +109,5 @@ public class H2ConsoleAutoConfigurationTests {
 		assertThat(this.context.getBean(ServletRegistrationBean.class).getUrlMappings(),
 				hasItems("/custom/*"));
 	}
+
 }

@@ -213,6 +213,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 				return super.matchesProduct(product)
 						|| product.toLowerCase().startsWith("firebird");
 			}
+
 		};
 
 		private final String product;

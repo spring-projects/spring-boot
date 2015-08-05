@@ -89,9 +89,8 @@ public class ColorConverter extends LogEventPatternConverter {
 	 */
 	public static ColorConverter newInstance(Configuration config, String[] options) {
 		if (options.length < 1) {
-			LOGGER.error(
-					"Incorrect number of options on style. Expected at least 1, received {}",
-					options.length);
+			LOGGER.error("Incorrect number of options on style. "
+					+ "Expected at least 1, received {}", options.length);
 			return null;
 		}
 		if (options[0] == null) {
@@ -100,8 +99,7 @@ public class ColorConverter extends LogEventPatternConverter {
 		}
 		PatternParser parser = PatternLayout.createPatternParser(config);
 		List<PatternFormatter> formatters = parser.parse(options[0]);
-
-		AnsiElement element = options.length == 1 ? null : ELEMENTS.get(options[1]);
+		AnsiElement element = (options.length == 1 ? null : ELEMENTS.get(options[1]));
 		return new ColorConverter(formatters, element);
 	}
 

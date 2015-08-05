@@ -55,9 +55,9 @@ public class H2ConsoleAutoConfiguration {
 
 	@Bean
 	public ServletRegistrationBean h2Console() {
-		return new ServletRegistrationBean(new WebServlet(), this.properties.getPath()
-				.endsWith("/") ? this.properties.getPath() + "*"
-				: this.properties.getPath() + "/*");
+		String path = this.properties.getPath();
+		String urlMapping = (path.endsWith("/") ? path + "*" : path + "/*");
+		return new ServletRegistrationBean(new WebServlet(), urlMapping);
 	}
 
 	@Configuration
@@ -83,9 +83,9 @@ public class H2ConsoleAutoConfiguration {
 
 			@Override
 			public void configure(HttpSecurity http) throws Exception {
-				HttpSecurity h2Console = http.antMatcher(this.console.getPath().endsWith(
-						"/") ? this.console.getPath() + "**" : this.console.getPath()
-						+ "/**");
+				String path = this.console.getPath();
+				String antPattern = (path.endsWith("/") ? path + "**" : path + "/**");
+				HttpSecurity h2Console = http.antMatcher(antPattern);
 				h2Console.csrf().disable();
 				h2Console.httpBasic();
 				h2Console.headers().frameOptions().sameOrigin();

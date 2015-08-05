@@ -777,7 +777,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			}
 
 			public boolean isEnabled() {
-				return enabled;
+				return this.enabled;
 			}
 
 			public void setEnabled(boolean enabled) {
@@ -785,7 +785,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			}
 
 			public String getPattern() {
-				return pattern;
+				return this.pattern;
 			}
 
 			public void setPattern(String pattern) {
@@ -793,7 +793,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			}
 
 			public String getDirectory() {
-				return directory;
+				return this.directory;
 			}
 
 			public void setDirectory(String directory) {
@@ -801,7 +801,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			}
 
 			public String getPrefix() {
-				return prefix;
+				return this.prefix;
 			}
 
 			public void setPrefix(String prefix) {
@@ -809,7 +809,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			}
 
 			public String getSuffix() {
-				return suffix;
+				return this.suffix;
 			}
 
 			public void setSuffix(String suffix) {
@@ -888,11 +888,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.directBuffers = directBuffers;
 		}
 
-		/**
-		 * Access log configuration.
-		 */
 		public Accesslog getAccesslog() {
-			return accesslog;
+			return this.accesslog;
 		}
 
 		/**
@@ -969,7 +966,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			factory.setAccessLogEnabled(this.accesslog.enabled);
 		}
 
-
 		public static class Accesslog {
 
 			/**
@@ -988,7 +984,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			private File dir = new File("logs");
 
 			public boolean isEnabled() {
-				return enabled;
+				return this.enabled;
 			}
 
 			public void setEnabled(boolean enabled) {
@@ -996,7 +992,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			}
 
 			public String getPattern() {
-				return pattern;
+				return this.pattern;
 			}
 
 			public void setPattern(String pattern) {
@@ -1004,7 +1000,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			}
 
 			public File getDir() {
-				return dir;
+				return this.dir;
 			}
 
 			public void setDir(File dir) {

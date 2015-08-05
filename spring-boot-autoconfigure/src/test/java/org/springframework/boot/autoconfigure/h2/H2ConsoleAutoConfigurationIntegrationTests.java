@@ -88,6 +88,7 @@ public class H2ConsoleAutoConfigurationIntegrationTests {
 		public void mockConsole() {
 
 		}
+
 	}
 
 }

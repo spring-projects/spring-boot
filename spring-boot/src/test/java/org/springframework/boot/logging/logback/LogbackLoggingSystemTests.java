@@ -252,8 +252,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
 		this.loggingSystem.initialize(this.initializationContext, null, null);
-		this.output
-				.expect(containsString("Wrapped by: java.lang.RuntimeException: Expected"));
+		this.output.expect(containsString("Wrapped by: "
+				+ "java.lang.RuntimeException: Expected"));
 		this.logger.warn("Expected exception", new RuntimeException("Expected",
 				new RuntimeException("Cause")));
 	}
