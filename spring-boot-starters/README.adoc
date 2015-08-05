@@ -22,6 +22,9 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
+| http://secondmarket.github.io/mongeez/[Mongeez]
+| https://github.com/hzpz/mongeez-spring-boot-starter/
+
 | http://ha-jdbc.github.io/[HA JDBC]
 | https://github.com/lievendoclo/hajdbc-spring-boot
 
