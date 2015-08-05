@@ -203,13 +203,22 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 
 		},
 
-		INFORMIX("Informix Dynamic Server", "select count(*) from systables");
+		INFORMIX("Informix Dynamic Server", "select count(*) from systables"),
+
+		FIREBIRD("Firebird", "SELECT 1 FROM RDB$DATABASE") {
+
+			@Override
+			protected boolean matchesProduct(String product) {
+				return super.matchesProduct(product)
+						||	product.toLowerCase().startsWith("firebird");
+			}
+		};
 
 		private final String product;
 
 		private final String query;
 
-		private Product(String product, String query) {
+		Product(String product, String query) {
 			this.product = product;
 			this.query = query;
 		}
