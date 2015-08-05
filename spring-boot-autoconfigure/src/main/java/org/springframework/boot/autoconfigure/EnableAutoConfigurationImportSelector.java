@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,18 +42,21 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
- * auto-configuration}.
+ * auto-configuration}. This class can also be subclassed if a custom variant of
+ * {@link EnableAutoConfiguration @EnableAutoConfiguration}. is needed.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @see EnableAutoConfiguration
+ * @since 1.3.0
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 1)
-class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
+public class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 		BeanClassLoaderAware, ResourceLoaderAware, BeanFactoryAware, EnvironmentAware {
 
 	private ConfigurableListableBeanFactory beanFactory;
@@ -66,55 +70,113 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
 		try {
-			AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-					.getAnnotationAttributes(EnableAutoConfiguration.class.getName(),
-							true));
-
-			Assert.notNull(attributes, "No auto-configuration attributes found. Is "
-					+ metadata.getClassName()
-					+ " annotated with @EnableAutoConfiguration?");
-
-			// Find all possible auto configuration classes, filtering duplicates
-			List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
-					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
-							this.beanClassLoader)));
-
-			// Remove those specifically excluded
-			Set<String> excluded = new LinkedHashSet<String>();
-			excluded.addAll(Arrays.asList(attributes.getStringArray("exclude")));
-			excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
-			excluded.addAll(getExcludeAutoConfigurationsProperty());
-			factories.removeAll(excluded);
-			ConditionEvaluationReport.get(this.beanFactory).recordExclusions(excluded);
-			ConditionEvaluationReport.get(this.beanFactory).recordEvaluationCandidates(
-					factories);
-
-			// Sort
-			factories = new AutoConfigurationSorter(this.resourceLoader)
-					.getInPriorityOrder(factories);
-
-			return factories.toArray(new String[factories.size()]);
+			AnnotationAttributes attributes = getAttributes(metadata);
+			List<String> configurations = getCandidateConfigurations(metadata, attributes);
+			configurations = removeDuplicates(configurations);
+			Set<String> exclusions = getExclusions(metadata, attributes);
+			configurations.removeAll(exclusions);
+			configurations = sort(configurations);
+			recordWithConditionEvaluationReport(configurations, exclusions);
+			return configurations.toArray(new String[configurations.size()]);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
+	/**
+	 * Return the appropriate {@link AnnotationAttributes} from the
+	 * {@link AnnotationMetadata}. By default this method will return attributes for
+	 * {@link #getAnnotationClass()}.
+	 * @param metadata the annotation metadata
+	 * @return annotation attributes
+	 */
+	protected AnnotationAttributes getAttributes(AnnotationMetadata metadata) {
+		String name = getAnnotationClass().getName();
+		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
+				.getAnnotationAttributes(name, true));
+		Assert.notNull(attributes,
+				"No auto-configuration attributes found. Is " + metadata.getClassName()
+						+ " annotated with " + ClassUtils.getShortName(name) + "?");
+		return attributes;
+	}
+
+	/**
+	 * Return the source annotation class used by the selector.
+	 * @return the annotation class
+	 */
+	protected Class<?> getAnnotationClass() {
+		return EnableAutoConfiguration.class;
+	}
+
+	/**
+	 * Return the auto-configuration class names that should be considered. By default
+	 * this method will load candidates using {@link SpringFactoriesLoader} with
+	 * {@link #getSpringFactoriesLoaderFactoryClass()}.
+	 * @param metadata the source metadata
+	 * @param attributes the {@link #getAttributes(AnnotationMetadata) annotation
+	 * attributes}
+	 * @return a list of candidate configurations
+	 */
+	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata,
+			AnnotationAttributes attributes) {
+		return SpringFactoriesLoader.loadFactoryNames(
+				getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
+	}
+
+	/**
+	 * Return the class used by {@link SpringFactoriesLoader} to load configuration
+	 * candidates.
+	 * @return the factory class
+	 */
+	protected Class<?> getSpringFactoriesLoaderFactoryClass() {
+		return EnableAutoConfiguration.class;
+	}
+
+	/**
+	 * Return any exclusions that limit the candidate configurations.
+	 * @param metadata the source metadata
+	 * @param attributes the {@link #getAttributes(AnnotationMetadata) annotation
+	 * attributes}
+	 * @return exclusions or an empty set
+	 */
+	protected Set<String> getExclusions(AnnotationMetadata metadata,
+			AnnotationAttributes attributes) {
+		Set<String> excluded = new LinkedHashSet<String>();
+		excluded.addAll(asList(attributes, "exclude"));
+		excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
+		excluded.addAll(getExcludeAutoConfigurationsProperty());
+		return excluded;
+	}
+
 	private List<String> getExcludeAutoConfigurationsProperty() {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(this.environment,
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(getEnvironment(),
 				"spring.autoconfigure.");
 		String[] exclude = resolver.getProperty("exclude", String[].class);
 		return (Arrays.asList(exclude == null ? new String[0] : exclude));
 	}
 
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.beanClassLoader = classLoader;
+	private List<String> sort(List<String> configurations) throws IOException {
+		configurations = new AutoConfigurationSorter(getResourceLoader())
+				.getInPriorityOrder(configurations);
+		return configurations;
 	}
 
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
+	private void recordWithConditionEvaluationReport(List<String> configurations,
+			Collection<String> exclusions) throws IOException {
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(getBeanFactory());
+		report.recordEvaluationCandidates(configurations);
+		report.recordExclusions(exclusions);
+	}
+
+	protected final <T> List<T> removeDuplicates(List<T> list) {
+		return new ArrayList<T>(new LinkedHashSet<T>(list));
+	}
+
+	protected final List<String> asList(AnnotationAttributes attributes, String name) {
+		String[] value = attributes.getStringArray(name);
+		return Arrays.asList(value == null ? new String[0] : value);
 	}
 
 	@Override
@@ -123,9 +185,35 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 	}
 
+	protected final ConfigurableListableBeanFactory getBeanFactory() {
+		return this.beanFactory;
+	}
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
+	}
+
+	protected ClassLoader getBeanClassLoader() {
+		return this.beanClassLoader;
+	}
+
 	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
+	}
+
+	protected final Environment getEnvironment() {
+		return this.environment;
+	}
+
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
+	protected final ResourceLoader getResourceLoader() {
+		return this.resourceLoader;
 	}
 
 }

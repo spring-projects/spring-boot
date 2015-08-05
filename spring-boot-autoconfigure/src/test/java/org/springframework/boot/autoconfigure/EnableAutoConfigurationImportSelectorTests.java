@@ -168,4 +168,5 @@ public class EnableAutoConfigurationImportSelectorTests {
 		return SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
 				getClass().getClassLoader());
 	}
+
 }
