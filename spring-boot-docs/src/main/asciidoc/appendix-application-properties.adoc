@@ -617,6 +617,7 @@ content into your application; rather pick only the properties that you need.
 	# ----------------------------------------
 
     # DEVTOOLS ({sc-spring-boot-devtools}/autoconfigure/DevToolsProperties.{sc-ext}[DevToolsProperties])
+    spring.devtools.restart.additional-paths= # additional paths to watch for changes
     spring.devtools.restart.enabled=true # enable automatic restart
     spring.devtools.restart.exclude= # patterns that should be excluding for triggering a full restart
     spring.devtools.restart.poll-interval= # amount of time (in milliseconds) to wait between polling for classpath changes

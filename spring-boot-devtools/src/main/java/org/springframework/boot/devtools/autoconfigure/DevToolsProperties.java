@@ -16,6 +16,10 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
@@ -87,6 +91,11 @@ public class DevToolsProperties {
 		 */
 		private String triggerFile;
 
+		/**
+		 * Additional paths to watch for changes.
+		 */
+		private List<File> additionalPaths = new ArrayList<File>();
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -125,6 +134,14 @@ public class DevToolsProperties {
 
 		public void setTriggerFile(String triggerFile) {
 			this.triggerFile = triggerFile;
+		}
+
+		public List<File> getAdditionalPaths() {
+			return this.additionalPaths;
+		}
+
+		public void setAdditionalPaths(List<File> additionalPaths) {
+			this.additionalPaths = additionalPaths;
 		}
 
 	}

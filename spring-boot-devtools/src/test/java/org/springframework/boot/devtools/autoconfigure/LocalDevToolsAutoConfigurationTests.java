@@ -16,6 +16,7 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,9 @@ import org.springframework.util.SocketUtils;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -179,6 +182,24 @@ public class LocalDevToolsAutoConfigurationTests {
 				"fileSystemWatcher");
 		Object filter = ReflectionTestUtils.getField(watcher, "triggerFilter");
 		assertThat(filter, instanceOf(TriggerFileFilter.class));
+	}
+
+	@Test
+	public void watchingAdditionalPaths() throws Exception {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("spring.devtools.restart.additional-paths",
+				"src/main/java,src/test/java");
+		this.context = initializeAndRun(Config.class, properties);
+		ClassPathFileSystemWatcher classPathWatcher = this.context
+				.getBean(ClassPathFileSystemWatcher.class);
+		Object watcher = ReflectionTestUtils.getField(classPathWatcher,
+				"fileSystemWatcher");
+		@SuppressWarnings("unchecked")
+		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils.getField(
+				watcher, "folders");
+		assertThat(folders.size(), is(equalTo(2)));
+		assertThat(folders, hasKey(new File("src/main/java").getAbsoluteFile()));
+		assertThat(folders, hasKey(new File("src/test/java").getAbsoluteFile()));
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config) {

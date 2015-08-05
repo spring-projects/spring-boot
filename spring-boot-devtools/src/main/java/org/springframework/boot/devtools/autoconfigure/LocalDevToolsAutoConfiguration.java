@@ -16,7 +16,9 @@
 
 package org.springframework.boot.devtools.autoconfigure;
 
+import java.io.File;
 import java.net.URL;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -157,6 +159,10 @@ public class LocalDevToolsAutoConfiguration {
 			String triggerFile = restartProperties.getTriggerFile();
 			if (StringUtils.hasLength(triggerFile)) {
 				watcher.setTriggerFilter(new TriggerFileFilter(triggerFile));
+			}
+			List<File> additionalPaths = restartProperties.getAdditionalPaths();
+			for (File path : additionalPaths) {
+				watcher.addSourceFolder(path.getAbsoluteFile());
 			}
 			return watcher;
 		}

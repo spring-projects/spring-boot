@@ -894,18 +894,32 @@ commercially supported.
 
 
 
+[[using-boot-devtools-restart-exclude]]
 ==== Excluding resources
 Certain resources don't necessarily need to trigger a restart when they are changed. For
 example, Thymeleaf templates can just be edited in-place. By default changing resources
 in `/META-INF/maven`, `/META-INF/resources` ,`/resources` ,`/static` ,`/public` or
-`/templates` will not trigger a restart. If you want to customize these exclusions you
-can use the `spring.devtools.restart.exclude` property. For example, to exclude only
+`/templates` will not trigger a restart but will trigger a
+<<using-boot-devtools-livereload, live reload>>. If you want to customize these exclusions
+you can use the `spring.devtools.restart.exclude` property. For example, to exclude only
 `/static` and `/public` you would set the following:
 
 [indent=0]
 ----
 	spring.devtools.restart.exclude=static/**,public/**
 ----
+
+
+
+[[using-boot-devtools-restart-additional-paths]]
+==== Watching additional paths
+You may want your application to be restarted or reloaded when you make changes to files
+that are not on the classpath. To do so, use the
+`spring.devtools.restart.additional-paths` property to configure additional paths to watch
+for changes. You can use the `spring.devtools.restart.exclude` property
+<<using-boot-devtools-restart-exclude, described above>> to control whether changes
+beneath the additional paths will trigger a full restart or just a
+<<using-boot-devtools-livereload, live reload>>.
 
 
 
