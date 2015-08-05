@@ -36,8 +36,8 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -184,6 +184,26 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 				this.loggingSystem.getStandardConfigLocations(),
 				is(arrayContaining("log4j2.yaml", "log4j2.yml", "log4j2.json",
 						"log4j2.jsn", "log4j2.xml")));
+	}
+
+	@Test
+	public void exceptionsIncludeClassPackaging() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.logger.info("Hidden");
+		this.loggingSystem.initialize(null, null, null);
+		this.output.expect(containsString("[junit-"));
+		this.logger.warn("Expected exception", new RuntimeException("Expected"));
+	}
+
+	@Test
+	public void rootCauseIsLoggedFirst() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.logger.info("Hidden");
+		this.loggingSystem.initialize(null, null, null);
+		this.output
+				.expect(containsString("Wrapped by: java.lang.RuntimeException: Expected"));
+		this.logger.warn("Expected exception", new RuntimeException("Expected",
+				new RuntimeException("Cause")));
 	}
 
 	private static class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {

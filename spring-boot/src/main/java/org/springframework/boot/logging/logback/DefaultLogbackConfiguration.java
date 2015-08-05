@@ -48,10 +48,10 @@ class DefaultLogbackConfiguration {
 	private static final String CONSOLE_LOG_PATTERN = "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} "
 			+ "%clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} "
 			+ "%clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} "
-			+ "%clr(:){faint} %m%n%wex";
+			+ "%clr(:){faint} %m%n%rEx";
 
 	private static final String FILE_LOG_PATTERN = "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p "
-			+ "${PID:- } --- [%t] %-40.40logger{39} : %m%n%wex";
+			+ "${PID:- } --- [%t] %-40.40logger{39} : %m%n%rEx";
 
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 

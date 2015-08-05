@@ -42,6 +42,7 @@ import org.springframework.util.StringUtils;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -235,6 +236,26 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				getLineWithText(output, "Hello world").contains("INFO"));
 		assertFalse("Wrong file output pattern:\n" + output,
 				getLineWithText(file, "Hello world").contains("INFO"));
+	}
+
+	@Test
+	public void exceptionsIncludeClassPackaging() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.logger.info("Hidden");
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.output.expect(containsString("[junit-"));
+		this.logger.warn("Expected exception", new RuntimeException("Expected"));
+	}
+
+	@Test
+	public void rootCauseIsLoggedFirst() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.logger.info("Hidden");
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.output
+				.expect(containsString("Wrapped by: java.lang.RuntimeException: Expected"));
+		this.logger.warn("Expected exception", new RuntimeException("Expected",
+				new RuntimeException("Cause")));
 	}
 
 	private String getLineWithText(File file, String outputSearch) throws Exception {
