@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,26 +116,6 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testCycleAvoidedThroughManualMetadata() throws Exception {
-		this.context.register(MetadataCycleConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "bar.name:foo");
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint report = this.context
-				.getBean(ConfigurationPropertiesReportEndpoint.class);
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
-		assertNotNull(nestedProperties);
-		assertEquals("bar", nestedProperties.get("prefix"));
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
-		assertNotNull(map);
-		assertEquals(1, map.size());
-		assertEquals("foo", map.get("name"));
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
 	public void testMap() throws Exception {
 		this.context.register(MapConfig.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "foo.map.name:foo");
@@ -196,28 +176,6 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testMapWithMetadata() throws Exception {
-		this.context.register(MetadataMapConfig.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spam.map.name:foo");
-		this.context.refresh();
-		ConfigurationPropertiesReportEndpoint report = this.context
-				.getBean(ConfigurationPropertiesReportEndpoint.class);
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("foo");
-		assertNotNull(nestedProperties);
-		assertEquals("spam", nestedProperties.get("prefix"));
-		Map<String, Object> map = (Map<String, Object>) nestedProperties
-				.get("properties");
-		assertNotNull(map);
-		System.err.println(nestedProperties);
-		// Only one property is mapped in metadata so the others are ignored
-		assertEquals(1, map.size());
-		assertEquals("foo", ((Map<String, Object>) map.get("map")).get("name"));
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
 	public void testInetAddress() throws Exception {
 		this.context.register(AddressedConfig.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "foo.address:192.168.1.10");
@@ -243,9 +201,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		@Bean
 		public ConfigurationPropertiesReportEndpoint endpoint() {
-			ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-			endpoint.setMetadataLocations("classpath*:/test-metadata.json");
-			return endpoint;
+			return new ConfigurationPropertiesReportEndpoint();
 		}
 
 	}
