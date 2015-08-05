@@ -65,7 +65,7 @@
 		<ehcache.version>2.10.0</ehcache.version>
 		<embedded-mongo.version>1.48.0</embedded-mongo.version>
 		<flyway.version>3.2.1</flyway.version>
-		<freemarker.version>2.3.22</freemarker.version>
+		<freemarker.version>2.3.23</freemarker.version>
 		<elasticsearch.version>1.5.2</elasticsearch.version>
 		<gemfire.version>8.1.0</gemfire.version>
 		<glassfish-el.version>3.0.0</glassfish-el.version>
@@ -95,7 +95,7 @@
 		<jdom2.version>2.0.6</jdom2.version>
 		<jedis.version>2.7.2</jedis.version>
 		<jersey.version>2.19</jersey.version>
-		<jetty.version>9.2.11.v20150529</jetty.version>
+		<jetty.version>9.2.13.v20150730</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jmustache.version>1.10</jmustache.version>
 		<joda-time.version>2.8.1</joda-time.version>
@@ -112,7 +112,7 @@
 		<mariadb.version>1.1.8</mariadb.version>
 		<mockito.version>1.10.19</mockito.version>
 		<mongodb.version>2.13.2</mongodb.version>
-		<mysql.version>5.1.35</mysql.version>
+		<mysql.version>5.1.36</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<postgresql.version>9.4-1201-jdbc41</postgresql.version>
 		<reactor.version>2.0.4.RELEASE</reactor.version>
