@@ -16,7 +16,7 @@ list it here. Just send a pull request for this page.
 
 WARNING: While the
 http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter-poms[reference documentation]
-mentions that 3rd party starters should not start with `spring-boot-starter`, some starters
+mentions that 3rd party starters should not start with `spring-boot`, some starters
 do as they were designed before this was clarified.
 
 |===
