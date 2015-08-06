@@ -332,7 +332,7 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void overrideExceptionConversionWord() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"logging.exception-conversion-word:%ex");
+				"logging.exceptionConversionWord:%ex");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.outputCapture.expect(containsString("Hello world"));

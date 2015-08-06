@@ -192,11 +192,16 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 		if (System.getProperty(EXCEPTION_CONVERSION_WORD) == null) {
 			System.setProperty(EXCEPTION_CONVERSION_WORD,
-					environment.getProperty("logging.exception-conversion-word", "%rEx"));
+					getExceptionConversionWord(environment));
 		}
 		initializeEarlyLoggingLevel(environment);
 		initializeSystem(environment, this.loggingSystem);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
+	}
+
+	private String getExceptionConversionWord(ConfigurableEnvironment environment) {
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment, "logging.");
+		return resolver.getProperty("exception-conversion-word", "%rEx");
 	}
 
 	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {

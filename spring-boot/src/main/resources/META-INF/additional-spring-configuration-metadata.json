@@ -30,6 +30,13 @@
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
+    "name": "logging.exception-conversion-word",
+    "type": "java.lang.String",
+    "description": "Conversion word used when logging exceptions.",
+    "defaultValue": "%rEx",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
     "name": "logging.file",
     "type": "java.lang.String",
     "description": "Log file name.",
