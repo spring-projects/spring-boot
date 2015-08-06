@@ -1,4 +1,4 @@
-=== Link: dump
+=== /dump
 This endpoint is a thread dump: the result is a list of threads each with their name,
 monitor state and stack. It is the same information as you would get from `kill -3` of a
 running Java process. It can be very useful for detecting issues at runtime, especially
@@ -10,7 +10,7 @@ NOTE: Some `SecurityManager` implementations might prevent this endpoint from wo
 Example curl request:
 include::{generated}/dump/curl-request.adoc[]
 
-Example HTTP request:
+Example HTTP request: [small]##link:../dump[icon:external-link[role="silver"]]##
 include::{generated}/dump/http-request.adoc[]
 
 Example HTTP response:

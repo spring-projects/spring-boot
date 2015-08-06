@@ -1,4 +1,4 @@
-=== Link: health
+=== /health
 This endpoint is an indication of the health of the application. It has an overall status
 ("UP", "DOWN" etc.), which is the only thing you see unless either you are authenticated
 or the endpoint is marked as `sensitive=false` (`endpoints.health.sensitive=false`).
@@ -10,7 +10,7 @@ The HTTP code in the response reflects the status (e.g. "`UP`"=200,
 Example curl request:
 include::{generated}/health/curl-request.adoc[]
 
-Example HTTP request:
+Example HTTP request: [small]##link:../health[icon:external-link[role="silver"]]##
 include::{generated}/health/http-request.adoc[]
 
 Example HTTP response:

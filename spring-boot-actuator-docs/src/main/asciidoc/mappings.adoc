@@ -1,11 +1,11 @@
-=== Link: mappings
+=== /mappings
 This endpoint lists the Spring MVC request mappings, so users can see the handlers
 registered for requests by path, method, media type, etc.
 
 Example curl request:
 include::{generated}/mappings/curl-request.adoc[]
 
-Example HTTP request:
+Example HTTP request: [small]##link:../mappings[icon:external-link[role="silver"]]##
 include::{generated}/mappings/http-request.adoc[]
 
 Example HTTP response:

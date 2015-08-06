@@ -1,6 +1,9 @@
 = Spring Boot Actuator Endpoints
 :toc: left
 :idprefix: spring_boot_actuator_
+:sectanchors:
+:icons: font
+:last-update-label!:
 
 Actuator endpoints allow you to monitor and interact with your application. Spring Boot
 includes a number of built-in endpoints and you can also add your own. For example the
@@ -17,7 +20,7 @@ include::{generated}/endpoints.adoc[]
 
 
 
-=== Link: logfile
+=== /logfile
 This endpoint (if available) contains the plain text logfile configured by the user
 using `logging.file` or `logging.path` (by default logs are only emitted on stdout
 so one of these properties has to be set for this endpoint to be active).
@@ -25,7 +28,7 @@ so one of these properties has to be set for this endpoint to be active).
 Example curl request:
 include::{generated}/logfile/curl-request.adoc[]
 
-Example HTTP request:
+Example HTTP request: [small]##link:../logfile[icon:external-link[role="silver"]]##
 include::{generated}/logfile/http-request.adoc[]
 
 Example HTTP response:
@@ -33,7 +36,7 @@ include::{generated}/logfile/http-response.adoc[]
 
 
 
-=== Link: docs
+=== /docs
 This endpoint (if available) contains HTML documemtation for the other endpoints. Its path
 can be "/docs" (if there is an existing home page) or "/" (otherwise, including if the
 HAL browser is not active).

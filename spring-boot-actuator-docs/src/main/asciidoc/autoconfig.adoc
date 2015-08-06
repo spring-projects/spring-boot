@@ -1,4 +1,4 @@
-=== Link: autoconfig
+=== /autoconfig
 This endpoint is a report on the Spring Boot auto-configuration process that happened when
 your application started up. It lists all the  `@Conditional` annotations that were
 evaluated as the context started and in each case it gives an indication of if (and why)
@@ -16,7 +16,7 @@ of overlap.
 Example curl request:
 include::{generated}/autoconfig/curl-request.adoc[]
 
-Example HTTP request:
+Example HTTP request: [small]##link:../autoconfig[icon:external-link[role="silver"]]##
 include::{generated}/autoconfig/http-request.adoc[]
 
 Example HTTP response:
