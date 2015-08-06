@@ -166,7 +166,7 @@ content into your application; rather pick only the properties that you need.
 	multipart.max-request-size=10Mb # Max request size.
 
 	# H2 Web Console ({sc-spring-boot-autoconfigure}/h2/H2ConsoleProperties.{sc-ext}[H2ConsoleProperties])
-	spring.h2.console.enable=false # Enable the console
+	spring.h2.console.enabled=false # Enable the console
 	spring.h2.console.path=/h2-console # Path at which the console can be accessed
 
 	# SPRING HATEOAS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
