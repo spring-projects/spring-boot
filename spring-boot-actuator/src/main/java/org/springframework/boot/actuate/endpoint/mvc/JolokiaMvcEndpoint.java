@@ -54,7 +54,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	 */
 	@NotNull
 	@Pattern(regexp = "/[^?#]*", message = "Path must start with /")
-	private String path;
+	private String path = "/jolokia";;
 
 	/**
 	 * Enable security on the endpoint.
@@ -69,7 +69,6 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	private final ServletWrappingController controller = new ServletWrappingController();
 
 	public JolokiaMvcEndpoint() {
-		this.path = "/jolokia";
 		this.controller.setServletClass(AgentServlet.class);
 		this.controller.setServletName("jolokia");
 	}
@@ -136,6 +135,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 	private static class PathStripper extends HttpServletRequestWrapper {
 
 		private final String path;
+
 		private final UrlPathHelper urlPathHelper;
 
 		public PathStripper(HttpServletRequest request, String path) {

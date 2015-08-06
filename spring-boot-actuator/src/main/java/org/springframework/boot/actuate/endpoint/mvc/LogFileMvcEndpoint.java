@@ -61,13 +61,11 @@ public class LogFileMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	/**
 	 * Enable security on the endpoint.
 	 */
-
 	private boolean sensitive = true;
 
 	/**
 	 * Enable the endpoint.
 	 */
-
 	private boolean enabled = true;
 
 	private Environment environment;
