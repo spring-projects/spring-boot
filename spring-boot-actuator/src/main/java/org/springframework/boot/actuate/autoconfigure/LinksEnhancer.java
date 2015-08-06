@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
- * Adds endpoints links to {@link ResourceSupport}.
+ * Adds endpoint links to {@link ResourceSupport}.
  *
  * @author Dave Syer
  */

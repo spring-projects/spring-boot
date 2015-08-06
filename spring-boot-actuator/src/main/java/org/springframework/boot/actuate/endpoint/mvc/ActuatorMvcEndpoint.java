@@ -23,16 +23,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.hateoas.ResourceSupport;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.resource.ResourceTransformer;
@@ -40,15 +44,16 @@ import org.springframework.web.servlet.resource.ResourceTransformerChain;
 import org.springframework.web.servlet.resource.TransformedResource;
 
 /**
- * {@link MvcEndpoint} to support the HAL browser.
+ * {@link MvcEndpoint} for the actuator. Uses content negotiation to provide access to the
+ * HAL browser (when on the classpath), and to HAL-formatted JSON.
  *
  * @author Dave Syer
- * @author Phillip Webb
- * @since 1.3.0
+ * @author Phil Webb
+ * @author Andy Wilkinson
  */
-@ConfigurationProperties("endpoints.hal")
-public class HalBrowserMvcEndpoint extends WebMvcConfigurerAdapter implements
-		MvcEndpoint, ResourceLoaderAware {
+@ConfigurationProperties("endpoints.actuator")
+public class ActuatorMvcEndpoint extends WebMvcConfigurerAdapter implements MvcEndpoint,
+		ResourceLoaderAware {
 
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
@@ -63,8 +68,8 @@ public class HalBrowserMvcEndpoint extends WebMvcConfigurerAdapter implements
 	 * Endpoint URL path.
 	 */
 	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
-	private String path = "/hal";
+	@Pattern(regexp = "^$|/[^/]*", message = "Path must be empty or start with /")
+	private String path;
 
 	/**
 	 * Enable security on the endpoint.
@@ -78,13 +83,16 @@ public class HalBrowserMvcEndpoint extends WebMvcConfigurerAdapter implements
 
 	private final ManagementServerProperties management;
 
-	@Autowired(required = false)
-	private LinksMvcEndpoint linksMvcEndpoint;
-
 	private HalBrowserLocation location;
 
-	public HalBrowserMvcEndpoint(ManagementServerProperties management) {
+	public ActuatorMvcEndpoint(ManagementServerProperties management) {
 		this.management = management;
+		if (StringUtils.hasText(management.getContextPath())) {
+			this.path = "";
+		}
+		else {
+			this.path = "/actuator";
+		}
 	}
 
 	@Override
@@ -94,22 +102,34 @@ public class HalBrowserMvcEndpoint extends WebMvcConfigurerAdapter implements
 
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public String browse(HttpServletRequest request) {
-		String contextPath = this.management.getContextPath() + this.path + "/";
+		if (this.location == null) {
+			throw new HalBrowserUnavailableException();
+		}
+		String contextPath = this.management.getContextPath()
+				+ (this.path.endsWith("/") ? this.path : this.path + "/");
 		if (request.getRequestURI().endsWith("/")) {
 			return "forward:" + contextPath + this.location.getHtmlFile();
 		}
 		return "redirect:" + contextPath;
 	}
 
+	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResourceSupport links() {
+		return new ResourceSupport();
+	}
+
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		// Make sure the root path is not cached so the browser comes back for the JSON
 		// and add a transformer to set the initial link
-		String start = this.management.getContextPath() + this.path;
-		registry.addResourceHandler(start + "/", start + "/**")
-				.addResourceLocations(this.location.getResourceLocation())
-				.setCachePeriod(0).resourceChain(true)
-				.addTransformer(new InitialUrlTransformer());
+		if (this.location != null) {
+			String start = this.management.getContextPath() + this.path;
+			registry.addResourceHandler(start + "/", start + "/**")
+					.addResourceLocations(this.location.getResourceLocation())
+					.setCachePeriod(0).resourceChain(true)
+					.addTransformer(new InitialUrlTransformer());
+		}
 	}
 
 	public void setPath(String path) {
@@ -121,21 +141,21 @@ public class HalBrowserMvcEndpoint extends WebMvcConfigurerAdapter implements
 		return this.path;
 	}
 
-	public void setSensitive(boolean sensitive) {
-		this.sensitive = sensitive;
-	}
-
 	@Override
 	public boolean isSensitive() {
 		return this.sensitive;
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public void setSensitive(boolean sensitive) {
+		this.sensitive = sensitive;
 	}
 
 	public boolean isEnabled() {
 		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override
@@ -167,21 +187,17 @@ public class HalBrowserMvcEndpoint extends WebMvcConfigurerAdapter implements
 				ResourceTransformerChain transformerChain) throws IOException {
 			resource = transformerChain.transform(request, resource);
 			if (resource.getFilename().equalsIgnoreCase(
-					HalBrowserMvcEndpoint.this.location.getHtmlFile())) {
+					ActuatorMvcEndpoint.this.location.getHtmlFile())) {
 				return replaceInitialLink(resource);
 			}
 			return resource;
 		}
 
 		private Resource replaceInitialLink(Resource resource) throws IOException {
-			LinksMvcEndpoint linksEndpoint = HalBrowserMvcEndpoint.this.linksMvcEndpoint;
-			if (linksEndpoint == null) {
-				return resource;
-			}
 			byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
 			String content = new String(bytes, DEFAULT_CHARSET);
-			String initialLink = HalBrowserMvcEndpoint.this.management.getContextPath()
-					+ linksEndpoint.getPath();
+			String initialLink = ActuatorMvcEndpoint.this.management.getContextPath()
+					+ getPath();
 			content = content.replace("entryPoint: '/'", "entryPoint: '" + initialLink
 					+ "'");
 			return new TransformedResource(resource, content.getBytes(DEFAULT_CHARSET));
@@ -212,6 +228,11 @@ public class HalBrowserMvcEndpoint extends WebMvcConfigurerAdapter implements
 		public String toString() {
 			return this.resourceLocation + this.htmlFile;
 		}
+
+	}
+
+	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+	private static class HalBrowserUnavailableException extends RuntimeException {
 
 	}
 

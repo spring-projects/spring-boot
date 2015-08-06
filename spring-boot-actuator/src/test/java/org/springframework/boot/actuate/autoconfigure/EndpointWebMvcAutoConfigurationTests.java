@@ -292,9 +292,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		// /health, /metrics, /env (/shutdown is disabled by default)
+		// /health, /metrics, /env, /actuator (/shutdown is disabled by default)
 		assertThat(this.applicationContext.getBeansOfType(MvcEndpoint.class).size(),
-				is(equalTo(5)));
+				is(equalTo(4)));
 	}
 
 	@Test

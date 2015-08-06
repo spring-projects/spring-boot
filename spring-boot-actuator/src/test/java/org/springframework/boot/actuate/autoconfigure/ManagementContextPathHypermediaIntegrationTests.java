@@ -20,10 +20,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.ContextPathHypermediaIntegrationTests.SpringBootHypermediaApplication;
+import org.springframework.boot.actuate.autoconfigure.ManagementContextPathHypermediaIntegrationTests.SpringBootHypermediaApplication;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.MediaType;
@@ -39,15 +39,23 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Integration tests for {@link ActuatorMvcEndpoint} when a custom management context path
+ * has been configured.
+ *
+ * @author Dave Syer
+ * @author Andy Wilkinson
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SpringBootHypermediaApplication.class)
 @WebAppConfiguration
 @TestPropertySource(properties = "management.contextPath:/admin")
 @DirtiesContext
-public class ContextPathHypermediaIntegrationTests {
+public class ManagementContextPathHypermediaIntegrationTests {
 
 	@Autowired
 	private WebApplicationContext context;
@@ -63,15 +71,16 @@ public class ContextPathHypermediaIntegrationTests {
 	}
 
 	@Test
-	public void home() throws Exception {
-		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
+	public void actuatorHomeJson() throws Exception {
+		this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
 	}
 
 	@Test
-	public void links() throws Exception {
-		this.mockMvc.perform(get("/admin/links").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
+	public void actuatorHomeHtml() throws Exception {
+		this.mockMvc.perform(get("/admin/").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("/admin/browser.html"));
 	}
 
 	@Test
@@ -89,13 +98,13 @@ public class ContextPathHypermediaIntegrationTests {
 	public void endpointsAllListed() throws Exception {
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
-			if ("/links".equals(path)) {
+			if ("/actuator".equals(path)) {
 				continue;
 			}
 			path = path.startsWith("/") ? path.substring(1) : path;
 			path = path.length() > 0 ? path : "self";
 			this.mockMvc
-					.perform(get("/admin/links").accept(MediaType.APPLICATION_JSON))
+					.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
 					.andExpect(
 							jsonPath("$._links.%s.href", path).value(
@@ -113,11 +122,6 @@ public class ContextPathHypermediaIntegrationTests {
 			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/")
 					.withSelfRel());
 			return resource;
-		}
-
-		public static void main(String[] args) {
-			new SpringApplicationBuilder(SpringBootHypermediaApplication.class)
-					.properties("management.contextPath:/admin").run(args);
 		}
 
 	}

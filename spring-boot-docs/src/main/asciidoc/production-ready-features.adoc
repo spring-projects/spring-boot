@@ -67,6 +67,10 @@ The following endpoints are available:
 |===
 | ID | Description | Sensitive
 
+|`actuator`
+|Provides a hypermedia-based "`discovery page`" for the other endpoints. Requires Spring
+HATEOAS to be on the classpath.
+
 |`autoconfig`
 |Displays an auto-configuration report showing all auto-configuration candidates and the
  reason why they '`were`' or '`were not`' applied.
@@ -169,18 +173,19 @@ If http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath 
 through the `spring-boot-starter-hateoas` or if you are using
 http://projects.spring.io/spring-data-rest[Spring Data REST]) then the HTTP endpoints
 from the Actuator are enhanced with hypermedia links, and a "`discovery page`" is added
-with links to all the endpoints. The "`discovery page`" is actually an endpoint itself,
-so it can be disabled along with the rest of the hypermedia by setting
-`endpoints.links.enabled=false`. If it is not explicitly disabled the links
-endpoint renders a JSON object with a link for each other endpoint on `/links`. If Spring
-Data REST is used, the root endpoint is enhanced with an extra `actuator` links that
-points to the "`discovery page`".
+with links to all the endpoints. The "`discovery page`" is available on `/actuator` by
+default. It is implemented as an endpoint, allowing properties to be used to configure
+its path (`endpoints.actuator.path`) and whether or not it is enabled
+(`endpoints.actuator.enabled`).
+
+When a custom management context path is configured, the "`discovery page`" will
+automatically move from `/actuator` to the root of the management context. For example,
+if the management context path is `/management` then the discovery page will be available
+from `/management`.
 
 If the https://github.com/mikekelly/hal-browser[HAL Browser] is on the classpath
 via its webjar (`org.webjars:hal-browser`), or via the `spring-data-rest-hal-browser` then
-the default home page for HTML clients will be the HAL Browser. This is also exposed via
-an endpoint ("`hal`") so it can be disabled and have its path explicitly configured like
-the other endpoints.
+an HTML "`discovery page`", in the form of the HAL Browser, is also provided.
 
 
 

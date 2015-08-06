@@ -20,8 +20,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.BrowserPathHypermediaIntegrationTests.SpringBootHypermediaApplication;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -40,10 +40,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Integration tests for {@link ActuatorMvcEndpoint}'s HAL Browser support
+ *
+ * @author Dave Syer
+ * @author Andy Wilkinson
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SpringBootHypermediaApplication.class)
 @WebAppConfiguration
-@TestPropertySource(properties = "endpoints.hal.path=/hal")
+@TestPropertySource(properties = "endpoints.actuator.path=/actuator")
 @DirtiesContext
 public class BrowserPathHypermediaIntegrationTests {
 
@@ -63,25 +69,21 @@ public class BrowserPathHypermediaIntegrationTests {
 	@Test
 	public void browser() throws Exception {
 		MvcResult response = this.mockMvc
-				.perform(get("/hal/").accept(MediaType.TEXT_HTML))
+				.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isOk()).andReturn();
-		assertEquals("/hal/browser.html", response.getResponse().getForwardedUrl());
+		assertEquals("/actuator/browser.html", response.getResponse().getForwardedUrl());
 	}
 
 	@Test
 	public void redirect() throws Exception {
-		this.mockMvc.perform(get("/hal").accept(MediaType.TEXT_HTML))
+		this.mockMvc.perform(get("/actuator").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound())
-				.andExpect(header().string("location", "/hal/"));
+				.andExpect(header().string("location", "/actuator/"));
 	}
 
 	@MinimalActuatorHypermediaApplication
 	@Configuration
 	public static class SpringBootHypermediaApplication {
-
-		public static void main(String[] args) {
-			SpringApplication.run(SpringBootHypermediaApplication.class, args);
-		}
 
 	}
 

@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ServerPortHypermediaIntegrationTests.SpringBootHypermediaApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMvcEndpoint;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
@@ -43,6 +43,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
+/**
+ * Integration tests for {@link ActuatorMvcEndpoint} when a custom server port has been
+ * configured.
+ *
+ * @author Dave Syer
+ * @author Andy Wilkinson
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SpringBootHypermediaApplication.class)
 @WebAppConfiguration
@@ -58,11 +65,13 @@ public class ServerPortHypermediaIntegrationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/links", HttpMethod.GET,
+				"http://localhost:" + this.port + "/actuator", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body: " + entity.getBody(),
 				entity.getBody().contains("\"_links\":"));
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains(":" + this.port));
 	}
 
 	@Test
@@ -70,7 +79,7 @@ public class ServerPortHypermediaIntegrationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/hal/", HttpMethod.GET,
+				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body: " + entity.getBody(), entity.getBody().contains("<title"));
@@ -86,11 +95,6 @@ public class ServerPortHypermediaIntegrationTests {
 			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/")
 					.withSelfRel());
 			return resource;
-		}
-
-		public static void main(String[] args) {
-			new SpringApplicationBuilder(SpringBootHypermediaApplication.class)
-					.properties("management.port:9000").run(args);
 		}
 
 	}

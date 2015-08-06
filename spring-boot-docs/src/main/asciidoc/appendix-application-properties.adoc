@@ -699,6 +699,9 @@ content into your application; rather pick only the properties that you need.
 	endpoints.trace.enabled=true
 
 	# HYPERMEDIA ENDPOINTS
+	endpoints.actuator.enabled=true
+	endpoints.actuator.path=/actuator
+	endpoints.actuator.sensitive=false
 	endpoints.docs.curies.enabled=false
 	endpoints.docs.enabled=true
 	endpoints.docs.path=/docs
@@ -709,9 +712,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.hal.enabled=true
 	endpoints.hal.path= # Redirects root HTML traffic to the HAL browser
 	endpoints.hal.sensitive=false
-	endpoints.links.enabled=true
-	endpoints.links.path=/links
-	endpoints.links.sensitive=false
 	endpoints.liquibase.enabled=true
 	endpoints.liquibase.id=liquibase
 	endpoints.liquibase.sensitive=false

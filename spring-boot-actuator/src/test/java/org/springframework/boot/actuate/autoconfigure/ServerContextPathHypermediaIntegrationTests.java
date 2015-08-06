@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ServerContextPathHypermediaIntegrationTests.SpringBootHypermediaApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorMvcEndpoint;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
@@ -43,6 +43,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
+/**
+ * Integration tests for {@link ActuatorMvcEndpoint} when a custom server context path has
+ * been configured.
+ *
+ * @author Dave Syer
+ * @author Andy Wilkinson
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SpringBootHypermediaApplication.class)
 @WebAppConfiguration
@@ -54,7 +61,7 @@ public class ServerContextPathHypermediaIntegrationTests {
 	private int port;
 
 	@Test
-	public void links() throws Exception {
+	public void linksAddedToHomePage() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
@@ -66,14 +73,26 @@ public class ServerContextPathHypermediaIntegrationTests {
 	}
 
 	@Test
-	public void browser() throws Exception {
+	public void actuatorBrowser() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port + "/spring/hal/", HttpMethod.GET,
+				"http://localhost:" + this.port + "/spring/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body: " + entity.getBody(), entity.getBody().contains("<title"));
+	}
+
+	@Test
+	public void actuatorLinks() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
+				"http://localhost:" + this.port + "/spring/actuator", HttpMethod.GET,
+				new HttpEntity<Void>(null, headers), String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"_links\":"));
 	}
 
 	@MinimalActuatorHypermediaApplication
@@ -86,11 +105,6 @@ public class ServerContextPathHypermediaIntegrationTests {
 			resource.add(linkTo(SpringBootHypermediaApplication.class).slash("/")
 					.withSelfRel());
 			return resource;
-		}
-
-		public static void main(String[] args) {
-			new SpringApplicationBuilder(SpringBootHypermediaApplication.class)
-					.properties("server.contextPath=/spring").run(args);
 		}
 
 	}
