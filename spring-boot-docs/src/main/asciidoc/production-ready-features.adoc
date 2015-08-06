@@ -172,13 +172,9 @@ from the Actuator are enhanced with hypermedia links, and a "`discovery page`" i
 with links to all the endpoints. The "`discovery page`" is actually an endpoint itself,
 so it can be disabled along with the rest of the hypermedia by setting
 `endpoints.links.enabled=false`. If it is not explicitly disabled the links
-endpoint renders a JSON object with a link for each other endpoint, and the default
-path is the same as the `management.context-path` (so "`/`" by default).
-
-NOTE: If there is a static home page ("`index.html`") in your application and the links
-endpoint is registered with its default path ("`/`") then content negotiation will kick in
-to determine which content is shown to a client that requests the home page (the
-links will show only if the client accepts `application/json`).
+endpoint renders a JSON object with a link for each other endpoint on `/links`. If Spring
+Data REST is used, the root endpoint is enhanced with an extra `actuator` links that
+points to the "`discovery page`".
 
 If the https://github.com/mikekelly/hal-browser[HAL Browser] is on the classpath
 via its webjar (`org.webjars:hal-browser`), or via the `spring-data-rest-hal-browser` then
