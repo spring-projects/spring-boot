@@ -23,6 +23,8 @@ import java.util.logging.LogManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,6 +46,8 @@ import ch.qos.logback.classic.LoggerContext;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -241,21 +245,52 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void exceptionsIncludeClassPackaging() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.logger.info("Hidden");
-		this.loggingSystem.initialize(this.initializationContext, null, null);
-		this.output.expect(containsString("[junit-"));
+		this.loggingSystem.initialize(this.initializationContext, null,
+				getLogFile(null, tmpDir()));
+		Matcher<String> expectedOutput = containsString("[junit-");
+		this.output.expect(expectedOutput);
 		this.logger.warn("Expected exception", new RuntimeException("Expected"));
+		String fileContents = FileCopyUtils.copyToString(new FileReader(new File(tmpDir()
+				+ "/spring.log")));
+		assertThat(fileContents, is(expectedOutput));
 	}
 
 	@Test
 	public void rootCauseIsLoggedFirst() throws Exception {
 		this.loggingSystem.beforeInitialize();
-		this.logger.info("Hidden");
-		this.loggingSystem.initialize(this.initializationContext, null, null);
-		this.output.expect(containsString("Wrapped by: "
-				+ "java.lang.RuntimeException: Expected"));
+		this.loggingSystem.initialize(this.initializationContext, null,
+				getLogFile(null, tmpDir()));
+		Matcher<String> expectedOutput = containsString("Wrapped by: "
+				+ "java.lang.RuntimeException: Expected");
+		this.output.expect(expectedOutput);
 		this.logger.warn("Expected exception", new RuntimeException("Expected",
 				new RuntimeException("Cause")));
+		String fileContents = FileCopyUtils.copyToString(new FileReader(new File(tmpDir()
+				+ "/spring.log")));
+		assertThat(fileContents, is(expectedOutput));
+	}
+
+	@Test
+	public void customExceptionConversionWord() throws Exception {
+		System.setProperty("LOG_EXCEPTION_CONVERSION_WORD", "%ex");
+		try {
+			this.loggingSystem.beforeInitialize();
+			this.logger.info("Hidden");
+			this.loggingSystem.initialize(this.initializationContext, null,
+					getLogFile(null, tmpDir()));
+			Matcher<String> expectedOutput = Matchers.allOf(
+					containsString("java.lang.RuntimeException: Expected"),
+					not(containsString("Wrapped by:")));
+			this.output.expect(expectedOutput);
+			this.logger.warn("Expected exception", new RuntimeException("Expected",
+					new RuntimeException("Cause")));
+			String fileContents = FileCopyUtils.copyToString(new FileReader(new File(
+					tmpDir() + "/spring.log")));
+			assertThat(fileContents, is(expectedOutput));
+		}
+		finally {
+			System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
+		}
 	}
 
 	private String getLineWithText(File file, String outputSearch) throws Exception {

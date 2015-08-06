@@ -92,6 +92,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	public static final String PID_KEY = "PID";
 
+	/**
+	 * The name of the System property that contains the exception conversion word.
+	 */
+	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
+
 	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
 	static {
 		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<LogLevel, String>();
@@ -184,6 +189,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
 		if (System.getProperty(PID_KEY) == null) {
 			System.setProperty(PID_KEY, new ApplicationPid().toString());
+		}
+		if (System.getProperty(EXCEPTION_CONVERSION_WORD) == null) {
+			System.setProperty(EXCEPTION_CONVERSION_WORD,
+					environment.getProperty("logging.exception-conversion-word", "%rEx"));
 		}
 		initializeEarlyLoggingLevel(environment);
 		initializeSystem(environment, this.loggingSystem);

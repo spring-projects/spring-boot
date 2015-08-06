@@ -1195,7 +1195,9 @@ These are:
 * `${PID}` the current process ID.
 * `${LOG_FILE}` if `logging.file` was set in Boot's external configuration.
 * `${LOG_PATH}` if `logging.path` was set (representing a directory for
-	log files to live in).
+   log files to live in).
+* `${LOG_EXCEPTION_CONVERSION_WORD}` if `logging.exception-conversion-word` was set in
+   Boot's external configuration.
 
 Spring Boot also provides some nice ANSI colour terminal output on a console (but not in
 a log file) using a custom Logback converter. See the default `base.xml` configuration

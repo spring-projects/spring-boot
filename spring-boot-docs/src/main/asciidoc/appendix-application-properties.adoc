@@ -56,10 +56,11 @@ content into your application; rather pick only the properties that you need.
 	spring.output.ansi.enabled=detect # Configure the ANSI output ("detect", "always", "never")
 
 	# LOGGING
-	logging.path=/var/log
-	logging.file=myapp.log
 	logging.config= # location of config file (default classpath:logback.xml for logback)
+	logging.exception-conversion-word=%rEx # conversion word used when logging exceptions
+	logging.file=myapp.log
 	logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
+	logging.path=/var/log
 	logging.pattern.console= # appender pattern for output to the console (only supported with the default logback setup)
 	logging.pattern.file= # appender pattern for output to the file (only supported with the default logback setup)
 

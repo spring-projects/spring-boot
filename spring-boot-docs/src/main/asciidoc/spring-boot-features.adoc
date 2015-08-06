@@ -1068,6 +1068,10 @@ To help with the customization some other properties are transferred from the Sp
 |===
 |Spring Environment |System Property |Comments
 
+|`logging.exception-conversion-word`
+|`LOG_EXCEPTION_CONVERSION_WORD`
+|The conversion word that's used when logging exceptions.
+
 |`logging.file`
 |`LOG_FILE`
 |Used in default log configuration if defined.

@@ -89,6 +89,7 @@ public class LoggingApplicationListenerTests {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
+		System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
 		if (this.context != null) {
 			this.context.close();
 		}
@@ -109,10 +110,10 @@ public class LoggingApplicationListenerTests {
 	public void baseConfigLocation() {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
-		this.logger.info("Hello world");
-		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Wrong output:\n" + output, output.contains("???"));
+		this.outputCapture.expect(containsString("Hello world"));
+		this.outputCapture.expect(not(containsString("???")));
+		this.outputCapture.expect(containsString("[junit-"));
+		this.logger.info("Hello world", new RuntimeException("Expected"));
 		assertFalse(new File(tmpDir() + "/spring.log").exists());
 	}
 
@@ -326,6 +327,18 @@ public class LoggingApplicationListenerTests {
 		assertTrue(bridgeHandlerInstalled());
 		this.initializer.onApplicationEvent(new ContextClosedEvent(this.context));
 		assertFalse(bridgeHandlerInstalled());
+	}
+
+	@Test
+	public void overrideExceptionConversionWord() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.exception-conversion-word:%ex");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.outputCapture.expect(containsString("Hello world"));
+		this.outputCapture.expect(not(containsString("???")));
+		this.outputCapture.expect(not(containsString("[junit-")));
+		this.logger.info("Hello world", new RuntimeException("Expected"));
 	}
 
 	private boolean bridgeHandlerInstalled() {
