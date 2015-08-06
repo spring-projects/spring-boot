@@ -48,27 +48,26 @@ public class SampleHypermediaApplicationHomePageTests {
 	public void home() {
 		String response = new TestRestTemplate().getForObject("http://localhost:"
 				+ this.port, String.class);
-		assertTrue("Wrong body: " + response, response.contains("\"_links\":"));
-		assertTrue("Wrong body: " + response, response.contains("\"curies\":"));
+		assertTrue("Wrong body: " + response, response.contains("404"));
 	}
 
 	@Test
-	public void homeWithJson() throws Exception {
+	public void linksWithJson() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> response = new TestRestTemplate().exchange(
 				new RequestEntity<Void>(headers, HttpMethod.GET, new URI(
-						"http://localhost:" + this.port + "/")), String.class);
+						"http://localhost:" + this.port + "/links")), String.class);
 		assertTrue("Wrong body: " + response, response.getBody().contains("\"_links\":"));
 	}
 
 	@Test
-	public void homeWithHtml() throws Exception {
+	public void halWithHtml() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> response = new TestRestTemplate().exchange(
 				new RequestEntity<Void>(headers, HttpMethod.GET, new URI(
-						"http://localhost:" + this.port)), String.class);
+						"http://localhost:" + this.port + "/hal/")), String.class);
 		assertTrue("Wrong body: " + response, response.getBody().contains("HAL Browser"));
 	}
 

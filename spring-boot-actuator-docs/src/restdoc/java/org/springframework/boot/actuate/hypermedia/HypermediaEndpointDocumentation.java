@@ -82,7 +82,7 @@ public class HypermediaEndpointDocumentation {
 
 	@Test
 	public void home() throws Exception {
-		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/links").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andDo(document("admin"));
 	}
 

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.hateoas.ResourceSupport;
@@ -32,14 +35,27 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ConfigurationProperties("endpoints.links")
 public class LinksMvcEndpoint implements MvcEndpoint {
 
-	private String path;
+	/**
+	 * Endpoint URL path.
+	 */
+	@NotNull
+	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
+	private String path = "/links";
+
+	/**
+	 * Enable security on the endpoint.
+	 */
 	private boolean sensitive = false;
 
-	public LinksMvcEndpoint(String defaultPath) {
-		this.path = defaultPath;
+	/**
+	 * Enable the endpoint.
+	 */
+	private boolean enabled = true;
+
+	public LinksMvcEndpoint() {
 	}
 
-	@RequestMapping(value = { "/", "" }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResourceSupport links() {
 		return new ResourceSupport();
@@ -61,6 +77,14 @@ public class LinksMvcEndpoint implements MvcEndpoint {
 
 	public void setSensitive(boolean sensitive) {
 		this.sensitive = sensitive;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override

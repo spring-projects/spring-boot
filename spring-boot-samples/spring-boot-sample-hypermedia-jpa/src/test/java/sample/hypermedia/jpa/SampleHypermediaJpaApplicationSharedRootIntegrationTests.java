@@ -61,8 +61,7 @@ public class SampleHypermediaJpaApplicationSharedRootIntegrationTests {
 	public void home() throws Exception {
 		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists())
-				.andExpect(jsonPath("$._links.health").exists())
-				.andExpect(jsonPath("$._links.admin").exists())
+				.andExpect(jsonPath("$._links.actuator").exists())
 				.andExpect(jsonPath("$._links.books").exists());
 	}
 

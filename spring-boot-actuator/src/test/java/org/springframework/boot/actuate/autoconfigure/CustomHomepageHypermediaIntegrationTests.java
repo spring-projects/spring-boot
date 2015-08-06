@@ -70,8 +70,11 @@ public class CustomHomepageHypermediaIntegrationTests {
 	public void endpointsAllListed() throws Exception {
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
+			if ("/links".equals(path)) {
+				continue;
+			}
 			path = path.startsWith("/") ? path.substring(1) : path;
-			this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
+			this.mockMvc.perform(get("/links").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$._links.%s.href", path).exists());
 		}

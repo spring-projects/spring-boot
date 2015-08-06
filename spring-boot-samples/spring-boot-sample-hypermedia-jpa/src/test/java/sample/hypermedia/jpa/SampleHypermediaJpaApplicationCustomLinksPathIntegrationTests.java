@@ -59,10 +59,10 @@ public class SampleHypermediaJpaApplicationCustomLinksPathIntegrationTests {
 
 	@Test
 	public void links() throws Exception {
-		this.mockMvc.perform(get("/").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/links").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists())
 				.andExpect(jsonPath("$._links.health").exists())
-				.andExpect(jsonPath("$._links.books").exists());
+				.andExpect(jsonPath("$._links.books").doesNotExist());
 	}
 
 	@Test

@@ -70,7 +70,7 @@ public class ContextPathHypermediaIntegrationTests {
 
 	@Test
 	public void links() throws Exception {
-		this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/admin/links").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
 	}
 
@@ -89,10 +89,13 @@ public class ContextPathHypermediaIntegrationTests {
 	public void endpointsAllListed() throws Exception {
 		for (MvcEndpoint endpoint : this.mvcEndpoints.getEndpoints()) {
 			String path = endpoint.getPath();
+			if ("/links".equals(path)) {
+				continue;
+			}
 			path = path.startsWith("/") ? path.substring(1) : path;
 			path = path.length() > 0 ? path : "self";
 			this.mockMvc
-					.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
+					.perform(get("/admin/links").accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
 					.andExpect(
 							jsonPath("$._links.%s.href", path).value(

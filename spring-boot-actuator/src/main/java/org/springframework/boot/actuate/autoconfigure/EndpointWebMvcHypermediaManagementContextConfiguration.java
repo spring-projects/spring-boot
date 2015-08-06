@@ -23,12 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorDocsEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.HalBrowserEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.HalBrowserMvcEndpoint.HalBrowserLocation;
 import org.springframework.boot.actuate.endpoint.mvc.HypermediaDisabled;
 import org.springframework.boot.actuate.endpoint.mvc.LinksMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
@@ -44,17 +42,15 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.env.Environment;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.core.type.MethodMetadata;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
@@ -67,8 +63,6 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.util.TypeUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.HandlerMapping;
@@ -81,12 +75,14 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import static org.springframework.hateoas.mvc.BasicLinkBuilder.linkToCurrentMapping;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
  * Configuration for hypermedia in HTTP endpoints.
  *
  * @author Dave Syer
+ * @author Phillip Webb
  * @since 1.3.0
  */
 @ManagementContextConfiguration
@@ -97,14 +93,12 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @EnableConfigurationProperties(ResourceProperties.class)
 public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
-	@Bean
 	@ConditionalOnProperty(value = "endpoints.hal.enabled", matchIfMissing = true)
-	@ConditionalOnResource(resources = "classpath:/META-INF/resources/webjars/hal-browser/b7669f1-1")
-	@Conditional(MissingSpringDataRestResourceCondition.class)
-	public HalBrowserEndpoint halBrowserMvcEndpoint(
+	@Conditional(HalBrowserCondition.class)
+	@Bean
+	public HalBrowserMvcEndpoint halBrowserMvcEndpoint(
 			ManagementServerProperties management, ResourceProperties resources) {
-		return new HalBrowserEndpoint(management,
-				resources.getWelcomePage() != null ? "/hal" : "");
+		return new HalBrowserMvcEndpoint(management);
 	}
 
 	@Bean
@@ -130,22 +124,19 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	}
 
 	/**
-	 * {@link SpringBootCondition} to detect the Spring Data REST HAL browser.
+	 * {@link SpringBootCondition} to detect the HAL browser.
 	 */
-	@Configuration("EndpointHypermediaAutoConfiguration.MissingResourceCondition")
-	@ConditionalOnResource(resources = "classpath:/META-INF/spring-data-rest/hal-browser/index.html")
-	protected static class MissingSpringDataRestResourceCondition extends
-			SpringBootCondition {
+	protected static class HalBrowserCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			if (context.getRegistry().containsBeanDefinition(
-					"EndpointHypermediaAutoConfiguration.MissingResourceCondition")) {
-				return ConditionOutcome.noMatch("Spring Data REST HAL browser found");
-			}
-			return ConditionOutcome.match("Spring Data REST HAL browser not found");
-
+			ResourceLoader loader = context.getResourceLoader();
+			loader = (loader == null ? new DefaultResourceLoader() : loader);
+			HalBrowserLocation found = HalBrowserMvcEndpoint
+					.getHalBrowserLocation(loader);
+			return new ConditionOutcome(found != null, "HAL Browser "
+					+ (found == null ? "not found" : "at " + found));
 		}
 
 	}
@@ -157,98 +148,8 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	public static class LinksConfiguration {
 
 		@Bean
-		@Conditional(NotSpringDataRestHomePageCondition.class)
 		public LinksMvcEndpoint linksMvcEndpoint(ResourceProperties resources) {
-			String defaultPath = getDefaultPath(resources);
-			return new LinksMvcEndpoint(defaultPath);
-		}
-
-		private String getDefaultPath(ResourceProperties resources) {
-			return resources.getWelcomePage() != null ? "/links" : "";
-		}
-
-		private static class NotSpringDataRestHomePageCondition extends
-				SpringBootCondition {
-
-			private static final String REST_CONFIGURATION_CLASS = "org.springframework."
-					+ "data.rest.core.config.RepositoryRestConfiguration";
-
-			@Override
-			public ConditionOutcome getMatchOutcome(ConditionContext context,
-					AnnotatedTypeMetadata metadata) {
-				if (!ClassUtils.isPresent(REST_CONFIGURATION_CLASS, null)) {
-					return ConditionOutcome.match("Spring Data REST is not present");
-				}
-				return getMatchOutcome(context,
-						ClassUtils.resolveClassName(REST_CONFIGURATION_CLASS, null));
-			}
-
-			private ConditionOutcome getMatchOutcome(ConditionContext context,
-					Class<?> configurationClass) {
-				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-				if (beanFactory.getBeanNamesForType(configurationClass, true, false).length == 0) {
-					return ConditionOutcome.match("Spring Data REST is not configured");
-				}
-				Environment environment = context.getEnvironment();
-				String path = getManagementContextPath(beanFactory, environment);
-				if (isHome(path)) {
-					path = getProperty(environment, "endpoints.links.", "path");
-					if (isHome(path)) {
-						return ConditionOutcome.noMatch("Management context path "
-								+ "is home and so is links path");
-					}
-					return ConditionOutcome.match("Management context path "
-							+ "is home but links path is not: '" + path + "'");
-				}
-				// N.B. we don't cover the case where the user has Spring Data REST
-				// but changes *its* home page - you'd have to instantiate the
-				// RepositoryRestConfiguration and look at it's basePath for that.
-				return ConditionOutcome.match("Management context path "
-						+ "is not home: '" + path + "'");
-			}
-
-			private String getManagementContextPath(
-					ConfigurableListableBeanFactory beanFactory, Environment environment) {
-				String path = getProperty(environment, "management.", "contextPath");
-				if (path == null
-						&& hasCustomBeanDefinition(beanFactory,
-								ManagementServerProperties.class,
-								ManagementServerPropertiesAutoConfiguration.class)) {
-					path = beanFactory.getBean(ManagementServerProperties.class)
-							.getContextPath();
-				}
-				return path;
-			}
-
-			private boolean isHome(String path) {
-				return path == null || "".equals(path) || "/".equals(path);
-			}
-
-			private String getProperty(Environment environment, String prefix, String name) {
-				RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-						environment, prefix);
-				return resolver.getProperty(name, String.class);
-			}
-
-			private <T> boolean hasCustomBeanDefinition(
-					ConfigurableListableBeanFactory beanFactory, Class<T> type,
-					Class<?> configClass) {
-				String[] names = beanFactory.getBeanNamesForType(type, true, false);
-				if (names == null || names.length != 1) {
-					return false;
-				}
-				BeanDefinition definition = beanFactory.getBeanDefinition(names[0]);
-				if (definition instanceof AnnotatedBeanDefinition) {
-					MethodMetadata factoryMethodMetadata = ((AnnotatedBeanDefinition) definition)
-							.getFactoryMethodMetadata();
-					if (factoryMethodMetadata != null) {
-						String className = factoryMethodMetadata.getDeclaringClassName();
-						return !configClass.getName().equals(className);
-					}
-				}
-				return true;
-			}
-
+			return new LinksMvcEndpoint();
 		}
 
 		/**
@@ -306,29 +207,21 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			private void beforeBodyWrite(Object body, ServletServerHttpRequest request) {
 				Object pattern = request.getServletRequest().getAttribute(
 						HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-				if (pattern != null) {
-					String path = pattern.toString();
-					if (isHomePage(path) || isManagementPath(path) || isLinksPath(path)) {
-						ResourceSupport resource = (ResourceSupport) body;
-						if (isHomePage(path) && hasManagementPath()) {
-							String rel = this.management.getContextPath().substring(1);
-							resource.add(linkTo(
-									EndpointWebMvcHypermediaManagementContextConfiguration.class)
-									.slash(this.management.getContextPath()).withRel(rel));
-						}
-						else {
-							this.linksEnhancer.addEndpointLinks(resource, "");
-						}
-					}
+				if (pattern != null && body instanceof ResourceSupport) {
+					beforeBodyWrite(pattern.toString(), (ResourceSupport) body);
 				}
 			}
 
-			private boolean hasManagementPath() {
-				return StringUtils.hasText(this.management.getContextPath());
-			}
-
-			private boolean isManagementPath(String path) {
-				return this.management.getContextPath().equals(path);
+			private void beforeBodyWrite(String path, ResourceSupport body) {
+				if (isLinksPath(path)) {
+					this.linksEnhancer.addEndpointLinks(body,
+							this.linksEndpoint.getPath());
+				}
+				else if (isHomePage(path)) {
+					body.add(linkToCurrentMapping()
+							.slash(this.management.getContextPath())
+							.slash(this.linksEndpoint.getPath()).withRel("actuator"));
+				}
 			}
 
 			private boolean isLinksPath(String path) {
@@ -370,7 +263,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 					Class<? extends HttpMessageConverter<?>> converterType) {
 				Class<?> controllerType = returnType.getDeclaringClass();
 				return !LinksMvcEndpoint.class.isAssignableFrom(controllerType)
-						&& !HalBrowserEndpoint.class.isAssignableFrom(controllerType);
+						&& !HalBrowserMvcEndpoint.class.isAssignableFrom(controllerType);
 			}
 
 			@Override

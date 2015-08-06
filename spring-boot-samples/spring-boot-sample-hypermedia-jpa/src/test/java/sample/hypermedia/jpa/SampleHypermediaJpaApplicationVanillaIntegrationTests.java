@@ -69,7 +69,7 @@ public class SampleHypermediaJpaApplicationVanillaIntegrationTests {
 
 	@Test
 	public void adminLinks() throws Exception {
-		this.mockMvc.perform(get("/admin").accept(MediaType.APPLICATION_JSON))
+		this.mockMvc.perform(get("/admin/links").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(jsonPath("$._links").exists());
 	}
 

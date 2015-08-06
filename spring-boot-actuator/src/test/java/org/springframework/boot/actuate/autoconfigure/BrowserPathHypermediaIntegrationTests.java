@@ -72,7 +72,7 @@ public class BrowserPathHypermediaIntegrationTests {
 	public void redirect() throws Exception {
 		this.mockMvc.perform(get("/hal").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound())
-				.andExpect(header().string("location", "/hal/#"));
+				.andExpect(header().string("location", "/hal/"));
 	}
 
 	@MinimalActuatorHypermediaApplication
