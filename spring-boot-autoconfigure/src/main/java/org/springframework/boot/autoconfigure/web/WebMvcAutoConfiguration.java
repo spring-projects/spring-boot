@@ -107,13 +107,13 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(HttpPutFormContentFilter.class)
-	public HttpPutFormContentFilter httpPutFormContentFilter() {
+	public OrderedHttpPutFormContentFilter httpPutFormContentFilter() {
 		return new OrderedHttpPutFormContentFilter();
 	}
 
