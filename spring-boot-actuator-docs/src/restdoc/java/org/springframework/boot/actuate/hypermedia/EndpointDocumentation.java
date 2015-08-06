@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.hypermedia.test;
+package org.springframework.boot.actuate.hypermedia;
 
 import groovy.text.Template;
 import groovy.text.TemplateEngine;
@@ -134,7 +134,7 @@ public class EndpointDocumentation {
 		PrintWriter writer = new PrintWriter(file, "UTF-8");
 		try {
 			Template template = this.templates.createTemplate(new File(
-					"src/test/resources/templates/endpoints.adoc.tpl"));
+					"src/restdoc/resources/templates/endpoints.adoc.tpl"));
 			template.make(model).writeTo(writer);
 		}
 		finally {

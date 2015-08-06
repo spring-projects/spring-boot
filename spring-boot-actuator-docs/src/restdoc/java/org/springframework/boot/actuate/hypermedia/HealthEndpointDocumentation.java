@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.hypermedia.test;
+package org.springframework.boot.actuate.hypermedia;
 
 import groovy.text.TemplateEngine;
 
