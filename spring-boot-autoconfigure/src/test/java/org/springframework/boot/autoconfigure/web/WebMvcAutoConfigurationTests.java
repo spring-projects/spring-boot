@@ -41,6 +41,7 @@ import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
+import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +52,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
@@ -441,6 +443,22 @@ public class WebMvcAutoConfigurationTests {
 		assertEquals(123456L, actual);
 	}
 
+	@Test
+	public void httpPutFormContentFilterIsAutoConfigured() {
+		load();
+		assertThat(this.context.getBeansOfType(OrderedHttpPutFormContentFilter.class)
+				.size(), is(equalTo(1)));
+	}
+
+	@Test
+	public void httpPutFormContentFilterCanBeOverridden() {
+		load(CustomHttpPutFormContentFilter.class);
+		assertThat(this.context.getBeansOfType(OrderedHttpPutFormContentFilter.class)
+				.size(), is(equalTo(0)));
+		assertThat(this.context.getBeansOfType(HttpPutFormContentFilter.class).size(),
+				is(equalTo(1)));
+	}
+
 	@SuppressWarnings("unchecked")
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
@@ -548,6 +566,16 @@ public class WebMvcAutoConfigurationTests {
 		@Override
 		public View resolveViewName(String viewName, Locale locale) throws Exception {
 			return null;
+		}
+
+	}
+
+	@Configuration
+	static class CustomHttpPutFormContentFilter {
+
+		@Bean
+		public HttpPutFormContentFilter customHttpPutFormContentFilter() {
+			return new HttpPutFormContentFilter();
 		}
 
 	}

@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
+import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -57,6 +58,7 @@ import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
+import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
@@ -105,8 +107,14 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(HttpPutFormContentFilter.class)
+	public OrderedHttpPutFormContentFilter httpPutFormContentFilter() {
+		return new OrderedHttpPutFormContentFilter();
 	}
 
 	// Defined as a nested config to ensure WebMvcConfigurerAdapter is not read when not
