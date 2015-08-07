@@ -1440,6 +1440,27 @@ be picked up by the default `JpaTransactionManager` in Spring Boot if you mark i
 `@Primary`. The other would have to be explicitly injected into a new instance. Or you
 might be able to use a JTA transaction manager spanning both.
 
+If you are using Spring Data, you need to configure `@EnableJpaRepositories` accordingly:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+
+	@Configuration
+	@EnableJpaRepositories(basePackageClasses = Customer.class,
+			entityManagerFactoryRef = "customerEntityManagerFactory")
+	public class CustomerConfiguration {
+		...
+	}
+
+	@Configuration
+	@EnableJpaRepositories(basePackageClasses = Order.class,
+			entityManagerFactoryRef = "orderEntityManagerFactory")
+	public class OrderConfiguration {
+		...
+	}
+
+
+----
 
 
 [[howto-use-traditional-persistence-xml]]
