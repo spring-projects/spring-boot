@@ -1390,7 +1390,8 @@ the same data in HTML format (to customize it just add a `View` that resolves to
 type `ErrorAttributes` to use the existing mechanism but replace the contents.
 
 If you want more specific error pages for some conditions, the embedded servlet containers
-support a uniform Java DSL for customizing the error handling. For example:
+support a uniform Java DSL for customizing the error handling. Assuming that you have a
+mapping for `/400`:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
