@@ -93,6 +93,17 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 		return new OAuth2Authentication(request, token);
 	}
 
+	private String[] getAuthorities(Map<String, Object> map) {
+    		@SuppressWarnings("unchecked")
+    		List<Map<String, String>> authorityList = (List<Map<String, String>>) map.get("authorities");
+
+    		List<String> authorities = new ArrayList<>();
+    		for (Map<String, String> authority : authorityList) {
+        		authorities.add(authority.get("authority"));
+    		}
+    		return authorities.toArray(new String[] {});
+	} 
+
 	private Object getPrincipal(Map<String, Object> map) {
 		for (String key : PRINCIPAL_KEYS) {
 			if (map.containsKey(key)) {
