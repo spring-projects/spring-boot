@@ -37,6 +37,7 @@ import org.springframework.util.ClassUtils;
  * {@code @Bean} definition.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 public class EntityManagerFactoryBuilder {
@@ -88,7 +89,7 @@ public class EntityManagerFactoryBuilder {
 
 		private String persistenceUnit;
 
-		private Map<String, Object> properties = new HashMap<String, Object>();
+		private Map<String, Object> properties;
 
 		private boolean jta;
 
@@ -140,6 +141,9 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 */
 		public Builder properties(Map<String, ?> properties) {
+			if (this.properties == null) {
+				this.properties = new HashMap<String, Object>();
+			}
 			this.properties.putAll(properties);
 			return this;
 		}
@@ -179,9 +183,14 @@ public class EntityManagerFactoryBuilder {
 			}
 
 			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
-			entityManagerFactoryBean.getJpaPropertyMap().putAll(
-					EntityManagerFactoryBuilder.this.properties.getProperties());
-			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
+			JpaProperties jpaProperties = EntityManagerFactoryBuilder.this.properties;
+			entityManagerFactoryBean.getJpaPropertyMap().putAll(jpaProperties.getProperties());
+			if (this.properties == null) {
+				entityManagerFactoryBean.getJpaPropertyMap().putAll(jpaProperties.
+						getHibernateProperties(this.dataSource));
+			} else {
+				entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
+			}
 			if (EntityManagerFactoryBuilder.this.callback != null) {
 				EntityManagerFactoryBuilder.this.callback
 						.execute(entityManagerFactoryBean);

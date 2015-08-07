@@ -16,37 +16,41 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.Collections;
 
 import javax.sql.DataSource;
 
+import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.junit.Test;
+import org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
+import static org.jgroups.util.Util.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EntityManagerFactoryBuilder}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class EntityManagerFactoryBuilderTests {
 
 	private JpaProperties properties = new JpaProperties();
-
-	private DataSource dataSource1 = mock(DataSource.class);
-
-	private DataSource dataSource2 = mock(DataSource.class);
 
 	@Test
 	public void entityManagerFactoryPropertiesNotOverwritingDefaults() {
 		EntityManagerFactoryBuilder factory = new EntityManagerFactoryBuilder(
 				new HibernateJpaVendorAdapter(), this.properties, null);
 		LocalContainerEntityManagerFactoryBean result1 = factory
-				.dataSource(this.dataSource1)
+				.dataSource(mockDataSource())
 				.properties(Collections.singletonMap("foo", "spam")).build();
 		assertFalse(result1.getJpaPropertyMap().isEmpty());
 		assertTrue(this.properties.getProperties().isEmpty());
@@ -57,12 +61,71 @@ public class EntityManagerFactoryBuilderTests {
 		EntityManagerFactoryBuilder factory = new EntityManagerFactoryBuilder(
 				new HibernateJpaVendorAdapter(), this.properties, null);
 		LocalContainerEntityManagerFactoryBean result1 = factory
-				.dataSource(this.dataSource1)
+				.dataSource(mockDataSource())
 				.properties(Collections.singletonMap("foo", "spam")).build();
 		assertFalse(result1.getJpaPropertyMap().isEmpty());
 		LocalContainerEntityManagerFactoryBean result2 = factory.dataSource(
-				this.dataSource2).build();
-		assertTrue(result2.getJpaPropertyMap().isEmpty());
+				mockDataSource()).build();
+		assertFalse(result2.getJpaPropertyMap().containsKey("foo"));
+	}
+
+	@Test
+	public void entityManagerApplyHibernateCustomizationsByDefault() {
+		EntityManagerFactoryBuilder factory = new EntityManagerFactoryBuilder(
+				new HibernateJpaVendorAdapter(), this.properties, null);
+		LocalContainerEntityManagerFactoryBean result = factory
+				.dataSource(mockDataSource("H2"))
+				.build();
+		assertEquals(SpringNamingStrategy.class.getName(),
+				result.getJpaPropertyMap().get("hibernate.ejb.naming_strategy"));
+		assertEquals("create-drop", result.getJpaPropertyMap().get("hibernate.hbm2ddl.auto"));
+	}
+
+	@Test
+	public void entityManagerUseCustomHibernateCustomizationsByDefault() {
+		this.properties.getHibernate().setNamingStrategy(ImprovedNamingStrategy.class);
+		this.properties.getHibernate().setDdlAuto("update");
+		EntityManagerFactoryBuilder factory = new EntityManagerFactoryBuilder(
+				new HibernateJpaVendorAdapter(), this.properties, null);
+		LocalContainerEntityManagerFactoryBean result = factory
+				.dataSource(mockDataSource("H2"))
+				.build();
+		assertEquals(ImprovedNamingStrategy.class.getName(),
+				result.getJpaPropertyMap().get("hibernate.ejb.naming_strategy"));
+		assertEquals("update", result.getJpaPropertyMap().get("hibernate.hbm2ddl.auto"));
+	}
+
+	@Test
+	public void entityManagerHibernateCustomizationsDisabledIfPropertiesAreSet() {
+		this.properties.getHibernate().setNamingStrategy(ImprovedNamingStrategy.class);
+		EntityManagerFactoryBuilder factory = new EntityManagerFactoryBuilder(
+				new HibernateJpaVendorAdapter(), this.properties, null);
+		LocalContainerEntityManagerFactoryBean result = factory
+				.dataSource(mockDataSource())
+				.properties(Collections.singletonMap("foo", "spam"))
+				.build();
+		assertFalse(result.getJpaPropertyMap().containsKey("hibernate.ejb.naming_strategy"));
+		assertFalse(result.getJpaPropertyMap().containsKey("hibernate.hbm2ddl.auto"));
+	}
+
+
+	private DataSource mockDataSource() {
+		return mockDataSource("Test");
+	}
+
+	private DataSource mockDataSource(String productName) {
+		try {
+			DataSource mock = mock(DataSource.class);
+			Connection connection = mock(Connection.class);
+			DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+			given(databaseMetaData.getDatabaseProductName()).willReturn(productName);
+			given(connection.getMetaData()).willReturn(databaseMetaData);
+			given(mock.getConnection()).willReturn(connection);
+			return mock;
+		}
+		catch (SQLException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 }
