@@ -228,7 +228,7 @@ about YAML.
 
 [[howto-set-active-spring-profiles]]
 === Set the active Spring profiles
-The Spring `Environment` has an API for this, but normally you would set a System profile
+The Spring `Environment` has an API for this, but normally you would set a System property
 (`spring.profiles.active`) or an OS environment variable (`SPRING_PROFILES_ACTIVE`). E.g.
 launch your application with a `-D` argument (remember to put it before the main class
 or jar archive):
