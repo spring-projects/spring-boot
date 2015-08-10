@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.rest;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Rest's MVC
@@ -53,6 +56,30 @@ public class RepositoryRestMvcAutoConfiguration {
 	@Bean
 	public SpringBootRepositoryRestConfigurer springBootRepositoryRestConfigurer() {
 		return new SpringBootRepositoryRestConfigurer();
+	}
+
+	/**
+	 * Spring Data REST has {@link org.springframework.http.HttpMethod#OPTIONS} mappings. This post processor
+	 * turns on support in the {@link DispatcherServlet}.
+	 */
+	@Bean
+	public BeanPostProcessor enableOptionsInDispatcherServletPostProcessor() {
+		return new BeanPostProcessor() {
+			@Override
+			public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+				return bean;
+			}
+
+			@Override
+			public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+				if (DispatcherServlet.class.isAssignableFrom(bean.getClass())) {
+					DispatcherServlet dispatcherServlet = (DispatcherServlet) bean;
+					dispatcherServlet.setDispatchOptionsRequest(true);
+				}
+
+				return bean;
+			}
+		};
 	}
 
 }
