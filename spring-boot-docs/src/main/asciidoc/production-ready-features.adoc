@@ -1157,6 +1157,10 @@ MetricWriter metricWriter() {
 }
 ----
 
+==== Statsd autoconfiguration
+If the `statsd.host` and `statsd.port` properties are found in your environment a `StatsMetricWriter` will be
+autoconfigured using the provided values. You can also define a custom prefix which will be used to store your
+metrics using the `statsd.prefix` property.
 
 [[production-ready-metric-writers-export-to-jmx]]
 ==== Example: Export to JMX
