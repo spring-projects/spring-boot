@@ -293,6 +293,17 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				equalTo("test2"));
 	}
 
+	@Test
+	public void nestedProperties() throws Exception {
+		// gh-3539
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "TEST_NESTED_VALUE:test1");
+		this.context.register(PropertyWithNestedValue.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertyWithNestedValue.class).getNested()
+				.getValue(), equalTo("test1"));
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class TestConfigurationWithValidatingSetter {
@@ -608,6 +619,39 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		@Override
 		public void afterPropertiesSet() throws Exception {
 			ConfigurationPropertiesWithFactoryBean.factoryBeanInit = true;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertyWithNestedValue {
+
+		private Nested nested = new Nested();
+
+		public Nested getNested() {
+			return this.nested;
+		}
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer configurer() {
+			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+		public static class Nested {
+
+			@Value("${default.value}")
+			private String value;
+
+			public void setValue(String value) {
+				this.value = value;
+			}
+
+			public String getValue() {
+				return this.value;
+			}
+
 		}
 
 	}
