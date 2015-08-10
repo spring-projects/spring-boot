@@ -419,7 +419,7 @@ environment variables or system properties.
 In addition to `application.properties` files, profile-specific properties can also be
 defined using the naming convention `application-{profile}.properties`. The
 `Environment` has a set of default profiles (by default `[default]`) which are
-used if no active profiels are set (i.e. if no profiles are explicitly activated
+used if no active profiles are set (i.e. if no profiles are explicitly activated
 then properties from `application-default.properties` are loaded).
 
 Profile specific properties are loaded from the same locations as standard
