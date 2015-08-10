@@ -127,9 +127,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			RoundEnvironment roundEnv) {
 		this.metadataCollector.processing(roundEnv);
 		Elements elementUtils = this.processingEnv.getElementUtils();
-		for (Element element : roundEnv.getElementsAnnotatedWith(elementUtils
-				.getTypeElement(configurationPropertiesAnnotation()))) {
-			processElement(element);
+		TypeElement annotationType = elementUtils
+				.getTypeElement(configurationPropertiesAnnotation());
+		if (annotationType != null) { // Is @ConfigurationProperties available
+			for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
+				processElement(element);
+			}
 		}
 		if (roundEnv.processingOver()) {
 			writeMetaData();
