@@ -70,6 +70,12 @@ public abstract class AbstractTemplateViewResolverProperties extends
 	 */
 	private boolean exposeSpringMacroHelpers = true;
 
+	/**
+	 * Set whether HttpSession attributes are allowed to override (hide) controller
+	 * generated model attributes of the same name.
+	 */
+	private boolean allowSessionOverride = false;
+
 	protected AbstractTemplateViewResolverProperties(String defaultPrefix,
 			String defaultSuffix) {
 		this.prefix = defaultPrefix;
@@ -124,6 +130,14 @@ public abstract class AbstractTemplateViewResolverProperties extends
 		this.allowRequestOverride = allowRequestOverride;
 	}
 
+	public boolean isAllowSessionOverride() {
+		return this.allowSessionOverride;
+	}
+
+	public void setAllowSessionOverride(boolean allowSessionOverride) {
+		this.allowSessionOverride = allowSessionOverride;
+	}
+
 	public boolean isExposeSpringMacroHelpers() {
 		return this.exposeSpringMacroHelpers;
 	}
@@ -152,6 +166,7 @@ public abstract class AbstractTemplateViewResolverProperties extends
 		resolver.setViewNames(getViewNames());
 		resolver.setExposeRequestAttributes(isExposeRequestAttributes());
 		resolver.setAllowRequestOverride(isAllowRequestOverride());
+		resolver.setAllowSessionOverride(isAllowSessionOverride());
 		resolver.setExposeSessionAttributes(isExposeSessionAttributes());
 		resolver.setExposeSpringMacroHelpers(isExposeSpringMacroHelpers());
 		resolver.setRequestContextAttribute(getRequestContextAttribute());

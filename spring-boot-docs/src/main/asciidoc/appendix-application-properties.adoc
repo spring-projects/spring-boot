@@ -158,6 +158,7 @@ content into your application; rather pick only the properties that you need.
 
 	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration])
 	spring.freemarker.allow-request-override=false
+	spring.freemarker.allow-session-override=false
 	spring.freemarker.cache=true
 	spring.freemarker.check-template-location=true
 	spring.freemarker.charset=UTF-8
@@ -183,6 +184,7 @@ content into your application; rather pick only the properties that you need.
 
 	# VELOCITY TEMPLATES ({sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[VelocityAutoConfiguration])
 	spring.velocity.allow-request-override=false
+	spring.velocity.allow-session-override=false
 	spring.velocity.cache=true
 	spring.velocity.check-template-location=true
 	spring.velocity.charset=UTF-8
