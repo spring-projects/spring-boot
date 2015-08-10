@@ -144,7 +144,7 @@ public class JacksonAutoConfigurationTests {
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
 		assertEquals("\"1988-06-25 20:30:00\"", mapper.writeValueAsString(dateTime));
-		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
+		Date date = dateTime.toDate();
 		assertEquals("\"19880625203000\"", mapper.writeValueAsString(date));
 	}
 
