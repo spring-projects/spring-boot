@@ -25,7 +25,8 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorDocsEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalJsonEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HypermediaDisabled;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
@@ -40,8 +41,10 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
@@ -86,9 +89,13 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 	@ConditionalOnProperty(prefix = "endpoints.actuator", name = "enabled", matchIfMissing = true)
 	@Bean
-	public ActuatorMvcEndpoint actuatorMvcEndpoint(ManagementServerProperties management,
-			ResourceProperties resources) {
-		return new ActuatorMvcEndpoint(management);
+	public ActuatorHalJsonEndpoint actuatorMvcEndpoint(
+			ManagementServerProperties management, ResourceProperties resources,
+			ResourceLoader resourceLoader) {
+		if (ActuatorHalBrowserEndpoint.getHalBrowserLocation(resourceLoader) != null) {
+			return new ActuatorHalBrowserEndpoint(management);
+		}
+		return new ActuatorHalJsonEndpoint(management);
 	}
 
 	@Bean
@@ -113,6 +120,12 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		return new DefaultCurieProvider("boot", new UriTemplate(path));
 	}
 
+	@ConditionalOnProperty(prefix = "endpoints.actuator", name = "enabled", matchIfMissing = true)
+	@Configuration
+	static class ActuatorMvcEndpointConfiguration {
+
+	}
+
 	/**
 	 * Controller advice that adds links to the actuator endpoint's path.
 	 */
@@ -123,7 +136,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private MvcEndpoints endpoints;
 
 		@Autowired(required = false)
-		private ActuatorMvcEndpoint actuatorEndpoint;
+		private ActuatorHalJsonEndpoint actuatorEndpoint;
 
 		@Autowired
 		private ManagementServerProperties management;
@@ -206,7 +219,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		public boolean supports(MethodParameter returnType,
 				Class<? extends HttpMessageConverter<?>> converterType) {
 			Class<?> controllerType = returnType.getDeclaringClass();
-			return !ActuatorMvcEndpoint.class.isAssignableFrom(controllerType);
+			return !ActuatorHalJsonEndpoint.class.isAssignableFrom(controllerType);
 		}
 
 		@Override

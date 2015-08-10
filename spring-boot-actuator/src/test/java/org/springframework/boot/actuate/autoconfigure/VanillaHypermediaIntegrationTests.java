@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.VanillaHypermediaIntegrationTests.SpringBootHypermediaApplication;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for {@link ActuatorMvcEndpoint}
+ * Integration tests for {@link ActuatorHalBrowserEndpoint}
  *
  * @author Dave Syer
  * @author Andy Wilkinson

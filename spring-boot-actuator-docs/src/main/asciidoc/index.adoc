@@ -60,18 +60,20 @@ WARNING: Beware of Actuator endpoint paths clashing with application endpoints.
 The easiest way to avoid that is to use a `management.context-path`, e.g. "/admin".
 
 TIP: You can disable the hypermedia support in Actuator endpoints by setting
-`endpoints.links.enabled=false`.
+`endpoints.actuator.enabled=false`.
 
 
 
-=== Default home page
-If the `management.context-path` is empty, or if the home page provided by the application
-happens to be a response body of type `ResourceSupport`, then it will be enhanced with
-links to the actuator endpoints. The latter would happen for instance if you use Spring
-Data REST to expose `Repository` endpoints.
+=== Main entry point
+When the hypermedia support is enabled, the Actuator provides a main entry point that
+provides links to all of its endpoints. If `management.context-path` is empty, this entry
+point is available at `/actuator`. If a management context path has been configured then
+the entry point is available at the root of that context. For example, if
+`management.context-path` has been set to `/admin` then the main entry point will be
+available at `/admin`.
 
-Example vanilla "/" endpoint if the `management.context-path` is empty (the "/admin" page
-would be the same with different links if `management.context-path=/admin`):
+TIP: The endpoint path can always, as with all MVC endpoints, be overridden using
+`endpoints.actuator.path=/yourpath` (note the leading slash).
 
 include::{generated}/admin/http-response.adoc[]
 
@@ -117,18 +119,12 @@ or in Gradle:
 NOTE: If you are using Spring Data REST, then a dependency on the
 `spring-data-rest-hal-browser` will have an equivalent effect.
 
-If you do that then a new endpoint will appear at `/` or `/hal` (relative to the
-`management.context-path`) serving up a static HTML page with some JavaScript that lets you
-browse the available resources. The default endpoint path depends on whether or not there
-is already a static home page ("`index.html`") - if there is not and the
-`management.context-path` is empty, then the HAL browser shows up on the home page.
+If you do that then the main entry point will server a static HTML page to browser clients
+with some JavaScript that lets you browse the available resources.
 
 Example:
 
 image::hal-browser.png[HAL Browser]
-
-TIP: The endpoint path can always, as with all MVC endpoints, be overridden using
-`endpoints.hal.path=/yourpath` (note the leading slash).
 
 
 

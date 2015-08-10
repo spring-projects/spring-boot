@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.BrowserPathHypermediaIntegrationTests.SpringBootHypermediaApplication;
-import org.springframework.boot.actuate.endpoint.mvc.ActuatorMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +41,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for {@link ActuatorMvcEndpoint}'s HAL Browser support
+ * Integration tests for {@link ActuatorHalBrowserEndpoint}'s support for producing
+ * text/html
  *
  * @author Dave Syer
  * @author Andy Wilkinson
