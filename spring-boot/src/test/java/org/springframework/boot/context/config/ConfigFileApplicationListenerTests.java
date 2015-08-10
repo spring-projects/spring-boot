@@ -512,6 +512,8 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property, equalTo("fromspecificlocation"));
+		property = context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo("fromapplicationproperties"));
 		assertThat(context.getEnvironment(),
 				containsPropertySource("class path resource "
 						+ "[specificlocation.properties]"));

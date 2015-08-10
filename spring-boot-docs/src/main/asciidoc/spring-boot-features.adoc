@@ -60,7 +60,7 @@ You can use the following variables inside your `banner.txt` file:
 | Variable | Description
 
 |`${application.version}`
-|The version number of your application as declared in `MANIFEST.MF`. For example `1.0`.
+|The version number of your application as declared in `MANIFEST.MF`. For example `Implementation-Version: 1.0` is printed as `1.0`.
 
 |`${application.formatted-version}`
 |The version number of your application as declared in `MANIFEST.MF` formatted for
