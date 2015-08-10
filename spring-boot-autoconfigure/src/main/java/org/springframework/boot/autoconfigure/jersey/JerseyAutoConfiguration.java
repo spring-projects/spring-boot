@@ -26,7 +26,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.ws.rs.ApplicationPath;
 
-import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
@@ -131,8 +130,6 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 	}
 
 	private void addInitParameters(RegistrationBean registration) {
-		registration.addInitParameter(CommonProperties.METAINF_SERVICES_LOOKUP_DISABLE,
-				"true");
 		for (Entry<String, String> entry : this.jersey.getInit().entrySet()) {
 			registration.addInitParameter(entry.getKey(), entry.getValue());
 		}
