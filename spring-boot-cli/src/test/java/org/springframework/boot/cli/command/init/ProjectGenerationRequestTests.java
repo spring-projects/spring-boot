@@ -95,9 +95,9 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	public void customPackaging() {
-		this.request.setPackaging("war");
-		assertEquals(createDefaultUrl("?packaging=war&type=test-type"),
+	public void customPackageName() {
+		this.request.setPackageName("demo.foo");
+		assertEquals(createDefaultUrl("?packageName=demo.foo&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -111,6 +111,13 @@ public class ProjectGenerationRequestTests {
 		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
 				+ "/foo?dependencies=data-rest&type=custom"),
 				this.request.generateUrl(metadata));
+	}
+
+	@Test
+	public void customPackaging() {
+		this.request.setPackaging("war");
+		assertEquals(createDefaultUrl("?type=test-type&packaging=war"),
+				this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test

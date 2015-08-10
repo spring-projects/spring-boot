@@ -266,18 +266,19 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	public void parseProjectOptions() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("-g=org.demo", "-a=acme", "-v=1.2.3-SNAPSHOT", "-n=acme-sample",
-				"--description=Acme sample project", "-p=war", "-t=ant-project",
-				"--build=grunt", "--format=web", "-j=1.9", "-l=groovy",
+				"--description=Acme sample project", "--package-name=demo.foo", "-t=ant-project",
+				"--build=grunt", "--format=web", "-p=war", "-j=1.9", "-l=groovy",
 				"-b=1.2.0.RELEASE", "-d=web,data-jpa");
 		assertEquals("org.demo", this.handler.lastRequest.getGroupId());
 		assertEquals("acme", this.handler.lastRequest.getArtifactId());
 		assertEquals("1.2.3-SNAPSHOT", this.handler.lastRequest.getVersion());
 		assertEquals("acme-sample", this.handler.lastRequest.getName());
 		assertEquals("Acme sample project", this.handler.lastRequest.getDescription());
-		assertEquals("war", this.handler.lastRequest.getPackaging());
+		assertEquals("demo.foo", this.handler.lastRequest.getPackageName());
 		assertEquals("ant-project", this.handler.lastRequest.getType());
 		assertEquals("grunt", this.handler.lastRequest.getBuild());
 		assertEquals("web", this.handler.lastRequest.getFormat());
+		assertEquals("war", this.handler.lastRequest.getPackaging());
 		assertEquals("1.9", this.handler.lastRequest.getJavaVersion());
 		assertEquals("groovy", this.handler.lastRequest.getLanguage());
 		assertEquals("1.2.0.RELEASE", this.handler.lastRequest.getBootVersion());

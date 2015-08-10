@@ -89,9 +89,11 @@ public class InitCommand extends OptionParsingCommand {
 
 		private OptionSpec<String> description;
 
-		private OptionSpec<String> packaging;
+		private OptionSpec<String> packageName;
 
 		private OptionSpec<String> type;
+
+		private OptionSpec<String> packaging;
 
 		private OptionSpec<String> build;
 
@@ -140,13 +142,14 @@ public class InitCommand extends OptionParsingCommand {
 					"Project name; infer application name").withRequiredArg();
 			this.description = option("description", "Project description")
 					.withRequiredArg();
-			this.packaging = option(Arrays.asList("packaging", "p"),
-					"Project packaging (for example 'jar')").withRequiredArg();
+			this.packageName = option("package-name", "Package name").withRequiredArg();
 			this.type = option(
 					Arrays.asList("type", "t"),
 					"Project type. Not normally needed if you use --build "
 							+ "and/or --format. Check the capabilities of the service "
 							+ "(--list) for more details").withRequiredArg();
+			this.packaging = option(Arrays.asList("packaging", "p"),
+					"Project packaging (for example 'jar')").withRequiredArg();
 			this.build = option("build",
 					"Build system to use (for example 'maven' or 'gradle')")
 					.withRequiredArg().defaultsTo("maven");
@@ -226,14 +229,17 @@ public class InitCommand extends OptionParsingCommand {
 			if (options.has(this.javaVersion)) {
 				request.setJavaVersion(options.valueOf(this.javaVersion));
 			}
-			if (options.has(this.packaging)) {
-				request.setPackaging(options.valueOf(this.packaging));
+			if (options.has(this.packageName)) {
+				request.setPackageName(options.valueOf(this.packageName));
 			}
 			request.setBuild(options.valueOf(this.build));
 			request.setFormat(options.valueOf(this.format));
 			request.setDetectType(options.has(this.build) || options.has(this.format));
 			if (options.has(this.type)) {
 				request.setType(options.valueOf(this.type));
+			}
+			if (options.has(this.packaging)) {
+				request.setPackaging(options.valueOf(this.packaging));
 			}
 			if (options.has(this.language)) {
 				request.setLanguage(options.valueOf(this.language));

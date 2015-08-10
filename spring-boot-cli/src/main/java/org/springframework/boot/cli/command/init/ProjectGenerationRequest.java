@@ -54,9 +54,11 @@ class ProjectGenerationRequest {
 
 	private String description;
 
-	private String packaging;
+	private String packageName;
 
 	private String type;
+
+	private String packaging;
 
 	private String build;
 
@@ -178,15 +180,15 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * The packaging type or {@code null} if it should not be customized.
-	 * @return the packaging type or {@code null}
+	 * Return the package name or {@code null} if it should not be customized.
+	 * @return the package name or {@code null}
 	 */
-	public String getPackaging() {
-		return this.packaging;
+	public String getPackageName() {
+		return packageName;
 	}
 
-	public void setPackaging(String packaging) {
-		this.packaging = packaging;
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
 	}
 
 	/**
@@ -200,6 +202,18 @@ class ProjectGenerationRequest {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	/**
+	 * The packaging type or {@code null} if it should not be customized.
+	 * @return the packaging type or {@code null}
+	 */
+	public String getPackaging() {
+		return this.packaging;
+	}
+
+	public void setPackaging(String packaging) {
+		this.packaging = packaging;
 	}
 
 	/**
@@ -322,11 +336,14 @@ class ProjectGenerationRequest {
 			if (this.description != null) {
 				builder.setParameter("description", this.description);
 			}
-			if (this.packaging != null) {
-				builder.setParameter("packaging", this.packaging);
+			if (this.packageName != null) {
+				builder.setParameter("packageName", this.packageName);
 			}
 			if (this.type != null) {
 				builder.setParameter("type", projectType.getId());
+			}
+			if (this.packaging != null) {
+				builder.setParameter("packaging", this.packaging);
 			}
 			if (this.javaVersion != null) {
 				builder.setParameter("javaVersion", this.javaVersion);
