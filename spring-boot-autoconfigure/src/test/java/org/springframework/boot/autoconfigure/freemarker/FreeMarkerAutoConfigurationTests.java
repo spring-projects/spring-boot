@@ -31,14 +31,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -137,6 +140,15 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.cache:false");
 		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit(),
 				equalTo(0));
+	}
+
+	@Test
+	public void allowSessionOverride() {
+		registerAndRefreshContext("spring.freemarker.allow-session-override:true");
+		AbstractTemplateViewResolver viewResolver = this.context
+				.getBean(FreeMarkerViewResolver.class);
+		assertThat((Boolean) ReflectionTestUtils.getField(viewResolver,
+				"allowSessionOverride"), is(true));
 	}
 
 	@SuppressWarnings("deprecation")

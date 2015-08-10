@@ -35,16 +35,19 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -189,6 +192,15 @@ public class VelocityAutoConfigurationTests {
 	public void registerResourceHandlingFilter() throws Exception {
 		registerAndRefreshContext();
 		assertNotNull(this.context.getBean(ResourceUrlEncodingFilter.class));
+	}
+
+	@Test
+	public void allowSessionOverride() {
+		registerAndRefreshContext("spring.velocity.allow-session-override:true");
+		AbstractTemplateViewResolver viewResolver = this.context
+				.getBean(VelocityViewResolver.class);
+		assertThat((Boolean) ReflectionTestUtils.getField(viewResolver,
+				"allowSessionOverride"), is(true));
 	}
 
 	private void registerAndRefreshContext(String... env) {
