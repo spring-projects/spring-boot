@@ -57,7 +57,7 @@ public class SampleHypermediaApplicationHomePageTests {
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> response = new TestRestTemplate().exchange(
 				new RequestEntity<Void>(headers, HttpMethod.GET, new URI(
-						"http://localhost:" + this.port + "/links")), String.class);
+						"http://localhost:" + this.port + "/actuator")), String.class);
 		assertTrue("Wrong body: " + response, response.getBody().contains("\"_links\":"));
 	}
 
@@ -67,7 +67,7 @@ public class SampleHypermediaApplicationHomePageTests {
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> response = new TestRestTemplate().exchange(
 				new RequestEntity<Void>(headers, HttpMethod.GET, new URI(
-						"http://localhost:" + this.port + "/hal/")), String.class);
+						"http://localhost:" + this.port + "/actuator/")), String.class);
 		assertTrue("Wrong body: " + response, response.getBody().contains("HAL Browser"));
 	}
 

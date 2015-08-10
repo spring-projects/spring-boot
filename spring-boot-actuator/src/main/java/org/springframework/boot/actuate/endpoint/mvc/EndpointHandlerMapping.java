@@ -201,4 +201,5 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 			RequestMappingInfo mappingInfo) {
 		return this.corsConfiguration;
 	}
+
 }

@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import sample.hypermedia.ui.SampleHypermediaUiApplication;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,7 +54,7 @@ public class SampleHypermediaUiApplicationTests {
 	@Test
 	public void links() {
 		String response = new TestRestTemplate().getForObject("http://localhost:"
-				+ this.port + "/links", String.class);
+				+ this.port + "/actuator", String.class);
 		assertTrue("Wrong body: " + response, response.contains("\"_links\":"));
 	}
 
@@ -65,7 +64,7 @@ public class SampleHypermediaUiApplicationTests {
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> response = new TestRestTemplate().exchange(
 				new RequestEntity<Void>(headers, HttpMethod.GET, new URI(
-						"http://localhost:" + this.port + "/links")), String.class);
+						"http://localhost:" + this.port + "/actuator")), String.class);
 		assertTrue("Wrong body: " + response, response.getBody().contains("\"_links\":"));
 	}
 
