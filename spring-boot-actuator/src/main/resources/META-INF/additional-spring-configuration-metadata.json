@@ -24,12 +24,6 @@
     "defaultValue": true
   },
   {
-    "name": "endpoints.hal.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable Spring Data HAL browser endpoint.",
-    "defaultValue": true
-  },
-  {
     "name": "endpoints.jmx.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable JMX export of all endpoints.",

@@ -711,9 +711,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.flyway.enabled=true
 	endpoints.flyway.id=flyway
 	endpoints.flyway.sensitive=true
-	endpoints.hal.enabled=true
-	endpoints.hal.path= # Redirects root HTML traffic to the HAL browser
-	endpoints.hal.sensitive=false
 	endpoints.liquibase.enabled=true
 	endpoints.liquibase.id=liquibase
 	endpoints.liquibase.sensitive=false
