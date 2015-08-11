@@ -145,6 +145,8 @@ content into your application; rather pick only the properties that you need.
 	spring.mvc.async.request-timeout= # async request timeout in milliseconds
 	spring.mvc.view.prefix= # MVC view prefix
 	spring.mvc.view.suffix= # ... and suffix
+	spring.mvc.view-controller.*= # Map for the given URL path (or pattern) and pre-configured view, e.g. "spring.mvc.view-controller.bar/**=bar"
+
 
 	# SPRING RESOURCES HANDLING ({sc-spring-boot-autoconfigure}/web/ResourceProperties.{sc-ext}[ResourceProperties])
 	spring.resources.cache-period= # cache timeouts in headers sent to browser

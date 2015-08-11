@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -28,6 +29,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Phillip Webb
  * @author Sébastien Deleuze
  * @author Stephane Nicoll
+ * @author Toshiaki Maki
  * @since 1.1
  */
 @ConfigurationProperties("spring.mvc")
@@ -57,6 +59,12 @@ public class WebMvcProperties {
 	private final Async async = new Async();
 
 	private final View view = new View();
+
+	/**
+	 * Map for the given URL path (or pattern) and pre-configured view.
+	 * @since 1.3
+	 */
+	private Map<String, String> viewController;
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
@@ -97,6 +105,14 @@ public class WebMvcProperties {
 
 	public View getView() {
 		return this.view;
+	}
+
+	public Map<String, String> getViewController() {
+		return viewController;
+	}
+
+	public void setViewController(Map<String, String> viewController) {
+		this.viewController = viewController;
 	}
 
 	public static class Async {
