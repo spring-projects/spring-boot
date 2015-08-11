@@ -45,6 +45,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
@@ -65,8 +66,8 @@ import org.springframework.lang.UsesJava7;
 @Configuration
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, CacheAutoConfiguration.class,
-		MetricRepositoryAutoConfiguration.class, CacheStatisticsAutoConfiguration.class,
-		IntegrationAutoConfiguration.class })
+	MetricRepositoryAutoConfiguration.class, CacheStatisticsAutoConfiguration.class,
+	IntegrationAutoConfiguration.class })
 public class PublicMetricsAutoConfiguration {
 
 	@Autowired(required = false)
@@ -107,6 +108,7 @@ public class PublicMetricsAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
+	@ConditionalOnWebApplication
 	static class TomcatMetricsConfiguration {
 
 		@Bean
