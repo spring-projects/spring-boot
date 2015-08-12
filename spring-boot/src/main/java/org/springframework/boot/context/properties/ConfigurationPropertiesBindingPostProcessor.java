@@ -298,10 +298,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			factory.bindPropertiesToTarget();
 		}
 		catch (Exception ex) {
-			String targetClass = "[unknown]";
-			if (target != null) {
-				ClassUtils.getShortName(target.getClass());
-			}
+			String targetClass = ClassUtils.getShortName(target.getClass());
 			throw new BeanCreationException(beanName, "Could not bind properties to "
 					+ targetClass + " (" + getAnnotationDetails(annotation) + ")", ex);
 		}
