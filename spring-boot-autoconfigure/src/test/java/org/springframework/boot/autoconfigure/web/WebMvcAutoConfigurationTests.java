@@ -464,7 +464,8 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void configureViewController() {
 		load("spring.mvc.view-controller./:index", "spring.mvc.view-controller.foo:foo",
-				"spring.mvc.view-controller.bar/**:bar");
+				"spring.mvc.view-controller.bar/**:bar",
+				"spring.mvc.view-controller.hello.do:hello");
 		SimpleUrlHandlerMapping handlerMapping = this.context
 				.getBean("viewControllerHandlerMapping", SimpleUrlHandlerMapping.class);
 		Map<String, ?> urlMap = handlerMapping.getUrlMap();
@@ -476,6 +477,8 @@ public class WebMvcAutoConfigurationTests {
 				is("foo"));
 		assertThat(ParameterizableViewController.class.cast(urlMap.get("bar/**"))
 				.getViewName(), is("bar"));
+		assertThat(ParameterizableViewController.class.cast(urlMap.get("hello.do"))
+				.getViewName(), is("hello"));
 	}
 
 	@SuppressWarnings("unchecked")
