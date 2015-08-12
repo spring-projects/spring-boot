@@ -20,11 +20,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.RemoteUrlPropertyExtractor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -64,6 +65,8 @@ public class RemoteUrlPropertyExtractorTests {
 		ApplicationContext context = doTest("http://localhost:8080");
 		assertThat(context.getEnvironment().getProperty("remoteUrl"),
 				equalTo("http://localhost:8080"));
+		assertThat(context.getEnvironment().getProperty("spring.thymeleaf.cache"),
+				is(nullValue()));
 	}
 
 	private ApplicationContext doTest(String... args) {

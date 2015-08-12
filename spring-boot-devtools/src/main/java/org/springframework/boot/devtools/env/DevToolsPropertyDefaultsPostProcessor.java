@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devtools.autoconfigure;
+package org.springframework.boot.devtools.env;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
 /**
- * {@link BeanFactoryPostProcessor} to add properties that make sense when working at
+ * {@link EnvironmentPostProcessor} to add properties that make sense when working at
  * development time.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @since 1.3.0
  */
-class DevToolsPropertyDefaultsPostProcessor implements BeanFactoryPostProcessor,
-		EnvironmentAware {
+public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostProcessor {
 
 	private static final Map<String, Object> PROPERTIES;
 	static {
@@ -51,24 +49,18 @@ class DevToolsPropertyDefaultsPostProcessor implements BeanFactoryPostProcessor,
 		PROPERTIES = Collections.unmodifiableMap(properties);
 	}
 
-	private Environment environment;
-
 	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
-	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-			throws BeansException {
-		if (this.environment instanceof ConfigurableEnvironment) {
-			postProcessEnvironment((ConfigurableEnvironment) this.environment);
+	public void postProcessEnvironment(ConfigurableEnvironment environment,
+			SpringApplication application) {
+		if (isLocalApplication(environment)) {
+			PropertySource<?> propertySource = new MapPropertySource("refresh",
+					PROPERTIES);
+			environment.getPropertySources().addFirst(propertySource);
 		}
 	}
 
-	private void postProcessEnvironment(ConfigurableEnvironment environment) {
-		PropertySource<?> propertySource = new MapPropertySource("refresh", PROPERTIES);
-		environment.getPropertySources().addFirst(propertySource);
+	private boolean isLocalApplication(ConfigurableEnvironment environment) {
+		return environment.getPropertySources().get("remoteUrl") == null;
 	}
 
 }

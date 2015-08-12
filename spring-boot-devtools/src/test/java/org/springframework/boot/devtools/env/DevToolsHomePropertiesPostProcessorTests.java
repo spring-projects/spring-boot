@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devtools.autoconfigure;
+package org.springframework.boot.devtools.env;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,21 +26,21 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.devtools.env.DevToolsHomePropertiesPostProcessor;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link DevToolHomePropertiesPostProcessor}.
+ * Tests for {@link DevToolsHomePropertiesPostProcessor}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-public class DevToolHomePropertiesPostProcessorTests {
+public class DevToolsHomePropertiesPostProcessorTests {
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
@@ -60,28 +60,26 @@ public class DevToolHomePropertiesPostProcessorTests {
 				".spring-boot-devtools.properties"));
 		properties.store(out, null);
 		out.close();
-		Environment environment = new MockEnvironment();
+		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
-		postProcessor.setEnvironment(environment);
-		postProcessor.postProcessBeanFactory(mock(ConfigurableListableBeanFactory.class));
+		postProcessor.postProcessEnvironment(environment, null);
 		assertThat(environment.getProperty("abc"), equalTo("def"));
 	}
 
 	@Test
 	public void ignoresMissingHomeProperties() throws Exception {
-		Environment environment = new MockEnvironment();
+		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
-		postProcessor.setEnvironment(environment);
-		postProcessor.postProcessBeanFactory(mock(ConfigurableListableBeanFactory.class));
+		postProcessor.postProcessEnvironment(environment, null);
 		assertThat(environment.getProperty("abc"), nullValue());
 	}
 
 	private class MockDevToolHomePropertiesPostProcessor extends
-			DevToolHomePropertiesPostProcessor {
+			DevToolsHomePropertiesPostProcessor {
 
 		@Override
 		protected File getHomeFolder() {
-			return DevToolHomePropertiesPostProcessorTests.this.home;
+			return DevToolsHomePropertiesPostProcessorTests.this.home;
 		}
 	}
 

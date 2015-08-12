@@ -53,19 +53,6 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(DevToolsProperties.class)
 public class LocalDevToolsAutoConfiguration {
 
-	@Autowired
-	private DevToolsProperties properties;
-
-	@Bean
-	public static DevToolsPropertyDefaultsPostProcessor devToolsPropertyDefaultsPostProcessor() {
-		return new DevToolsPropertyDefaultsPostProcessor();
-	}
-
-	@Bean
-	public static DevToolHomePropertiesPostProcessor devToolHomePropertiesPostProcessor() {
-		return new DevToolHomePropertiesPostProcessor();
-	}
-
 	/**
 	 * Local LiveReload configuration.
 	 */

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -35,9 +36,10 @@ import org.springframework.util.StringUtils;
  * {@link RemoteSpringApplication} to use.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class RemoteUrlPropertyExtractor implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	private static final String NON_OPTION_ARGS = CommandLinePropertySource.DEFAULT_NON_OPTION_ARGS_PROPERTY_NAME;
 
@@ -56,6 +58,11 @@ class RemoteUrlPropertyExtractor implements
 		Map<String, Object> source = Collections.singletonMap("remoteUrl", (Object) url);
 		PropertySource<?> propertySource = new MapPropertySource("remoteUrl", source);
 		environment.getPropertySources().addLast(propertySource);
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 }
