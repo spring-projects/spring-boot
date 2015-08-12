@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.Servlet;
 
@@ -91,6 +92,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Sébastien Deleuze
+ * @author Toshiaki Maki
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -294,6 +296,13 @@ public class WebMvcAutoConfiguration {
 			if (page != null) {
 				logger.info("Adding welcome page: " + page);
 				registry.addViewController("/").setViewName("forward:index.html");
+			}
+			if (this.mvcProperties.getViewController() != null) {
+				for (Map.Entry<String, String> entry : this.mvcProperties
+						.getViewController().entrySet()) {
+					registry.addViewController(entry.getKey())
+							.setViewName(entry.getValue());
+				}
 			}
 		}
 

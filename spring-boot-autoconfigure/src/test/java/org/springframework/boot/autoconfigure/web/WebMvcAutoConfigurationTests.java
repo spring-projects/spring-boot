@@ -62,6 +62,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
+import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.CachingResourceResolver;
@@ -97,6 +98,7 @@ import static org.junit.Assert.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Brian Clozel
+ * @author Toshiaki Maki
  */
 public class WebMvcAutoConfigurationTests {
 
@@ -457,6 +459,26 @@ public class WebMvcAutoConfigurationTests {
 				.size(), is(equalTo(0)));
 		assertThat(this.context.getBeansOfType(HttpPutFormContentFilter.class).size(),
 				is(equalTo(1)));
+	}
+
+	@Test
+	public void configureViewController() {
+		load("spring.mvc.view-controller./:index", "spring.mvc.view-controller.foo:foo",
+				"spring.mvc.view-controller.bar/**:bar",
+				"spring.mvc.view-controller.hello.do:hello");
+		SimpleUrlHandlerMapping handlerMapping = this.context
+				.getBean("viewControllerHandlerMapping", SimpleUrlHandlerMapping.class);
+		Map<String, ?> urlMap = handlerMapping.getUrlMap();
+		assertThat(
+				ParameterizableViewController.class.cast(urlMap.get("/")).getViewName(),
+				is("index"));
+		assertThat(
+				ParameterizableViewController.class.cast(urlMap.get("foo")).getViewName(),
+				is("foo"));
+		assertThat(ParameterizableViewController.class.cast(urlMap.get("bar/**"))
+				.getViewName(), is("bar"));
+		assertThat(ParameterizableViewController.class.cast(urlMap.get("hello.do"))
+				.getViewName(), is("hello"));
 	}
 
 	@SuppressWarnings("unchecked")
