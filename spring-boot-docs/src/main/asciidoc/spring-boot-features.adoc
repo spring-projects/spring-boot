@@ -2292,7 +2292,7 @@ path using the `spring.h2.console.path` property.
 
 [[boot-features-sql-h2-console-securing]]
 ==== Securing the H2 console
-When Spring Security is one the and basic auth is enabled, the H2 console will be
+When Spring Security is on the classpath and basic auth is enabled, the H2 console will be
 automatically secured using basic auth. The following properties can be used to customize
 the security configuration:
 

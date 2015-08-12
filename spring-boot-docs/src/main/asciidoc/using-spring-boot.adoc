@@ -775,7 +775,7 @@ entropy for session keys.)
 === Using the Gradle plugin
 The Spring Boot Gradle plugin also includes a `bootRun` task which can be used to run
 your application in an exploded form. The `bootRun` task is added whenever you import
-the `spring-boot-plugin`
+the `spring-boot-gradle-plugin`:
 
 [indent=0,subs="attributes"]
 ----
