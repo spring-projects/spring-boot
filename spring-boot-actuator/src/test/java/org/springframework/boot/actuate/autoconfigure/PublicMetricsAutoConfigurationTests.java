@@ -16,6 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import static org.hamcrest.Matchers.hasKey;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -41,9 +49,12 @@ import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,14 +67,6 @@ import org.springframework.util.SocketUtils;
 
 import com.zaxxer.hikari.HikariDataSource;
 
-import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 /**
  * Tests for {@link PublicMetricsAutoConfiguration}.
  *
@@ -73,7 +76,7 @@ import static org.mockito.Mockito.mock;
  */
 public class PublicMetricsAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private ConfigurableApplicationContext context;
 
 	@After
 	public void after() {
@@ -147,7 +150,7 @@ public class PublicMetricsAutoConfigurationTests {
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
 			public Void doInConnection(Connection connection) throws SQLException,
-					DataAccessException {
+			DataAccessException {
 				return null;
 			}
 		});
@@ -189,7 +192,7 @@ public class PublicMetricsAutoConfigurationTests {
 
 	@Test
 	public void tomcatMetrics() throws Exception {
-		load(TomcatConfiguration.class);
+		loadWeb(TomcatConfiguration.class);
 		assertEquals(1, this.context.getBeansOfType(TomcatPublicMetrics.class).size());
 	}
 
@@ -236,15 +239,28 @@ public class PublicMetricsAutoConfigurationTests {
 		}
 	}
 
-	private void load(Class<?>... config) {
-		this.context = new AnnotationConfigApplicationContext();
+	private void loadWeb(Class<?>... config) {
+		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 		if (config.length > 0) {
-			this.context.register(config);
+			context.register(config);
 		}
-		this.context.register(DataSourcePoolMetadataProvidersConfiguration.class,
+		context.register(DataSourcePoolMetadataProvidersConfiguration.class,
+				CacheStatisticsAutoConfiguration.class,
+				PublicMetricsAutoConfiguration.class, MockEmbeddedServletContainerFactory.class);
+		context.refresh();
+		this.context = context;
+	}
+
+	private void load(Class<?>... config) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		if (config.length > 0) {
+			context.register(config);
+		}
+		context.register(DataSourcePoolMetadataProvidersConfiguration.class,
 				CacheStatisticsAutoConfiguration.class,
 				PublicMetricsAutoConfiguration.class);
-		this.context.refresh();
+		context.refresh();
+		this.context = context;
 	}
 
 	@Configuration
