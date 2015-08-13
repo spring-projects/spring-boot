@@ -37,7 +37,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfigurationTests.CustomConfigurableWebBindingInitializer.CustomWebBindingInitializer;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -581,16 +580,6 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	static class CustomHttpPutFormContentFilter {
-
-		@Bean
-		public HttpPutFormContentFilter customHttpPutFormContentFilter() {
-			return new HttpPutFormContentFilter();
-		}
-
-	}
-
-	@Configuration
 	static class CustomConfigurableWebBindingInitializer {
 
 		@Bean
@@ -599,10 +588,20 @@ public class WebMvcAutoConfigurationTests {
 
 		}
 
-		static class CustomWebBindingInitializer extends
-				ConfigurableWebBindingInitializer {
+	}
 
+	private static class CustomWebBindingInitializer extends
+			ConfigurableWebBindingInitializer {
+	}
+
+	@Configuration
+	static class CustomHttpPutFormContentFilter {
+
+		@Bean
+		public HttpPutFormContentFilter customHttpPutFormContentFilter() {
+			return new HttpPutFormContentFilter();
 		}
+
 	}
 
 }
