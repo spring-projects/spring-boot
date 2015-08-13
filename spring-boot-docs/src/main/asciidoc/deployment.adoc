@@ -294,6 +294,68 @@ run the app.
 
 
 
+[[cloud-deployment-boxfuse]]
+=== Boxfuse and Amazon Web Services
+https://boxfuse.com/[Boxfuse] works by turning your Spring Boot executable jar or war
+into a minimal VM image that can be deployed unchanged either on VirtualBox or on AWS.
+Boxfuse comes with deep integration for Spring Boot and will use the information from your
+Spring Boot configuration file to automatically configure ports and healthcheck URLs.
+Boxfuse leverages this information both for the images it produces as well as for all the
+resources it provisions (instances, security groups, elastic load balancers, etc).
+
+Once you have created a https://console.boxfuse.com[Boxfuse account], connected it to your
+AWS account, and installed the latest version of the Boxfuse Client, you can deploy your
+Spring Boot application to AWS as follows (ensure the application has been built by
+Maven or Gradle first using, for example, `mvn clean package`):
+
+[indent=0]
+----
+	$ boxfuse run myapp-1.0.jar -env=prod
+----
+
+See the https://boxfuse.com/docs/commandline/run.html[`boxfuse run` documentation] for
+more options. If there is a https://boxfuse.com/docs/commandline/#configuration
+[`boxfuse.conf`] file present in the current directory, it will be consulted.
+
+TIP: By default Boxfuse will activate a Spring profile named `boxfuse` on startup and if
+your executable jar or war contains an
+https://boxfuse.com/docs/payloads/springboot.html#configuration
+[`application-boxfuse.properties`]
+file, Boxfuse will base its configuration based on the properties it contains.
+
+At this point `boxfuse` will start create an image for your application, upload it,
+and then configure and start the necessary resources on AWS:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	Fusing Image for myapp-1.0.jar ...
+	Image fused in 00:06.838s (53937 K) -> axelfontaine/myapp:1.0
+	Creating axelfontaine/myapp ...
+	Pushing axelfontaine/myapp:1.0 ...
+	Verifying axelfontaine/myapp:1.0 ...
+	Creating Elastic IP ...
+	Mapping myapp-axelfontaine.boxfuse.io to 52.28.233.167 ...
+	Waiting for AWS to create an AMI for axelfontaine/myapp:1.0 in eu-central-1 (this may take up to 50 seconds) ...
+	AMI created in 00:23.557s -> ami-d23f38cf
+	Creating security group boxfuse-sg_axelfontaine/myapp:1.0 ...
+	Launching t2.micro instance of axelfontaine/myapp:1.0 (ami-d23f38cf) in eu-central-1 ...
+	Instance launched in 00:30.306s -> i-92ef9f53
+	Waiting for AWS to boot Instance i-92ef9f53 and Payload to start at http://52.28.235.61/ ...
+	Payload started in 00:29.266s -> http://52.28.235.61/
+	Remapping Elastic IP 52.28.233.167 to i-92ef9f53 ...
+	Waiting 15s for AWS to complete Elastic IP Zero Downtime transition ...
+	Deployment completed successfully. axelfontaine/myapp:1.0 is up and running at http://myapp-axelfontaine.boxfuse.io/
+----
+
+Your application should now be up and running on AWS.
+
+There's a blog on https://boxfuse.com/blog/spring-boot-ec2.html[deploying Spring Boot apps
+on EC2] as well as well as https://boxfuse.com/docs/payloads/springboot.html[documentation
+for the Boxfuse Spring Boot integration] on their website that will get you started with a
+Maven build to run the app.
+
+
+
 [[cloud-deployment-gae]]
 === Google App Engine
 Google App Engine is tied to the Servlet 2.5 API, so you can't deploy a Spring Application
@@ -511,11 +573,12 @@ your Spring Boot application.
 
 [[deployment-whats-next]]
 == What to read next
-Check out the http://www.cloudfoundry.com/[Cloud Foundry], https://www.heroku.com/[Heroku]
-and https://www.openshift.com[Openshift] web sites for more information about the kinds of
-features that a PaaS can offer. These are just three of the most popular Java PaaS
-providers, since Spring Boot is so amenable to cloud-based deployment you're free to
-consider other providers as well.
+Check out the http://www.cloudfoundry.com/[Cloud Foundry],
+https://www.heroku.com/[Heroku], https://www.openshift.com[Openshift] and
+https://boxfuse.com[Boxfuse] web sites for more information about the kinds of features
+that a PaaS can offer. These are just four of the most popular Java PaaS providers, since
+Spring Boot is so amenable to cloud-based deployment you're free to consider other
+providers as well.
 
 The next section goes on to cover the _<<spring-boot-cli.adoc#cli, Spring Boot CLI>>_;
 or you can jump ahead to read about
