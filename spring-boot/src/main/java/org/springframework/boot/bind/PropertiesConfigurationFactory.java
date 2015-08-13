@@ -314,7 +314,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 			// We can filter properties to those starting with the target name, but
 			// we can't do a complete filter since we need to trigger the
 			// unknown fields check
-			return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMITERS,
+			return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMITERS, true,
 					this.targetName);
 		}
 		// Not ideal, we basically can't filter anything

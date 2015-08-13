@@ -48,30 +48,9 @@ public class PropertiesConfigurationFactoryTests {
 	private String targetName = null;
 
 	@Test
-	public void testValidPropertiesLoadsWithNoErrors() throws Exception {
-		Foo foo = createFoo("name: blah\nbar: blah");
-		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
-	}
-
-	@Test
-	public void testValidPropertiesLoadsWithUpperCase() throws Exception {
-		Foo foo = createFoo("NAME: blah\nbar: blah");
-		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
-	}
-
-	@Test
 	public void testValidPropertiesLoadsWithDash() throws Exception {
 		Foo foo = createFoo("na-me: blah\nbar: blah");
 		assertEquals("blah", foo.bar);
-		assertEquals("blah", foo.name);
-	}
-
-	@Test
-	public void testUnderscore() throws Exception {
-		Foo foo = createFoo("spring_foo_baz: blah\nname: blah");
-		assertEquals("blah", foo.spring_foo_baz);
 		assertEquals("blah", foo.name);
 	}
 
@@ -101,13 +80,6 @@ public class PropertiesConfigurationFactoryTests {
 		setupFactory();
 		this.factory.setExceptionIfInvalid(false);
 		bindFoo("bar: blah");
-	}
-
-	@Test
-	public void testBindToNamedTarget() throws Exception {
-		this.targetName = "foo";
-		Foo foo = createFoo("hi: hello\nfoo.name: foo\nfoo.bar: blah");
-		assertEquals("blah", foo.bar);
 	}
 
 	private Foo createFoo(final String values) throws Exception {

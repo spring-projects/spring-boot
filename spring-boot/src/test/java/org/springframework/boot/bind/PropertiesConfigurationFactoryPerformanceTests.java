@@ -33,7 +33,7 @@ import org.springframework.validation.Validator;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests for {@link PropertiesConfigurationFactory}.
+ * Performance tests for {@link PropertiesConfigurationFactory}.
  *
  * @author Dave Syer
  */
