@@ -70,6 +70,7 @@ The following endpoints are available:
 |`actuator`
 |Provides a hypermedia-based "`discovery page`" for the other endpoints. Requires Spring
 HATEOAS to be on the classpath.
+|true
 
 |`autoconfig`
 |Displays an auto-configuration report showing all auto-configuration candidates and the
