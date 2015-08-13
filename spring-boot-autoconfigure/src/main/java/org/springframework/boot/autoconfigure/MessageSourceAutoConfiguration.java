@@ -48,6 +48,7 @@ import static org.springframework.util.StringUtils.trimAllWhitespace;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnMissingBean(MessageSource.class)
@@ -77,6 +78,11 @@ public class MessageSourceAutoConfiguration {
 	 */
 	private int cacheSeconds = -1;
 
+	/**
+	 * Fall back to the system locale.
+	 */
+	private boolean fallbackToSystemLocale = true;
+
 	@Bean
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -87,6 +93,7 @@ public class MessageSourceAutoConfiguration {
 		if (this.encoding != null) {
 			messageSource.setDefaultEncoding(this.encoding.name());
 		}
+		messageSource.setFallbackToSystemLocale(this.fallbackToSystemLocale);
 		messageSource.setCacheSeconds(this.cacheSeconds);
 		return messageSource;
 	}
@@ -113,6 +120,14 @@ public class MessageSourceAutoConfiguration {
 
 	public void setCacheSeconds(int cacheSeconds) {
 		this.cacheSeconds = cacheSeconds;
+	}
+
+	public boolean isFallbackToSystemLocale() {
+		return this.fallbackToSystemLocale;
+	}
+
+	public void setFallbackToSystemLocale(boolean fallbackToSystemLocale) {
+		this.fallbackToSystemLocale = fallbackToSystemLocale;
 	}
 
 	protected static class ResourceBundleCondition extends SpringBootCondition {

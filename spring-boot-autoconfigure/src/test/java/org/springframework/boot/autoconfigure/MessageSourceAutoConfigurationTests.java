@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,11 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MessageSourceAutoConfiguration}.
@@ -78,8 +81,7 @@ public class MessageSourceAutoConfigurationTests {
 		this.context.register(MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals("bar",
-				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertEquals("bar", this.context.getMessage("foo", null, "Foo message", Locale.UK));
 		assertEquals("bar-bar",
 				this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK));
 	}
@@ -87,8 +89,7 @@ public class MessageSourceAutoConfigurationTests {
 	@Test
 	public void testBadEncoding() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.messages.encoding:rubbish");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.messages.encoding:rubbish");
 		this.context.register(MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -105,6 +106,35 @@ public class MessageSourceAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals("bar",
 				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+	}
+
+	@Test
+	public void testFallbackDefault() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.messages.basename:test/messages");
+		this.context.register(MessageSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+
+		assertTrue(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isFallbackToSystemLocale());
+		assertEquals("bar", this.context.getMessage("foo", null, "bar", Locale.UK));
+	}
+
+	@Test
+	public void testFallbackTurnOff() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.messages.basename:test/messages",
+				"spring.messages.fallback-to-system-locale:false");
+		this.context.register(MessageSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+
+		assertFalse(this.context.getBean(MessageSourceAutoConfiguration.class)
+				.isFallbackToSystemLocale());
+		assertEquals("bar", this.context.getMessage("foo", null, "bar", Locale.UK));
 	}
 
 	@Configuration
