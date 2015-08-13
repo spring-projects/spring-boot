@@ -119,7 +119,8 @@ public class DataSourceAutoConfiguration {
 					.driverClassName(this.properties.getDriverClassName())
 					.url(this.properties.getUrl())
 					.username(this.properties.getUsername())
-					.password(this.properties.getPassword());
+					.password(this.properties.getPassword())
+					.isolationLevel(this.properties.getIsolationLevel());
 			return factory.build();
 		}
 

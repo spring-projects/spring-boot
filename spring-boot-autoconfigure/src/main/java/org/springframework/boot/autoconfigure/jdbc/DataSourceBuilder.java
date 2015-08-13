@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -36,6 +37,7 @@ import org.springframework.util.ClassUtils;
  * {@code @ConfigurationProperties}.
  *
  * @author Dave Syer
+ * @author Arnost Havelka
  * @since 1.1.0
  */
 public class DataSourceBuilder {
@@ -51,6 +53,8 @@ public class DataSourceBuilder {
 	private ClassLoader classLoader;
 
 	private Map<String, String> properties = new HashMap<String, String>();
+	
+	private Integer isolationLevel;
 
 	public static DataSourceBuilder create() {
 		return new DataSourceBuilder(null);
@@ -69,7 +73,15 @@ public class DataSourceBuilder {
 		DataSource result = BeanUtils.instantiate(type);
 		maybeGetDriverClassName();
 		bind(result);
+		if (this.isolationLevel != null && this.isolationLevel != TransactionDefinition.ISOLATION_DEFAULT) {
+			// apply isolation level by wrapping datasource (when properly configured)
+			result = applyIsolationLevel(result);
+		}
 		return result;
+	}
+
+	private DataSource applyIsolationLevel(DataSource result) {
+		return new IsolationLevelDataSourceWrapper(result, this.isolationLevel);
 	}
 
 	private void maybeGetDriverClassName() {
@@ -108,6 +120,16 @@ public class DataSourceBuilder {
 
 	public DataSourceBuilder password(String password) {
 		this.properties.put("password", password);
+		return this;
+	}
+
+	/**
+	 * @since 1.3.0
+	 */
+	public DataSourceBuilder isolationLevel(int isolationLevel) {
+		if (isolationLevel != TransactionDefinition.ISOLATION_DEFAULT) {
+			this.isolationLevel = isolationLevel;
+		}
 		return this;
 	}
 

@@ -17,13 +17,17 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.nio.charset.Charset;
+import java.sql.Connection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -37,6 +41,8 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 public class DataSourceProperties implements BeanClassLoaderAware, InitializingBean {
+	
+	private final Log log = LogFactory.getLog(getClass());
 
 	public static final String PREFIX = "spring.datasource";
 
@@ -97,6 +103,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Statement separator in SQL initialization scripts.
 	 */
 	private String separator = ";";
+
+	/**
+	 * Default isolation level
+	 */
+	private int isolationLevel = TransactionDefinition.ISOLATION_DEFAULT;
 
 	/**
 	 * SQL scripts encoding.
@@ -260,7 +271,64 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	public Charset getSqlScriptEncoding() {
 		return this.sqlScriptEncoding;
 	}
+	
+	public int getIsolationLevel() {
+		return isolationLevel;
+	}
 
+	public void setIsolationLevel(String isolationLevel) {
+		int newValue = getIsolationLevelValue(isolationLevel);
+		if (newValue < 0) {
+			log.warn(String.format("Configuration item 'spring.datasource.isolation-level' does not support value '%s'!", isolationLevel));
+			// nothing to change
+			return;
+		}
+		this.isolationLevel = newValue;
+	}
+
+	/**
+	 * Parse configuration value for isolation levels ("none", "read_uncommited", "read_commited", "repeatable_read", "serializable") 
+	 * or its equal integer constant from class <code>java.sql.Connection</code>.
+	 * @param value desired isolation level
+	 */	
+	private int getIsolationLevelValue(String value) {
+		if (StringUtils.isEmpty(value)) {
+			return -1;
+		}
+		try {
+			int intValue = Integer.parseInt(value);
+			switch (intValue) {
+			case Connection.TRANSACTION_NONE:
+			case Connection.TRANSACTION_READ_UNCOMMITTED:
+			case Connection.TRANSACTION_READ_COMMITTED:
+			case Connection.TRANSACTION_REPEATABLE_READ:
+			case Connection.TRANSACTION_SERIALIZABLE:
+				return intValue;
+			default:
+				return -1;
+			}
+		} catch (NumberFormatException ex) {
+			// Configuration is not done by number (according constant)
+			if ("none".equals(value)) {
+				return Connection.TRANSACTION_NONE;
+			}
+			if ("read_uncommited".equals(value)) {
+				return Connection.TRANSACTION_READ_UNCOMMITTED;
+			}
+			if ("read_commited".equals(value)) {
+				return Connection.TRANSACTION_READ_COMMITTED;
+			}
+			if ("repeatable_read".equals(value)) {
+				return Connection.TRANSACTION_REPEATABLE_READ;
+			}
+			if ("serializable".equals(value)) {
+				return Connection.TRANSACTION_SERIALIZABLE;
+			}
+		}
+		// anything else is also considered as wrong configuration
+		return -1;		
+	}
+	
 	public void setSqlScriptEncoding(Charset sqlScriptEncoding) {
 		this.sqlScriptEncoding = sqlScriptEncoding;
 	}
