@@ -37,13 +37,12 @@ public class SpringNamingStrategy extends ImprovedNamingStrategy {
 	@Override
 	public String foreignKeyColumnName(String propertyName, String propertyEntityName,
 			String propertyTableName, String referencedColumnName) {
-		String name = propertyTableName;
 		if (propertyName != null) {
-			name = StringHelper.unqualify(propertyName);
+			propertyTableName = StringHelper.unqualify(propertyName);
 		}
-		Assert.state(StringUtils.hasLength(name),
+		Assert.state(StringUtils.hasLength(propertyTableName),
 				"Unable to generate foreignKeyColumnName");
-		return columnName(name) + "_" + referencedColumnName;
+		return columnName(propertyTableName) + "_" + referencedColumnName;
 	}
 
 }
