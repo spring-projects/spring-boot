@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -56,6 +57,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.HttpPutFormContentFilter;
@@ -334,6 +336,9 @@ public class WebMvcAutoConfiguration {
 		@Autowired(required = false)
 		private WebMvcProperties mvcProperties;
 
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
 		@Bean
 		@Override
 		public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
@@ -349,6 +354,16 @@ public class WebMvcAutoConfiguration {
 		public RequestMappingHandlerMapping requestMappingHandlerMapping() {
 			// Must be @Primary for MvcUriComponentsBuilder to work
 			return super.requestMappingHandlerMapping();
+		}
+
+		@Override
+		protected ConfigurableWebBindingInitializer getConfigurableWebBindingInitializer() {
+			try {
+				return this.beanFactory.getBean(ConfigurableWebBindingInitializer.class);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return super.getConfigurableWebBindingInitializer();
+			}
 		}
 
 	}

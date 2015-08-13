@@ -37,6 +37,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfigurationTests.CustomConfigurableWebBindingInitializer.CustomWebBindingInitializer;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -52,6 +53,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -459,6 +461,14 @@ public class WebMvcAutoConfigurationTests {
 				is(equalTo(1)));
 	}
 
+	@Test
+	public void customConfigurableWebBindingInitializer() {
+		load(CustomConfigurableWebBindingInitializer.class);
+		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class)
+				.getWebBindingInitializer(),
+				is(instanceOf(CustomWebBindingInitializer.class)));
+	}
+
 	@SuppressWarnings("unchecked")
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
@@ -578,6 +588,21 @@ public class WebMvcAutoConfigurationTests {
 			return new HttpPutFormContentFilter();
 		}
 
+	}
+
+	@Configuration
+	static class CustomConfigurableWebBindingInitializer {
+
+		@Bean
+		public ConfigurableWebBindingInitializer customConfigurableWebBindingInitializer() {
+			return new CustomWebBindingInitializer();
+
+		}
+
+		static class CustomWebBindingInitializer extends
+				ConfigurableWebBindingInitializer {
+
+		}
 	}
 
 }

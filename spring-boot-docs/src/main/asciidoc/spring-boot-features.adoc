@@ -1216,6 +1216,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Automatic registration of `MessageCodesResolver` (see below).
 * Static `index.html` support.
 * Custom `Favicon` support.
+* Automatic use of a `ConfigurableWebBindingInitializer` bean (see below).
 
 If you want to take complete control of Spring MVC, you can add your own `@Configuration`
 annotated with `@EnableWebMvc`. If you want to keep Spring Boot MVC features, and
@@ -1344,6 +1345,13 @@ This feature has been thoroughly described in a dedicated
 https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post]
 and in Spring Framework's {spring-reference}/#mvc-config-static-resources[reference documentation].
 ====
+
+[[boot-features-spring-mvc-web-binding-initializer]]
+==== ConfigurableWebBindingInitializer
+
+Spring MVC uses a `WebBindingInitializer` to initialize a `WebDataBinder` for a particular
+request. If you create your own `ConfigurableWebBindingInitializer` `@Bean`, Spring Boot
+will automatically configure Spring MVC to use it.
 
 
 
