@@ -33,12 +33,11 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
+import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.env.PropertySourcesLoader;
 import org.springframework.boot.logging.DeferredLog;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
@@ -47,7 +46,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -59,7 +57,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 
 /**
- * {@link ApplicationListener} that configures the context environment by loading
+ * {@link EnvironmentPostProcessor} that configures the context environment by loading
  * properties from well known file locations. By default properties will be loaded from
  * 'application.properties' and/or 'application.yml' files in the following locations:
  * <ul>
@@ -89,9 +87,10 @@ import org.springframework.validation.BindException;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-public class ConfigFileApplicationListener implements
-		ApplicationListener<ApplicationEvent>, Ordered {
+public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProcessor,
+		ApplicationListener<ApplicationPreparedEvent>, Ordered {
 
 	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
@@ -121,34 +120,15 @@ public class ConfigFileApplicationListener implements
 	private final ConversionService conversionService = new DefaultConversionService();
 
 	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
-		}
-		if (event instanceof ApplicationPreparedEvent) {
-			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
-		}
-	}
-
-	private void onApplicationEnvironmentPreparedEvent(
-			ApplicationEnvironmentPreparedEvent event) {
-		Environment environment = event.getEnvironment();
-		if (environment instanceof ConfigurableEnvironment) {
-			onApplicationEnvironmentPreparedEvent((ConfigurableEnvironment) environment,
-					event.getSpringApplication());
-		}
-	}
-
-	private void onApplicationEnvironmentPreparedEvent(
-			ConfigurableEnvironment environment, SpringApplication application) {
+	public void postProcessEnvironment(ConfigurableEnvironment environment,
+			SpringApplication application) {
 		addPropertySources(environment, application.getResourceLoader());
 		bindToSpringApplication(environment, application);
 	}
 
-	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		// logging is deferred because the Logging initialization might not have
-		// run at the time that config file decisions are taken
-		this.logger.replayTo(ConfigFileApplicationListener.class);
+	@Override
+	public void onApplicationEvent(ApplicationPreparedEvent event) {
+		this.logger.replayTo(ConfigFileEnvironmentPostProcessor.class);
 		addPostProcessors(event.getApplicationContext());
 	}
 
@@ -272,7 +252,7 @@ public class ConfigFileApplicationListener implements
 	 */
 	private class Loader {
 
-		private final Log logger = ConfigFileApplicationListener.this.logger;
+		private final Log logger = ConfigFileEnvironmentPostProcessor.this.logger;
 
 		private final ConfigurableEnvironment environment;
 
@@ -472,7 +452,7 @@ public class ConfigFileApplicationListener implements
 				}
 			}
 			locations.addAll(asResolvedSet(
-					ConfigFileApplicationListener.this.searchLocations,
+					ConfigFileEnvironmentPostProcessor.this.searchLocations,
 					DEFAULT_SEARCH_LOCATIONS));
 			return locations;
 		}
@@ -482,7 +462,8 @@ public class ConfigFileApplicationListener implements
 				return asResolvedSet(this.environment.getProperty(CONFIG_NAME_PROPERTY),
 						null);
 			}
-			return asResolvedSet(ConfigFileApplicationListener.this.names, DEFAULT_NAMES);
+			return asResolvedSet(ConfigFileEnvironmentPostProcessor.this.names,
+					DEFAULT_NAMES);
 		}
 
 		private Set<String> asResolvedSet(String value, String fallback) {

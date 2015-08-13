@@ -25,11 +25,11 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor;
+import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -39,8 +39,8 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.util.StringUtils;
 
 /**
- * An {@link ApplicationListener} that knows where to find VCAP (a.k.a. Cloud Foundry)
- * meta data in the existing environment. It parses out the VCAP_APPLICATION and
+ * An {@link EnvironmentPostProcessor} that knows where to find VCAP (a.k.a. Cloud
+ * Foundry) meta data in the existing environment. It parses out the VCAP_APPLICATION and
  * VCAP_SERVICES meta data and dumps it in a form that is easily consumed by
  * {@link Environment} users. If the app is running in Cloud Foundry then both meta data
  * items are JSON objects encoded in OS environment variables. VCAP_APPLICATION is a
@@ -86,18 +86,19 @@ import org.springframework.util.StringUtils;
  * Cloud is more convenient and more robust against potential changes in Cloud Foundry.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
-public class VcapApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+public class VcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
-	private static final Log logger = LogFactory.getLog(VcapApplicationListener.class);
+	private static final Log logger = LogFactory
+			.getLog(VcapEnvironmentPostProcessor.class);
 
 	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
 
 	private static final String VCAP_SERVICES = "VCAP_SERVICES";
 
 	// Before ConfigFileApplicationListener so values there can use these ones
-	private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;
+	private int order = ConfigFileEnvironmentPostProcessor.DEFAULT_ORDER - 1;
 
 	private final JsonParser parser = JsonParserFactory.getJsonParser();
 
@@ -111,8 +112,8 @@ public class VcapApplicationListener implements
 	}
 
 	@Override
-	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		ConfigurableEnvironment environment = event.getEnvironment();
+	public void postProcessEnvironment(ConfigurableEnvironment environment,
+			SpringApplication application) {
 		if (!environment.containsProperty(VCAP_APPLICATION)
 				&& !environment.containsProperty(VCAP_SERVICES)) {
 			return;
