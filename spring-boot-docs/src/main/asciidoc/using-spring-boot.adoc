@@ -296,7 +296,8 @@ search dependencies by name. For example, with the appropriate Eclipse or STS pl
 installed, you can simply hit `ctrl-space` in the POM editor and type
 "`spring-boot-starter`" for a complete list.
 
-Third party starters should not start with `spring-boot` as it is reserved for
+As explained in the <<spring-boot-features#boot-features-custom-starter,Creating your own starter>>
+section, third party starters should not start with `spring-boot` as it is reserved for
 official Spring Boot artifacts. A third-party starter for `acme` will be typically named
 `acme-spring-boot-starter`.
 ****

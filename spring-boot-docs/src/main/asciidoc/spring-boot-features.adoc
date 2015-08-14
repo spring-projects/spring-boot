@@ -3631,12 +3631,19 @@ public class MyTest {
 
 
 [[boot-features-developing-auto-configuration]]
-== Developing auto-configuration and using conditions
+== Creating your own auto-configuration
 If you work in a company that develops shared libraries, or if you work on an open-source
 or commercial library, you might want to develop your own auto-configuration.
 Auto-configuration classes can be bundled in external jars and still be picked-up by
 Spring Boot.
 
+Auto-configuration can be associated to a "starter" that provides the auto-configuration
+code as well as the typical libraries that you would use with it. We will fist cover what
+you need to know to build your own auto-configuration and we will move on to the
+<<boot-features-custom-starter,typical steps required to create a custom starter>>.
+
+TIP: A https://github.com/snicoll-demos/spring-boot-master-auto-configuration[demo project]
+is available to showcase how you can create a starter step by step.
 
 
 [[boot-features-understanding-auto-configured-beans]]
@@ -3745,6 +3752,66 @@ The `@ConditionalOnExpression` annotation allows configuration to be included ba
 result of a {spring-reference}/#expressions[SpEL expression].
 
 
+[[boot-features-custom-starter]]
+=== Creating your own starter
+
+A full Spring Boot starter for a library may contain the following components:
+
+* The `autoconfigure` module that contains the auto-configuration code.
+* The `starter` module that provides a dependency to the autoconfigure module as well as
+  the library and any additional dependencies that are typically useful . In a nutshell,
+  adding the starter should be enough to start using that library
+
+TIP: You may combine the auto-configuration code and the dependency management in a single
+module if you don't need to separate those two concerns.
+
+[[boot-features-custom-starter-naming]]
+==== Naming
+
+Please make sure to provide a proper namespace for your starter. Do not start your module
+names with `spring-boot`, even if you are using a different Maven groupId. We may offer an
+official support for the thing you're auto-configuring in the future.
+
+Here is a rule of thumb. Let's assume that you are creating a starter for "acme", name the
+auto-configure module `acme-spring-boot-autoconfigure` and the starter
+`acme-spring-boot-starter`. If you only have one module combining the two, use
+`acme-spring-boot-starter`.
+
+Besides, if your starter provides configuration keys, use a proper namespace for them. In
+particular, do not include your keys in the namespaces that Spring Boot uses (e.g.
+`server`, `management`, `spring`, etc). These are "ours" and we may improve/modify them
+in the future in such a way it could break your things.
+
+Make sure to
+<<appendix-configuration-metadata#configuration-metadata-annotation-processor,trigger
+meta-data generation>> so that IDE assistance is available for your keys as well. You
+may want to review the generated meta-data (`META-INF/spring-configuration-metadata.json`)
+to make sure your keys are properly documented.
+
+[[boot-features-custom-starter-module-autoconfigure]]
+=== Autoconfigure module
+
+The autoconfigure module contains everything that is necessary to get started with the
+library. It may also contain configuration keys definition (`@ConfigurationProperties`)
+and any callback interface that can be used to further customize how the components are
+initialized.
+
+TIP: You should mark the dependencies to the library as optional so that you can include
+the autoconfigure module in your projects more easily. If you do it that way, the library
+won't be provided and boot will backoff by default.
+
+[[boot-features-custom-starter-module-starter]]
+=== Starter module
+
+The starter is an empty jar, really. Its only purpose is to provide the necessary
+dependencies to work with the library; see it as an opinionated view of what is required
+to get started.
+
+Do not make assumptions about the project in which your starter is added . If the library
+you are auto-configuring typically requires other starters, mention them as well. Providing
+a proper set of _default_ dependencies may be hard if the number of optional dependencies
+is high as you should avoid bringing unnecessary dependencies for a typical usage of the
+library.
 
 [[boot-features-websockets]]
 == WebSockets
