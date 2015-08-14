@@ -79,7 +79,9 @@ public class MessageSourceAutoConfiguration {
 	private int cacheSeconds = -1;
 
 	/**
-	 * Fall back to the system locale.
+	 * Set whether to fall back to the system Locale if no files for a specific Locale
+	 * have been found.  if this is turned off, the only fallback will be the default
+	 * file (e.g. "messages.properties" for basename "messages").
 	 */
 	private boolean fallbackToSystemLocale = true;
 

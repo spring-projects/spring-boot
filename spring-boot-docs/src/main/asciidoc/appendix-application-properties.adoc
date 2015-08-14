@@ -279,7 +279,7 @@ content into your application; rather pick only the properties that you need.
 	spring.messages.basename=messages
 	spring.messages.cache-seconds=-1
 	spring.messages.encoding=UTF-8
-	spring.messages.fallback-to-system-locale=true
+	spring.messages.fallback-to-system-locale=true # set whether to fall back to the system Locale
 
 	[[common-application-properties-security]]
 	# SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])
