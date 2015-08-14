@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Properties;
-
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -35,7 +32,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ByteArrayResource;
 
 import com.rabbitmq.client.Channel;
 
@@ -78,6 +74,7 @@ import com.rabbitmq.client.Channel;
  * @author Greg Turnquist
  * @author Josh Long
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
@@ -105,42 +102,54 @@ public class RabbitAutoConfiguration {
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class RabbitConnectionFactoryCreator {
 
+		@Autowired
+		private RabbitProperties properties;
+
 		@Bean
-		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties config)
+		public CachingConnectionFactory rabbitConnectionFactory()
 				throws Exception {
 			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
-			if (config.getHost() != null) {
-				factory.setHost(config.getHost());
-				factory.setPort(config.getPort());
-			}
-			if (config.getUsername() != null) {
-				factory.setUsername(config.getUsername());
-			}
-			if (config.getPassword() != null) {
-				factory.setPassword(config.getPassword());
-			}
-			if (config.getVirtualHost() != null) {
-				factory.setVirtualHost(config.getVirtualHost());
-			}
-			if (config.getRequestedHeartbeat() != null) {
-				factory.setRequestedHeartbeat(config.getRequestedHeartbeat());
-			}
-			RabbitProperties.Ssl ssl = config.getSsl();
-			if (ssl.isEnabled()) {
-				factory.setUseSSL(true);
-				if (ssl.getKeyStore() != null || ssl.getTrustStore() != null) {
-					Properties properties = ssl.createSslProperties();
-					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-					properties.store(outputStream, "SSL config");
-					factory.setSslPropertiesLocation(new ByteArrayResource(outputStream
-							.toByteArray()));
-				}
-			}
+			applyProperties(factory);
+			applySslProperties(factory);
 			factory.afterPropertiesSet();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
 					factory.getObject());
-			connectionFactory.setAddresses(config.getAddresses());
+			connectionFactory.setAddresses(this.properties.getAddresses());
 			return connectionFactory;
+		}
+
+		private void applyProperties(RabbitConnectionFactoryBean factory) {
+			if (this.properties.getHost() != null) {
+				factory.setHost(this.properties.getHost());
+				factory.setPort(this.properties.getPort());
+			}
+			if (this.properties.getUsername() != null) {
+				factory.setUsername(this.properties.getUsername());
+			}
+			if (this.properties.getPassword() != null) {
+				factory.setPassword(this.properties.getPassword());
+			}
+			if (this.properties.getVirtualHost() != null) {
+				factory.setVirtualHost(this.properties.getVirtualHost());
+			}
+			if (this.properties.getRequestedHeartbeat() != null) {
+				factory.setRequestedHeartbeat(this.properties.getRequestedHeartbeat());
+			}
+		}
+
+		private void applySslProperties(RabbitConnectionFactoryBean factory) {
+			RabbitProperties.Ssl ssl = this.properties.getSsl();
+			if (ssl.isEnabled()) {
+				factory.setUseSSL(true);
+				if (ssl.getPropertiesLocation() != null) {
+					factory.setSslPropertiesLocation(ssl.getPropertiesLocation());
+				} else {
+					factory.setKeyStore(ssl.getKeyStore());
+					factory.setTrustStore(ssl.getTrustStore());
+					factory.setKeyStorePassphrase(ssl.getKeyStorePassword());
+					factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
+				}
+			}
 		}
 
 	}

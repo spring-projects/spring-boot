@@ -53,6 +53,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class RabbitAutoConfigurationTests {
 
@@ -247,6 +248,14 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.ssl.keyStorePassword=secret",
 				"spring.rabbitmq.ssl.trustStore=bar",
 				"spring.rabbitmq.ssl.trustStorePassword=secret");
+	}
+
+	@Test
+	public void enableSslWithConfigFile() {
+		this.thrown.expectMessage("foo");
+		this.thrown.expectMessage("does not exist");
+		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true",
+				"spring.rabbitmq.ssl.properties-location=rabbit-ssl.properties");
 	}
 
 	private com.rabbitmq.client.ConnectionFactory getTargetConnectionFactory() {
