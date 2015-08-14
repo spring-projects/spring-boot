@@ -3789,7 +3789,7 @@ may want to review the generated meta-data (`META-INF/spring-configuration-metad
 to make sure your keys are properly documented.
 
 [[boot-features-custom-starter-module-autoconfigure]]
-=== Autoconfigure module
+==== Autoconfigure module
 
 The autoconfigure module contains everything that is necessary to get started with the
 library. It may also contain configuration keys definition (`@ConfigurationProperties`)
@@ -3801,7 +3801,7 @@ the autoconfigure module in your projects more easily. If you do it that way, th
 won't be provided and boot will backoff by default.
 
 [[boot-features-custom-starter-module-starter]]
-=== Starter module
+==== Starter module
 
 The starter is an empty jar, really. Its only purpose is to provide the necessary
 dependencies to work with the library; see it as an opinionated view of what is required
