@@ -2047,8 +2047,10 @@ Here's the algorithm for choosing a specific implementation:
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa`
 '`starter POMs`' you will automatically get a dependency to `tomcat-jdbc`.
 
-NOTE: Additional connection pools can always be configured manually. If you define your
-own `DataSource` bean, auto-configuration will not occur.
+NOTE: You can bypass that algorithm completely and specify the connection pool to use via
+the `spring.datasource.type` property. Also, additional connection pools can always be
+configured manually. If you define your own `DataSource` bean, auto-configuration will
+not occur.
 
 DataSource configuration is controlled by external configuration properties in
 `+spring.datasource.*+`. For example, you might declare the following section in

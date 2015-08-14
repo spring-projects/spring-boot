@@ -120,6 +120,9 @@ public class DataSourceAutoConfiguration {
 					.url(this.properties.getUrl())
 					.username(this.properties.getUsername())
 					.password(this.properties.getPassword());
+			if (this.properties.getType() != null) {
+				factory.type(this.properties.getType());
+			}
 			return factory.build();
 		}
 

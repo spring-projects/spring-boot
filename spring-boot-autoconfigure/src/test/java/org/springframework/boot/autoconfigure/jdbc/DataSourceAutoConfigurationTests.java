@@ -26,13 +26,14 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Logger;
-
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -41,8 +42,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-
-import com.zaxxer.hikari.HikariDataSource;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -56,6 +55,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link DataSourceAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class DataSourceAutoConfigurationTests {
 
@@ -72,9 +72,7 @@ public class DataSourceAutoConfigurationTests {
 	@After
 	public void restore() {
 		EmbeddedDatabaseConnection.override = null;
-		if (this.context != null) {
-			this.context.close();
-		}
+		this.context.close();
 	}
 
 	@Test
@@ -154,6 +152,20 @@ public class DataSourceAutoConfigurationTests {
 		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
 		assertEquals("org.hsqldb.jdbcDriver", pool.getDriverClassName());
 		assertEquals("sa", pool.getUsername());
+	}
+
+	@Test
+	public void explicitType() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+				"spring.datasource.type:" + HikariDataSource.class.getName());
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource bean = this.context.getBean(DataSource.class);
+		assertNotNull(bean);
+		assertEquals(HikariDataSource.class, bean.getClass());
 	}
 
 	@Test
@@ -259,6 +271,7 @@ public class DataSourceAutoConfigurationTests {
 
 	}
 
+	@SuppressWarnings("unused") // see testExplicitDriverClassClearsUserName
 	public static class DatabaseDriver implements Driver {
 
 		@Override
