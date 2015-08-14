@@ -140,7 +140,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	public Class<? extends DataSource> getType() {
-		return type;
+		return this.type;
 	}
 
 	public void setType(Class<? extends DataSource> type) {
