@@ -324,8 +324,9 @@ class ProjectGenerationRequest {
 			if (this.groupId != null) {
 				builder.setParameter("groupId", this.groupId);
 			}
-			if (this.artifactId != null) {
-				builder.setParameter("artifactId", this.artifactId);
+			String resolvedArtifactId = resolveArtifactId();
+			if (resolvedArtifactId != null) {
+				builder.setParameter("artifactId", resolvedArtifactId);
 			}
 			if (this.version != null) {
 				builder.setParameter("version", this.version);
@@ -403,6 +404,21 @@ class ProjectGenerationRequest {
 			}
 			return defaultType;
 		}
+	}
+
+	/**
+	 * Resolve the artifactId to use or {@code null} if it should not be customized.
+	 * @return the artifactId
+	 */
+	protected String resolveArtifactId() {
+		if (this.artifactId != null) {
+			return this.artifactId;
+		}
+		if (this.output != null) {
+			int i = this.output.lastIndexOf('.');
+			return (i == -1 ? this.output : this.output.substring(0, i));
+		}
+		return null;
 	}
 
 	private static void filter(Map<String, ProjectType> projects, String tag,

@@ -140,6 +140,39 @@ public class ProjectGenerationRequestTests {
 	}
 
 	@Test
+	public void outputCustomizeArtifactId() {
+		this.request.setOutput("my-project");
+		assertEquals(
+				createDefaultUrl("?artifactId=my-project&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
+	public void outputArchiveCustomizeArtifactId() {
+		this.request.setOutput("my-project.zip");
+		assertEquals(
+				createDefaultUrl("?artifactId=my-project&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
+	public void outputArchiveWithDotsCustomizeArtifactId() {
+		this.request.setOutput("my.nice.project.zip");
+		assertEquals(
+				createDefaultUrl("?artifactId=my.nice.project&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
+	public void outputDoesNotOverrideCustomArtifactId() {
+		this.request.setOutput("my-project");
+		this.request.setArtifactId("my-id");
+		assertEquals(
+				createDefaultUrl("?artifactId=my-id&type=test-type"),
+				this.request.generateUrl(createDefaultMetadata()));
+	}
+
+	@Test
 	public void buildNoMatch() {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("does-not-exist", null);
