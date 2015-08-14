@@ -1,6 +1,6 @@
 language: java
 services: mongodb
-
+sudo: false
 install: true
 before_script:
 - mvn install -q -U -DskipTests=true -Dmaven.test.redirectTestOutputToFile=true || true
