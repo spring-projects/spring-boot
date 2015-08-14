@@ -310,7 +310,7 @@ content into your application; rather pick only the properties that you need.
     security.oauth2.sso.login-path= # Path to the login page, i.e. the one that triggers the redirect to the OAuth2 Authorization Server
 
 	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[DataSourceProperties])
-	spring.datasource.name= # name of the data source
+	spring.datasource.name=testdb # name of the data source
 	spring.datasource.initialize=true # populate using data.sql
 	spring.datasource.schema= # a schema (DDL) script resource reference
 	spring.datasource.data= # a data (DML) script resource reference

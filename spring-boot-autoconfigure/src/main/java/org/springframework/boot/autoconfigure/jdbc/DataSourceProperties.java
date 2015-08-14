@@ -43,6 +43,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	public static final String PREFIX = "spring.datasource";
 
 	/**
+	 * Name of the datasource.
+	 */
+	private String name = "testdb";
+
+	/**
 	 * Fully qualified name of the connection pool implementation to use. By default,
 	 * it is auto-detected from the classpath.
 	 */
@@ -124,6 +129,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	public void afterPropertiesSet() throws Exception {
 		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection
 				.get(this.classLoader);
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Class<? extends DataSource> getType() {
