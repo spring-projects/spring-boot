@@ -11,7 +11,7 @@ https://support.springsource.com/spring_committer_signup[contributor's agreement
 Signing the contributor's agreement does not grant anyone commit rights to the main
 repository, but it does mean that we can accept your contributions, and you will get an
 author credit if we do.  Active contributors might be asked to join the core team, and
-given the ability to merge pull requests. Use ``Phillip Webb'' or ``Dave Syer'' in the
+given the ability to merge pull requests. Use '`Phillip Webb`' or '`Dave Syer`' in the
 project lead field when you complete the form.
 
 
@@ -21,7 +21,7 @@ None of these is essential for a pull request, but they will all help.  They can
 added after the original pull request but before a merge.
 
 * Use the Spring Framework code format conventions. If you use Eclipse and you follow
-  the ``Importing into eclipse'' instructions below you should get project specific
+  the '`Importing into eclipse`' instructions below you should get project specific
   formatting automatically. You can also import formatter settings using the
   `eclipse-code-formatter.xml` file from the `eclipse` folder. If using IntelliJ IDEA, you
   can use the http://plugins.jetbrains.com/plugin/6546[Eclipse Code Formatter Plugin]
