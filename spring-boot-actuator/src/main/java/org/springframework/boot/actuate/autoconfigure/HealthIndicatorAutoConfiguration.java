@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -57,6 +58,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
@@ -94,6 +96,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(JdbcTemplate.class)
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnProperty(prefix = "management.health.db", name = "enabled", matchIfMissing = true)
 	public static class DataSourcesHealthIndicatorConfiguration {
