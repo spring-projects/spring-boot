@@ -1585,12 +1585,18 @@ instance. By default the embedded server will listen for HTTP requests on port `
 
 
 
-[[boot-features-embedded-container-servlets-and-filters]]
-==== Servlets and Filters
+[[boot-features-embedded-container-servlets-filters-listeners]]
+==== Servlets, Filters, and listeners
 When using an embedded servlet container you can register Servlets, Filters and all the
-listeners from the Servlet spec (e.g. `HttpSessionListener`) directly as
-Spring beans. This can be particularly convenient if you want to refer to a value from
-your `application.properties` during configuration.
+listeners from the Servlet spec (e.g. `HttpSessionListener`) either by using Spring beans
+or by scanning for Servlet components.
+
+
+[[boot-features-embedded-container-servlets-filters-listeners-beans]]
+===== Registering Servlets, Filters, and listeners as Spring beans
+Any `Servlet`, `Filter` or Servlet `*Listener` instance that is a Spring bean will be
+registered with the embedded container. This can be particularly convenient if you want to
+refer to a value from your `application.properties` during configuration.
 
 By default, if the context contains only a single Servlet it will be mapped to `/`. In the
 case of multiple Servlet beans the bean name will be used as a path prefix. Filters will
@@ -1600,6 +1606,16 @@ If convention-based mapping is not flexible enough you can use the
 `ServletRegistrationBean`, `FilterRegistrationBean` and `ServletListenerRegistrationBean`
 classes for complete control. You can also register items directly if your bean implements
 the `ServletContextInitializer` interface.
+
+
+
+[[boot-features-embedded-container-servlets-filters-listeners-scanning]]
+===== Scanning for Servlets, Filters, and listeners
+When using an embedded container, automatic registration of `@WebServlet`, `@WebFilter`,
+and `@WebListener` annotated classes can be enabled using `@ServletComponentScan`.
+
+TIP: `@ServletComponentScan` will have no effect in a standalone container, where the
+container's built-in discovery mechanisms will be used instead.
 
 
 

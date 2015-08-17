@@ -348,15 +348,23 @@ Spring Boot. The definitive list comes from searching the source code for
 
 
 
-[[howto-add-a-servlet-filter-or-servletcontextlistener]]
-=== Add a Servlet, Filter or ServletContextListener to an application
-`Servlet`, `Filter`, `ServletContextListener` and the other listeners supported by the
-Servlet spec can be added to your application as `@Bean` definitions. Be very careful that
-they don't cause eager initialization of too many other beans because they have to be
-installed in the container very early in the application lifecycle (e.g. it's not a good
-idea to have them depend on your `DataSource` or JPA configuration). You can work around
-restrictions like that by initializing them lazily when first used instead of on
-initialization.
+[[howto-add-a-servlet-filter-or-listener]]
+=== Add a Servlet, Filter or Listener to an application
+There are two ways to add `Servlet`, `Filter`, `ServletContextListener` and the other
+listeners supported by the Servlet spec to your application. You can either provide
+Spring beans for them, or enable scanning for Servlet components.
+
+
+
+[[howto-add-a-servlet-filter-or-listener-as-spring-bean]]
+==== Add a Servlet, Filter or Listener using a Spring bean
+To add a `Servlet`, `Filter`, or Servlet `*Listener` provide a `@Bean` definition for it.
+This can be very useful when you want to inject configuration or dependencies. However,
+you must be very careful that they don't cause eager initialization of too many other
+beans because they have to be installed in the container very early in the application
+lifecycle (e.g. it's not a good idea to have them depend on your `DataSource` or JPA
+configuration). You can work around restrictions like that by initializing them lazily
+when first used instead of on initialization.
 
 In the case of `Filters` and `Servlets` you can also add mappings and init parameters by
 adding a `FilterRegistrationBean` or `ServletRegistrationBean` instead of or as well as
@@ -365,7 +373,7 @@ the underlying component.
 
 
 [[howto-disable-registration-of-a-servlet-or-filter]]
-=== Disable registration of a Servlet or Filter
+===== Disable registration of a Servlet or Filter
 As <<howto-add-a-servlet-filter-or-servletcontextlistener,described above>> any `Servlet`
 or `Filter` beans will be registered with the servlet container automatically. To disable
 registration of a particular `Filter` or `Servlet` bean create a registration bean for it
@@ -380,6 +388,15 @@ and mark it as disabled. For example:
 		return registration;
 	}
 ----
+
+
+[[howto-add-a-servlet-filter-or-listener-using-scanning]]
+==== Add Servlets, Filters, and Listeners using classpath scanning
+`@WebServlet`, `@WebFilter`, and `@WebListener` annotated classes can be automatically
+registered with an embedded servlet container by annotating a `@Configuration` class
+with `@ServletComponentScan` and specifying the package(s) containing the components
+that you want to register. By default, `@ServletComponentScan` will scan from the package
+of the annotated class.
 
 
 
@@ -1215,7 +1232,7 @@ using the "logging.config" property.
 [[howto-configure-logback-for-loggin]]
 === Configure Logback for logging
 If you put a `logback.xml` in the root of your classpath it will be picked up from
-there 
+there
 (or `logback-spring.xml` to take advantage of the templating features provided by Boot). Spring Boot provides a default base configuration that you can include if you just
 want to set levels, e.g.
 
