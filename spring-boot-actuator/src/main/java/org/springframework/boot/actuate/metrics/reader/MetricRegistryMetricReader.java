@@ -115,7 +115,7 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 				Set<Metric<?>> metrics = new TreeSet<Metric<?>>(new Comparator<Metric<?>>() {
 					@Override
 					public int compare(Metric<?> metric1, Metric<?> metric2) {
-						return metric2.getName().compareToIgnoreCase(metric2.getName());
+						return metric1.getName().compareToIgnoreCase(metric2.getName());
 					}
 				});
 				for (String name : MetricRegistryMetricReader.this.names.keySet()) {
