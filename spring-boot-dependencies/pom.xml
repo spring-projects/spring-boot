@@ -125,7 +125,7 @@
 		<snakeyaml.version>1.15</snakeyaml.version>
 		<solr.version>4.10.4</solr.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
-		<spring.version>4.2.1.BUILD-SNAPSHOT</spring.version>
+		<spring.version>4.2.0.RELEASE</spring.version>
 		<spring-amqp.version>1.5.0.M1</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.0.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.5.RELEASE</spring-batch.version>
