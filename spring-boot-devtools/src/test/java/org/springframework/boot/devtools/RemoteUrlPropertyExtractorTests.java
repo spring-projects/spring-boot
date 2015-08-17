@@ -16,12 +16,16 @@
 
 package org.springframework.boot.devtools;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
+
+import ch.qos.logback.classic.Logger;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -37,6 +41,12 @@ public class RemoteUrlPropertyExtractorTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@After
+	public void preventRunFailuresFromPollutingLoggerContext() {
+		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class))
+				.getLoggerContext().getTurboFilterList().clear();
+	}
 
 	@Test
 	public void missingUrl() throws Exception {
