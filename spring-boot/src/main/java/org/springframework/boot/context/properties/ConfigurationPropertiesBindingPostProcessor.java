@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.context.properties;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -60,10 +62,11 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
  * {@link ConfigurationProperties}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
 		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
@@ -74,6 +77,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
 			"javax.validation.ValidatorFactory" };
 
+	private ConfigurationBeanFactoryMetaData beans = new ConfigurationBeanFactoryMetaData();
+
 	private PropertySources propertySources;
 
 	private Validator validator;
@@ -82,11 +87,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private ConversionService conversionService;
 
-	private final DefaultConversionService defaultConversionService = new DefaultConversionService();
+	private DefaultConversionService defaultConversionService;
 
 	private BeanFactory beanFactory;
-
-	private final boolean initialized = false;
 
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
@@ -112,24 +115,35 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	/**
-	 * @param propertySources
+	 * Set the property sources to bind.
+	 * @param propertySources the property sources
 	 */
 	public void setPropertySources(PropertySources propertySources) {
 		this.propertySources = propertySources;
 	}
 
 	/**
-	 * @param validator the validator to set
+	 * Set the bean validator used to validate property fields.
+	 * @param validator the validator
 	 */
 	public void setValidator(Validator validator) {
 		this.validator = validator;
 	}
 
 	/**
-	 * @param conversionService the conversionService to set
+	 * Set the conversion service used to convert property values.
+	 * @param conversionService the conversion service
 	 */
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
+	}
+
+	/**
+	 * Set the bean meta-data store.
+	 * @param beans the bean meta data store
+	 */
+	public void setBeanMetaDataStore(ConfigurationBeanFactoryMetaData beans) {
+		this.beans = beans;
 	}
 
 	@Override
@@ -154,11 +168,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
 		if (this.propertySources == null) {
 			this.propertySources = deducePropertySources();
 		}
-
 		if (this.validator == null) {
 			this.validator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
 			if (this.validator == null && isJsr303Present()) {
@@ -167,7 +179,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 				this.ownedValidator = true;
 			}
 		}
-
 		if (this.conversionService == null) {
 			this.conversionService = getOptionalBean(
 					ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
@@ -193,22 +204,34 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private PropertySources deducePropertySources() {
-		try {
-			PropertySourcesPlaceholderConfigurer configurer = this.beanFactory
-					.getBean(PropertySourcesPlaceholderConfigurer.class);
-			return extractPropertySources(configurer);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			// Continue if no PropertySourcesPlaceholderConfigurer bean
+		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
+		if (configurer != null) {
+			// Flatten the sources into a single list so they can be iterated
+			return new FlatPropertySources(configurer.getAppliedPropertySources());
 		}
 
 		if (this.environment instanceof ConfigurableEnvironment) {
-			return flattenPropertySources(((ConfigurableEnvironment) this.environment)
-					.getPropertySources());
+			MutablePropertySources propertySources = ((ConfigurableEnvironment) this.environment)
+					.getPropertySources();
+			return new FlatPropertySources(propertySources);
 		}
 
 		// empty, so not very useful, but fulfils the contract
 		return new MutablePropertySources();
+	}
+
+	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
+		// Take care not to cause early instantiation of all FactoryBeans
+		if (this.beanFactory instanceof ListableBeanFactory) {
+			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) this.beanFactory;
+			Map<String, PropertySourcesPlaceholderConfigurer> beans = listableBeanFactory
+					.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false,
+							false);
+			if (beans.size() == 1) {
+				return beans.values().iterator().next();
+			}
+		}
+		return null;
 	}
 
 	private <T> T getOptionalBean(String name, Class<T> type) {
@@ -220,61 +243,17 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		}
 	}
 
-	/**
-	 * Convenience method to extract PropertySources from an existing (and already
-	 * initialized) PropertySourcesPlaceholderConfigurer. As long as this method is
-	 * executed late enough in the context lifecycle it will come back with data. We can
-	 * rely on the fact that PropertySourcesPlaceholderConfigurer is a
-	 * BeanFactoryPostProcessor and is therefore initialized early.
-	 * @param configurer a PropertySourcesPlaceholderConfigurer
-	 * @return some PropertySources
-	 */
-	private PropertySources extractPropertySources(
-			PropertySourcesPlaceholderConfigurer configurer) {
-		PropertySources propertySources = configurer.getAppliedPropertySources();
-		// Flatten the sources into a single list so they can be iterated
-		return flattenPropertySources(propertySources);
-	}
-
-	/**
-	 * Flatten out a tree of property sources.
-	 * @param propertySources some PropertySources, possibly containing environment
-	 * properties
-	 * @return another PropertySources containing the same properties
-	 */
-	private PropertySources flattenPropertySources(PropertySources propertySources) {
-		MutablePropertySources result = new MutablePropertySources();
-		for (PropertySource<?> propertySource : propertySources) {
-			flattenPropertySources(propertySource, result);
-		}
-		return result;
-	}
-
-	/**
-	 * Convenience method to allow recursive flattening of property sources.
-	 * @param propertySource a property source to flatten
-	 * @param result the cumulative result
-	 */
-	private void flattenPropertySources(PropertySource<?> propertySource,
-			MutablePropertySources result) {
-		Object source = propertySource.getSource();
-		if (source instanceof ConfigurableEnvironment) {
-			ConfigurableEnvironment environment = (ConfigurableEnvironment) source;
-			for (PropertySource<?> childSource : environment.getPropertySources()) {
-				flattenPropertySources(childSource, result);
-			}
-		}
-		else {
-			result.addLast(propertySource);
-		}
-	}
-
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
 		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
 				bean.getClass(), ConfigurationProperties.class);
 		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
+			postProcessBeforeInitialization(bean, beanName, annotation);
+		}
+		annotation = this.beans.findFactoryAnnotation(beanName,
+				ConfigurationProperties.class);
+		if (annotation != null) {
 			postProcessBeforeInitialization(bean, beanName, annotation);
 		}
 		return bean;
@@ -293,7 +272,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
 		if (annotation != null && annotation.locations().length != 0) {
-			factory.setPropertySources(loadPropertySources(annotation.locations()));
+			factory.setPropertySources(loadPropertySources(annotation.locations(),
+					annotation.merge()));
 		}
 		else {
 			factory.setPropertySources(this.propertySources);
@@ -318,21 +298,41 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			factory.bindPropertiesToTarget();
 		}
 		catch (Exception ex) {
-			throw new BeanCreationException(beanName, "Could not bind properties", ex);
+			String targetClass = ClassUtils.getShortName(target.getClass());
+			throw new BeanCreationException(beanName, "Could not bind properties to "
+					+ targetClass + " (" + getAnnotationDetails(annotation) + ")", ex);
 		}
 	}
 
+	private String getAnnotationDetails(ConfigurationProperties annotation) {
+		if (annotation == null) {
+			return "";
+		}
+		StringBuilder details = new StringBuilder();
+		details.append("target=").append(
+				(StringUtils.hasLength(annotation.value()) ? annotation.value()
+						: annotation.prefix()));
+		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
+		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
+		details.append(", ignoreNestedProperties=").append(
+				annotation.ignoreNestedProperties());
+		return details.toString();
+	}
+
 	private Validator determineValidator(Object bean) {
+		boolean globalValidatorSupportBean = (this.validator != null && this.validator
+				.supports(bean.getClass()));
 		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {
-			if (this.validator == null) {
+			if (!globalValidatorSupportBean) {
 				return (Validator) bean;
 			}
 			return new ChainingValidator(this.validator, (Validator) bean);
 		}
-		return this.validator;
+		return (globalValidatorSupportBean ? this.validator : null);
 	}
 
-	private PropertySources loadPropertySources(String[] locations) {
+	private PropertySources loadPropertySources(String[] locations,
+			boolean mergeDefaultSources) {
 		try {
 			PropertySourcesLoader loader = new PropertySourcesLoader();
 			for (String location : locations) {
@@ -345,7 +345,13 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 				}
 				loader.load(resource);
 			}
-			return loader.getPropertySources();
+			MutablePropertySources loaded = loader.getPropertySources();
+			if (mergeDefaultSources) {
+				for (PropertySource<?> propertySource : this.propertySources) {
+					loaded.addLast(propertySource);
+				}
+			}
+			return loaded;
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
@@ -353,11 +359,13 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private ConversionService getDefaultConversionService() {
-		if (!this.initialized && this.beanFactory instanceof ListableBeanFactory) {
+		if (this.defaultConversionService == null) {
+			DefaultConversionService conversionService = new DefaultConversionService();
 			for (Converter<?, ?> converter : ((ListableBeanFactory) this.beanFactory)
-					.getBeansOfType(Converter.class).values()) {
-				this.defaultConversionService.addConverter(converter);
+					.getBeansOfType(Converter.class, false, false).values()) {
+				conversionService.addConverter(converter);
 			}
+			this.defaultConversionService = conversionService;
 		}
 		return this.defaultConversionService;
 	}
@@ -406,6 +414,58 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 				if (validator.supports(target.getClass())) {
 					validator.validate(target, errors);
 				}
+			}
+		}
+
+	}
+
+	/**
+	 * Convenience class to flatten out a tree of property sources without losing the
+	 * reference to the backing data (which can therefore be updated in the background).
+	 */
+	private static class FlatPropertySources implements PropertySources {
+
+		private PropertySources propertySources;
+
+		public FlatPropertySources(PropertySources propertySources) {
+			this.propertySources = propertySources;
+		}
+
+		@Override
+		public Iterator<PropertySource<?>> iterator() {
+			MutablePropertySources result = getFlattened();
+			return result.iterator();
+		}
+
+		@Override
+		public boolean contains(String name) {
+			return get(name) != null;
+		}
+
+		@Override
+		public PropertySource<?> get(String name) {
+			return getFlattened().get(name);
+		}
+
+		private MutablePropertySources getFlattened() {
+			MutablePropertySources result = new MutablePropertySources();
+			for (PropertySource<?> propertySource : this.propertySources) {
+				flattenPropertySources(propertySource, result);
+			}
+			return result;
+		}
+
+		private void flattenPropertySources(PropertySource<?> propertySource,
+				MutablePropertySources result) {
+			Object source = propertySource.getSource();
+			if (source instanceof ConfigurableEnvironment) {
+				ConfigurableEnvironment environment = (ConfigurableEnvironment) source;
+				for (PropertySource<?> childSource : environment.getPropertySources()) {
+					flattenPropertySources(childSource, result);
+				}
+			}
+			else {
+				result.addLast(propertySource);
 			}
 		}
 

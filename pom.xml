@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-build</artifactId>
-	<version>1.0.2.BUILD-SNAPSHOT</version>
+	<version>1.3.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
@@ -25,7 +25,7 @@
 		<developer>
 			<id>pwebb</id>
 			<name>Phillip Webb</name>
-			<email>pwebb at gopivotal.com</email>
+			<email>pwebb at pivotal.io</email>
 			<organization>Pivotal Software, Inc.</organization>
 			<organizationUrl>http://www.spring.io</organizationUrl>
 			<roles>
@@ -35,7 +35,7 @@
 		<developer>
 			<id>dsyer</id>
 			<name>Dave Syer</name>
-			<email>dsyer at gopivotal.com</email>
+			<email>dsyer at pivotal.io</email>
 			<organization>Pivotal Software, Inc.</organization>
 			<organizationUrl>http://www.spring.io</organizationUrl>
 			<roles>
@@ -44,7 +44,7 @@
 		</developer>
 	</developers>
 	<prerequisites>
-		<maven>3.0.0</maven>
+		<maven>3.2.1</maven>
 	</prerequisites>
 	<properties>
 		<main.basedir>${basedir}</main.basedir>
@@ -53,9 +53,21 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
 					<version>1.7</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.17</version>
+				</plugin>
+				<plugin>
+					<groupId>com.google.code.maven-replacer-plugin</groupId>
+					<artifactId>replacer</artifactId>
+					<version>1.5.3</version>
+				</plugin>
+
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -72,7 +84,10 @@
 				<module>spring-boot</module>
 				<module>spring-boot-autoconfigure</module>
 				<module>spring-boot-actuator</module>
+				<module>spring-boot-devtools</module>
+				<module>spring-boot-docs</module>
 				<module>spring-boot-starters</module>
+				<module>spring-boot-actuator-docs</module>
 				<module>spring-boot-cli</module>
 			</modules>
 		</profile>
@@ -86,16 +101,22 @@
 			</modules>
 		</profile>
 		<profile>
+			<id>full</id>
+		</profile>
+		<profile>
 			<id>prepare</id>
 			<properties>
 				<skipTests>true</skipTests>
 			</properties>
 			<modules>
+				<module>spring-boot-dependencies</module>
+				<module>spring-boot-parent</module>
 				<module>spring-boot-tools</module>
 			</modules>
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<dependencies>
 							<dependency>
@@ -150,7 +171,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>fixup-starter-parent</id>
+								<id>fixup-dependencies-pom</id>
 								<phase>verify</phase>
 								<goals>
 									<goal>run</goal>
@@ -158,7 +179,7 @@
 								<inherited>false</inherited>
 								<configuration>
 									<target>
-										<property name="sourceFile" value="spring-boot-starters/spring-boot-starter-parent/pom.xml" />
+										<property name="sourceFile" value="spring-boot-dependencies/pom.xml" />
 										<xslt in="${sourceFile}" out="${sourceFile}.new" force="true">
 											<style>
 												<string><![CDATA[
@@ -174,19 +195,8 @@
 
 	<xsl:template
 		match="m:properties/m:spring-boot.version/text()">
-		<xsl:value-of select="/m:project/m:parent/m:version/text()"/>
+		<xsl:value-of select="/m:project/m:version/text()"/>
 	</xsl:template>
-
-	<xsl:template
-		match="m:dependency[m:groupId='org.springframework.boot']/m:version/text()">
-		<xsl:text>${spring-boot.version}</xsl:text>
-	</xsl:template>
-
-	<xsl:template
-		match="m:plugin[m:groupId='org.springframework.boot']/m:version/text()">
-		<xsl:text>${spring-boot.version}</xsl:text>
-	</xsl:template>
-
 </xsl:stylesheet>
 				]]>
 												</string>
@@ -201,16 +211,77 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
 							<skip>true</skip>
 						</configuration>
 					</plugin>
+					<plugin>
+						<groupId>com.google.code.maven-replacer-plugin</groupId>
+						<artifactId>replacer</artifactId>
+						<executions>
+							<execution>
+								<id>fixup-gradle-samples</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>${basedir}/spring-boot-samples/**/build.gradle</include>
+									</includes>
+									<token>springBootVersion\s+.*+</token>
+									<value>springBootVersion = '${project.version}'</value>
+								</configuration>
+							</execution>
+							<execution>
+								<id>fixup-ant-samples</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>${basedir}/spring-boot-samples/**/build.xml</include>
+									</includes>
+									<token>spring-boot\.version\"\s.*+</token>
+									<value>spring-boot.version" value="${project.version}" /&gt;</value>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
 		<profile>
-			<id>full</id>
+			<id>ci</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.google.code.maven-replacer-plugin</groupId>
+						<artifactId>replacer</artifactId>
+						<executions>
+							<execution>
+								<id>remove-repo-samples</id>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>${basedir}/spring-boot-dependencies/pom.xml</include>
+									</includes>
+									<regexFlags>
+										<regexFlag>DOTALL</regexFlag>
+									</regexFlags>
+									<token>\n\t&lt;profiles&gt;.*&lt;/profiles&gt;</token>
+									<value />
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 </project>

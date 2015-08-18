@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,53 +25,52 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.actuate.web.BasicErrorController;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.core.Ordered;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Servlet {@link Filter} that logs all requests to a {@link TraceRepository}.
- * 
+ *
  * @author Dave Syer
  */
-public class WebRequestTraceFilter implements Filter, Ordered {
+public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
 
 	private final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
 
 	private boolean dumpRequests = false;
 
+	// Not LOWEST_PRECEDENCE, but near the end, so it has a good chance of catching all
+	// enriched headers, but users can add stuff after this if they want to
+	private int order = Ordered.LOWEST_PRECEDENCE - 10;
+
 	private final TraceRepository traceRepository;
 
-	private int order = Integer.MAX_VALUE;
-
-	private final ObjectMapper objectMapper = new ObjectMapper();
-
-	private BasicErrorController errorController;
+	private ErrorAttributes errorAttributes;
 
 	/**
-	 * @param traceRepository
+	 * Create a new {@link WebRequestTraceFilter} instance.
+	 * @param traceRepository the trace repository
 	 */
 	public WebRequestTraceFilter(TraceRepository traceRepository) {
 		this.traceRepository = traceRepository;
 	}
 
 	/**
-	 * @param order the order to set
+	 * Debugging feature. If enabled, and trace logging is enabled then web request
+	 * headers will be logged.
+	 * @param dumpRequests if requests should be logged
 	 */
-	public void setOrder(int order) {
-		this.order = order;
+	public void setDumpRequests(boolean dumpRequests) {
+		this.dumpRequests = dumpRequests;
 	}
 
 	@Override
@@ -79,40 +78,28 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 		return this.order;
 	}
 
-	/**
-	 * Debugging feature. If enabled, and trace logging is enabled then web request
-	 * headers will be logged.
-	 */
-	public void setDumpRequests(boolean dumpRequests) {
-		this.dumpRequests = dumpRequests;
+	public void setOrder(int order) {
+		this.order = order;
 	}
 
 	@Override
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-			throws IOException, ServletException {
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) res;
+	protected void doFilterInternal(HttpServletRequest request,
+			HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 
 		Map<String, Object> trace = getTrace(request);
 		if (this.logger.isTraceEnabled()) {
 			this.logger.trace("Processing request " + request.getMethod() + " "
 					+ request.getRequestURI());
 			if (this.dumpRequests) {
-				try {
-					@SuppressWarnings("unchecked")
-					Map<String, Object> headers = (Map<String, Object>) trace
-							.get("headers");
-					this.logger.trace("Headers: "
-							+ this.objectMapper.writeValueAsString(headers));
-				}
-				catch (JsonProcessingException ex) {
-					throw new IllegalStateException("Cannot create JSON", ex);
-				}
+				@SuppressWarnings("unchecked")
+				Map<String, Object> headers = (Map<String, Object>) trace.get("headers");
+				this.logger.trace("Headers: " + headers);
 			}
 		}
 
 		try {
-			chain.doFilter(request, response);
+			filterChain.doFilter(request, response);
 		}
 		finally {
 			enhanceTrace(trace, response);
@@ -156,27 +143,19 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 		trace.put("method", request.getMethod());
 		trace.put("path", request.getRequestURI());
 		trace.put("headers", allHeaders);
-		Throwable error = (Throwable) request
+		Throwable exception = (Throwable) request
 				.getAttribute("javax.servlet.error.exception");
-		if (error != null) {
-			if (this.errorController != null) {
-				trace.put("error", this.errorController.extract(
-						new ServletRequestAttributes(request), true, false));
-			}
+		if (exception != null && this.errorAttributes != null) {
+			RequestAttributes requestAttributes = new ServletRequestAttributes(request);
+			Map<String, Object> error = this.errorAttributes.getErrorAttributes(
+					requestAttributes, true);
+			trace.put("error", error);
 		}
 		return trace;
 	}
 
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-	}
-
-	@Override
-	public void destroy() {
-	}
-
-	public void setErrorController(BasicErrorController errorController) {
-		this.errorController = errorController;
+	public void setErrorAttributes(ErrorAttributes errorAttributes) {
+		this.errorAttributes = errorAttributes;
 	}
 
 }

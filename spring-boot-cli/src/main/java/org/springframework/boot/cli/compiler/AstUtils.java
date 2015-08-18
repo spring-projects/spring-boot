@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cli.compiler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,10 +26,19 @@ import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.expr.ArgumentListExpression;
+import org.codehaus.groovy.ast.expr.ClosureExpression;
+import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.ExpressionStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
+import org.springframework.util.PatternMatchUtils;
 
 /**
  * General purpose AST utilities.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Greg Turnquist
@@ -39,6 +49,10 @@ public abstract class AstUtils {
 	 * Determine if a {@link ClassNode} has one or more of the specified annotations on
 	 * the class or any of its methods. N.B. the type names are not normally fully
 	 * qualified.
+	 * @param node the class to examine
+	 * @param annotations the annotations to look for
+	 * @return {@code true} if at least one of the annotations is found, otherwise
+	 * {@code false}
 	 */
 	public static boolean hasAtLeastOneAnnotation(ClassNode node, String... annotations) {
 		if (hasAtLeastOneAnnotation((AnnotatedNode) node, annotations)) {
@@ -55,12 +69,17 @@ public abstract class AstUtils {
 	/**
 	 * Determine if an {@link AnnotatedNode} has one or more of the specified annotations.
 	 * N.B. the annotation type names are not normally fully qualified.
+	 * @param node the node to examine
+	 * @param annotations the annotations to look for
+	 * @return {@code true} if at least one of the annotations is found, otherwise
+	 * {@code false}
 	 */
 	public static boolean hasAtLeastOneAnnotation(AnnotatedNode node,
 			String... annotations) {
 		for (AnnotationNode annotationNode : node.getAnnotations()) {
 			for (String annotation : annotations) {
-				if (annotation.equals(annotationNode.getClassNode().getName())) {
+				if (PatternMatchUtils.simpleMatch(annotation, annotationNode
+						.getClassNode().getName())) {
 					return true;
 				}
 			}
@@ -72,6 +91,9 @@ public abstract class AstUtils {
 	 * Determine if a {@link ClassNode} has one or more fields of the specified types or
 	 * method returning one or more of the specified types. N.B. the type names are not
 	 * normally fully qualified.
+	 * @param node the class to examine
+	 * @param types the types to look for
+	 * @return {@code true} if at least one of the types is found, otherwise {@code false}
 	 */
 	public static boolean hasAtLeastOneFieldOrMethod(ClassNode node, String... types) {
 		Set<String> typesSet = new HashSet<String>(Arrays.asList(types));
@@ -91,6 +113,10 @@ public abstract class AstUtils {
 	/**
 	 * Determine if a {@link ClassNode} subclasses any of the specified types N.B. the
 	 * type names are not normally fully qualified.
+	 * @param node the class to examine
+	 * @param types the types that may have been sub-classed
+	 * @return {@code true} if the class subclasses any of the specified types, otherwise
+	 * {@code false}
 	 */
 	public static boolean subclasses(ClassNode node, String... types) {
 		for (String type : types) {
@@ -99,6 +125,56 @@ public abstract class AstUtils {
 			}
 		}
 		return false;
+	}
+
+	public static boolean hasAtLeastOneInterface(ClassNode classNode, String... types) {
+		Set<String> typesSet = new HashSet<String>(Arrays.asList(types));
+		for (ClassNode inter : classNode.getInterfaces()) {
+			if (typesSet.contains(inter.getName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Extract a top-level {@code name} closure from inside this block if there is
+	 * one, optionally removing it from the block at the same time.
+	 * @param block a block statement (class definition)
+	 * @param name the name to look for
+	 * @param remove whether or not the extracted closure should be removed
+	 * @return a beans Closure if one can be found, null otherwise
+	 */
+	public static ClosureExpression getClosure(BlockStatement block, String name,
+			boolean remove) {
+
+		for (Statement statement : new ArrayList<Statement>(block.getStatements())) {
+			if (statement instanceof ExpressionStatement) {
+				Expression expression = ((ExpressionStatement) statement).getExpression();
+				if (expression instanceof MethodCallExpression) {
+					MethodCallExpression call = (MethodCallExpression) expression;
+					Expression methodCall = call.getMethod();
+					if (methodCall instanceof ConstantExpression) {
+						ConstantExpression method = (ConstantExpression) methodCall;
+						if (name.equals(method.getValue())) {
+							ArgumentListExpression arguments = (ArgumentListExpression) call
+									.getArguments();
+							if (remove) {
+								block.getStatements().remove(statement);
+							}
+							ClosureExpression closure = (ClosureExpression) arguments
+									.getExpression(0);
+							return closure;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public static ClosureExpression getClosure(BlockStatement block, String name) {
+		return getClosure(block, name, false);
 	}
 
 }

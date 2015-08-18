@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,14 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
@@ -33,18 +37,28 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * random and printed on the console at INFO level during startup. In a webapp this
  * configuration also secures all web endpoints (except some well-known static resource)
  * locations with HTTP basic security. To replace all the default behaviour in a webapp
- * provide a <code>@Configuration</code> with <code>@EnableWebSecurity</code>. To just add
- * your own layer of application security in front of the defaults, add a
- * <code>@Configuration</code> of type {@link WebSecurityConfigurerAdapter}.
- * 
+ * provide a {@code @Configuration} with {@code @EnableWebSecurity}. To just add your own
+ * layer of application security in front of the defaults, add a {@code @Configuration} of
+ * type {@link WebSecurityConfigurerAdapter}.
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
-@ConditionalOnClass(AuthenticationManager.class)
+@ConditionalOnClass({ AuthenticationManager.class,
+		GlobalAuthenticationConfigurerAdapter.class })
 @EnableConfigurationProperties
 @Import({ SpringBootWebSecurityConfiguration.class,
-		AuthenticationManagerConfiguration.class })
+		AuthenticationManagerConfiguration.class,
+		BootGlobalAuthenticationConfiguration.class })
 public class SecurityAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)
+	public DefaultAuthenticationEventPublisher authenticationEventPublisher(
+			ApplicationEventPublisher publisher) {
+		return new DefaultAuthenticationEventPublisher(publisher);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean

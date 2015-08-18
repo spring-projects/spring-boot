@@ -25,7 +25,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * General Utils for working with Redis.
- * 
+ *
  * @author Luke Taylor
  */
 class RedisUtils {

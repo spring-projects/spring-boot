@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,23 +18,38 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for JMX.
- * 
+ *
  * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.jmx")
 public class EndpointMBeanExportProperties {
 
+	/**
+	 * JMX domain name. Initialized with the value of 'spring.jmx.default-domain' if set.
+	 */
+	@Value("${spring.jmx.default-domain:}")
 	private String domain;
 
+	/**
+	 * Ensure that ObjectNames are modified in case of conflict.
+	 */
 	private boolean uniqueNames = false;
 
+	/**
+	 * Enable the JMX endpoints.
+	 */
 	private boolean enabled = true;
 
+	/**
+	 * Additional static properties to append to all ObjectNames of MBeans representing
+	 * Endpoints.
+	 */
 	private Properties staticNames = new Properties();
 
 	public boolean isEnabled() {

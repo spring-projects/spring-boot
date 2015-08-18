@@ -23,13 +23,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Jolokia.
- * 
+ *
  * @author Christian Dupuis
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "jolokia")
 public class JolokiaProperties {
 
+	/**
+	 * Jolokia settings. These are traditionally set using servlet parameters, refer to
+	 * the documentation of Jolokia for more details.
+	 */
 	private Map<String, String> config = new HashMap<String, String>();
 
 	public Map<String, String> getConfig() {

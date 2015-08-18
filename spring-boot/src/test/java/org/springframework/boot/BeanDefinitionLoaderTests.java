@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link BeanDefinitionLoader}.
- * 
+ *
  * @author Phillip Webb
  */
 public class BeanDefinitionLoaderTests {

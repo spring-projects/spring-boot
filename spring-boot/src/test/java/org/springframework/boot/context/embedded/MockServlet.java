@@ -25,9 +25,10 @@ import javax.servlet.ServletResponse;
 
 /**
  * Simple mock Servlet that does nothing.
- * 
+ *
  * @author Phillip Webb
  */
+@SuppressWarnings("serial")
 public class MockServlet extends GenericServlet {
 
 	@Override

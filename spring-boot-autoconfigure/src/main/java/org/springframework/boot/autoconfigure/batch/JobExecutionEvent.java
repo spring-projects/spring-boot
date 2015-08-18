@@ -21,9 +21,10 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Spring {@link ApplicationEvent} encapsulating a {@link JobExecution}.
- * 
+ *
  * @author Dave Syer
  */
+@SuppressWarnings("serial")
 public class JobExecutionEvent extends ApplicationEvent {
 
 	private final JobExecution execution;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,50 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Redis.
- * 
+ *
  * @author Dave Syer
+ * @author Christoph Strobl
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
 
+	/**
+	 * Database index used by the connection factory.
+	 */
+	private int database = 0;
+
+	/**
+	 * Redis server host.
+	 */
 	private String host = "localhost";
 
+	/**
+	 * Login password of the redis server.
+	 */
 	private String password;
 
+	/**
+	 * Redis server port.
+	 */
 	private int port = 6379;
 
-	private RedisProperties.Pool pool;
+	/**
+	 * Connection timeout in milliseconds.
+	 */
+	private int timeout;
+
+	private Pool pool;
+
+	private Sentinel sentinel;
+
+	public int getDatabase() {
+		return this.database;
+	}
+
+	public void setDatabase(int database) {
+		this.database = database;
+	}
 
 	public String getHost() {
 		return this.host;
@@ -40,14 +71,6 @@ public class RedisProperties {
 
 	public void setHost(String host) {
 		this.host = host;
-	}
-
-	public int getPort() {
-		return this.port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public String getPassword() {
@@ -58,11 +81,35 @@ public class RedisProperties {
 		this.password = password;
 	}
 
-	public RedisProperties.Pool getPool() {
+	public int getPort() {
+		return this.port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+
+	public int getTimeout() {
+		return this.timeout;
+	}
+
+	public Sentinel getSentinel() {
+		return this.sentinel;
+	}
+
+	public void setSentinel(Sentinel sentinel) {
+		this.sentinel = sentinel;
+	}
+
+	public Pool getPool() {
 		return this.pool;
 	}
 
-	public void setPool(RedisProperties.Pool pool) {
+	public void setPool(Pool pool) {
 		this.pool = pool;
 	}
 
@@ -71,12 +118,29 @@ public class RedisProperties {
 	 */
 	public static class Pool {
 
+		/**
+		 * Max number of "idle" connections in the pool. Use a negative value to indicate
+		 * an unlimited number of idle connections.
+		 */
 		private int maxIdle = 8;
 
+		/**
+		 * Target for the minimum number of idle connections to maintain in the pool. This
+		 * setting only has an effect if it is positive.
+		 */
 		private int minIdle = 0;
 
+		/**
+		 * Max number of connections that can be allocated by the pool at a given time.
+		 * Use a negative value for no limit.
+		 */
 		private int maxActive = 8;
 
+		/**
+		 * Maximum amount of time (in milliseconds) a connection allocation should block
+		 * before throwing an exception when the pool is exhausted. Use a negative value
+		 * to block indefinitely.
+		 */
 		private int maxWait = -1;
 
 		public int getMaxIdle() {
@@ -112,4 +176,35 @@ public class RedisProperties {
 		}
 	}
 
+	/**
+	 * Redis sentinel properties.
+	 */
+	public static class Sentinel {
+
+		/**
+		 * Name of Redis server.
+		 */
+		private String master;
+
+		/**
+		 * Comma-separated list of host:port pairs.
+		 */
+		private String nodes;
+
+		public String getMaster() {
+			return this.master;
+		}
+
+		public void setMaster(String master) {
+			this.master = master;
+		}
+
+		public String getNodes() {
+			return this.nodes;
+		}
+
+		public void setNodes(String nodes) {
+			this.nodes = nodes;
+		}
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,12 @@ import javax.servlet.ServletRegistration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -39,6 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -46,11 +50,11 @@ import org.springframework.web.servlet.DispatcherServlet;
  * {@link DispatcherServlet}. Should work for a standalone application where an embedded
  * servlet container is already present and also for a deployable application using
  * {@link SpringBootServletInitializer}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass(DispatcherServlet.class)
@@ -86,7 +90,7 @@ public class DispatcherServletAutoConfiguration {
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		public ServletRegistrationBean dispatcherServletRegistration() {
 			ServletRegistrationBean registration = new ServletRegistrationBean(
-					dispatcherServlet(), this.server.getServletPath());
+					dispatcherServlet(), this.server.getServletMapping());
 			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			if (this.multipartConfig != null) {
 				registration.setMultipartConfig(this.multipartConfig);
@@ -94,8 +98,17 @@ public class DispatcherServletAutoConfiguration {
 			return registration;
 		}
 
+		@Bean
+		@ConditionalOnBean(MultipartResolver.class)
+		@ConditionalOnMissingBean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
+		public MultipartResolver multipartResolver(MultipartResolver resolver) {
+			// Detect if the user has created a MultipartResolver but named it incorrectly
+			return resolver;
+		}
+
 	}
 
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	private static class DefaultDispatcherServletCondition extends SpringBootCondition {
 
 		@Override

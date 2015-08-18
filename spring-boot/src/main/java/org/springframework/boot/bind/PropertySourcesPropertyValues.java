@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,102 +16,152 @@
 
 package org.springframework.boot.bind;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
-import org.springframework.core.env.StandardEnvironment;
-import org.springframework.util.PatternMatchUtils;
+import org.springframework.util.Assert;
 import org.springframework.validation.DataBinder;
 
 /**
  * A {@link PropertyValues} implementation backed by a {@link PropertySources}, bridging
  * the two abstractions and allowing (for instance) a regular {@link DataBinder} to be
  * used with the latter.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertySourcesPropertyValues implements PropertyValues {
 
-	private final Map<String, PropertyValue> propertyValues = new ConcurrentHashMap<String, PropertyValue>();
+	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
 
 	private final PropertySources propertySources;
 
-	private final Collection<String> NON_ENUMERABLE_ENUMERABLES = Arrays.asList(
-			StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-			StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
+	private final Collection<String> propertyNames;
+
+	private final PropertyNamePatternsMatcher includes;
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
 	 * @param propertySources a PropertySources instance
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
-		this(propertySources, null, null);
+		this(propertySources, (Collection<String>) null, PropertyNamePatternsMatcher.ALL);
 	}
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
 	 * @param propertySources a PropertySources instance
-	 * @param patterns property name patterns to include from system properties and
+	 * @param includePatterns property name patterns to include from system properties and
 	 * environment variables
-	 * @param names exact property names to include
+	 * @param propertyNames the property names to use in lieu of an
+	 * {@link EnumerablePropertySource}.
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources,
-			Collection<String> patterns, Collection<String> names) {
+			Collection<String> includePatterns, Collection<String> propertyNames) {
+		this(propertySources, propertyNames, new PatternPropertyNamePatternsMatcher(
+				includePatterns));
+	}
+
+	/**
+	 * Create a new PropertyValues from the given PropertySources
+	 * @param propertySources a PropertySources instance
+	 * @param propertyNames the property names to use in lieu of an
+	 * {@link EnumerablePropertySource}.
+	 * @param includes the property name patterns to include
+	 */
+	PropertySourcesPropertyValues(PropertySources propertySources,
+			Collection<String> propertyNames, PropertyNamePatternsMatcher includes) {
+		Assert.notNull(propertySources, "PropertySources must not be null");
+		Assert.notNull(includes, "Includes must not be null");
 		this.propertySources = propertySources;
+		this.propertyNames = (propertyNames == null ? Collections.<String> emptySet()
+				: propertyNames);
+		this.includes = includes;
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 				propertySources);
-		String[] includes = patterns == null ? new String[0] : patterns
-				.toArray(new String[0]);
-		String[] exacts = names == null ? new String[0] : names.toArray(new String[0]);
 		for (PropertySource<?> source : propertySources) {
-			if (source instanceof EnumerablePropertySource) {
-				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
-				if (enumerable.getPropertyNames().length > 0) {
-					for (String propertyName : enumerable.getPropertyNames()) {
-						if (this.NON_ENUMERABLE_ENUMERABLES.contains(source.getName())
-								&& !PatternMatchUtils.simpleMatch(includes, propertyName)) {
-							continue;
-						}
-						Object value = source.getProperty(propertyName);
-						try {
-							value = resolver.getProperty(propertyName);
-						}
-						catch (RuntimeException ex) {
-							// Probably could not resolve placeholders, ignore it here
-						}
-						this.propertyValues.put(propertyName, new PropertyValue(
-								propertyName, value));
-					}
+			processPropertySource(source, resolver);
+		}
+	}
+
+	private void processPropertySource(PropertySource<?> source,
+			PropertySourcesPropertyResolver resolver) {
+		if (source instanceof CompositePropertySource) {
+			processCompositePropertySource((CompositePropertySource) source, resolver);
+		}
+		else if (source instanceof EnumerablePropertySource) {
+			processEnumerablePropertySource((EnumerablePropertySource<?>) source,
+					resolver, this.includes);
+		}
+		else {
+			processNonEnumerablePropertySource(source, resolver);
+		}
+	}
+
+	private void processCompositePropertySource(CompositePropertySource source,
+			PropertySourcesPropertyResolver resolver) {
+		for (PropertySource<?> nested : source.getPropertySources()) {
+			processPropertySource(nested, resolver);
+		}
+	}
+
+	private void processEnumerablePropertySource(EnumerablePropertySource<?> source,
+			PropertySourcesPropertyResolver resolver, PropertyNamePatternsMatcher includes) {
+		if (source.getPropertyNames().length > 0) {
+			for (String propertyName : source.getPropertyNames()) {
+				if (includes.matches(propertyName)) {
+					Object value = getEnumerableProperty(source, resolver, propertyName);
+					putIfAbsent(propertyName, value);
 				}
 			}
-			else {
-				// We can only do exact matches for non-enumerable property names, but
-				// that's better than nothing...
-				for (String propertyName : exacts) {
-					Object value;
-					value = source.getProperty(propertyName);
-					if (value != null) {
-						this.propertyValues.put(propertyName, new PropertyValue(
-								propertyName, value));
-						continue;
-					}
-					value = source.getProperty(propertyName.toUpperCase());
-					if (value != null) {
-						this.propertyValues.put(propertyName, new PropertyValue(
-								propertyName, value));
-						continue;
-					}
-				}
+		}
+	}
+
+	private Object getEnumerableProperty(EnumerablePropertySource<?> source,
+			PropertySourcesPropertyResolver resolver, String propertyName) {
+		try {
+			return resolver.getProperty(propertyName, Object.class);
+		}
+		catch (RuntimeException ex) {
+			// Probably could not resolve placeholders, ignore it here
+			return source.getProperty(propertyName);
+		}
+	}
+
+	private void processNonEnumerablePropertySource(PropertySource<?> source,
+			PropertySourcesPropertyResolver resolver) {
+		// We can only do exact matches for non-enumerable property names, but
+		// that's better than nothing...
+		for (String propertyName : this.propertyNames) {
+			if (!source.containsProperty(propertyName)) {
+				continue;
 			}
+			Object value = null;
+			try {
+				value = resolver.getProperty(propertyName, Object.class);
+			}
+			catch (RuntimeException ex) {
+				// Probably could not convert to Object, weird, but ignoreable
+			}
+			if (value == null) {
+				value = source.getProperty(propertyName.toUpperCase());
+			}
+			putIfAbsent(propertyName, value);
+		}
+	}
+
+	private void putIfAbsent(String propertyName, Object value) {
+		if (value != null && !this.propertyValues.containsKey(propertyName)) {
+			this.propertyValues.put(propertyName, new PropertyValue(propertyName, value));
 		}
 	}
 

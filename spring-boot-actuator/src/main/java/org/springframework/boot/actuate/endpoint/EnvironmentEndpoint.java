@@ -18,26 +18,28 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
 /**
  * {@link Endpoint} to expose {@link ConfigurableEnvironment environment} information.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.env", ignoreUnknownFields = false)
-public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> implements
-		EnvironmentAware {
+public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	private Environment environment;
+	private final Sanitizer sanitizer = new Sanitizer();
 
 	/**
 	 * Create a new {@link EnvironmentEndpoint} instance.
@@ -46,42 +48,60 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 		super("env");
 	}
 
+	public void setKeysToSanitize(String... keysToSanitize) {
+		this.sanitizer.setKeysToSanitize(keysToSanitize);
+	}
+
 	@Override
 	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		result.put("profiles", this.environment.getActiveProfiles());
-		for (PropertySource<?> source : getPropertySources()) {
+		result.put("profiles", getEnvironment().getActiveProfiles());
+		for (Entry<String, PropertySource<?>> entry : getPropertySources().entrySet()) {
+			PropertySource<?> source = entry.getValue();
+			String sourceName = entry.getKey();
 			if (source instanceof EnumerablePropertySource) {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
 				Map<String, Object> map = new LinkedHashMap<String, Object>();
 				for (String name : enumerable.getPropertyNames()) {
 					map.put(name, sanitize(name, enumerable.getProperty(name)));
 				}
-				result.put(source.getName(), map);
+				result.put(sourceName, map);
 			}
 		}
 		return result;
 	}
 
-	private Iterable<PropertySource<?>> getPropertySources() {
-		if (this.environment != null
-				&& this.environment instanceof ConfigurableEnvironment) {
-			return ((ConfigurableEnvironment) this.environment).getPropertySources();
+	private Map<String, PropertySource<?>> getPropertySources() {
+		Map<String, PropertySource<?>> map = new LinkedHashMap<String, PropertySource<?>>();
+		MutablePropertySources sources = null;
+		Environment environment = getEnvironment();
+		if (environment != null && environment instanceof ConfigurableEnvironment) {
+			sources = ((ConfigurableEnvironment) environment).getPropertySources();
 		}
-		return new StandardEnvironment().getPropertySources();
+		else {
+			sources = new StandardEnvironment().getPropertySources();
+		}
+		for (PropertySource<?> source : sources) {
+			extract("", map, source);
+		}
+		return map;
 	}
 
-	public static Object sanitize(String name, Object object) {
-		if (name.toLowerCase().endsWith("password")
-				|| name.toLowerCase().endsWith("secret")) {
-			return object == null ? null : "******";
+	private void extract(String root, Map<String, PropertySource<?>> map,
+			PropertySource<?> source) {
+		if (source instanceof CompositePropertySource) {
+			for (PropertySource<?> nest : ((CompositePropertySource) source)
+					.getPropertySources()) {
+				extract(source.getName() + ":", map, nest);
+			}
 		}
-		return object;
+		else {
+			map.put(root + source.getName(), source);
+		}
 	}
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
+	public Object sanitize(String name, Object object) {
+		return this.sanitizer.sanitize(name, object);
 	}
 
 }

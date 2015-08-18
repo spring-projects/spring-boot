@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LevelRemappingAppender}.
- * 
+ *
  * @author Phillip Webb
  */
 public class LevelRemappingAppenderTests {
@@ -84,6 +84,13 @@ public class LevelRemappingAppenderTests {
 		verify(this.logger, times(2)).callAppenders(this.logCaptor.capture());
 		assertThat(this.logCaptor.getAllValues().get(0).getLevel(), equalTo(Level.TRACE));
 		assertThat(this.logCaptor.getAllValues().get(1).getLevel(), equalTo(Level.WARN));
+	}
+
+	@Test
+	public void notRemapped() throws Exception {
+		this.appender.append(mockLogEvent(Level.TRACE));
+		verify(this.logger).callAppenders(this.logCaptor.capture());
+		assertThat(this.logCaptor.getAllValues().get(0).getLevel(), equalTo(Level.TRACE));
 	}
 
 	private ILoggingEvent mockLogEvent(Level level) {

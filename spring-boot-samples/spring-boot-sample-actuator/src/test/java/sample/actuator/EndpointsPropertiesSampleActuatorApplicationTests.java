@@ -20,6 +20,9 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
@@ -31,25 +34,32 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for endpoints configuration.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port=0")
 @DirtiesContext
 @ActiveProfiles("endpoints")
 public class EndpointsPropertiesSampleActuatorApplicationTests {
+
+	@Autowired
+	private SecurityProperties security;
+
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void testCustomErrorPath() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", "password")
-				.getForEntity("http://localhost:8080/oops", Map.class);
+				.getForEntity("http://localhost:" + this.port + "/oops", Map.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -59,10 +69,19 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 
 	@Test
 	public void testCustomContextPath() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/admin/health", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/admin/health",
+						String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		String body = entity.getBody();
-		assertEquals("ok", body);
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"status\":\"UP\""));
+		System.err.println(entity.getBody());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"hello\":\"world\""));
 	}
+
+	private String getPassword() {
+		return this.security.getUser().getPassword();
+	}
+
 }

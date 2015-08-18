@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +16,26 @@
 
 package org.springframework.boot.cli.command.shell;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.boot.cli.command.status.ExitStatus;
+import org.springframework.boot.loader.tools.RunProcess;
 
 /**
  * Special {@link Command} used to run a process from the shell. NOTE: this command is not
  * directly installed into the shell.
- * 
+ *
  * @author Phillip Webb
  */
 class RunProcessCommand extends AbstractCommand {
 
-	private static final Method INHERIT_IO_METHOD = ReflectionUtils.findMethod(
-			ProcessBuilder.class, "inheritIO");
-
-	private static final long JUST_ENDED_LIMIT = 500;
-
 	private final String[] command;
 
-	private volatile Process process;
-
-	private volatile long endTime;
+	private volatile RunProcess process;
 
 	public RunProcessCommand(String... command) {
 		super(null, null);
@@ -52,99 +43,23 @@ class RunProcessCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
-		run(Arrays.asList(args));
+	public ExitStatus run(String... args) throws Exception {
+		return run(Arrays.asList(args));
 	}
 
-	protected void run(Collection<String> args) throws IOException {
-		ProcessBuilder builder = new ProcessBuilder(this.command);
-		builder.command().addAll(args);
-		builder.redirectErrorStream(true);
-		boolean inheritedIO = inheritIO(builder);
-		try {
-			this.process = builder.start();
-			if (!inheritedIO) {
-				redirectOutput(this.process);
-			}
-			try {
-				this.process.waitFor();
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
+	protected ExitStatus run(Collection<String> args) throws IOException {
+		this.process = new RunProcess(this.command);
+		int code = this.process.run(true, args.toArray(new String[args.size()]));
+		if (code == 0) {
+			return ExitStatus.OK;
 		}
-		finally {
-			this.endTime = System.currentTimeMillis();
-			this.process = null;
+		else {
+			return new ExitStatus(code, "EXTERNAL_ERROR");
 		}
 	}
 
-	private boolean inheritIO(ProcessBuilder builder) {
-		try {
-			INHERIT_IO_METHOD.invoke(builder);
-			return true;
-		}
-		catch (Exception ex) {
-			return false;
-		}
-	}
-
-	private void redirectOutput(Process process) {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(
-				process.getInputStream()));
-		new Thread() {
-			@Override
-			public void run() {
-				try {
-					String line = reader.readLine();
-					while (line != null) {
-						System.out.println(line);
-						line = reader.readLine();
-					}
-					reader.close();
-				}
-				catch (Exception ex) {
-				}
-			};
-		}.start();
-	}
-
-	/**
-	 * @return the running process or {@code null}
-	 */
-	public Process getRunningProcess() {
-		return this.process;
-	}
-
-	/**
-	 * @return {@code true} if the process was stopped.
-	 */
 	public boolean handleSigInt() {
-
-		// if the process has just ended, probably due to this SIGINT, consider handled.
-		if (hasJustEnded()) {
-			return true;
-		}
-
-		// destroy the running process
-		Process process = this.process;
-		if (process != null) {
-			try {
-				process.destroy();
-				process.waitFor();
-				this.process = null;
-				return true;
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}
-
-		return false;
-	}
-
-	public boolean hasJustEnded() {
-		return System.currentTimeMillis() < (this.endTime + JUST_ENDED_LIMIT);
+		return this.process.handleSigInt();
 	}
 
 }

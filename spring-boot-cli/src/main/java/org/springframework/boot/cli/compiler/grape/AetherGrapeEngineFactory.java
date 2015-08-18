@@ -26,7 +26,6 @@ import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
-import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -39,13 +38,14 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
 
 /**
  * Utility class to create a pre-configured {@link AetherGrapeEngine}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public abstract class AetherGrapeEngineFactory {
 
 	public static AetherGrapeEngine create(GroovyClassLoader classLoader,
-			List<RepositoryConfiguration> repositoryConfigurations) {
+			List<RepositoryConfiguration> repositoryConfigurations,
+			DependencyResolutionContext dependencyResolutionContext) {
 
 		RepositorySystem repositorySystem = createServiceLocator().getService(
 				RepositorySystem.class);
@@ -63,12 +63,9 @@ public abstract class AetherGrapeEngineFactory {
 		new DefaultRepositorySystemSessionAutoConfiguration().apply(
 				repositorySystemSession, repositorySystem);
 
-		List<Dependency> managedDependencies = new ManagedDependenciesFactory()
-				.getManagedDependencies();
-
 		return new AetherGrapeEngine(classLoader, repositorySystem,
 				repositorySystemSession, createRepositories(repositoryConfigurations),
-				managedDependencies);
+				dependencyResolutionContext);
 	}
 
 	private static ServiceLocator createServiceLocator() {

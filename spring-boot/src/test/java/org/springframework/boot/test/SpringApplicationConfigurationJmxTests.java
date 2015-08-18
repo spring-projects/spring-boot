@@ -29,11 +29,12 @@ import static org.junit.Assert.assertFalse;
 
 /**
  * Tests for disabling JMX by default
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Config.class)
+@IntegrationTest
 public class SpringApplicationConfigurationJmxTests {
 
 	@Value("${spring.jmx.enabled}")

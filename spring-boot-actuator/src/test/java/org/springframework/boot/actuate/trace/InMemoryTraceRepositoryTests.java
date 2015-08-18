@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link InMemoryTraceRepository}.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryTraceRepositoryTests {
@@ -40,7 +40,21 @@ public class InMemoryTraceRepositoryTests {
 		this.repository.add(Collections.<String, Object> singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
 		assertEquals(2, traces.size());
+		assertEquals("bar", traces.get(0).getInfo().get("bar"));
+		assertEquals("foo", traces.get(1).getInfo().get("bar"));
+	}
+
+	@Test
+	public void reverseFalse() {
+		this.repository.setReverse(false);
+		this.repository.setCapacity(2);
+		this.repository.add(Collections.<String, Object> singletonMap("foo", "bar"));
+		this.repository.add(Collections.<String, Object> singletonMap("bar", "foo"));
+		this.repository.add(Collections.<String, Object> singletonMap("bar", "bar"));
+		List<Trace> traces = this.repository.findAll();
+		assertEquals(2, traces.size());
 		assertEquals("bar", traces.get(1).getInfo().get("bar"));
+		assertEquals("foo", traces.get(0).getInfo().get("bar"));
 	}
 
 }

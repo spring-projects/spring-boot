@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package org.springframework.boot.loader.tools;
  * The scope of a library. The common {@link #COMPILE}, {@link #RUNTIME} and
  * {@link #PROVIDED} scopes are defined here and supported by the common {@link Layouts}.
  * A custom {@link Layout} can handle additional scopes as required.
- * 
+ *
  * @author Phillip Webb
  */
 public interface LibraryScope {
@@ -28,41 +28,49 @@ public interface LibraryScope {
 	/**
 	 * The library is used at compile time and runtime.
 	 */
-	public static final LibraryScope COMPILE = new LibraryScope() {
+	LibraryScope COMPILE = new LibraryScope() {
+
 		@Override
 		public String toString() {
 			return "compile";
-		};
+		}
+
 	};
 
 	/**
 	 * The library is used at runtime but not needed for compile.
 	 */
-	public static final LibraryScope RUNTIME = new LibraryScope() {
+	LibraryScope RUNTIME = new LibraryScope() {
+
 		@Override
 		public String toString() {
 			return "runtime";
-		};
+		}
+
 	};
 
 	/**
 	 * The library is needed for compile but is usually provided when running.
 	 */
-	public static final LibraryScope PROVIDED = new LibraryScope() {
+	LibraryScope PROVIDED = new LibraryScope() {
+
 		@Override
 		public String toString() {
 			return "provided";
-		};
+		}
+
 	};
 
 	/**
 	 * Marker for custom scope when custom configuration is used.
 	 */
-	public static final LibraryScope CUSTOM = new LibraryScope() {
+	LibraryScope CUSTOM = new LibraryScope() {
+
 		@Override
 		public String toString() {
 			return "custom";
-		};
+		}
+
 	};
 
 }

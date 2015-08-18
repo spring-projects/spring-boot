@@ -20,8 +20,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.boot.ansi.AnsiStyle;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -31,7 +33,7 @@ import ch.qos.logback.core.pattern.CompositeConverter;
  * Logback {@link CompositeConverter} colors output using the {@link AnsiOutput} class. A
  * single 'color' option can be provided to the converter, or if not specified color will
  * be picked based on the logging level.
- * 
+ *
  * @author Phillip Webb
  */
 public class ColorConverter extends CompositeConverter<ILoggingEvent> {
@@ -39,21 +41,21 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 	private static final Map<String, AnsiElement> ELEMENTS;
 	static {
 		Map<String, AnsiElement> elements = new HashMap<String, AnsiElement>();
-		elements.put("faint", AnsiElement.FAINT);
-		elements.put("red", AnsiElement.RED);
-		elements.put("green", AnsiElement.GREEN);
-		elements.put("yellow", AnsiElement.YELLOW);
-		elements.put("blue", AnsiElement.BLUE);
-		elements.put("magenta", AnsiElement.MAGENTA);
-		elements.put("cyan", AnsiElement.CYAN);
+		elements.put("faint", AnsiStyle.FAINT);
+		elements.put("red", AnsiColor.RED);
+		elements.put("green", AnsiColor.GREEN);
+		elements.put("yellow", AnsiColor.YELLOW);
+		elements.put("blue", AnsiColor.BLUE);
+		elements.put("magenta", AnsiColor.MAGENTA);
+		elements.put("cyan", AnsiColor.CYAN);
 		ELEMENTS = Collections.unmodifiableMap(elements);
 	}
 
 	private static final Map<Integer, AnsiElement> LEVELS;
 	static {
 		Map<Integer, AnsiElement> levels = new HashMap<Integer, AnsiElement>();
-		levels.put(Level.ERROR_INTEGER, AnsiElement.RED);
-		levels.put(Level.WARN_INTEGER, AnsiElement.YELLOW);
+		levels.put(Level.ERROR_INTEGER, AnsiColor.RED);
+		levels.put(Level.WARN_INTEGER, AnsiColor.YELLOW);
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 
@@ -63,7 +65,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 		if (element == null) {
 			// Assume highlighting
 			element = LEVELS.get(event.getLevel().toInteger());
-			element = (element == null ? AnsiElement.GREEN : element);
+			element = (element == null ? AnsiColor.GREEN : element);
 		}
 		return toAnsiString(in, element);
 	}

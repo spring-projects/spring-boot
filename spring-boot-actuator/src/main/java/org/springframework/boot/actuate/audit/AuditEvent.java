@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.util.Assert;
 
 /**
@@ -32,9 +32,10 @@ import org.springframework.util.Assert;
  * such an event.
  * <p>
  * Users can inject a {@link AuditEventRepository} to publish their own events or
- * alternatively use Springs {@link AuthenticationEventPublisher} (usually obtained by
- * implementing {@link ApplicationEventPublisherAware}).
- * 
+ * alternatively use Spring's {@link ApplicationEventPublisher} (usually obtained by
+ * implementing {@link ApplicationEventPublisherAware}) to publish AuditApplicationEvents
+ * (wrappers for AuditEvent).
+ *
  * @author Dave Syer
  * @see AuditEventRepository
  */
@@ -102,6 +103,7 @@ public class AuditEvent implements Serializable {
 
 	/**
 	 * Returns the date/time that the even was logged.
+	 * @return the time stamp
 	 */
 	public Date getTimestamp() {
 		return this.timestamp;
@@ -109,6 +111,7 @@ public class AuditEvent implements Serializable {
 
 	/**
 	 * Returns the user principal responsible for the event or {@code null}.
+	 * @return the principal or {@code null}
 	 */
 	public String getPrincipal() {
 		return this.principal;
@@ -116,6 +119,7 @@ public class AuditEvent implements Serializable {
 
 	/**
 	 * Returns the type of event.
+	 * @return the event type
 	 */
 	public String getType() {
 		return this.type;
@@ -123,6 +127,7 @@ public class AuditEvent implements Serializable {
 
 	/**
 	 * Returns the event data.
+	 * @return the event data
 	 */
 	public Map<String, Object> getData() {
 		return this.data;

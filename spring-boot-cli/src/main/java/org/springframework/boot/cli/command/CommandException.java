@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Runtime exception wrapper that defines additional {@link Option}s that are understood
  * by the {@link CommandRunner}.
- * 
+ *
  * @author Phillip Webb
  */
 public class CommandException extends RuntimeException {
@@ -62,6 +62,16 @@ public class CommandException extends RuntimeException {
 		this.options = asEnumSet(options);
 	}
 
+	/**
+	 * Create a new {@link CommandException} with the specified options.
+	 * @param cause the underlying cause
+	 * @param options the exception options
+	 */
+	public CommandException(Throwable cause, Option... options) {
+		super(cause);
+		this.options = asEnumSet(options);
+	}
+
 	private EnumSet<Option> asEnumSet(Option[] options) {
 		if (options == null || options.length == 0) {
 			return EnumSet.noneOf(Option.class);
@@ -70,7 +80,8 @@ public class CommandException extends RuntimeException {
 	}
 
 	/**
-	 * Returns options a set of options that are understood by the {@link CommandRunner}.
+	 * Returns a set of options that are understood by the {@link CommandRunner}.
+	 * @return the options understood by the runner
 	 */
 	public Set<Option> getOptions() {
 		return Collections.unmodifiableSet(this.options);
@@ -79,7 +90,7 @@ public class CommandException extends RuntimeException {
 	/**
 	 * Specific options understood by the {@link CommandRunner}.
 	 */
-	public static enum Option {
+	public enum Option {
 
 		/**
 		 * Hide the exception message.
@@ -100,6 +111,7 @@ public class CommandException extends RuntimeException {
 		 * Re-throw the exception rather than dealing with it.
 		 */
 		RETHROW
+
 	}
 
 }

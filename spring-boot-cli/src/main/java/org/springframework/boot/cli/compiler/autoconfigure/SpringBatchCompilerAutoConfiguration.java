@@ -24,7 +24,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Batch.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

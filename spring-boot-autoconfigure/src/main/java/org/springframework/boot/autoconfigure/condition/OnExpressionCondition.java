@@ -21,16 +21,19 @@ import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.ClassMetadata;
 
 /**
  * A Condition that evaluates a SpEL expression.
- * 
+ *
  * @author Dave Syer
  * @see ConditionalOnExpression
  */
-public class OnExpressionCondition extends SpringBootCondition {
+@Order(Ordered.LOWEST_PRECEDENCE - 20)
+class OnExpressionCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,17 @@
 package sample.actuator;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Configuration
-@EnableAutoConfiguration
-@EnableConfigurationProperties
-@ComponentScan
-public class SampleActuatorApplication {
+@SpringBootApplication
+public class SampleActuatorApplication implements HealthIndicator {
+
+	@Override
+	public Health health() {
+		return Health.up().withDetail("hello", "world").build();
+	}
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleActuatorApplication.class, args);

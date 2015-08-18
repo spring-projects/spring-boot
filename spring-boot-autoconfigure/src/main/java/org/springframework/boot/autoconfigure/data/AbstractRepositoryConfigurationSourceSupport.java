@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 /**
  * Base {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data
  * Repositories.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Oliver Gierke
@@ -55,8 +55,9 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
-		new RepositoryConfigurationDelegate(getConfigurationSource(), this.resourceLoader)
-				.registerRepositoriesIn(registry, getRepositoryConfigurationExtension());
+		new RepositoryConfigurationDelegate(getConfigurationSource(),
+				this.resourceLoader, this.environment).registerRepositoriesIn(registry,
+				getRepositoryConfigurationExtension());
 	}
 
 	private AnnotationRepositoryConfigurationSource getConfigurationSource() {
@@ -78,16 +79,19 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 
 	/**
 	 * The Spring Data annotation used to enable the particular repository support.
+	 * @return the annotation class
 	 */
 	protected abstract Class<? extends Annotation> getAnnotation();
 
 	/**
 	 * The configuration class that will be used by Spring Boot as a template.
+	 * @return the configuration class
 	 */
 	protected abstract Class<?> getConfiguration();
 
 	/**
 	 * The {@link RepositoryConfigurationExtension} for the particular repository support.
+	 * @return the repository configuration extension
 	 */
 	protected abstract RepositoryConfigurationExtension getRepositoryConfigurationExtension();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.cli.compiler.autoconfigure;
 import groovy.lang.GroovyClassLoader;
 
 import org.codehaus.groovy.ast.AnnotationNode;
+import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -30,7 +31,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -44,8 +45,10 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("javax.annotation.PostConstruct",
-				"javax.annotation.PreDestroy", "groovy.util.logging.Log",
+		imports.addImports(
+				"javax.annotation.PostConstruct",
+				"javax.annotation.PreDestroy",
+				"groovy.util.logging.Log",
 				"org.springframework.stereotype.Controller",
 				"org.springframework.stereotype.Service",
 				"org.springframework.stereotype.Component",
@@ -62,8 +65,14 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 				"org.springframework.context.MessageSource",
 				"org.springframework.core.annotation.Order",
 				"org.springframework.core.io.ResourceLoader",
+				"org.springframework.boot.ApplicationRunner",
+				"org.springframework.boot.ApplicationArguments",
 				"org.springframework.boot.CommandLineRunner",
-				"org.springframework.boot.autoconfigure.EnableAutoConfiguration");
+				"org.springframework.boot.context.properties.ConfigurationProperties",
+				"org.springframework.boot.context.properties.EnableConfigurationProperties",
+				"org.springframework.boot.autoconfigure.EnableAutoConfiguration",
+				"org.springframework.boot.context.properties.ConfigurationProperties",
+				"org.springframework.boot.context.properties.EnableConfigurationProperties");
 		imports.addStarImports("org.springframework.stereotype",
 				"org.springframework.scheduling.annotation");
 	}
@@ -78,23 +87,17 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 	private void addEnableAutoConfigurationAnnotation(SourceUnit source,
 			ClassNode classNode) {
 		if (!hasEnableAutoConfigureAnnotation(classNode)) {
-			try {
-				Class<?> annotationClass = source.getClassLoader().loadClass(
-						"org.springframework.boot.autoconfigure.EnableAutoConfiguration");
-				AnnotationNode annotationNode = new AnnotationNode(new ClassNode(
-						annotationClass));
-				classNode.addAnnotation(annotationNode);
-			}
-			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException(ex);
-			}
+			AnnotationNode annotationNode = new AnnotationNode(
+					ClassHelper.make("EnableAutoConfiguration"));
+			classNode.addAnnotation(annotationNode);
 		}
 	}
 
 	private boolean hasEnableAutoConfigureAnnotation(ClassNode classNode) {
 		for (AnnotationNode node : classNode.getAnnotations()) {
-			if ("EnableAutoConfiguration".equals(node.getClassNode()
-					.getNameWithoutPackage())) {
+			String name = node.getClassNode().getNameWithoutPackage();
+			if ("EnableAutoConfiguration".equals(name)
+					|| "SpringBootApplication".equals(name)) {
 				return true;
 			}
 		}

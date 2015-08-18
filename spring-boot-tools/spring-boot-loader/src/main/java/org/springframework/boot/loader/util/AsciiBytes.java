@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 /**
  * Simple wrapper around a byte array that represents an ASCII. Used for performance
  * reasons to save constructing Strings for ZIP data.
- * 
+ *
  * @author Phillip Webb
  */
 public final class AsciiBytes {
@@ -42,17 +42,17 @@ public final class AsciiBytes {
 
 	/**
 	 * Create a new {@link AsciiBytes} from the specified String.
-	 * @param string
+	 * @param string the source string
 	 */
 	public AsciiBytes(String string) {
-		this(string.getBytes());
+		this(string.getBytes(UTF_8));
 		this.string = string;
 	}
 
 	/**
 	 * Create a new {@link AsciiBytes} from the specified bytes. NOTE: underlying bytes
 	 * are not expected to change.
-	 * @param bytes the bytes
+	 * @param bytes the source bytes
 	 */
 	public AsciiBytes(byte[] bytes) {
 		this(bytes, 0, bytes.length);
@@ -61,7 +61,7 @@ public final class AsciiBytes {
 	/**
 	 * Create a new {@link AsciiBytes} from the specified bytes. NOTE: underlying bytes
 	 * are not expected to change.
-	 * @param bytes the bytes
+	 * @param bytes the source bytes
 	 * @param offset the offset
 	 * @param length the length
 	 */
@@ -125,7 +125,14 @@ public final class AsciiBytes {
 		if (string == null || string.length() == 0) {
 			return this;
 		}
-		return append(string.getBytes());
+		return append(string.getBytes(UTF_8));
+	}
+
+	public AsciiBytes append(AsciiBytes asciiBytes) {
+		if (asciiBytes == null || asciiBytes.length() == 0) {
+			return this;
+		}
+		return append(asciiBytes.bytes);
 	}
 
 	public AsciiBytes append(byte[] bytes) {

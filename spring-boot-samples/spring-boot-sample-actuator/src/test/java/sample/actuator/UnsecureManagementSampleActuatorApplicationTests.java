@@ -20,9 +20,10 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -37,22 +38,25 @@ import static org.junit.Assert.assertTrue;
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
  * classpath).
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest({ "server.port:0", "management.security.enabled:false" })
 @DirtiesContext
 @ActiveProfiles("unsecure-management")
 public class UnsecureManagementSampleActuatorApplicationTests {
+
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void testHomeIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", Map.class);
+				"http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -71,11 +75,11 @@ public class UnsecureManagementSampleActuatorApplicationTests {
 		}
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/metrics", Map.class);
+				"http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.root"));
+		assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.unmapped"));
 	}
 
 }

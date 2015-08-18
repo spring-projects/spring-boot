@@ -19,10 +19,11 @@ package org.springframework.boot.cli.command.shell;
 import jline.console.ConsoleReader;
 
 import org.springframework.boot.cli.command.AbstractCommand;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * Clear the {@link Shell} screen.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -36,9 +37,10 @@ class ClearCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public ExitStatus run(String... args) throws Exception {
 		this.consoleReader.setPrompt("");
 		this.consoleReader.clearScreen();
+		return ExitStatus.OK;
 	}
 
 }

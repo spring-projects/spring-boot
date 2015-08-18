@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,11 @@ import java.util.Set;
  * between key and value.
  * <p>
  * Adapted from Spring.
- * 
+ *
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Dave Syer
- * 
+ *
  * @see System#getProperty(String)
  */
 public abstract class SystemPropertyUtils {
@@ -167,9 +167,10 @@ public abstract class SystemPropertyUtils {
 
 	/**
 	 * Search the System properties and environment variables for a value with the
-	 * provided key. Environment variables in <code>UPPER_CASE</code> style are allowed
-	 * where System properties would normally be <code>lower.case</code>.
+	 * provided key. Environment variables in {@code UPPER_CASE} style are allowed
+	 * where System properties would normally be {@code lower.case}.
 	 * @param key the key to resolve
+	 * @param defaultValue the default value
 	 * @param text optional extra context for an error message if the key resolution fails
 	 * (e.g. if System properties are not accessible)
 	 * @return a static property value or null of not found

@@ -23,13 +23,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for externalized configuration. Add this to a class definition if you want
- * to bind and validate some external Properties (e.g. from a .properties file).
- * 
+ * Annotation for externalized configuration. Add this to a class definition or a
+ * {@code @Bean} method in a {@code @Configuration} class if you want to bind and validate
+ * some external Properties (e.g. from a .properties file).
+ *
  * @author Dave Syer
  * @see ConfigurationPropertiesBindingPostProcessor
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConfigurationProperties {
@@ -78,10 +79,20 @@ public @interface ConfigurationProperties {
 	boolean exceptionIfInvalid() default true;
 
 	/**
-	 * Optionally provide an explicit resource locations to bind to instead of using the
-	 * default environment.
+	 * Optionally provide explicit resource locations to bind to. By default the
+	 * configuration at these specified locations will be merged with the default
+	 * configuration.
 	 * @return the path (or paths) of resources to bind to
+	 * @see #merge()
 	 */
 	String[] locations() default {};
+
+	/**
+	 * Flag to indicate that configuration loaded from the specified locations should be
+	 * merged with the default configuration.
+	 * @return the flag value (default true)
+	 * @see #locations()
+	 */
+	boolean merge() default true;
 
 }

@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link AnnotationConfigEmbeddedWebApplicationContext}.
- * 
+ *
  * @author Phillip Webb
  */
 public class AnnotationConfigEmbeddedWebApplicationContextTests {
@@ -130,6 +130,7 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 	}
 
 	@Component
+	@SuppressWarnings("serial")
 	protected static class ExampleServletWithAutowired extends GenericServlet {
 
 		@Autowired

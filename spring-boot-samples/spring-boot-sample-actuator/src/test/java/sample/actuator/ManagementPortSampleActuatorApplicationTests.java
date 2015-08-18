@@ -29,32 +29,31 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for separate management and main service ports.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest({ "server.port=0", "management.port=0" })
 @DirtiesContext
-@ActiveProfiles("management-port")
 public class ManagementPortSampleActuatorApplicationTests {
 
 	@Autowired
 	private SecurityProperties security;
 
-	@Value("${server.port}")
+	@Value("${local.server.port}")
 	private int port = 9010;
 
-	@Value("${management.port}")
+	@Value("${local.management.port}")
 	private int managementPort = 9011;
 
 	@Test
@@ -82,7 +81,8 @@ public class ManagementPortSampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"status\":\"UP\""));
 	}
 
 	@Test

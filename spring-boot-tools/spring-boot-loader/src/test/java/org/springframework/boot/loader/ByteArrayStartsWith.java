@@ -21,7 +21,7 @@ import org.hamcrest.TypeSafeMatcher;
 
 /**
  * Hamcrest matcher to tests that a byte array starts with specific bytes.
- * 
+ *
  * @author Phillip Webb
  */
 public class ByteArrayStartsWith extends TypeSafeMatcher<byte[]> {

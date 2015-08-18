@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.sql.DataSource;
+import liquibase.integration.spring.SpringLiquibase;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
@@ -30,30 +36,33 @@ import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEn
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
+import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
-import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.SimpleHealthIndicator;
-import org.springframework.boot.actuate.health.VanillaHealthIndicator;
-import org.springframework.boot.actuate.metrics.reader.MetricReader;
-import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
@@ -63,31 +72,32 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
  * {@link Endpoint}s.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist
+ * @author Christian Dupuis
+ * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 @Configuration
+@AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 public class EndpointAutoConfiguration {
-
-	@Autowired(required = false)
-	private HealthIndicator<? extends Object> healthIndicator;
-
-	@Autowired(required = false)
-	private DataSource dataSource;
 
 	@Autowired
 	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
-	private final MetricReader metricRepository = new InMemoryMetricRepository();
+	private HealthAggregator healthAggregator = new OrderedHealthAggregator();
 
 	@Autowired(required = false)
-	private PublicMetrics metrics;
+	private Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
 
 	@Autowired(required = false)
-	private final TraceRepository traceRepository = new InMemoryTraceRepository();
+	private Collection<PublicMetrics> publicMetrics;
+
+	@Autowired(required = false)
+	private TraceRepository traceRepository = new InMemoryTraceRepository();
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -97,18 +107,8 @@ public class EndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HealthEndpoint<Object> healthEndpoint() {
-		if (this.healthIndicator == null) {
-			if (this.dataSource == null) {
-				this.healthIndicator = new VanillaHealthIndicator();
-			}
-			else {
-				SimpleHealthIndicator healthIndicator = new SimpleHealthIndicator();
-				healthIndicator.setDataSource(this.dataSource);
-				this.healthIndicator = healthIndicator;
-			}
-		}
-		return new HealthEndpoint<Object>(this.healthIndicator);
+	public HealthEndpoint healthEndpoint() {
+		return new HealthEndpoint(this.healthAggregator, this.healthIndicators);
 	}
 
 	@Bean
@@ -132,10 +132,12 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MetricsEndpoint metricsEndpoint() {
-		if (this.metrics == null) {
-			this.metrics = new VanillaPublicMetrics(this.metricRepository);
+		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
+		if (this.publicMetrics != null) {
+			publicMetrics.addAll(this.publicMetrics);
 		}
-		return new MetricsEndpoint(this.metrics);
+		Collections.sort(publicMetrics, AnnotationAwareOrderComparator.INSTANCE);
+		return new MetricsEndpoint(publicMetrics);
 	}
 
 	@Bean
@@ -153,7 +155,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(ConditionEvaluationReport.class)
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public AutoConfigurationReportEndpoint autoConfigurationAuditEndpoint() {
+	public AutoConfigurationReportEndpoint autoConfigurationReportEndpoint() {
 		return new AutoConfigurationReportEndpoint();
 	}
 
@@ -161,6 +163,38 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ShutdownEndpoint shutdownEndpoint() {
 		return new ShutdownEndpoint();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
+		return new ConfigurationPropertiesReportEndpoint();
+	}
+
+	@Configuration
+	@ConditionalOnBean(Flyway.class)
+	@ConditionalOnClass(Flyway.class)
+	static class FlywayEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public FlywayEndpoint flywayEndpoint(Flyway flyway) {
+			return new FlywayEndpoint(flyway);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnBean(SpringLiquibase.class)
+	@ConditionalOnClass(SpringLiquibase.class)
+	static class LiquibaseEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public LiquibaseEndpoint liquibaseEndpoint(SpringLiquibase liquibase) {
+			return new LiquibaseEndpoint(liquibase);
+		}
+
 	}
 
 	@Configuration
@@ -174,12 +208,6 @@ public class EndpointAutoConfiguration {
 			return endpoint;
 		}
 
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
-		return new ConfigurationPropertiesReportEndpoint();
 	}
 
 	@Configuration

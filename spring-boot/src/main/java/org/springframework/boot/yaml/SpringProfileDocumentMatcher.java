@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,24 @@
 package org.springframework.boot.yaml;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
-import org.springframework.boot.yaml.YamlProcessor.DocumentMatcher;
-import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
+import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
+import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.core.env.Environment;
 
 /**
  * {@link DocumentMatcher} backed by {@link Environment#getActiveProfiles()}. A YAML
  * document matches if it contains an element "spring.profiles" (a comma-separated list)
  * and one of the profiles is in the active list.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
-	private static final String[] DEFAULT_PROFILES = new String[] { "default" };
+	private static final String[] DEFAULT_PROFILES = new String[] { "^\\s*$" };
 
 	private String[] activeProfiles = new String[0];
 
@@ -47,9 +48,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	public void addActiveProfiles(String... profiles) {
 		LinkedHashSet<String> set = new LinkedHashSet<String>(
 				Arrays.asList(this.activeProfiles));
-		for (String profile : profiles) {
-			set.add(profile);
-		}
+		Collections.addAll(set, profiles);
 		this.activeProfiles = set.toArray(new String[set.size()]);
 	}
 

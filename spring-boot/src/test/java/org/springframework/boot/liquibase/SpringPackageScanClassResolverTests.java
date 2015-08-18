@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for SpringPackageScanClassResolver.
- * 
+ *
  * @author Phillip Webb
  */
 public class SpringPackageScanClassResolverTests {

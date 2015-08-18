@@ -23,7 +23,7 @@ import org.springframework.boot.cli.command.options.OptionHelp;
 
 /**
  * Abstract {@link Command} implementation.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -66,6 +66,11 @@ public abstract class AbstractCommand implements Command {
 	@Override
 	public Collection<OptionHelp> getOptionsHelp() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public Collection<HelpExample> getExamples() {
+		return null;
 	}
 
 }

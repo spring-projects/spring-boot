@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import org.springframework.boot.cli.app.SpringApplicationLauncher;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.util.ResourceUtils;
 
@@ -32,7 +33,7 @@ import org.springframework.boot.cli.util.ResourceUtils;
  * Compiles Groovy code running the resulting classes using a {@code SpringApplication}.
  * Takes care of threading and class-loading issues and can optionally monitor sources for
  * changes.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -67,8 +68,17 @@ public class SpringApplicationRunner {
 		this.sources = sources.clone();
 		this.args = args.clone();
 		this.compiler = new GroovyCompiler(configuration);
-		if (configuration.getLogLevel().intValue() <= Level.FINE.intValue()) {
+		int level = configuration.getLogLevel().intValue();
+		if (level <= Level.FINER.intValue()) {
 			System.setProperty("groovy.grape.report.downloads", "true");
+			System.setProperty("trace", "true");
+		}
+		else if (level <= Level.FINE.intValue()) {
+			System.setProperty("debug", "true");
+		}
+		else if (level == Level.OFF.intValue()) {
+			System.setProperty("spring.main.showBanner", "false");
+			System.setProperty("logging.level.ROOT", "OFF");
 		}
 	}
 
@@ -135,12 +145,8 @@ public class SpringApplicationRunner {
 		@Override
 		public void run() {
 			try {
-				// User reflection to load and call Spring
-				Class<?> application = getContextClassLoader().loadClass(
-						"org.springframework.boot.SpringApplication");
-				Method method = application.getMethod("run", Object[].class,
-						String[].class);
-				this.applicationContext = method.invoke(null, this.compiledSources,
+				this.applicationContext = new SpringApplicationLauncher(
+						getContextClassLoader()).launch(this.compiledSources,
 						SpringApplicationRunner.this.args);
 			}
 			catch (Exception ex) {

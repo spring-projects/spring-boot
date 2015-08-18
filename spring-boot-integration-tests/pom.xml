@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.0.2.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-integration-tests</artifactId>
@@ -19,6 +19,10 @@
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
+	<modules>
+		<module>spring-boot-gradle-tests</module>
+		<module>spring-boot-security-tests</module>
+	</modules>
 	<profiles>
 		<profile>
 			<id>default</id>
@@ -30,13 +34,22 @@
 					<plugin>
 						<!-- Invoke integration tests in the install phase, after the maven-plugin
 							is available -->
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-invoker-plugin</artifactId>
+						<inherited>false</inherited>
 						<configuration>
 							<settingsFile>src/it/settings.xml</settingsFile>
 							<projectsDirectory>${main.basedir}/spring-boot-samples/</projectsDirectory>
 							<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
 							<skipInvocation>${skipTests}</skipInvocation>
 							<streamLogs>true</streamLogs>
+							<profiles>
+								<profile>integration-test</profile>
+							</profiles>
+							<localRepositoryPath> </localRepositoryPath>
+							<pomIncludes>
+								<pomInclude>*/pom.xml</pomInclude>
+							</pomIncludes>
 						</configuration>
 						<executions>
 							<execution>
@@ -45,6 +58,41 @@
 								<goals>
 									<goal>install</goal>
 									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<inherited>false</inherited>
+						<executions>
+							<execution>
+								<id>clean-samples</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<delete includeemptydirs="true">
+											<fileset dir="${main.basedir}/spring-boot-samples" includes="**/target/" />
+										</delete>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-clean-plugin</artifactId>
+						<inherited>false</inherited>
+						<executions>
+							<execution>
+								<id>clean-samples</id>
+								<phase>clean</phase>
+								<goals>
+									<goal>clean</goal>
 								</goals>
 							</execution>
 						</executions>

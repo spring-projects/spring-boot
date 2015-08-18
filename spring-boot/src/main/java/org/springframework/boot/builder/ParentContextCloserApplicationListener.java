@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,40 @@ package org.springframework.boot.builder;
 
 import java.lang.ref.WeakReference;
 
+import org.springframework.beans.BeansException;
 import org.springframework.boot.builder.ParentContextApplicationContextInitializer.ParentContextAvailableEvent;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.Ordered;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Listener that closes the application context if its parent is closed. It listens for
  * refresh events and grabs the current context from there, and then listens for closed
  * events and propagates it down the hierarchy.
- * 
+ *
  * @author Dave Syer
  * @author Eric Bottard
  */
 public class ParentContextCloserApplicationListener implements
-		ApplicationListener<ParentContextAvailableEvent>, Ordered {
+		ApplicationListener<ParentContextAvailableEvent>, ApplicationContextAware,
+		Ordered {
+
+	private int order = Ordered.LOWEST_PRECEDENCE - 10;
+
+	private ApplicationContext context;
 
 	@Override
 	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE - 10;
+		return this.order;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext context) throws BeansException {
+		this.context = context;
 	}
 
 	@Override
@@ -46,22 +60,29 @@ public class ParentContextCloserApplicationListener implements
 	}
 
 	private void maybeInstallListenerInParent(ConfigurableApplicationContext child) {
-		if (child.getParent() instanceof ConfigurableApplicationContext) {
-			ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
-					.getParent();
-			parent.addApplicationListener(createContextCloserListener(child));
+		if (child == this.context) {
+			if (child.getParent() instanceof ConfigurableApplicationContext) {
+				ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
+						.getParent();
+				parent.addApplicationListener(createContextCloserListener(child));
+			}
 		}
 	}
 
 	/**
 	 * Subclasses may override to create their own subclass of ContextCloserListener. This
 	 * still enforces the use of a weak reference.
+	 * @param child the child context
+	 * @return the {@link ContextCloserListener} to use
 	 */
 	protected ContextCloserListener createContextCloserListener(
 			ConfigurableApplicationContext child) {
 		return new ContextCloserListener(child);
 	}
 
+	/**
+	 * {@link ApplicationListener} to close the context.
+	 */
 	protected static class ContextCloserListener implements
 			ApplicationListener<ContextClosedEvent> {
 
@@ -80,6 +101,27 @@ public class ParentContextCloserApplicationListener implements
 					&& context.isActive()) {
 				context.close();
 			}
+		}
+
+		@Override
+		public int hashCode() {
+			return ObjectUtils.nullSafeHashCode(this.childContext.get());
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (obj instanceof ContextCloserListener) {
+				ContextCloserListener other = (ContextCloserListener) obj;
+				return ObjectUtils.nullSafeEquals(this.childContext.get(),
+						other.childContext.get());
+			}
+			return super.equals(obj);
 		}
 
 	}

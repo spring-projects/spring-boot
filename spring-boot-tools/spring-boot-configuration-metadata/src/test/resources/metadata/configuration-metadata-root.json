@@ -1,0 +1,11 @@
+{
+  "properties": [
+    {
+      "name": "spring.root.name",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "spring.root2.name"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ package org.springframework.boot.loader.tools.sample;
 
 /**
  * Sample class with a main method.
- * 
+ *
  * @author Phillip Webb
  */
 public class ClassWithMainMethod {

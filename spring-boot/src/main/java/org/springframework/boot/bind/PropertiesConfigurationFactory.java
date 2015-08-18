@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package org.springframework.boot.bind;
 
 import java.beans.PropertyDescriptor;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -34,6 +35,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
@@ -44,11 +46,16 @@ import org.springframework.validation.Validator;
  * Validate some {@link Properties} (or optionally {@link PropertySources}) by binding
  * them to an object of a specified type and then optionally running a {@link Validator}
  * over it.
- * 
+ *
+ * @param <T> The target type
  * @author Dave Syer
  */
 public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		MessageSourceAware, InitializingBean {
+
+	private static final char[] EXACT_DELIMITERS = { '_', '.', '[' };
+
+	private static final char[] TARGET_NAME_DELIMITERS = { '_', '.' };
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -87,6 +94,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 
 	/**
 	 * Create a new factory for an object of the given type.
+	 * @param type the target type
 	 * @see #PropertiesConfigurationFactory(Class)
 	 */
 	@SuppressWarnings("unchecked")
@@ -176,7 +184,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	/**
 	 * Flag to indicate that an exception should be raised if a Validator is available and
 	 * validation fails.
-	 * 
+	 *
 	 * @param exceptionIfInvalid the flag to set
 	 */
 	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
@@ -234,7 +242,6 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	private void doBindPropertiesToTarget() throws BindException {
-
 		RelaxedDataBinder dataBinder = (this.targetName != null ? new RelaxedDataBinder(
 				this.target, this.targetName) : new RelaxedDataBinder(this.target));
 		if (this.validator != null) {
@@ -247,36 +254,75 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
 		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
 		customizeBinder(dataBinder);
+		Set<String> names = getNames();
+		PropertyValues propertyValues = getPropertyValues(names);
+		dataBinder.bind(propertyValues);
+		if (this.validator != null) {
+			validate(dataBinder);
+		}
+	}
 
-		Set<String> names = new HashSet<String>();
-		Set<String> patterns = new HashSet<String>();
+	private Set<String> getNames() {
+		Set<String> names = new LinkedHashSet<String>();
 		if (this.target != null) {
+			Iterable<String> prefixes = (StringUtils.hasLength(this.targetName) ? new RelaxedNames(
+					this.targetName) : null);
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
-			String prefix = (this.targetName != null ? this.targetName + "." : "");
-			String[] suffixes = new String[] { ".*", "_*" };
 			for (PropertyDescriptor descriptor : descriptors) {
 				String name = descriptor.getName();
 				if (!name.equals("class")) {
-					for (String relaxedName : new RelaxedNames(prefix + name)) {
-						names.add(relaxedName);
-						patterns.add(relaxedName);
-						for (String suffix : suffixes) {
-							patterns.add(relaxedName + suffix);
+					RelaxedNames relaxedNames = RelaxedNames.forCamelCase(name);
+					if (prefixes == null) {
+						for (String relaxedName : relaxedNames) {
+							names.add(relaxedName);
+						}
+					}
+					else {
+						for (String prefix : prefixes) {
+							for (String relaxedName : relaxedNames) {
+								names.add(prefix + "." + relaxedName);
+								names.add(prefix + "_" + relaxedName);
+							}
 						}
 					}
 				}
 			}
 		}
+		return names;
+	}
 
-		PropertyValues propertyValues = (this.properties != null ? new MutablePropertyValues(
-				this.properties) : new PropertySourcesPropertyValues(
-				this.propertySources, patterns, names));
-		dataBinder.bind(propertyValues);
-
-		if (this.validator != null) {
-			validate(dataBinder);
+	private PropertyValues getPropertyValues(Set<String> names) {
+		if (this.properties != null) {
+			return new MutablePropertyValues(this.properties);
 		}
+		return getPropertySourcesPropertyValues(names);
+	}
+
+	private PropertyValues getPropertySourcesPropertyValues(Set<String> names) {
+		PropertyNamePatternsMatcher includes = getPropertyNamePatternsMatcher(names);
+		return new PropertySourcesPropertyValues(this.propertySources, names, includes);
+	}
+
+	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(Set<String> names) {
+		if (this.ignoreUnknownFields && !isMapTarget()) {
+			// Since unknown fields are ignored we can filter them out early to save
+			// unnecessary calls to the PropertySource.
+			return new DefaultPropertyNamePatternsMatcher(EXACT_DELIMITERS, true, names);
+		}
+		if (this.targetName != null) {
+			// We can filter properties to those starting with the target name, but
+			// we can't do a complete filter since we need to trigger the
+			// unknown fields check
+			return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMITERS, true,
+					this.targetName);
+		}
+		// Not ideal, we basically can't filter anything
+		return PropertyNamePatternsMatcher.ALL;
+	}
+
+	private boolean isMapTarget() {
+		return this.target != null && Map.class.isAssignableFrom(this.target.getClass());
 	}
 
 	private void validate(RelaxedDataBinder dataBinder) throws BindException {

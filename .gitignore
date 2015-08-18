@@ -8,11 +8,15 @@
 .classpath
 .project
 .settings
+.metadata
+.factorypath
+.recommenders
 bin
 build
 lib/
 target
 .springBeans
+interpolated*.xml
 dependency-reduced-pom.xml
 build.log
 _site/
@@ -23,4 +27,9 @@ settings.xml
 activemq-data
 overridedb.*
 *.iml
+*.ipr
+*.iws
 .idea
+*.jar
+.DS_Store
+.factorypath

@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ShellProperties}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class ShellPropertiesTests {
@@ -119,6 +119,19 @@ public class ShellPropertiesTests {
 		assertEquals(2, props.getDisabledPlugins().length);
 		assertArrayEquals(new String[] { "pattern1", "pattern2" },
 				props.getDisabledPlugins());
+	}
+
+	@Test
+	public void testBindingDisabledCommands() {
+		ShellProperties props = new ShellProperties();
+		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
+		binder.setConversionService(new DefaultConversionService());
+		binder.bind(new MutablePropertyValues(Collections.singletonMap(
+				"shell.disabled_commands", "pattern1, pattern2")));
+		assertFalse(binder.getBindingResult().hasErrors());
+		assertEquals(2, props.getDisabledCommands().length);
+		assertArrayEquals(new String[] { "pattern1", "pattern2" },
+				props.getDisabledCommands());
 	}
 
 	@Test

@@ -5,11 +5,11 @@
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-samples</artifactId>
-		<version>1.0.2.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-actuator-log4j</artifactId>
-	<name>Spring Boot Actuator Log4J Sample</name>
-	<description>Spring Boot Actuator Log4J Sample</description>
+	<name>Spring Boot Actuator Log4j Sample</name>
+	<description>Spring Boot Actuator Log4j Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>

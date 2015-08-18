@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link JvmUtils}.
- * 
+ *
  * @author Phillip Webb
  */
 public class JvmUtilsTests {
@@ -35,7 +35,7 @@ public class JvmUtilsTests {
 	@Test
 	public void getToolsJar() throws Exception {
 		URL jarUrl = JvmUtils.getToolsJarUrl();
-		System.out.println(jarUrl);
+		// System.out.println(jarUrl);
 		assertThat(jarUrl.toString(), endsWith(".jar"));
 		assertThat(new File(jarUrl.toURI()).exists(), equalTo(true));
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,14 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
@@ -43,7 +45,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SpringApplicationBuilder}.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringApplicationBuilderTests {
@@ -52,9 +54,7 @@ public class SpringApplicationBuilderTests {
 
 	@After
 	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+		ApplicationContextTestUtils.closeAll(this.context);
 	}
 
 	@Test
@@ -180,6 +180,50 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	public void parentFirstWithDifferentProfile() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(
+				ExampleConfig.class).profiles("node").properties("transport=redis")
+				.child(ChildConfig.class).profiles("admin").web(false);
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"),
+				is(true));
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"),
+				is(false));
+	}
+
+	@Test
+	public void parentWithDifferentProfile() throws Exception {
+		SpringApplicationBuilder shared = new SpringApplicationBuilder(
+				ExampleConfig.class).profiles("node").properties("transport=redis");
+		SpringApplicationBuilder application = shared.child(ChildConfig.class)
+				.profiles("admin").web(false);
+		shared.profiles("parent");
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"),
+				is(true));
+		assertThat(
+				this.context.getParent().getEnvironment()
+						.acceptsProfiles("node", "parent"), is(true));
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"),
+				is(false));
+	}
+
+	@Test
+	public void parentFirstWithDifferentProfileAndExplicitEnvironment() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(
+				ExampleConfig.class).environment(new StandardEnvironment())
+				.profiles("node").properties("transport=redis").child(ChildConfig.class)
+				.profiles("admin").web(false);
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"),
+				is(true));
+		// Now they share an Environment explicitly so there's no way to keep the profiles
+		// separate
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"),
+				is(true));
+	}
+
+	@Test
 	public void parentContextIdentical() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class);
@@ -195,7 +239,7 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).web(false);
 		this.context = application.run();
-		assertEquals(2, application.application().getInitializers().size());
+		assertEquals(4, application.application().getInitializers().size());
 	}
 
 	@Test
@@ -203,7 +247,7 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).child(ChildConfig.class).web(false);
 		this.context = application.run();
-		assertEquals(3, application.application().getInitializers().size());
+		assertEquals(5, application.application().getInitializers().size());
 	}
 
 	@Test
@@ -217,7 +261,7 @@ public class SpringApplicationBuilderTests {
 					}
 				});
 		this.context = application.run();
-		assertEquals(3, application.application().getInitializers().size());
+		assertEquals(5, application.application().getInitializers().size());
 	}
 
 	@Configuration

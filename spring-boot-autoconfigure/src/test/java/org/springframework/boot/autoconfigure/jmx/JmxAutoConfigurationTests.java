@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,15 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
+import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
@@ -37,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link JmxAutoConfiguration}
- * 
+ *
  * @author Christian Dupuis
  */
 public class JmxAutoConfigurationTests {
@@ -51,6 +56,9 @@ public class JmxAutoConfigurationTests {
 	public void tearDown() {
 		if (this.context != null) {
 			this.context.close();
+			if (this.context.getParent() != null) {
+				((ConfigurableApplicationContext) this.context.getParent()).close();
+			}
 		}
 	}
 
@@ -70,7 +78,6 @@ public class JmxAutoConfigurationTests {
 		this.context.setEnvironment(env);
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
-
 		assertNotNull(this.context.getBean(MBeanExporter.class));
 	}
 
@@ -82,7 +89,6 @@ public class JmxAutoConfigurationTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
 		this.context.refresh();
-
 		this.context.getBean(MBeanExporter.class);
 	}
 
@@ -90,18 +96,59 @@ public class JmxAutoConfigurationTests {
 	public void testDefaultDomainConfiguredOnMBeanExport() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("spring.jmx.enabled", "true");
-		env.setProperty("spring.jmx.default_domain", "my-test-domain");
+		env.setProperty("spring.jmx.default-domain", "my-test-domain");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setEnvironment(env);
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
 		this.context.refresh();
-
 		MBeanExporter mBeanExporter = this.context.getBean(MBeanExporter.class);
 		assertNotNull(mBeanExporter);
 		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
-				.getField(mBeanExporter, "metadataNamingStrategy");
+				.getField(mBeanExporter, "namingStrategy");
 		assertEquals("my-test-domain",
 				ReflectionTestUtils.getField(naming, "defaultDomain"));
+	}
+
+	@Test
+	public void testBasicParentContext() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(JmxAutoConfiguration.class);
+		this.context.refresh();
+		AnnotationConfigApplicationContext parent = this.context;
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		this.context.register(JmxAutoConfiguration.class);
+		this.context.refresh();
+	}
+
+	@Test
+	public void testParentContext() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(JmxAutoConfiguration.class, TestConfiguration.class);
+		this.context.refresh();
+		AnnotationConfigApplicationContext parent = this.context;
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		this.context.register(JmxAutoConfiguration.class, TestConfiguration.class);
+		this.context.refresh();
+	}
+
+	@Test
+	public void customJmxDomain() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomJmxDomainConfiguration.class,
+				JmxAutoConfiguration.class, IntegrationAutoConfiguration.class);
+		this.context.refresh();
+		IntegrationMBeanExporter mbeanExporter = this.context
+				.getBean(IntegrationMBeanExporter.class);
+		DirectFieldAccessor dfa = new DirectFieldAccessor(mbeanExporter);
+		assertEquals("foo.my", dfa.getPropertyValue("domain"));
+	}
+
+	@Configuration
+	@EnableIntegrationMBeanExport(defaultDomain = "foo.my")
+	public static class CustomJmxDomainConfiguration {
+
 	}
 
 	@Configuration

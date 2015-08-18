@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link SpringApplicationContextLoader} (detectDefaultConfigurationClasses).
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

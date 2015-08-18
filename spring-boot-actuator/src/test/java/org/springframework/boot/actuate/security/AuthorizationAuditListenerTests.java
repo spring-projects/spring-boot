@@ -20,7 +20,6 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,6 +29,7 @@ import org.springframework.security.access.event.AuthorizationFailureEvent;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -39,8 +39,7 @@ public class AuthorizationAuditListenerTests {
 
 	private final AuthorizationAuditListener listener = new AuthorizationAuditListener();
 
-	private final ApplicationEventPublisher publisher = Mockito
-			.mock(ApplicationEventPublisher.class);
+	private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
 
 	@Before
 	public void init() {

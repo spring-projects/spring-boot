@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,140 @@
 
 package org.springframework.boot.autoconfigure.redis;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.StringUtils;
+
+import redis.clients.jedis.Jedis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link RedisAutoConfiguration}.
+ *
  * @author Dave Syer
+ * @author Christian Dupuis
+ * @author Christoph Strobl
+ * @author Eddú Meléndez
  */
 public class RedisAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
+	@Before
+	public void setup() {
+		this.context = new AnnotationConfigApplicationContext();
+	}
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void testDefaultRedisConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(RedisAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		load();
 		assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
 		assertNotNull(this.context.getBean(StringRedisTemplate.class));
 	}
 
 	@Test
 	public void testOverrideRedisConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.redis.host:foo");
-		this.context.register(RedisAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertEquals("foo", this.context.getBean(LettuceConnectionFactory.class)
+		load("spring.redis.host:foo", "spring.redis.database:1");
+		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
 				.getHostName());
+		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getDatabase());
+	}
+
+	@Test
+	public void testRedisConfigurationWithPool() throws Exception {
+		load("spring.redis.host:foo", "spring.redis.pool.max-idle:1");
+		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
+				.getHostName());
+		assertEquals(1, this.context.getBean(JedisConnectionFactory.class)
+				.getPoolConfig().getMaxIdle());
+	}
+
+	@Test
+	public void testRedisConfigurationWithTimeout() throws Exception {
+		load("spring.redis.host:foo", "spring.redis.timeout:100");
+		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
+				.getHostName());
+		assertEquals(100, this.context.getBean(JedisConnectionFactory.class).getTimeout());
+	}
+
+	@Test
+	public void testRedisConfigurationWithSentinel() throws Exception {
+		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
+		if (isAtLeastOneSentinelAvailable(sentinels)) {
+			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
+					+ StringUtils.collectionToCommaDelimitedString(sentinels));
+
+			assertTrue(this.context.getBean(JedisConnectionFactory.class)
+					.isRedisSentinelAware());
+		}
+	}
+
+	private boolean isAtLeastOneSentinelAvailable(List<String> sentinels) {
+		for (String sentinel : sentinels) {
+			if (isSentinelAvailable(sentinel)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean isSentinelAvailable(String node) {
+		Jedis jedis = null;
+		try {
+			String[] hostAndPort = node.split(":");
+			jedis = new Jedis(hostAndPort[0], Integer.valueOf(hostAndPort[1]));
+			jedis.connect();
+			jedis.ping();
+			return true;
+		}
+		catch (Exception ex) {
+			return false;
+		}
+		finally {
+			if (jedis != null) {
+				try {
+					jedis.disconnect();
+					jedis.close();
+				}
+				catch (Exception ex) {
+					// Continue
+				}
+			}
+		}
+	}
+
+	private void load(String... environment) {
+		this.context = doLoad(environment);
+	}
+
+	private AnnotationConfigApplicationContext doLoad(String... environment) {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+		applicationContext.register(RedisAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		applicationContext.refresh();
+		return applicationContext;
 	}
 
 }

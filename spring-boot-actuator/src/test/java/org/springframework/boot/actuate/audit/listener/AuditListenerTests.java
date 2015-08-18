@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link AuditListener}.
- * 
+ *
  * @author Phillip Webb
  */
 public class AuditListenerTests {

@@ -23,9 +23,10 @@ import org.springframework.core.env.Environment;
 /**
  * Event published when a {@link SpringApplication} is starting up and the
  * {@link Environment} is first available for inspection and modification.
- * 
+ *
  * @author Dave Syer
  */
+@SuppressWarnings("serial")
 public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent {
 
 	private final ConfigurableEnvironment environment;

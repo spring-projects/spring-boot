@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,51 +16,35 @@
 
 package sample.data.mongo;
 
-import java.net.ConnectException;
-
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.OutputCapture;
-import org.springframework.core.NestedCheckedException;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleMongoApplication}.
- * 
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = SampleMongoApplication.class)
+@IntegrationTest
 public class SampleMongoApplicationTests {
 
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+	@ClassRule
+	public static OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
-		try {
-			SampleMongoApplication.main(new String[0]);
-		}
-		catch (IllegalStateException ex) {
-			if (serverNotRunning(ex)) {
-				return;
-			}
-		}
-		String output = this.outputCapture.toString();
+		String output = SampleMongoApplicationTests.outputCapture.toString();
 		assertTrue("Wrong output: " + output,
 				output.contains("firstName='Alice', lastName='Smith'"));
-	}
-
-	private boolean serverNotRunning(IllegalStateException ex) {
-		@SuppressWarnings("serial")
-		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
-		};
-		if (nested.contains(ConnectException.class)) {
-			Throwable root = nested.getRootCause();
-			if (root.getMessage().contains("Connection refused")) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

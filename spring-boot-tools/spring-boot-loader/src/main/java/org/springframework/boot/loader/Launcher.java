@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.boot.loader.jar.JarFile;
 /**
  * Base class for launchers that can start an application with a fully configured
  * classpath backed by one or more {@link Archive}s.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -70,13 +70,11 @@ public abstract class Launcher {
 	 * Create a classloader for the specified archives.
 	 * @param archives the archives
 	 * @return the classloader
-	 * @throws Exception
+	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
 		List<URL> urls = new ArrayList<URL>(archives.size());
 		for (Archive archive : archives) {
-			// Add the current archive at end (it will be reversed and end up taking
-			// precedence)
 			urls.add(archive.getUrl());
 		}
 		return createClassLoader(urls.toArray(new URL[urls.size()]));
@@ -86,7 +84,7 @@ public abstract class Launcher {
 	 * Create a classloader for the specified URLs
 	 * @param urls the URLs
 	 * @return the classloader
-	 * @throws Exception
+	 * @throws Exception if the classloader cannot be created
 	 */
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
 		return new LaunchedURLClassLoader(urls, getClass().getClassLoader());
@@ -97,7 +95,7 @@ public abstract class Launcher {
 	 * @param args the incoming arguments
 	 * @param mainClass the main class to run
 	 * @param classLoader the classloader
-	 * @throws Exception
+	 * @throws Exception if the launch fails
 	 */
 	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
 			throws Exception {
@@ -114,7 +112,7 @@ public abstract class Launcher {
 	 * @param args the incoming arguments
 	 * @param classLoader the classloader
 	 * @return a runnable used to start the application
-	 * @throws Exception
+	 * @throws Exception if the main method runner cannot be created
 	 */
 	protected Runnable createMainMethodRunner(String mainClass, String[] args,
 			ClassLoader classLoader) throws Exception {
@@ -127,14 +125,14 @@ public abstract class Launcher {
 	/**
 	 * Returns the main class that should be launched.
 	 * @return the name of the main class
-	 * @throws Exception
+	 * @throws Exception if the main class cannot be obtained
 	 */
 	protected abstract String getMainClass() throws Exception;
 
 	/**
 	 * Returns the archives that will be used to construct the class path.
 	 * @return the class path archives
-	 * @throws Exception
+	 * @throws Exception if the class path archives cannot be obtained
 	 */
 	protected abstract List<Archive> getClassPathArchives() throws Exception;
 
@@ -142,7 +140,7 @@ public abstract class Launcher {
 		ProtectionDomain protectionDomain = getClass().getProtectionDomain();
 		CodeSource codeSource = protectionDomain.getCodeSource();
 		URI location = (codeSource == null ? null : codeSource.getLocation().toURI());
-		String path = (location == null ? null : location.getPath());
+		String path = (location == null ? null : location.getSchemeSpecificPart());
 		if (path == null) {
 			throw new IllegalStateException("Unable to determine code source archive");
 		}

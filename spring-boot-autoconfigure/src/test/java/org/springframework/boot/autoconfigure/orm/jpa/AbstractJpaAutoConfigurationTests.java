@@ -17,11 +17,13 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +32,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
@@ -57,7 +60,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Base for JPA tests and tests for {@link JpaBaseConfiguration}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -139,7 +142,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	@Test
 	public void customJpaProperties() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.jpa.properties.a:b",
-				"spring.jpa.properties.c:d");
+				"spring.jpa.properties.a.b:c", "spring.jpa.properties.c:d");
 		setupTestConfiguration();
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
@@ -147,15 +150,30 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		Map<String, Object> map = bean.getJpaPropertyMap();
 		assertThat(map.get("a"), equalTo((Object) "b"));
 		assertThat(map.get("c"), equalTo((Object) "d"));
+		assertThat(map.get("a.b"), equalTo((Object) "c"));
 	}
 
 	@Test
-	public void usesManuallyDefinedEntityManagerFactoryBeanIfAvailable() {
-		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
+	public void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanIfAvailable() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:false");
+		setupTestConfiguration(TestConfigurationWithLocalContainerEntityManagerFactoryBean.class);
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean factoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = factoryBean.getJpaPropertyMap();
+		assertThat(map.get("configured"), equalTo((Object) "manually"));
+	}
+
+	@Test
+	public void usesManuallyDefinedEntityManagerFactoryIfAvailable() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:false");
+		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
+		this.context.refresh();
+		EntityManagerFactory factoryBean = this.context
+				.getBean(EntityManagerFactory.class);
+		Map<String, Object> map = factoryBean.getProperties();
 		assertThat(map.get("configured"), equalTo((Object) "manually"));
 	}
 
@@ -187,6 +205,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	protected void setupTestConfiguration(Class<?> configClass) {
 		this.context.register(configClass, EmbeddedDataSourceConfiguration.class,
+				DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 	}
 
@@ -212,21 +231,51 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestConfigurationWithEntityManagerFactory extends
-			TestConfiguration {
+	protected static class TestConfigurationWithLocalContainerEntityManagerFactoryBean
+			extends TestConfiguration {
 
 		@Bean
 		public LocalContainerEntityManagerFactoryBean entityManagerFactory(
 				DataSource dataSource, JpaVendorAdapter adapter) {
-
 			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
 			factoryBean.setPersistenceUnitName("manually-configured");
-			factoryBean.setJpaPropertyMap(Collections.singletonMap("configured",
-					"manually"));
+			Map<String, Object> properties = new HashMap<String, Object>();
+			properties.put("configured", "manually");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			factoryBean.setJpaPropertyMap(properties);
 			return factoryBean;
 		}
+
+	}
+
+	@Configuration
+	protected static class TestConfigurationWithEntityManagerFactory extends
+			TestConfiguration {
+
+		@Bean
+		public EntityManagerFactory entityManagerFactory(DataSource dataSource,
+				JpaVendorAdapter adapter) {
+			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+			factoryBean.setJpaVendorAdapter(adapter);
+			factoryBean.setDataSource(dataSource);
+			factoryBean.setPersistenceUnitName("manually-configured");
+			Map<String, Object> properties = new HashMap<String, Object>();
+			properties.put("configured", "manually");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
+			factoryBean.setJpaPropertyMap(properties);
+			factoryBean.afterPropertiesSet();
+			return factoryBean.getObject();
+		}
+
+		@Bean
+		public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+			JpaTransactionManager transactionManager = new JpaTransactionManager();
+			transactionManager.setEntityManagerFactory(emf);
+			return transactionManager;
+		}
+
 	}
 
 	@Configuration
@@ -257,6 +306,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
+	@SuppressWarnings("serial")
 	static class CustomJpaTransactionManager extends JpaTransactionManager {
 	}
 

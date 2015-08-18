@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests to reproduce reported issues.
- * 
+ *
  * @author Phillip Webb
  */
 public class AutoConfigurationReproTests {
@@ -48,8 +49,9 @@ public class AutoConfigurationReproTests {
 	public void doesNotEarlyInitializeFactoryBeans() throws Exception {
 		SpringApplication application = new SpringApplication(EarlyInitConfig.class,
 				PropertySourcesPlaceholderConfigurer.class,
-				EmbeddedServletContainerAutoConfiguration.class);
-		this.context = application.run();
+				EmbeddedServletContainerAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class);
+		this.context = application.run("--server.port=0");
 		String bean = (String) this.context.getBean("earlyInit");
 		assertThat(bean, equalTo("bucket"));
 	}

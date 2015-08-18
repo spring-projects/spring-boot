@@ -20,7 +20,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -39,10 +41,11 @@ import org.springframework.boot.cli.command.jar.JarCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.command.test.TestCommand;
 import org.springframework.boot.cli.util.OutputCapture;
+import org.springframework.util.SocketUtils;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -56,6 +59,8 @@ public class CliTester implements TestRule {
 	private final List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
 
 	private final String prefix;
+
+	private final int port = SocketUtils.findAvailableTcpPort();
 
 	public CliTester(String prefix) {
 		this.prefix = prefix;
@@ -73,8 +78,12 @@ public class CliTester implements TestRule {
 
 	public String test(String... args) throws Exception {
 		Future<TestCommand> future = submitCommand(new TestCommand(), args);
-		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
-		return getOutput();
+		try {
+			this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
+			return getOutput();
+		} catch (Exception ex) {
+			return getOutput();
+		}
 	}
 
 	public String grab(String... args) throws Exception {
@@ -91,20 +100,38 @@ public class CliTester implements TestRule {
 
 	private <T extends OptionParsingCommand> Future<T> submitCommand(final T command,
 			String... args) {
+		clearUrlHandler();
 		final String[] sources = getSources(args);
 		return Executors.newSingleThreadExecutor().submit(new Callable<T>() {
 			@Override
 			public T call() throws Exception {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				System.setProperty("server.port", String.valueOf(CliTester.this.port));
 				try {
 					command.run(sources);
 					return command;
 				}
 				finally {
+					System.clearProperty("server.port");
 					Thread.currentThread().setContextClassLoader(loader);
 				}
 			}
 		});
+	}
+
+	/**
+	 * The TomcatURLStreamHandlerFactory fails if the factory is already set, use
+	 * reflection to reset it.
+	 */
+	private void clearUrlHandler() {
+		try {
+			Field field = URL.class.getDeclaredField("factory");
+			field.setAccessible(true);
+			field.set(null, null);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	protected String[] getSources(String... args) {
@@ -148,12 +175,13 @@ public class CliTester implements TestRule {
 	}
 
 	public String getHttpOutput() {
-		return getHttpOutput("http://localhost:8080");
+		return getHttpOutput("/");
 	}
 
 	public String getHttpOutput(String uri) {
 		try {
-			InputStream stream = URI.create(uri).toURL().openStream();
+			InputStream stream = URI.create("http://localhost:" + this.port + uri)
+					.toURL().openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;
 			StringBuilder result = new StringBuilder();

@@ -36,7 +36,7 @@ import ch.qos.logback.core.AppenderBase;
 /**
  * {@link Appender} that can remap {@link ILoggingEvent} {@link Level}s as they are
  * written.
- * 
+ *
  * @author Phillip Webb
  * @see #setRemapLevels(String)
  * @see #setDestinationLogger(String)
@@ -50,13 +50,25 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 
 	private Map<Level, Level> remapLevels = DEFAULT_REMAPS;
 
+	/**
+	 * Create a new {@link LevelRemappingAppender}.
+	 */
+	public LevelRemappingAppender() {
+	}
+
+	/**
+	 * Create a new {@link LevelRemappingAppender} with a specific destination logger.
+	 * @param destinationLogger the destination logger
+	 */
+	public LevelRemappingAppender(String destinationLogger) {
+		this.destinationLogger = destinationLogger;
+	}
+
 	@Override
 	protected void append(ILoggingEvent event) {
-		Level remappedLevel = this.remapLevels.get(event.getLevel());
-		if (remappedLevel != null) {
-			AppendableLogger logger = getLogger(this.destinationLogger);
-			logger.callAppenders(new RemappedLoggingEvent(event));
-		}
+		AppendableLogger logger = getLogger(this.destinationLogger);
+		Level remapped = this.remapLevels.get(event.getLevel());
+		logger.callAppenders(remapped == null ? event : new RemappedLoggingEvent(event));
 	}
 
 	protected AppendableLogger getLogger(String name) {

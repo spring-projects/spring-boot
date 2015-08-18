@@ -25,15 +25,30 @@ import javax.servlet.ServletResponse;
 
 /**
  * Simple example Servlet used for testing.
- * 
+ *
  * @author Phillip Webb
  */
+@SuppressWarnings("serial")
 public class ExampleServlet extends GenericServlet {
+
+	private final boolean echoRequestInfo;
+
+	public ExampleServlet() {
+		this(false);
+	}
+
+	public ExampleServlet(boolean echoRequestInfo) {
+		this.echoRequestInfo = echoRequestInfo;
+	}
 
 	@Override
 	public void service(ServletRequest request, ServletResponse response)
 			throws ServletException, IOException {
-		response.getWriter().write("Hello World");
+		String content = "Hello World";
+		if (this.echoRequestInfo) {
+			content += " scheme=" + request.getScheme();
+		}
+		response.getWriter().write(content);
 	}
 
 }

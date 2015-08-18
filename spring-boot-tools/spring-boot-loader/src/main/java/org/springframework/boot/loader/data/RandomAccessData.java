@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.io.InputStream;
 /**
  * Interface that provides read-only random access to some underlying data.
  * Implementations must allow concurrent reads in a thread-safe manner.
- * 
+ *
  * @author Phillip Webb
  */
 public interface RandomAccessData {
@@ -32,7 +32,7 @@ public interface RandomAccessData {
 	 * caller is responsible close the underlying stream.
 	 * @param access hint indicating how the underlying data should be accessed
 	 * @return a new input stream that can be used to read the underlying data.
-	 * @throws IOException
+	 * @throws IOException if the stream cannot be opened
 	 */
 	InputStream getInputStream(ResourceAccess access) throws IOException;
 
@@ -53,7 +53,7 @@ public interface RandomAccessData {
 	/**
 	 * Lock modes for accessing the underlying resource.
 	 */
-	public static enum ResourceAccess {
+	enum ResourceAccess {
 
 		/**
 		 * Obtain access to the underlying resource once and keep it until the stream is
@@ -65,5 +65,7 @@ public interface RandomAccessData {
 		 * Obtain access to the underlying resource on each read, releasing it when done.
 		 */
 		PER_READ
+
 	}
+
 }

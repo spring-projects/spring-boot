@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,28 +36,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ServletWrappingController;
+import org.springframework.web.util.UrlPathHelper;
 
 /**
  * {@link MvcEndpoint} to expose Jolokia.
- * 
+ *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
+@HypermediaDisabled
 public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		ApplicationContextAware, ServletContextAware {
 
+	/**
+	 * Endpoint URL path.
+	 */
 	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
-	private String path;
+	@Pattern(regexp = "/[^?#]*", message = "Path must start with /")
+	private String path = "/jolokia";;
 
-	private boolean sensitive;
+	/**
+	 * Enable security on the endpoint.
+	 */
+	private boolean sensitive = true;
 
+	/**
+	 * Enable the endpoint.
+	 */
 	private boolean enabled = true;
 
 	private final ServletWrappingController controller = new ServletWrappingController();
 
 	public JolokiaMvcEndpoint() {
-		this.path = "/jolokia";
 		this.controller.setServletClass(AgentServlet.class);
 		this.controller.setServletName("jolokia");
 	}
@@ -125,14 +136,18 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 
 		private final String path;
 
+		private final UrlPathHelper urlPathHelper;
+
 		public PathStripper(HttpServletRequest request, String path) {
 			super(request);
 			this.path = path;
+			this.urlPathHelper = new UrlPathHelper();
 		}
 
 		@Override
 		public String getPathInfo() {
-			String value = super.getRequestURI();
+			String value = this.urlPathHelper.decodeRequestString(
+					(HttpServletRequest) getRequest(), super.getRequestURI());
 			if (value.contains(this.path)) {
 				value = value.substring(value.indexOf(this.path) + this.path.length());
 			}
@@ -145,6 +160,6 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 			}
 			return value;
 		}
-
 	}
+
 }

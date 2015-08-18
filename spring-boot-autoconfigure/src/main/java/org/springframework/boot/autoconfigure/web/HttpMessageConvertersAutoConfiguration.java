@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,40 +16,43 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.http.converter.StringHttpMessageConverter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpMessageConverter}s.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Piotr Maj
+ * @author Oliver Gierke
+ * @author David Liu
+ * @author Andy Wilkinson
+ * @author Sebastien Deleuze
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)
+@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class })
+@Import({ JacksonHttpMessageConvertersConfiguration.class,
+		GsonHttpMessageConvertersConfiguration.class })
 public class HttpMessageConvertersAutoConfiguration {
+
+	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
 	@Autowired(required = false)
 	private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
@@ -57,53 +60,23 @@ public class HttpMessageConvertersAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HttpMessageConverters messageConverters() {
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(
-				this.converters);
-		return new HttpMessageConverters(converters);
+		return new HttpMessageConverters(this.converters);
 	}
 
 	@Configuration
-	@ConditionalOnClass(ObjectMapper.class)
-	@EnableConfigurationProperties(HttpMapperProperties.class)
-	protected static class ObjectMappers {
+	@ConditionalOnClass(StringHttpMessageConverter.class)
+	@EnableConfigurationProperties(HttpEncodingProperties.class)
+	protected static class StringHttpMessageConverterConfiguration {
 
 		@Autowired
-		private HttpMapperProperties properties = new HttpMapperProperties();
-
-		@Autowired
-		private ListableBeanFactory beanFactory;
-
-		@PostConstruct
-		public void init() {
-			Collection<ObjectMapper> mappers = BeanFactoryUtils
-					.beansOfTypeIncludingAncestors(this.beanFactory, ObjectMapper.class)
-					.values();
-			Collection<Module> modules = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-					this.beanFactory, Module.class).values();
-			for (ObjectMapper mapper : mappers) {
-				mapper.registerModules(modules);
-			}
-		}
+		private HttpEncodingProperties encodingProperties;
 
 		@Bean
 		@ConditionalOnMissingBean
-		@Primary
-		public ObjectMapper jacksonObjectMapper() {
-			ObjectMapper objectMapper = new ObjectMapper();
-			if (this.properties.isJsonSortKeys()) {
-				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
-						true);
-			}
-			return objectMapper;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
-				ObjectMapper objectMapper) {
-			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-			converter.setObjectMapper(objectMapper);
-			converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
+		public StringHttpMessageConverter stringHttpMessageConverter() {
+			StringHttpMessageConverter converter = new StringHttpMessageConverter(
+					this.encodingProperties.getCharset());
+			converter.setWriteAcceptCharset(false);
 			return converter;
 		}
 

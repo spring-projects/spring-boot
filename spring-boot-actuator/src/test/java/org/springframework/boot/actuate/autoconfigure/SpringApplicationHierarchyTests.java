@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,15 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Test for application hierarchies created using {@link SpringApplicationBuilder}.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringApplicationHierarchyTests {
@@ -34,34 +36,34 @@ public class SpringApplicationHierarchyTests {
 
 	@After
 	public void after() {
-		if (this.context != null) {
-			ApplicationContext parentContext = this.context.getParent();
-			if (parentContext instanceof ConfigurableApplicationContext) {
-				((ConfigurableApplicationContext) parentContext).close();
-			}
-			this.context.close();
-		}
+		ApplicationContextTestUtils.closeAll(this.context);
 	}
 
 	@Test
 	public void testParent() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Child.class);
+		builder.properties("flyway.enabled=false", "liquibase.enabled=false");
 		builder.parent(Parent.class);
-		this.context = builder.run();
+		this.context = builder.run("--server.port=0");
 	}
 
 	@Test
 	public void testChild() {
-		this.context = new SpringApplicationBuilder(Parent.class).child(Child.class)
-				.run();
+		SpringApplicationBuilder builder = new SpringApplicationBuilder(Parent.class);
+		builder.properties("flyway.enabled=false", "liquibase.enabled=false");
+		builder.child(Child.class);
+		this.context = builder.run("--server.port=0");
 	}
 
-	@EnableAutoConfiguration
+	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
+			ElasticsearchRepositoriesAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 	}
 
 	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
+			EndpointMBeanExportAutoConfiguration.class,
+			ElasticsearchDataAutoConfiguration.class,
+			ElasticsearchRepositoriesAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {
 	}
 

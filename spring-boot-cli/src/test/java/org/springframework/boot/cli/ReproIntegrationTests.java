@@ -25,8 +25,10 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests to exercise and reproduce specific issues.
- * 
+ *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class ReproIntegrationTests {
 
@@ -59,9 +61,16 @@ public class ReproIntegrationTests {
 	}
 
 	@Test
+	public void dataJpaDependencies() throws Exception {
+		this.cli.run("data-jpa.groovy");
+		assertThat(this.cli.getOutput(), containsString("Hello World"));
+	}
+
+	@Test
 	public void jarFileExtensionNeeded() throws Exception {
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("is not a JAR file");
 		this.cli.jar("secure.groovy", "crsh.groovy");
 	}
+
 }

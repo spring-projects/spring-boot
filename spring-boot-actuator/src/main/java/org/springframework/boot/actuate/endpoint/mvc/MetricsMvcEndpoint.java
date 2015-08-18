@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Map;
+
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,8 +28,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Adapter to expose {@link MetricsEndpoint} as an {@link MvcEndpoint}.
- * 
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Sergei Egorov
  */
 public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
@@ -40,14 +44,47 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
 	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
 	@ResponseBody
+	@HypermediaDisabled
 	public Object value(@PathVariable String name) {
-		Object value = this.delegate.invoke().get(name);
-		if (value == null) {
-			throw new NoSuchMetricException("No such metric: " + name);
+		if (!this.delegate.isEnabled()) {
+			// Shouldn't happen - MVC endpoint shouldn't be registered when delegate's
+			// disabled
+			return getDisabledResponse();
 		}
-		return value;
+		return new NamePatternMapFilter(this.delegate.invoke()).getResults(name);
 	}
 
+	/**
+	 * {@link NamePatternFilter} for the Map source.
+	 */
+	private class NamePatternMapFilter extends NamePatternFilter<Map<String, ?>> {
+
+		public NamePatternMapFilter(Map<String, ?> source) {
+			super(source);
+		}
+
+		@Override
+		protected void getNames(Map<String, ?> source, NameCallback callback) {
+			for (String name : source.keySet()) {
+				callback.addName(name);
+			}
+		}
+
+		@Override
+		protected Object getValue(Map<String, ?> source, String name) {
+			Object value = source.get(name);
+			if (value == null) {
+				throw new NoSuchMetricException("No such metric: " + name);
+			}
+			return value;
+		}
+
+	}
+
+	/**
+	 * Exception thrown when the specified metric cannot be found.
+	 */
+	@SuppressWarnings("serial")
 	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such metric")
 	public static class NoSuchMetricException extends RuntimeException {
 
@@ -56,4 +93,5 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 		}
 
 	}
+
 }

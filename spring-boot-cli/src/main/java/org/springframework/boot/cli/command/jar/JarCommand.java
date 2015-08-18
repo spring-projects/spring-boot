@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,43 +35,43 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.codehaus.groovy.ast.ASTNode;
+import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
+import org.springframework.boot.cli.app.SpringApplicationLauncher;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.jar.ResourceMatcher.MatchedResource;
 import org.springframework.boot.cli.command.options.CompilerOptionHandler;
 import org.springframework.boot.cli.command.options.OptionSetGroovyCompilerConfiguration;
 import org.springframework.boot.cli.command.options.SourceOptions;
+import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.jar.PackagedSpringApplicationLauncher;
 import org.springframework.boot.loader.tools.JarWriter;
-import org.springframework.boot.loader.tools.Layout;
-import org.springframework.boot.loader.tools.Layouts;
+import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.Library;
+import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryScope;
+import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
 /**
  * {@link Command} to create a self-contained executable jar file from a CLI application
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 public class JarCommand extends OptionParsingCommand {
-
-	private static final String[] DEFAULT_INCLUDES = { "public/**", "resources/**",
-			"static/**", "templates/**", "META-INF/**", "*" };
-
-	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**",
-			"target/**", "**/*.jar", "**/*.groovy" };
-
-	private static final Layout LAYOUT = new Layouts.Jar();
 
 	public JarCommand() {
 		super("jar", "Create a self-contained "
@@ -95,15 +95,15 @@ public class JarCommand extends OptionParsingCommand {
 			this.includeOption = option(
 					"include",
 					"Pattern applied to directories on the classpath to find files to include in the resulting jar")
-					.withRequiredArg().defaultsTo(DEFAULT_INCLUDES);
+					.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
 			this.excludeOption = option(
 					"exclude",
 					"Pattern applied to directories on the claspath to find files to exclude from the resulting jar")
-					.withRequiredArg().defaultsTo(DEFAULT_EXCLUDES);
+					.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
 		}
 
 		@Override
-		protected void run(OptionSet options) throws Exception {
+		protected ExitStatus run(OptionSet options) throws Exception {
 			List<?> nonOptionArguments = new ArrayList<Object>(
 					options.nonOptionArguments());
 			Assert.isTrue(nonOptionArguments.size() >= 2,
@@ -127,6 +127,7 @@ public class JarCommand extends OptionParsingCommand {
 			dependencies.removeAll(classpath);
 
 			writeJar(output, compiledClasses, classpathEntries, dependencies);
+			return ExitStatus.OK;
 		}
 
 		private void deleteIfExists(File file) {
@@ -165,6 +166,7 @@ public class JarCommand extends OptionParsingCommand {
 		private void writeJar(File file, Class<?>[] compiledClasses,
 				List<MatchedResource> classpathEntries, List<URL> dependencies)
 				throws FileNotFoundException, IOException, URISyntaxException {
+			final List<Library> libraries;
 			JarWriter writer = new JarWriter(file);
 			try {
 				addManifest(writer, compiledClasses);
@@ -172,25 +174,41 @@ public class JarCommand extends OptionParsingCommand {
 				for (Class<?> compiledClass : compiledClasses) {
 					addClass(writer, compiledClass);
 				}
-				addClasspathEntries(writer, classpathEntries);
-				addDependencies(writer, dependencies);
-				writer.writeLoaderClasses();
+				libraries = addClasspathEntries(writer, classpathEntries);
 			}
 			finally {
 				writer.close();
 			}
+			libraries.addAll(createLibraries(dependencies));
+			Repackager repackager = new Repackager(file);
+			repackager.setMainClass(PackagedSpringApplicationLauncher.class.getName());
+			repackager.repackage(new Libraries() {
+
+				@Override
+				public void doWithLibraries(LibraryCallback callback) throws IOException {
+					for (Library library : libraries) {
+						callback.library(library);
+					}
+				}
+			});
+		}
+
+		private List<Library> createLibraries(List<URL> dependencies)
+				throws URISyntaxException {
+			List<Library> libraries = new ArrayList<Library>();
+			for (URL dependency : dependencies) {
+				File file = new File(dependency.toURI());
+				libraries.add(new Library(file, LibraryScope.COMPILE));
+			}
+			return libraries;
 		}
 
 		private void addManifest(JarWriter writer, Class<?>[] compiledClasses)
 				throws IOException {
 			Manifest manifest = new Manifest();
 			manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-			manifest.getMainAttributes().putValue("Main-Class",
-					LAYOUT.getLauncherClassName());
-			manifest.getMainAttributes().putValue("Start-Class",
-					PackagedSpringApplicationLauncher.class.getName());
 			manifest.getMainAttributes().putValue(
-					PackagedSpringApplicationLauncher.SOURCE_MANIFEST_ENTRY,
+					PackagedSpringApplicationLauncher.SOURCE_ENTRY,
 					commaDelimitedClassNames(compiledClasses));
 			writer.writeManifest(manifest);
 		}
@@ -206,6 +224,14 @@ public class JarCommand extends OptionParsingCommand {
 
 		private void addCliClasses(JarWriter writer) throws IOException {
 			addClass(writer, PackagedSpringApplicationLauncher.class);
+			addClass(writer, SpringApplicationLauncher.class);
+			Resource[] resources = new PathMatchingResourcePatternResolver()
+					.getResources("org/springframework/boot/groovy/**");
+			for (Resource resource : resources) {
+				String url = resource.getURL().toString();
+				addResource(writer, resource,
+						url.substring(url.indexOf("org/springframework/boot/groovy/")));
+			}
 		}
 
 		private void addClass(JarWriter writer, Class<?> sourceClass) throws IOException {
@@ -214,31 +240,25 @@ public class JarCommand extends OptionParsingCommand {
 			writer.writeEntry(name, stream);
 		}
 
-		private void addClasspathEntries(JarWriter writer, List<MatchedResource> entries)
+		private void addResource(JarWriter writer, Resource resource, String name)
 				throws IOException {
+			InputStream stream = resource.getInputStream();
+			writer.writeEntry(name, stream);
+		}
+
+		private List<Library> addClasspathEntries(JarWriter writer,
+				List<MatchedResource> entries) throws IOException {
+			List<Library> libraries = new ArrayList<Library>();
 			for (MatchedResource entry : entries) {
 				if (entry.isRoot()) {
-					addDependency(writer, entry.getFile());
+					libraries.add(new Library(entry.getFile(), LibraryScope.COMPILE));
 				}
 				else {
 					writer.writeEntry(entry.getName(),
 							new FileInputStream(entry.getFile()));
 				}
 			}
-		}
-
-		private void addDependencies(JarWriter writer, List<URL> urls)
-				throws IOException, URISyntaxException, FileNotFoundException {
-			for (URL url : urls) {
-				addDependency(writer, new File(url.toURI()));
-			}
-		}
-
-		private void addDependency(JarWriter writer, File dependency)
-				throws FileNotFoundException, IOException {
-			if (dependency.isFile()) {
-				writer.writeNestedLibrary("lib/", dependency);
-			}
+			return libraries;
 		}
 
 	}
@@ -262,6 +282,24 @@ public class JarCommand extends OptionParsingCommand {
 				AnnotationNode annotation = new AnnotationNode(new ClassNode(Grab.class));
 				annotation.addMember("value", new ConstantExpression("groovy"));
 				classNode.addAnnotation(annotation);
+				// We only need to do it at most once
+				break;
+			}
+			// Disable the addition of a static initializer that calls Grape.addResolver
+			// because all the dependencies are local now
+			disableGrabResolvers(module.getClasses());
+			disableGrabResolvers(module.getImports());
+		}
+
+		private void disableGrabResolvers(List<? extends AnnotatedNode> nodes) {
+			for (AnnotatedNode classNode : nodes) {
+				List<AnnotationNode> annotations = classNode.getAnnotations();
+				for (AnnotationNode node : new ArrayList<AnnotationNode>(annotations)) {
+					if (node.getClassNode().getNameWithoutPackage()
+							.equals("GrabResolver")) {
+						node.setMember("initClass", new ConstantExpression(false));
+					}
+				}
 			}
 		}
 

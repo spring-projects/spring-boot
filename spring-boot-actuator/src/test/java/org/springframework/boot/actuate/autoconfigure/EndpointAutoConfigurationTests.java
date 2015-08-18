@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,35 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.FlywayEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
+import org.springframework.boot.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,21 +53,17 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist
+ * @author Christian Dupuis
+ * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class EndpointAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setup() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class);
-		this.context.refresh();
-	}
 
 	@After
 	public void close() {
@@ -68,6 +74,7 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void endpoints() throws Exception {
+		load(EndpointAutoConfiguration.class);
 		assertNotNull(this.context.getBean(BeansEndpoint.class));
 		assertNotNull(this.context.getBean(DumpEndpoint.class));
 		assertNotNull(this.context.getBean(EnvironmentEndpoint.class));
@@ -81,25 +88,52 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void healthEndpoint() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class,
-				EmbeddedDataSourceConfiguration.class);
-		this.context.refresh();
-		HealthEndpoint<?> bean = this.context.getBean(HealthEndpoint.class);
+		load(EmbeddedDataSourceConfiguration.class, EndpointAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
 		assertNotNull(bean);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> result = (Map<String, Object>) bean.invoke();
+		Health result = bean.invoke();
 		assertNotNull(result);
-		assertTrue("Wrong result: " + result, result.containsKey("status"));
-		assertTrue("Wrong result: " + result, result.containsKey("database"));
+		assertTrue("Wrong result: " + result, result.getDetails().containsKey("db"));
 	}
 
 	@Test
-	public void autoconfigurationAuditEndpoints() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class,
-				ConditionEvaluationReport.class);
-		this.context.refresh();
+	public void healthEndpointWithDefaultHealthIndicator() {
+		load(EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
+		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
+		assertNotNull(bean);
+		Health result = bean.invoke();
+		assertNotNull(result);
+	}
+
+	@Test
+	public void metricEndpointsHasSystemMetricsByDefault() {
+		load(PublicMetricsAutoConfiguration.class, EndpointAutoConfiguration.class);
+		MetricsEndpoint endpoint = this.context.getBean(MetricsEndpoint.class);
+		Map<String, Object> metrics = endpoint.invoke();
+		assertTrue(metrics.containsKey("mem"));
+		assertTrue(metrics.containsKey("heap.used"));
+	}
+
+	@Test
+	public void metricEndpointCustomPublicMetrics() {
+		load(CustomPublicMetricsConfig.class, PublicMetricsAutoConfiguration.class,
+				EndpointAutoConfiguration.class);
+		MetricsEndpoint endpoint = this.context.getBean(MetricsEndpoint.class);
+		Map<String, Object> metrics = endpoint.invoke();
+
+		// Custom metrics
+		assertTrue(metrics.containsKey("foo"));
+
+		// System metrics still available
+		assertTrue(metrics.containsKey("mem"));
+		assertTrue(metrics.containsKey("heap.used"));
+
+	}
+
+	@Test
+	public void autoConfigurationAuditEndpoints() {
+		load(EndpointAutoConfiguration.class, ConditionEvaluationReport.class);
 		assertNotNull(this.context.getBean(AutoConfigurationReportEndpoint.class));
 	}
 
@@ -125,5 +159,49 @@ public class EndpointAutoConfigurationTests {
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertNotNull(endpoint);
 		assertNull(endpoint.invoke().get("git"));
+	}
+
+	@Test
+	public void testFlywayEndpoint() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.refresh();
+		FlywayEndpoint endpoint = this.context.getBean(FlywayEndpoint.class);
+		assertNotNull(endpoint);
+		assertEquals(1, endpoint.invoke().size());
+	}
+
+	@Test
+	public void testLiquibaseEndpoint() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class, EndpointAutoConfiguration.class);
+		this.context.refresh();
+		LiquibaseEndpoint endpoint = this.context.getBean(LiquibaseEndpoint.class);
+		assertNotNull(endpoint);
+		assertEquals(1, endpoint.invoke().size());
+	}
+
+	private void load(Class<?>... config) {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(config);
+		this.context.refresh();
+	}
+
+	@Configuration
+	static class CustomPublicMetricsConfig {
+
+		@Bean
+		PublicMetrics customPublicMetrics() {
+			return new PublicMetrics() {
+				@Override
+				public Collection<Metric<?>> metrics() {
+					Metric<Integer> metric = new Metric<Integer>("foo", 1);
+					return Collections.<Metric<?>> singleton(metric);
+				}
+			};
+		}
+
 	}
 }

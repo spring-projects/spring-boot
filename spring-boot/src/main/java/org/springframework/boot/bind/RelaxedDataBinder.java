@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,13 @@ package org.springframework.boot.bind;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -29,6 +33,8 @@ import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DataBinder;
 
@@ -36,15 +42,20 @@ import org.springframework.validation.DataBinder;
  * Binder implementation that allows caller to bind to maps and also allows property names
  * to match a bit loosely (if underscores or dashes are removed and replaced with camel
  * case for example).
- * 
+ *
  * @author Dave Syer
+ * @author Phillip Webb
  * @see RelaxedNames
  */
 public class RelaxedDataBinder extends DataBinder {
 
+	private static final Object BLANK = new Object();
+
 	private String namePrefix;
 
 	private boolean ignoreNestedProperties;
+
+	private MultiValueMap<String, String> nameAliases = new LinkedMultiValueMap<String, String>();
 
 	/**
 	 * Create a new {@link RelaxedDataBinder} instance.
@@ -75,40 +86,103 @@ public class RelaxedDataBinder extends DataBinder {
 		this.ignoreNestedProperties = ignoreNestedProperties;
 	}
 
+	/**
+	 * Set name aliases.
+	 * @param aliases a map of property name to aliases
+	 */
+	public void setNameAliases(Map<String, List<String>> aliases) {
+		this.nameAliases = new LinkedMultiValueMap<String, String>(aliases);
+	}
+
+	/**
+	 * Add aliases to the {@link DataBinder}.
+	 * @param name the property name to alias
+	 * @param alias aliases for the property names
+	 * @return this instance
+	 */
+	public RelaxedDataBinder withAlias(String name, String... alias) {
+		for (String value : alias) {
+			this.nameAliases.add(name, value);
+		}
+		return this;
+	}
+
+	@Override
+	public void initBeanPropertyAccess() {
+		super.initBeanPropertyAccess();
+		// Hook in the RelaxedConversionService
+		getInternalBindingResult().initConversion(
+				new RelaxedConversionService(getConversionService()));
+	}
+
 	@Override
 	protected void doBind(MutablePropertyValues propertyValues) {
-		propertyValues = modifyProperties(propertyValues, getTarget());
 		// Harmless additional property editor comes in very handy sometimes...
 		getPropertyEditorRegistry().registerCustomEditor(InetAddress.class,
 				new InetAddressEditor());
-		super.doBind(propertyValues);
+		super.doBind(modifyProperties(propertyValues, getTarget()));
 	}
 
 	/**
 	 * Modify the property values so that period separated property paths are valid for
 	 * map keys. Also creates new maps for properties of map type that are null (assuming
-	 * all maps are potentially nested). The standard bracket <code>[...]</code>
-	 * dereferencing is also accepted.
+	 * all maps are potentially nested). The standard bracket {@code[...]} dereferencing
+	 * is also accepted.
 	 * @param propertyValues the property values
 	 * @param target the target object
 	 */
 	private MutablePropertyValues modifyProperties(MutablePropertyValues propertyValues,
 			Object target) {
-
 		propertyValues = getPropertyValuesForNamePrefix(propertyValues);
-
 		if (target instanceof MapHolder) {
 			propertyValues = addMapPrefix(propertyValues);
 		}
-
-		BeanWrapper targetWrapper = new BeanWrapperImpl(target);
-		targetWrapper.setAutoGrowNestedPaths(true);
-
-		List<PropertyValue> list = propertyValues.getPropertyValueList();
-		for (int i = 0; i < list.size(); i++) {
-			modifyProperty(propertyValues, targetWrapper, list.get(i), i);
+		BeanWrapper wrapper = new BeanWrapperImpl(target);
+		wrapper.setConversionService(new RelaxedConversionService(getConversionService()));
+		wrapper.setAutoGrowNestedPaths(true);
+		List<PropertyValue> sortedValues = new ArrayList<PropertyValue>();
+		Set<String> modifiedNames = new HashSet<String>();
+		List<String> sortedNames = getSortedPropertyNames(propertyValues);
+		for (String name : sortedNames) {
+			PropertyValue propertyValue = propertyValues.getPropertyValue(name);
+			PropertyValue modifiedProperty = modifyProperty(wrapper, propertyValue);
+			if (modifiedNames.add(modifiedProperty.getName())) {
+				sortedValues.add(modifiedProperty);
+			}
 		}
-		return propertyValues;
+		return new MutablePropertyValues(sortedValues);
+	}
+
+	private List<String> getSortedPropertyNames(MutablePropertyValues propertyValues) {
+		List<String> names = new LinkedList<String>();
+		for (PropertyValue propertyValue : propertyValues.getPropertyValueList()) {
+			names.add(propertyValue.getName());
+		}
+		sortPropertyNames(names);
+		return names;
+	}
+
+	/**
+	 * Sort by name so that parent properties get processed first (e.g. 'foo.bar' before
+	 * 'foo.bar.spam'). Don't use Collections.sort() because the order might be
+	 * significant for other property names (it shouldn't be but who knows what people
+	 * might be relying on, e.g. HSQL has a JDBCXADataSource where "databaseName" is a
+	 * synonym for "url").
+	 * @param names the names to sort
+	 */
+	private void sortPropertyNames(List<String> names) {
+		for (String name : new ArrayList<String>(names)) {
+			int propertyIndex = names.indexOf(name);
+			BeanPath path = new BeanPath(name);
+			for (String prefix : path.prefixes()) {
+				int prefixIndex = names.indexOf(prefix);
+				if (prefixIndex >= propertyIndex) {
+					// The child property has a parent in the list in the wrong order
+					names.remove(name);
+					names.add(prefixIndex, name);
+				}
+			}
+		}
 	}
 
 	private MutablePropertyValues addMapPrefix(MutablePropertyValues propertyValues) {
@@ -139,14 +213,13 @@ public class RelaxedDataBinder extends DataBinder {
 		return rtn;
 	}
 
-	private void modifyProperty(MutablePropertyValues propertyValues, BeanWrapper target,
-			PropertyValue propertyValue, int index) {
-		String oldName = propertyValue.getName();
-		String name = normalizePath(target, oldName);
-		if (!name.equals(oldName)) {
-			propertyValues.setPropertyValueAt(
-					new PropertyValue(name, propertyValue.getValue()), index);
+	private PropertyValue modifyProperty(BeanWrapper target, PropertyValue propertyValue) {
+		String name = propertyValue.getName();
+		String normalizedName = normalizePath(target, name);
+		if (!normalizedName.equals(name)) {
+			return new PropertyValue(normalizedName, propertyValue.getValue());
 		}
+		return propertyValue;
 	}
 
 	/**
@@ -165,7 +238,6 @@ public class RelaxedDataBinder extends DataBinder {
 	}
 
 	private String initializePath(BeanWrapper wrapper, BeanPath path, int index) {
-
 		String prefix = path.prefix(index);
 		String key = path.name(index);
 		if (path.isProperty(index)) {
@@ -179,16 +251,9 @@ public class RelaxedDataBinder extends DataBinder {
 		String name = path.prefix(index);
 		TypeDescriptor descriptor = wrapper.getPropertyTypeDescriptor(name);
 		if (descriptor == null || descriptor.isMap()) {
-			if (descriptor != null) {
-				wrapper.getPropertyValue(name + "[foo]");
-				TypeDescriptor valueDescriptor = descriptor.getMapValueTypeDescriptor();
-				if (valueDescriptor != null) {
-					Class<?> valueType = valueDescriptor.getObjectType();
-					if (valueType != null
-							&& CharSequence.class.isAssignableFrom(valueType)) {
-						path.collapseKeys(index);
-					}
-				}
+			if (isMapValueStringType(descriptor)
+					|| isBlanked(wrapper, name, path.name(index))) {
+				path.collapseKeys(index);
 			}
 			path.mapIndex(index);
 			extendMapIfNecessary(wrapper, path, index);
@@ -197,14 +262,41 @@ public class RelaxedDataBinder extends DataBinder {
 			extendCollectionIfNecessary(wrapper, path, index);
 		}
 		else if (descriptor.getType().equals(Object.class)) {
+			if (isBlanked(wrapper, name, path.name(index))) {
+				path.collapseKeys(index);
+			}
 			path.mapIndex(index);
-			String next = path.prefix(index + 1);
-			if (wrapper.getPropertyValue(next) == null) {
-				wrapper.setPropertyValue(next, new LinkedHashMap<String, Object>());
+			if (path.isLastNode(index)) {
+				wrapper.setPropertyValue(path.toString(), BLANK);
+			}
+			else {
+				String next = path.prefix(index + 1);
+				if (wrapper.getPropertyValue(next) == null) {
+					wrapper.setPropertyValue(next, new LinkedHashMap<String, Object>());
+				}
 			}
 		}
-
 		return initializePath(wrapper, path, index);
+	}
+
+	private boolean isMapValueStringType(TypeDescriptor descriptor) {
+		if (descriptor == null || descriptor.getMapValueTypeDescriptor() == null) {
+			return false;
+		}
+		Class<?> valueType = descriptor.getMapValueTypeDescriptor().getObjectType();
+		return (valueType != null && CharSequence.class.isAssignableFrom(valueType));
+	}
+
+	@SuppressWarnings("rawtypes")
+	private boolean isBlanked(BeanWrapper wrapper, String propertyName, String key) {
+		Object value = (wrapper.isReadableProperty(propertyName) ? wrapper
+				.getPropertyValue(propertyName) : null);
+		if (value instanceof Map) {
+			if (((Map) value).get(key) == BLANK) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void extendCollectionIfNecessary(BeanWrapper wrapper, BeanPath path, int index) {
@@ -229,6 +321,9 @@ public class RelaxedDataBinder extends DataBinder {
 			return;
 		}
 		TypeDescriptor descriptor = parent.getMapValueTypeDescriptor();
+		if (descriptor == null) {
+			descriptor = TypeDescriptor.valueOf(Object.class);
+		}
 		if (!descriptor.isMap() && !descriptor.isCollection()
 				&& !descriptor.getType().equals(Object.class)) {
 			return;
@@ -245,22 +340,69 @@ public class RelaxedDataBinder extends DataBinder {
 		if (descriptor.isCollection()) {
 			extend = new ArrayList<Object>();
 		}
+		if (descriptor.getType().equals(Object.class) && path.isLastNode(index)) {
+			extend = BLANK;
+		}
 		wrapper.setPropertyValue(extensionName, extend);
 	}
 
 	private String getActualPropertyName(BeanWrapper target, String prefix, String name) {
-		prefix = StringUtils.hasText(prefix) ? prefix + "." : "";
-		for (String candidate : new RelaxedNames(name)) {
-			try {
-				if (target.getPropertyType(prefix + candidate) != null) {
-					return candidate;
+		String propertyName = resolvePropertyName(target, prefix, name);
+		if (propertyName == null) {
+			propertyName = resolveNestedPropertyName(target, prefix, name);
+		}
+		return (propertyName == null ? name : propertyName);
+	}
+
+	private String resolveNestedPropertyName(BeanWrapper target, String prefix,
+			String name) {
+		StringBuilder candidate = new StringBuilder();
+		for (String field : name.split("[_\\-\\.]")) {
+			candidate.append(candidate.length() > 0 ? "." : "");
+			candidate.append(field);
+			String nested = resolvePropertyName(target, prefix, candidate.toString());
+			if (nested != null) {
+				String propertyName = resolvePropertyName(target,
+						joinString(prefix, nested),
+						name.substring(candidate.length() + 1));
+				if (propertyName != null) {
+					return joinString(nested, propertyName);
 				}
 			}
-			catch (InvalidPropertyException ex) {
-				// swallow and continue
+		}
+		return null;
+	}
+
+	private String resolvePropertyName(BeanWrapper target, String prefix, String name) {
+		Iterable<String> names = getNameAndAliases(name);
+		for (String nameOrAlias : names) {
+			for (String candidate : new RelaxedNames(nameOrAlias)) {
+				try {
+					if (target.getPropertyType(joinString(prefix, candidate)) != null) {
+						return candidate;
+					}
+				}
+				catch (InvalidPropertyException ex) {
+					// swallow and continue
+				}
 			}
 		}
-		return name;
+		return null;
+	}
+
+	private String joinString(String prefix, String name) {
+		return (StringUtils.hasLength(prefix) ? prefix + "." + name : name);
+	}
+
+	private Iterable<String> getNameAndAliases(String name) {
+		List<String> aliases = this.nameAliases.get(name);
+		if (aliases == null) {
+			return Collections.singleton(name);
+		}
+		List<String> nameAndAliases = new ArrayList<String>(aliases.size() + 1);
+		nameAndAliases.add(name);
+		nameAndAliases.addAll(aliases);
+		return nameAndAliases;
 	}
 
 	private static Object wrapTarget(Object target) {
@@ -301,27 +443,50 @@ public class RelaxedDataBinder extends DataBinder {
 			this.nodes = splitPath(path);
 		}
 
+		public List<String> prefixes() {
+			List<String> prefixes = new ArrayList<String>();
+			for (int index = 1; index < this.nodes.size(); index++) {
+				prefixes.add(prefix(index));
+			}
+			return prefixes;
+		}
+
+		public boolean isLastNode(int index) {
+			return index >= this.nodes.size() - 1;
+		}
+
 		private List<PathNode> splitPath(String path) {
 			List<PathNode> nodes = new ArrayList<PathNode>();
-			for (String name : StringUtils.delimitedListToStringArray(path, ".")) {
-				for (String sub : StringUtils.delimitedListToStringArray(name, "[")) {
-					if (StringUtils.hasText(sub)) {
-						if (sub.endsWith("]")) {
-							sub = sub.substring(0, sub.length() - 1);
-							if (sub.matches("[0-9]+")) {
-								nodes.add(new ArrayIndexNode(sub));
-							}
-							else {
-								nodes.add(new MapIndexNode(sub));
-							}
-						}
-						else {
-							nodes.add(new PropertyNode(sub));
-						}
-					}
+			String current = extractIndexedPaths(path, nodes);
+			for (String name : StringUtils.delimitedListToStringArray(current, ".")) {
+				if (StringUtils.hasText(name)) {
+					nodes.add(new PropertyNode(name));
 				}
 			}
 			return nodes;
+		}
+
+		private String extractIndexedPaths(String path, List<PathNode> nodes) {
+			int startRef = path.indexOf("[");
+			String current = path;
+			while (startRef >= 0) {
+				if (startRef > 0) {
+					nodes.addAll(splitPath(current.substring(0, startRef)));
+				}
+				int endRef = current.indexOf("]", startRef);
+				if (endRef > 0) {
+					String sub = current.substring(startRef + 1, endRef);
+					if (sub.matches("[0-9]+")) {
+						nodes.add(new ArrayIndexNode(sub));
+					}
+					else {
+						nodes.add(new MapIndexNode(sub));
+					}
+				}
+				current = current.substring(endRef + 1);
+				startRef = current.indexOf("[");
+			}
+			return current;
 		}
 
 		public void collapseKeys(int index) {

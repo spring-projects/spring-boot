@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose arbitrary application information.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.info", ignoreUnknownFields = false)
@@ -35,11 +35,11 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	/**
 	 * Create a new {@link InfoEndpoint} instance.
-	 * 
+	 *
 	 * @param info the info to expose
 	 */
 	public InfoEndpoint(Map<String, ? extends Object> info) {
-		super("info", false, true);
+		super("info", false);
 		Assert.notNull(info, "Info must not be null");
 		this.info = info;
 	}

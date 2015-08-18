@@ -16,13 +16,8 @@
 
 package org.springframework.boot;
 
-import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.security.ProtectionDomain;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
@@ -34,7 +29,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Logs application information on startup.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -137,38 +132,24 @@ class StartupInfoLogger {
 				return System.getProperty("user.name");
 			}
 		});
-		File codeSourceLocation = getCodeSourceLocation();
-		String path = (codeSourceLocation == null ? "" : codeSourceLocation
-				.getAbsolutePath());
-		if (startedBy == null && codeSourceLocation == null) {
+		String in = getValue("in ", new Callable<Object>() {
+			@Override
+			public Object call() throws Exception {
+				return System.getProperty("user.dir");
+			}
+		});
+		ApplicationHome home = new ApplicationHome(this.sourceClass);
+		String path = (home.getSource() == null ? "" : home.getSource().getAbsolutePath());
+		if (startedBy == null && path == null) {
 			return "";
 		}
 		if (StringUtils.hasLength(startedBy) && StringUtils.hasLength(path)) {
 			startedBy = " " + startedBy;
 		}
-		return " (" + path + startedBy + ")";
-	}
-
-	private File getCodeSourceLocation() {
-		try {
-			ProtectionDomain protectionDomain = (this.sourceClass == null ? getClass()
-					: this.sourceClass).getProtectionDomain();
-			URL location = protectionDomain.getCodeSource().getLocation();
-			File file;
-			URLConnection connection = location.openConnection();
-			if (connection instanceof JarURLConnection) {
-				file = new File(((JarURLConnection) connection).getJarFile().getName());
-			}
-			else {
-				file = new File(location.getPath());
-			}
-			if (file.exists()) {
-				return file;
-			}
+		if (StringUtils.hasLength(in) && StringUtils.hasLength(startedBy)) {
+			in = " " + in;
 		}
-		catch (Exception ex) {
-		}
-		return null;
+		return " (" + path + startedBy + in + ")";
 	}
 
 	private String getValue(String prefix, Callable<Object> call) {

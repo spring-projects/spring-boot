@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,15 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EventListener;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.Filter;
-import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -39,9 +34,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.Scope;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
@@ -79,7 +74,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * Although this context can be used directly, most developers should consider using the
  * {@link AnnotationConfigEmbeddedWebApplicationContext} or
  * {@link XmlEmbeddedWebApplicationContext} variants.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see AnnotationConfigEmbeddedWebApplicationContext
@@ -88,13 +83,16 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class EmbeddedWebApplicationContext extends GenericWebApplicationContext {
 
+	private static final Log logger = LogFactory
+			.getLog(EmbeddedWebApplicationContext.class);
+
 	/**
 	 * Constant value for the DispatcherServlet bean name. A Servlet bean with this name
 	 * is deemed to be the "main" servlet and is automatically given a mapping of "/" by
 	 * default. To change the default behaviour you can use a
 	 * {@link ServletRegistrationBean} or a different bean name.
 	 */
-	public static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
+	public static final String DISPATCHER_SERVLET_NAME = ServletContextInitializerBeans.DISPATCHER_SERVLET_NAME;
 
 	private EmbeddedServletContainer embeddedServletContainer;
 
@@ -205,100 +203,35 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		return new ServletContextInitializer() {
 			@Override
 			public void onStartup(ServletContext servletContext) throws ServletException {
-				prepareEmbeddedWebApplicationContext(servletContext);
-				WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
-						getServletContext());
-				WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(),
-						getServletContext());
-				for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
-					beans.onStartup(servletContext);
-				}
+				selfInitialize(servletContext);
 			}
 		};
+	}
+
+	private void selfInitialize(ServletContext servletContext) throws ServletException {
+		prepareEmbeddedWebApplicationContext(servletContext);
+		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(
+				beanFactory);
+		WebApplicationContextUtils.registerWebApplicationScopes(beanFactory,
+				getServletContext());
+		existingScopes.restore();
+		WebApplicationContextUtils.registerEnvironmentBeans(beanFactory,
+				getServletContext());
+		for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
+			beans.onStartup(servletContext);
+		}
 	}
 
 	/**
 	 * Returns {@link ServletContextInitializer}s that should be used with the embedded
 	 * Servlet context. By default this method will first attempt to find
-	 * {@link ServletContextInitializer} beans, if none are found it will instead search
-	 * for {@link Servlet} and {@link Filter} beans.
+	 * {@link ServletContextInitializer}, {@link Servlet}, {@link Filter} and certain
+	 * {@link EventListener} beans.
+	 * @return the servlet initializer beans
 	 */
 	protected Collection<ServletContextInitializer> getServletContextInitializerBeans() {
-
-		Set<ServletContextInitializer> initializers = new LinkedHashSet<ServletContextInitializer>();
-		Set<Servlet> servletRegistrations = new LinkedHashSet<Servlet>();
-		Set<Filter> filterRegistrations = new LinkedHashSet<Filter>();
-		Set<EventListener> listenerRegistrations = new LinkedHashSet<EventListener>();
-
-		for (Entry<String, ServletContextInitializer> initializerBean : getOrderedBeansOfType(ServletContextInitializer.class)) {
-			ServletContextInitializer initializer = initializerBean.getValue();
-			initializers.add(initializer);
-			if (initializer instanceof ServletRegistrationBean) {
-				ServletRegistrationBean servlet = (ServletRegistrationBean) initializer;
-				servletRegistrations.add(servlet.getServlet());
-			}
-			if (initializer instanceof FilterRegistrationBean) {
-				FilterRegistrationBean filter = (FilterRegistrationBean) initializer;
-				filterRegistrations.add(filter.getFilter());
-			}
-			if (initializer instanceof ServletListenerRegistrationBean) {
-				listenerRegistrations
-						.add(((ServletListenerRegistrationBean<?>) initializer)
-								.getListener());
-			}
-		}
-
-		List<Entry<String, Servlet>> servletBeans = getOrderedBeansOfType(Servlet.class);
-		for (Entry<String, Servlet> servletBean : servletBeans) {
-			final String name = servletBean.getKey();
-			Servlet servlet = servletBean.getValue();
-			if (!servletRegistrations.contains(servlet)) {
-				String url = (servletBeans.size() == 1 ? "/" : "/" + name + "/");
-				if (name.equals(DISPATCHER_SERVLET_NAME)) {
-					url = "/"; // always map the main dispatcherServlet to "/"
-				}
-				ServletRegistrationBean registration = new ServletRegistrationBean(
-						servlet, url);
-				registration.setName(name);
-				registration.setMultipartConfig(getMultipartConfig());
-				initializers.add(registration);
-			}
-		}
-
-		for (Entry<String, Filter> filterBean : getOrderedBeansOfType(Filter.class)) {
-			String name = filterBean.getKey();
-			Filter filter = filterBean.getValue();
-			if (!filterRegistrations.contains(filter)) {
-				FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-				registration.setName(name);
-				initializers.add(registration);
-			}
-		}
-
-		Set<Class<?>> listenerTypes = ServletListenerRegistrationBean.getSupportedTypes();
-		for (Class<?> type : listenerTypes) {
-			for (Entry<String, ?> listenerBean : getOrderedBeansOfType(type)) {
-				String name = listenerBean.getKey();
-				EventListener listener = (EventListener) listenerBean.getValue();
-				if (ServletListenerRegistrationBean.isSupportedType(listener)
-						&& !filterRegistrations.contains(listener)) {
-					ServletListenerRegistrationBean<EventListener> registration = new ServletListenerRegistrationBean<EventListener>(
-							listener);
-					registration.setName(name);
-					initializers.add(registration);
-				}
-			}
-		}
-
-		return initializers;
-	}
-
-	private MultipartConfigElement getMultipartConfig() {
-		List<Entry<String, MultipartConfigElement>> beans = getOrderedBeansOfType(MultipartConfigElement.class);
-		if (beans.isEmpty()) {
-			return null;
-		}
-		return beans.get(0).getValue();
+		return new ServletContextInitializerBeans(getBeanFactory());
 	}
 
 	/**
@@ -317,9 +250,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 						"Cannot initialize context because there is already a root application context present - "
 								+ "check whether you have multiple ServletContextInitializers!");
 			}
-			else {
-				return;
-			}
+			return;
 		}
 		Log logger = LogFactory.getLog(ContextLoader.class);
 		servletContext.log("Initializing Spring embedded WebApplicationContext");
@@ -350,25 +281,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
 			throw ex;
 		}
-	}
-
-	private <T> List<Entry<String, T>> getOrderedBeansOfType(Class<T> type) {
-		List<Entry<String, T>> beans = new ArrayList<Entry<String, T>>();
-		Comparator<Entry<String, T>> comparator = new Comparator<Entry<String, T>>() {
-			@Override
-			public int compare(Entry<String, T> o1, Entry<String, T> o2) {
-				return AnnotationAwareOrderComparator.INSTANCE.compare(o1.getValue(),
-						o2.getValue());
-			}
-		};
-		String[] names = getBeanFactory().getBeanNamesForType(type, true, false);
-		Map<String, T> map = new LinkedHashMap<String, T>();
-		for (String name : names) {
-			map.put(name, getBeanFactory().getBean(name, type));
-		}
-		beans.addAll(map.entrySet());
-		Collections.sort(beans, comparator);
-		return beans;
 	}
 
 	private void startEmbeddedServletContainer() {
@@ -420,9 +332,51 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	/**
 	 * Returns the {@link EmbeddedServletContainer} that was created by the context or
 	 * {@code null} if the container has not yet been created.
+	 * @return the embedded servlet container
 	 */
 	public EmbeddedServletContainer getEmbeddedServletContainer() {
 		return this.embeddedServletContainer;
+	}
+
+	/**
+	 * Utility class to store and restore any user defined scopes. This allow scopes to be
+	 * registered in an ApplicationContextInitializer in the same way as they would in a
+	 * classic non-embedded web application context.
+	 */
+	public static class ExistingWebApplicationScopes {
+
+		private static final Set<String> SCOPES;
+		static {
+			Set<String> scopes = new LinkedHashSet<String>();
+			scopes.add(WebApplicationContext.SCOPE_REQUEST);
+			scopes.add(WebApplicationContext.SCOPE_SESSION);
+			scopes.add(WebApplicationContext.SCOPE_GLOBAL_SESSION);
+			SCOPES = Collections.unmodifiableSet(scopes);
+		}
+
+		private final ConfigurableListableBeanFactory beanFactory;
+
+		private final Map<String, Scope> scopes = new HashMap<String, Scope>();
+
+		public ExistingWebApplicationScopes(ConfigurableListableBeanFactory beanFactory) {
+			this.beanFactory = beanFactory;
+			for (String scopeName : SCOPES) {
+				Scope scope = beanFactory.getRegisteredScope(scopeName);
+				if (scope != null) {
+					this.scopes.put(scopeName, scope);
+				}
+			}
+		}
+
+		public void restore() {
+			for (Map.Entry<String, Scope> entry : this.scopes.entrySet()) {
+				if (logger.isInfoEnabled()) {
+					logger.info("Restoring user defined scope " + entry.getKey());
+				}
+				this.beanFactory.registerScope(entry.getKey(), entry.getValue());
+			}
+		}
+
 	}
 
 }

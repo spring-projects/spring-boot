@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
+import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
 /**
  * Customizer that allows dependencies to be added during compilation. Adding a dependency
@@ -32,7 +33,7 @@ import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesRes
  * <p>
  * This class provides a fluent API for conditionally adding dependencies. For example:
  * {@code dependencies.ifMissing("com.corp.SomeClass").add(module)}.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -42,17 +43,19 @@ public class DependencyCustomizer {
 
 	private final ClassNode classNode;
 
-	private final ArtifactCoordinatesResolver coordinatesResolver;
+	private final DependencyResolutionContext dependencyResolutionContext;
 
 	/**
 	 * Create a new {@link DependencyCustomizer} instance.
-	 * @param loader
+	 * @param loader the current classloader
+	 * @param moduleNode the current module
+	 * @param dependencyResolutionContext the context for dependency resolution
 	 */
 	public DependencyCustomizer(GroovyClassLoader loader, ModuleNode moduleNode,
-			ArtifactCoordinatesResolver coordinatesResolver) {
+			DependencyResolutionContext dependencyResolutionContext) {
 		this.loader = loader;
 		this.classNode = moduleNode.getClasses().get(0);
-		this.coordinatesResolver = coordinatesResolver;
+		this.dependencyResolutionContext = dependencyResolutionContext;
 	}
 
 	/**
@@ -62,7 +65,7 @@ public class DependencyCustomizer {
 	protected DependencyCustomizer(DependencyCustomizer parent) {
 		this.loader = parent.loader;
 		this.classNode = parent.classNode;
-		this.coordinatesResolver = parent.coordinatesResolver;
+		this.dependencyResolutionContext = parent.dependencyResolutionContext;
 	}
 
 	public String getVersion(String artifactId) {
@@ -71,7 +74,8 @@ public class DependencyCustomizer {
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {
-		String version = this.coordinatesResolver.getVersion(artifactId);
+		String version = this.dependencyResolutionContext
+				.getArtifactCoordinatesResolver().getVersion(artifactId);
 		if (version == null) {
 			version = defaultVersion;
 		}
@@ -96,7 +100,7 @@ public class DependencyCustomizer {
 						return true;
 					}
 				}
-				return DependencyCustomizer.this.canAdd();
+				return false;
 			}
 		};
 	}
@@ -179,20 +183,21 @@ public class DependencyCustomizer {
 
 	/**
 	 * Add dependencies and all of their dependencies. The group ID and version of the
-	 * dependency are resolves using the customizer's {@link ArtifactCoordinatesResolver}.
+	 * dependencies are resolved from the modules using the customizer's
+	 * {@link ArtifactCoordinatesResolver}.
 	 * @param modules The module IDs
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String... modules) {
 		for (String module : modules) {
-			add(module, true);
+			add(module, null, null, true);
 		}
 		return this;
 	}
 
 	/**
 	 * Add a single dependency and, optionally, all of its dependencies. The group ID and
-	 * version of the dependency are resolves using the customizer's
+	 * version of the dependency are resolved from the module using the customizer's
 	 * {@link ArtifactCoordinatesResolver}.
 	 * @param module The module ID
 	 * @param transitive {@code true} if the transitive dependencies should also be added,
@@ -200,20 +205,46 @@ public class DependencyCustomizer {
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String module, boolean transitive) {
+		return add(module, null, null, transitive);
+	}
+
+	/**
+	 * Add a single dependency with the specified classifier and type and, optionally, all
+	 * of its dependencies. The group ID and version of the dependency are resolved from
+	 * the module by using the customizer's {@link ArtifactCoordinatesResolver}.
+	 * @param module The module ID
+	 * @param classifier The classifier, may be {@code null}
+	 * @param type The type, may be {@code null}
+	 * @param transitive {@code true} if the transitive dependencies should also be added,
+	 * otherwise {@code false}.
+	 * @return this {@link DependencyCustomizer} for continued use
+	 */
+	public DependencyCustomizer add(String module, String classifier, String type,
+			boolean transitive) {
 		if (canAdd()) {
+			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
+					.getArtifactCoordinatesResolver();
 			this.classNode.addAnnotation(createGrabAnnotation(
-					this.coordinatesResolver.getGroupId(module), module,
-					this.coordinatesResolver.getVersion(module), transitive));
+					artifactCoordinatesResolver.getGroupId(module),
+					artifactCoordinatesResolver.getArtifactId(module),
+					artifactCoordinatesResolver.getVersion(module), classifier, type,
+					transitive));
 		}
 		return this;
 	}
 
 	private AnnotationNode createGrabAnnotation(String group, String module,
-			String version, boolean transitive) {
+			String version, String classifier, String type, boolean transitive) {
 		AnnotationNode annotationNode = new AnnotationNode(new ClassNode(Grab.class));
 		annotationNode.addMember("group", new ConstantExpression(group));
 		annotationNode.addMember("module", new ConstantExpression(module));
 		annotationNode.addMember("version", new ConstantExpression(version));
+		if (classifier != null) {
+			annotationNode.addMember("classifier", new ConstantExpression(classifier));
+		}
+		if (type != null) {
+			annotationNode.addMember("type", new ConstantExpression(type));
+		}
 		annotationNode.addMember("transitive", new ConstantExpression(transitive));
 		annotationNode.addMember("initClass", new ConstantExpression(false));
 		return annotationNode;
@@ -221,9 +252,19 @@ public class DependencyCustomizer {
 
 	/**
 	 * Strategy called to test if dependencies can be added. Subclasses override as
-	 * required.
+	 * required. Returns {@code true} by default.
+	 *
+	 * @return {@code true} if dependencies can be added, otherwise {@code false}
 	 */
 	protected boolean canAdd() {
 		return true;
+	}
+
+	/**
+	 * Returns the {@link DependencyResolutionContext}.
+	 * @return the dependency resolution context
+	 */
+	public DependencyResolutionContext getDependencyResolutionContext() {
+		return this.dependencyResolutionContext;
 	}
 }

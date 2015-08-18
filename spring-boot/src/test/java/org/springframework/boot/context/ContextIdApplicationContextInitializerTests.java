@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link ContextIdApplicationContextInitializer}.
- * 
+ *
  * @author Dave Syer
  */
 public class ContextIdApplicationContextInitializerTests {

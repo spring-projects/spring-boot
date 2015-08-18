@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose {@link Trace} information.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.trace", ignoreUnknownFields = false)

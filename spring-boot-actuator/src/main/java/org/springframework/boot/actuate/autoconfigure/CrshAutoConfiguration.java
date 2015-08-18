@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +43,7 @@ import org.crsh.vfs.spi.AbstractFSDriver;
 import org.crsh.vfs.spi.FSDriver;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellAuthenticationProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.JaasAuthenticationProperties;
@@ -54,8 +54,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -71,6 +71,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -79,40 +80,35 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedding an extensible shell
  * into a Spring Boot enabled application. By default a SSH daemon is started on port
- * 2000. If the CRaSH Telnet plugin is available on the classpath, Telnet deamon will be
+ * 2000. If the CRaSH Telnet plugin is available on the classpath, Telnet daemon will be
  * launched on port 5000.
- * 
  * <p>
  * The default shell authentication method uses a username and password combination. If no
  * configuration is provided the default username is 'user' and the password will be
  * printed to console during application startup. Those default values can be overridden
- * by using <code>shell.auth.simple.username</code> and
- * <code>shell.auth.simple.password</code>.
- * 
+ * by using {@code shell.auth.simple.username} and {@code shell.auth.simple.password}.
  * <p>
  * If a Spring Security {@link AuthenticationManager} is detected, this configuration will
  * create a {@link CRaSHPlugin} to forward shell authentication requests to Spring
- * Security. This authentication method will get enabled if <code>shell.auth</code> is set
- * to <code>spring</code> or if no explicit <code>shell.auth</code> is provided and a
+ * Security. This authentication method will get enabled if {@code shell.auth} is set to
+ * {@code spring} or if no explicit {@code shell.auth} is provided and a
  * {@link AuthenticationManager} is available. In the latter case shell access will be
  * restricted to users having roles that match those configured in
  * {@link ManagementServerProperties}. Required roles can be overridden by
- * <code>shell.auth.spring.roles</code>.
- * 
+ * {@code shell.auth.spring.roles}.
  * <p>
  * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
  * the application context. Those beans will get auto detected during startup and
  * registered with the underlying shell infrastructure. To configure plugins and the CRaSH
  * infrastructure add beans of type {@link CrshShellProperties} to the application
  * context.
- * 
  * <p>
  * Additional shell commands can be implemented using the guide and documentation at <a
  * href="http://www.crashub.org">crashub.org</a>. By default Boot will search for commands
- * using the following classpath scanning pattern <code>classpath*:/commands/**</code>. To
- * add different locations or override the default use
- * <code>shell.command_path_patterns</code> in your application configuration.
- * 
+ * using the following classpath scanning pattern {@code classpath*:/commands/**}. To add
+ * different locations or override the default use {@code shell.command_path_patterns} in
+ * your application configuration.
+ *
  * @author Christian Dupuis
  * @see ShellProperties
  */
@@ -120,36 +116,36 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ PluginLifeCycle.class })
 @EnableConfigurationProperties({ ShellProperties.class })
 @AutoConfigureAfter({ SecurityAutoConfiguration.class,
-		ManagementSecurityAutoConfiguration.class })
+		ManagementWebSecurityAutoConfiguration.class })
 public class CrshAutoConfiguration {
 
 	@Autowired
 	private ShellProperties properties;
 
 	@Bean
-	@ConditionalOnExpression("'${shell.auth:simple}' == 'jaas'")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties jaasAuthenticationProperties() {
+	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "jaas")
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public JaasAuthenticationProperties jaasAuthenticationProperties() {
 		return new JaasAuthenticationProperties();
 	}
 
 	@Bean
-	@ConditionalOnExpression("'${shell.auth:simple}' == 'key'")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties keyAuthenticationProperties() {
+	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "key")
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public KeyAuthenticationProperties keyAuthenticationProperties() {
 		return new KeyAuthenticationProperties();
 	}
 
 	@Bean
-	@ConditionalOnExpression("'${shell.auth:simple}' == 'simple'")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties simpleAuthenticationProperties() {
+	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "simple", matchIfMissing = true)
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public SimpleAuthenticationProperties simpleAuthenticationProperties() {
 		return new SimpleAuthenticationProperties();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ PluginLifeCycle.class })
-	public PluginLifeCycle shellBootstrap() {
+	@ConditionalOnMissingBean(PluginLifeCycle.class)
+	public CrshBootstrapBean shellBootstrap() {
 		CrshBootstrapBean bootstrapBean = new CrshBootstrapBean();
 		bootstrapBean.setConfig(this.properties.asCrshShellConfig());
 		return bootstrapBean;
@@ -159,7 +155,8 @@ public class CrshAutoConfiguration {
 	 * Class to configure CRaSH to authenticate against Spring Security.
 	 */
 	@Configuration
-	@ConditionalOnBean({ AuthenticationManager.class })
+	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "spring", matchIfMissing = true)
+	@ConditionalOnBean(AuthenticationManager.class)
 	@AutoConfigureAfter(CrshAutoConfiguration.class)
 	public static class AuthenticationManagerAdapterAutoConfiguration {
 
@@ -167,14 +164,13 @@ public class CrshAutoConfiguration {
 		private ManagementServerProperties management;
 
 		@Bean
-		public CRaSHPlugin<?> shellAuthenticationManager() {
+		public AuthenticationManagerAdapter shellAuthenticationManager() {
 			return new AuthenticationManagerAdapter();
 		}
 
 		@Bean
-		@ConditionalOnExpression("'${shell.auth:spring}' == 'spring'")
-		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-		public CrshShellAuthenticationProperties springAuthenticationProperties() {
+		@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+		public SpringAuthenticationProperties springAuthenticationProperties() {
 			// In case no shell.auth property is provided fall back to Spring Security
 			// based authentication and get role to access shell from
 			// ManagementServerProperties.
@@ -214,11 +210,12 @@ public class CrshAutoConfiguration {
 		}
 
 		@PostConstruct
-		public void init() throws Exception {
-			FS commandFileSystem = createFileSystem(this.properties
-					.getCommandPathPatterns());
-			FS configurationFileSystem = createFileSystem(this.properties
-					.getConfigPathPatterns());
+		public void init() {
+			FS commandFileSystem = createFileSystem(
+					this.properties.getCommandPathPatterns(),
+					this.properties.getDisabledCommands());
+			FS configurationFileSystem = createFileSystem(
+					this.properties.getConfigPathPatterns(), new String[0]);
 
 			PluginDiscovery discovery = new BeanFactoryFilteringPluginDiscovery(
 					this.resourceLoader.getClassLoader(), this.beanFactory,
@@ -232,13 +229,19 @@ public class CrshAutoConfiguration {
 			start(context);
 		}
 
-		protected FS createFileSystem(String[] pathPatterns) throws IOException,
-				URISyntaxException {
+		protected FS createFileSystem(String[] pathPatterns, String[] filterPatterns) {
 			Assert.notNull(pathPatterns, "PathPatterns must not be null");
+			Assert.notNull(filterPatterns, "FilterPatterns must not be null");
 			FS fileSystem = new FS();
 			for (String pathPattern : pathPatterns) {
-				fileSystem.mount(new SimpleFileSystemDriver(new DirectoryHandle(
-						pathPattern, this.resourceLoader)));
+				try {
+					fileSystem.mount(new SimpleFileSystemDriver(new DirectoryHandle(
+							pathPattern, this.resourceLoader, filterPatterns)));
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException("Failed to mount file system for '"
+							+ pathPattern + "'", ex);
+				}
 			}
 			return fileSystem;
 		}
@@ -277,6 +280,7 @@ public class CrshAutoConfiguration {
 		private AuthenticationManager authenticationManager;
 
 		@Autowired(required = false)
+		@Qualifier("shellAccessDecisionManager")
 		private AccessDecisionManager accessDecisionManager;
 
 		private String[] roles = new String[] { "ADMIN" };
@@ -487,22 +491,36 @@ public class CrshAutoConfiguration {
 
 		private final ResourcePatternResolver resourceLoader;
 
-		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader) {
+		private final String[] filterPatterns;
+
+		private final AntPathMatcher matcher = new AntPathMatcher();
+
+		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader,
+				String[] filterPatterns) {
 			super(name);
 			this.resourceLoader = resourceLoader;
+			this.filterPatterns = filterPatterns;
 		}
 
 		public List<ResourceHandle> members() throws IOException {
 			Resource[] resources = this.resourceLoader.getResources(getName());
 			List<ResourceHandle> files = new ArrayList<ResourceHandle>();
 			for (Resource resource : resources) {
-				if (!resource.getURL().getPath().endsWith("/")) {
+				if (!resource.getURL().getPath().endsWith("/") && !shouldFilter(resource)) {
 					files.add(new FileHandle(resource.getFilename(), resource));
 				}
 			}
 			return files;
 		}
 
+		private boolean shouldFilter(Resource resource) {
+			for (String filterPattern : this.filterPatterns) {
+				if (this.matcher.match(filterPattern, resource.getFilename())) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
 	/**

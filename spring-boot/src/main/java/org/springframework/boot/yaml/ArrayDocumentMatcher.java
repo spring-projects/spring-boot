@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,19 @@
 
 package org.springframework.boot.yaml;
 
+import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 
-import org.springframework.boot.yaml.YamlProcessor.DocumentMatcher;
-import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
+import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
+import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.util.StringUtils;
 
 /**
  * Matches a document containing a given key and where the value of that key is an array
  * containing one of the given values, or where one of the values matches one of the given
  * values (interpreted as regexes).
- * 
+ *
  * @author Dave Syer
  */
 public class ArrayDocumentMatcher implements DocumentMatcher {
@@ -49,6 +50,9 @@ public class ArrayDocumentMatcher implements DocumentMatcher {
 		}
 		Set<String> values = StringUtils.commaDelimitedListToSet(properties
 				.getProperty(this.key));
+		if (values.isEmpty()) {
+			values = Collections.singleton("");
+		}
 		for (String pattern : this.patterns) {
 			for (String value : values) {
 				if (value.matches(pattern)) {

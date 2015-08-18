@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
  * A registry for all {@link MvcEndpoint} beans, and a factory for a set of generic ones
  * wrapping existing {@link Endpoint} instances that are not already exposed as MVC
  * endpoints.
- * 
+ *
  * @author Dave Syer
  */
 @Component
@@ -52,8 +52,9 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Collection<MvcEndpoint> existing = this.applicationContext.getBeansOfType(
-				MvcEndpoint.class).values();
+		Collection<MvcEndpoint> existing = BeanFactoryUtils
+				.beansOfTypeIncludingAncestors(this.applicationContext, MvcEndpoint.class)
+				.values();
 		this.endpoints.addAll(existing);
 		this.customTypes = findEndpointClasses(existing);
 		@SuppressWarnings("rawtypes")

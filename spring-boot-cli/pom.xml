@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.0.2.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-cli</artifactId>
@@ -19,6 +19,7 @@
 		<main.basedir>${basedir}/..</main.basedir>
 		<start-class>org.springframework.boot.cli.SpringCli</start-class>
 		<spring.profiles.active>default</spring.profiles.active>
+		<generated.pom.dir>${project.build.directory}/generated-resources/org/springframework/boot/cli/compiler/dependencies</generated.pom.dir>
 	</properties>
 	<profiles>
 		<profile>
@@ -34,14 +35,8 @@
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-dependency-tools</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader-tools</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jline</groupId>
@@ -58,6 +53,10 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
@@ -128,18 +127,23 @@
 			<artifactId>junit</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 	<build>
+		<resources>
+			<resource>
+				<directory>${project.build.directory}/generated-resources</directory>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<additionalClasspathElements>
@@ -157,6 +161,26 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>copy-effective-pom</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.springframework.boot</groupId>
+									<artifactId>spring-boot-dependencies</artifactId>
+									<version>${project.version}</version>
+									<type>effective-pom</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${generated.pom.dir}</outputDirectory>
+									<destFileName>effective-pom.xml</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+					<execution>
 						<id>unpack</id>
 						<phase>prepare-package</phase>
 						<goals>
@@ -165,7 +189,7 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>${project.groupId}</groupId>
+									<groupId>org.springframework.boot</groupId>
 									<artifactId>spring-boot-loader</artifactId>
 									<version>${project.version}</version>
 									<type>jar</type>
@@ -188,6 +212,7 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
@@ -227,6 +252,7 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<dependencies>
 					<dependency>
@@ -305,8 +331,6 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings
-					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -316,19 +340,6 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-antrun-plugin</artifactId>
-										<versionRange>[1.7,)</versionRange>
-										<goals>
-											<goal>run</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
 										<groupId>
 											org.apache.maven.plugins
 										</groupId>
@@ -336,16 +347,15 @@
 											maven-dependency-plugin
 										</artifactId>
 										<versionRange>
-											[2.8,)
+											[1.0.0,)
 										</versionRange>
 										<goals>
-											<goal>
-												copy-dependencies
-											</goal>
+											<goal>unpack</goal>
+											<goal>copy-dependencies</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore></ignore>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -355,14 +365,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>objectstyle</id>
-			<name>ObjectStyle.org Repository</name>
-			<url>http://objectstyle.org/maven2/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 </project>

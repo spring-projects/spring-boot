@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.embedded;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -24,15 +23,17 @@ import org.springframework.context.ApplicationEvent;
  * {@link EmbeddedServletContainer} is ready. Useful for obtaining the local port of a
  * running server. Normally it will have been started, but listeners are free to inspect
  * the server and stop and start it if they want to.
- * 
+ *
  * @author Dave Syer
  */
+@SuppressWarnings("serial")
 public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 
-	private final ApplicationContext applicationContext;
+	private final EmbeddedWebApplicationContext applicationContext;
 
 	public EmbeddedServletContainerInitializedEvent(
-			ApplicationContext applicationContext, EmbeddedServletContainer source) {
+			EmbeddedWebApplicationContext applicationContext,
+			EmbeddedServletContainer source) {
 		super(source);
 		this.applicationContext = applicationContext;
 	}
@@ -60,7 +61,7 @@ public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 	 * context) before acting on the server container itself.
 	 * @return the applicationContext that the container was created from
 	 */
-	public ApplicationContext getApplicationContext() {
+	public EmbeddedWebApplicationContext getApplicationContext() {
 		return this.applicationContext;
 	}
 

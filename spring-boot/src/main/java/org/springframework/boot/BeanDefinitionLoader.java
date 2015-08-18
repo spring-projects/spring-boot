@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,13 +48,11 @@ import org.springframework.util.StringUtils;
  * simple facade over {@link AnnotatedBeanDefinitionReader},
  * {@link XmlBeanDefinitionReader} and {@link ClassPathBeanDefinitionScanner}. See
  * {@link SpringApplication} for the types of sources that are supported.
- * 
+ *
  * @author Phillip Webb
  * @see #setBeanNameGenerator(BeanNameGenerator)
  */
 class BeanDefinitionLoader {
-
-	private static final ResourceLoader DEFAULT_RESOURCE_LOADER = new PathMatchingResourcePatternResolver();
 
 	private final Object[] sources;
 
@@ -228,8 +226,8 @@ class BeanDefinitionLoader {
 	}
 
 	private Resource[] findResources(String source) {
-		ResourceLoader loader = this.resourceLoader != null ? this.resourceLoader
-				: DEFAULT_RESOURCE_LOADER;
+		ResourceLoader loader = (this.resourceLoader != null ? this.resourceLoader
+				: new PathMatchingResourcePatternResolver());
 		try {
 			if (loader instanceof ResourcePatternResolver) {
 				return ((ResourcePatternResolver) loader).getResources(source);
@@ -273,7 +271,7 @@ class BeanDefinitionLoader {
 		}
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
-		if (type.isAnonymousClass() || type.getName().matches(".*\\$_.*closure.*")
+		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass()
 				|| type.getConstructors() == null || type.getConstructors().length == 0) {
 			return false;
 		}

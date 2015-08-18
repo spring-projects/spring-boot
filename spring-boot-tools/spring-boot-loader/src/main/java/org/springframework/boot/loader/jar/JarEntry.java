@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.util.jar.Manifest;
 
 /**
  * Extended variant of {@link java.util.jar.JarEntry} returned by {@link JarFile}s.
- * 
+ *
  * @author Phillip Webb
  */
 public class JarEntry extends java.util.jar.JarEntry {
@@ -44,6 +44,7 @@ public class JarEntry extends java.util.jar.JarEntry {
 
 	/**
 	 * Return the source {@link JarEntryData} that was used to create this entry.
+	 * @return the source of the entry
 	 */
 	public JarEntryData getSource() {
 		return this.source;
@@ -51,6 +52,8 @@ public class JarEntry extends java.util.jar.JarEntry {
 
 	/**
 	 * Return a {@link URL} for this {@link JarEntry}.
+	 * @return the URL for the entry
+	 * @throws MalformedURLException if the URL is not valid
 	 */
 	public URL getUrl() throws MalformedURLException {
 		return new URL(this.source.getSource().getUrl(), getName());

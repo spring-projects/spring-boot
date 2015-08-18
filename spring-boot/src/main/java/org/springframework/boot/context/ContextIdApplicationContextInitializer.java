@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2010-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,17 +33,17 @@ import org.springframework.util.StringUtils;
  * <li>spring.config.name</li>
  * </ul>
  * If no property is set the ID 'application' will be used.
- * 
+ *
  * <p>
  * In addition the following environment properties will be consulted to append a relevant
  * port or index:
- * 
+ *
  * <ul>
  * <li>spring.application.index</li>
  * <li>vcap.application.instance_index</li>
  * <li>PORT</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  */
 public class ContextIdApplicationContextInitializer implements
@@ -68,7 +68,8 @@ public class ContextIdApplicationContextInitializer implements
 	}
 
 	/**
-	 * @param name
+	 * Create a new {@link ContextIdApplicationContextInitializer} instance.
+	 * @param name the name of the application (can include placeholders)
 	 */
 	public ContextIdApplicationContextInitializer(String name) {
 		this.name = name;
@@ -91,7 +92,6 @@ public class ContextIdApplicationContextInitializer implements
 	private String getApplicationId(ConfigurableEnvironment environment) {
 		String name = environment.resolvePlaceholders(this.name);
 		String index = environment.resolvePlaceholders(INDEX_PATTERN);
-
 		String profiles = StringUtils.arrayToCommaDelimitedString(environment
 				.getActiveProfiles());
 		if (StringUtils.hasText(profiles)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,24 +52,23 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * well-behaved OS-level services than a model based on executable jars.
  * <p>
  * Looks in various places for a properties file to extract loader settings, defaulting to
- * <code>application.properties</code> either on the current classpath or in the current
+ * {@code application.properties} either on the current classpath or in the current
  * working directory. The name of the properties file can be changed by setting a System
- * property <code>loader.config.name</code> (e.g. <code>-Dloader.config.name=foo</code>
- * will look for <code>foo.properties</code>. If that file doesn't exist then tries
- * <code>loader.config.location</code> (with allowed prefixes <code>classpath:</code> and
- * <code>file:</code> or any valid URL). Once that file is located turns it into
- * Properties and extracts optional values (which can also be provided overridden as
- * System properties in case the file doesn't exist):
+ * property {@code loader.config.name} (e.g. {@code -Dloader.config.name=foo} will look
+ * for {@code foo.properties}. If that file doesn't exist then tries
+ * {@code loader.config.location} (with allowed prefixes {@code classpath:} and
+ * {@code file:} or any valid URL). Once that file is located turns it into Properties and
+ * extracts optional values (which can also be provided overridden as System properties in
+ * case the file doesn't exist):
  * <ul>
- * <li><code>loader.path</code>: a comma-separated list of directories to append to the
+ * <li>{@code loader.path}: a comma-separated list of directories to append to the
  * classpath (containing file resources and/or nested archives in *.jar or *.zip).
- * Defaults to <code>lib</code> (i.e. a directory in the current working directory)</li>
- * <li><code>loader.main</code>: the main method to delegate execution to once the class
- * loader is set up. No default, but will fall back to looking for a
- * <code>Start-Class</code> in a <code>MANIFEST.MF</code>, if there is one in
- * <code>${loader.home}/META-INF</code>.</li>
+ * Defaults to {@code lib} in your application archive</li>
+ * <li>{@code loader.main}: the main method to delegate execution to once the class loader
+ * is set up. No default, but will fall back to looking for a {@code Start-Class} in a
+ * {@code MANIFEST.MF}, if there is one in <code>${loader.home}/META-INF</code>.</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  * @author Janne Valkealahti
  */
@@ -78,14 +78,14 @@ public class PropertiesLauncher extends Launcher {
 
 	/**
 	 * Properties key for main class. As a manifest entry can also be specified as
-	 * <code>Start-Class</code>.
+	 * {@code Start-Class}.
 	 */
 	public static final String MAIN = "loader.main";
 
 	/**
 	 * Properties key for classpath entries (directories possibly containing jars).
 	 * Defaults to "lib/" (relative to {@link #HOME loader home directory}). Multiple
-	 * entries can be specified using a comma separeted list.
+	 * entries can be specified using a comma-separated list.
 	 */
 	public static final String PATH = "loader.path";
 
@@ -123,7 +123,7 @@ public class PropertiesLauncher extends Launcher {
 	 */
 	public static final String SET_SYSTEM_PROPERTIES = "loader.system";
 
-	private static final List<String> DEFAULT_PATHS = Arrays.asList("lib/");
+	private static final List<String> DEFAULT_PATHS = Arrays.asList();
 
 	private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
 
@@ -135,6 +135,8 @@ public class PropertiesLauncher extends Launcher {
 
 	private final Properties properties = new Properties();
 
+	private Archive parent;
+
 	public PropertiesLauncher() {
 		if (!isDebug()) {
 			this.logger.setLevel(Level.SEVERE);
@@ -143,6 +145,7 @@ public class PropertiesLauncher extends Launcher {
 			this.home = getHomeDirectory();
 			initializeProperties(this.home);
 			initializePaths();
+			this.parent = createArchive();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -313,15 +316,12 @@ public class PropertiesLauncher extends Launcher {
 			path = cleanupPath(path);
 			// Empty path (i.e. the archive itself if running from a JAR) is always added
 			// to the classpath so no need for it to be explicitly listed
-			if (!(path.equals(".") || path.equals(""))) {
+			if (!path.equals("")) {
 				paths.add(path);
 			}
 		}
 		if (paths.isEmpty()) {
-			// On the other hand, we don't want a completely empty path. If the app is
-			// running from an archive (java -jar) then this will make sure the archive
-			// itself is included at the very least.
-			paths.add(".");
+			paths.add("lib");
 		}
 		return paths;
 	}
@@ -455,7 +455,7 @@ public class PropertiesLauncher extends Launcher {
 		String root = cleanupPath(stripFileUrlPrefix(path));
 		List<Archive> lib = new ArrayList<Archive>();
 		File file = new File(root);
-		if (!root.startsWith("/")) {
+		if (!isAbsolutePath(root)) {
 			file = new File(this.home, root);
 		}
 		if (file.isDirectory()) {
@@ -478,6 +478,11 @@ public class PropertiesLauncher extends Launcher {
 		return lib;
 	}
 
+	private boolean isAbsolutePath(String root) {
+		// Windows contains ":" others start with "/"
+		return root.contains(":") || root.startsWith("/");
+	}
+
 	private Archive getArchive(File file) throws IOException {
 		String name = file.getName().toLowerCase();
 		if (name.endsWith(".jar") || name.endsWith(".zip")) {
@@ -487,40 +492,84 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private Archive getNestedArchive(final String root) throws Exception {
-		Archive parent = createArchive();
-		if (root.startsWith("/") || parent.getUrl().equals(this.home.toURI().toURL())) {
+		if (root.startsWith("/")
+				|| this.parent.getUrl().equals(this.home.toURI().toURL())) {
 			// If home dir is same as parent archive, no need to add it twice.
 			return null;
 		}
 		EntryFilter filter = new PrefixMatchingArchiveFilter(root);
-		if (parent.getNestedArchives(filter).isEmpty()) {
+		if (this.parent.getNestedArchives(filter).isEmpty()) {
 			return null;
 		}
 		// If there are more archives nested in this subdirectory (root) then create a new
 		// virtual archive for them, and have it added to the classpath
-		return new FilteredArchive(parent, filter);
+		return new FilteredArchive(this.parent, filter);
 	}
 
 	private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
 			URISyntaxException {
 		ClassLoader parentClassLoader = getClass().getClassLoader();
+		List<Archive> urls = new ArrayList<Archive>();
 		for (URL url : getURLs(parentClassLoader)) {
 			if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
-				lib.add(0, new JarFileArchive(new File(url.toURI())));
+				urls.add(new JarFileArchive(new File(url.toURI())));
 			}
 			else if (url.toString().endsWith("/*")) {
 				String name = url.getFile();
 				File dir = new File(name.substring(0, name.length() - 1));
 				if (dir.exists()) {
-					lib.add(0,
-							new ExplodedArchive(new File(name.substring(0,
-									name.length() - 1)), false));
+					urls.add(new ExplodedArchive(new File(name.substring(0,
+							name.length() - 1)), false));
 				}
 			}
 			else {
-				lib.add(0, new ExplodedArchive(new File(url.getFile())));
+				String filename = URLDecoder.decode(url.getFile(), "UTF-8");
+				urls.add(new ExplodedArchive(new File(filename)));
 			}
 		}
+		// The parent archive might have a "lib/" directory, meaning we are running from
+		// an executable JAR. We add nested entries from there with low priority (i.e. at
+		// end).
+		addNestedArchivesFromParent(urls);
+		for (Archive archive : urls) {
+			// But only add them if they are not already included
+			if (findArchive(lib, archive) < 0) {
+				lib.add(archive);
+			}
+		}
+	}
+
+	private void addNestedArchivesFromParent(List<Archive> urls) {
+		int index = findArchive(urls, this.parent);
+		if (index >= 0) {
+			try {
+				Archive nested = getNestedArchive("lib/");
+				if (nested != null) {
+					List<Archive> extra = new ArrayList<Archive>(
+							nested.getNestedArchives(new ArchiveEntryFilter()));
+					urls.addAll(index + 1, extra);
+				}
+			}
+			catch (Exception ex) {
+				// ignore
+			}
+		}
+	}
+
+	private int findArchive(List<Archive> urls, Archive archive) {
+		// Do not rely on Archive to have an equals() method. Look for the archive by
+		// matching strings.
+		if (archive == null) {
+			return -1;
+		}
+		int i = 0;
+		for (Archive url : urls) {
+			if (url.toString().equals(archive.toString())) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
 	}
 
 	private URL[] getURLs(ClassLoader classLoader) {
@@ -532,6 +581,10 @@ public class PropertiesLauncher extends Launcher {
 
 	private String cleanupPath(String path) {
 		path = path.trim();
+		// No need for current dir path
+		if (path.startsWith("./")) {
+			path = path.substring(2);
+		}
 		if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")) {
 			return path;
 		}
@@ -540,13 +593,9 @@ public class PropertiesLauncher extends Launcher {
 		}
 		else {
 			// It's a directory
-			if (!path.endsWith("/")) {
+			if (!path.endsWith("/") && !path.equals(".")) {
 				path = path + "/";
 			}
-		}
-		// No need for current dir path
-		if (path.startsWith("./")) {
-			path = path.substring(2);
 		}
 		return path;
 	}
@@ -591,8 +640,7 @@ public class PropertiesLauncher extends Launcher {
 
 		@Override
 		public boolean matches(Entry entry) {
-			return entry.isDirectory() || entry.getName().endsWith(DOT_JAR)
-					|| entry.getName().endsWith(DOT_ZIP);
+			return entry.getName().endsWith(DOT_JAR) || entry.getName().endsWith(DOT_ZIP);
 		}
 	}
 

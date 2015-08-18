@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import javax.servlet.ServletRegistration.Dynamic;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * A {@link ServletContextInitializer} to register {@link Servlet}s in a Servlet 3.0+
@@ -40,8 +41,10 @@ import org.springframework.util.Assert;
  * <p>
  * The {@link #setServlet(Servlet) servlet} must be specified before calling
  * {@link #onStartup}. URL mapping can be configured used {@link #setUrlMappings} or
- * omitted when mapping to '/*'. The servlet name will be deduced if not specified.
- * 
+ * omitted when mapping to '/*' (unless
+ * {@link #ServletRegistrationBean(Servlet, boolean, String...) alwaysMapUrl} is set to
+ * {@code false}). The servlet name will be deduced if not specified.
+ *
  * @author Phillip Webb
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)
@@ -55,6 +58,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 	private Servlet servlet;
 
 	private Set<String> urlMappings = new LinkedHashSet<String>();
+
+	private boolean alwaysMapUrl = true;
 
 	private int loadOnStartup = -1;
 
@@ -73,14 +78,28 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 * @param urlMappings the URLs being mapped
 	 */
 	public ServletRegistrationBean(Servlet servlet, String... urlMappings) {
+		this(servlet, true, urlMappings);
+	}
+
+	/**
+	 * Create a new {@link ServletRegistrationBean} instance with the specified
+	 * {@link Servlet} and URL mappings.
+	 * @param servlet the servlet being mapped
+	 * @param alwaysMapUrl if omitted URL mappings should be replaced with '/*'
+	 * @param urlMappings the URLs being mapped
+	 */
+	public ServletRegistrationBean(Servlet servlet, boolean alwaysMapUrl,
+			String... urlMappings) {
 		Assert.notNull(servlet, "Servlet must not be null");
 		Assert.notNull(urlMappings, "UrlMappings must not be null");
 		this.servlet = servlet;
+		this.alwaysMapUrl = alwaysMapUrl;
 		this.urlMappings.addAll(Arrays.asList(urlMappings));
 	}
 
 	/**
 	 * Returns the servlet being registered.
+	 * @return the sevlet
 	 */
 	protected Servlet getServlet() {
 		return this.servlet;
@@ -88,6 +107,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Sets the servlet to be registered.
+	 * @param servlet the servlet
 	 */
 	public void setServlet(Servlet servlet) {
 		Assert.notNull(servlet, "Servlet must not be null");
@@ -124,16 +144,17 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Sets the <code>loadOnStartup</code> priority. See
+	 * Sets the {@code loadOnStartup} priority. See
 	 * {@link ServletRegistration.Dynamic#setLoadOnStartup} for details.
+	 * @param loadOnStartup if load on startup is enabled
 	 */
 	public void setLoadOnStartup(int loadOnStartup) {
 		this.loadOnStartup = loadOnStartup;
 	}
 
 	/**
-	 * Set the the {@link MultipartConfigElement multi-part configuration}.
-	 * @param multipartConfig the muti-part configuration to set or {@code null}
+	 * Set the {@link MultipartConfigElement multi-part configuration}.
+	 * @param multipartConfig the multi-part configuration to set or {@code null}
 	 */
 	public void setMultipartConfig(MultipartConfigElement multipartConfig) {
 		this.multipartConfig = multipartConfig;
@@ -142,6 +163,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	/**
 	 * Returns the {@link MultipartConfigElement multi-part configuration} to be applied
 	 * or {@code null}.
+	 * @return the multipart config
 	 */
 	public MultipartConfigElement getMultipartConfig() {
 		return this.multipartConfig;
@@ -149,6 +171,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Returns the servlet name that will be registered.
+	 * @return the servlet name
 	 */
 	public String getServletName() {
 		return getOrDeduceName(this.servlet);
@@ -159,7 +182,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 		Assert.notNull(this.servlet, "Servlet must not be null");
 		String name = getServletName();
 		if (!isEnabled()) {
-			logger.info("Filter " + name + " was not registered (disabled)");
+			logger.info("Servlet " + name + " was not registered (disabled)");
 			return;
 		}
 		logger.info("Mapping servlet: '" + name + "' to " + this.urlMappings);
@@ -175,15 +198,18 @@ public class ServletRegistrationBean extends RegistrationBean {
 	/**
 	 * Configure registration settings. Subclasses can override this method to perform
 	 * additional configuration if required.
+	 * @param registration the registration
 	 */
 	protected void configure(ServletRegistration.Dynamic registration) {
 		super.configure(registration);
 		String[] urlMapping = this.urlMappings
 				.toArray(new String[this.urlMappings.size()]);
-		if (urlMapping.length == 0) {
+		if (urlMapping.length == 0 && this.alwaysMapUrl) {
 			urlMapping = DEFAULT_MAPPINGS;
 		}
-		registration.addMapping(urlMapping);
+		if (!ObjectUtils.isEmpty(urlMapping)) {
+			registration.addMapping(urlMapping);
+		}
 		registration.setLoadOnStartup(this.loadOnStartup);
 		if (this.multipartConfig != null) {
 			registration.setMultipartConfig(this.multipartConfig);
