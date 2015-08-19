@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,6 +33,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Josh Thornhill
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -218,6 +220,11 @@ public class RabbitProperties {
 		 */
 		private String trustStorePassword;
 
+		/**
+		 *
+		 */
+		private Resource propertiesLocation;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -258,29 +265,13 @@ public class RabbitProperties {
 			this.trustStorePassword = trustStorePassword;
 		}
 
-		/**
-		 * Create the ssl configuration as expected by the
-		 * {@link org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean
-		 * RabbitConnectionFactoryBean}.
-		 * @return the ssl configuration
-		 */
-		public Properties createSslProperties() {
-			Properties properties = new Properties();
-			if (getKeyStore() != null) {
-				properties.put("keyStore", getKeyStore());
-			}
-			if (getKeyStorePassword() != null) {
-				properties.put("keyStore.passPhrase", getKeyStorePassword());
-			}
-			if (getTrustStore() != null) {
-				properties.put("trustStore", getTrustStore());
-			}
-			if (getTrustStorePassword() != null) {
-				properties.put("trustStore.passPhrase", getTrustStorePassword());
-			}
-			return properties;
+		public Resource getPropertiesLocation() {
+			return this.propertiesLocation;
 		}
 
+		public void setPropertiesLocation(Resource propertiesLocation) {
+			this.propertiesLocation = propertiesLocation;
+		}
 	}
 
 	public static class Listener {
