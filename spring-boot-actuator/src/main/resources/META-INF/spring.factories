@@ -15,6 +15,7 @@ org.springframework.boot.actuate.autoconfigure.MetricsDropwizardAutoConfiguratio
 org.springframework.boot.actuate.autoconfigure.MetricsChannelAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.PublicMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.StompMvcEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration
 
