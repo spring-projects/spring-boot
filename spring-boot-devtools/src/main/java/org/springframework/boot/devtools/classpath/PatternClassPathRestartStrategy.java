@@ -33,9 +33,12 @@ public class PatternClassPathRestartStrategy implements ClassPathRestartStrategy
 
 	private final String[] excludePatterns;
 
+	public PatternClassPathRestartStrategy(String[] excludePatterns) {
+		this.excludePatterns = excludePatterns;
+	}
+
 	public PatternClassPathRestartStrategy(String excludePatterns) {
-		this.excludePatterns = StringUtils
-				.commaDelimitedListToStringArray(excludePatterns);
+		this(StringUtils.commaDelimitedListToStringArray(excludePatterns));
 	}
 
 	@Override

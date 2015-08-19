@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for developer tools.
@@ -71,9 +72,14 @@ public class DevToolsProperties {
 		private boolean enabled = true;
 
 		/**
-		 * Patterns that should be excluding for triggering a full restart.
+		 * Patterns that should be excluded from triggering a full restart.
 		 */
 		private String exclude = DEFAULT_RESTART_EXCLUDES;
+
+		/**
+		 * Additional patterns that should be excluded from triggering a full restart.
+		 */
+		private String additionalExclude;
 
 		/**
 		 * Amount of time (in milliseconds) to wait between polling for classpath changes.
@@ -105,12 +111,31 @@ public class DevToolsProperties {
 			this.enabled = enabled;
 		}
 
+		public String[] getAllExclude() {
+			List<String> allExclude = new ArrayList<String>();
+			if (StringUtils.hasText(this.exclude)) {
+				allExclude.addAll(StringUtils.commaDelimitedListToSet(this.exclude));
+			}
+			if (StringUtils.hasText(this.additionalExclude)) {
+				allExclude.addAll(StringUtils.commaDelimitedListToSet(this.additionalExclude));
+			}
+			return allExclude.toArray(new String[allExclude.size()]);
+		}
+
 		public String getExclude() {
 			return this.exclude;
 		}
 
 		public void setExclude(String exclude) {
 			this.exclude = exclude;
+		}
+
+		public String getAdditionalExclude() {
+			return this.additionalExclude;
+		}
+
+		public void setAdditionalExclude(String additionalExclude) {
+			this.additionalExclude = additionalExclude;
 		}
 
 		public long getPollInterval() {

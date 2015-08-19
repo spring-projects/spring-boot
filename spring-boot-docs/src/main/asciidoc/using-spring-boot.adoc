@@ -910,6 +910,8 @@ you can use the `spring.devtools.restart.exclude` property. For example, to excl
 	spring.devtools.restart.exclude=static/**,public/**
 ----
 
+TIP: if you want to keep those defaults and _add_ additional exclusions, use the
+`spring.devtools.restart.exclude.additional-exclude` property instead.
 
 
 [[using-boot-devtools-restart-additional-paths]]

@@ -214,7 +214,7 @@ public class RemoteClientConfiguration {
 		@Bean
 		public ClassPathRestartStrategy classPathRestartStrategy() {
 			return new PatternClassPathRestartStrategy(this.properties.getRestart()
-					.getExclude());
+					.getAllExclude());
 		}
 
 		@Bean
