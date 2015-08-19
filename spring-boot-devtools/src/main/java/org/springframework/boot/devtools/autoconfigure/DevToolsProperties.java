@@ -33,13 +33,6 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "spring.devtools")
 public class DevToolsProperties {
 
-	private static final String DEFAULT_RESTART_EXCLUDES = "META-INF/maven/**,"
-			+ "META-INF/resources/**,resources/**,static/**,public/**,templates/**";
-
-	private static final long DEFAULT_RESTART_POLL_INTERVAL = 1000;
-
-	private static final long DEFAULT_RESTART_QUIET_PERIOD = 400;
-
 	private Restart restart = new Restart();
 
 	private Livereload livereload = new Livereload();
@@ -63,6 +56,14 @@ public class DevToolsProperties {
 	 * Restart properties
 	 */
 	public static class Restart {
+
+		private static final String DEFAULT_RESTART_EXCLUDES = "META-INF/maven/**,"
+				+ "META-INF/resources/**,resources/**,static/**,public/**,templates/**";
+
+		private static final long DEFAULT_RESTART_POLL_INTERVAL = 1000;
+
+		private static final long DEFAULT_RESTART_QUIET_PERIOD = 400;
+
 
 		/**
 		 * Enable automatic restart.
