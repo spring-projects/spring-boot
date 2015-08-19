@@ -1130,6 +1130,28 @@ Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`W
 {sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
 
 
+[[howto-customize-view-resolvers-velocity]]
+=== Velocity
+
+By default, Spring Boot configures a `VelocityViewResolver`. If you need a `VelocityLayoutViewResolver`
+instead, you can easily configure your own by creating a bean with name `velocityViewResolver`. You can
+also inject the `VelocityProperties` instance to apply the base defaults to your custom view resolver.
+
+The following example replaces the auto-configured velocity view resolver with a
+`VelocityLayoutViewResolver` defining a customized `layoutUrl` and all settings that would have been
+applied from the auto-configuration:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean(name = "velocityViewResolver")
+	public VelocityLayoutViewResolver velocityViewResolver(VelocityProperties properties) {
+		VelocityLayoutViewResolver resolver = new VelocityLayoutViewResolver();
+		properties.applyToViewResolver(resolver);
+		resolver.setLayoutUrl("layout/default.vm");
+		return resolver;
+	}
+----
+
 
 [[howto-logging]]
 == Logging
