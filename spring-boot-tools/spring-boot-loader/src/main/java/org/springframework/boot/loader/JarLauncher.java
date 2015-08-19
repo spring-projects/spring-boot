@@ -31,7 +31,7 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 
 	private static final AsciiBytes LIB = new AsciiBytes("lib/");
 
-	JarLauncher() {
+	public JarLauncher() {
 	}
 
 	public JarLauncher(Archive archive) {

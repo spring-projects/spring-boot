@@ -41,7 +41,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	private final JavaAgentDetector javaAgentDetector;
 
-	protected ExecutableArchiveLauncher() {
+	public ExecutableArchiveLauncher() {
 		this(new InputArgumentsJavaAgentDetector());
 	}
 
