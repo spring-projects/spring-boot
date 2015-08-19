@@ -43,6 +43,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
@@ -73,8 +74,9 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 			AnnotationAttributes attributes = getAttributes(metadata);
 			List<String> configurations = getCandidateConfigurations(metadata, attributes);
 			configurations = removeDuplicates(configurations);
-			Set<String> exclusions = getExclusions(metadata, attributes);
-			configurations.removeAll(exclusions);
+            configurations = removeIllegal(configurations);
+            Set<String> exclusions = getExclusions(metadata, attributes);
+            configurations.removeAll(exclusions);
 			configurations = sort(configurations);
 			recordWithConditionEvaluationReport(configurations, exclusions);
 			return configurations.toArray(new String[configurations.size()]);
@@ -174,7 +176,17 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 		return new ArrayList<T>(new LinkedHashSet<T>(list));
 	}
 
-	protected final List<String> asList(AnnotationAttributes attributes, String name) {
+    private List<String> removeIllegal(List<String> configurations) {
+        List<String> result = new ArrayList<String>();
+        for (String configuration : configurations) {
+            if(StringUtils.hasText(configuration)){
+                result.add(configuration);
+            }
+        }
+        return result;
+    }
+
+    protected final List<String> asList(AnnotationAttributes attributes, String name) {
 		String[] value = attributes.getStringArray(name);
 		return Arrays.asList(value == null ? new String[0] : value);
 	}
