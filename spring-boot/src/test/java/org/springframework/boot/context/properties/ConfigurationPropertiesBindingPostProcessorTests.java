@@ -30,6 +30,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.bind.RelaxedBindingNotWritablePropertyException;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -82,6 +84,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		catch (BeanCreationException ex) {
 			BindException bex = (BindException) ex.getRootCause();
 			assertEquals(1, bex.getErrorCount());
+		}
+	}
+
+	@Test
+	public void unknonwFieldFailureMessageContainsDetailsOfPropertyOrigin() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "com.example.baz:spam");
+		this.context.register(TestConfiguration.class);
+		try {
+			this.context.refresh();
+			fail("Expected exception");
+		}
+		catch (BeanCreationException ex) {
+			RelaxedBindingNotWritablePropertyException bex = (RelaxedBindingNotWritablePropertyException) ex.getRootCause();
+			assertThat(bex.getMessage(),
+					startsWith("Failed to bind 'com.example.baz' from 'test' to 'baz' "
+							+ "property on '" + TestConfiguration.class.getName()));
 		}
 	}
 
@@ -398,6 +417,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		@PostConstruct
 		public void init() {
 			assertNotNull(this.bar);
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "com.example", ignoreUnknownFields = false)
+	public static class TestConfiguration {
+
+		private String bar;
+
+		public void setBar(String bar) {
+			this.bar = bar;
+		}
+
+		public String getBar() {
+			return this.bar;
 		}
 
 	}

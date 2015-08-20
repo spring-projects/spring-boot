@@ -120,7 +120,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			for (String propertyName : source.getPropertyNames()) {
 				if (includes.matches(propertyName)) {
 					Object value = getEnumerableProperty(source, resolver, propertyName);
-					putIfAbsent(propertyName, value);
+					putIfAbsent(propertyName, value, source);
 				}
 			}
 		}
@@ -155,13 +155,14 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			if (value == null) {
 				value = source.getProperty(propertyName.toUpperCase());
 			}
-			putIfAbsent(propertyName, value);
+			putIfAbsent(propertyName, value, source);
 		}
 	}
 
-	private void putIfAbsent(String propertyName, Object value) {
+	private void putIfAbsent(String propertyName, Object value, PropertySource<?> source) {
 		if (value != null && !this.propertyValues.containsKey(propertyName)) {
-			this.propertyValues.put(propertyName, new PropertyValue(propertyName, value));
+			this.propertyValues.put(propertyName, new OriginCapablePropertyValue(
+					propertyName, value, propertyName, source));
 		}
 	}
 
@@ -180,7 +181,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		for (PropertySource<?> source : this.propertySources) {
 			Object value = source.getProperty(propertyName);
 			if (value != null) {
-				propertyValue = new PropertyValue(propertyName, value);
+				propertyValue = new OriginCapablePropertyValue(propertyName, value,
+						propertyName, source);
 				this.propertyValues.put(propertyName, propertyValue);
 				return propertyValue;
 			}

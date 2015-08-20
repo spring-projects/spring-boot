@@ -309,7 +309,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			return "";
 		}
 		StringBuilder details = new StringBuilder();
-		details.append("target=").append(
+		details.append("prefix=").append(
 				(StringUtils.hasLength(annotation.value()) ? annotation.value()
 						: annotation.prefix()));
 		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());

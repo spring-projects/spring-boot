@@ -29,13 +29,17 @@ import java.util.Set;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyValue;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.AbstractPropertyBindingResult;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.DataBinder;
 
 /**
@@ -116,18 +120,7 @@ public class RelaxedDataBinder extends DataBinder {
 	}
 
 	@Override
-	public void initBeanPropertyAccess() {
-		super.initBeanPropertyAccess();
-		// Hook in the RelaxedConversionService
-		getInternalBindingResult().initConversion(
-				new RelaxedConversionService(getConversionService()));
-	}
-
-	@Override
 	protected void doBind(MutablePropertyValues propertyValues) {
-		// Harmless additional property editor comes in very handy sometimes...
-		getPropertyEditorRegistry().registerCustomEditor(InetAddress.class,
-				new InetAddressEditor());
 		super.doBind(modifyProperties(propertyValues, getTarget()));
 	}
 
@@ -213,7 +206,9 @@ public class RelaxedDataBinder extends DataBinder {
 				if (name.startsWith(candidate)) {
 					name = name.substring(candidate.length());
 					if (!(this.ignoreNestedProperties && name.contains("."))) {
-						rtn.add(name, value.getValue());
+						PropertyOrigin propertyOrigin = findPropertyOrigin(value);
+						rtn.addPropertyValue(new OriginCapablePropertyValue(name, value
+								.getValue(), propertyOrigin));
 					}
 				}
 			}
@@ -243,6 +238,44 @@ public class RelaxedDataBinder extends DataBinder {
 	 */
 	protected String normalizePath(BeanWrapper wrapper, String path) {
 		return initializePath(wrapper, new BeanPath(path), 0);
+	}
+
+	@Override
+	protected AbstractPropertyBindingResult createBeanPropertyBindingResult() {
+		return new BeanPropertyBindingResult(getTarget(), getObjectName(),
+				isAutoGrowNestedPaths(), getAutoGrowCollectionLimit()) {
+			@Override
+			protected BeanWrapper createBeanWrapper() {
+				BeanWrapper beanWrapper = new BeanWrapperImpl(getTarget()) {
+					@Override
+					public void setPropertyValue(PropertyValue pv) throws BeansException {
+						try {
+							super.setPropertyValue(pv);
+						}
+						catch (NotWritablePropertyException ex) {
+							PropertyOrigin origin = findPropertyOrigin(pv);
+							if (origin != null) {
+								throw new RelaxedBindingNotWritablePropertyException(ex,
+										origin);
+							}
+							throw ex;
+						}
+					}
+				};
+				beanWrapper.setConversionService(new RelaxedConversionService(
+						getConversionService()));
+				beanWrapper.registerCustomEditor(InetAddress.class,
+						new InetAddressEditor());
+				return beanWrapper;
+			}
+		};
+	}
+
+	private PropertyOrigin findPropertyOrigin(PropertyValue propertyValue) {
+		if (propertyValue instanceof OriginCapablePropertyValue) {
+			return ((OriginCapablePropertyValue) propertyValue).getOrigin();
+		}
+		return new OriginCapablePropertyValue(propertyValue).getOrigin();
 	}
 
 	private String initializePath(BeanWrapper wrapper, BeanPath path, int index) {
