@@ -108,6 +108,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LoggerContext context = getLoggerContext();
 		context.stop();
 		context.reset();
+		installLevelChangePropagator(context);
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
@@ -123,6 +124,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LoggerContext loggerContext = getLoggerContext();
 		loggerContext.stop();
 		loggerContext.reset();
+		installLevelChangePropagator(loggerContext);
 		try {
 			configureByResourceUrl(initializationContext, loggerContext,
 					ResourceUtils.getURL(location));
@@ -181,14 +183,14 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		getLogger(loggerName).setLevel(LEVELS.get(level));
 	}
 
-	private ch.qos.logback.classic.Logger getLogger(String name) {
+	protected ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
 		return factory.getLogger(StringUtils.isEmpty(name) ? Logger.ROOT_LOGGER_NAME
 				: name);
 
 	}
 
-	private LoggerContext getLoggerContext() {
+	protected LoggerContext getLoggerContext() {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		Assert.isInstanceOf(LoggerContext.class, factory, String.format(
 				"LoggerFactory is not a Logback LoggerContext but Logback is on "
@@ -198,6 +200,17 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 						+ "prefer-application-packages in WEB-INF/weblogic.xml",
 				factory.getClass(), getLocation(factory)));
 		return (LoggerContext) factory;
+	}
+
+	/**
+	 * ref {@link org.slf4j.bridge.SLF4JBridgeHandler}
+	 */
+	private void installLevelChangePropagator(LoggerContext context) {
+		LevelChangePropagator levelChangePropagator = new LevelChangePropagator();
+		levelChangePropagator.setResetJUL(true);
+		levelChangePropagator.setContext(context);
+		levelChangePropagator.start();
+		context.addListener(levelChangePropagator);
 	}
 
 	private Object getLocation(ILoggerFactory factory) {
