@@ -38,7 +38,7 @@ defaults. The parent project provides the following features:
 * A Dependency Management section, allowing you to omit `<version>` tags for common
   dependencies, inherited from the `spring-boot-dependencies` POM.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
-* Sensible plugin configuration (http://mojo.codehaus.org/exec-maven-plugin/[exec plugin],
+* Sensible plugin configuration (http://www.mojohaus.org/exec-maven-plugin/[exec plugin],
   http://maven.apache.org/surefire/maven-surefire-plugin/[surefire],
   https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID],
   http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
