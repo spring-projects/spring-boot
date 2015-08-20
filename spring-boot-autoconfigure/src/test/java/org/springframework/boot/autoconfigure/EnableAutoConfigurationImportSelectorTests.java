@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.List;
 
-import org.flywaydb.core.internal.util.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +34,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
