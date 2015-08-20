@@ -28,6 +28,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -87,6 +88,13 @@ public class LocalDevToolsAutoConfigurationTests {
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
 		assertThat(resolver.isCacheable(), equalTo(false));
+	}
+
+	@Test
+	public void resourceCachePeriodIsZero() throws Exception {
+		this.context = initializeAndRun(WebResourcesConfig.class);
+		ResourceProperties properties = this.context.getBean(ResourceProperties.class);
+		assertThat(properties.getCachePeriod(), equalTo(0));
 	}
 
 	@Test
@@ -242,4 +250,9 @@ public class LocalDevToolsAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	@Import({ LocalDevToolsAutoConfiguration.class, ResourceProperties.class })
+	public static class WebResourcesConfig {
+
+	}
 }
