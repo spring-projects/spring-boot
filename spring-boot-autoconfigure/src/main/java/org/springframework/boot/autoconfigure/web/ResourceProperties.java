@@ -173,7 +173,9 @@ public class ResourceProperties implements ResourceLoaderAware {
 		private final Strategy strategy = new Strategy();
 
 		public Boolean getEnabled() {
-			return this.enabled;
+			return Boolean.TRUE.equals(this.enabled)
+					|| getStrategy().getFixed().isEnabled()
+					|| getStrategy().getContent().isEnabled();
 		}
 
 		public void setEnabled(boolean enabled) {

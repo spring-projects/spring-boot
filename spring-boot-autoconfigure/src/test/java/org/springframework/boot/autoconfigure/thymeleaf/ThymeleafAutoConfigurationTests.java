@@ -196,9 +196,19 @@ public class ThymeleafAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerResourceHandlingFilter() throws Exception {
+	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(0, this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
+	}
+
+	@Test
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() throws Exception {
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.resources.chain.enabled:true");
 		this.context.refresh();
 		assertNotNull(this.context.getBean(ResourceUrlEncodingFilter.class));
 	}

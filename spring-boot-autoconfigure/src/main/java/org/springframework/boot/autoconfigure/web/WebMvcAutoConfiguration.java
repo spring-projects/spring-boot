@@ -256,9 +256,7 @@ public class WebMvcAutoConfiguration {
 
 		private void registerResourceChain(ResourceHandlerRegistration registration) {
 			ResourceProperties.Chain properties = this.resourceProperties.getChain();
-			if (Boolean.TRUE.equals(properties.getEnabled())
-					|| properties.getStrategy().getFixed().isEnabled()
-					|| properties.getStrategy().getContent().isEnabled()) {
+			if (properties.getEnabled()) {
 				configureResourceChain(properties,
 						registration.resourceChain(properties.isCache()));
 			}

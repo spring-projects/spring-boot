@@ -49,6 +49,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -56,6 +57,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link VelocityAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 public class VelocityAutoConfigurationTests {
 
@@ -189,8 +191,14 @@ public class VelocityAutoConfigurationTests {
 	}
 
 	@Test
-	public void registerResourceHandlingFilter() throws Exception {
+	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
 		registerAndRefreshContext();
+		assertEquals(0, this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
+	}
+
+	@Test
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() throws Exception {
+		registerAndRefreshContext("spring.resources.chain.enabled:true");
 		assertNotNull(this.context.getBean(ResourceUrlEncodingFilter.class));
 	}
 
