@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.qos.logback.classic.jul.LevelChangePropagator;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -108,7 +109,8 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LoggerContext context = getLoggerContext();
 		context.stop();
 		context.reset();
-		LogbackConfigurator configurator = new LogbackConfigurator(context);
+        installLevelChangePropagator(context);
+        LogbackConfigurator configurator = new LogbackConfigurator(context);
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
 	}
@@ -123,6 +125,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LoggerContext loggerContext = getLoggerContext();
 		loggerContext.stop();
 		loggerContext.reset();
+        installLevelChangePropagator(loggerContext);
 		try {
 			configureByResourceUrl(initializationContext, loggerContext,
 					ResourceUtils.getURL(location));
@@ -144,6 +147,17 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 					+ "detected: \n" + errors);
 		}
 	}
+
+    /**
+     * ref {@link org.slf4j.bridge.SLF4JBridgeHandler}
+     */
+    private void installLevelChangePropagator(LoggerContext context) {
+        LevelChangePropagator levelChangePropagator = new LevelChangePropagator();
+        levelChangePropagator.setResetJUL(true);
+        levelChangePropagator.setContext(context);
+        levelChangePropagator.start();
+        context.addListener(levelChangePropagator);
+    }
 
 	private void configureByResourceUrl(
 			LoggingInitializationContext initializationContext,
@@ -181,14 +195,14 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		getLogger(loggerName).setLevel(LEVELS.get(level));
 	}
 
-	private ch.qos.logback.classic.Logger getLogger(String name) {
+	protected ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
 		return factory.getLogger(StringUtils.isEmpty(name) ? Logger.ROOT_LOGGER_NAME
 				: name);
 
 	}
 
-	private LoggerContext getLoggerContext() {
+    protected LoggerContext getLoggerContext() {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		Assert.isInstanceOf(LoggerContext.class, factory, String.format(
 				"LoggerFactory is not a Logback LoggerContext but Logback is on "
