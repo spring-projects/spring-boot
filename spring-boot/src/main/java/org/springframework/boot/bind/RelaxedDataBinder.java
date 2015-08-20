@@ -45,6 +45,7 @@ import org.springframework.validation.DataBinder;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @see RelaxedNames
  */
 public class RelaxedDataBinder extends DataBinder {
@@ -73,7 +74,14 @@ public class RelaxedDataBinder extends DataBinder {
 	public RelaxedDataBinder(Object target, String namePrefix) {
 		super(wrapTarget(target), (StringUtils.hasLength(namePrefix) ? namePrefix
 				: DEFAULT_OBJECT_NAME));
-		this.namePrefix = (StringUtils.hasLength(namePrefix) ? namePrefix + "." : null);
+		this.namePrefix = cleanNamePrefix(namePrefix);
+	}
+
+	private static String cleanNamePrefix(String namePrefix) {
+		if (!StringUtils.hasLength(namePrefix)) {
+			return null;
+		}
+		return (namePrefix.endsWith(".") ? namePrefix : namePrefix + ".");
 	}
 
 	/**

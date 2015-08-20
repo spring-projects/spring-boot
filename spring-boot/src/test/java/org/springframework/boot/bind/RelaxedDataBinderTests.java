@@ -96,6 +96,13 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindStringWithPrefixDotSuffix() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "some.test.foo: bar", "some.test.");
+		assertEquals("bar", target.getFoo());
+	}
+
+	@Test
 	public void testBindFromEnvironmentStyleWithPrefix() throws Exception {
 		VanillaTarget target = new VanillaTarget();
 		bind(target, "TEST_FOO: bar", "test");
