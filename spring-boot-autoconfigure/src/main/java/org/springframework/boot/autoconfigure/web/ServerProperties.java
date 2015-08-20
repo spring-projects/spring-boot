@@ -736,7 +736,12 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		}
 
 		private void customizeAccessLog(TomcatEmbeddedServletContainerFactory factory) {
-			factory.addContextValves(this.accesslog.createAccessLogValve());
+			AccessLogValve valve = new AccessLogValve();
+			valve.setPattern(this.accesslog.getPattern());
+			valve.setDirectory(this.accesslog.getDirectory());
+			valve.setPrefix(this.accesslog.getPrefix());
+			valve.setSuffix(this.accesslog.getSuffix());
+			factory.addContextValves(valve);
 		}
 
 		public static class Accesslog {
@@ -766,15 +771,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			 * Log file name suffix.
 			 */
 			private String suffix = ".log";
-
-			AccessLogValve createAccessLogValve() {
-				AccessLogValve valve = new AccessLogValve();
-				valve.setPattern(this.pattern);
-				valve.setDirectory(this.directory);
-				valve.setPrefix(this.prefix);
-				valve.setSuffix(this.suffix);
-				return valve;
-			}
 
 			public boolean isEnabled() {
 				return this.enabled;
