@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.plexus.util.StringUtils;
-
 /**
  * A helper class generating a report from the meta-data of a particular service.
  *
@@ -64,15 +62,15 @@ class ServiceCapabilitiesReportGenerator {
 	private String generateHelp(String url, InitializrServiceMetadata metadata) {
 		String header = "Capabilities of " + url;
 		StringBuilder report = new StringBuilder();
-		report.append(StringUtils.repeat("=", header.length()) + NEW_LINE);
+		report.append(repeat("=", header.length()) + NEW_LINE);
 		report.append(header + NEW_LINE);
-		report.append(StringUtils.repeat("=", header.length()) + NEW_LINE);
+		report.append(repeat("=", header.length()) + NEW_LINE);
 		report.append(NEW_LINE);
 		reportAvailableDependencies(metadata, report);
 		report.append(NEW_LINE);
-		reportAvilableProjectTypes(metadata, report);
+		reportAvailableProjectTypes(metadata, report);
 		report.append(NEW_LINE);
-		z(metadata, report);
+		reportDefaults(report, metadata);
 		return report.toString();
 	}
 
@@ -102,7 +100,7 @@ class ServiceCapabilitiesReportGenerator {
 		return dependencies;
 	}
 
-	private void reportAvilableProjectTypes(InitializrServiceMetadata metadata,
+	private void reportAvailableProjectTypes(InitializrServiceMetadata metadata,
 			StringBuilder report) {
 		report.append("Available project types:" + NEW_LINE);
 		report.append("------------------------" + NEW_LINE);
@@ -135,7 +133,7 @@ class ServiceCapabilitiesReportGenerator {
 		report.append("]");
 	}
 
-	private void z(InitializrServiceMetadata metadata, StringBuilder report) {
+	private void reportDefaults(StringBuilder report, InitializrServiceMetadata metadata) {
 		report.append("Defaults:" + NEW_LINE);
 		report.append("---------" + NEW_LINE);
 		List<String> defaultsKeys = new ArrayList<String>(metadata.getDefaults().keySet());
@@ -144,6 +142,14 @@ class ServiceCapabilitiesReportGenerator {
 			String defaultsValue = metadata.getDefaults().get(defaultsKey);
 			report.append(defaultsKey + ": " + defaultsValue + NEW_LINE);
 		}
+	}
+
+	private static String repeat(String s, int count) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < count; i++) {
+			sb.append(s);
+		}
+		return sb.toString();
 	}
 
 }
