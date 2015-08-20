@@ -26,21 +26,21 @@ package org.springframework.boot.configurationprocessor.metadata;
  */
 public class ItemMetadata implements Comparable<ItemMetadata> {
 
-	private final ItemType itemType;
+	private ItemType itemType;
 
-	private final String name;
+	private String name;
 
-	private final String type;
+	private String type;
 
-	private final String description;
+	private String description;
 
-	private final String sourceType;
+	private String sourceType;
 
-	private final String sourceMethod;
+	private String sourceMethod;
 
-	private final Object defaultValue;
+	private Object defaultValue;
 
-	private final ItemDeprecation deprecation;
+	private ItemDeprecation deprecation;
 
 	ItemMetadata(ItemType itemType, String prefix, String name, String type,
 			String sourceType, String sourceMethod, String description,
@@ -72,32 +72,64 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		return this.itemType == itemType;
 	}
 
+	public boolean hasSameType(ItemMetadata metadata) {
+		return this.itemType == metadata.itemType;
+	}
+
 	public String getName() {
 		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getType() {
 		return this.type;
 	}
 
-	public String getSourceType() {
-		return this.sourceType;
-	}
-
-	public String getSourceMethod() {
-		return this.sourceMethod;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getDescription() {
 		return this.description;
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getSourceType() {
+		return this.sourceType;
+	}
+
+	public void setSourceType(String sourceType) {
+		this.sourceType = sourceType;
+	}
+
+	public String getSourceMethod() {
+		return this.sourceMethod;
+	}
+
+	public void setSourceMethod(String sourceMethod) {
+		this.sourceMethod = sourceMethod;
+	}
+
 	public Object getDefaultValue() {
 		return this.defaultValue;
 	}
 
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
 	public ItemDeprecation getDeprecation() {
 		return this.deprecation;
+	}
+
+	public void setDeprecation(ItemDeprecation deprecation) {
+		this.deprecation = deprecation;
 	}
 
 	@Override

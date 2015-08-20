@@ -348,21 +348,73 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void mergingOfAdditionalProperty() throws Exception {
-		File additionalMetadataFile = createAdditionalMetadataFile();
-		JSONObject property = new JSONObject();
-		property.put("name", "foo");
-		property.put("type", "java.lang.String");
-		property.put("sourceType", AdditionalMetadata.class.getName());
-		JSONArray properties = new JSONArray();
-		properties.put(property);
-		JSONObject additionalMetadata = new JSONObject();
-		additionalMetadata.put("properties", properties);
-		writeMetadata(additionalMetadataFile, additionalMetadata);
+		ItemMetadata property = ItemMetadata.newProperty(null, "foo",
+				"java.lang.String", AdditionalMetadata.class.getName(), null, null, null,null);
+		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata, containsProperty("simple.comparator"));
 		assertThat(metadata,
 				containsProperty("foo", String.class)
 						.fromSource(AdditionalMetadata.class));
+	}
+
+	@Test
+	public void mergeExistingPropertyDefaultValue() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null,
+				null, null, null, true, null);
+		writeAdditionalMetadata(property);
+		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(
+				metadata,
+				containsProperty("simple.flag", Boolean.class)
+						.fromSource(SimpleProperties.class)
+						.withDescription("A simple flag.")
+						.withDefaultValue(is(true)));
+		assertThat(metadata.getItems().size(), is(4));
+	}
+
+	@Test
+	public void mergeExistingPropertyDescription() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null,
+				null, null, "A nice comparator.", null, null);
+		writeAdditionalMetadata(property);
+		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(
+				metadata,
+				containsProperty("simple.comparator", "java.util.Comparator<?>")
+						.fromSource(SimpleProperties.class)
+						.withDescription("A nice comparator."));
+		assertThat(metadata.getItems().size(), is(4));
+	}
+
+	@Test
+	public void mergeExistingPropertyDeprecation() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("simple", "comparator", null,
+				null, null, null, null, new ItemDeprecation("Don't use this.",
+						"simple.complex-comparator"));
+		writeAdditionalMetadata(property);
+		ConfigurationMetadata metadata = compile(SimpleProperties.class);
+		assertThat(
+				metadata,
+				containsProperty("simple.comparator", "java.util.Comparator<?>")
+						.fromSource(SimpleProperties.class)
+						.withDeprecation("Don't use this.", "simple.complex-comparator"));
+		assertThat(metadata.getItems().size(), is(4));
+	}
+
+	@Test
+	public void mergeExistingPropertyDeprecationOverride() throws Exception {
+		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null,
+				null, null, null, null, new ItemDeprecation("Don't use this.",
+						"single.name"));
+		writeAdditionalMetadata(property);
+		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
+		assertThat(
+				metadata,
+				containsProperty("singledeprecated.name", String.class.getName())
+						.fromSource(DeprecatedSingleProperty.class)
+						.withDeprecation("Don't use this.", "single.name"));
+		assertThat(metadata.getItems().size(), is(3));
 	}
 
 	@Test
@@ -530,6 +582,13 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				this.compiler.getOutputLocation());
 		this.compiler.getTask(types).call(processor);
 		return processor.getMetadata();
+	}
+
+	private void writeAdditionalMetadata(ItemMetadata... metadata) throws IOException {
+		File additionalMetadataFile = createAdditionalMetadataFile();
+		JSONObject additionalMetadata = new JSONObject();
+		additionalMetadata.put("properties", metadata);
+		writeMetadata(additionalMetadataFile, additionalMetadata);
 	}
 
 	private void writeAdditionalHints(ItemHint... hints) throws IOException {

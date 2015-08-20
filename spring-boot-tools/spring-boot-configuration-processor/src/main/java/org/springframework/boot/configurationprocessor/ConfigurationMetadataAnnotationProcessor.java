@@ -374,7 +374,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
 		try {
 			ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
-			merged.addAll(this.metadataStore.readAdditionalMetadata());
+			merged.merge(this.metadataStore.readAdditionalMetadata());
 			return merged;
 		}
 		catch (FileNotFoundException ex) {
