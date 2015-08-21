@@ -16,15 +16,15 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultCounterService}.
@@ -39,6 +39,22 @@ public class DefaultCounterServiceTests {
 
 	@Captor
 	private ArgumentCaptor<Delta<Number>> captor;
+
+	@Test
+	public void incrementWithExistingCounter() {
+		this.service.increment("counter.foo");
+		verify(this.repository).increment(this.captor.capture());
+		assertEquals("counter.foo", this.captor.getValue().getName());
+		assertEquals(1L, this.captor.getValue().getValue());
+	}
+
+	@Test
+	public void incrementWithExistingNearlyCounter() {
+		this.service.increment("counter-foo");
+		verify(this.repository).increment(this.captor.capture());
+		assertEquals("counter.counter-foo", this.captor.getValue().getName());
+		assertEquals(1L, this.captor.getValue().getValue());
+	}
 
 	@Test
 	public void incrementPrependsCounter() {

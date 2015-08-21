@@ -58,7 +58,7 @@ public class DefaultCounterService implements CounterService {
 		if (this.names.containsKey(metricName)) {
 			return this.names.get(metricName);
 		}
-		if (metricName.startsWith("counter") || metricName.startsWith("meter")) {
+		if (metricName.startsWith("counter.") || metricName.startsWith("meter.")) {
 			return metricName;
 		}
 		String name = "counter." + metricName;
