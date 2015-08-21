@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Properties;
-
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -35,7 +32,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ByteArrayResource;
 
 import com.rabbitmq.client.Channel;
 
@@ -128,13 +124,10 @@ public class RabbitAutoConfiguration {
 			RabbitProperties.Ssl ssl = config.getSsl();
 			if (ssl.isEnabled()) {
 				factory.setUseSSL(true);
-				if (ssl.getKeyStore() != null || ssl.getTrustStore() != null) {
-					Properties properties = ssl.createSslProperties();
-					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-					properties.store(outputStream, "SSL config");
-					factory.setSslPropertiesLocation(new ByteArrayResource(outputStream
-							.toByteArray()));
-				}
+				factory.setKeyStore(ssl.getKeyStore());
+				factory.setKeyStorePassphrase(ssl.getKeyStorePassword());
+				factory.setTrustStore(ssl.getTrustStore());
+				factory.setTrustStorePassphrase(ssl.getTrustStorePassword());
 			}
 			factory.afterPropertiesSet();
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
