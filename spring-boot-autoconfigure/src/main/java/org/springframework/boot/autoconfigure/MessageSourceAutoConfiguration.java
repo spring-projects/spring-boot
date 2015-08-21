@@ -16,7 +16,11 @@
 
 package org.springframework.boot.autoconfigure;
 
+import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
+import static org.springframework.util.StringUtils.trimAllWhitespace;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
@@ -28,16 +32,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
-import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
-import static org.springframework.util.StringUtils.trimAllWhitespace;
-
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnMissingBean(MessageSource.class)
+@ConditionalOnMissingBean(value=MessageSource.class, search=SearchStrategy.CURRENT)
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class MessageSourceAutoConfiguration implements EnvironmentAware {
 
@@ -54,7 +55,7 @@ public class MessageSourceAutoConfiguration implements EnvironmentAware {
 		String basename = this.environment.getProperty("basename", "messages");
 		if (StringUtils.hasText(basename)) {
 			messageSource
-					.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(basename)));
+			.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(basename)));
 		}
 		String encoding = this.environment.getProperty("encoding", "utf-8");
 		messageSource.setDefaultEncoding(encoding);
