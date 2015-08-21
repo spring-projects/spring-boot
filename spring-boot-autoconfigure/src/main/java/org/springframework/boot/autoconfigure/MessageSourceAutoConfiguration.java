@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure;
 
+import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
+import static org.springframework.util.StringUtils.trimAllWhitespace;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
@@ -24,6 +27,7 @@ import java.util.Set;
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration.ResourceBundleCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,9 +44,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.StringUtils;
 
-import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
-import static org.springframework.util.StringUtils.trimAllWhitespace;
-
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
  *
@@ -51,7 +52,7 @@ import static org.springframework.util.StringUtils.trimAllWhitespace;
  * @author Eddú Meléndez
  */
 @Configuration
-@ConditionalOnMissingBean(MessageSource.class)
+@ConditionalOnMissingBean(value=MessageSource.class, search=SearchStrategy.CURRENT)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
@@ -90,7 +91,7 @@ public class MessageSourceAutoConfiguration {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(this.basename)) {
 			messageSource
-					.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(this.basename)));
+			.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(this.basename)));
 		}
 		if (this.encoding != null) {
 			messageSource.setDefaultEncoding(this.encoding.name());
@@ -166,7 +167,7 @@ public class MessageSourceAutoConfiguration {
 		private Resource[] getResources(ClassLoader classLoader, String name) {
 			try {
 				return new SkipPatternPathMatchingResourcePatternResolver(classLoader)
-						.getResources("classpath*:" + name + "*.properties");
+				.getResources("classpath*:" + name + "*.properties");
 			}
 			catch (Exception ex) {
 				return NO_RESOURCES;
@@ -180,7 +181,7 @@ public class MessageSourceAutoConfiguration {
 	 * contain messages.properties.
 	 */
 	private static class SkipPatternPathMatchingResourcePatternResolver extends
-			PathMatchingResourcePatternResolver {
+	PathMatchingResourcePatternResolver {
 
 		private static final ClassLoader ROOT_CLASSLOADER;
 		static {
@@ -197,14 +198,14 @@ public class MessageSourceAutoConfiguration {
 		}
 
 		private static final String[] SKIPPED = { "aspectjweaver-", "hibernate-core-",
-				"hsqldb-", "jackson-annotations-", "jackson-core-", "jackson-databind-",
-				"javassist-", "snakeyaml-", "spring-aop-", "spring-beans-",
-				"spring-boot-", "spring-boot-actuator-", "spring-boot-autoconfigure-",
-				"spring-core-", "spring-context-", "spring-data-commons-",
-				"spring-expression-", "spring-jdbc-", "spring-orm-", "spring-tx-",
-				"spring-web-", "spring-webmvc-", "tomcat-embed-", "joda-time-",
-				"hibernate-entitymanager-", "hibernate-validator-", "logback-classic-",
-				"logback-core-", "thymeleaf-" };
+			"hsqldb-", "jackson-annotations-", "jackson-core-", "jackson-databind-",
+			"javassist-", "snakeyaml-", "spring-aop-", "spring-beans-",
+			"spring-boot-", "spring-boot-actuator-", "spring-boot-autoconfigure-",
+			"spring-core-", "spring-context-", "spring-data-commons-",
+			"spring-expression-", "spring-jdbc-", "spring-orm-", "spring-tx-",
+			"spring-web-", "spring-webmvc-", "tomcat-embed-", "joda-time-",
+			"hibernate-entitymanager-", "hibernate-validator-", "logback-classic-",
+			"logback-core-", "thymeleaf-" };
 
 		public SkipPatternPathMatchingResourcePatternResolver(ClassLoader classLoader) {
 			super(classLoader);
