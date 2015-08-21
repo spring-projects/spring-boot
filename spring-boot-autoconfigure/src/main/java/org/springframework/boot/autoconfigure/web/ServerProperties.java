@@ -283,7 +283,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat()
-					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
+			.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
 		}
 		if (container instanceof UndertowEmbeddedServletContainerFactory) {
 			getUndertow().customizeUndertow(
@@ -496,13 +496,13 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		/**
 		 * Name of the HTTP header used to override the original port value.
 		 */
-		private String portHeader;
+		private String portHeader = "x-forwarded-port";
 
 		/**
 		 * Name of the http header from which the remote ip is extracted. Configured as a
 		 * RemoteIpValve only if remoteIpHeader is also set.
 		 */
-		private String remoteIpHeader;
+		private String remoteIpHeader = "x-forwarded-for";
 
 		/**
 		 * Tomcat base directory. If not specified a temporary directory will be used.
@@ -691,13 +691,16 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			String remoteIpHeader = getRemoteIpHeader();
 			String protocolHeader = getProtocolHeader();
 			if (StringUtils.hasText(remoteIpHeader)
-					|| StringUtils.hasText(protocolHeader)) {
+					&& StringUtils.hasText(protocolHeader)) {
 				RemoteIpValve valve = new RemoteIpValve();
 				valve.setRemoteIpHeader(remoteIpHeader);
 				valve.setProtocolHeader(protocolHeader);
+				// The internal proxies default to a white list of "safe" internal IP
+				// addresses
 				valve.setInternalProxies(getInternalProxies());
 				valve.setPortHeader(getPortHeader());
 				valve.setProtocolHeaderHttpsValue(getProtocolHeaderHttpsValue());
+				// ... so it's safe to add this valve by default.
 				factory.addContextValves(valve);
 			}
 		}
@@ -1012,7 +1015,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 * configuration.
 	 */
 	private static class SessionConfiguringInitializer implements
-			ServletContextInitializer {
+	ServletContextInitializer {
 
 		private final Session session;
 

@@ -525,11 +525,24 @@ HTTPS connector:
 
 [[howto-use-tomcat-behind-a-proxy-server]]
 === Use Tomcat behind a front-end proxy server
-Spring Boot will automatically configure Tomcat's `RemoteIpValve` if you enable it. This
-allows you to transparently use the standard `x-forwarded-for` and `x-forwarded-proto`
-headers that most front-end proxy servers add. The valve is switched on by setting one or
-both of these properties to something non-empty (these are the conventional values used by
-most proxies, and if you only set one the other will be set automatically):
+Your app might need to send 302 redirects, or render UI templates with
+absolute links to itself, or hypermedia links back to itself in the
+case of a RESTful service. If the app is behind a proxy, the caller
+wants a link to the proxy not to the physical address of the app, so
+something has to be done in the backend. Typically this is handled via
+a contract with the proxy, which will add headers to tell the back end
+how to construct links to itself. If the proxy adds conventional
+headers (most do this out of the box) the absolute links should be
+rendered correctly by default using the Tomcat server.
+
+Spring Boot using Tomcat automatically adds a `RemoteIpValve`. This
+transparently takes the standard `x-forwarded-for` and
+`x-forwarded-proto` headers and uses them to change local URLs created
+in the `HttpServletRequest`. You can configure the header names in
+Spring Boot and the valve is switched on unless one or both of these
+properties is empty. These values are the defaults and are the
+conventional values used by most proxies, so you don't need to set
+them unless you need different values:
 
 [indent=0]
 ----
@@ -560,8 +573,12 @@ NOTE: The double backslashes are only required when you're using a properties fi
 configuration. If you are using YAML, single backslashes are sufficient and a value
 that's equivalent to the one shown above would be `192\.168\.\d{1,3}\.\d{1,3}`.
 
-Alternatively, you can take complete control of the configuration of the `RemoteIpValve`
-by configuring and adding it in a `TomcatEmbeddedServletContainerFactory` bean.
+NOTE: You can trust all proxies by setting the `internal_proxies` to empty (but don't do this in production).
+
+You can take complete control of the configuration of the
+`RemoteIpValve` by switching the automatic one off (i.e. set one of
+the headers to empty) and adding a new valve instance in a
+`TomcatEmbeddedServletContainerFactory` bean.
 
 
 
