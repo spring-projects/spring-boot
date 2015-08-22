@@ -31,7 +31,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 class OnEnabledHealthIndicatorCondition extends SpringBootCondition {
 
-	private static final String ANNOTATION_CLASS = ConditionalOnEnablednHealthIndicator.class
+	private static final String ANNOTATION_CLASS = ConditionalOnEnabledHealthIndicator.class
 			.getName();
 
 	@Override

@@ -122,7 +122,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(HealthIndicatorAutoConfiguration.class,
 				ManagementServerProperties.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"management.health.enabled:false",
+				"management.health.defaults.enabled:false",
 				"management.health.diskspace.enabled:true");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
