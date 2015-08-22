@@ -114,7 +114,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 			}
 			if (!contextPath.startsWith("/") || contextPath.endsWith("/")) {
 				throw new IllegalArgumentException(
-						"ContextPath must start with '/ and not end with '/'");
+						"ContextPath must start with '/' and not end with '/'");
 			}
 		}
 	}
