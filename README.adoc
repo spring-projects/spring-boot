@@ -25,7 +25,7 @@ diverge from the defaults
 The {docs}/htmlsingle/[reference documentation] includes detailed
 {docs}/htmlsingle/#getting-started-installing-spring-boot[installation instructions]
 as well as a comprehensive {docs}/htmlsingle/#getting-started-first-application[``getting
-started''] guide. Documentation is published in {docs}/htmlsingle/[HTML],
+started``] guide. Documentation is published in {docs}/htmlsingle/[HTML],
 {docs}/pdf/spring-boot-reference.pdf[PDF] and {docs}/epub/spring-boot-reference.epub[EPUB]
 formats.
 
