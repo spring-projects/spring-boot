@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Conditional;
 /**
  * {@link Conditional} that checks whether or not a default health indicator is enabled.
  * Matches if the value of the {@code management.health.<name>.enabled} property is
- * {@code true}. Otherwise , matches if the value of the
+ * {@code true}. Otherwise, matches if the value of the
  * {@code management.health.defaults.enabled} property is {@code true} or if it is not
  * configured.
  *
@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Conditional;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
 @Conditional(OnEnabledHealthIndicatorCondition.class)
-public @interface ConditionalOnEnablednHealthIndicator {
+public @interface ConditionalOnEnabledHealthIndicator {
 
 	/**
 	 * The name of the health indicator.

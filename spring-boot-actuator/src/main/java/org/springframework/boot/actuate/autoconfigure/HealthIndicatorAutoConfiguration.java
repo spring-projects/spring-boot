@@ -153,7 +153,7 @@ public class HealthIndicatorAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(JdbcTemplate.class)
 	@ConditionalOnBean(DataSource.class)
-	@ConditionalOnEnablednHealthIndicator("db")
+	@ConditionalOnEnabledHealthIndicator("db")
 	public static class DataSourcesHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<DataSourceHealthIndicator, DataSource>
 			implements InitializingBean {
@@ -193,7 +193,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(MongoTemplate.class)
-	@ConditionalOnEnablednHealthIndicator("mongo")
+	@ConditionalOnEnabledHealthIndicator("mongo")
 	public static class MongoHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
@@ -210,7 +210,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RedisConnectionFactory.class)
-	@ConditionalOnEnablednHealthIndicator("redis")
+	@ConditionalOnEnabledHealthIndicator("redis")
 	public static class RedisHealthIndicatorConfiguration
 			extends
 			CompositeHealthIndicatorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
@@ -228,7 +228,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RabbitTemplate.class)
-	@ConditionalOnEnablednHealthIndicator("rabbit")
+	@ConditionalOnEnabledHealthIndicator("rabbit")
 	public static class RabbitHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<RabbitHealthIndicator, RabbitTemplate> {
 
@@ -245,7 +245,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(SolrServer.class)
-	@ConditionalOnEnablednHealthIndicator("solr")
+	@ConditionalOnEnabledHealthIndicator("solr")
 	public static class SolrHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<SolrHealthIndicator, SolrServer> {
 
@@ -261,7 +261,7 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnEnablednHealthIndicator("diskspace")
+	@ConditionalOnEnabledHealthIndicator("diskspace")
 	public static class DiskSpaceHealthIndicatorConfiguration {
 
 		@Bean
@@ -280,7 +280,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(JavaMailSenderImpl.class)
-	@ConditionalOnEnablednHealthIndicator("mail")
+	@ConditionalOnEnabledHealthIndicator("mail")
 	public static class MailHealthIndicatorConfiguration
 			extends
 			CompositeHealthIndicatorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
@@ -298,7 +298,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(ConnectionFactory.class)
-	@ConditionalOnEnablednHealthIndicator("jms")
+	@ConditionalOnEnabledHealthIndicator("jms")
 	public static class JmsHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<JmsHealthIndicator, ConnectionFactory> {
 
@@ -315,7 +315,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(Client.class)
-	@ConditionalOnEnablednHealthIndicator("elasticsearch")
+	@ConditionalOnEnabledHealthIndicator("elasticsearch")
 	@EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
 	public static class ElasticsearchHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<ElasticsearchHealthIndicator, Client> {
