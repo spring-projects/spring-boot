@@ -27,8 +27,8 @@ import java.net.URLDecoder;
 import java.net.URLStreamHandler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.springframework.boot.loader.Debug;
 
 /**
  * {@link URLStreamHandler} for Spring Boot loader {@link JarFile}s.
@@ -64,8 +64,6 @@ public class Handler extends URLStreamHandler {
 		rootFileCache = new SoftReference<Map<File, JarFile>>(null);
 	}
 
-	private final Logger logger = Logger.getLogger(getClass().getName());
-
 	private final JarFile jarFile;
 
 	private URLStreamHandler fallbackHandler;
@@ -98,10 +96,17 @@ public class Handler extends URLStreamHandler {
 		}
 		catch (Exception ex) {
 			if (reason instanceof IOException) {
-				this.logger.log(Level.FINEST, "Unable to open fallback handler", ex);
+				IOException ioex = (IOException) ex;
+				if (Debug.isEnabled()) {
+					System.err.println("Unable to open fallback handler");
+					ex.printStackTrace();
+				}
 				throw (IOException) reason;
 			}
-			this.logger.log(Level.WARNING, "Unable to open fallback handler", ex);
+			if (Debug.isEnabled()) {
+				System.err.println("Unable to open fallback handler");
+				ex.printStackTrace();
+			}
 			if (reason instanceof RuntimeException) {
 				throw (RuntimeException) reason;
 			}
