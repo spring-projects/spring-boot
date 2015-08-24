@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.pool.PooledConnectionFactory;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,15 +59,25 @@ public class ActiveMQAutoConfigurationTests {
 		assertTrue(mockingDetails(this.context.getBean(ConnectionFactory.class)).isMock());
 	}
 
-	private void load(Class<?> config) {
-		this.context = doLoad(config);
+	@Test
+	public void pooledConnectionFactoryConfiguration() {
+		load(EmptyConfiguration.class, "spring.activemq.pooled:true");
+		ConnectionFactory connectionFactory = this.context
+				.getBean(ConnectionFactory.class);
+		assertThat(connectionFactory, instanceOf(PooledConnectionFactory.class));
 	}
 
-	private AnnotationConfigApplicationContext doLoad(Class<?> config) {
+	private void load(Class<?> config, String... environment) {
+		this.context = doLoad(config, environment);
+	}
+
+	private AnnotationConfigApplicationContext doLoad(Class<?> config,
+			String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(config);
 		applicationContext.register(ActiveMQAutoConfiguration.class,
 				JmsAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
 		return applicationContext;
 	}

@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleWsApplication.class)
+@SpringApplicationConfiguration(SampleWsApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port=0")
 public class SampleWsApplicationTests {

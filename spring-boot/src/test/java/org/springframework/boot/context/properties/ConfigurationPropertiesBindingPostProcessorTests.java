@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
@@ -28,6 +30,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.bind.RelaxedBindingNotWritablePropertyException;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +43,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -52,8 +56,12 @@ import static org.junit.Assert.fail;
  *
  * @author Christian Dupuis
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class ConfigurationPropertiesBindingPostProcessorTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -76,6 +84,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		catch (BeanCreationException ex) {
 			BindException bex = (BindException) ex.getRootCause();
 			assertEquals(1, bex.getErrorCount());
+		}
+	}
+
+	@Test
+	public void unknonwFieldFailureMessageContainsDetailsOfPropertyOrigin() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "com.example.baz:spam");
+		this.context.register(TestConfiguration.class);
+		try {
+			this.context.refresh();
+			fail("Expected exception");
+		}
+		catch (BeanCreationException ex) {
+			RelaxedBindingNotWritablePropertyException bex = (RelaxedBindingNotWritablePropertyException) ex.getRootCause();
+			assertThat(bex.getMessage(),
+					startsWith("Failed to bind 'com.example.baz' from 'test' to 'baz' "
+							+ "property on '" + TestConfiguration.class.getName()));
 		}
 	}
 
@@ -129,13 +154,59 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void testPropertyWithEnum() throws Exception {
+	public void testValidationWithCustomValidator() {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "test.value:foo");
+		this.context.register(TestConfigurationWithCustomValidator.class);
+		try {
+			this.context.refresh();
+			fail("Expected exception");
+		}
+		catch (BeanCreationException ex) {
+			BindException bex = (BindException) ex.getRootCause();
+			assertEquals(1, bex.getErrorCount());
+		}
+	}
+
+	@Test
+	public void testValidationWithCustomValidatorNotSupported() {
+		MockEnvironment env = new MockEnvironment();
+		env.setProperty("test.foo", "bar");
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setEnvironment(env);
+		this.context.register(TestConfigurationWithCustomValidator.class,
+				PropertyWithValidatingSetter.class);
+		try {
+			// PropertyWithValidatingSetter should not use validator
+			this.context.refresh();
+			fail("Expected exception");
+		}
+		catch (BeanCreationException ex) {
+			BindException bex = (BindException) ex.getRootCause();
+			assertEquals(1, bex.getErrorCount());
+		}
+	}
+
+	@Test
+	public void testPropertyWithEnum() throws Exception {
+		doEnumTest("test.theValue:foo");
+	}
+
+	@Test
+	public void testRelaxedPropertyWithEnum() throws Exception {
+		doEnumTest("test.the-value:FoO");
+		doEnumTest("TEST_THE_VALUE:FoO");
+		doEnumTest("test.THE_VALUE:FoO");
+		doEnumTest("test_the_value:FoO");
+	}
+
+	private void doEnumTest(String property) {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, property);
 		this.context.register(PropertyWithEnum.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithEnum.class).getValue(),
+		assertThat(this.context.getBean(PropertyWithEnum.class).getTheValue(),
 				equalTo(FooEnum.FOO));
+		this.context.close();
 	}
 
 	@Test
@@ -196,6 +267,60 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithCharArray.class).getChars(),
 				equalTo("word".toCharArray()));
+	}
+
+	@Test
+	public void configurationPropertiesWithArrayExpansion() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.chars[4]:s");
+		this.context.register(PropertyWithCharArrayExpansion.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertyWithCharArrayExpansion.class).getChars(),
+				equalTo("words".toCharArray()));
+	}
+
+	@Test
+	public void notWritablePropertyException() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.madeup:word");
+		this.context.register(PropertyWithCharArray.class);
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("test");
+		this.context.refresh();
+	}
+
+	@Test
+	public void relaxedPropertyNamesSame() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test1");
+		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test2");
+		this.context.register(RelaxedPropertyNames.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar(),
+				equalTo("test2"));
+	}
+
+	@Test
+	public void relaxedPropertyNamesMixed() throws Exception {
+		// gh-3385
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.foo-bar:test1");
+		EnvironmentTestUtils.addEnvironment(this.context, "test.FOO_BAR:test2");
+		this.context.register(RelaxedPropertyNames.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(RelaxedPropertyNames.class).getFooBar(),
+				equalTo("test2"));
+	}
+
+	@Test
+	public void nestedProperties() throws Exception {
+		// gh-3539
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "TEST_NESTED_VALUE:test1");
+		this.context.register(PropertyWithNestedValue.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertyWithNestedValue.class).getNested()
+				.getValue(), equalTo("test1"));
 	}
 
 	@Configuration
@@ -296,6 +421,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	}
 
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "com.example", ignoreUnknownFields = false)
+	public static class TestConfiguration {
+
+		private String bar;
+
+		public void setBar(String bar) {
+			this.bar = bar;
+		}
+
+		public String getBar() {
+			return this.bar;
+		}
+
+	}
+
 	@ConfigurationProperties(prefix = "test")
 	public static class PropertyWithJSR303 extends PropertyWithoutJSR303 {
 
@@ -314,7 +456,51 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Configuration
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
+	public static class TestConfigurationWithCustomValidator {
+
+		@Bean
+		public PropertyWithCustomValidator propertyWithCustomValidator() {
+			return new PropertyWithCustomValidator();
+		}
+
+		@Bean
+		public Validator configurationPropertiesValidator() {
+			return new CustomPropertyValidator();
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "custom")
+	public static class PropertyWithCustomValidator {
+
+		private String foo;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
+	}
+
+	public static class CustomPropertyValidator implements Validator {
+
+		@Override
+		public boolean supports(Class<?> aClass) {
+			return aClass == PropertyWithCustomValidator.class;
+		}
+
+		@Override
+		public void validate(Object o, Errors errors) {
+			ValidationUtils.rejectIfEmpty(errors, "foo", "TEST1");
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test", ignoreUnknownFields = false)
 	public static class PropertyWithCharArray {
 
 		private char[] chars;
@@ -331,22 +517,39 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Configuration
 	@EnableConfigurationProperties
-	@ConfigurationProperties(prefix = "test")
-	public static class PropertyWithEnum {
+	@ConfigurationProperties(prefix = "test", ignoreUnknownFields = false)
+	public static class PropertyWithCharArrayExpansion {
 
-		private FooEnum value;
+		private char[] chars = new char[] { 'w', 'o', 'r', 'd' };
 
-		public void setValue(FooEnum value) {
-			this.value = value;
+		public char[] getChars() {
+			return this.chars;
 		}
 
-		public FooEnum getValue() {
-			return this.value;
+		public void setChars(char[] chars) {
+			this.chars = chars;
 		}
 
 	}
 
-	static enum FooEnum {
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertyWithEnum {
+
+		private FooEnum theValue;
+
+		public void setTheValue(FooEnum value) {
+			this.theValue = value;
+		}
+
+		public FooEnum getTheValue() {
+			return this.theValue;
+		}
+
+	}
+
+	enum FooEnum {
 		FOO, BAZ, BAR
 	}
 
@@ -413,6 +616,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	}
 
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class RelaxedPropertyNames {
+
+		private String fooBar;
+
+		public String getFooBar() {
+			return this.fooBar;
+		}
+
+		public void setFooBar(String fooBar) {
+			this.fooBar = fooBar;
+		}
+
+	}
+
 	@SuppressWarnings("rawtypes")
 	// Must be a raw type
 	static class FactoryBeanTester implements FactoryBean, InitializingBean {
@@ -435,6 +655,39 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		@Override
 		public void afterPropertiesSet() throws Exception {
 			ConfigurationPropertiesWithFactoryBean.factoryBeanInit = true;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertyWithNestedValue {
+
+		private Nested nested = new Nested();
+
+		public Nested getNested() {
+			return this.nested;
+		}
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer configurer() {
+			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+		public static class Nested {
+
+			@Value("${default.value}")
+			private String value;
+
+			public void setValue(String value) {
+				this.value = value;
+			}
+
+			public String getValue() {
+				return this.value;
+			}
+
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,15 +57,7 @@ public class DefaultRepositorySystemSessionAutoConfiguration implements
 	}
 
 	private File getM2RepoDirectory() {
-		return new File(getM2HomeDirectory(), "repository");
-	}
-
-	private File getM2HomeDirectory() {
-		String grapeRoot = System.getProperty("grape.root");
-		if (StringUtils.hasLength(grapeRoot)) {
-			return new File(grapeRoot);
-		}
-		return getDefaultM2HomeDirectory();
+		return new File(getDefaultM2HomeDirectory(), "repository");
 	}
 
 	private File getDefaultM2HomeDirectory() {

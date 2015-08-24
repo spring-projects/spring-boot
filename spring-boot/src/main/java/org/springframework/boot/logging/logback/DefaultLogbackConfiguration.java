@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,12 @@ package org.springframework.boot.logging.logback;
 
 import java.nio.charset.Charset;
 
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.logging.LogFile;
+import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.PropertySourcesPropertyResolver;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -42,18 +47,29 @@ class DefaultLogbackConfiguration {
 
 	private static final String CONSOLE_LOG_PATTERN = "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} "
 			+ "%clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} "
-			+ "%clr([%15.15t{14}]){faint} %clr(%-40.40logger{39}){cyan} "
-			+ "%clr(:){faint} %m%n%wex";
+			+ "%clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} "
+			+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}";
 
 	private static final String FILE_LOG_PATTERN = "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p "
-			+ "${PID:- } --- [%t] %-40.40logger{39} : %m%n%wex";
+			+ "${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}";
 
 	private static final Charset UTF8 = Charset.forName("UTF-8");
 
+	private final PropertyResolver patterns;
+
 	private final LogFile logFile;
 
-	public DefaultLogbackConfiguration(LogFile logFile) {
+	public DefaultLogbackConfiguration(
+			LoggingInitializationContext initializationContext, LogFile logFile) {
+		this.patterns = getPatternsResolver(initializationContext.getEnvironment());
 		this.logFile = logFile;
+	}
+
+	private PropertyResolver getPatternsResolver(Environment environment) {
+		if (environment == null) {
+			return new PropertySourcesPropertyResolver(null);
+		}
+		return new RelaxedPropertyResolver(environment, "logging.pattern.");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -99,8 +115,8 @@ class DefaultLogbackConfiguration {
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(OptionHelper.substVars(CONSOLE_LOG_PATTERN,
-				config.getContext()));
+		String logPattern = this.patterns.getProperty("console", CONSOLE_LOG_PATTERN);
+		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		encoder.setCharset(UTF8);
 		config.start(encoder);
 		appender.setEncoder(encoder);
@@ -112,7 +128,8 @@ class DefaultLogbackConfiguration {
 			String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<ILoggingEvent>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(OptionHelper.substVars(FILE_LOG_PATTERN, config.getContext()));
+		String logPattern = this.patterns.getProperty("file", FILE_LOG_PATTERN);
+		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		appender.setEncoder(encoder);
 		config.start(encoder);
 

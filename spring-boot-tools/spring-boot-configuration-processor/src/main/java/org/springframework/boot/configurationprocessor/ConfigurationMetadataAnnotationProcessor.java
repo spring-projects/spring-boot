@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,7 +30,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -43,14 +43,13 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic.Kind;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
 import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCompilerFieldValuesParser;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
+import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
-import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
  * Annotation {@link Processor} that writes meta-data file for
@@ -58,10 +57,10 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Kris De Volder
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ "*" })
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot."
@@ -70,13 +69,18 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
 			+ "context.properties.NestedConfigurationProperty";
 
+	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot."
+			+ "context.properties.DeprecatedConfigurationProperty";
+
 	static final String LOMBOK_DATA_ANNOTATION = "lombok.Data";
 
 	static final String LOMBOK_GETTER_ANNOTATION = "lombok.Getter";
 
 	static final String LOMBOK_SETTER_ANNOTATION = "lombok.Setter";
 
-	private ConfigurationMetadata metadata;
+	private MetadataStore metadataStore;
+
+	private MetadataCollector metadataCollector;
 
 	private TypeUtils typeUtils;
 
@@ -92,11 +96,22 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return NESTED_CONFIGURATION_PROPERTY_ANNOTATION;
 	}
 
+	protected String deprecatedConfigurationPropertyAnnotation() {
+		return DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION;
+	}
+
+	@Override
+	public SourceVersion getSupportedSourceVersion() {
+		return SourceVersion.latestSupported();
+	}
+
 	@Override
 	public synchronized void init(ProcessingEnvironment env) {
 		super.init(env);
-		this.metadata = new ConfigurationMetadata();
 		this.typeUtils = new TypeUtils(env);
+		this.metadataStore = new MetadataStore(env);
+		this.metadataCollector = new MetadataCollector(env,
+				this.metadataStore.readMetadata());
 		try {
 			this.fieldValuesParser = new JavaCompilerFieldValuesParser(env);
 		}
@@ -107,41 +122,47 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private void logWarning(String msg) {
-		this.processingEnv.getMessager().printMessage(Kind.WARNING, msg);
-	}
-
 	@Override
 	public boolean process(Set<? extends TypeElement> annotations,
 			RoundEnvironment roundEnv) {
+		this.metadataCollector.processing(roundEnv);
 		Elements elementUtils = this.processingEnv.getElementUtils();
-		for (Element element : roundEnv.getElementsAnnotatedWith(elementUtils
-				.getTypeElement(configurationPropertiesAnnotation()))) {
-			processElement(element);
+		TypeElement annotationType = elementUtils
+				.getTypeElement(configurationPropertiesAnnotation());
+		if (annotationType != null) { // Is @ConfigurationProperties available
+			for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
+				processElement(element);
+			}
 		}
 		if (roundEnv.processingOver()) {
-			writeMetaData(this.metadata);
+			writeMetaData();
 		}
 		return false;
 	}
 
 	private void processElement(Element element) {
-		AnnotationMirror annotation = getAnnotation(element,
-				configurationPropertiesAnnotation());
-		String prefix = getPrefix(annotation);
-		if (annotation != null) {
-			if (element instanceof TypeElement) {
-				processAnnotatedTypeElement(prefix, (TypeElement) element);
+		try {
+			AnnotationMirror annotation = getAnnotation(element,
+					configurationPropertiesAnnotation());
+			if (annotation != null) {
+				String prefix = getPrefix(annotation);
+				if (element instanceof TypeElement) {
+					processAnnotatedTypeElement(prefix, (TypeElement) element);
+				}
+				else if (element instanceof ExecutableElement) {
+					processExecutableElement(prefix, (ExecutableElement) element);
+				}
 			}
-			else if (element instanceof ExecutableElement) {
-				processExecutableElement(prefix, (ExecutableElement) element);
-			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Error processing configuration meta-data on " + element, ex);
 		}
 	}
 
 	private void processAnnotatedTypeElement(String prefix, TypeElement element) {
 		String type = this.typeUtils.getType(element);
-		this.metadata.add(ItemMetadata.newGroup(prefix, type, type, null));
+		this.metadataCollector.add(ItemMetadata.newGroup(prefix, type, type, null));
 		processTypeElement(prefix, element);
 	}
 
@@ -151,7 +172,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			Element returns = this.processingEnv.getTypeUtils().asElement(
 					element.getReturnType());
 			if (returns instanceof TypeElement) {
-				this.metadata.add(ItemMetadata.newGroup(prefix,
+				this.metadataCollector.add(ItemMetadata.newGroup(prefix,
 						this.typeUtils.getType(returns),
 						this.typeUtils.getType(element.getEnclosingElement()),
 						element.toString()));
@@ -196,13 +217,27 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				String sourceType = this.typeUtils.getType(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
-				boolean deprecated = hasDeprecateAnnotation(getter)
-						|| hasDeprecateAnnotation(setter)
-						|| hasDeprecateAnnotation(element);
-				this.metadata.add(ItemMetadata.newProperty(prefix, name, dataType,
-						sourceType, null, description, defaultValue, deprecated));
+				boolean deprecated = isDeprecated(getter) || isDeprecated(setter)
+						|| isDeprecated(element);
+				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
+						dataType, sourceType, null, description, defaultValue,
+						(deprecated ? getItemDeprecation(getter) : null)));
 			}
 		}
+	}
+
+	private ItemDeprecation getItemDeprecation(ExecutableElement getter) {
+		AnnotationMirror annotation = getAnnotation(getter,
+				deprecatedConfigurationPropertyAnnotation());
+		String reason = null;
+		String replacement = null;
+		if (annotation != null) {
+			Map<String, Object> elementValues = getAnnotationElementValues(annotation);
+			reason = (String) elementValues.get("reason");
+			replacement = (String) elementValues.get("replacement");
+		}
+		return new ItemDeprecation(("".equals(reason) ? null : reason),
+				("".equals(replacement) ? null : replacement));
 	}
 
 	private void processLombokTypes(String prefix, TypeElement element,
@@ -225,10 +260,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				String sourceType = this.typeUtils.getType(element);
 				String description = this.typeUtils.getJavaDoc(field);
 				Object defaultValue = fieldValues.get(name);
-				boolean deprecated = hasDeprecateAnnotation(field)
-						|| hasDeprecateAnnotation(element);
-				this.metadata.add(ItemMetadata.newProperty(prefix, name, dataType,
-						sourceType, null, description, defaultValue, deprecated));
+				boolean deprecated = isDeprecated(field) || isDeprecated(element);
+				this.metadataCollector.add(ItemMetadata.newProperty(prefix, name,
+						dataType, sourceType, null, description, defaultValue,
+						(deprecated ? new ItemDeprecation() : null)));
 			}
 		}
 	}
@@ -261,7 +296,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			if (returnType != null && returnType instanceof TypeElement
 					&& annotation == null && isNested) {
 				String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, name);
-				this.metadata.add(ItemMetadata.newGroup(nestedPrefix,
+				this.metadataCollector.add(ItemMetadata.newGroup(nestedPrefix,
 						this.typeUtils.getType(returnType),
 						this.typeUtils.getType(element), getter.toString()));
 				processTypeElement(nestedPrefix, (TypeElement) returnType);
@@ -278,8 +313,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				&& returnType.getKind() != ElementKind.ENUM;
 	}
 
-	private boolean hasDeprecateAnnotation(Element element) {
-		return hasAnnotation(element, "java.lang.Deprecated");
+	private boolean isDeprecated(Element element) {
+		return hasAnnotation(element, "java.lang.Deprecated")
+				|| hasAnnotation(element, deprecatedConfigurationPropertyAnnotation());
 	}
 
 	private boolean hasAnnotation(Element element, String type) {
@@ -320,54 +356,52 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return values;
 	}
 
-	protected void writeMetaData(ConfigurationMetadata metadata) {
-		metadata = mergeManualMetadata(metadata);
+	protected ConfigurationMetadata writeMetaData() {
+		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
+		metadata = mergeAdditionalMetadata(metadata);
 		if (!metadata.getItems().isEmpty()) {
 			try {
-				FileObject resource = this.processingEnv.getFiler().createResource(
-						StandardLocation.CLASS_OUTPUT, "",
-						"META-INF/spring-configuration-metadata.json");
-				OutputStream outputStream = resource.openOutputStream();
-				try {
-					new JsonMarshaller().write(metadata, outputStream);
-				}
-				finally {
-					outputStream.close();
-				}
+				this.metadataStore.writeMetadata(metadata);
 			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
+			catch (IOException ex) {
+				throw new IllegalStateException("Failed to write metadata", ex);
 			}
-		}
-	}
-
-	private ConfigurationMetadata mergeManualMetadata(ConfigurationMetadata metadata) {
-		try {
-			FileObject manualMetadata = this.processingEnv.getFiler().getResource(
-					StandardLocation.CLASS_PATH, "",
-					"META-INF/additional-spring-configuration-metadata.json");
-			if (!"file".equals(manualMetadata.toUri().getScheme())) {
-				// We only want local files, not any classpath jars
-				return metadata;
-			}
-			InputStream inputStream = manualMetadata.openInputStream();
-			try {
-				ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
-				try {
-					merged.addAll(new JsonMarshaller().read(inputStream));
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
-				}
-				return merged;
-			}
-			finally {
-				inputStream.close();
-			}
-		}
-		catch (IOException ex) {
 			return metadata;
 		}
+		return null;
+	}
+
+	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
+		try {
+			ConfigurationMetadata merged = new ConfigurationMetadata(metadata);
+			merged.merge(this.metadataStore.readAdditionalMetadata());
+			return merged;
+		}
+		catch (FileNotFoundException ex) {
+			// No additional metadata
+		}
+		catch (InvalidConfigurationMetadataException ex) {
+			log(ex.getKind(), ex.getMessage());
+		}
+		catch (Exception ex) {
+			logWarning("Unable to merge additional metadata");
+			logWarning(getStackTrace(ex));
+		}
+		return metadata;
+	}
+
+	private String getStackTrace(Exception ex) {
+		StringWriter writer = new StringWriter();
+		ex.printStackTrace(new PrintWriter(writer, true));
+		return writer.toString();
+	}
+
+	private void logWarning(String msg) {
+		log(Kind.WARNING, msg);
+	}
+
+	private void log(Kind kind, String msg) {
+		this.processingEnv.getMessager().printMessage(kind, msg);
 	}
 
 }

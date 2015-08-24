@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,14 @@ import org.springframework.beans.factory.CannotLoadBeanClassException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.type.MethodMetadata;
+import org.springframework.core.type.StandardMethodMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -54,6 +57,7 @@ import org.springframework.util.StringUtils;
  * </ul>
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
 abstract class BeanTypeRegistry {
@@ -107,19 +111,33 @@ abstract class BeanTypeRegistry {
 	private Class<?> getConfigurationClassFactoryBeanGeneric(
 			ConfigurableListableBeanFactory beanFactory, BeanDefinition definition,
 			String name) throws Exception {
-		BeanDefinition factoryDefinition = beanFactory.getBeanDefinition(definition
-				.getFactoryBeanName());
-		Class<?> factoryClass = ClassUtils.forName(factoryDefinition.getBeanClassName(),
-				beanFactory.getBeanClassLoader());
-		Method method = ReflectionUtils.findMethod(factoryClass,
-				definition.getFactoryMethodName());
+		Method method = getFactoryMethod(beanFactory, definition);
 		Class<?> generic = ResolvableType.forMethodReturnType(method)
 				.as(FactoryBean.class).resolveGeneric();
 		if ((generic == null || generic.equals(Object.class))
 				&& definition.hasAttribute(FACTORY_BEAN_OBJECT_TYPE)) {
-			generic = (Class<?>) definition.getAttribute(FACTORY_BEAN_OBJECT_TYPE);
+			generic = getTypeFromAttribute(definition
+					.getAttribute(FACTORY_BEAN_OBJECT_TYPE));
 		}
 		return generic;
+	}
+
+	private Method getFactoryMethod(ConfigurableListableBeanFactory beanFactory,
+			BeanDefinition definition) throws Exception {
+		if (definition instanceof AnnotatedBeanDefinition) {
+			MethodMetadata factoryMethodMetadata = ((AnnotatedBeanDefinition) definition)
+					.getFactoryMethodMetadata();
+			if (factoryMethodMetadata instanceof StandardMethodMetadata) {
+				return ((StandardMethodMetadata) factoryMethodMetadata)
+						.getIntrospectedMethod();
+			}
+		}
+		BeanDefinition factoryDefinition = beanFactory.getBeanDefinition(definition
+				.getFactoryBeanName());
+		Class<?> factoryClass = ClassUtils.forName(factoryDefinition.getBeanClassName(),
+				beanFactory.getBeanClassLoader());
+		return ReflectionUtils
+				.findMethod(factoryClass, definition.getFactoryMethodName());
 	}
 
 	private Class<?> getDirectFactoryBeanGeneric(
@@ -131,9 +149,21 @@ abstract class BeanTypeRegistry {
 				.as(FactoryBean.class).resolveGeneric();
 		if ((generic == null || generic.equals(Object.class))
 				&& definition.hasAttribute(FACTORY_BEAN_OBJECT_TYPE)) {
-			generic = (Class<?>) definition.getAttribute(FACTORY_BEAN_OBJECT_TYPE);
+			generic = getTypeFromAttribute(definition
+					.getAttribute(FACTORY_BEAN_OBJECT_TYPE));
 		}
 		return generic;
+	}
+
+	private Class<?> getTypeFromAttribute(Object attribute)
+			throws ClassNotFoundException, LinkageError {
+		if (attribute instanceof Class<?>) {
+			return (Class<?>) attribute;
+		}
+		if (attribute instanceof String) {
+			return ClassUtils.forName((String) attribute, null);
+		}
+		return null;
 	}
 
 	/**
@@ -291,6 +321,8 @@ abstract class BeanTypeRegistry {
 
 		/**
 		 * Returns the {@link OptimizedBeanTypeRegistry} for the given bean factory.
+		 * @param factory the source {@link BeanFactory}
+		 * @return the {@link OptimizedBeanTypeRegistry}
 		 */
 		public static OptimizedBeanTypeRegistry getFromFactory(
 				DefaultListableBeanFactory factory) {

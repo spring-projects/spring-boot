@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
 		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
@@ -114,28 +115,32 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	/**
-	 * @param propertySources
+	 * Set the property sources to bind.
+	 * @param propertySources the property sources
 	 */
 	public void setPropertySources(PropertySources propertySources) {
 		this.propertySources = propertySources;
 	}
 
 	/**
-	 * @param validator the validator to set
+	 * Set the bean validator used to validate property fields.
+	 * @param validator the validator
 	 */
 	public void setValidator(Validator validator) {
 		this.validator = validator;
 	}
 
 	/**
-	 * @param conversionService the conversionService to set
+	 * Set the conversion service used to convert property values.
+	 * @param conversionService the conversion service
 	 */
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
 	/**
-	 * @param beans the bean meta data to set
+	 * Set the bean meta-data store.
+	 * @param beans the bean meta data store
 	 */
 	public void setBeanMetaDataStore(ConfigurationBeanFactoryMetaData beans) {
 		this.beans = beans;
@@ -163,11 +168,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
 		if (this.propertySources == null) {
 			this.propertySources = deducePropertySources();
 		}
-
 		if (this.validator == null) {
 			this.validator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
 			if (this.validator == null && isJsr303Present()) {
@@ -176,7 +179,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 				this.ownedValidator = true;
 			}
 		}
-
 		if (this.conversionService == null) {
 			this.conversionService = getOptionalBean(
 					ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
@@ -296,18 +298,37 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			factory.bindPropertiesToTarget();
 		}
 		catch (Exception ex) {
-			throw new BeanCreationException(beanName, "Could not bind properties", ex);
+			String targetClass = ClassUtils.getShortName(target.getClass());
+			throw new BeanCreationException(beanName, "Could not bind properties to "
+					+ targetClass + " (" + getAnnotationDetails(annotation) + ")", ex);
 		}
 	}
 
+	private String getAnnotationDetails(ConfigurationProperties annotation) {
+		if (annotation == null) {
+			return "";
+		}
+		StringBuilder details = new StringBuilder();
+		details.append("prefix=").append(
+				(StringUtils.hasLength(annotation.value()) ? annotation.value()
+						: annotation.prefix()));
+		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
+		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
+		details.append(", ignoreNestedProperties=").append(
+				annotation.ignoreNestedProperties());
+		return details.toString();
+	}
+
 	private Validator determineValidator(Object bean) {
+		boolean globalValidatorSupportBean = (this.validator != null && this.validator
+				.supports(bean.getClass()));
 		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {
-			if (this.validator == null) {
+			if (!globalValidatorSupportBean) {
 				return (Validator) bean;
 			}
 			return new ChainingValidator(this.validator, (Validator) bean);
 		}
-		return this.validator;
+		return (globalValidatorSupportBean ? this.validator : null);
 	}
 
 	private PropertySources loadPropertySources(String[] locations,

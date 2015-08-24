@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,20 +22,19 @@ import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
  * {@link EmbeddedWebApplicationContext} that accepts annotated classes as input - in
- * particular {@link org.springframework.context.annotation.Configuration
- * <code>@Configuration</code>}-annotated classes, but also plain
- * {@link org.springframework.stereotype.Component <code>@Component</code>} classes and
- * JSR-330 compliant classes using {@code javax.inject} annotations. Allows for
- * registering classes one by one (specifying class names as config location) as well as
- * for classpath scanning (specifying base packages as config location).
+ * particular {@link org.springframework.context.annotation.Configuration @Configuration}
+ * -annotated classes, but also plain {@link Component @Component} classes and JSR-330
+ * compliant classes using {@code javax.inject} annotations. Allows for registering
+ * classes one by one (specifying class names as config location) as well as for classpath
+ * scanning (specifying base packages as config location).
  * <p>
  * Note: In case of multiple {@code @Configuration} classes, later {@code @Bean}
  * definitions will override ones defined in earlier loaded files. This can be leveraged
@@ -72,8 +71,8 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * Create a new {@link AnnotationConfigEmbeddedWebApplicationContext}, deriving bean
 	 * definitions from the given annotated classes and automatically refreshing the
 	 * context.
-	 * @param annotatedClasses one or more annotated classes, e.g. {@link Configuration
-	 * <code>@Configuration</code>} classes
+	 * @param annotatedClasses one or more annotated classes, e.g. {@code @Configuration}
+	 * classes
 	 */
 	public AnnotationConfigEmbeddedWebApplicationContext(Class<?>... annotatedClasses) {
 		this();
@@ -115,6 +114,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * <p>
 	 * Any call to this method must occur prior to calls to {@link #register(Class...)}
 	 * and/or {@link #scan(String...)}.
+	 * @param beanNameGenerator the bean name generator
 	 * @see AnnotatedBeanDefinitionReader#setBeanNameGenerator
 	 * @see ClassPathBeanDefinitionScanner#setBeanNameGenerator
 	 */
@@ -133,6 +133,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * <p>
 	 * Any call to this method must occur prior to calls to {@link #register(Class...)}
 	 * and/or {@link #scan(String...)}.
+	 * @param scopeMetadataResolver the scope metadata resolver
 	 */
 	public void setScopeMetadataResolver(ScopeMetadataResolver scopeMetadataResolver) {
 		this.reader.setScopeMetadataResolver(scopeMetadataResolver);
@@ -146,8 +147,8 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * <p>
 	 * Calls to {@link #register} are idempotent; adding the same annotated class more
 	 * than once has no additional effect.
-	 * @param annotatedClasses one or more annotated classes, e.g. {@link Configuration
-	 * <code>@Configuration</code>} classes
+	 * @param annotatedClasses one or more annotated classes, e.g. {@code @Configuration}
+	 * classes
 	 * @see #scan(String...)
 	 * @see #refresh()
 	 */

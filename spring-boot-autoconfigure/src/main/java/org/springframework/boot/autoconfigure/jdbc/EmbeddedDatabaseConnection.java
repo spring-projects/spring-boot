@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,7 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * Returns the driver class name.
+	 * @return the driver class name
 	 */
 	public String getDriverClassName() {
 		return this.driverClass;
@@ -80,6 +81,7 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * Returns the {@link EmbeddedDatabaseType} for the connection.
+	 * @return the database type
 	 */
 	public EmbeddedDatabaseType getType() {
 		return this.type;
@@ -87,6 +89,7 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * Returns the URL for the connection.
+	 * @return the connection URL
 	 */
 	public String getUrl() {
 		return this.url;

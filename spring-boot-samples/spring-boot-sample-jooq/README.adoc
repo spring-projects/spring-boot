@@ -1,0 +1,9 @@
+== jOOQ Sample
+
+To rerun the code generator:
+
+[indent=0]
+----
+	$ rm -fr gensrc
+	$ mvn clean generate-sources -Pgenerate
+----

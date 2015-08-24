@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class ConfigurationWarningsApplicationContextInitializer implements
 	/**
 	 * A single check that can be applied.
 	 */
-	protected static interface Check {
+	protected interface Check {
 
 		/**
 		 * Returns a warning if the check fails or {@code null} if there are no problems.

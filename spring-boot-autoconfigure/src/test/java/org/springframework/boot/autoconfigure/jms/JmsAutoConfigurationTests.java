@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,21 @@
 package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerConfigUtils;
@@ -38,10 +41,13 @@ import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -49,6 +55,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link JmsAutoConfiguration}.
  *
  * @author Greg Turnquist
+ * @author Stephane Nicoll
  */
 public class JmsAutoConfigurationTests {
 
@@ -135,6 +142,73 @@ public class JmsAutoConfigurationTests {
 				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
 		assertEquals(SimpleJmsListenerContainerFactory.class,
 				jmsListenerContainerFactory.getClass());
+	}
+
+	@Test
+	public void testJmsListenerContainerFactoryWithCustomSettings() {
+		load(EnableJmsConfiguration.class, "spring.jms.listener.autoStartup=false",
+				"spring.jms.listener.acknowledgeMode=client",
+				"spring.jms.listener.concurrency=2",
+				"spring.jms.listener.maxConcurrency=10");
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context
+				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
+		assertEquals(DefaultJmsListenerContainerFactory.class,
+				jmsListenerContainerFactory.getClass());
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertEquals(false, listenerContainer.isAutoStartup());
+		assertEquals(Session.CLIENT_ACKNOWLEDGE,
+				listenerContainer.getSessionAcknowledgeMode());
+		assertEquals(2, listenerContainer.getConcurrentConsumers());
+		assertEquals(10, listenerContainer.getMaxConcurrentConsumers());
+	}
+
+	@Test
+	public void testDefaultContainerFactoryWithJtaTransactionManager() {
+		this.context = createContext(TestConfiguration7.class,
+				EnableJmsConfiguration.class);
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context
+				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
+		assertEquals(DefaultJmsListenerContainerFactory.class,
+				jmsListenerContainerFactory.getClass());
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertFalse("wrong session transacted flag with JTA transactions",
+				listenerContainer.isSessionTransacted());
+		assertSame(this.context.getBean(JtaTransactionManager.class),
+				new DirectFieldAccessor(listenerContainer)
+						.getPropertyValue("transactionManager"));
+	}
+
+	@Test
+	public void testDefaultContainerFactoryNonJtaTransactionManager() {
+		this.context = createContext(TestConfiguration8.class,
+				EnableJmsConfiguration.class);
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context
+				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
+		assertEquals(DefaultJmsListenerContainerFactory.class,
+				jmsListenerContainerFactory.getClass());
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertTrue("wrong session transacted flag with no tx manager",
+				listenerContainer.isSessionTransacted());
+		assertNull(new DirectFieldAccessor(listenerContainer)
+				.getPropertyValue("transactionManager"));
+	}
+
+	@Test
+	public void testDefaultContainerFactoryNoTransactionManager() {
+		this.context = createContext(EnableJmsConfiguration.class);
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context
+				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
+		assertEquals(DefaultJmsListenerContainerFactory.class,
+				jmsListenerContainerFactory.getClass());
+		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
+				.createListenerContainer(mock(JmsListenerEndpoint.class));
+		assertTrue("wrong session transacted flag with no tx manager",
+				listenerContainer.isSessionTransacted());
+		assertNull(new DirectFieldAccessor(listenerContainer)
+				.getPropertyValue("transactionManager"));
 	}
 
 	@Test
@@ -346,6 +420,26 @@ public class JmsAutoConfigurationTests {
 			SimpleJmsListenerContainerFactory factory = new SimpleJmsListenerContainerFactory();
 			factory.setConnectionFactory(connectionFactory);
 			return factory;
+		}
+
+	}
+
+	@Configuration
+	protected static class TestConfiguration7 {
+
+		@Bean
+		JtaTransactionManager transactionManager() {
+			return mock(JtaTransactionManager.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class TestConfiguration8 {
+
+		@Bean
+		DataSourceTransactionManager transactionManager() {
+			return mock(DataSourceTransactionManager.class);
 		}
 
 	}

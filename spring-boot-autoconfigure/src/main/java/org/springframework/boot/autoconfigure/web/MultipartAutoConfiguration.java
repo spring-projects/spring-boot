@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * {@link javax.servlet.MultipartConfigElement multipartConfigElement} if none is
  * otherwise defined. The {@link EmbeddedWebApplicationContext} will associate the
  * {@link MultipartConfigElement} bean to any {@link Servlet} beans.
- * <p/>
+ * <p>
  * The {@link javax.servlet.MultipartConfigElement} is a Servlet API that's used to
  * configure how the container handles file uploads. By default
  *
@@ -56,14 +56,13 @@ public class MultipartAutoConfiguration {
 	private MultipartProperties multipartProperties = new MultipartProperties();
 
 	@Bean
-	@ConditionalOnMissingBean(value = { MultipartConfigElement.class,
-			MultipartResolver.class })
+	@ConditionalOnMissingBean
 	public MultipartConfigElement multipartConfigElement() {
 		return this.multipartProperties.createMultipartConfig();
 	}
 
 	@Bean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
-	@ConditionalOnMissingBean(value = MultipartResolver.class)
+	@ConditionalOnMissingBean(MultipartResolver.class)
 	public StandardServletMultipartResolver multipartResolver() {
 		return new StandardServletMultipartResolver();
 	}

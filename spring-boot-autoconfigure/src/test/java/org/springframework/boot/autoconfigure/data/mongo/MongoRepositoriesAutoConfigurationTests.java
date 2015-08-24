@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -29,11 +31,14 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -61,6 +66,12 @@ public class MongoRepositoriesAutoConfigurationTests {
 		assertNotNull(this.context.getBean(CityRepository.class));
 		Mongo mongo = this.context.getBean(Mongo.class);
 		assertThat(mongo, is(instanceOf(MongoClient.class)));
+		MongoMappingContext mappingContext = this.context
+				.getBean(MongoMappingContext.class);
+		@SuppressWarnings("unchecked")
+		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
+				.getField(mappingContext, "initialEntitySet");
+		assertThat(entities.size(), is(equalTo(1)));
 	}
 
 	@Test

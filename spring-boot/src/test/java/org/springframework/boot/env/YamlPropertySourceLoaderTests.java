@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import static org.junit.Assert.assertThat;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class YamlPropertySourceLoaderTests {
 
@@ -73,6 +74,14 @@ public class YamlPropertySourceLoaderTests {
 		assertNotNull(source);
 		assertEquals("spam", source.getProperty("foo.bar"));
 		assertEquals("wham", source.getProperty("foo.baz"));
+	}
+
+	@Test
+	public void timestampLikeItemsDoNotBecomeDates() throws Exception {
+		ByteArrayResource resource = new ByteArrayResource("foo: 2015-01-28".getBytes());
+		PropertySource<?> source = this.loader.load("resource", resource, null);
+		assertNotNull(source);
+		assertEquals("2015-01-28", source.getProperty("foo"));
 	}
 
 }

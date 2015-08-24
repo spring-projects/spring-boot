@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.cli;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 
 import org.junit.After;
 import org.junit.Before;
@@ -65,31 +63,25 @@ public class GrabCommandIntegrationTests {
 	}
 
 	@Test
-	public void duplicateGrabMetadataAnnotationsProducesAnError() throws Exception {
+	public void duplicateDependencyManagementBomAnnotationsProducesAnError()
+			throws Exception {
 		try {
-			this.cli.grab("duplicateGrabMetadata.groovy");
+			this.cli.grab("duplicateDependencyManagementBom.groovy");
 			fail();
 		}
 		catch (Exception ex) {
 			assertThat(ex.getMessage(),
-					containsString("Duplicate @GrabMetadata annotation"));
+					containsString("Duplicate @DependencyManagementBom annotation"));
 		}
 	}
 
 	@Test
 	public void customMetadata() throws Exception {
 		System.setProperty("grape.root", "target");
-
-		File testArtifactDir = new File("target/repository/test/test/1.0.0");
-		testArtifactDir.mkdirs();
-
-		File testArtifact = new File(testArtifactDir, "test-1.0.0.properties");
-		testArtifact.createNewFile();
-		PrintWriter writer = new PrintWriter(new FileWriter(testArtifact));
-		writer.println("javax.ejb\\:ejb-api=3.0");
-		writer.close();
-
-		this.cli.grab("customGrabMetadata.groovy", "--autoconfigure=false");
+		FileSystemUtils.copyRecursively(new File(
+				"src/test/resources/grab-samples/repository"), new File(
+				"target/repository"));
+		this.cli.grab("customDependencyManagement.groovy", "--autoconfigure=false");
 		assertTrue(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory());
 	}
 }

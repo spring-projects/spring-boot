@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import java.io.PrintStream;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.core.env.Environment;
 
-import static org.springframework.boot.ansi.AnsiElement.DEFAULT;
-import static org.springframework.boot.ansi.AnsiElement.FAINT;
-import static org.springframework.boot.ansi.AnsiElement.GREEN;
+import static org.springframework.boot.ansi.AnsiColor.DEFAULT;
+import static org.springframework.boot.ansi.AnsiColor.GREEN;
+import static org.springframework.boot.ansi.AnsiStyle.FAINT;
 
 /**
  * Default Banner implementation which writes the 'Spring' banner.
@@ -50,7 +50,7 @@ class SpringBootBanner implements Banner {
 		for (String line : BANNER) {
 			printStream.println(line);
 		}
-		String version = Banner.class.getPackage().getImplementationVersion();
+		String version = SpringBootVersion.getVersion();
 		version = (version == null ? "" : " (v" + version + ")");
 		String padding = "";
 		while (padding.length() < STRAP_LINE_SIZE

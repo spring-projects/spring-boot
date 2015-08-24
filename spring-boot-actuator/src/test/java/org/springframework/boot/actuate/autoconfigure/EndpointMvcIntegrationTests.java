@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -38,10 +39,12 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMappingCustomizer;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.IntegrationTest;
@@ -50,6 +53,7 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -68,7 +72,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(Application.class)
 @IntegrationTest("server.port=0")
 @WebAppConfiguration
 @DirtiesContext
@@ -81,11 +85,20 @@ public class EndpointMvcIntegrationTests {
 	private TestInterceptor interceptor;
 
 	@Test
-	public void envEndpointNotHidden() throws InterruptedException {
+	public void envEndpointHidden() throws InterruptedException {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
 				+ "/env/user.dir", String.class);
 		assertNotNull(body);
 		assertTrue("Wrong body: \n" + body, body.contains("spring-boot-actuator"));
+		assertTrue(this.interceptor.invoked());
+	}
+
+	@Test
+	public void healthEndpointNotHidden() throws InterruptedException {
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
+				+ "/health", String.class);
+		assertNotNull(body);
+		assertTrue("Wrong body: \n" + body, body.contains("status"));
 		assertTrue(this.interceptor.invoked());
 	}
 
@@ -95,16 +108,17 @@ public class EndpointMvcIntegrationTests {
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
-	protected static @interface MinimalWebConfiguration {
+			JacksonAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
+	protected @interface MinimalWebConfiguration {
 
 	}
 
 	@Configuration
 	@MinimalWebConfiguration
 	@Import({ ManagementServerPropertiesAutoConfiguration.class,
-			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class })
+			JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class })
 	@RestController
 	protected static class Application {
 
@@ -118,6 +132,15 @@ public class EndpointMvcIntegrationTests {
 		public Map<String, Object> master(@PathVariable String name,
 				@PathVariable String env) {
 			return Collections.singletonMap("foo", (Object) "bar");
+		}
+
+		@Autowired(required = false)
+		private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
+
+		@Bean
+		@ConditionalOnMissingBean
+		public HttpMessageConverters messageConverters() {
+			return new HttpMessageConverters(this.converters);
 		}
 
 		@Bean

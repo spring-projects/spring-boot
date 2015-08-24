@@ -118,8 +118,8 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 
 	private boolean isReplacement(HttpMessageConverter<?> defaultConverter,
 			HttpMessageConverter<?> candidate) {
-		for (Class<?> nonRelacingConverter : NON_REPLACING_CONVERTERS) {
-			if (nonRelacingConverter.isInstance(candidate)) {
+		for (Class<?> nonReplacingConverter : NON_REPLACING_CONVERTERS) {
+			if (nonReplacingConverter.isInstance(candidate)) {
 				return false;
 			}
 		}

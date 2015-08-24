@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainer} instance.
 	 * @param server the underlying Jetty server
+	 * @param autoStart if auto-starting the container
 	 */
 	public JettyEmbeddedServletContainer(Server server, boolean autoStart) {
 		this.autoStart = autoStart;
@@ -80,6 +81,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 			// Start the server so that the ServletContext is available
 			this.server.start();
+			this.server.setStopAtShutdown(false);
 		}
 		catch (Exception ex) {
 			// Ensure process isn't left running
@@ -196,6 +198,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	/**
 	 * Returns access to the underlying Jetty Server.
+	 * @return the Jetty server
 	 */
 	public Server getServer() {
 		return this.server;

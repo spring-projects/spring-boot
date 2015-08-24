@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,12 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
+import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -79,7 +81,7 @@ public class GroovyTemplateAutoConfigurationTests {
 	@Test
 	public void emptyTemplateLocation() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		registerAndRefreshContext("spring.groovy.template.prefix:"
+		registerAndRefreshContext("spring.groovy.template.resource-loader-path:"
 				+ "classpath:/templates/empty-directory/");
 	}
 
@@ -130,7 +132,7 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void customPrefix() throws Exception {
-		registerAndRefreshContext("spring.groovy.template.prefix:classpath:/templates/prefix/");
+		registerAndRefreshContext("spring.groovy.template.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("prefixed"));
@@ -146,7 +148,7 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
-		registerAndRefreshContext("spring.groovy.template.prefix:classpath:/custom-templates/");
+		registerAndRefreshContext("spring.groovy.template.resource-loader-path:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("custom"));
@@ -169,6 +171,13 @@ public class GroovyTemplateAutoConfigurationTests {
 				.make(new HashMap<String, Object>(Collections.singletonMap("greeting",
 						"Hello World"))).writeTo(writer);
 		assertThat(writer.toString(), containsString("Hello World"));
+	}
+
+	@Test
+	public void customConfiguration() throws Exception {
+		registerAndRefreshContext("spring.groovy.template.configuration.auto-indent:true");
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent(),
+				is(true));
 	}
 
 	private void registerAndRefreshContext(String... env) {

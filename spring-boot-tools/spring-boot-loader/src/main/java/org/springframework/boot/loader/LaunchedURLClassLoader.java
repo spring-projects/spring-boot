@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,14 @@ import java.util.Enumeration;
 
 import org.springframework.boot.loader.jar.Handler;
 import org.springframework.boot.loader.jar.JarFile;
+import org.springframework.lang.UsesJava7;
 
 /**
  * {@link ClassLoader} used by the {@link Launcher}.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
@@ -99,27 +101,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		if (this.rootClassLoader == null) {
 			return findResources(name);
 		}
-
-		final Enumeration<URL> rootResources = this.rootClassLoader.getResources(name);
-		final Enumeration<URL> localResources = findResources(name);
-
-		return new Enumeration<URL>() {
-
-			@Override
-			public boolean hasMoreElements() {
-				return rootResources.hasMoreElements()
-						|| localResources.hasMoreElements();
-			}
-
-			@Override
-			public URL nextElement() {
-				if (rootResources.hasMoreElements()) {
-					return rootResources.nextElement();
-				}
-				return localResources.nextElement();
-			}
-
-		};
+		return new ResourceEnumeration(this.rootClassLoader.getResources(name),
+				findResources(name));
 	}
 
 	/**
@@ -224,6 +207,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
+	@UsesJava7
 	private static LockProvider setupLockProvider() {
 		try {
 			ClassLoader.registerAsParallelCapable();
@@ -248,6 +232,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	/**
 	 * Java 7 specific {@link LockProvider}.
 	 */
+	@UsesJava7
 	private static class Java7LockProvider extends LockProvider {
 
 		@Override
@@ -256,5 +241,42 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 
 	}
+
+	/**
+	 * {@link Enumeration} implementation used for {@code getResources()}.
+	 */
+	private static class ResourceEnumeration implements Enumeration<URL> {
+
+		private final Enumeration<URL> rootResources;
+
+		private final Enumeration<URL> localResources;
+
+		public ResourceEnumeration(Enumeration<URL> rootResources,
+				Enumeration<URL> localResources) {
+			this.rootResources = rootResources;
+			this.localResources = localResources;
+		}
+
+		@Override
+		public boolean hasMoreElements() {
+			try {
+				Handler.setUseFastConnectionExceptions(true);
+				return this.rootResources.hasMoreElements()
+						|| this.localResources.hasMoreElements();
+			}
+			finally {
+				Handler.setUseFastConnectionExceptions(false);
+			}
+		}
+
+		@Override
+		public URL nextElement() {
+			if (this.rootResources.hasMoreElements()) {
+				return this.rootResources.nextElement();
+			}
+			return this.localResources.nextElement();
+		}
+
+	};
 
 }

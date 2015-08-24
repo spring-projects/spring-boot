@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,14 +62,14 @@ public class PropertySourcesLoader {
 		Assert.notNull(propertySources, "PropertySources must not be null");
 		this.propertySources = propertySources;
 		this.loaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
-				null);
+				getClass().getClassLoader());
 	}
 
 	/**
 	 * Load the specified resource (if possible) and add it as the first source.
 	 * @param resource the source resource (may be {@code null}).
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource) throws IOException {
 		return load(resource, null);
@@ -81,7 +81,7 @@ public class PropertySourcesLoader {
 	 * @param resource the source resource (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource, String profile) throws IOException {
 		return load(resource, resource.getDescription(), profile);
@@ -94,7 +94,7 @@ public class PropertySourcesLoader {
 	 * @param name the root property name (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource, String name, String profile)
 			throws IOException {
@@ -115,7 +115,7 @@ public class PropertySourcesLoader {
 	 * @param name the root property name (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the source cannot be loaded
 	 */
 	public PropertySource<?> load(Resource resource, String group, String name,
 			String profile) throws IOException {
@@ -190,6 +190,7 @@ public class PropertySourcesLoader {
 
 	/**
 	 * Return the {@link MutablePropertySources} being loaded.
+	 * @return the property sources
 	 */
 	public MutablePropertySources getPropertySources() {
 		return this.propertySources;
@@ -197,6 +198,7 @@ public class PropertySourcesLoader {
 
 	/**
 	 * Returns all file extensions that could be loaded.
+	 * @return the file extensions
 	 */
 	public Set<String> getAllFileExtensions() {
 		Set<String> fileExtensions = new HashSet<String>();

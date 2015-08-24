@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,8 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	private ErrorAttributes errorAttributes;
 
 	/**
-	 * @param traceRepository
+	 * Create a new {@link WebRequestTraceFilter} instance.
+	 * @param traceRepository the trace repository
 	 */
 	public WebRequestTraceFilter(TraceRepository traceRepository) {
 		this.traceRepository = traceRepository;
@@ -66,6 +67,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	/**
 	 * Debugging feature. If enabled, and trace logging is enabled then web request
 	 * headers will be logged.
+	 * @param dumpRequests if requests should be logged
 	 */
 	public void setDumpRequests(boolean dumpRequests) {
 		this.dumpRequests = dumpRequests;

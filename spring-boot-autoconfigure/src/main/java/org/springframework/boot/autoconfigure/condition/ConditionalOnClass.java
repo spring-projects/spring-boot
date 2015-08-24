@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,12 @@ public @interface ConditionalOnClass {
 	 * classpath.
 	 * @return the classes that must be present
 	 */
-	public Class<?>[] value() default {};
+	Class<?>[] value() default {};
 
 	/**
 	 * The classes names that must be present.
 	 * @return the class names that must be present.
 	 */
-	public String[] name() default {};
+	String[] name() default {};
+
 }

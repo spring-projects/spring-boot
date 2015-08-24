@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Christian Dupuis
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class HealthMvcEndpointTests {
 
@@ -115,23 +117,7 @@ public class HealthMvcEndpointTests {
 	}
 
 	@Test
-	public void secureNotCached() {
-		given(this.endpoint.getTimeToLive()).willReturn(10000L);
-		given(this.endpoint.isSensitive()).willReturn(false);
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().up().withDetail("foo", "bar").build());
-		Object result = this.mvc.invoke(this.user);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
-		result = this.mvc.invoke(this.user);
-		@SuppressWarnings("unchecked")
-		Health health = ((ResponseEntity<Health>) result).getBody();
-		assertTrue(health.getStatus() == Status.DOWN);
-	}
-
-	@Test
-	public void unsecureCached() {
+	public void healthIsCached() {
 		given(this.endpoint.getTimeToLive()).willReturn(10000L);
 		given(this.endpoint.isSensitive()).willReturn(true);
 		given(this.endpoint.invoke()).willReturn(
@@ -154,6 +140,31 @@ public class HealthMvcEndpointTests {
 
 	@Test
 	public void unsecureAnonymousAccessUnrestricted() {
+		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
+		this.mvc.setEnvironment(this.environment);
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(null);
+		assertTrue(result instanceof Health);
+		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+	}
+
+	@Test
+	public void unsensitiveAnonymousAccessRestricted() {
+		this.environment.getPropertySources().addLast(NON_SENSITIVE);
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(null);
+		assertTrue(result instanceof Health);
+		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertNull(((Health) result).getDetails().get("foo"));
+	}
+
+	@Test
+	public void unsecureUnsensitiveAnonymousAccessUnrestricted() {
+		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
+		this.mvc.setEnvironment(this.environment);
 		this.environment.getPropertySources().addLast(NON_SENSITIVE);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
@@ -164,9 +175,8 @@ public class HealthMvcEndpointTests {
 	}
 
 	@Test
-	public void unsecureIsNotCachedWhenAnonymousAccessIsUnrestricted() {
-		this.environment.getPropertySources().addLast(NON_SENSITIVE);
-		given(this.endpoint.getTimeToLive()).willReturn(10000L);
+	public void noCachingWhenTimeToLiveIsZero() {
+		given(this.endpoint.getTimeToLive()).willReturn(0L);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
@@ -195,4 +205,5 @@ public class HealthMvcEndpointTests {
 		Health health = ((ResponseEntity<Health>) result).getBody();
 		assertTrue(health.getStatus() == Status.DOWN);
 	}
+
 }

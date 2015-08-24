@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,13 @@
 package org.springframework.boot.autoconfigure.jackson;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -32,6 +35,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  *
  * @author Andy Wilkinson
  * @author Marcel Overdijk
+ * @author Johannes Stelzer
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.jackson")
@@ -42,6 +46,12 @@ public class JacksonProperties {
 	 * name.
 	 */
 	private String dateFormat;
+
+	/**
+	 * Joda date time format string (yyyy-MM-dd HH:mm:ss). If not configured,
+	 * "date-format" will be used as a fallback if it is configured with a format string.
+	 */
+	private String jodaDateTimeFormat;
 
 	/**
 	 * One of the constants on Jackson's PropertyNamingStrategy
@@ -75,12 +85,37 @@ public class JacksonProperties {
 	 */
 	private Map<JsonGenerator.Feature, Boolean> generator = new HashMap<JsonGenerator.Feature, Boolean>();
 
+	/**
+	 * Controls the inclusion of properties during serialization. Configured with one of
+	 * the values in Jackson's JsonInclude.Include enumeration.
+	 */
+	private JsonInclude.Include serializationInclusion;
+
+	/**
+	 * Time zone used when formatting dates. Configured using any recognized time zone
+	 * identifier, for example "America/Los_Angeles" or "GMT+10".
+	 */
+	private TimeZone timeZone = null;
+
+	/**
+	 * Locale used for formatting.
+	 */
+	private Locale locale;
+
 	public String getDateFormat() {
 		return this.dateFormat;
 	}
 
 	public void setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
+	}
+
+	public String getJodaDateTimeFormat() {
+		return this.jodaDateTimeFormat;
+	}
+
+	public void setJodaDateTimeFormat(String jodaDataTimeFormat) {
+		this.jodaDateTimeFormat = jodaDataTimeFormat;
 	}
 
 	public String getPropertyNamingStrategy() {
@@ -109,6 +144,30 @@ public class JacksonProperties {
 
 	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
 		return this.generator;
+	}
+
+	public JsonInclude.Include getSerializationInclusion() {
+		return this.serializationInclusion;
+	}
+
+	public void setSerializationInclusion(JsonInclude.Include serializationInclusion) {
+		this.serializationInclusion = serializationInclusion;
+	}
+
+	public TimeZone getTimeZone() {
+		return this.timeZone;
+	}
+
+	public void setTimeZone(TimeZone timeZone) {
+		this.timeZone = timeZone;
+	}
+
+	public Locale getLocale() {
+		return this.locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
 	}
 
 }

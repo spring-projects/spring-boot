@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.stereotype.Component;
@@ -53,6 +55,8 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
+				JacksonAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				TestHealthIndicator.class);
 		this.context.refresh();
@@ -67,6 +71,8 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
+				JacksonAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				TestHealthIndicator.class);

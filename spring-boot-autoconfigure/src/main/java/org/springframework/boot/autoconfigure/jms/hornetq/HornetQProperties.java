@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,17 +107,17 @@ public class HornetQProperties {
 		private String dataDirectory;
 
 		/**
-		 * Comma-separate list of queues to create on startup.
+		 * Comma-separated list of queues to create on startup.
 		 */
 		private String[] queues = new String[0];
 
 		/**
-		 * Comma-separate list of topics to create on startup.
+		 * Comma-separated list of topics to create on startup.
 		 */
 		private String[] topics = new String[0];
 
 		/**
-		 * Cluster password. Randomly generated on startup by default
+		 * Cluster password. Randomly generated on startup by default.
 		 */
 		private String clusterPassword = UUID.randomUUID().toString();
 
@@ -187,6 +187,7 @@ public class HornetQProperties {
 		/**
 		 * Creates the minimal transport parameters for an embedded transport
 		 * configuration.
+		 * @return the transport parameters
 		 * @see TransportConstants#SERVER_ID_PROP_NAME
 		 */
 		public Map<String, Object> generateTransportParameters() {

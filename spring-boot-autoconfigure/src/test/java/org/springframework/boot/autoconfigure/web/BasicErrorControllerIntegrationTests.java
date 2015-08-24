@@ -59,7 +59,7 @@ import static org.junit.Assert.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
 @DirtiesContext
 @IntegrationTest("server.port=0")
@@ -90,6 +90,18 @@ public class BasicErrorControllerIntegrationTests {
 						+ "error=Bad Request, "
 						+ "exception=org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests$TestConfiguration$Errors$ExpectedException, "
 						+ "message=Expected!, " + "path=/annotated}"));
+	}
+
+	@Test
+	public void testErrorForAnnotatedNoReasonException() throws Exception {
+		ResponseEntity<?> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/annotatedNoReason", Object.class);
+		assertThat(
+				entity.getBody().toString(),
+				endsWith("status=406, "
+						+ "error=Not Acceptable, "
+						+ "exception=org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests$TestConfiguration$Errors$NoReasonExpectedException, "
+						+ "message=Expected message, " + "path=/annotatedNoReason}"));
 	}
 
 	@Test
@@ -144,6 +156,11 @@ public class BasicErrorControllerIntegrationTests {
 				throw new ExpectedException();
 			}
 
+			@RequestMapping("/annotatedNoReason")
+			public String annotatedNoReason() {
+				throw new NoReasonExpectedException("Expected message");
+			}
+
 			@RequestMapping("/bind")
 			public String bind(HttpServletRequest request) throws Exception {
 				BindException error = new BindException(this, "test");
@@ -154,6 +171,16 @@ public class BasicErrorControllerIntegrationTests {
 			@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Expected!")
 			@SuppressWarnings("serial")
 			private static class ExpectedException extends RuntimeException {
+
+			}
+
+			@ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
+			@SuppressWarnings("serial")
+			private static class NoReasonExpectedException extends RuntimeException {
+
+				public NoReasonExpectedException(String message) {
+					super(message);
+				}
 
 			}
 

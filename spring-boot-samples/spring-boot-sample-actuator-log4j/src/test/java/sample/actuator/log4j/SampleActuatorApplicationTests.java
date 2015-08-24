@@ -31,6 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Basic integration tests for service demo application.
@@ -38,7 +39,7 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleActuatorLog4JApplication.class)
+@SpringApplicationConfiguration(SampleActuatorLog4JApplication.class)
 @WebAppConfiguration
 @IntegrationTest("server.port=0")
 @DirtiesContext
@@ -51,11 +52,22 @@ public class SampleActuatorApplicationTests {
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port, Map.class);
+				"http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("Hello Phil", body.get("message"));
+	}
+
+	@Test
+	public void testHealth() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/health", Map.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertNotNull(body.get("diskSpace"));
 	}
 
 }

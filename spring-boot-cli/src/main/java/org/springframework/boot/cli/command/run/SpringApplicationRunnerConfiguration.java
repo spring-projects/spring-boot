@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,13 @@ public interface SpringApplicationRunnerConfiguration extends GroovyCompilerConf
 	/**
 	 * Returns {@code true} if the source file should be monitored for changes and
 	 * automatically recompiled.
+	 * @return {@code true} if file watching should be performed, otherwise {@code false}
 	 */
 	boolean isWatchForFileChanges();
 
 	/**
 	 * Returns the logging level to use.
+	 * @return the logging level
 	 */
 	Level getLogLevel();
 }

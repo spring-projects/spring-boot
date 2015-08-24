@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,22 +33,25 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebAppli
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.template.TemplateLocation;
+import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.view.velocity.EmbeddedVelocityViewResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.velocity.VelocityEngineFactory;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.view.velocity.VelocityConfig;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
-import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Velocity.
  *
  * @author Andy Wilkinson
+ * @author Brian Clozel
  * @since 1.1.0
  */
 @Configuration
@@ -127,10 +130,17 @@ public class VelocityAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "velocityViewResolver")
 		@ConditionalOnProperty(name = "spring.velocity.enabled", matchIfMissing = true)
-		public VelocityViewResolver velocityViewResolver() {
-			VelocityViewResolver resolver = new VelocityViewResolver();
+		public EmbeddedVelocityViewResolver velocityViewResolver() {
+			EmbeddedVelocityViewResolver resolver = new EmbeddedVelocityViewResolver();
 			this.properties.applyToViewResolver(resolver);
 			return resolver;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnEnabledResourceChain
+		public ResourceUrlEncodingFilter resourceUrlEncodingFilter() {
+			return new ResourceUrlEncodingFilter();
 		}
 
 	}

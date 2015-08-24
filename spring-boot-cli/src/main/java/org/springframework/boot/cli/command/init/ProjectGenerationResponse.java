@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ class ProjectGenerationResponse {
 
 	/**
 	 * Return the {@link ContentType} of this instance
+	 * @return the content type
 	 */
 	public ContentType getContentType() {
 		return this.contentType;
@@ -45,6 +46,7 @@ class ProjectGenerationResponse {
 
 	/**
 	 * The generated project archive or file.
+	 * @return the content
 	 */
 	public byte[] getContent() {
 		return this.content;
@@ -57,6 +59,7 @@ class ProjectGenerationResponse {
 	/**
 	 * The preferred file name to use to store the entity on disk or {@code null} if no
 	 * preferred value has been set.
+	 * @return the file name, or {@code null}
 	 */
 	public String getFileName() {
 		return this.fileName;

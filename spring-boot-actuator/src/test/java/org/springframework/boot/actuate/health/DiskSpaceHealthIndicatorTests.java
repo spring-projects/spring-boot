@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,19 +58,23 @@ public class DiskSpaceHealthIndicatorTests {
 	@Test
 	public void diskSpaceIsUp() throws Exception {
 		given(this.fileMock.getFreeSpace()).willReturn(THRESHOLD_BYTES + 10);
+		given(this.fileMock.getTotalSpace()).willReturn(THRESHOLD_BYTES * 10);
 		Health health = this.healthIndicator.health();
 		assertEquals(Status.UP, health.getStatus());
 		assertEquals(THRESHOLD_BYTES, health.getDetails().get("threshold"));
 		assertEquals(THRESHOLD_BYTES + 10, health.getDetails().get("free"));
+		assertEquals(THRESHOLD_BYTES * 10, health.getDetails().get("total"));
 	}
 
 	@Test
 	public void diskSpaceIsDown() throws Exception {
 		given(this.fileMock.getFreeSpace()).willReturn(THRESHOLD_BYTES - 10);
+		given(this.fileMock.getTotalSpace()).willReturn(THRESHOLD_BYTES * 10);
 		Health health = this.healthIndicator.health();
 		assertEquals(Status.DOWN, health.getStatus());
 		assertEquals(THRESHOLD_BYTES, health.getDetails().get("threshold"));
 		assertEquals(THRESHOLD_BYTES - 10, health.getDetails().get("free"));
+		assertEquals(THRESHOLD_BYTES * 10, health.getDetails().get("total"));
 	}
 
 	private DiskSpaceHealthIndicatorProperties createProperties(File path, long threshold) {

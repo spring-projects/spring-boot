@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.Level;
@@ -35,9 +39,11 @@ import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -45,6 +51,7 @@ import org.springframework.util.ResourceUtils;
  *
  * @author Daniel Fullarton
  * @author Andy Wilkinson
+ * @author Alexander Heusingfeld
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
@@ -57,7 +64,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		levels.put(LogLevel.INFO, Level.INFO);
 		levels.put(LogLevel.WARN, Level.WARN);
 		levels.put(LogLevel.ERROR, Level.ERROR);
-		levels.put(LogLevel.FATAL, Level.ERROR);
+		levels.put(LogLevel.FATAL, Level.FATAL);
 		levels.put(LogLevel.OFF, Level.OFF);
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
@@ -95,23 +102,42 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	protected String[] getStandardConfigLocations() {
-		return new String[] { "log4j2.json", "log4j2.jsn", "log4j2.xml" };
+		return getCurrentlySupportedConfigLocations();
+	}
+
+	private String[] getCurrentlySupportedConfigLocations() {
+		List<String> supportedConfigLocations = new ArrayList<String>();
+		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
+			Collections.addAll(supportedConfigLocations, "log4j2.yaml", "log4j2.yml");
+		}
+		if (isClassAvailable("com.fasterxml.jackson.databind.ObjectMapper")) {
+			Collections.addAll(supportedConfigLocations, "log4j2.json", "log4j2.jsn");
+		}
+		supportedConfigLocations.add("log4j2.xml");
+		return supportedConfigLocations.toArray(new String[supportedConfigLocations
+				.size()]);
+	}
+
+	protected boolean isClassAvailable(String className) {
+		return ClassUtils.isPresent(className, getClassLoader());
 	}
 
 	@Override
 	public void beforeInitialize() {
 		super.beforeInitialize();
-		getLoggerConfig(null).addFilter(FILTER);
+		getRootLoggerConfig().addFilter(FILTER);
 	}
 
 	@Override
-	public void initialize(String configLocation, LogFile logFile) {
-		getLoggerConfig(null).removeFilter(FILTER);
-		super.initialize(configLocation, logFile);
+	public void initialize(LoggingInitializationContext initializationContext,
+			String configLocation, LogFile logFile) {
+		getRootLoggerConfig().removeFilter(FILTER);
+		super.initialize(initializationContext, configLocation, logFile);
 	}
 
 	@Override
-	protected void loadDefaults(LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext,
+			LogFile logFile) {
 		if (logFile != null) {
 			loadConfiguration(getPackagedConfigFile("log4j2-file.xml"), logFile);
 		}
@@ -121,6 +147,11 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
+	protected void loadConfiguration(LoggingInitializationContext initializationContext,
+			String location, LogFile logFile) {
+		loadConfiguration(location, logFile);
+	}
+
 	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		if (logFile != null) {
@@ -129,7 +160,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		try {
 			LoggerContext ctx = getLoggerContext();
 			URL url = ResourceUtils.getURL(location);
-			ConfigurationSource source = new ConfigurationSource(url.openStream(), url);
+			ConfigurationSource source = getConfigurationSource(url);
 			ctx.start(ConfigurationFactory.getInstance().getConfiguration(source));
 		}
 		catch (Exception ex) {
@@ -138,21 +169,39 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		}
 	}
 
+	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
+		InputStream stream = url.openStream();
+		if (ResourceUtils.isFileURL(url)) {
+			return new ConfigurationSource(stream, ResourceUtils.getFile(url));
+		}
+		return new ConfigurationSource(stream, url);
+	}
+
 	@Override
-	protected void reinitialize() {
+	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		getLoggerContext().reconfigure();
 	}
 
 	@Override
-	public void setLogLevel(String loggerName, LogLevel level) {
-		getLoggerConfig(loggerName).setLevel(LEVELS.get(level));
+	public void setLogLevel(String loggerName, LogLevel logLevel) {
+		Level level = LEVELS.get(logLevel);
+		LoggerConfig loggerConfig = getLoggerConfig(loggerName);
+		if (loggerConfig == null) {
+			loggerConfig = new LoggerConfig(loggerName, level, true);
+			getLoggerContext().getConfiguration().addLogger(loggerName, loggerConfig);
+		}
+		else {
+			loggerConfig.setLevel(level);
+		}
 		getLoggerContext().updateLoggers();
 	}
 
+	private LoggerConfig getRootLoggerConfig() {
+		return getLoggerContext().getConfiguration().getLoggerConfig("");
+	}
+
 	private LoggerConfig getLoggerConfig(String loggerName) {
-		LoggerConfig loggerConfig = getLoggerContext().getConfiguration()
-				.getLoggerConfig(loggerName == null ? "" : loggerName);
-		return loggerConfig;
+		return getLoggerContext().getConfiguration().getLoggers().get(loggerName);
 	}
 
 	private LoggerContext getLoggerContext() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,17 +86,16 @@ import org.springframework.util.StringUtils;
  * The default shell authentication method uses a username and password combination. If no
  * configuration is provided the default username is 'user' and the password will be
  * printed to console during application startup. Those default values can be overridden
- * by using <code>shell.auth.simple.username</code> and
- * <code>shell.auth.simple.password</code>.
+ * by using {@code shell.auth.simple.username} and {@code shell.auth.simple.password}.
  * <p>
  * If a Spring Security {@link AuthenticationManager} is detected, this configuration will
  * create a {@link CRaSHPlugin} to forward shell authentication requests to Spring
- * Security. This authentication method will get enabled if <code>shell.auth</code> is set
- * to <code>spring</code> or if no explicit <code>shell.auth</code> is provided and a
+ * Security. This authentication method will get enabled if {@code shell.auth} is set to
+ * {@code spring} or if no explicit {@code shell.auth} is provided and a
  * {@link AuthenticationManager} is available. In the latter case shell access will be
  * restricted to users having roles that match those configured in
  * {@link ManagementServerProperties}. Required roles can be overridden by
- * <code>shell.auth.spring.roles</code>.
+ * {@code shell.auth.spring.roles}.
  * <p>
  * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
  * the application context. Those beans will get auto detected during startup and
@@ -106,9 +105,9 @@ import org.springframework.util.StringUtils;
  * <p>
  * Additional shell commands can be implemented using the guide and documentation at <a
  * href="http://www.crashub.org">crashub.org</a>. By default Boot will search for commands
- * using the following classpath scanning pattern <code>classpath*:/commands/**</code>. To
- * add different locations or override the default use
- * <code>shell.command_path_patterns</code> in your application configuration.
+ * using the following classpath scanning pattern {@code classpath*:/commands/**}. To add
+ * different locations or override the default use {@code shell.command_path_patterns} in
+ * your application configuration.
  *
  * @author Christian Dupuis
  * @see ShellProperties
@@ -117,7 +116,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ PluginLifeCycle.class })
 @EnableConfigurationProperties({ ShellProperties.class })
 @AutoConfigureAfter({ SecurityAutoConfiguration.class,
-		ManagementSecurityAutoConfiguration.class })
+		ManagementWebSecurityAutoConfiguration.class })
 public class CrshAutoConfiguration {
 
 	@Autowired
@@ -125,28 +124,28 @@ public class CrshAutoConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "jaas")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties jaasAuthenticationProperties() {
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public JaasAuthenticationProperties jaasAuthenticationProperties() {
 		return new JaasAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "key")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties keyAuthenticationProperties() {
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public KeyAuthenticationProperties keyAuthenticationProperties() {
 		return new KeyAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "simple", matchIfMissing = true)
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties simpleAuthenticationProperties() {
+	@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+	public SimpleAuthenticationProperties simpleAuthenticationProperties() {
 		return new SimpleAuthenticationProperties();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ PluginLifeCycle.class })
-	public PluginLifeCycle shellBootstrap() {
+	@ConditionalOnMissingBean(PluginLifeCycle.class)
+	public CrshBootstrapBean shellBootstrap() {
 		CrshBootstrapBean bootstrapBean = new CrshBootstrapBean();
 		bootstrapBean.setConfig(this.properties.asCrshShellConfig());
 		return bootstrapBean;
@@ -157,7 +156,7 @@ public class CrshAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnProperty(prefix = "shell", name = "auth", havingValue = "spring", matchIfMissing = true)
-	@ConditionalOnBean({ AuthenticationManager.class })
+	@ConditionalOnBean(AuthenticationManager.class)
 	@AutoConfigureAfter(CrshAutoConfiguration.class)
 	public static class AuthenticationManagerAdapterAutoConfiguration {
 
@@ -165,13 +164,13 @@ public class CrshAutoConfiguration {
 		private ManagementServerProperties management;
 
 		@Bean
-		public CRaSHPlugin<?> shellAuthenticationManager() {
+		public AuthenticationManagerAdapter shellAuthenticationManager() {
 			return new AuthenticationManagerAdapter();
 		}
 
 		@Bean
-		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-		public CrshShellAuthenticationProperties springAuthenticationProperties() {
+		@ConditionalOnMissingBean(CrshShellAuthenticationProperties.class)
+		public SpringAuthenticationProperties springAuthenticationProperties() {
 			// In case no shell.auth property is provided fall back to Spring Security
 			// based authentication and get role to access shell from
 			// ManagementServerProperties.

@@ -41,7 +41,7 @@ import static org.junit.Assert.assertThat;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = TestConfig.class)
+@SpringApplicationConfiguration(TestConfig.class)
 @IntegrationTest
 public class SimplerPropertySourcesBindingTests {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.logging;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -58,6 +59,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link AutoConfigurationReportLoggingInitializer}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class AutoConfigurationReportLoggingInitializerTests {
 
@@ -161,6 +163,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
+		ConditionEvaluationReport.get(context.getBeanFactory()).recordExclusions(
+				Arrays.asList("com.foo.Bar"));
 		context.refresh();
 		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
 		for (String message : this.debugLog) {

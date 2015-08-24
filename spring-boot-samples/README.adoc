@@ -6,6 +6,8 @@
   --  Embedded Tomcat
 * link:spring-boot-sample-jetty[spring-boot-sample-jetty]
   -- Embedded Jetty
+* link:spring-boot-sample-activemq[spring-boot-sample-activemq]
+  -- Simple JMS consumer and producer using Apache ActiveMQ
 * link:spring-boot-sample-actuator[spring-boot-sample-actuator]
   -- Simple REST service with production features
 * link:spring-boot-sample-actuator-ui[spring-boot-sample-actuator-ui]
@@ -14,6 +16,8 @@
   -- A production features sample with no web application
 * link:spring-boot-sample-actuator-log4j[spring-boot-sample-actuator-log4j]
   -- A production features sample using log4j for logging (instead of logback)
+* link:spring-boot-sample-cache-ehcache[spring-boot-sample-cache]
+  -- A web sample that uses Spring's cache abstraction
 * link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
   -- A thymeleaf web application
 * link:spring-boot-sample-web-static[spring-boot-sample-web-static]
@@ -66,6 +70,8 @@
   -- A spring integration application
 * link:spring-boot-sample-profile[spring-boot-sample-profile]
   -- example showing Spring's `@profile` support
+* link:spring-boot-sample-property-validation[spring-boot-sample-property-validation]
+  -- example showing the usage of `@ConfigurationProperties` with a Spring `Validator`
 * link:spring-boot-sample-parent-context[spring-boot-sample-parent-context]
   -- example showing an `ApplicationContext` with a parent
 * link:spring-boot-sample-aop[spring-boot-sample-aop]

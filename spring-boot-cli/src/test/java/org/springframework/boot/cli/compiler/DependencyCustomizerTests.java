@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,17 @@ public class DependencyCustomizerTests {
 				"org.springframework.boot");
 		given(this.resolver.getArtifactId("spring-boot-starter-logging")).willReturn(
 				"spring-boot-starter-logging");
-		given(this.resolver.getVersion("spring-boot-starter-logging"))
-				.willReturn("1.2.3");
 		this.moduleNode.addClass(this.classNode);
 		this.dependencyCustomizer = new DependencyCustomizer(new GroovyClassLoader(
 				getClass().getClassLoader()), this.moduleNode,
-				new DependencyResolutionContext(this.resolver));
+				new DependencyResolutionContext() {
+
+					@Override
+					public ArtifactCoordinatesResolver getArtifactCoordinatesResolver() {
+						return DependencyCustomizerTests.this.resolver;
+					}
+
+				});
 	}
 
 	@Test
@@ -149,7 +154,6 @@ public class DependencyCustomizerTests {
 			boolean transitive) {
 		assertEquals(group, getMemberValue(annotationNode, "group"));
 		assertEquals(module, getMemberValue(annotationNode, "module"));
-		assertEquals(version, getMemberValue(annotationNode, "version"));
 		if (type == null) {
 			assertNull(annotationNode.getMember("type"));
 		}

@@ -16,12 +16,12 @@
 
 package org.springframework.boot.logging;
 
-import java.io.File;
+import java.io.IOException;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -34,30 +34,30 @@ public abstract class AbstractLoggingSystemTests {
 
 	private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-	private static String tempDir;
+	@Rule
+	public TemporaryFolder temp = new TemporaryFolder();
 
-	@BeforeClass
-	public static void configureTempdir() {
-		tempDir = System.getProperty(JAVA_IO_TMPDIR);
-		File newTempDir = new File("target/tmp");
-		newTempDir.mkdirs();
-		System.setProperty(JAVA_IO_TMPDIR, newTempDir.getAbsolutePath());
-	}
-
-	@AfterClass
-	public static void reinstateTempDir() {
-		System.setProperty(JAVA_IO_TMPDIR, tempDir);
-	}
+	private String originalTempFolder;
 
 	@Before
-	public void deleteTempLog() {
-		new File(tmpDir() + "/spring.log").delete();
+	public void configureTempdir() throws IOException {
+		this.originalTempFolder = System.getProperty(JAVA_IO_TMPDIR);
+		System.setProperty(JAVA_IO_TMPDIR, this.temp.newFolder().getAbsolutePath());
+	}
+
+	@After
+	public void reinstateTempDir() {
+		System.setProperty(JAVA_IO_TMPDIR, this.originalTempFolder);
 	}
 
 	@After
 	public void clear() {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("PID");
+	}
+
+	protected final String[] getSpringConfigLocations(AbstractLoggingSystem system) {
+		return system.getSpringConfigLocations();
 	}
 
 	protected final LogFile getLogFile(String file, String path) {

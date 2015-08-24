@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.compiler;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,12 +43,16 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 
 	private final Set<String> interestingAnnotationNames;
 
+	private final boolean removeAnnotations;
+
 	private List<AnnotationNode> annotationNodes = new ArrayList<AnnotationNode>();
 
 	private SourceUnit sourceUnit;
 
-	protected AnnotatedNodeASTTransformation(Set<String> interestingAnnotationNames) {
+	protected AnnotatedNodeASTTransformation(Set<String> interestingAnnotationNames,
+			boolean removeAnnotations) {
 		this.interestingAnnotationNames = interestingAnnotationNames;
+		this.removeAnnotations = removeAnnotations;
 	}
 
 	@Override
@@ -94,10 +99,16 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 
 	private void visitAnnotatedNode(AnnotatedNode annotatedNode) {
 		if (annotatedNode != null) {
-			for (AnnotationNode annotationNode : annotatedNode.getAnnotations()) {
+			Iterator<AnnotationNode> annotationNodes = annotatedNode.getAnnotations()
+					.iterator();
+			while (annotationNodes.hasNext()) {
+				AnnotationNode annotationNode = annotationNodes.next();
 				if (this.interestingAnnotationNames.contains(annotationNode
 						.getClassNode().getName())) {
 					this.annotationNodes.add(annotationNode);
+					if (this.removeAnnotations) {
+						annotationNodes.remove();
+					}
 				}
 			}
 		}

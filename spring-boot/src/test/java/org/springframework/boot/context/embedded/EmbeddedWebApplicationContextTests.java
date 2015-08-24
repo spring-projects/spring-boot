@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,18 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.config.Scope;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
@@ -53,6 +57,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -70,6 +75,7 @@ import static org.mockito.Mockito.withSettings;
  * Tests for {@link EmbeddedWebApplicationContext}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class EmbeddedWebApplicationContextTests {
 
@@ -139,6 +145,16 @@ public class EmbeddedWebApplicationContextTests {
 		assertNotNull(event);
 		assertTrue(event.getSource().getPort() >= 0);
 		assertEquals(this.context, event.getApplicationContext());
+	}
+
+	@Test
+	public void localPortIsAvailable() throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
+		this.context.refresh();
+		ConfigurableEnvironment environment = this.context.getEnvironment();
+		assertTrue(environment.containsProperty("local.server.port"));
+		assertEquals("8080", environment.getProperty("local.server.port"));
 	}
 
 	@Test
@@ -406,6 +422,24 @@ public class EmbeddedWebApplicationContextTests {
 		this.context.refresh();
 		assertThat(getEmbeddedServletContainerFactory().getContainer().getPort(),
 				equalTo(8080));
+	}
+
+	@Test
+	public void doesNotReplaceExistingScopes() throws Exception { // gh-2082
+		Scope scope = mock(Scope.class);
+		ConfigurableListableBeanFactory factory = this.context.getBeanFactory();
+		factory.registerScope(WebApplicationContext.SCOPE_REQUEST, scope);
+		factory.registerScope(WebApplicationContext.SCOPE_SESSION, scope);
+		factory.registerScope(WebApplicationContext.SCOPE_GLOBAL_SESSION, scope);
+		addEmbeddedServletContainerFactoryBean();
+		this.context.refresh();
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST),
+				sameInstance(scope));
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
+				sameInstance(scope));
+		assertThat(
+				factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION),
+				sameInstance(scope));
 	}
 
 	private void addEmbeddedServletContainerFactoryBean() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link RandomValuePropertySource}.
  *
  * @author Dave Syer
+ * @author Matt Benson
  */
 public class RandomValuePropertySourceTests {
 
@@ -52,6 +53,7 @@ public class RandomValuePropertySourceTests {
 		Integer value = (Integer) this.source.getProperty("random.int[4,10]");
 		assertNotNull(value);
 		assertTrue(value >= 4);
+		assertTrue(value < 10);
 	}
 
 	@Test
@@ -67,4 +69,18 @@ public class RandomValuePropertySourceTests {
 		assertNotNull(value);
 	}
 
+	@Test
+	public void longRange() {
+		Long value = (Long) this.source.getProperty("random.long[4,10]");
+		assertNotNull(value);
+		assertTrue(Long.toString(value), value >= 4L);
+		assertTrue(Long.toString(value), value < 10L);
+	}
+
+	@Test
+	public void longMax() {
+		Long value = (Long) this.source.getProperty("random.long(10)");
+		assertNotNull(value);
+		assertTrue(value < 10L);
+	}
 }

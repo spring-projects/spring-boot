@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.NestedServletException;
 
 /**
  * A special {@link AbstractConfigurableEmbeddedServletContainer} for non-embedded
@@ -69,6 +70,8 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 	private static final String ERROR_MESSAGE = "javax.servlet.error.message";
 
+	public static final String ERROR_REQUEST_URI = "javax.servlet.error.request_uri";
+
 	private static final String ERROR_STATUS_CODE = "javax.servlet.error.status_code";
 
 	private String global;
@@ -86,6 +89,11 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 				HttpServletResponse response, FilterChain chain) throws ServletException,
 				IOException {
 			ErrorPageFilter.this.doFilter(request, response, chain);
+		}
+
+		@Override
+		protected boolean shouldNotFilterAsyncDispatch() {
+			return false;
 		}
 
 	};
@@ -116,7 +124,11 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 			}
 		}
 		catch (Throwable ex) {
-			handleException(request, response, wrapped, ex);
+			Throwable exceptionToHandle = ex;
+			if (ex instanceof NestedServletException) {
+				exceptionToHandle = ((NestedServletException) ex).getRootCause();
+			}
+			handleException(request, response, wrapped, exceptionToHandle);
 			response.flushBuffer();
 		}
 	}
@@ -220,9 +232,10 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		return this.global;
 	}
 
-	private void setErrorAttributes(ServletRequest request, int status, String message) {
+	private void setErrorAttributes(HttpServletRequest request, int status, String message) {
 		request.setAttribute(ERROR_STATUS_CODE, status);
 		request.setAttribute(ERROR_MESSAGE, message);
+		request.setAttribute(ERROR_REQUEST_URI, request.getRequestURI());
 	}
 
 	private void rethrow(Throwable ex) throws IOException, ServletException {
@@ -266,11 +279,10 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 		private String message;
 
-		private boolean errorToSend;
+		private boolean hasErrorToSend = false;
 
 		public ErrorWrapperResponse(HttpServletResponse response) {
 			super(response);
-			this.status = response.getStatus();
 		}
 
 		@Override
@@ -282,17 +294,23 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		public void sendError(int status, String message) throws IOException {
 			this.status = status;
 			this.message = message;
-			this.errorToSend = true;
+			this.hasErrorToSend = true;
+			// Do not call super because the container may prevent us from handling the
+			// error ourselves
 		}
 
 		@Override
 		public int getStatus() {
-			return this.status;
+			if (this.hasErrorToSend) {
+				return this.status;
+			}
+			// If there was no error we need to trust the wrapped response
+			return super.getStatus();
 		}
 
 		@Override
 		public void flushBuffer() throws IOException {
-			if (this.errorToSend && !isCommitted()) {
+			if (this.hasErrorToSend && !isCommitted()) {
 				((HttpServletResponse) getResponse())
 						.sendError(this.status, this.message);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,6 +153,7 @@ public class ShellProperties {
 	/**
 	 * Return a properties file configured from these settings that can be applied to a
 	 * CRaSH shell instance.
+	 * @return the CRaSH properties
 	 */
 	public Properties asCrshShellConfig() {
 		Properties properties = new Properties();
@@ -185,6 +186,7 @@ public class ShellProperties {
 
 	/**
 	 * Basic validation of applied CRaSH shell configuration.
+	 * @param properties the properties to validate
 	 */
 	protected void validateCrshShellConfig(Properties properties) {
 		String finalAuth = properties.getProperty("crash.auth");
@@ -205,6 +207,7 @@ public class ShellProperties {
 
 		/**
 		 * Apply the properties to a CRaSH configuration.
+		 * @param config the CRaSH configuration properties
 		 */
 		protected abstract void applyToCrshShellConfig(Properties config);
 

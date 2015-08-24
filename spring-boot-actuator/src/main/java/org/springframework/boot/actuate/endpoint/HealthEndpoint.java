@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	/**
 	 * Create a new {@link HealthIndicator} instance.
+	 * @param healthAggregator the health aggregator
+	 * @param healthIndicators the health indicators
 	 */
 	public HealthEndpoint(HealthAggregator healthAggregator,
 			Map<String, HealthIndicator> healthIndicators) {
@@ -52,15 +54,15 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
 		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
 				healthAggregator);
-		for (Map.Entry<String, HealthIndicator> h : healthIndicators.entrySet()) {
-			healthIndicator.addHealthIndicator(getKey(h.getKey()), h.getValue());
+		for (Map.Entry<String, HealthIndicator> entry : healthIndicators.entrySet()) {
+			healthIndicator.addHealthIndicator(getKey(entry.getKey()), entry.getValue());
 		}
 		this.healthIndicator = healthIndicator;
 	}
 
 	/**
-	 * Time to live for cached result. If accessed anonymously, we might need to cache the
-	 * result of this endpoint to prevent a DOS attack.
+	 * Time to live for cached result. This is particularly useful to cache the result of
+	 * this endpoint to prevent a DOS attack if it is accessed anonymously.
 	 * @return time to live in milliseconds (default 1000)
 	 */
 	public long getTimeToLive() {

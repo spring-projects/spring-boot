@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -28,12 +29,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
+import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.jmx.support.JmxUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for a JNDI located
  * {@link DataSource}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.2.0
  */
 @Configuration
@@ -44,11 +48,22 @@ import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class JndiDataSourceAutoConfiguration {
 
+	@Autowired(required = false)
+	private MBeanExporter mbeanExporter;
+
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
 	public DataSource dataSource(DataSourceProperties properties) {
 		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
-		return dataSourceLookup.getDataSource(properties.getJndiName());
+		DataSource dataSource = dataSourceLookup.getDataSource(properties.getJndiName());
+		excludeMBeanIfNecessary(dataSource, "dataSource");
+		return dataSource;
+	}
+
+	private void excludeMBeanIfNecessary(Object candidate, String beanName) {
+		if (this.mbeanExporter != null && JmxUtils.isMBean(candidate.getClass())) {
+			this.mbeanExporter.addExcludedBean(beanName);
+		}
 	}
 
 }

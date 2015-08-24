@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,14 +69,14 @@ public class DataSourceJsonSerializationTests {
 	public void serializerWithMixin() throws Exception {
 		DataSource dataSource = new DataSource();
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.addMixInAnnotations(DataSource.class, DataSourceJson.class);
+		mapper.addMixIn(DataSource.class, DataSourceJson.class);
 		String value = mapper.writeValueAsString(dataSource);
 		assertTrue(value.contains("\"url\":"));
 		assertEquals(1, StringUtils.countOccurrencesOf(value, "\"url\""));
 	}
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)
-	protected static interface DataSourceJson {
+	protected interface DataSourceJson {
 	}
 
 	protected static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {

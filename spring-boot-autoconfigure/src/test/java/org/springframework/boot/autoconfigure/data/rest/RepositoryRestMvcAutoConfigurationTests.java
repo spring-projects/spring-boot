@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2014 the original author or authors.
+ * Copyright 2002-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,27 +69,26 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void testWithCustomBaseUri() throws Exception {
-		load(TestConfiguration.class, "spring.data.rest.baseUri:foo");
+	public void testWithCustomBasePath() throws Exception {
+		load(TestConfiguration.class, "spring.data.rest.base-path:foo");
 		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
-		URI expectedUri = URI.create("foo");
-		assertEquals("Custom baseURI not set", expectedUri, bean.getBaseUri());
+		URI expectedUri = URI.create("/foo");
+		assertEquals("Custom basePath not set", expectedUri, bean.getBaseUri());
 		BaseUri baseUri = this.context.getBean(BaseUri.class);
-		assertEquals("Custom baseUri has not been applied to BaseUri bean", expectedUri,
+		assertEquals("Custom basePath has not been applied to BaseUri bean", expectedUri,
 				baseUri.getUri());
 	}
 
 	@Test
 	public void backOffWithCustomConfiguration() {
-		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.baseUri:foo");
+		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.base-path:foo");
 		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
 		assertEquals("Custom base URI should not have been set", URI.create(""),
 				bean.getBaseUri());
-
 	}
 
 	@Test

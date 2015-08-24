@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.util.ClassUtils;
  * {@link LocalContainerEntityManagerFactoryBean} through a fluent builder pattern. The
  * most common options are covered in the builder, but you can always manipulate the
  * product of the builder if you need more control, before returning it from a
- * <code>@Bean</code> definition.
+ * {@code @Bean} definition.
  *
  * @author Dave Syer
  * @since 1.1.0
@@ -71,6 +71,7 @@ public class EntityManagerFactoryBuilder {
 
 	/**
 	 * An optional callback for new entity manager factory beans.
+	 * @param callback the entity manager factory bean callback
 	 */
 	public void setCallback(EntityManagerFactoryBeanCallback callback) {
 		this.callback = callback;
@@ -96,7 +97,7 @@ public class EntityManagerFactoryBuilder {
 		}
 
 		/**
-		 * The names of packages to scan for <code>@Entity</code> annotations.
+		 * The names of packages to scan for {@code @Entity} annotations.
 		 * @param packagesToScan packages to scan
 		 * @return the builder for fluent usage
 		 */
@@ -106,8 +107,7 @@ public class EntityManagerFactoryBuilder {
 		}
 
 		/**
-		 * The classes whose packages should be scanned for <code>@Entity</code>
-		 * annotations.
+		 * The classes whose packages should be scanned for {@code @Entity} annotations.
 		 * @param basePackageClasses the classes to use
 		 * @return the builder for fluent usage
 		 */
@@ -194,7 +194,7 @@ public class EntityManagerFactoryBuilder {
 	/**
 	 * A callback for new entity manager factory beans created by a Builder.
 	 */
-	public static interface EntityManagerFactoryBeanCallback {
+	public interface EntityManagerFactoryBeanCallback {
 
 		void execute(LocalContainerEntityManagerFactoryBean factory);
 

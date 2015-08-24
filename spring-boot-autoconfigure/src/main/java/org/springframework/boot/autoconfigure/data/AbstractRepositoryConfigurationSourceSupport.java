@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,16 +79,19 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 
 	/**
 	 * The Spring Data annotation used to enable the particular repository support.
+	 * @return the annotation class
 	 */
 	protected abstract Class<? extends Annotation> getAnnotation();
 
 	/**
 	 * The configuration class that will be used by Spring Boot as a template.
+	 * @return the configuration class
 	 */
 	protected abstract Class<?> getConfiguration();
 
 	/**
 	 * The {@link RepositoryConfigurationExtension} for the particular repository support.
+	 * @return the repository configuration extension
 	 */
 	protected abstract RepositoryConfigurationExtension getRepositoryConfigurationExtension();
 

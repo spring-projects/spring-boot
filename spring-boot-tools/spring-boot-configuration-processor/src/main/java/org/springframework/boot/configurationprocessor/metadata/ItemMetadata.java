@@ -26,25 +26,25 @@ package org.springframework.boot.configurationprocessor.metadata;
  */
 public class ItemMetadata implements Comparable<ItemMetadata> {
 
-	private final ItemType itemType;
+	private ItemType itemType;
 
-	private final String name;
+	private String name;
 
-	private final String type;
+	private String type;
 
-	private final String description;
+	private String description;
 
-	private final String sourceType;
+	private String sourceType;
 
-	private final String sourceMethod;
+	private String sourceMethod;
 
-	private final Object defaultValue;
+	private Object defaultValue;
 
-	private final boolean deprecated;
+	private ItemDeprecation deprecation;
 
 	ItemMetadata(ItemType itemType, String prefix, String name, String type,
 			String sourceType, String sourceMethod, String description,
-			Object defaultValue, boolean deprecated) {
+			Object defaultValue, ItemDeprecation deprecation) {
 		super();
 		this.itemType = itemType;
 		this.name = buildName(prefix, name);
@@ -53,7 +53,7 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		this.sourceMethod = sourceMethod;
 		this.description = description;
 		this.defaultValue = defaultValue;
-		this.deprecated = deprecated;
+		this.deprecation = deprecation;
 	}
 
 	private String buildName(String prefix, String name) {
@@ -72,32 +72,64 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		return this.itemType == itemType;
 	}
 
+	public boolean hasSameType(ItemMetadata metadata) {
+		return this.itemType == metadata.itemType;
+	}
+
 	public String getName() {
 		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getType() {
 		return this.type;
 	}
 
-	public String getSourceType() {
-		return this.sourceType;
-	}
-
-	public String getSourceMethod() {
-		return this.sourceMethod;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getDescription() {
 		return this.description;
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getSourceType() {
+		return this.sourceType;
+	}
+
+	public void setSourceType(String sourceType) {
+		this.sourceType = sourceType;
+	}
+
+	public String getSourceMethod() {
+		return this.sourceMethod;
+	}
+
+	public void setSourceMethod(String sourceMethod) {
+		this.sourceMethod = sourceMethod;
+	}
+
 	public Object getDefaultValue() {
 		return this.defaultValue;
 	}
 
-	public boolean isDeprecated() {
-		return this.deprecated;
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public ItemDeprecation getDeprecation() {
+		return this.deprecation;
+	}
+
+	public void setDeprecation(ItemDeprecation deprecation) {
+		this.deprecation = deprecation;
 	}
 
 	@Override
@@ -107,7 +139,7 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 		buildToStringProperty(string, "sourceType", this.sourceType);
 		buildToStringProperty(string, "description", this.description);
 		buildToStringProperty(string, "defaultValue", this.defaultValue);
-		buildToStringProperty(string, "deprecated", this.deprecated);
+		buildToStringProperty(string, "deprecation", this.deprecation);
 		return string.toString();
 	}
 
@@ -126,20 +158,20 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 	public static ItemMetadata newGroup(String name, String type, String sourceType,
 			String sourceMethod) {
 		return new ItemMetadata(ItemType.GROUP, name, null, type, sourceType,
-				sourceMethod, null, null, false);
+				sourceMethod, null, null, null);
 	}
 
 	public static ItemMetadata newProperty(String prefix, String name, String type,
 			String sourceType, String sourceMethod, String description,
-			Object defaultValue, boolean deprecated) {
+			Object defaultValue, ItemDeprecation deprecation) {
 		return new ItemMetadata(ItemType.PROPERTY, prefix, name, type, sourceType,
-				sourceMethod, description, defaultValue, deprecated);
+				sourceMethod, description, defaultValue, deprecation);
 	}
 
 	/**
 	 * The item type.
 	 */
-	public static enum ItemType {
+	public enum ItemType {
 		GROUP, PROPERTY
 	}
 

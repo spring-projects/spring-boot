@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,9 @@ public @interface ConditionalOnBean {
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
-	 * when each class specified is missing from beans in the {@link ApplicationContext}.
-	 * @return the class types of beans to check
+	 * when any of the annotations specified is defined on a bean in the
+	 * {@link ApplicationContext}.
+	 * @return the class-level annotation types to check
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 
@@ -70,6 +71,7 @@ public @interface ConditionalOnBean {
 	/**
 	 * Strategy to decide if the application context hierarchy (parent contexts) should be
 	 * considered.
+	 * @return the search strategy
 	 */
 	SearchStrategy search() default SearchStrategy.ALL;
 

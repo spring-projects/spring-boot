@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link InitCommand}
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 public class InitCommandTests extends AbstractHttpClientMockTests {
 
@@ -74,8 +75,20 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
+	public void listServiceCapabilitiesText() throws Exception {
+		mockSuccessfulMetadataTextGet();
+		this.command.run("--list", "--target=http://fake-service");
+	}
+
+	@Test
 	public void listServiceCapabilities() throws Exception {
-		mockSuccessfulMetadataGet();
+		mockSuccessfulMetadataGet(true);
+		this.command.run("--list", "--target=http://fake-service");
+	}
+
+	@Test
+	public void listServiceCapabilitiesV2() throws Exception {
+		mockSuccessfulMetadataGetV2(true);
 		this.command.run("--list", "--target=http://fake-service");
 	}
 
@@ -250,6 +263,32 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	}
 
 	@Test
+	public void parseProjectOptions() throws Exception {
+		this.handler.disableProjectGeneration();
+		this.command.run("-g=org.demo", "-a=acme", "-v=1.2.3-SNAPSHOT", "-n=acme-sample",
+				"--description=Acme sample project", "--package-name=demo.foo", "-t=ant-project",
+				"--build=grunt", "--format=web", "-p=war", "-j=1.9", "-l=groovy",
+				"-b=1.2.0.RELEASE", "-d=web,data-jpa");
+		assertEquals("org.demo", this.handler.lastRequest.getGroupId());
+		assertEquals("acme", this.handler.lastRequest.getArtifactId());
+		assertEquals("1.2.3-SNAPSHOT", this.handler.lastRequest.getVersion());
+		assertEquals("acme-sample", this.handler.lastRequest.getName());
+		assertEquals("Acme sample project", this.handler.lastRequest.getDescription());
+		assertEquals("demo.foo", this.handler.lastRequest.getPackageName());
+		assertEquals("ant-project", this.handler.lastRequest.getType());
+		assertEquals("grunt", this.handler.lastRequest.getBuild());
+		assertEquals("web", this.handler.lastRequest.getFormat());
+		assertEquals("war", this.handler.lastRequest.getPackaging());
+		assertEquals("1.9", this.handler.lastRequest.getJavaVersion());
+		assertEquals("groovy", this.handler.lastRequest.getLanguage());
+		assertEquals("1.2.0.RELEASE", this.handler.lastRequest.getBootVersion());
+		List<String> dependencies = this.handler.lastRequest.getDependencies();
+		assertEquals(2, dependencies.size());
+		assertTrue(dependencies.contains("web"));
+		assertTrue(dependencies.contains("data-jpa"));
+	}
+
+	@Test
 	public void overwriteFileInArchive() throws Exception {
 		File folder = this.temporaryFolder.newFolder();
 		File conflict = new File(folder, "test.txt");
@@ -263,23 +302,6 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		assertEquals(ExitStatus.OK,
 				this.command.run("--force", "--extract", folder.getAbsolutePath()));
 		assertTrue("File should have changed", fileLength != conflict.length());
-	}
-
-	@Test
-	public void parseProjectOptions() throws Exception {
-		this.handler.disableProjectGeneration();
-		this.command.run("-b=1.2.0.RELEASE", "-d=web,data-jpa", "-j=1.9", "-p=war",
-				"--build=grunt", "--format=web", "-t=ant-project");
-		assertEquals("1.2.0.RELEASE", this.handler.lastRequest.getBootVersion());
-		List<String> dependencies = this.handler.lastRequest.getDependencies();
-		assertEquals(2, dependencies.size());
-		assertTrue(dependencies.contains("web"));
-		assertTrue(dependencies.contains("data-jpa"));
-		assertEquals("1.9", this.handler.lastRequest.getJavaVersion());
-		assertEquals("war", this.handler.lastRequest.getPackaging());
-		assertEquals("grunt", this.handler.lastRequest.getBuild());
-		assertEquals("web", this.handler.lastRequest.getFormat());
-		assertEquals("ant-project", this.handler.lastRequest.getType());
 	}
 
 	@Test

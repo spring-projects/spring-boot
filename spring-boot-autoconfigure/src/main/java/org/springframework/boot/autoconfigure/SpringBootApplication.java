@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * {@code @EnableAutoConfiguration} and {@code @ComponentScan}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.2.0
  */
 @Target(ElementType.TYPE)
@@ -48,7 +49,16 @@ public @interface SpringBootApplication {
 
 	/**
 	 * Exclude specific auto-configuration classes such that they will never be applied.
+	 * @return the classes to exclude
 	 */
 	Class<?>[] exclude() default {};
+
+	/**
+	 * Exclude specific auto-configuration class names such that they will never be
+	 * applied.
+	 * @return the class names to exclude
+	 * @since 1.3.0
+	 */
+	String[] excludeName() default {};
 
 }

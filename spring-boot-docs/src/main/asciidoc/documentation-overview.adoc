@@ -136,10 +136,9 @@ When you're ready to push your Spring Boot application to production, we've got
 == Advanced topics
 Lastly, we have a few topics for the more advanced user.
 
-* *Deploy to the cloud:*
-<<cloud-deployment.adoc#cloud-deployment-cloud-foundry, Cloud Foundry>> |
-<<cloud-deployment.adoc#cloud-deployment-heroku, Heroku>> |
-<<cloud-deployment.adoc#cloud-deployment-cloudbees, CloudBees>>
+* *Deploy Spring Boot Applications:*
+<<deployment.adoc#cloud-deployment, Cloud Deployment>> |
+<<deployment.adoc#deployment-service, OS Service>>
 * *Build tool plugins:*
 <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven>> |
 <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle>>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,32 +55,48 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	public Collection<Metric<?>> metrics() {
 		Collection<Metric<?>> result = new LinkedHashSet<Metric<?>>();
 		addBasicMetrics(result);
-		addHeapMetrics(result);
-		addThreadMetrics(result);
-		addClassLoadingMetrics(result);
-		addGarbageCollectionMetrics(result);
+		addManagementMetrics(result);
 		return result;
 	}
 
 	/**
 	 * Add basic system metrics.
+	 * @param result the result
 	 */
 	protected void addBasicMetrics(Collection<Metric<?>> result) {
+		// NOTE: ManagementFactory must not be used here since it fails on GAE
 		result.add(new Metric<Long>("mem", Runtime.getRuntime().totalMemory() / 1024));
 		result.add(new Metric<Long>("mem.free", Runtime.getRuntime().freeMemory() / 1024));
 		result.add(new Metric<Integer>("processors", Runtime.getRuntime()
 				.availableProcessors()));
-		// Add JVM up time in ms
-		result.add(new Metric<Long>("uptime", ManagementFactory.getRuntimeMXBean()
-				.getUptime()));
 		result.add(new Metric<Long>("instance.uptime", System.currentTimeMillis()
 				- this.timestamp));
-		result.add(new Metric<Double>("systemload.average", ManagementFactory
-				.getOperatingSystemMXBean().getSystemLoadAverage()));
+	}
+
+	/**
+	 * Add metrics from ManagementFactory if possible. Note that ManagementFactory is not
+	 * available on Google App Engine.
+	 */
+	private void addManagementMetrics(Collection<Metric<?>> result) {
+		try {
+			// Add JVM up time in ms
+			result.add(new Metric<Long>("uptime", ManagementFactory.getRuntimeMXBean()
+					.getUptime()));
+			result.add(new Metric<Double>("systemload.average", ManagementFactory
+					.getOperatingSystemMXBean().getSystemLoadAverage()));
+			addHeapMetrics(result);
+			addThreadMetrics(result);
+			addClassLoadingMetrics(result);
+			addGarbageCollectionMetrics(result);
+		}
+		catch (NoClassDefFoundError ex) {
+			// Expected on Google App Engine
+		}
 	}
 
 	/**
 	 * Add JVM heap metrics.
+	 * @param result the result
 	 */
 	protected void addHeapMetrics(Collection<Metric<?>> result) {
 		MemoryUsage memoryUsage = ManagementFactory.getMemoryMXBean()
@@ -93,6 +109,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	/**
 	 * Add thread metrics.
+	 * @param result the result
 	 */
 	protected void addThreadMetrics(Collection<Metric<?>> result) {
 		ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
@@ -105,6 +122,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	/**
 	 * Add class loading metrics.
+	 * @param result the result
 	 */
 	protected void addClassLoadingMetrics(Collection<Metric<?>> result) {
 		ClassLoadingMXBean classLoadingMxBean = ManagementFactory.getClassLoadingMXBean();
@@ -118,6 +136,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	/**
 	 * Add garbage collection metrics.
+	 * @param result the result
 	 */
 	protected void addGarbageCollectionMetrics(Collection<Metric<?>> result) {
 		List<GarbageCollectorMXBean> garbageCollectorMxBeans = ManagementFactory

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,6 @@ import org.springframework.social.connect.web.SignInAdapter;
 import org.springframework.social.connect.web.thymeleaf.SpringSocialDialect;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
@@ -98,9 +97,9 @@ public class SocialWebAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(BeanNameViewResolver.class)
+		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
-		public ViewResolver beanNameViewResolver() {
+		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver viewResolver = new BeanNameViewResolver();
 			viewResolver.setOrder(Integer.MIN_VALUE);
 			return viewResolver;
@@ -108,7 +107,7 @@ public class SocialWebAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(SignInAdapter.class)
-		@ConditionalOnMissingBean(ProviderSignInController.class)
+		@ConditionalOnMissingBean
 		public ProviderSignInController signInController(
 				ConnectionFactoryLocator factoryLocator,
 				UsersConnectionRepository usersRepository, SignInAdapter signInAdapter) {
@@ -125,7 +124,7 @@ public class SocialWebAutoConfiguration {
 	@Configuration
 	@EnableSocial
 	@ConditionalOnWebApplication
-	@ConditionalOnMissingClass(name = "org.springframework.security.core.context.SecurityContextHolder")
+	@ConditionalOnMissingClass("org.springframework.security.core.context.SecurityContextHolder")
 	protected static class AnonymousUserIdSourceConfig extends SocialConfigurerAdapter {
 
 		@Override

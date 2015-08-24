@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "security", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "security")
 public class SecurityProperties implements SecurityPrerequisite {
 
 	/**
@@ -56,7 +56,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	public static final int IGNORED_ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 	/**
-	 * The default order of Spring Security's Filter
+	 * Default order of Spring Security's Filter.
 	 */
 	public static final int DEFAULT_FILTER_ORDER = 0;
 
@@ -150,7 +150,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 	public static class Headers {
 
-		public static enum HSTS {
+		public enum HSTS {
 			NONE, DOMAIN, ALL
 		}
 
@@ -238,6 +238,11 @@ public class SecurityProperties implements SecurityPrerequisite {
 		 */
 		private String[] path = new String[] { "/**" };
 
+		/**
+		 * Security authorize mode to apply.
+		 */
+		private SecurityAuthorizeMode authorizeMode = SecurityAuthorizeMode.ROLE;
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -260,6 +265,14 @@ public class SecurityProperties implements SecurityPrerequisite {
 
 		public void setPath(String... paths) {
 			this.path = paths;
+		}
+
+		public SecurityAuthorizeMode getAuthorizeMode() {
+			return this.authorizeMode;
+		}
+
+		public void setAuthorizeMode(SecurityAuthorizeMode authorizeMode) {
+			this.authorizeMode = authorizeMode;
 		}
 
 	}

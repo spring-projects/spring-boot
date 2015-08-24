@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public class RedisMetricRepository implements MetricRepository {
 	 * @param redisConnectionFactory the redis connection factory
 	 */
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory) {
-		this(redisConnectionFactory, DEFAULT_METRICS_PREFIX);
+		this(redisConnectionFactory, null);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class RedisMetricRepository implements MetricRepository {
 	 */
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory,
 			String prefix) {
-		this(redisConnectionFactory, prefix, DEFAULT_KEY);
+		this(redisConnectionFactory, prefix, null);
 	}
 
 	/**
@@ -91,17 +91,21 @@ public class RedisMetricRepository implements MetricRepository {
 	 */
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory,
 			String prefix, String key) {
+		if (prefix == null) {
+			prefix = DEFAULT_METRICS_PREFIX;
+			if (key == null) {
+				key = DEFAULT_KEY;
+			}
+		}
+		else if (key == null) {
+			key = "keys." + prefix;
+		}
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";
 		}
 		this.prefix = prefix;
-		if (!DEFAULT_METRICS_PREFIX.equals(this.prefix)) {
-			if (DEFAULT_KEY.equals(key)) {
-				key = "keys." + prefix;
-			}
-		}
 		if (key.endsWith(".")) {
 			key = key.substring(0, key.length() - 1);
 		}

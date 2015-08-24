@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@ package org.springframework.boot.context.embedded.undertow;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowMessages;
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.AccessLogReceiver;
+import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.Resource;
@@ -57,6 +62,7 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -69,10 +75,11 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.SocketUtils;
-import org.springframework.util.StringUtils;
+import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
+import org.xnio.Xnio;
+import org.xnio.XnioWorker;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -83,6 +90,7 @@ import org.xnio.SslClientAuthMode;
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
+ * @author Marcos Barbero
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainer
  */
@@ -107,12 +115,18 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 	private Boolean directBuffers;
 
+	private File accessLogDirectory;
+
+	private String accessLogPattern;
+
+	private boolean accessLogEnabled = false;
+
 	/**
 	 * Create a new {@link UndertowEmbeddedServletContainerFactory} instance.
 	 */
 	public UndertowEmbeddedServletContainerFactory() {
 		super();
-		setRegisterJspServlet(false);
+		getJspServlet().setRegistered(false);
 	}
 
 	/**
@@ -122,7 +136,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 */
 	public UndertowEmbeddedServletContainerFactory(int port) {
 		super(port);
-		setRegisterJspServlet(false);
+		getJspServlet().setRegistered(false);
 	}
 
 	/**
@@ -133,7 +147,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	 */
 	public UndertowEmbeddedServletContainerFactory(String contextPath, int port) {
 		super(contextPath, port);
-		setRegisterJspServlet(false);
+		getJspServlet().setRegistered(false);
 	}
 
 	/**
@@ -204,12 +218,9 @@ public class UndertowEmbeddedServletContainerFactory extends
 			ServletContextInitializer... initializers) {
 		DeploymentManager manager = createDeploymentManager(initializers);
 		int port = getPort();
-		if (port == 0) {
-			port = SocketUtils.findAvailableTcpPort(40000);
-		}
 		Builder builder = createBuilder(port);
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, port >= 0);
+				port, port >= 0, getCompression());
 	}
 
 	private Builder createBuilder(int port) {
@@ -229,11 +240,11 @@ public class UndertowEmbeddedServletContainerFactory extends
 		if (this.directBuffers != null) {
 			builder.setDirectBuffers(this.directBuffers);
 		}
-		if (getSsl() == null) {
-			builder.addHttpListener(port, getListenAddress());
+		if (getSsl() != null && getSsl().isEnabled()) {
+			configureSsl(getSsl(), port, builder);
 		}
 		else {
-			configureSsl(port, builder);
+			builder.addHttpListener(port, getListenAddress());
 		}
 		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
 			customizer.customize(builder);
@@ -241,9 +252,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 		return builder;
 	}
 
-	private void configureSsl(int port, Builder builder) {
+	private void configureSsl(Ssl ssl, int port, Builder builder) {
 		try {
-			Ssl ssl = getSsl();
 			SSLContext sslContext = SSLContext.getInstance(ssl.getProtocol());
 			sslContext.init(getKeyManagers(), getTrustManagers(), null);
 			builder.addHttpsListener(port, getListenAddress(), sslContext);
@@ -330,8 +340,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 		registerServletContainerInitializerToDriveServletContextInitializers(deployment,
 				initializers);
 		deployment.setClassLoader(getServletClassLoader());
-		String contextPath = getContextPath();
-		deployment.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
+		deployment.setContextPath(getContextPath());
+		deployment.setDisplayName(getDisplayName());
 		deployment.setDeploymentName("spring-boot");
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));
@@ -343,12 +353,57 @@ public class UndertowEmbeddedServletContainerFactory extends
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
 		}
+		if (isAccessLogEnabled()) {
+			configureAccessLog(deployment);
+		}
+		if (isPersistSession()) {
+			File folder = new ApplicationTemp().getFolder("undertow-sessions");
+			deployment.setSessionPersistenceManager(new FileSessionPersistence(folder));
+		}
 		DeploymentManager manager = Servlets.defaultContainer().addDeployment(deployment);
 		manager.deploy();
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		int sessionTimeout = (getSessionTimeout() > 0 ? getSessionTimeout() : -1);
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
+	}
+
+	private void configureAccessLog(DeploymentInfo deploymentInfo) {
+		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+			@Override
+			public HttpHandler wrap(HttpHandler handler) {
+				return createAccessLogHandler(handler);
+			}
+		});
+	}
+
+	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
+		try {
+			createAccessLogDirectoryIfNecessary();
+			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
+					createWorker(), this.accessLogDirectory, "access_log");
+			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
+					: "common";
+			return new AccessLogHandler(handler, accessLogReceiver, formatString,
+					Undertow.class.getClassLoader());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Failed to create AccessLogHandler", ex);
+		}
+	}
+
+	private void createAccessLogDirectoryIfNecessary() {
+		Assert.state(this.accessLogDirectory != null, "Access log directory is not set");
+		if (!this.accessLogDirectory.isDirectory() && !this.accessLogDirectory.mkdirs()) {
+			throw new IllegalStateException("Failed to create access log directory '"
+					+ this.accessLogDirectory + "'");
+		}
+	}
+
+	private XnioWorker createWorker() throws IOException {
+		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
+		OptionMap.Builder builder = OptionMap.builder();
+		return xnio.createWorker(builder.getMap());
 	}
 
 	private void registerServletContainerInitializerToDriveServletContextInitializers(
@@ -420,7 +475,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 	protected UndertowEmbeddedServletContainer getUndertowEmbeddedServletContainer(
 			Builder builder, DeploymentManager manager, int port) {
 		return new UndertowEmbeddedServletContainer(builder, manager, getContextPath(),
-				port, port >= 0);
+				port, port >= 0, getCompression());
 	}
 
 	@Override
@@ -448,10 +503,20 @@ public class UndertowEmbeddedServletContainerFactory extends
 		this.directBuffers = directBuffers;
 	}
 
-	@Override
-	public void setRegisterJspServlet(boolean registerJspServlet) {
-		Assert.isTrue(!registerJspServlet, "Undertow does not support JSPs");
-		super.setRegisterJspServlet(registerJspServlet);
+	public void setAccessLogDirectory(File accessLogDirectory) {
+		this.accessLogDirectory = accessLogDirectory;
+	}
+
+	public void setAccessLogPattern(String accessLogPattern) {
+		this.accessLogPattern = accessLogPattern;
+	}
+
+	public void setAccessLogEnabled(boolean accessLogEnabled) {
+		this.accessLogEnabled = accessLogEnabled;
+	}
+
+	public boolean isAccessLogEnabled() {
+		return this.accessLogEnabled;
 	}
 
 	/**

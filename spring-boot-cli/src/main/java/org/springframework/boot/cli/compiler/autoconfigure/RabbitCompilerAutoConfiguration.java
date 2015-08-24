@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,6 @@ public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 		imports.addStarImports("org.springframework.amqp.rabbit.annotation",
 				"org.springframework.amqp.rabbit.core",
@@ -53,8 +52,6 @@ public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 				"org.springframework.amqp.rabbit.connection",
 				"org.springframework.amqp.rabbit.listener",
 				"org.springframework.amqp.rabbit.listener.adapter",
-				"org.springframework.amqp.core").addImports(
-				org.springframework.boot.groovy.EnableRabbitMessaging.class.getName());
+				"org.springframework.amqp.core");
 	}
-
 }

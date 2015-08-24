@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Conditional;
  * not already contained in the {@link BeanFactory}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -54,10 +55,25 @@ public @interface ConditionalOnMissingBean {
 	String[] type() default {};
 
 	/**
+	 * The class type of beans that should be ignored when identifying matching beans.
+	 * @return the class types of beans to ignore
+	 * @since 1.2.5
+	 */
+	Class<?>[] ignored() default {};
+
+	/**
+	 * The class type names of beans that should be ignored when identifying matching
+	 * beans.
+	 * @return the class type names of beans to ignore
+	 * @since 1.2.5
+	 */
+	String[] ignoredType() default {};
+
+	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
-	 * when each class specified is missing from all beans in the
+	 * when each annotation specified is missing from all beans in the
 	 * {@link ApplicationContext}.
-	 * @return the class types of beans to check
+	 * @return the class-level annotation types to check
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 
@@ -71,6 +87,7 @@ public @interface ConditionalOnMissingBean {
 	/**
 	 * Strategy to decide if the application context hierarchy (parent contexts) should be
 	 * considered.
+	 * @return the search strategy
 	 */
 	SearchStrategy search() default SearchStrategy.ALL;
 

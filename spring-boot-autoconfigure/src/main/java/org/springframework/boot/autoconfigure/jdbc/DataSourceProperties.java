@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
@@ -32,12 +34,24 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Maciej Walkowiak
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
 public class DataSourceProperties implements BeanClassLoaderAware, InitializingBean {
 
 	public static final String PREFIX = "spring.datasource";
+
+	/**
+	 * Name of the datasource.
+	 */
+	private String name = "testdb";
+
+	/**
+	 * Fully qualified name of the connection pool implementation to use. By default,
+	 * it is auto-detected from the classpath.
+	 */
+	private Class<? extends DataSource> type;
 
 	/**
 	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
@@ -100,7 +114,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	/**
 	 * SQL scripts encoding.
 	 */
-	private String sqlScriptEncoding;
+	private Charset sqlScriptEncoding;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
@@ -115,6 +129,22 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	public void afterPropertiesSet() throws Exception {
 		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection
 				.get(this.classLoader);
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Class<? extends DataSource> getType() {
+		return this.type;
+	}
+
+	public void setType(Class<? extends DataSource> type) {
+		this.type = type;
 	}
 
 	public String getDriverClassName() {
@@ -143,6 +173,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		return driverClassName;
 	}
 
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
+	}
+
 	public String getUrl() {
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
@@ -158,6 +192,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		return url;
 	}
 
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 	public String getUsername() {
 		if (StringUtils.hasText(this.username)) {
 			return this.username;
@@ -168,6 +206,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		return null;
 	}
 
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	public String getPassword() {
 		if (StringUtils.hasText(this.password)) {
 			return this.password;
@@ -176,18 +218,6 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 			return "";
 		}
 		return null;
-	}
-
-	public void setDriverClassName(String driverClassName) {
-		this.driverClassName = driverClassName;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
 	}
 
 	public void setPassword(String password) {
@@ -256,11 +286,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		this.separator = separator;
 	}
 
-	public String getSqlScriptEncoding() {
+	public Charset getSqlScriptEncoding() {
 		return this.sqlScriptEncoding;
 	}
 
-	public void setSqlScriptEncoding(String sqlScriptEncoding) {
+	public void setSqlScriptEncoding(Charset sqlScriptEncoding) {
 		this.sqlScriptEncoding = sqlScriptEncoding;
 	}
 

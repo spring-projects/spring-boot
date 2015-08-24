@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,13 @@ import static org.junit.Assert.assertEquals;
  * Abstract base class for {@link DataSourcePoolMetadata} tests.
  *
  * @author Stephane Nicoll
+ * @param <D> the data source pool metadata type
  */
 public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourcePoolMetadata<?>> {
 
 	/**
 	 * Return a data source metadata instance with a min size of 0 and max size of 2.
+	 * @return the data source metadata
 	 */
 	protected abstract D getDataSourceMetadata();
 

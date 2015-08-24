@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-deployment-tests</artifactId>
-		<version>1.2.1.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-deployment-test-wildfly</artifactId>
 	<packaging>war</packaging>
@@ -52,6 +52,7 @@
 							<portNames>
 								<portName>appserver.port</portName>
 								<portName>appserver.ajp.port</portName>
+								<portName>appserver.transaction.port</portName>
 							</portNames>
 						</configuration>
 					</execution>
@@ -63,6 +64,7 @@
 				<configuration>
 					<container>
 						<containerId>wildfly8x</containerId>
+						<timeout>300000</timeout>
 						<zipUrlInstaller>
 							<url>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip</url>
 						</zipUrlInstaller>
@@ -71,6 +73,9 @@
 						<properties>
 							<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
 							<cargo.jboss.ajp.port>${appserver.ajp.port}</cargo.jboss.ajp.port>
+							<cargo.jboss.transaction.statusManager.port>
+								${appserver.transaction.port}
+							</cargo.jboss.transaction.statusManager.port>
 							<cargo.jboss.configuration>standalone-full</cargo.jboss.configuration>
 						</properties>
 					</configuration>

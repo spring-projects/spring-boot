@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public abstract class MainClassFinder {
 	 * Find the main class from a given folder.
 	 * @param rootFolder the root folder to search
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the folder cannot be read
 	 */
 	public static String findMainClass(File rootFolder) throws IOException {
 		return doWithMainClasses(rootFolder, new ClassNameCallback<String>() {
@@ -91,7 +91,7 @@ public abstract class MainClassFinder {
 	 * Find a single main class from a given folder.
 	 * @param rootFolder the root folder to search
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the folder cannot be read
 	 */
 	public static String findSingleMainClass(File rootFolder) throws IOException {
 		MainClassesCallback callback = new MainClassesCallback();
@@ -161,7 +161,7 @@ public abstract class MainClassFinder {
 	 * @param jarFile the jar file to search
 	 * @param classesLocation the location within the jar containing classes
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the jar file cannot be read
 	 */
 	public static String findMainClass(JarFile jarFile, String classesLocation)
 			throws IOException {
@@ -179,7 +179,7 @@ public abstract class MainClassFinder {
 	 * @param jarFile the jar file to search
 	 * @param classesLocation the location within the jar containing classes
 	 * @return the main class or {@code null}
-	 * @throws IOException
+	 * @throws IOException if the jar file cannot be read
 	 */
 	public static String findSingleMainClass(JarFile jarFile, String classesLocation)
 			throws IOException {
@@ -192,6 +192,7 @@ public abstract class MainClassFinder {
 	 * Perform the given callback operation on all main classes from the given jar.
 	 * @param jarFile the jar file to search
 	 * @param classesLocation the location within the jar containing classes
+	 * @param callback the callback
 	 * @return the first callback result or {@code null}
 	 * @throws IOException
 	 */
@@ -310,8 +311,9 @@ public abstract class MainClassFinder {
 
 	/**
 	 * Callback interface used to receive class names.
+	 * @param <T> the result type
 	 */
-	public static interface ClassNameCallback<T> {
+	public interface ClassNameCallback<T> {
 
 		/**
 		 * Handle the specified class name

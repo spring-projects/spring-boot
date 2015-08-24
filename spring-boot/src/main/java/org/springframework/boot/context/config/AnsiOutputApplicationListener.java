@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@ import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.env.EnvironmentPostProcessingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 
 /**
- * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the the
- * value of the property <code>spring.output.ansi.enabled</code>. See {@link Enabled} for
- * valid values.
+ * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the
+ * value of the property {@code spring.output.ansi.enabled}. See {@link Enabled} for valid
+ * values.
  *
  * @author Raphael von der Grün
  * @since 1.2.0
@@ -42,12 +43,18 @@ public class AnsiOutputApplicationListener implements
 			String enabled = resolver.getProperty("enabled");
 			AnsiOutput.setEnabled(Enum.valueOf(Enabled.class, enabled.toUpperCase()));
 		}
+
+		if (resolver.containsProperty("console-available")) {
+			AnsiOutput.setConsoleAvailable(resolver.getProperty("console-available",
+					Boolean.class));
+		}
 	}
 
 	@Override
 	public int getOrder() {
-		// Apply after the ConfigFileApplicationListener
-		return ConfigFileApplicationListener.DEFAULT_ORDER + 1;
+		// Apply after the EnvironmentPostProcessingApplicationListener has called all
+		// EnvironmentPostProcessors
+		return EnvironmentPostProcessingApplicationListener.ORDER + 1;
 	}
 
 }

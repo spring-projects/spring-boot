@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ public class AtomikosProperties {
 	/**
 	 * Specifies whether VM shutdown should trigger forced shutdown of the transaction
 	 * core. Defaults to false.
-	 * @param forceShutdownOnVmExit
+	 * @param forceShutdownOnVmExit if VM shutdown should be forced
 	 */
 	public void setForceShutdownOnVmExit(boolean forceShutdownOnVmExit) {
 		set("force_shutdown_on_vm_exit", forceShutdownOnVmExit);

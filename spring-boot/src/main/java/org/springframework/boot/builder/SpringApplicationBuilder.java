@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -299,6 +299,7 @@ public class SpringApplicationBuilder {
 	 * Sets the {@link Banner} instance which will be used to print the banner when no
 	 * static banner file is provided.
 	 * @param banner The banner to use
+	 * @return the current builder
 	 */
 	public SpringApplicationBuilder banner(Banner banner) {
 		this.application.setBanner(banner);
@@ -329,6 +330,8 @@ public class SpringApplicationBuilder {
 	/**
 	 * Sets if the created {@link ApplicationContext} should have a shutdown hook
 	 * registered.
+	 * @param registerShutdownHook if the shutdown hook should be registered
+	 * @return the current builder
 	 */
 	public SpringApplicationBuilder registerShutdownHook(boolean registerShutdownHook) {
 		this.registerShutdownHookApplied = true;
@@ -402,7 +405,7 @@ public class SpringApplicationBuilder {
 	/**
 	 * Default properties for the environment. Multiple calls to this method are
 	 * cumulative.
-	 * @param defaults
+	 * @param defaults the default properties
 	 * @return the current builder
 	 * @see SpringApplicationBuilder#properties(String...)
 	 */

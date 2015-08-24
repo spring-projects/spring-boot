@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 the original author or authors.
+ * Copyright 2010-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	 * Return a listing of Gemstones currently stored in the GemFire Cache.
 	 * <p/>
 	 *
-	 * @return a Iterable object to iterate over the list of Gemstones currently stored in
+	 * @return an Iterable object to iterate over the list of Gemstones currently stored in
 	 * the GemFire Cache.
 	 * @see java.lang.Iterable
 	 * @see sample.data.gemfire.domain.Gemstone
@@ -164,6 +164,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 		public IllegalGemstoneException(final String message, final Throwable cause) {
 			super(message, cause);
 		}
+
 	}
 
 }

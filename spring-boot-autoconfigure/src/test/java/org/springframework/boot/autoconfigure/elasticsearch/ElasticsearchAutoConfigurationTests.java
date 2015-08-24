@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,8 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -51,12 +52,41 @@ public class ElasticsearchAutoConfigurationTests {
 	}
 
 	@Test
-	public void createNodeClient() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class,
+	public void createNodeClientWithDefaults() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.foo.bar:baz",
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
+		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
-		assertThat(this.context.getBean(Client.class), instanceOf(NodeClient.class));
+		NodeClient client = (NodeClient) this.context.getBean(Client.class);
+		assertThat(client.settings().get("foo.bar"), is(equalTo("baz")));
+		assertThat(client.settings().get("node.local"), is(equalTo("true")));
+		assertThat(client.settings().get("http.enabled"), is(equalTo("false")));
+	}
+
+	@Test
+	public void createNodeClientWithOverrides() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.foo.bar:baz",
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs",
+				"spring.data.elasticsearch.properties.node.local:false",
+				"spring.data.elasticsearch.properties.node.data:true",
+				"spring.data.elasticsearch.properties.http.enabled:true");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
+		NodeClient client = (NodeClient) this.context.getBean(Client.class);
+		assertThat(client.settings().get("foo.bar"), is(equalTo("baz")));
+		assertThat(client.settings().get("node.local"), is(equalTo("false")));
+		assertThat(client.settings().get("node.data"), is(equalTo("true")));
+		assertThat(client.settings().get("http.enabled"), is(equalTo("true")));
 	}
 
 	@Test
@@ -65,7 +95,9 @@ public class ElasticsearchAutoConfigurationTests {
 		// a port and check the exception
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.data.elasticsearch.cluster-nodes:localhost");
+				"spring.data.elasticsearch.cluster-nodes:localhost",
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.thrown.expect(BeanCreationException.class);

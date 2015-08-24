@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,7 @@ public class XmlEmbeddedWebApplicationContext extends EmbeddedWebApplicationCont
 
 	/**
 	 * Set whether to use XML validation. Default is {@code true}.
+	 * @param validating if validating the XML
 	 */
 	public void setValidating(boolean validating) {
 		this.reader.setValidating(validating);

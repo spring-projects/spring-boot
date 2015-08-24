@@ -40,7 +40,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = JpaUserDetailsTests.Main.class)
+@SpringApplicationConfiguration(JpaUserDetailsTests.Main.class)
 @DirtiesContext
 public class JpaUserDetailsTests {
 

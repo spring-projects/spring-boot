@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,19 @@ class InitializrService {
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	/**
+	 * Accept header to use to retrieve the json meta-data.
+	 */
+	public static final String ACCEPT_META_DATA = "application/vnd.initializr.v2.1+"
+			+ "json,application/vnd.initializr.v2+json";
+
+	/**
+	 * Accept header to use to retrieve the service capabilities of the service. If the
+	 * service does not offer such feature, the json meta-data are retrieved instead.
+	 */
+	public static final String ACCEPT_SERVICE_CAPABILITIES = "text/plain,"
+			+ ACCEPT_META_DATA;
+
+	/**
 	 * Late binding HTTP client.
 	 */
 	private CloseableHttpClient http;
@@ -69,7 +82,9 @@ class InitializrService {
 
 	/**
 	 * Generate a project based on the specified {@link ProjectGenerationRequest}
+	 * @param request the generation request
 	 * @return an entity defining the project
+	 * @throws IOException if generation fails
 	 */
 	public ProjectGenerationResponse generate(ProjectGenerationRequest request)
 			throws IOException {
@@ -78,34 +93,62 @@ class InitializrService {
 		URI url = request.generateUrl(metadata);
 		CloseableHttpResponse httpResponse = executeProjectGenerationRequest(url);
 		HttpEntity httpEntity = httpResponse.getEntity();
-		if (httpEntity == null) {
-			throw new ReportableException("No content received from server '" + url + "'");
-		}
-		if (httpResponse.getStatusLine().getStatusCode() != 200) {
-			throw createException(request.getServiceUrl(), httpResponse);
-		}
+		validateResponse(httpResponse, request.getServiceUrl());
 		return createResponse(httpResponse, httpEntity);
 	}
 
 	/**
 	 * Load the {@link InitializrServiceMetadata} at the specified url.
+	 * @param serviceUrl to url of the initializer service
+	 * @return the metadata describing the service
+	 * @throws IOException if the service's metadata cannot be loaded
 	 */
 	public InitializrServiceMetadata loadMetadata(String serviceUrl) throws IOException {
 		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(serviceUrl);
+		validateResponse(httpResponse, serviceUrl);
+		return parseJsonMetadata(httpResponse.getEntity());
+	}
+
+	/**
+	 * Loads the service capabilities of the service at the specified URL. If the service
+	 * supports generating a textual representation of the capabilities, it is returned,
+	 * otherwise {@link InitializrServiceMetadata} is returned.
+	 * @param serviceUrl to url of the initializer service
+	 * @return the service capabilities (as a String) or the
+	 * {@link InitializrServiceMetadata} describing the service
+	 * @throws IOException if the service capabilities cannot be loaded
+	 */
+	public Object loadServiceCapabilities(String serviceUrl) throws IOException {
+		HttpGet request = new HttpGet(serviceUrl);
+		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
+		CloseableHttpResponse httpResponse = execute(request, serviceUrl, "retrieve help");
+		validateResponse(httpResponse, serviceUrl);
+		HttpEntity httpEntity = httpResponse.getEntity();
+		ContentType contentType = ContentType.getOrDefault(httpEntity);
+		if (contentType.getMimeType().equals("text/plain")) {
+			return getContent(httpEntity);
+		}
+		return parseJsonMetadata(httpEntity);
+	}
+
+	private InitializrServiceMetadata parseJsonMetadata(HttpEntity httpEntity)
+			throws IOException {
+		try {
+			return new InitializrServiceMetadata(getContentAsJson(httpEntity));
+		}
+		catch (JSONException ex) {
+			throw new ReportableException("Invalid content received from server ("
+					+ ex.getMessage() + ")", ex);
+		}
+	}
+
+	private void validateResponse(CloseableHttpResponse httpResponse, String serviceUrl) {
 		if (httpResponse.getEntity() == null) {
 			throw new ReportableException("No content received from server '"
 					+ serviceUrl + "'");
 		}
 		if (httpResponse.getStatusLine().getStatusCode() != 200) {
 			throw createException(serviceUrl, httpResponse);
-		}
-		try {
-			HttpEntity httpEntity = httpResponse.getEntity();
-			return new InitializrServiceMetadata(getContentAsJson(httpEntity));
-		}
-		catch (JSONException ex) {
-			throw new ReportableException("Invalid content received from server ("
-					+ ex.getMessage() + ")", ex);
 		}
 	}
 
@@ -134,8 +177,7 @@ class InitializrService {
 	 */
 	private CloseableHttpResponse executeInitializrMetadataRetrieval(String url) {
 		HttpGet request = new HttpGet(url);
-		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT,
-				"application/vnd.initializr.v2+json"));
+		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_META_DATA));
 		return execute(request, url, "retrieve metadata");
 	}
 
@@ -183,11 +225,15 @@ class InitializrService {
 	}
 
 	private JSONObject getContentAsJson(HttpEntity entity) throws IOException {
+		return new JSONObject(getContent(entity));
+	}
+
+	private String getContent(HttpEntity entity) throws IOException {
 		ContentType contentType = ContentType.getOrDefault(entity);
 		Charset charset = contentType.getCharset();
 		charset = (charset != null ? charset : UTF_8);
 		byte[] content = FileCopyUtils.copyToByteArray(entity.getContent());
-		return new JSONObject(new String(content, charset));
+		return new String(content, charset);
 	}
 
 	private String extractFileName(Header header) {

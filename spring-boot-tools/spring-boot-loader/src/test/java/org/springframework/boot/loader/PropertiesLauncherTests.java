@@ -135,6 +135,17 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
+	public void testUserSpecifiedClassPathOrder() throws Exception {
+		System.setProperty("loader.path", "more-jars/app.jar,jars/app.jar");
+		System.setProperty("loader.classLoader", URLClassLoader.class.getName());
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("[more-jars/app.jar, jars/app.jar]",
+				ReflectionTestUtils.getField(launcher, "paths").toString());
+		launcher.launch(new String[0]);
+		waitFor("Hello Other World");
+	}
+
+	@Test
 	public void testCustomClassLoaderCreation() throws Exception {
 		System.setProperty("loader.classLoader", TestLoader.class.getName());
 		PropertiesLauncher launcher = new PropertiesLauncher();

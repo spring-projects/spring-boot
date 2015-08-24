@@ -28,7 +28,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleJersey1Application.class)
+@SpringApplicationConfiguration(SampleJersey1Application.class)
 @WebAppConfiguration
 @IntegrationTest("server.port:0")
 public class SampleJersey1ApplicationTests {

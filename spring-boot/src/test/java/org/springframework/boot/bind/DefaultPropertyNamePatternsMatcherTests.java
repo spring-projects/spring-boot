@@ -28,42 +28,53 @@ import static org.junit.Assert.assertTrue;
  */
 public class DefaultPropertyNamePatternsMatcherTests {
 
+	private static final char[] DELIMITERS = { '.', '_' };
+
 	@Test
 	public void namesShorter() {
-		assertFalse(new DefaultPropertyNamePatternsMatcher("aaaa", "bbbb")
+		assertFalse(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb")
 				.matches("zzzzz"));
 
 	}
 
 	@Test
 	public void namesExactMatch() {
-		assertTrue(new DefaultPropertyNamePatternsMatcher("aaaa", "bbbb", "cccc")
-				.matches("bbbb"));
+		assertTrue(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb",
+				"cccc").matches("bbbb"));
 	}
 
 	@Test
 	public void namesLonger() {
-		assertFalse(new DefaultPropertyNamePatternsMatcher("aaaaa", "bbbbb", "ccccc")
-				.matches("bbbb"));
+		assertFalse(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaaa", "bbbbb",
+				"ccccc").matches("bbbb"));
 	}
 
 	@Test
 	public void nameWithDot() throws Exception {
-		assertTrue(new DefaultPropertyNamePatternsMatcher("aaaa", "bbbb", "cccc")
-				.matches("bbbb.anything"));
+		assertTrue(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb",
+				"cccc").matches("bbbb.anything"));
 	}
 
 	@Test
 	public void nameWithUnderscore() throws Exception {
-		assertTrue(new DefaultPropertyNamePatternsMatcher("aaaa", "bbbb", "cccc")
-				.matches("bbbb_anything"));
+		assertTrue(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb",
+				"cccc").matches("bbbb_anything"));
 	}
 
 	@Test
 	public void namesMatchWithDifferentLengths() throws Exception {
-		assertTrue(new DefaultPropertyNamePatternsMatcher("aaa", "bbbb", "ccccc")
-				.matches("bbbb"));
+		assertTrue(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaa", "bbbb",
+				"ccccc").matches("bbbb"));
+	}
 
+	@Test
+	public void withSquareBrackets() throws Exception {
+		char[] delimiters = "._[".toCharArray();
+		PropertyNamePatternsMatcher matcher = new DefaultPropertyNamePatternsMatcher(
+				delimiters, "aaa", "bbbb", "ccccc");
+		assertTrue(matcher.matches("bbbb"));
+		assertTrue(matcher.matches("bbbb[4]"));
+		assertFalse(matcher.matches("bbb[4]"));
 	}
 
 }

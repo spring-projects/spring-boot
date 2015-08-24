@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Dave Syer
  */
-@SpringApplicationConfiguration(classes = TestConfiguration.class)
+@SpringApplicationConfiguration(TestConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @IntegrationTest({ "server.servletPath:/spring/*", "server.port:0" })

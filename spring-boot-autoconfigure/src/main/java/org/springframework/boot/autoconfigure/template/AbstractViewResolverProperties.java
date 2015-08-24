@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,12 @@
 
 package org.springframework.boot.autoconfigure.template;
 
+import java.nio.charset.Charset;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.MimeType;
 import org.springframework.web.servlet.ViewResolver;
 
 /**
@@ -28,6 +33,10 @@ import org.springframework.web.servlet.ViewResolver;
  * @see AbstractTemplateViewResolverProperties
  */
 public abstract class AbstractViewResolverProperties {
+
+	private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");
+
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	/**
 	 * Enable MVC view resolution for this technology.
@@ -42,12 +51,12 @@ public abstract class AbstractViewResolverProperties {
 	/**
 	 * Content-Type value.
 	 */
-	private String contentType = "text/html";
+	private MimeType contentType = DEFAULT_CONTENT_TYPE;
 
 	/**
 	 * Template encoding.
 	 */
-	private String charset = "UTF-8";
+	private Charset charset = DEFAULT_CHARSET;
 
 	/**
 	 * White list of view names that can be resolved.
@@ -91,37 +100,29 @@ public abstract class AbstractViewResolverProperties {
 		this.cache = cache;
 	}
 
-	public String getContentType() {
-		return this.contentType
-				+ (this.contentType.contains(";charset=") ? "" : ";charset="
-						+ this.charset);
+	public MimeType getContentType() {
+		if (this.contentType.getCharSet() == null) {
+			Map<String, String> parameters = new LinkedHashMap<String, String>();
+			parameters.put("charset", this.charset.name());
+			parameters.putAll(this.contentType.getParameters());
+			return new MimeType(this.contentType, parameters);
+		}
+		return this.contentType;
 	}
 
-	public void setContentType(String contentType) {
+	public void setContentType(MimeType contentType) {
 		this.contentType = contentType;
 	}
 
-	/**
-	 * @deprecated since 1.2.0 in favor of {@link #getCharset()}
-	 */
-	@Deprecated
-	public String getCharSet() {
-		return getCharset();
-	}
-
-	/**
-	 * @deprecated since 1.2.0 in favor of {@link #setCharset(String)}
-	 */
-	@Deprecated
-	public void setCharSet(String charSet) {
-		setCharset(charSet);
-	}
-
-	public String getCharset() {
+	public Charset getCharset() {
 		return this.charset;
 	}
 
-	public void setCharset(String charset) {
+	public String getCharsetName() {
+		return (this.charset != null ? this.charset.name() : null);
+	}
+
+	public void setCharset(Charset charset) {
 		this.charset = charset;
 	}
 

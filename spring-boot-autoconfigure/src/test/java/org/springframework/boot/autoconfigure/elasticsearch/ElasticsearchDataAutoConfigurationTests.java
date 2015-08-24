@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 
@@ -42,11 +43,16 @@ public class ElasticsearchDataAutoConfigurationTests {
 
 	@Test
 	public void templateExists() {
-		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class,
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class,
 				ElasticsearchDataAutoConfiguration.class);
+		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(ElasticsearchTemplate.class).length);
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 	/**
 	 * Returns the absolute document root when it points to a valid folder, logging a
 	 * warning and returning {@code null} otherwise.
+	 * @return the valid document root
 	 */
 	protected final File getValidDocumentRoot() {
 		File file = getDocumentRoot();

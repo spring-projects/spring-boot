@@ -5,13 +5,27 @@ something, or simply want to hack on the code this document should help you get 
 
 
 
+== Using GitHub issues
+
+We use GitHub issues to track bugs and enhancements. If you have a general usage question
+please ask on http://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
+broader community monitor the http://stackoverflow.com/tags/spring-boot[`spring-boot`]
+tag.
+
+If you are reporting a bug, please help to speed up problem diagnosis by providing as much
+information as possible. Ideally, that would include a small sample project that
+reproduces the problem.
+
+
+
 == Sign the Contributor License Agreement
 Before we accept a non-trivial patch or pull request we will need you to sign the
 https://support.springsource.com/spring_committer_signup[contributor's agreement].
 Signing the contributor's agreement does not grant anyone commit rights to the main
 repository, but it does mean that we can accept your contributions, and you will get an
 author credit if we do.  Active contributors might be asked to join the core team, and
-given the ability to merge pull requests.
+given the ability to merge pull requests. Use '`Phillip Webb`' or '`Dave Syer`' in the
+project lead field when you complete the form.
 
 
 
@@ -20,10 +34,10 @@ None of these is essential for a pull request, but they will all help.  They can
 added after the original pull request but before a merge.
 
 * Use the Spring Framework code format conventions. If you use Eclipse and you follow
-  the ``Importing into eclipse'' instructions below you should get project specific
+  the '`Importing into eclipse`' instructions below you should get project specific
   formatting automatically. You can also import formatter settings using the
-  `eclipse-code-formatter.xml` file from the `eclipse` folder. If using IntelliJ, you can
-  use the http://plugins.jetbrains.com/plugin/6546[Eclipse Code Formatter Plugin]
+  `eclipse-code-formatter.xml` file from the `eclipse` folder. If using IntelliJ IDEA, you
+  can use the http://plugins.jetbrains.com/plugin/6546[Eclipse Code Formatter Plugin]
   to import the same file.
 * Make sure all new `.java` files to have a simple Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is
@@ -53,7 +67,7 @@ should also work without issue.
 
 === Building from source
 To build the source you will need to install
-http://maven.apache.org/run-maven/index.html[Apache Maven] v3.0.6 or above and JDK 1.7.
+http://maven.apache.org/run-maven/index.html[Apache Maven] v3.0.6 or above and JDK 1.8.
 
 
 
@@ -66,7 +80,7 @@ The project can be built from the root directory using the standard maven comman
 ----
 
 NOTE: You may need to increase the amount of memory available to Maven by setting
-a `MAVEN_OPTS` environment variable with the value `-Xmx512m -XX:MaxPermSize=128m`
+a `MAVEN_OPTS` environment variable with the value `-Xmx512m`
 
 If you are rebuilding often, you might also want to skip the tests until you are ready
 to submit a pull request:
@@ -117,7 +131,7 @@ Once the build has been prepared, you can run a full build using the following c
 
 NOTE: As for the standard build, you may need to increase the amount of memory available
 to Maven by setting a `MAVEN_OPTS` environment variable with the value
-`-Xmx512m -XX:MaxPermSize=128m`. We generate more artifacts when running the full build
+`-Xmx512m`. We generate more artifacts when running the full build
 (such as Javadoc jars), so you may find the process a little slower than the standard build.
 
 

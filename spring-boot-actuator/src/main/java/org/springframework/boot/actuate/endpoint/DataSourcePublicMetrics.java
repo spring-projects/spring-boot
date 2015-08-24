@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,8 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 		if (primary) {
 			return "datasource.primary";
 		}
-		if (name.toLowerCase().endsWith(DATASOURCE_SUFFIX.toLowerCase())) {
+		if (name.length() > DATASOURCE_SUFFIX.length()
+				&& name.toLowerCase().endsWith(DATASOURCE_SUFFIX.toLowerCase())) {
 			name = name.substring(0, name.length() - DATASOURCE_SUFFIX.length());
 		}
 		return "datasource." + name;

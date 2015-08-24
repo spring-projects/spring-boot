@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,16 @@ import java.io.IOException;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.tasks.TaskDependency;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.PluginFeatures;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.boot.gradle.run.FindMainClassTask;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.util.StringUtils;
@@ -37,6 +41,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class RepackagePluginFeatures implements PluginFeatures {
 
@@ -55,11 +60,17 @@ public class RepackagePluginFeatures implements PluginFeatures {
 				+ "archives so that they can be executed from the command "
 				+ "line using 'java -jar'");
 		task.setGroup(BasePlugin.BUILD_GROUP);
-		task.dependsOn(project.getConfigurations()
-				.getByName(Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts()
-				.getBuildDependencies());
+		Configuration runtimeConfiguration = project.getConfigurations().getByName(
+				JavaPlugin.RUNTIME_CONFIGURATION_NAME);
+		TaskDependency runtimeProjectDependencyJarTasks = runtimeConfiguration
+				.getTaskDependencyFromProjectDependency(true, JavaPlugin.JAR_TASK_NAME);
+		task.dependsOn(
+				project.getConfigurations().getByName(Dependency.ARCHIVES_CONFIGURATION)
+						.getAllArtifacts().getBuildDependencies(),
+				runtimeProjectDependencyJarTasks);
 		registerOutput(project, task);
 		ensureTaskRunsOnAssembly(project, task);
+		ensureMainClassHasBeenFound(project, task);
 	}
 
 	private void registerOutput(Project project, final RepackageTask task) {
@@ -78,6 +89,10 @@ public class RepackagePluginFeatures implements PluginFeatures {
 
 	private void ensureTaskRunsOnAssembly(Project project, Task task) {
 		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(task);
+	}
+
+	private void ensureMainClassHasBeenFound(Project project, Task task) {
+		task.dependsOn(project.getTasks().withType(FindMainClassTask.class));
 	}
 
 	/**
@@ -121,7 +136,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		private void setupInputOutputs(Jar jarTask, String classifier) {
 			Logger logger = this.project.getLogger();
 			logger.debug("Using classifier: " + classifier + " for task "
-					+ task.getName());
+					+ this.task.getName());
 			File inputFile = jarTask.getArchivePath();
 			String outputName = inputFile.getName();
 			outputName = StringUtils.stripFilenameExtension(outputName) + "-"

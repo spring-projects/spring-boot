@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.SimpleJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -55,6 +54,7 @@ import org.springframework.util.StringUtils;
  * JobRegistry.
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
@@ -92,7 +92,7 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ExitCodeGenerator jobExecutionExitCodeGenerator() {
+	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
 	}
 
@@ -102,14 +102,19 @@ public class BatchAutoConfiguration {
 	public JobExplorer jobExplorer(DataSource dataSource) throws Exception {
 		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
 		factory.setDataSource(dataSource);
+		String tablePrefix = this.properties.getTablePrefix();
+		if (StringUtils.hasText(tablePrefix)) {
+			factory.setTablePrefix(tablePrefix);
+		}
 		factory.afterPropertiesSet();
 		return factory.getObject();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public JobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
-			ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
+	@ConditionalOnMissingBean(JobOperator.class)
+	public SimpleJobOperator jobOperator(JobExplorer jobExplorer,
+			JobLauncher jobLauncher, ListableJobLocator jobRegistry,
+			JobRepository jobRepository) throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
 		factory.setJobExplorer(jobExplorer);
 		factory.setJobLauncher(jobLauncher);
@@ -126,20 +131,24 @@ public class BatchAutoConfiguration {
 	@Configuration
 	protected static class JpaBatchConfiguration {
 
+		@Autowired
+		private BatchProperties properties;
+
 		// The EntityManagerFactory may not be discoverable by type when this condition
 		// is evaluated, so we need a well-known bean name. This is the one used by Spring
 		// Boot in the JPA auto configuration.
 		@Bean
 		@ConditionalOnBean(name = "entityManagerFactory")
-		public BatchConfigurer jpaBatchConfigurer(DataSource dataSource,
+		public BasicBatchConfigurer jpaBatchConfigurer(DataSource dataSource,
 				EntityManagerFactory entityManagerFactory) {
-			return new BasicBatchConfigurer(dataSource, entityManagerFactory);
+			return new BasicBatchConfigurer(this.properties, dataSource,
+					entityManagerFactory);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "entityManagerFactory")
-		public BatchConfigurer basicBatchConfigurer(DataSource dataSource) {
-			return new BasicBatchConfigurer(dataSource);
+		public BasicBatchConfigurer basicBatchConfigurer(DataSource dataSource) {
+			return new BasicBatchConfigurer(this.properties, dataSource);
 		}
 
 	}

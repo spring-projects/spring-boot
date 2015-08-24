@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentNavigableMap;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository;
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
 import org.springframework.boot.actuate.metrics.writer.Delta;
@@ -34,8 +33,7 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
  *
  * @author Dave Syer
  */
-public class InMemoryMetricRepository implements MetricRepository, MultiMetricRepository,
-		PrefixMetricReader {
+public class InMemoryMetricRepository implements MetricRepository, MultiMetricRepository {
 
 	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
 

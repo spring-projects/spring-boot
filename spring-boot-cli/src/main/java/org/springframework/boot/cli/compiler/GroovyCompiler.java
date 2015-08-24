@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  * features:
  * <ul>
  * <li>{@link CompilerAutoConfiguration} strategies will be read from
- * <code>META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration</code>
+ * {@code META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration}
  * (per the standard java {@link ServiceLoader} contract) and applied during compilation</li>
  *
  * <li>Multiple classes can be returned if the Groovy source defines more than one Class</li>
@@ -105,7 +105,7 @@ public class GroovyCompiler {
 		}
 
 		this.transformations = new ArrayList<ASTTransformation>();
-		this.transformations.add(new GrabMetadataTransformation(resolutionContext));
+		this.transformations.add(new DependencyManagementBomTransformation(resolutionContext));
 		this.transformations.add(new DependencyAutoConfigurationTransformation(
 				this.loader, resolutionContext, this.compilerAutoConfigurations));
 		this.transformations.add(new GroovyBeansTransformation());
@@ -123,6 +123,7 @@ public class GroovyCompiler {
 	/**
 	 * Return a mutable list of the {@link ASTTransformation}s to be applied during
 	 * {@link #compile(String...)}.
+	 * @return the AST transformations to apply
 	 */
 	public List<ASTTransformation> getAstTransformations() {
 		return this.transformations;

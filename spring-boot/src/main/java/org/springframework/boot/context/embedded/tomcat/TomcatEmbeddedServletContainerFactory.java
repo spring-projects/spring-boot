@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -38,16 +39,22 @@ import org.apache.catalina.Host;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Manager;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.loader.WebappLoader;
+import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.ApplicationTemp;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -85,6 +92,8 @@ import org.springframework.util.StringUtils;
 public class TomcatEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
 	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
@@ -107,7 +116,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private String tldSkip;
 
-	private String uriEncoding = "UTF-8";
+	private Charset uriEncoding = DEFAULT_CHARSET;
 
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
@@ -160,6 +169,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
+		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
@@ -173,9 +183,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
-		if (isRegisterJspServlet()
-				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
-						.getClassLoader())) {
+		if (shouldRegisterJspServlet()) {
 			addJspServlet(context);
 			addJasperInitializer(context);
 			context.addLifecycleListener(new StoreMergedWebXmlListener());
@@ -202,8 +210,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private void addJspServlet(Context context) {
 		Wrapper jspServlet = context.createWrapper();
 		jspServlet.setName("jsp");
-		jspServlet.setServletClass(getJspServletClassName());
+		jspServlet.setServletClass(getJspServlet().getClassName());
 		jspServlet.addInitParameter("fork", "false");
+		for (Entry<String, String> initParameter : getJspServlet().getInitParameters()
+				.entrySet()) {
+			jspServlet.addInitParameter(initParameter.getKey(), initParameter.getValue());
+		}
 		jspServlet.setLoadOnStartup(3);
 		context.addChild(jspServlet);
 		context.addServletMapping("*.jsp", "jsp");
@@ -227,32 +239,57 @@ public class TomcatEmbeddedServletContainerFactory extends
 		int port = (getPort() >= 0 ? getPort() : 0);
 		connector.setPort(port);
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
-			if (getAddress() != null) {
-				((AbstractProtocol<?>) connector.getProtocolHandler())
-						.setAddress(getAddress());
-			}
+			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
 		}
 		if (getUriEncoding() != null) {
-			connector.setURIEncoding(getUriEncoding());
+			connector.setURIEncoding(getUriEncoding().name());
 		}
 
 		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
 
-		if (getSsl() != null) {
-			Assert.state(
-					connector.getProtocolHandler() instanceof AbstractHttp11JsseProtocol,
-					"To use SSL, the connector's protocol handler must be an "
-							+ "AbstractHttp11JsseProtocol subclass");
-			configureSsl((AbstractHttp11JsseProtocol<?>) connector.getProtocolHandler(),
-					getSsl());
-			connector.setScheme("https");
-			connector.setSecure(true);
+		if (getSsl() != null && getSsl().isEnabled()) {
+			customizeSsl(connector);
 		}
-
+		if (getCompression() != null && getCompression().getEnabled()) {
+			customizeCompression(connector);
+		}
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
+		}
+	}
+
+	private void customizeProtocol(AbstractProtocol<?> protocol) {
+		if (getAddress() != null) {
+			protocol.setAddress(getAddress());
+		}
+	}
+
+	private void customizeSsl(Connector connector) {
+		ProtocolHandler handler = connector.getProtocolHandler();
+		Assert.state(handler instanceof AbstractHttp11JsseProtocol,
+				"To use SSL, the connector's protocol handler must be an "
+						+ "AbstractHttp11JsseProtocol subclass");
+		configureSsl((AbstractHttp11JsseProtocol<?>) handler, getSsl());
+		connector.setScheme("https");
+		connector.setSecure(true);
+	}
+
+	private void customizeCompression(Connector connector) {
+		ProtocolHandler handler = connector.getProtocolHandler();
+		if (handler instanceof AbstractHttp11Protocol) {
+			AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+			Compression compression = getCompression();
+			protocol.setCompression("on");
+			protocol.setCompressionMinSize(compression.getMinResponseSize());
+			protocol.setCompressableMimeTypes(StringUtils
+					.arrayToCommaDelimitedString(compression.getMimeTypes()));
+			if (getCompression().getExcludedUserAgents() != null) {
+				protocol.setNoCompressionUserAgents(StringUtils
+						.arrayToCommaDelimitedString(getCompression()
+								.getExcludedUserAgents()));
+			}
 		}
 	}
 
@@ -345,15 +382,36 @@ public class TomcatEmbeddedServletContainerFactory extends
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
-		long sessionTimeout = getSessionTimeout();
-		if (sessionTimeout > 0) {
-			// Tomcat timeouts are in minutes
-			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
-		}
-		context.setSessionTimeout((int) sessionTimeout);
+		configureSession(context);
 		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
 			customizer.customize(context);
 		}
+	}
+
+	private void configureSession(Context context) {
+		long sessionTimeout = getSessionTimeoutInMinutes();
+		context.setSessionTimeout((int) sessionTimeout);
+		if (isPersistSession()) {
+			Manager manager = context.getManager();
+			if (manager == null) {
+				manager = new StandardManager();
+				context.setManager(manager);
+			}
+			Assert.state(manager instanceof StandardManager,
+					"Unable to persist HTTP session state using manager type "
+							+ manager.getClass().getName());
+			File folder = new ApplicationTemp().getFolder("tomcat-sessions");
+			File file = new File(folder, "SESSIONS.ser");
+			((StandardManager) manager).setPathname(file.getAbsolutePath());
+		}
+	}
+
+	private long getSessionTimeoutInMinutes() {
+		long sessionTimeout = getSessionTimeout();
+		if (sessionTimeout > 0) {
+			sessionTimeout = Math.max(TimeUnit.SECONDS.toMinutes(sessionTimeout), 1L);
+		}
+		return sessionTimeout;
 	}
 
 	/**
@@ -378,7 +436,17 @@ public class TomcatEmbeddedServletContainerFactory extends
 		return new TomcatEmbeddedServletContainer(tomcat, getPort() >= 0);
 	}
 
-	private File createTempDir(String prefix) {
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
+	/**
+	 * Returns the absolute temp dir for given web server.
+	 * @param prefix webserver name
+	 * @return The temp dir for given web server.
+	 */
+	protected File createTempDir(String prefix) {
 		try {
 			File tempFolder = File.createTempFile(prefix + ".", "." + getPort());
 			tempFolder.delete();
@@ -388,13 +456,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 		}
 		catch (IOException ex) {
 			throw new EmbeddedServletContainerException(
-					"Unable to create Tomcat tempdir", ex);
+					"Unable to create Tomcat tempdir. java.io.tmpdir is set to "
+							+ System.getProperty("java.io.tmpdir"), ex);
 		}
-	}
-
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
 	}
 
 	/**
@@ -417,6 +481,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * The Tomcat protocol to use when create the {@link Connector}.
+	 * @param protocol the protocol
 	 * @see Connector#Connector(String)
 	 */
 	public void setProtocol(String protocol) {
@@ -575,14 +640,15 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * be used.
 	 * @param uriEncoding the uri encoding to set
 	 */
-	public void setUriEncoding(String uriEncoding) {
+	public void setUriEncoding(Charset uriEncoding) {
 		this.uriEncoding = uriEncoding;
 	}
 
 	/**
 	 * Returns the character encoding to use for URL decoding.
+	 * @return the URI encoding
 	 */
-	public String getUriEncoding() {
+	public Charset getUriEncoding() {
 		return this.uriEncoding;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,9 @@ public class DependencyCustomizer {
 
 	/**
 	 * Create a new {@link DependencyCustomizer} instance.
-	 * @param loader
+	 * @param loader the current classloader
+	 * @param moduleNode the current module
+	 * @param dependencyResolutionContext the context for dependency resolution
 	 */
 	public DependencyCustomizer(GroovyClassLoader loader, ModuleNode moduleNode,
 			DependencyResolutionContext dependencyResolutionContext) {
@@ -250,7 +252,9 @@ public class DependencyCustomizer {
 
 	/**
 	 * Strategy called to test if dependencies can be added. Subclasses override as
-	 * required.
+	 * required. Returns {@code true} by default.
+	 *
+	 * @return {@code true} if dependencies can be added, otherwise {@code false}
 	 */
 	protected boolean canAdd() {
 		return true;

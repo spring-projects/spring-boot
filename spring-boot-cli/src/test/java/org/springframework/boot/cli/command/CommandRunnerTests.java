@@ -203,7 +203,7 @@ public class CommandRunnerTests {
 		this.commandRunner.run("help", "missing");
 	}
 
-	private static enum Call {
+	private enum Call {
 		SHOW_USAGE, ERROR_MESSAGE, PRINT_STACK_TRACE
 	}
 }

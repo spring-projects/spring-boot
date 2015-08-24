@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2010-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,8 @@ public class ContextIdApplicationContextInitializer implements
 	}
 
 	/**
-	 * @param name
+	 * Create a new {@link ContextIdApplicationContextInitializer} instance.
+	 * @param name the name of the application (can include placeholders)
 	 */
 	public ContextIdApplicationContextInitializer(String name) {
 		this.name = name;
@@ -91,7 +92,6 @@ public class ContextIdApplicationContextInitializer implements
 	private String getApplicationId(ConfigurableEnvironment environment) {
 		String name = environment.resolvePlaceholders(this.name);
 		String index = environment.resolvePlaceholders(INDEX_PATTERN);
-
 		String profiles = StringUtils.arrayToCommaDelimitedString(environment
 				.getActiveProfiles());
 		if (StringUtils.hasText(profiles)) {

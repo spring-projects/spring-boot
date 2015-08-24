@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,9 @@ package org.springframework.boot.test;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
@@ -42,45 +37,11 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @deprecated since 1.3 in favor of
+ * org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer
  */
-public class ServerPortInfoApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-	@Override
-	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext
-				.addApplicationListener(new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
-					@Override
-					public void onApplicationEvent(
-							EmbeddedServletContainerInitializedEvent event) {
-						ServerPortInfoApplicationContextInitializer.this
-								.onApplicationEvent(event);
-					}
-				});
-	}
-
-	protected void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
-		String propertyName = getPropertyName(event.getApplicationContext());
-		setPortProperty(event.getApplicationContext(), propertyName, event
-				.getEmbeddedServletContainer().getPort());
-	}
-
-	protected String getPropertyName(EmbeddedWebApplicationContext context) {
-		String name = context.getNamespace();
-		if (StringUtils.isEmpty(name)) {
-			name = "server";
-		}
-		return "local." + name + ".port";
-	}
-
-	private void setPortProperty(ApplicationContext context, String propertyName, int port) {
-		if (context instanceof ConfigurableApplicationContext) {
-			EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) context,
-					propertyName + ":" + port);
-		}
-		if (context.getParent() != null) {
-			setPortProperty(context.getParent(), propertyName, port);
-		}
-	}
+@Deprecated
+public class ServerPortInfoApplicationContextInitializer extends
+		org.springframework.boot.context.web.ServerPortInfoApplicationContextInitializer {
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.springframework.boot.bind;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.PropertyValue;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -41,6 +45,7 @@ public class PropertySourcesPropertyValuesTests {
 	@Before
 	public void init() {
 		this.propertySources.addFirst(new PropertySource<String>("static", "foo") {
+
 			@Override
 			public Object getProperty(String name) {
 				if (name.equals(getSource())) {
@@ -55,10 +60,39 @@ public class PropertySourcesPropertyValuesTests {
 	}
 
 	@Test
+	public void testTypesPreserved() {
+		Map<String, Object> map = Collections.<String, Object> singletonMap("name", 123);
+		this.propertySources.replace("map", new MapPropertySource("map", map));
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+				this.propertySources);
+		assertEquals(123, propertyValues.getPropertyValues()[0].getValue());
+	}
+
+	@Test
 	public void testSize() {
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
 		assertEquals(1, propertyValues.getPropertyValues().length);
+	}
+
+	@Test
+	public void testOrderPreserved() {
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		map.put("one", 1);
+		map.put("two", 2);
+		map.put("three", 3);
+		map.put("four", 4);
+		map.put("five", 5);
+		this.propertySources.addFirst(new MapPropertySource("ordered", map));
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+				this.propertySources);
+		PropertyValue[] values = propertyValues.getPropertyValues();
+		assertEquals(6, values.length);
+		Collection<String> names = new ArrayList<String>();
+		for (PropertyValue value : values) {
+			names.add(value.getName());
+		}
+		assertEquals("[one, two, three, four, five, name]", names.toString());
 	}
 
 	@Test
@@ -89,6 +123,7 @@ public class PropertySourcesPropertyValuesTests {
 	@Test
 	public void testNonEnumeratedPlaceholder() {
 		this.propertySources.addFirst(new PropertySource<String>("another", "baz") {
+
 			@Override
 			public Object getProperty(String name) {
 				if (name.equals(getSource())) {
@@ -145,10 +180,12 @@ public class PropertySourcesPropertyValuesTests {
 		TestBean target = new TestBean();
 		DataBinder binder = new DataBinder(target);
 		this.propertySources.addFirst(new PropertySource<Object>("application", "STUFF") {
+
 			@Override
 			public Object getProperty(String name) {
 				return new Object();
 			}
+
 		});
 		binder.bind(new PropertySourcesPropertyValues(this.propertySources,
 				(Collection<String>) null, Collections.singleton("name")));

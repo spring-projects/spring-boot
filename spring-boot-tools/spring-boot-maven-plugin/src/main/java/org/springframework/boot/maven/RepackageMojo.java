@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
@@ -34,6 +35,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.springframework.boot.loader.tools.DefaultLaunchScript;
+import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
@@ -118,11 +121,36 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private LayoutType layout;
 
 	/**
-	 * A list of the libraries that must be unpacked from fat jars in order to run.
+	 * A list of the libraries that must be unpacked from fat jars in order to run. Specify
+	 * each library as a <code>&lt;dependency&gt;</code> with a <code>&lt;groupId&gt;</code> and a
+	 * <code>&lt;artifactId&gt;</code> and they will be unpacked at runtime in <code>$TMPDIR/spring-boot-libs</code>.
 	 * @since 1.1
 	 */
 	@Parameter
 	private List<Dependency> requiresUnpack;
+
+	/**
+	 * Make a fully executable jar for *nix machines by prepending a launch script to the
+	 * jar.
+	 * @since 1.3
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean executable;
+
+	/**
+	 * The embedded launch script to prepend to the front of the jar if it is fully
+	 * executable. If not specified the 'Spring Boot' default script will be used.
+	 * @since 1.3
+	 */
+	@Parameter
+	private File embeddedLaunchScript;
+
+	/**
+	 * Properties that should be expanded in the embedded launch script.
+	 * @since 1.3
+	 */
+	@Parameter
+	private Properties embeddedLaunchScriptProperties;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -167,17 +195,22 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack,
 				getLog());
 		try {
-			repackager.repackage(target, libraries);
+			LaunchScript launchScript = getLaunchScript();
+			repackager.repackage(target, libraries, launchScript);
 		}
 		catch (IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
-		if (!source.equals(target)) {
+		if (this.classifier != null) {
 			getLog().info(
 					"Attaching archive: " + target + ", with classifier: "
 							+ this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(),
 					this.classifier, target);
+		}
+		else if (!source.equals(target)) {
+			this.project.getArtifact().setFile(target);
+			getLog().info("Replacing main artifact " + source + " to " + target);
 		}
 	}
 
@@ -186,11 +219,22 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		if (classifier.length() > 0 && !classifier.startsWith("-")) {
 			classifier = "-" + classifier;
 		}
+		if (!this.outputDirectory.exists()) {
+			this.outputDirectory.mkdirs();
+		}
 		return new File(this.outputDirectory, this.finalName + classifier + "."
-				+ this.project.getPackaging());
+				+ this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
-	public static enum LayoutType {
+	private LaunchScript getLaunchScript() throws IOException {
+		if (this.executable || this.embeddedLaunchScript != null) {
+			return new DefaultLaunchScript(this.embeddedLaunchScript,
+					this.embeddedLaunchScriptProperties);
+		}
+		return null;
+	}
+
+	public enum LayoutType {
 
 		/**
 		 * Jar Layout

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,16 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Abstract base class for {@link ConfigurableEmbeddedServletContainer} implementations.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @author Ivan Sopov
  * @see AbstractEmbeddedServletContainerFactory
  */
 public abstract class AbstractConfigurableEmbeddedServletContainer implements
@@ -42,11 +46,9 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	private String contextPath = "";
 
+	private String displayName;
+
 	private boolean registerDefaultServlet = true;
-
-	private boolean registerJspServlet = true;
-
-	private String jspServletClassName = "org.apache.jasper.servlet.JspServlet";
 
 	private int port = 8080;
 
@@ -62,7 +64,13 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	private int sessionTimeout = DEFAULT_SESSION_TIMEOUT;
 
+	private boolean persistSession;
+
 	private Ssl ssl;
+
+	private JspServlet jspServlet = new JspServlet();
+
+	private Compression compression;
 
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
@@ -106,7 +114,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 			}
 			if (!contextPath.startsWith("/") || contextPath.endsWith("/")) {
 				throw new IllegalArgumentException(
-						"ContextPath must start with '/ and not end with '/'");
+						"ContextPath must start with '/' and not end with '/'");
 			}
 		}
 	}
@@ -114,9 +122,19 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	/**
 	 * Returns the context path for the embedded servlet container. The path will start
 	 * with "/" and not end with "/". The root context is represented by an empty string.
+	 * @return the context path
 	 */
 	public String getContextPath() {
 		return this.contextPath;
+	}
+
+	@Override
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDisplayName() {
+		return this.displayName;
 	}
 
 	@Override
@@ -163,6 +181,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	@Override
+	public void setPersistSession(boolean persistSession) {
+		this.persistSession = persistSession;
+	}
+
+	public boolean isPersistSession() {
+		return this.persistSession;
+	}
+
+	@Override
 	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers = new ArrayList<ServletContextInitializer>(initializers);
@@ -182,6 +209,7 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	/**
 	 * Returns the document root which will be used by the web context to serve static
 	 * files.
+	 * @return the document root
 	 */
 	public File getDocumentRoot() {
 		return this.documentRoot;
@@ -200,8 +228,9 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * Returns a mutable set of {@link ErrorPage}s that will be used when handling
-	 * exceptions.
+	 * Returns a mutable set of {@link ErrorPage ErrorPages} that will be used when
+	 * handling exceptions.
+	 * @return the error pages
 	 */
 	public Set<ErrorPage> getErrorPages() {
 		return this.errorPages;
@@ -225,18 +254,10 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		this.registerDefaultServlet = registerDefaultServlet;
 	}
 
-	/**
-	 * Flag to indicate that the JSP servlet should be registered if available on the
-	 * classpath.
-	 * @return true if the JSP servlet is to be registered
-	 */
-	public boolean isRegisterJspServlet() {
-		return this.registerJspServlet;
-	}
-
 	@Override
 	public void setRegisterJspServlet(boolean registerJspServlet) {
-		this.registerJspServlet = registerJspServlet;
+		Assert.notNull(this.jspServlet);
+		this.jspServlet.setRegistered(registerJspServlet);
 	}
 
 	/**
@@ -258,14 +279,26 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	@Override
 	public void setJspServletClassName(String jspServletClassName) {
-		this.jspServletClassName = jspServletClassName;
+		Assert.notNull(this.jspServlet);
+		this.jspServlet.setClassName(jspServletClassName);
 	}
 
-	/**
-	 * @return the JSP servlet class name
-	 */
-	protected String getJspServletClassName() {
-		return this.jspServletClassName;
+	@Override
+	public void setJspServlet(JspServlet jspServlet) {
+		this.jspServlet = jspServlet;
+	}
+
+	public JspServlet getJspServlet() {
+		return this.jspServlet;
+	}
+
+	public Compression getCompression() {
+		return this.compression;
+	}
+
+	@Override
+	public void setCompression(Compression compression) {
+		this.compression = compression;
 	}
 
 	/**
@@ -282,6 +315,18 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 		mergedInitializers.addAll(this.initializers);
 		return mergedInitializers
 				.toArray(new ServletContextInitializer[mergedInitializers.size()]);
+	}
+
+	/**
+	 * Returns whether or not he JSP servlet should be registered with the embedded
+	 * container.
+	 * @return {@code true} if the container should be registered, otherwise {@code false}
+	 */
+	protected boolean shouldRegisterJspServlet() {
+		return this.jspServlet != null
+				&& this.jspServlet.getRegistered()
+				&& ClassUtils.isPresent(this.jspServlet.getClassName(), getClass()
+						.getClassLoader());
 	}
 
 }

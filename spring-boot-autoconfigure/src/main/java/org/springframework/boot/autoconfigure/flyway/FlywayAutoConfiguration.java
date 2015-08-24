@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -52,7 +54,8 @@ import org.springframework.util.Assert;
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "flyway", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
+		HibernateJpaAutoConfiguration.class })
 public class FlywayAutoConfiguration {
 
 	@Configuration
@@ -73,6 +76,9 @@ public class FlywayAutoConfiguration {
 		@Autowired(required = false)
 		@FlywayDataSource
 		private DataSource flywayDataSource;
+
+		@Autowired(required = false)
+		private FlywayMigrationStrategy migrationStrategy;
 
 		@PostConstruct
 		public void checkLocationExists() {
@@ -95,7 +101,7 @@ public class FlywayAutoConfiguration {
 			return false;
 		}
 
-		@Bean(initMethod = "migrate")
+		@Bean
 		@ConfigurationProperties(prefix = "flyway")
 		public Flyway flyway() {
 			Flyway flyway = new Flyway();
@@ -113,6 +119,12 @@ public class FlywayAutoConfiguration {
 			return flyway;
 		}
 
+		@Bean
+		public FlywayMigrationInitializer flywayInitializer(Flyway flyway) {
+			return new FlywayMigrationInitializer(flyway, this.migrationStrategy);
+
+		}
+
 	}
 
 	/**
@@ -126,7 +138,35 @@ public class FlywayAutoConfiguration {
 			EntityManagerFactoryDependsOnPostProcessor {
 
 		public FlywayJpaDependencyConfiguration() {
-			super("flyway");
+			super("flywayInitializer", "flyway");
+		}
+
+	}
+
+	/**
+	 * {@link InitializingBean} used to trigger {@link Flyway} migration via the
+	 * {@link FlywayMigrationStrategy}.
+	 */
+	private static class FlywayMigrationInitializer implements InitializingBean {
+
+		private final Flyway flyway;
+
+		private final FlywayMigrationStrategy migrationStrategy;
+
+		public FlywayMigrationInitializer(Flyway flyway,
+				FlywayMigrationStrategy migrationStrategy) {
+			this.flyway = flyway;
+			this.migrationStrategy = migrationStrategy;
+		}
+
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			if (this.migrationStrategy != null) {
+				this.migrationStrategy.migrate(this.flyway);
+			}
+			else {
+				this.flyway.migrate();
+			}
 		}
 
 	}

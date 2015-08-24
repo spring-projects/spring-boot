@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,19 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -32,13 +37,14 @@ import static org.junit.Assert.assertThat;
 /**
  * Abstract base class for endpoint tests.
  *
+ * @param <T> the endpoint type
  * @author Phillip Webb
  */
 public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	protected AnnotationConfigApplicationContext context;
 
-	private final Class<?> configClass;
+	protected final Class<?> configClass;
 
 	private final Class<?> type;
 
@@ -60,7 +66,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Before
 	public void setup() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(this.configClass);
+		this.context.register(JacksonAutoConfiguration.class, this.configClass);
 		this.context.refresh();
 	}
 
@@ -131,6 +137,38 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.refresh();
 		((AbstractEndpoint) getEndpointBean()).setEnabled(true);
 		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+	}
+
+	@Test
+	public void isAllEndpointsDisabled() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		PropertySource<?> propertySource = new MapPropertySource("test",
+				Collections.<String, Object> singletonMap("endpoints.enabled", false));
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
+		assertThat(getEndpointBean().isEnabled(), equalTo(false));
+	}
+
+	@Test
+	public void isOptIn() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		Map<String, Object> source = new HashMap<String, Object>();
+		source.put("endpoints.enabled", false);
+		source.put(this.property + ".enabled", true);
+		PropertySource<?> propertySource = new MapPropertySource("test", source);
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.register(this.configClass);
+		this.context.refresh();
+		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+	}
+
+	@Test
+	public void serialize() throws Exception {
+		Object result = getEndpointBean().invoke();
+		if (result != null) {
+			this.context.getBean(ObjectMapper.class).writeValue(System.out, result);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

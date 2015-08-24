@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,11 @@ import org.springframework.util.StringUtils;
 public class MultipartProperties {
 
 	/**
+	 * Enable multipart upload handling.
+	 */
+	private boolean enabled;
+
+	/**
 	 * Intermediate location of uploaded files.
 	 */
 	private String location;
@@ -73,32 +78,40 @@ public class MultipartProperties {
 	 */
 	private String fileSizeThreshold = "0";
 
-	public String getMaxFileSize() {
-		return this.maxFileSize;
+	public boolean getEnabled() {
+		return this.enabled;
 	}
 
-	public String getMaxRequestSize() {
-		return this.maxRequestSize;
-	}
-
-	public String getFileSizeThreshold() {
-		return this.fileSizeThreshold;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public String getLocation() {
 		return this.location;
 	}
 
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getMaxFileSize() {
+		return this.maxFileSize;
+	}
+
 	public void setMaxFileSize(String maxFileSize) {
 		this.maxFileSize = maxFileSize;
+	}
+
+	public String getMaxRequestSize() {
+		return this.maxRequestSize;
 	}
 
 	public void setMaxRequestSize(String maxRequestSize) {
 		this.maxRequestSize = maxRequestSize;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public String getFileSizeThreshold() {
+		return this.fileSizeThreshold;
 	}
 
 	public void setFileSizeThreshold(String fileSizeThreshold) {

@@ -12,7 +12,7 @@
   },
   {
     "name": "banner.location",
-    "type": "java.lang.String",
+    "type": "org.springframework.core.io.Resource",
     "description": "Banner file location.",
     "defaultValue": "classpath:banner.txt"
   },
@@ -30,6 +30,13 @@
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
+    "name": "logging.exception-conversion-word",
+    "type": "java.lang.String",
+    "description": "Conversion word used when logging exceptions.",
+    "defaultValue": "%rEx",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
     "name": "logging.file",
     "type": "java.lang.String",
     "description": "Log file name.",
@@ -37,8 +44,20 @@
   },
   {
     "name": "logging.level",
-    "type": "java.util.Map<java.lang.String,java.lang.Object>",
+    "type": "java.util.Map<java.lang.String,java.lang.String>",
     "description": "Log levels severity mapping. Use 'root' for the root logger.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
+    "name": "logging.pattern.console",
+    "type": "java.lang.String",
+    "description": "Appender pattern for output to the console. Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
+    "name": "logging.pattern.file",
+    "type": "java.lang.String",
+    "description": "Appender pattern for output to the file. Only supported with the default logback setup.",
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
@@ -50,7 +69,7 @@
   {
     "name": "spring.mandatory-file-encoding",
     "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
-    "type": "java.lang.String",
+    "type": "java.nio.charset.Charset",
     "description": "Expected character encoding the application must use."
   },
   {
@@ -89,7 +108,7 @@
     "name": "spring.main.sources",
     "type": "java.util.Set<java.lang.Object>",
     "sourceType": "org.springframework.boot.SpringApplication",
-    "description": "Sources (class name, package name or XML resource location) used to create the ApplicationContext."
+    "description": "Sources (class name, package name or XML resource location) to include in the ApplicationContext."
   },
   {
     "name": "spring.main.web-environment",
@@ -112,6 +131,69 @@
     "name": "spring.profiles.include",
     "type": "java.lang.String",
     "description": "Unconditionally activate the specified comma separated profiles."
+  }
+],"hints": [
+  {
+    "name": "logging.level.keys",
+    "values": [
+      {
+        "value": "root",
+        "description": "Root logger used to assign the default logging level."
+      }
+    ],
+    "providers": [
+      {
+        "name": "logger-name"
+      }
+    ]
+  },
+  {
+    "name": "logging.level.values",
+    "values": [
+      {
+        "value": "trace"
+      },
+      {
+        "value": "debug"
+      },
+      {
+        "value": "info"
+      },
+      {
+        "value": "warn"
+      },
+      {
+        "value": "error"
+      },
+      {
+        "value": "fatal"
+      },
+      {
+        "value": "off"
+      }
+
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.profiles.active",
+    "providers": [
+      {
+        "name": "spring-profile-name"
+      }
+    ]
+  },
+  {
+    "name": "spring.profiles.include",
+    "providers": [
+      {
+        "name": "spring-profile-name"
+      }
+    ]
   }
 ]}
 

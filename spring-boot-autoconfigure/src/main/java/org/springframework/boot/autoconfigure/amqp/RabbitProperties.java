@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.amqp;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -27,6 +28,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Greg Turnquist
  * @author Dave Syer
+ * @author Stephane Nicoll
+ * @author Andy Wilkinson
+ * @author Josh Thornhill
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
@@ -52,6 +56,11 @@ public class RabbitProperties {
 	private String password;
 
 	/**
+	 * SSL configuration.
+	 */
+	private final Ssl ssl = new Ssl();
+
+	/**
 	 * Virtual host to use when connecting to the broker.
 	 */
 	private String virtualHost;
@@ -60,6 +69,16 @@ public class RabbitProperties {
 	 * Comma-separated list of addresses to which the client should connect to.
 	 */
 	private String addresses;
+
+	/**
+	 * Requested heartbeat timeout, in seconds; zero for none.
+	 */
+	private Integer requestedHeartbeat;
+
+	/**
+	 * Listener container configuration.
+	 */
+	private final Listener listener = new Listener();
 
 	public String getHost() {
 		if (this.addresses == null) {
@@ -115,7 +134,7 @@ public class RabbitProperties {
 			}
 			int index = address.indexOf("/");
 			if (index >= 0 && index < address.length()) {
-				this.virtualHost = address.substring(index + 1);
+				setVirtualHost(address.substring(index + 1));
 				address = address.substring(0, index);
 			}
 			if (!address.contains(":")) {
@@ -147,12 +166,180 @@ public class RabbitProperties {
 		this.password = password;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
 	public String getVirtualHost() {
 		return this.virtualHost;
 	}
 
 	public void setVirtualHost(String virtualHost) {
 		this.virtualHost = ("".equals(virtualHost) ? "/" : virtualHost);
+	}
+
+	public Integer getRequestedHeartbeat() {
+		return this.requestedHeartbeat;
+	}
+
+	public void setRequestedHeartbeat(Integer requestedHeartbeat) {
+		this.requestedHeartbeat = requestedHeartbeat;
+	}
+
+	public Listener getListener() {
+		return this.listener;
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Enable SSL support.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Path to the key store that holds the SSL certificate.
+		 */
+		private String keyStore;
+
+		/**
+		 * Password used to access the key store.
+		 */
+		private String keyStorePassword;
+
+		/**
+		 * Trust store that holds SSL certificates.
+		 */
+		private String trustStore;
+
+		/**
+		 * Password used to access the trust store.
+		 */
+		private String trustStorePassword;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getKeyStore() {
+			return this.keyStore;
+		}
+
+		public void setKeyStore(String keyStore) {
+			this.keyStore = keyStore;
+		}
+
+		public String getKeyStorePassword() {
+			return this.keyStorePassword;
+		}
+
+		public void setKeyStorePassword(String keyStorePassword) {
+			this.keyStorePassword = keyStorePassword;
+		}
+
+		public String getTrustStore() {
+			return this.trustStore;
+		}
+
+		public void setTrustStore(String trustStore) {
+			this.trustStore = trustStore;
+		}
+
+		public String getTrustStorePassword() {
+			return this.trustStorePassword;
+		}
+
+		public void setTrustStorePassword(String trustStorePassword) {
+			this.trustStorePassword = trustStorePassword;
+		}
+
+	}
+
+	public static class Listener {
+
+		/**
+		 * Start the container automatically on startup.
+		 */
+		private boolean autoStartup = true;
+
+		/**
+		 * Acknowledge mode of container.
+		 */
+		private AcknowledgeMode acknowledgeMode;
+
+		/**
+		 * Minimum number of consumers.
+		 */
+		private Integer concurrency;
+
+		/**
+		 * Maximum number of consumers.
+		 */
+		private Integer maxConcurrency;
+
+		/**
+		 * Number of messages to be handled in a single request. It should be greater than
+		 * or equal to the transaction size (if used).
+		 */
+		private Integer prefetch;
+
+		/**
+		 * Number of messages to be processed in a transaction. For best results it should
+		 * be less than or equal to the prefetch count.
+		 */
+		private Integer transactionSize;
+
+		public boolean isAutoStartup() {
+			return this.autoStartup;
+		}
+
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
+		}
+
+		public AcknowledgeMode getAcknowledgeMode() {
+			return this.acknowledgeMode;
+		}
+
+		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+			this.acknowledgeMode = acknowledgeMode;
+		}
+
+		public Integer getConcurrency() {
+			return this.concurrency;
+		}
+
+		public void setConcurrency(Integer concurrency) {
+			this.concurrency = concurrency;
+		}
+
+		public Integer getMaxConcurrency() {
+			return this.maxConcurrency;
+		}
+
+		public void setMaxConcurrency(Integer maxConcurrency) {
+			this.maxConcurrency = maxConcurrency;
+		}
+
+		public Integer getPrefetch() {
+			return this.prefetch;
+		}
+
+		public void setPrefetch(Integer prefetch) {
+			this.prefetch = prefetch;
+		}
+
+		public Integer getTransactionSize() {
+			return this.transactionSize;
+		}
+
+		public void setTransactionSize(Integer transactionSize) {
+			this.transactionSize = transactionSize;
+		}
 	}
 
 }

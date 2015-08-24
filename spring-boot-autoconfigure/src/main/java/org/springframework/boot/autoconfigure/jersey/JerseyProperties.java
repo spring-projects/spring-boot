@@ -36,7 +36,7 @@ public class JerseyProperties {
 	private Type type = Type.SERVLET;
 
 	/**
-	 * Init parameters to pass to Jersey.
+	 * Init parameters to pass to Jersey via the servlet or filter.
 	 */
 	private Map<String, String> init = new HashMap<String, String>();
 

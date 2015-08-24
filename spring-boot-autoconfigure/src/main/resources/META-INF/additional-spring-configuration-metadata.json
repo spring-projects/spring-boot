@@ -1,5 +1,11 @@
 {"properties": [
   {
+    "name": "multipart.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable support of multi-part uploads.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.aop.auto",
     "type": "java.lang.Boolean",
     "description": "Add @EnableAspectJAutoProxy.",
@@ -10,6 +16,23 @@
     "type": "java.lang.Boolean",
     "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
     "defaultValue": false
+  },
+  {
+    "name": "spring.application.admin.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable admin features for the application.",
+    "defaultValue": false
+  },
+  {
+    "name": "spring.application.admin.jmx-name",
+    "type": "java.lang.String",
+    "description": "JMX name of the application admin MBean.",
+    "defaultValue": "org.springframework.boot:type=Admin,name=SpringApplication"
+  },
+  {
+    "name": "spring.autoconfigure.exclude",
+    "type": "java.lang.Class[]",
+    "description": "Auto-configuration classes to exclude."
   },
   {
     "name": "spring.batch.job.enabled",
@@ -60,10 +83,26 @@
     "defaultValue": true
   },
   {
+  	"name": "spring.http.converters.preferred-json-mapper",
+  	"type": "java.lang.String",
+  	"description": "Preferred JSON mapper to use for HTTP message conversion."
+  },
+  {
+    "name": "spring.jmx.default-domain",
+    "type": "java.lang.String",
+    "description": "JMX domain name."
+  },
+  {
     "name": "spring.jmx.enabled",
     "type": "java.lang.Boolean",
     "description": "Expose management beans to the JMX domain.",
     "defaultValue": true
+  },
+  {
+    "name": "spring.jmx.server",
+    "type": "java.lang.String",
+    "description": "MBeanServer bean name.",
+    "defaultValue": "mbeanServer"
   },
   {
     "name": "spring.jpa.open-in-view",
@@ -90,6 +129,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.mvc.favicon.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable resolution of favicon.ico.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.rabbitmq.dynamic",
     "type": "java.lang.Boolean",
     "description": "Create an AmqpAdmin bean.",
@@ -104,12 +149,137 @@
   {
     "name": "spring.view.prefix",
     "type": "java.lang.String",
-    "description": "Spring MVC view prefix."
+    "description": "Spring MVC view prefix.",
+    "deprecation": {
+      "replacement": "spring.mvc.view.prefix"
+    }
   },
   {
     "name": "spring.view.suffix",
     "type": "java.lang.String",
-    "description": "Spring MVC view suffix."
+    "description": "Spring MVC view suffix.",
+    "deprecation": {
+      "replacement": "spring.mvc.view.suffix"
+    }
+  }
+],"hints": [
+  {
+    "name": "liquibase.change-log",
+    "providers": [
+      {
+        "name": "handle-as",
+        "parameters": {
+          "target": "org.springframework.core.io.Resource"
+        }
+      }
+    ]
+  },
+  {
+    "name": "server.jsp-servlet.class-name",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "javax.servlet.http.HttpServlet"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.cache.jcache.provider",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "javax.cache.spi.CachingProvider"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.datasource.driver-class-name",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "java.sql.Driver"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.datasource.xa.data-source-class-name",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "javax.sql.XADataSource"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.http.converters.preferred-json-mapper",
+    "values": [
+      {
+        "value": "gson"
+      },
+      {
+        "value": "jackson"
+      }
+    ],
+    "providers": [
+      {
+        "name": "any"
+      }
+    ]
+  },
+  {
+    "name": "spring.jmx.server",
+    "providers": [
+      {
+        "name": "spring-bean-reference",
+        "parameters": {
+          "target": "javax.management.MBeanServer"
+        }
+      }
+    ]
+  },
+  {
+    "name": "spring.jpa.hibernate.ddl-auto",
+    "values": [
+      {
+        "value": "none",
+        "description": "Disable DDL handling."
+      },
+      {
+        "value": "validate",
+        "description": "Validate the schema, make no changes to the database."
+      },
+      {
+        "value": "update",
+        "description": "Update the schema if necessary."
+      },
+      {
+        "value": "create",
+        "description": "Create the schema and destroy previous data."
+      },
+      {
+        "value": "create-drop",
+        "description": "Create and then destroy the schema at the end of the session."
+      }
+    ]
+  },
+  {
+    "name": "spring.jpa.hibernate.naming-strategy",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "org.hibernate.cfg.NamingStrategy"
+        }
+      }
+    ]
   }
 ]}
 

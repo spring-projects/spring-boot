@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,10 +27,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Oliver Gierke
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.mail")
 public class MailProperties {
+
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	/**
 	 * SMTP server host.
@@ -52,14 +56,29 @@ public class MailProperties {
 	private String password;
 
 	/**
+	 * Protocol used by the SMTP server.
+	 */
+	private String protocol = "smtp";
+
+	/**
 	 * Default MimeMessage encoding.
 	 */
-	private String defaultEncoding = "UTF-8";
+	private Charset defaultEncoding = DEFAULT_CHARSET;
 
 	/**
 	 * Additional JavaMail session properties.
 	 */
 	private Map<String, String> properties = new HashMap<String, String>();
+
+	/**
+	 * Session JNDI name. When set, takes precedence to others mail settings.
+	 */
+	private String jndiName;
+
+	/**
+	 * Test that the mail server is available on startup.
+	 */
+	private boolean testConnection;
 
 	public String getHost() {
 		return this.host;
@@ -93,16 +112,40 @@ public class MailProperties {
 		this.password = password;
 	}
 
-	public String getDefaultEncoding() {
+	public String getProtocol() {
+		return this.protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public Charset getDefaultEncoding() {
 		return this.defaultEncoding;
 	}
 
-	public void setDefaultEncoding(String defaultEncoding) {
+	public void setDefaultEncoding(Charset defaultEncoding) {
 		this.defaultEncoding = defaultEncoding;
 	}
 
 	public Map<String, String> getProperties() {
 		return this.properties;
+	}
+
+	public void setJndiName(String jndiName) {
+		this.jndiName = jndiName;
+	}
+
+	public String getJndiName() {
+		return this.jndiName;
+	}
+
+	public boolean isTestConnection() {
+		return this.testConnection;
+	}
+
+	public void setTestConnection(boolean testConnection) {
+		this.testConnection = testConnection;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,8 @@ public class ParentContextCloserApplicationListener implements
 	/**
 	 * Subclasses may override to create their own subclass of ContextCloserListener. This
 	 * still enforces the use of a weak reference.
+	 * @param child the child context
+	 * @return the {@link ContextCloserListener} to use
 	 */
 	protected ContextCloserListener createContextCloserListener(
 			ConfigurableApplicationContext child) {

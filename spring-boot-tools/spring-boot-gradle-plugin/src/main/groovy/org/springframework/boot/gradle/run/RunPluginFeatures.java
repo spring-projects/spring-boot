@@ -22,8 +22,10 @@ import java.util.concurrent.Callable;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.application.CreateStartScripts;
 import org.springframework.boot.gradle.PluginFeatures;
 
@@ -45,7 +47,12 @@ public class RunPluginFeatures implements PluginFeatures {
 	}
 
 	private void mainClassNameFinder(Project project) {
-		project.getTasks().create(FIND_MAIN_CLASS_TASK_NAME, FindMainClassTask.class);
+		FindMainClassTask findMainClassTask = project.getTasks().create(
+				FIND_MAIN_CLASS_TASK_NAME, FindMainClassTask.class);
+		SourceSet mainSourceSet = SourceSets.findMainSourceSet(project);
+		if (mainSourceSet != null) {
+			findMainClassTask.setMainClassSourceSetOutput(mainSourceSet.getOutput());
+		}
 		project.getTasks().all(new Action<Task>() {
 			@Override
 			public void execute(Task task) {
@@ -69,7 +76,17 @@ public class RunPluginFeatures implements PluginFeatures {
 		run.getConventionMapping().map("main", new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
-				return project.property("mainClassName");
+				if (project.hasProperty("mainClassName")
+						&& project.property("mainClassName") != null) {
+					return project.property("mainClassName");
+				}
+				ExtraPropertiesExtension extraPropertiesExtension = (ExtraPropertiesExtension) project
+						.getExtensions().getByName("ext");
+				if (extraPropertiesExtension.has("mainClassName")
+						&& extraPropertiesExtension.get("mainClassName") != null) {
+					return extraPropertiesExtension.get("mainClassName");
+				}
+				return null;
 			}
 		});
 		run.getConventionMapping().map("jvmArgs", new Callable<Object>() {

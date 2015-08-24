@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,6 @@ import org.springframework.util.StringUtils;
  * @see #setBeanNameGenerator(BeanNameGenerator)
  */
 class BeanDefinitionLoader {
-
-	private static final ResourceLoader DEFAULT_RESOURCE_LOADER = new PathMatchingResourcePatternResolver();
 
 	private final Object[] sources;
 
@@ -228,8 +226,8 @@ class BeanDefinitionLoader {
 	}
 
 	private Resource[] findResources(String source) {
-		ResourceLoader loader = this.resourceLoader != null ? this.resourceLoader
-				: DEFAULT_RESOURCE_LOADER;
+		ResourceLoader loader = (this.resourceLoader != null ? this.resourceLoader
+				: new PathMatchingResourcePatternResolver());
 		try {
 			if (loader instanceof ResourcePatternResolver) {
 				return ((ResourcePatternResolver) loader).getResources(source);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Documented;
@@ -43,19 +44,21 @@ public @interface ConditionalOnJava {
 	 * Configures whether the value configured in {@link #value()} shall be considered the
 	 * upper exclusive or lower inclusive boundary. Defaults to
 	 * {@link Range#EQUAL_OR_NEWER}.
+	 * @return the range
 	 */
 	Range range() default Range.EQUAL_OR_NEWER;
 
 	/**
 	 * The {@link JavaVersion} to check for. Use {@link #range()} to specify whether the
 	 * configured value is an upper-exclusive or lower-inclusive boundary.
+	 * @return the java version
 	 */
 	JavaVersion value();
 
 	/**
 	 * Range options.
 	 */
-	public enum Range {
+	enum Range {
 
 		/**
 		 * Equal to, or newer than the specified {@link JavaVersion}.
@@ -72,7 +75,7 @@ public @interface ConditionalOnJava {
 	/**
 	 * Java versions.
 	 */
-	public enum JavaVersion {
+	enum JavaVersion {
 
 		/**
 		 * Java 1.6.
@@ -128,6 +131,7 @@ public @interface ConditionalOnJava {
 
 		/**
 		 * Returns the {@link JavaVersion} of the current runtime.
+		 * @return the {@link JavaVersion}
 		 */
 		public static JavaVersion getJavaVersion() {
 			int version = JdkVersion.getMajorJavaVersion();

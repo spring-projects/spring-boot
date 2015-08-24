@@ -2,7 +2,8 @@
 <Configuration status="WARN">
 	<Properties>
 		<Property name="PID">????</Property>
-		<Property name="LOG_PATTERN">[%d{yyyy-MM-dd HH:mm:ss.SSS}] boot%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
+		<Property name="LOG_EXCEPTION_CONVERSION_WORD">%rEx</Property>
+		<Property name="LOG_PATTERN">%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{%5p} %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
 	</Properties>
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT" follow="true">

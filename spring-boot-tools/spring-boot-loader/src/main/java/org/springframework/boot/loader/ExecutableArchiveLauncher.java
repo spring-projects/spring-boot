@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.loader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -92,9 +93,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 				}
 			}
 		}
-		for (URL url : urls) {
-			copy.add(url);
-		}
+		Collections.addAll(copy, urls);
 		return super.createClassLoader(copy.toArray(new URL[copy.size()]));
 	}
 
@@ -120,7 +119,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * Called to post-process archive entries before they are used. Implementations can
 	 * add and remove entries.
 	 * @param archives the archives
-	 * @throws Exception
+	 * @throws Exception if the post processing fails
 	 */
 	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
 	}

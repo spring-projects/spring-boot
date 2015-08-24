@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfigur
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpointTests.TestConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -35,7 +38,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
@@ -44,10 +46,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
+ * Tests for {@link EnvironmentMvcEndpoint}
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { TestConfiguration.class })
+@SpringApplicationConfiguration(TestConfiguration.class)
 @WebAppConfiguration
 public class EnvironmentMvcEndpointTests {
 
@@ -58,9 +63,10 @@ public class EnvironmentMvcEndpointTests {
 
 	@Before
 	public void setUp() {
+		this.context.getBean(EnvironmentEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
 		EnvironmentTestUtils.addEnvironment(
-				(ConfigurableApplicationContext) this.context, "foo:bar");
+				(ConfigurableApplicationContext) this.context, "foo:bar", "fool:baz");
 	}
 
 	@Test
@@ -75,20 +81,29 @@ public class EnvironmentMvcEndpointTests {
 				.andExpect(content().string(equalToIgnoringCase("bar")));
 	}
 
-	@Import({ EndpointWebMvcAutoConfiguration.class,
+	@Test
+	public void subWhenDisabled() throws Exception {
+		this.context.getBean(EnvironmentEndpoint.class).setEnabled(false);
+		this.mvc.perform(get("/env/foo")).andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void regex() throws Exception {
+		this.mvc.perform(get("/env/foo.*")).andExpect(status().isOk())
+				.andExpect(content().string(containsString("\"foo\":\"bar\"")))
+				.andExpect(content().string(containsString("\"fool\":\"baz\"")));
+	}
+
+	@Import({ JacksonAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class })
-	@EnableWebMvc
 	@Configuration
 	public static class TestConfiguration {
 
 		@Bean
 		public EnvironmentEndpoint endpoint() {
 			return new EnvironmentEndpoint();
-		}
-
-		@Bean
-		public EnvironmentMvcEndpoint mvcEndpoint() {
-			return new EnvironmentMvcEndpoint(endpoint());
 		}
 
 	}

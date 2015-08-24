@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.net.ConnectException;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
@@ -32,13 +33,18 @@ import static org.junit.Assert.assertTrue;
  */
 public class SampleElasticsearchApplicationTests {
 
+	private static final String[] PROPERTIES = {
+			"spring.data.elasticsearch.properties.path.data:target/data",
+			"spring.data.elasticsearch.properties.path.logs:target/logs" };
+
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
 		try {
-			SampleElasticsearchApplication.main(new String[0]);
+			new SpringApplicationBuilder(SampleElasticsearchApplication.class)
+					.properties(PROPERTIES).run();
 		}
 		catch (IllegalStateException ex) {
 			if (serverNotRunning(ex)) {

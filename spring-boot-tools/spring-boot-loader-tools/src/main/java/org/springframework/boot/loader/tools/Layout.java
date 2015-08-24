@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,13 @@ public interface Layout {
 
 	/**
 	 * Returns the location of classes within the archive.
+	 * @return the classes location
 	 */
 	String getClassesLocation();
 
 	/**
 	 * Returns if loader classes should be included to make the archive executable.
+	 * @return if the layout is executable
 	 */
 	boolean isExecutable();
 

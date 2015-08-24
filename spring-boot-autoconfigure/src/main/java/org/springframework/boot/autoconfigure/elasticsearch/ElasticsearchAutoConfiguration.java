@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,19 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.lease.Releasable;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.node.Node;
+import org.elasticsearch.node.NodeBuilder;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,6 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.NodeClientFactoryBean;
 import org.springframework.data.elasticsearch.client.TransportClientFactoryBean;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,18 +55,25 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchAutoConfiguration implements DisposableBean {
 
+	private static final Map<String, String> DEFAULTS;
+	static {
+		Map<String, String> defaults = new LinkedHashMap<String, String>();
+		defaults.put("http.enabled", String.valueOf(false));
+		defaults.put("node.local", String.valueOf(true));
+		DEFAULTS = Collections.unmodifiableMap(defaults);
+	}
+
 	private static Log logger = LogFactory.getLog(ElasticsearchAutoConfiguration.class);
 
 	@Autowired
 	private ElasticsearchProperties properties;
 
-	private Client client;
+	private Releasable releasable;
 
 	@Bean
 	public Client elasticsearchClient() {
 		try {
-			this.client = createClient();
-			return this.client;
+			return createClient();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -70,29 +88,51 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	}
 
 	private Client createNodeClient() throws Exception {
-		NodeClientFactoryBean factory = new NodeClientFactoryBean(true);
-		factory.setClusterName(this.properties.getClusterName());
-		factory.afterPropertiesSet();
-		return factory.getObject();
+		ImmutableSettings.Builder settings = ImmutableSettings.settingsBuilder();
+		for (Map.Entry<String, String> entry : DEFAULTS.entrySet()) {
+			if (!this.properties.getProperties().containsKey(entry.getKey())) {
+				settings.put(entry.getKey(), entry.getValue());
+			}
+		}
+		settings.put(this.properties.getProperties());
+		Node node = new NodeBuilder().settings(settings)
+				.clusterName(this.properties.getClusterName()).node();
+		this.releasable = node;
+		return node.client();
 	}
 
 	private Client createTransportClient() throws Exception {
 		TransportClientFactoryBean factory = new TransportClientFactoryBean();
-		factory.setClusterName(this.properties.getClusterName());
 		factory.setClusterNodes(this.properties.getClusterNodes());
+		factory.setProperties(createProperties());
 		factory.afterPropertiesSet();
-		return factory.getObject();
+		TransportClient client = factory.getObject();
+		this.releasable = client;
+		return client;
+	}
+
+	private Properties createProperties() {
+		Properties properties = new Properties();
+		properties.put("cluster.name", this.properties.getClusterName());
+		properties.putAll(this.properties.getProperties());
+		return properties;
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		if (this.client != null) {
+		if (this.releasable != null) {
 			try {
 				if (logger.isInfoEnabled()) {
 					logger.info("Closing Elasticsearch client");
 				}
-				if (this.client != null) {
-					this.client.close();
+				try {
+					this.releasable.close();
+				}
+				catch (NoSuchMethodError ex) {
+					// Earlier versions of Elasticsearch had a different method name
+					ReflectionUtils.invokeMethod(
+							ReflectionUtils.findMethod(Releasable.class, "release"),
+							this.releasable);
 				}
 			}
 			catch (final Exception ex) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,8 +65,14 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 	private final ArtifactCoordinatesResolver coordinatesResolver = mock(ArtifactCoordinatesResolver.class);
 
-	private final DependencyResolutionContext resolutionContext = new DependencyResolutionContext(
-			this.coordinatesResolver);
+	private final DependencyResolutionContext resolutionContext = new DependencyResolutionContext() {
+
+		@Override
+		public ArtifactCoordinatesResolver getArtifactCoordinatesResolver() {
+			return ResolveDependencyCoordinatesTransformationTests.this.coordinatesResolver;
+		}
+
+	};
 
 	private final ASTTransformation transformation = new ResolveDependencyCoordinatesTransformation(
 			this.resolutionContext);
@@ -75,13 +81,12 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 	public void setupExpectations() {
 		given(this.coordinatesResolver.getGroupId("spring-core")).willReturn(
 				"org.springframework");
-		given(this.coordinatesResolver.getVersion("spring-core")).willReturn("4.0.0.RC1");
 	}
 
 	@Test
 	public void transformationOfAnnotationOnImport() {
 		this.moduleNode.addImport(null, null, Arrays.asList(this.grabAnnotation));
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -89,7 +94,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 		this.moduleNode.addStarImport("org.springframework.util",
 				Arrays.asList(this.grabAnnotation));
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -97,7 +102,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 		this.moduleNode.addStaticImport(null, null, null,
 				Arrays.asList(this.grabAnnotation));
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -105,7 +110,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 		this.moduleNode.addStaticStarImport(null, null,
 				Arrays.asList(this.grabAnnotation));
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -114,7 +119,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 		packageNode.addAnnotation(this.grabAnnotation);
 		this.moduleNode.setPackage(packageNode);
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -123,7 +128,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 		classNode.addAnnotation(this.grabAnnotation);
 		this.moduleNode.addClass(classNode);
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -141,7 +146,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 		fieldNode.addAnnotation(this.grabAnnotation);
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -153,7 +158,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 		constructorNode.addAnnotation(this.grabAnnotation);
 		classNode.addMethod(constructorNode);
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -166,7 +171,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 		methodNode.addAnnotation(this.grabAnnotation);
 		classNode.addMethod(methodNode);
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -181,7 +186,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 				new Parameter[] { parameter }, new ClassNode[0], null);
 		classNode.addMethod(methodNode);
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
@@ -202,7 +207,7 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 		classNode.addMethod(methodNode);
 
-		assertGrabAnnotationHasBeenTransformation();
+		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	private AnnotationNode createGrabAnnotation() {
@@ -212,12 +217,11 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 		return annotationNode;
 	}
 
-	private void assertGrabAnnotationHasBeenTransformation() {
+	private void assertGrabAnnotationHasBeenTransformed() {
 		this.transformation.visit(new ASTNode[] { this.moduleNode }, this.sourceUnit);
 
 		assertEquals("org.springframework", getGrabAnnotationMemberAsString("group"));
 		assertEquals("spring-core", getGrabAnnotationMemberAsString("module"));
-		assertEquals("4.0.0.RC1", getGrabAnnotationMemberAsString("version"));
 	}
 
 	private Object getGrabAnnotationMemberAsString(String memberName) {

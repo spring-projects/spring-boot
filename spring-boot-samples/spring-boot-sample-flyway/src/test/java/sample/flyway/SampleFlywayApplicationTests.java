@@ -26,7 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleFlywayApplication.class)
+@SpringApplicationConfiguration(SampleFlywayApplication.class)
 public class SampleFlywayApplicationTests {
 
 	@Autowired
