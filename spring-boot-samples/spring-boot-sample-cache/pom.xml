@@ -33,6 +33,15 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+
+		<!-- JSR-107 API (uncomment to try the JCache support) -->
+		<!--
+		<dependency>
+			<groupId>javax.cache</groupId>
+			<artifactId>cache-api</artifactId>
+		</dependency>
+		-->
+		
 		<!-- Additional cache providers (uncomment to try them) -->
 		<!--
 		<dependency>

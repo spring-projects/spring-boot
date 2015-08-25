@@ -10,6 +10,7 @@ abstraction is supported by many caching libraries, including:
 * `Redis`
 * `Guava`
 * Simple provider based on `ConcurrentHashMap`
+* Generic provider based on `org.springframework.Cache` bean definition(s)
 
 The sample defines a simple `CountryService` that caches countries by ISO code. When
 the application starts a client invokes the service with a random code every 500ms. You
@@ -35,6 +36,25 @@ as explained below.
 
 
 
+=== JCache (JSR-107)
+If you want to configure your cache infrastructure via the standard, you need a compliant
+implementation and the JSR-107 api. You first need to add `javax.cache:cache-api` to your
+project. Then you could try the following:
+
+* `Hazelcast`: add `com.hazelcast:hazelcast`
+* `Infinispan`: add `org.infinispan:infinispan-jcache`
+
+TIP: Certain cache providers do not create a default cache on-the-fly if it does not exist
+so you might need to update the sample to create the caches on startup or specify the
+location to the provider-specific file via the `spring.cache.jcache.config` property.
+
+NOTE: Any other JSR-107 compliant provider is also supported but Spring Boot may not
+offer a dependency management entry for it. You will have to add it with the version
+of the library that you want to use.
+
+
+
+
 === EhCache 2.x
 Simply add the `net.sf.ehcache:ehcache` dependency to the project. Since there is a
 default `ehcache.xml` configuration file at the root of the classpath, it is automatically
@@ -56,20 +76,6 @@ Infinispan. There is no default location that Infinispan uses to look for a conf
 file so if you don't specify anything it will bootstrap on a hardcoded default. You
 can set the `spring.cache.infinispan.config` property to use the provided
 `infinispan.xml` configuration instead.
-
-
-
-=== JCache (JSR-107)
-If you want to configure your cache infrastructure via the standard, you need a compliant
-implementation. You could try the following:
-
-* `Hazelcast`: add `com.hazelcast:hazelcast`
-* `Infinispan`: add `org.infinispan:infinispan-jcache`
-
-
-Since Spring Boot supports the native cache library and the JCache wrapper, you
-should set the `spring.cache.type` property to `jcache` to specify that you want the
-cache manager to be auto-configured that way.
 
 
 

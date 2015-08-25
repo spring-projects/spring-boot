@@ -2806,10 +2806,10 @@ implementations are only provided by the `spring-context-support` jar.
 Spring Boot tries to detect the following providers (in this order):
 
 * <<boot-features-caching-provider-generic,Generic>>
+* <<boot-features-caching-provider-jcache,JCache (JSR-107)>>
 * <<boot-features-caching-provider-ehcache2,EhCache 2.x>>
 * <<boot-features-caching-provider-hazelcast,Hazelcast>>
 * <<boot-features-caching-provider-infinispan,Infinispan>>
-* <<boot-features-caching-provider-jcache,JCache (JSR-107)>>
 * <<boot-features-caching-provider-redis,Redis>>
 * <<boot-features-caching-provider-guava,Guava>>
 * <<boot-features-caching-provider-simple,Simple>>
@@ -2823,6 +2823,38 @@ property.
 ==== Generic
 Generic caching is used if the context defines _at least_ one
 `org.springframework.cache.Cache` bean, a `CacheManager` wrapping them is configured.
+
+
+
+[[boot-features-caching-provider-jcache]]
+==== JCache
+JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
+classpath (i.e. a JSR-107 compliant caching library). It might happen than more that one
+provider is present, in which case the provider must be explicitly specified. Even if the
+JSR-107 standard does not enforce a standardized way to define the location of the
+configuration file, Spring Boot does its best to accommodate with implementation details.
+
+[source,properties,indent=0]
+----
+    # Only necessary if more than one provider is present
+	spring.cache.jcache.provider=com.acme.MyCachingProvider
+	spring.cache.jcache.config=classpath:acme.xml
+----
+
+NOTE: Since a cache library may offer both a native implementation and JSR-107 support
+Spring Boot will prefer the JSR-107 support so that the same features are available if
+you switch to a different JSR-107 implementation.
+
+There are several ways to customize the underlying `javax.cache.cacheManager`:
+
+* Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
+`javax.cache.configuration.Configuration` bean is defined, it is used to customize them.
+* `org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer` beans are
+invoked with the reference of the `CacheManager` for full customization.
+
+TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped
+automatically in a `org.springframework.cache.CacheManager` implementation that the
+abstraction expects. No further customization is applied on it.
 
 
 
@@ -2865,38 +2897,6 @@ Infinispan has no default configuration file location so it must be specified ex
 
 Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
 `ConfigurationBuilder` bean is defined, it is used to customize them.
-
-
-
-[[boot-features-caching-provider-jcache]]
-==== JCache
-JCache is bootstrapped via the presence of a `javax.cache.spi.CachingProvider` on the
-classpath (i.e. a JSR-107 compliant caching library). It might happen than more that one
-provider is present, in which case the provider must be explicitly specified. Even if the
-JSR-107 standard does not enforce a standardized way to define the location of the
-configuration file, Spring Boot does its best to accommodate with implementation details.
-
-[source,properties,indent=0]
-----
-    # Only necessary if more than one provider is present
-	spring.cache.jcache.provider=com.acme.MyCachingProvider
-	spring.cache.jcache.config=classpath:acme.xml
-----
-
-NOTE: Since a cache library may offer both a native implementation and JSR-107 support
-it is advised to set the `spring.cache.type` to `jcache` to force that mode if that's
-what you want.
-
-There are several ways to customize the underlying `javax.cache.cacheManager`:
-
-* Caches can be created on startup via the `spring.cache.cache-names` property. If a custom
-`javax.cache.configuration.Configuration` bean is defined, it is used to customize them.
-* `org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer` beans are
-invoked with the reference of the `CacheManager` for full customization.
-
-TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped
-automatically in a `org.springframework.cache.CacheManager` implementation that the
-abstraction expects. No further customization is applied on it.
 
 
 
