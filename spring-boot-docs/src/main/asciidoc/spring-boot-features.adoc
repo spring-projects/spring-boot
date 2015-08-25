@@ -283,7 +283,9 @@ Spring Boot allows you to externalize your configuration so you can work with th
 application code in different environments. You can use properties files, YAML files,
 environment variables and command-line arguments to externalize configuration. Property
 values can be injected directly into your beans using the `@Value` annotation, accessed
-via Spring's `Environment` abstraction or bound to structured objects.
+via Spring's `Environment` abstraction or
+<<boot-features-external-config-typesafe-configuration-properties,bound to structured objects>>
+via `@ConfigurationProperties`.
 
 Spring Boot uses a very particular `PropertySource` order that is designed to allow
 sensible overriding of values, properties are considered in the following order:
@@ -303,7 +305,8 @@ sensible overriding of values, properties are considered in the following order:
   variants).
 . Application properties packaged inside your jar (`application.properties` and YAML
   variants).
-. `@PropertySource` annotations on your `@Configuration` classes.
+. {spring-javadoc}/context/annotation/PropertySource.{dc-ext}[`@PropertySource`] annotations
+  on your `@Configuration` classes.
 . Default properties (specified using `SpringApplication.setDefaultProperties`).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a
@@ -374,7 +377,8 @@ following locations and add them to the Spring `Environment`:
 . A classpath `/config` package
 . The classpath root
 
-The list is ordered by precedence (locations higher in the list override lower items).
+The list is ordered by precedence (properties defined in locations higher in the list
+override those defined in lower locations).
 
 NOTE: You can also <<boot-features-external-config-yaml, use YAML ('.yml') files>> as
 an alternative to '.properties'.
