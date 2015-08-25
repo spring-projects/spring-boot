@@ -21,6 +21,9 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -31,9 +34,13 @@ import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.type.StandardAnnotationMetadata;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,6 +52,7 @@ import org.springframework.security.authentication.event.AuthenticationFailureBa
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -52,9 +60,11 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -90,11 +100,57 @@ public class SecurityAutoConfigurationTests {
 		assertEquals(5, filterChains.size());
 	}
 
+	// gh-3703
+	@Test
+	public void testDefaultFilterOrderWithSecurityAdapter() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(WebSecurity.class,
+				SecurityAutoConfiguration.class,
+				SecurityFilterRegistrationAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(
+				0,
+				this.context.getBean("securityFilterChainRegistration",
+						FilterRegistrationBean.class).getOrder());
+	}
+
+	@Test
+	public void testSecurityFilterRegistrationAutoConfigurationRegisteredAutoConfiguration() throws Exception {
+		EnableAutoConfigurationImportSelector selector = new EnableAutoConfigurationImportSelector();
+		selector.setBeanFactory(new DefaultListableBeanFactory());
+		selector.setEnvironment(new MockEnvironment());
+		selector.setResourceLoader(new DefaultResourceLoader());
+		String[] imports = selector.selectImports(new StandardAnnotationMetadata(AutoConfiguration.class));
+
+		assertTrue(ObjectUtils.containsElement(imports, "org.springframework.boot.autoconfigure.security.SecurityFilterRegistrationAutoConfiguration"));
+	}
+
+	@Test
+	public void testDefaultFilterOrderNotWeb() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(SecurityAutoConfiguration.class,
+				SecurityFilterRegistrationAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+
+		try {
+			context.refresh();
+			assertFalse(
+					context.containsBean("securityFilterChainRegistration"));
+		} finally {
+			context.close();
+		}
+	}
+
 	@Test
 	public void testDefaultFilterOrder() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterRegistrationAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -110,6 +166,7 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.filter-order:12345");
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
+				SecurityFilterRegistrationAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -411,4 +468,11 @@ public class SecurityAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	@EnableWebSecurity
+	static class WebSecurity extends WebSecurityConfigurerAdapter {}
+
+	@Configuration
+	@EnableAutoConfiguration
+	static class AutoConfiguration {}
 }
