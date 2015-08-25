@@ -56,6 +56,7 @@ org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.security.SecurityFilterRegistrationAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.OAuth2AutoConfiguration,\
 org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration,\
