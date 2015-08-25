@@ -140,6 +140,10 @@ class BasicBatchConfigurer implements BatchConfigurer {
 			logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
 			factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
 		}
+		String tablePrefix = this.properties.getTablePrefix();
+		if (StringUtils.hasText(tablePrefix)) {
+			factory.setTablePrefix(tablePrefix);
+		}
 		factory.setTransactionManager(getTransactionManager());
 		factory.afterPropertiesSet();
 		return factory.getObject();
