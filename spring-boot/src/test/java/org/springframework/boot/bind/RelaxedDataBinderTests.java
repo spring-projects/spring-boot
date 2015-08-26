@@ -16,6 +16,15 @@
 
 package org.springframework.boot.bind;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -50,15 +59,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RelaxedDataBinder}.
@@ -324,6 +324,14 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedMapPropsWithUnderscores() throws Exception {
+		TargetWithNestedMap target = new TargetWithNestedMap();
+		bind(target, "nested_foo: bar\n" + "nested_value: 123");
+		assertEquals("123", target.getNested().get("value"));
+		assertEquals("bar", target.getNested().get("foo"));
+	}
+
+	@Test
 	public void testBindNestedUntypedMap() throws Exception {
 		TargetWithNestedUntypedMap target = new TargetWithNestedUntypedMap();
 		bind(target, "nested.foo: bar\n" + "nested.value: 123");
@@ -336,6 +344,22 @@ public class RelaxedDataBinderTests {
 		bind(target, "nested.foo: bar\n" + "nested.value.foo: 123");
 		assertEquals("bar", target.getNested().get("foo"));
 		assertEquals("123", target.getNested().get("value.foo"));
+	}
+
+	@Test
+	public void testBindNestedMapOfStringWithUnderscore() throws Exception {
+		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
+		bind(target, "nested_foo: bar\n" + "nested_value_foo: 123");
+		assertEquals("bar", target.getNested().get("foo"));
+		assertEquals("123", target.getNested().get("value_foo"));
+	}
+
+	@Test
+	public void testBindNestedMapOfStringWithUnderscoreAndupperCase() throws Exception {
+		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
+		bind(target, "NESTED_FOO: bar\n" + "NESTED_VALUE_FOO: 123");
+		assertEquals("bar", target.getNested().get("FOO"));
+		assertEquals("123", target.getNested().get("VALUE_FOO"));
 	}
 
 	@Test
@@ -686,7 +710,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	public static class RequiredKeysValidator implements
-			ConstraintValidator<RequiredKeys, Map<String, Object>> {
+	ConstraintValidator<RequiredKeys, Map<String, Object>> {
 
 		private String[] fields;
 
