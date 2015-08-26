@@ -48,6 +48,12 @@ public class BasicErrorController implements ErrorController {
 	@Value("${error.path:/error}")
 	private String errorPath;
 
+	@Value("${error.trace:REQUEST}")
+	private StackTracePolicy defaultStackTracePolicy;
+
+	@Value("${error.trace.html:NEVER}")
+	private StackTracePolicy htmlStackTracePolicy;
+
 	private final ErrorAttributes errorAttributes;
 
 	public BasicErrorController(ErrorAttributes errorAttributes) {
@@ -62,23 +68,29 @@ public class BasicErrorController implements ErrorController {
 
 	@RequestMapping(value = "${error.path:/error}", produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request) {
-		return new ModelAndView("error", getErrorAttributes(request, false));
+		return new ModelAndView("error", getErrorAttributes(request, getTraceParameter(request, htmlStackTracePolicy)));
 	}
 
 	@RequestMapping(value = "${error.path:/error}")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request, getTraceParameter(request));
+		Map<String, Object> body = getErrorAttributes(request, getTraceParameter(request, defaultStackTracePolicy));
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<Map<String, Object>>(body, status);
 	}
 
-	private boolean getTraceParameter(HttpServletRequest request) {
-		String parameter = request.getParameter("trace");
-		if (parameter == null) {
+	private boolean getTraceParameter(HttpServletRequest request, StackTracePolicy policy) {
+		if(policy == StackTracePolicy.NEVER) {
 			return false;
+		} else if(policy == StackTracePolicy.ALWAYS) {
+			return true;
+		} else {
+			String parameter = request.getParameter("trace");
+			if (parameter == null) {
+				return false;
+			}
+			return !"false".equals(parameter.toLowerCase());
 		}
-		return !"false".equals(parameter.toLowerCase());
 	}
 
 	private Map<String, Object> getErrorAttributes(HttpServletRequest request,
