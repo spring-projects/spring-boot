@@ -43,6 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @see ErrorAttributes
  */
 @Controller
+@RequestMapping("${error.path:/error}")
 public class BasicErrorController implements ErrorController {
 
 	@Value("${error.path:/error}")
@@ -60,15 +61,15 @@ public class BasicErrorController implements ErrorController {
 		return this.errorPath;
 	}
 
-	@RequestMapping(value = "${error.path:/error}", produces = "text/html")
+	@RequestMapping(produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request) {
 		return new ModelAndView("error", getErrorAttributes(request, false));
 	}
 
-	@RequestMapping(value = "${error.path:/error}")
+	@RequestMapping
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request, getTraceParameter(request));
+		Map<String, Object> body = getErrorAttributes(request);
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<Map<String, Object>>(body, status);
 	}
@@ -81,14 +82,18 @@ public class BasicErrorController implements ErrorController {
 		return !"false".equals(parameter.toLowerCase());
 	}
 
-	private Map<String, Object> getErrorAttributes(HttpServletRequest request,
+	protected Map<String, Object> getErrorAttributes(HttpServletRequest request) {
+		return getErrorAttributes(request, getTraceParameter(request));
+	}
+
+	protected Map<String, Object> getErrorAttributes(HttpServletRequest request,
 			boolean includeStackTrace) {
 		RequestAttributes requestAttributes = new ServletRequestAttributes(request);
 		return this.errorAttributes.getErrorAttributes(requestAttributes,
 				includeStackTrace);
 	}
 
-	private HttpStatus getStatus(HttpServletRequest request) {
+	protected HttpStatus getStatus(HttpServletRequest request) {
 		Integer statusCode = (Integer) request
 				.getAttribute("javax.servlet.error.status_code");
 		if (statusCode != null) {

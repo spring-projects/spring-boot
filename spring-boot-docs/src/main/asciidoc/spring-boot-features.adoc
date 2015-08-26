@@ -1401,6 +1401,12 @@ the same data in HTML format (to customize it just add a `View` that resolves to
 `ErrorController` and register a bean definition of that type, or simply add a bean of
 type `ErrorAttributes` to use the existing mechanism but replace the contents.
 
+TIP: The `BasicErrorController` can be used as a base class for a custom `ErrorController`.
+This is particularly useful if you want to add a handler for a new content type (the default
+is to handle `text/html` specifically and provide a fallback for everything else). To do that
+just extend `BasicErrorController` and add a public method with a `@RequestMapping` that
+has a `produces` attribute, and create a bean of your new type.
+
 If you want more specific error pages for some conditions, the embedded servlet containers
 support a uniform Java DSL for customizing the error handling. Assuming that you have a
 mapping for `/400`:
