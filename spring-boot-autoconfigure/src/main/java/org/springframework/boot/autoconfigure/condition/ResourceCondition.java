@@ -14,33 +14,44 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cache;
+package org.springframework.boot.autoconfigure.condition;
 
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link SpringBootCondition} used to check if a cache configuration file can be found.
+ * {@link SpringBootCondition} used to check if a resource can be found using a
+ * configurable property and optional default location(s).
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @since 1.3.0
  */
-abstract class CacheConfigFileCondition extends SpringBootCondition {
+public abstract class ResourceCondition extends SpringBootCondition {
 
 	private final String name;
 
 	private final String prefix;
 
+	private final String propertyName;
+
 	private final String[] resourceLocations;
 
-	public CacheConfigFileCondition(String name, String prefix,
+	/**
+	 * Create a new condition.
+	 * @param name the name of the component
+	 * @param prefix the prefix of the configuration key
+	 * @param propertyName the name of the configuration key
+	 * @param resourceLocations default location(s) where the configuration file can be
+	 * found if the configuration key is not specified
+	 */
+	protected ResourceCondition(String name, String prefix, String propertyName,
 			String... resourceLocations) {
 		this.name = name;
 		this.prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
+		this.propertyName = propertyName;
 		this.resourceLocations = resourceLocations;
 	}
 
@@ -49,13 +60,19 @@ abstract class CacheConfigFileCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), this.prefix);
-		if (resolver.containsProperty("config")) {
-			return ConditionOutcome.match("A '" + this.prefix + ".config' "
+		if (resolver.containsProperty(propertyName)) {
+			return ConditionOutcome.match("A '" + this.prefix + propertyName +"' "
 					+ "property is specified");
 		}
 		return getResourceOutcome(context, metadata);
 	}
 
+	/**
+	 * Check if one of the default resource locations actually exists.
+	 * @param context the condition context
+	 * @param metadata the annotation metadata
+	 * @return the condition outcome
+	 */
 	protected ConditionOutcome getResourceOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		for (String location : this.resourceLocations) {

@@ -585,6 +585,9 @@ content into your application; rather pick only the properties that you need.
 	spring.cache.jcache.provider= # fully qualified name of the CachingProvider implementation to use
 	spring.cache.guava.spec= # link:http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/cache/CacheBuilderSpec.html[guava specs]
 
+	# HAZELCAST ({sc-spring-boot-autoconfigure}/hazelcast/HazelcastProperties.{sc-ext}[HazelcastProperties])
+	spring.hazelcast.config= # location of the hazelcast configuration
+
 	# AOP
 	spring.aop.auto=
 	spring.aop.proxy-target-class=

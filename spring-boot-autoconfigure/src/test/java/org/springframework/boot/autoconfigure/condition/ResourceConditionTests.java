@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cache;
+package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -29,11 +30,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test for {@link CacheConfigFileCondition}.
+ * Test for {@link ResourceCondition}.
  *
  * @author Stephane Nicoll
  */
-public class CacheConfigFileConditionTests {
+public class ResourceConditionTests {
 
 	private ConfigurableApplicationContext context;
 
@@ -45,20 +46,21 @@ public class CacheConfigFileConditionTests {
 	}
 
 	@Test
-	public void defaultFileAndNoExplicitKey() {
-		load(DefaultFileConfiguration.class);
+	public void defaultResourceAndNoExplicitKey() {
+		load(DefaultLocationConfiguration.class);
 		assertTrue(this.context.containsBean("foo"));
 	}
 
 	@Test
-	public void noDefaultFileAndNoExplicitKey() {
-		load(NoDefaultFileConfiguration.class);
+	public void unknownDefaultLocationAndNoExplicitKey() {
+		load(UnknownDefaultLocationConfiguration.class);
 		assertFalse(this.context.containsBean("foo"));
 	}
 
 	@Test
-	public void noDefaultFileAndExplicitKeyToResource() {
-		load(NoDefaultFileConfiguration.class, "spring.cache.test.config=ehcache.xml");
+	public void unknownDefaultLocationAndExplicitKeyToResource() {
+		load(UnknownDefaultLocationConfiguration.class,
+				"spring.foo.test.config=logging.properties");
 		assertTrue(this.context.containsBean("foo"));
 	}
 
@@ -71,8 +73,8 @@ public class CacheConfigFileConditionTests {
 	}
 
 	@Configuration
-	@Conditional(CacheConfigFileDefaultFileCondition.class)
-	static class DefaultFileConfiguration {
+	@Conditional(DefaultLocationResourceCondition.class)
+	static class DefaultLocationConfiguration {
 
 		@Bean
 		public String foo() {
@@ -81,8 +83,8 @@ public class CacheConfigFileConditionTests {
 	}
 
 	@Configuration
-	@Conditional(CacheConfigFileNoDefaultFileCondition.class)
-	static class NoDefaultFileConfiguration {
+	@Conditional(UnknownDefaultLocationResourceCondition.class)
+	static class UnknownDefaultLocationConfiguration {
 
 		@Bean
 		public String foo() {
@@ -90,19 +92,19 @@ public class CacheConfigFileConditionTests {
 		}
 	}
 
-	private static class CacheConfigFileDefaultFileCondition extends
-			CacheConfigFileCondition {
+	private static class DefaultLocationResourceCondition extends
+			ResourceCondition {
 
-		public CacheConfigFileDefaultFileCondition() {
-			super("test", "spring.cache.test.", "classpath:/ehcache.xml");
+		public DefaultLocationResourceCondition() {
+			super("test", "spring.foo.test.", "config", "classpath:/logging.properties");
 		}
 	}
 
-	private static class CacheConfigFileNoDefaultFileCondition extends
-			CacheConfigFileCondition {
-		public CacheConfigFileNoDefaultFileCondition() {
-			super("test", "spring.cache.test",
-					"classpath:/this-cache-file-does-not-exist.xml");
+	private static class UnknownDefaultLocationResourceCondition extends
+			ResourceCondition {
+		public UnknownDefaultLocationResourceCondition() {
+			super("test", "spring.foo.test", "config",
+					"classpath:/this-file-does-not-exist.xml");
 		}
 
 	}

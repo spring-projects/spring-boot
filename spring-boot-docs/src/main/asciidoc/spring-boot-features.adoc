@@ -2900,15 +2900,22 @@ manager. An alternate configuration file can be provide a well using:
 
 [[boot-features-caching-provider-hazelcast]]
 ==== Hazelcast
-Hazelcast is used if a `hazelcast.xml` file can be found in the current working
-directory, at the root of the classpath or a location specified via the `hazelcast.config`
-system property. Spring Boot detects all of these and also allows for explicit location
-using:
+
+Spring Boot has a <<boot-features-hazelcast,general support for Hazelcast>>. If
+a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a
+`CacheManager`.
+
+If for some reason you need a different `HazelcastInstance` for caching, you can
+request Spring Boot to create a separate one that will only used by the
+`CacheManager`:
 
 [source,properties,indent=0]
 ----
-	spring.cache.hazelcast.config=classpath:config/my-hazelcast.xml
+	spring.cache.hazelcast.config=classpath:config/my-cache-hazelcast.xml
 ----
+
+TIP: If a separate `HazelcastInstance` is created that way, it is not registered
+in the application context.
 
 
 
@@ -3388,6 +3395,36 @@ registered within your `ApplicationContext`.
 The {sc-spring-boot}/jta/BitronixXAConnectionFactoryWrapper.{sc-ext}[BitronixXAConnectionFactoryWrapper]
 and {sc-spring-boot}/jta/BitronixXADataSourceWrapper.{sc-ext}[BitronixXADataSourceWrapper]
 provide good examples of how to write XA wrappers.
+
+
+
+[[boot-features-hazelcast]]
+== Hazelcast
+
+If hazelcast is on the classpath, Spring Boot will auto-configure an `HazelcastInstance`
+that you can inject in your application. The `HazelcastInstance` is only created if a
+configuration is found.
+
+You can define a `com.hazelcast.config.Config` bean and we'll use that. If your
+configuration defines an instance name, we'll try to locate an existing instance rather
+than creating a new one.
+
+You could also specify the `hazelcast.xml` configuration file to use via configuration:
+
+[source,properties,indent=0]
+----
+	spring.hazelcast.config=classpath:config/my-hazelcast.xml
+----
+
+Otherwise, Spring Boot tries to find the Hazelcast configuration from the default
+locations, that is `hazelcast.xml` in the working directory or at the root of the
+classpath. We also check if the `hazelcast.config` system property is set. Check the
+Hazelcast documentation for more details.
+
+NOTE: Spring Boot also has an
+<<boot-features-caching-provider-hazelcast,explicit caching support for Hazelcast>>. The
+`HazelcastInstance` is automatically wrapped in a `CacheManager` implementation if
+caching is enabled.
 
 
 
