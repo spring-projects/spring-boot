@@ -144,7 +144,7 @@ stop() {
   isRunning $pid || { echoRed "Not running (process ${pid} not found)"; exit 1; }
   kill -HUP $pid &> /dev/null || { echoRed "Unable to kill process ${pid}"; exit 1; }
   for i in $(seq 1 20); do
-    isRunning ${pid} || { echoGreen "Stopped [$pid]"; rm -f $pid_file; exit 0; }
+    isRunning ${pid} || { echoGreen "Stopped [$pid]"; rm -f $pid_file; return 0; }
     sleep 1
   done
   echoRed "Unable to kill process ${pid}";
