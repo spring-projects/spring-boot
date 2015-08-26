@@ -761,7 +761,8 @@ The following properties names can all be used:
 Spring will attempt to coerce the external application properties to the right type when
 it binds to the `@ConfigurationProperties` beans. If you need custom type conversion you
 can provide a `ConversionService` bean (with bean id `conversionService`) or custom
-property editors (via a `CustomEditorConfigurer` bean).
+property editors (via a `CustomEditorConfigurer` bean) or custom `Converters` (with
+bean definitions annotated as `@ConfigurationPropertiesBinding`).
 
 
 
