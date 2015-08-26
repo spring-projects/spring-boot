@@ -71,8 +71,8 @@ echoYellow() { echo $'\e[0;33m'$1$'\e[0m'; }
 
 # Utility functions
 checkPermissions() {
-  touch "$pid_file" &> /dev/null || { echoRed "Operation not permitted (cannot access pid file)"; exit 1; }
-  touch "$log_file" &> /dev/null || { echoRed "Operation not permitted (cannot access log file)"; exit 1; }
+  touch "$pid_file" &> /dev/null || { echoRed "Operation not permitted (cannot access pid file)"; return 4; }
+  touch "$log_file" &> /dev/null || { echoRed "Operation not permitted (cannot access log file)"; return 4; }
 }
 
 isRunning() {
@@ -115,40 +115,40 @@ command="$javaexe -jar -Dsun.misc.URLClassPath.disableJarChecking=true $JAVA_OPT
 start() {
   if [[ -f "$pid_file" ]]; then
     pid=$(cat "$pid_file")
-    isRunning $pid && { echoYellow "Already running [$pid]"; exit 0; }
+    isRunning $pid && { echoYellow "Already running [$pid]"; return 0; }
   fi
   pushd $(dirname "$jarfile") > /dev/null
   if [[ -n "$run_user" ]]; then
     mkdir "$PID_FOLDER" &> /dev/null
-    checkPermissions
+    checkPermissions || return $?
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
     su -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
     pid=$(cat "$pid_file")
   else
-    checkPermissions
+    checkPermissions || return $?
     $command &> "$log_file" &
     pid=$!
     disown $pid
     echo "$pid" > "$pid_file"
   fi
-  [[ -z $pid ]] && { echoRed "Failed to start"; exit 1; }
+  [[ -z $pid ]] && { echoRed "Failed to start"; return 1; }
   echoGreen "Started [$pid]"
 }
 
 stop() {
-  [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; exit 1; }
+  [[ -f $pid_file ]] || { echoRed "Not running (pidfile not found)"; return 1; }
   pid=$(cat "$pid_file")
   rm -f "$pid_file"
-  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; exit 1; }
-  kill -HUP $pid &> /dev/null || { echoRed "Unable to kill process ${pid}"; exit 1; }
-  for i in $(seq 1 20); do
-    isRunning ${pid} || { echoGreen "Stopped [$pid]"; rm -f $pid_file; exit 0; }
+  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 1; }
+  kill -HUP $pid &> /dev/null || { echoRed "Unable to kill process ${pid}"; return 3; }
+  for i in $(seq 1 60); do
+    isRunning ${pid} || { echoGreen "Stopped [$pid]"; rm -f $pid_file; return 0; }
     sleep 1
   done
   echoRed "Unable to kill process ${pid}";
-  exit 3;
+  return 3;
 }
 
 restart() {
@@ -157,31 +157,33 @@ restart() {
 }
 
 status() {
-  [[ -f $pid_file ]] || { echoRed "Not running"; exit 1; }
+  [[ -f $pid_file ]] || { echoRed "Not running"; return 1; }
   pid=$(cat "$pid_file")
-  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; exit 1; }
+  isRunning $pid || { echoRed "Not running (process ${pid} not found)"; return 3; }
   echoGreen "Running [$pid]"
-  exit 0
+  return 0
 }
 
 run() {
   pushd $(dirname "$jarfile") > /dev/null
   exec $command
+  result = $?
   popd
+  return $result
 }
 
 # Call the appropriate action function
 case "$action" in
 start)
-  start "$@";;
+  start "$@"; exit $?;;
 stop)
-  stop "$@";;
+  stop "$@"; exit $?;;
 restart)
-  restart "$@";;
+  restart "$@"; exit $?;;
 status)
-  status "$@";;
+  status "$@"; exit $?;;
 run)
-  run "$@";;
+  run "$@"; exit $?;;
 *)
   echo "Usage: $0 {start|stop|restart|status|run}"; exit 1;
 esac

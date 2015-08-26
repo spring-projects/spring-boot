@@ -432,6 +432,9 @@ the default behavior in a script or on the command line:
  but if it is not a symlink, or you want to explicitly set the app name this can be
  useful.
 
+|`RUN_ARGS`
+|The arguments to pass to the program (the Spring Boot app).
+
 |`JAVA_HOME`
 |The location of the `java` executable is discovered by using the `PATH` by default, but
  you can set it explicitly if there is an executable file at `$JAVA_HOME/bin/java`.
