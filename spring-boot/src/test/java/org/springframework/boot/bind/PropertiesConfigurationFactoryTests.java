@@ -24,8 +24,11 @@ import javax.validation.constraints.NotNull;
 import org.junit.Test;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.context.support.StaticMessageSource;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.mock.env.MockPropertySource;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
@@ -80,6 +83,37 @@ public class PropertiesConfigurationFactoryTests {
 		setupFactory();
 		this.factory.setExceptionIfInvalid(false);
 		bindFoo("bar: blah");
+	}
+
+	@Test
+	public void systemEnvironmentBindingFailuresAreIgnored() throws Exception {
+		setupFactory();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		propertySource.setProperty("doesNotExist", "foo");
+		propertySource.setProperty("name", "bar");
+		propertySources.addFirst(propertySource);
+		this.factory.setPropertySources(propertySources);
+		this.factory.setIgnoreUnknownFields(false);
+		this.factory.afterPropertiesSet();
+		this.factory.getObject();
+		Foo foo = this.factory.getObject();
+		assertEquals("bar", foo.name);
+	}
+
+	@Test
+	public void systemPropertyBindingFailuresAreIgnored() throws Exception {
+		setupFactory();
+		MutablePropertySources propertySources = new MutablePropertySources();
+		MockPropertySource propertySource = new MockPropertySource(
+				StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
+		propertySource.setProperty("doesNotExist", "foo");
+		propertySource.setProperty("name", "bar");
+		propertySources.addFirst(propertySource);
+		this.factory.setPropertySources(propertySources);
+		this.factory.setIgnoreUnknownFields(false);
+		this.factory.afterPropertiesSet();
 	}
 
 	private Foo createFoo(final String values) throws Exception {

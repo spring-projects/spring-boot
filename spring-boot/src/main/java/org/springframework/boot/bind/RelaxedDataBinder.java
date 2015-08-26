@@ -18,6 +18,7 @@ package org.springframework.boot.bind;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.PropertyValue;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -53,6 +55,11 @@ import org.springframework.validation.DataBinder;
  * @see RelaxedNames
  */
 public class RelaxedDataBinder extends DataBinder {
+
+	private static final Set<String> BENIGN_PROPERTY_SOURCE_NAMES = Collections
+			.unmodifiableSet(new HashSet<String>(Arrays.asList(
+					StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+					StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)));
 
 	private static final Object BLANK = new Object();
 
@@ -254,11 +261,19 @@ public class RelaxedDataBinder extends DataBinder {
 						}
 						catch (NotWritablePropertyException ex) {
 							PropertyOrigin origin = findPropertyOrigin(pv);
-							if (origin != null) {
-								throw new RelaxedBindingNotWritablePropertyException(ex,
-										origin);
+							if (isFatal(origin)) {
+								if (origin != null) {
+									throw new RelaxedBindingNotWritablePropertyException(
+											ex, origin);
+								}
+								else {
+									throw ex;
+								}
 							}
-							throw ex;
+							else {
+								logger.debug("Ignoring benign property binding failure",
+										ex);
+							}
 						}
 					}
 				};
@@ -269,6 +284,13 @@ public class RelaxedDataBinder extends DataBinder {
 				return beanWrapper;
 			}
 		};
+	}
+
+	private boolean isFatal(PropertyOrigin origin) {
+		if (origin == null) {
+			return true;
+		}
+		return !BENIGN_PROPERTY_SOURCE_NAMES.contains(origin.getSource().getName());
 	}
 
 	private PropertyOrigin findPropertyOrigin(PropertyValue propertyValue) {
