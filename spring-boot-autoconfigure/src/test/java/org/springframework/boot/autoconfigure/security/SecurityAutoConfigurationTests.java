@@ -52,6 +52,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -348,6 +349,18 @@ public class SecurityAutoConfigurationTests {
 
 		token = new UsernamePasswordAuthenticationToken("foo", "bar");
 		assertNotNull(manager.authenticate(token));
+	}
+
+	@Test
+	public void testSecurityEvaluationContextExtensionSupport() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+
+		this.context.register(AuthenticationManagerCustomizer.class,
+				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
+		this.context.refresh();
+
+		assertNotNull(this.context.getBean(SecurityEvaluationContextExtension.class));
 	}
 
 	private static final class AuthenticationListener implements

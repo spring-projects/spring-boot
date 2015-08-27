@@ -50,7 +50,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableConfigurationProperties
 @Import({ SpringBootWebSecurityConfiguration.class,
 		AuthenticationManagerConfiguration.class,
-		BootGlobalAuthenticationConfiguration.class })
+		BootGlobalAuthenticationConfiguration.class,
+		SecurityDataConfiguration.class })
 public class SecurityAutoConfiguration {
 
 	@Bean
