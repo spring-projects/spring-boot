@@ -21,9 +21,6 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -38,9 +35,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.type.StandardAnnotationMetadata;
-import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,7 +54,6 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -73,6 +66,7 @@ import static org.junit.Assert.fail;
  * Tests for {@link SecurityAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Rob Winch
  */
 public class SecurityAutoConfigurationTests {
 
@@ -100,14 +94,12 @@ public class SecurityAutoConfigurationTests {
 		assertEquals(5, filterChains.size());
 	}
 
-	// gh-3703
 	@Test
 	public void testDefaultFilterOrderWithSecurityAdapter() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(WebSecurity.class,
-				SecurityAutoConfiguration.class,
-				SecurityFilterRegistrationAutoConfiguration.class,
+		this.context.register(WebSecurity.class, SecurityAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -118,29 +110,17 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	public void testSecurityFilterRegistrationAutoConfigurationRegisteredAutoConfiguration() throws Exception {
-		EnableAutoConfigurationImportSelector selector = new EnableAutoConfigurationImportSelector();
-		selector.setBeanFactory(new DefaultListableBeanFactory());
-		selector.setEnvironment(new MockEnvironment());
-		selector.setResourceLoader(new DefaultResourceLoader());
-		String[] imports = selector.selectImports(new StandardAnnotationMetadata(AutoConfiguration.class));
-
-		assertTrue(ObjectUtils.containsElement(imports, "org.springframework.boot.autoconfigure.security.SecurityFilterRegistrationAutoConfiguration"));
-	}
-
-	@Test
-	public void testDefaultFilterOrderNotWeb() throws Exception {
+	public void testFilterIsNotRegisteredInNonWeb() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(SecurityAutoConfiguration.class,
-				SecurityFilterRegistrationAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-
 		try {
 			context.refresh();
-			assertFalse(
-					context.containsBean("securityFilterChainRegistration"));
-		} finally {
+			assertFalse(context.containsBean("securityFilterChainRegistration"));
+		}
+		finally {
 			context.close();
 		}
 	}
@@ -150,7 +130,7 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				SecurityFilterRegistrationAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -166,7 +146,7 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.filter-order:12345");
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				SecurityFilterRegistrationAutoConfiguration.class,
+				SecurityFilterAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -470,9 +450,8 @@ public class SecurityAutoConfigurationTests {
 
 	@Configuration
 	@EnableWebSecurity
-	static class WebSecurity extends WebSecurityConfigurerAdapter {}
+	static class WebSecurity extends WebSecurityConfigurerAdapter {
 
-	@Configuration
-	@EnableAutoConfiguration
-	static class AutoConfiguration {}
+	}
+
 }

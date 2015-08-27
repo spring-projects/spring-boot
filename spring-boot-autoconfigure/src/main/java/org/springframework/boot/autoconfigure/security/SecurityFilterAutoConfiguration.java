@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,21 @@ import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 
 /**
- * Configures the ordering for Spring Security's Filter.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Security's Filter.
+ * Configured separately from {@link SpringBootWebSecurityConfiguration} to ensure that
+ * the filter's order is still configured when a user-provided
+ * {@link WebSecurityConfiguration} exists.
  *
  * @author Rob Winch
  * @since 1.3
@@ -37,7 +42,8 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 @ConditionalOnWebApplication
 @EnableConfigurationProperties
 @AutoConfigureAfter(SpringBootWebSecurityConfiguration.class)
-public class SecurityFilterRegistrationAutoConfiguration {
+public class SecurityFilterAutoConfiguration {
+
 	@Bean
 	@ConditionalOnBean(name = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME)
 	public FilterRegistrationBean securityFilterChainRegistration(
@@ -49,4 +55,5 @@ public class SecurityFilterRegistrationAutoConfiguration {
 				.setName(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME);
 		return registration;
 	}
+
 }
