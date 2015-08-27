@@ -68,6 +68,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link BatchAutoConfiguration}.
  *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class BatchAutoConfigurationTests {
 
@@ -224,9 +225,12 @@ public class BatchAutoConfigurationTests {
 			PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
-		assertNotNull(this.context.getBean(JobExplorer.class));
 		assertEquals(0, new JdbcTemplate(this.context.getBean(DataSource.class))
 			.queryForList("select * from PREFIX_JOB_EXECUTION").size());
+		JobExplorer jobExplorer = this.context.getBean(JobExplorer.class);
+		assertEquals(0, jobExplorer.findRunningJobExecutions("test").size());
+		JobRepository jobRepository = this.context.getBean(JobRepository.class);
+		assertNull(jobRepository.getLastJobExecution("test", new JobParameters()));
 	}
 
 	@Configuration
