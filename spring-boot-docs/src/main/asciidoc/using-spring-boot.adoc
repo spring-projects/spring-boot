@@ -696,6 +696,9 @@ The `@SpringBootApplication` annotation is equivalent to using `@Configuration`,
 	}
 ----
 
+NOTE: `@SpringBootApplication` also provides aliases to customize the attributes of
+`@EnableAutoConfiguration` and `@ComponentScan`.
+
 
 
 [[using-boot-running-your-application]]
