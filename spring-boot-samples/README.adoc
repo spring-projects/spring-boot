@@ -16,7 +16,7 @@
   -- A production features sample with no web application
 * link:spring-boot-sample-actuator-log4j[spring-boot-sample-actuator-log4j]
   -- A production features sample using log4j for logging (instead of logback)
-* link:spring-boot-sample-cache-ehcache[spring-boot-sample-cache]
+* link:spring-boot-sample-cache[spring-boot-sample-cache]
   -- A web sample that uses Spring's cache abstraction
 * link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
   -- A thymeleaf web application
@@ -30,9 +30,9 @@
   -- A web application using native Groovy templates
 * link:spring-boot-sample-web-jsp[spring-boot-sample-web-jsp]
   -- A web application using JSP templates
-* link:spring-boot-sample-web-tomcat8-jsp[spring-boot-sample-tomcat8-jsp]
+* link:spring-boot-sample-web-tomcat-jsp[spring-boot-sample-tomcat-jsp]
   -- A web application using JSP templates with Tomcat 8
-* link:spring-boot-sample-web-tomcat-multi-connectors[spring-boot-sample-tomcat-multi-connectors]
+* link:spring-boot-sample-tomcat-multi-connectors[spring-boot-sample-tomcat-multi-connectors]
   -- A web application using multiple connectors in tomcat, showing how to customize the Tomcat server
 * link:spring-boot-sample-web-secure[spring-boot-sample-web-secure]
   -- A web application with typical Security configuration enabling a login form
@@ -44,8 +44,12 @@
   -- example showing a "raw" `Servlet` returning plaintext content
 * link:spring-boot-sample-ws[spring-boot-sample-ws]
   -- A simple contract-first SOAP web service with Spring Web Services
-* link:spring-boot-sample-websocket[spring-boot-sample-websocket]
-  -- A web application with Websocket support on the client and server
+* link:spring-boot-sample-websocket-jetty[spring-boot-sample-websocket-jetty]
+  -- A web application with Websocket support on Jetty server
+* link:spring-boot-sample-websocket-tomcat[spring-boot-sample-websocket-tomcat]
+  -- A web application with Websocket support on Tomcat server
+* link:spring-boot-sample-websocket-undertow[spring-boot-sample-websocket-undertow]
+  -- A web application with Websocket support on Undertow server
 * link:spring-boot-sample-flyway[spring-boot-sample-flyway]
   -- Example showing database migrations with Flyway
 * link:spring-boot-sample-liquibase[spring-boot-sample-liquibase]
