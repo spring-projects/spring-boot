@@ -71,7 +71,7 @@ enum DatabaseDriver {
 	/**
 	 * Oracle
 	 */
-	ORACLE("oracle.jdbc.OracleDriver", "oracle.jdbc.xa.OracleXADataSource"),
+	ORACLE("oracle.jdbc.OracleDriver", "oracle.jdbc.xa.client.OracleXADataSource"),
 
 	/**
 	 * Postres
