@@ -16,24 +16,6 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.Lifecycle;
@@ -71,6 +53,23 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -118,6 +117,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private Charset uriEncoding = DEFAULT_CHARSET;
 
+    private boolean namingEnabled = false;
+
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
 	 */
@@ -160,6 +161,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 		for (Connector additionalConnector : this.additionalTomcatConnectors) {
 			tomcat.getService().addConnector(additionalConnector);
 		}
+        if (namingEnabled) {
+            tomcat.enableNaming();
+        }
 		prepareContext(tomcat.getHost(), initializers);
 		return getTomcatEmbeddedServletContainer(tomcat);
 	}
@@ -269,8 +273,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private void customizeSsl(Connector connector) {
 		ProtocolHandler handler = connector.getProtocolHandler();
 		Assert.state(handler instanceof AbstractHttp11JsseProtocol,
-				"To use SSL, the connector's protocol handler must be an "
-						+ "AbstractHttp11JsseProtocol subclass");
+                "To use SSL, the connector's protocol handler must be an "
+                        + "AbstractHttp11JsseProtocol subclass");
 		configureSsl((AbstractHttp11JsseProtocol<?>) handler, getSsl());
 		connector.setScheme("https");
 		connector.setSecure(true);
@@ -652,7 +656,23 @@ public class TomcatEmbeddedServletContainerFactory extends
 		return this.uriEncoding;
 	}
 
-	private static class TomcatErrorPage {
+    /**
+     * Returns if tomcat will enable JNDI naming on startup
+     * @return if JNDI is enabled  , false by default
+     */
+    public boolean isNamingEnabled() {
+        return namingEnabled;
+    }
+
+    /**
+     * Tell Tomcat to enable JNDI naming on startup, false by default
+     * @param namingEnabled
+     */
+    public void setNamingEnabled(boolean namingEnabled) {
+        this.namingEnabled = namingEnabled;
+    }
+
+    private static class TomcatErrorPage {
 
 		private final String location;
 

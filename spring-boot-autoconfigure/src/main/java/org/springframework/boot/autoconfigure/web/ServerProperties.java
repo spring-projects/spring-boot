@@ -16,20 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import javax.validation.constraints.NotNull;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
@@ -56,6 +42,19 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.net.InetAddress;
+import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * {@link ConfigurationProperties} for a web server (e.g. port and path settings). Will be
@@ -528,6 +527,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		 * Character encoding to use to decode the URI.
 		 */
 		private Charset uriEncoding;
+		
+		/**
+		* If JNDI naming will be enabled on startup, false by default
+		*/
+		private boolean namingEnabled;
 
 		public int getMaxThreads() {
 			return this.maxThreads;
@@ -547,6 +551,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
+		}
+
+		public boolean getNamingEnabled() {
+			return this.namingEnabled;
 		}
 
 		/**
@@ -654,6 +662,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		public void setUriEncoding(Charset uriEncoding) {
 			this.uriEncoding = uriEncoding;
 		}
+		
+		public void setNamingEnabled(boolean enableNaming) {
+			this.namingEnabled = enableNaming;
+		}
 
 		void customizeTomcat(TomcatEmbeddedServletContainerFactory factory) {
 			if (getBasedir() != null) {
@@ -673,6 +685,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			if (getUriEncoding() != null) {
 				factory.setUriEncoding(getUriEncoding());
 			}
+			if (namingEnabled) {
+				factory.setNamingEnabled(true);
+			}
+
 		}
 
 		private void customizeBackgroundProcessorDelay(
