@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,6 +73,8 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * @author Janne Valkealahti
  */
 public class PropertiesLauncher extends Launcher {
+
+	private final Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
 	 * Properties key for main class. As a manifest entry can also be specified as
@@ -134,6 +138,9 @@ public class PropertiesLauncher extends Launcher {
 	private Archive parent;
 
 	public PropertiesLauncher() {
+		if (!isDebug()) {
+			this.logger.setLevel(Level.SEVERE);
+		}
 		try {
 			this.home = getHomeDirectory();
 			initializeProperties(this.home);
@@ -143,6 +150,22 @@ public class PropertiesLauncher extends Launcher {
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private boolean isDebug() {
+		String debug = System.getProperty("debug");
+		if (debug != null && !"false".equals(debug)) {
+			return true;
+		}
+		debug = System.getProperty("DEBUG");
+		if (debug != null && !"false".equals(debug)) {
+			return true;
+		}
+		debug = System.getenv("DEBUG");
+		if (debug != null && !"false".equals(debug)) {
+			return true;
+		}
+		return false;
 	}
 
 	protected File getHomeDirectory() {
@@ -159,9 +182,7 @@ public class PropertiesLauncher extends Launcher {
 		InputStream resource = getResource(config);
 
 		if (resource != null) {
-			if (Debug.isEnabled()) {
-			System.err.println("Found: " + config);
-			}
+			this.logger.info("Found: " + config);
 			try {
 				this.properties.load(resource);
 			}
@@ -178,9 +199,7 @@ public class PropertiesLauncher extends Launcher {
 			}
 			if (SystemPropertyUtils.resolvePlaceholders(
 					"${" + SET_SYSTEM_PROPERTIES + ":false}").equals("true")) {
-				if (Debug.isEnabled()) {
-					System.err.println("Adding resolved properties to System properties");
-				}
+				this.logger.info("Adding resolved properties to System properties");
 				for (Object key : Collections.list(this.properties.propertyNames())) {
 					String value = this.properties.getProperty((String) key);
 					System.setProperty((String) key, value);
@@ -188,9 +207,7 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		else {
-			if (Debug.isEnabled()) {
-				System.err.println("Not found: " + config);
-			}
+			this.logger.info("Not found: " + config);
 		}
 
 	}
@@ -225,17 +242,13 @@ public class PropertiesLauncher extends Launcher {
 			config = config.substring(1);
 		}
 		config = "/" + config;
-		if (Debug.isEnabled()) {
-			System.err.println("Trying classpath: " + config);
-		}
+		this.logger.fine("Trying classpath: " + config);
 		return getClass().getResourceAsStream(config);
 	}
 
 	private InputStream getFileResource(String config) throws Exception {
 		File file = new File(config);
-		if (Debug.isEnabled()) {
-			System.err.println("Trying file: " + config);
-		}
+		this.logger.fine("Trying file: " + config);
 		if (file.canRead()) {
 			return new FileInputStream(file);
 		}
@@ -294,9 +307,7 @@ public class PropertiesLauncher extends Launcher {
 		if (path != null) {
 			this.paths = parsePathsProperty(SystemPropertyUtils.resolvePlaceholders(path));
 		}
-		if (Debug.isEnabled()) {
-			System.err.println("Nested archive paths: " + this.paths);
-		}
+		this.logger.info("Nested archive paths: " + this.paths);
 	}
 
 	private List<String> parsePathsProperty(String commaSeparatedPaths) {
@@ -344,9 +355,7 @@ public class PropertiesLauncher extends Launcher {
 		String customLoaderClassName = getProperty("loader.classLoader");
 		if (customLoaderClassName != null) {
 			loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
-			if (Debug.isEnabled()) {
-				System.err.println("Using custom class loader: " + customLoaderClassName);
-			}
+			this.logger.info("Using custom class loader: " + customLoaderClassName);
 		}
 		return loader;
 	}
@@ -389,18 +398,14 @@ public class PropertiesLauncher extends Launcher {
 		String property = SystemPropertyUtils.getProperty(propertyKey);
 		if (property != null) {
 			String value = SystemPropertyUtils.resolvePlaceholders(property);
-			if (Debug.isEnabled()) {
-				System.err.println("Property '" + propertyKey + "' from environment: " + value);
-			}
+			this.logger.fine("Property '" + propertyKey + "' from environment: " + value);
 			return value;
 		}
 
 		if (this.properties.containsKey(propertyKey)) {
 			String value = SystemPropertyUtils.resolvePlaceholders(this.properties
 					.getProperty(propertyKey));
-			if (Debug.isEnabled()) {
-				System.err.println("Property '" + propertyKey + "' from properties: " + value);
-			}
+			this.logger.fine("Property '" + propertyKey + "' from properties: " + value);
 			return value;
 		}
 
@@ -409,10 +414,8 @@ public class PropertiesLauncher extends Launcher {
 			Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
 			if (manifest != null) {
 				String value = manifest.getMainAttributes().getValue(manifestKey);
-				if (Debug.isEnabled()) {
-					System.err.println("Property '" + manifestKey
+				this.logger.fine("Property '" + manifestKey
 						+ "' from home directory manifest: " + value);
-				}
 				return value;
 			}
 		}
@@ -425,10 +428,8 @@ public class PropertiesLauncher extends Launcher {
 		if (manifest != null) {
 			String value = manifest.getMainAttributes().getValue(manifestKey);
 			if (value != null) {
-				if (Debug.isEnabled()) {
-					System.err.println("Property '" + manifestKey + "' from archive manifest: "
+				this.logger.fine("Property '" + manifestKey + "' from archive manifest: "
 						+ value);
-				}
 				return value;
 			}
 		}
@@ -458,26 +459,20 @@ public class PropertiesLauncher extends Launcher {
 			file = new File(this.home, root);
 		}
 		if (file.isDirectory()) {
-			if (Debug.isEnabled()) {
-				System.err.println("Adding classpath entries from " + file);
-			}
+			this.logger.info("Adding classpath entries from " + file);
 			Archive archive = new ExplodedArchive(file, false);
 			lib.add(archive);
 		}
 		Archive archive = getArchive(file);
 		if (archive != null) {
-			if (Debug.isEnabled()) {
-				System.err.println("Adding classpath entries from archive " + archive.getUrl()
+			this.logger.info("Adding classpath entries from archive " + archive.getUrl()
 					+ root);
-			}
 			lib.add(archive);
 		}
 		Archive nested = getNestedArchive(root);
 		if (nested != null) {
-			if (Debug.isEnabled()) {
-				System.err.println("Adding classpath entries from nested " + nested.getUrl()
+			this.logger.info("Adding classpath entries from nested " + nested.getUrl()
 					+ root);
-			}
 			lib.add(nested);
 		}
 		return lib;
