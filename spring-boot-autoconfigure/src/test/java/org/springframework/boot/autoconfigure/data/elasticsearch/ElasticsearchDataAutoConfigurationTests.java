@@ -23,6 +23,8 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
+import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,6 +32,7 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link ElasticsearchDataAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Artur Konczak
  */
 public class ElasticsearchDataAutoConfigurationTests {
 
@@ -54,6 +57,34 @@ public class ElasticsearchDataAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(ElasticsearchTemplate.class).length);
+	}
+
+	@Test
+	public void mappingContextExists() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class,
+				ElasticsearchDataAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(1, this.context
+				.getBeanNamesForType(SimpleElasticsearchMappingContext.class).length);
+	}
+
+	@Test
+	public void converterExists() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.elasticsearch.properties.path.data:target/data",
+				"spring.data.elasticsearch.properties.path.logs:target/logs");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class,
+				ElasticsearchDataAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(ElasticsearchConverter.class).length);
 	}
 
 }
