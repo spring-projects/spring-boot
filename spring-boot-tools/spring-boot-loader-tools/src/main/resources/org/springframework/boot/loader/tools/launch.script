@@ -124,7 +124,7 @@ start() {
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
-    su -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
+    su -s /bin/sh -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
     pid=$(cat "$pid_file")
   else
     checkPermissions || return $?
