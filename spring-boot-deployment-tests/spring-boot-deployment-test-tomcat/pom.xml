@@ -17,6 +17,10 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<cargo.container.id>tomcat8x</cargo.container.id>
+		<cargo.container.url>
+			http://mirrors.ibiblio.org/apache/tomcat/tomcat-8/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip
+		</cargo.container.url>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -60,45 +64,13 @@
 				<groupId>org.codehaus.cargo</groupId>
 				<artifactId>cargo-maven2-plugin</artifactId>
 				<configuration>
-					<container>
-						<containerId>tomcat8x</containerId>
-						<timeout>300000</timeout>
-						<zipUrlInstaller>
-							<url>http://www.us.apache.org/dist/tomcat/tomcat-8/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip</url>
-						</zipUrlInstaller>
-					</container>
 					<configuration>
 						<properties>
 							<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
 							<cargo.tomcat.ajp.port>${appserver.ajp.port}</cargo.tomcat.ajp.port>
 						</properties>
 					</configuration>
-					<deployables>
-						<deployable>
-							<properties>
-								<context>/bootapp</context>
-							</properties>
-							<pingURL>http://localhost:${appserver.port}/bootapp</pingURL>
-							<pingTimeout>30000</pingTimeout>
-						</deployable>
-					</deployables>
 				</configuration>
-				<executions>
-					<execution>
-						<id>start-cargo</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>start</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>stop-cargo</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
