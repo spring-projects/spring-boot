@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.web;
 
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.HttpPutFormContentFilter;
 
@@ -26,12 +27,12 @@ import org.springframework.web.filter.HttpPutFormContentFilter;
  * @since 1.3.0
  */
 public class OrderedHttpPutFormContentFilter extends HttpPutFormContentFilter implements
-		Ordered {
+Ordered {
 
 	/**
 	 * Higher order to ensure the filter is applied before Spring Security.
 	 */
-	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+	public static final int DEFAULT_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 9900;
 
 	private int order = DEFAULT_ORDER;
 

@@ -16,6 +16,12 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
 import org.junit.After;
@@ -56,12 +62,6 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SecurityAutoConfiguration}.
@@ -105,7 +105,7 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(
-				0,
+				FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER-100,
 				this.context.getBean("securityFilterChainRegistration",
 						FilterRegistrationBean.class).getOrder());
 	}
@@ -136,7 +136,7 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(
-				0,
+				FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER-100,
 				this.context.getBean("securityFilterChainRegistration",
 						FilterRegistrationBean.class).getOrder());
 	}
@@ -364,7 +364,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	private static final class AuthenticationListener implements
-			ApplicationListener<AbstractAuthenticationEvent> {
+	ApplicationListener<AbstractAuthenticationEvent> {
 
 		private ApplicationEvent event;
 
@@ -410,7 +410,7 @@ public class SecurityAutoConfigurationTests {
 
 	@Configuration
 	protected static class WorkaroundSecurityCustomizer extends
-			WebSecurityConfigurerAdapter {
+	WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private AuthenticationManagerBuilder builder;
@@ -435,7 +435,7 @@ public class SecurityAutoConfigurationTests {
 	@Configuration
 	@Order(-1)
 	protected static class AuthenticationManagerCustomizer extends
-			GlobalAuthenticationConfigurerAdapter {
+	GlobalAuthenticationConfigurerAdapter {
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
@@ -446,7 +446,7 @@ public class SecurityAutoConfigurationTests {
 
 	@Configuration
 	protected static class UserDetailsSecurityCustomizer extends
-			WebSecurityConfigurerAdapter {
+	WebSecurityConfigurerAdapter {
 
 		private UserDetailsService userDetails;
 

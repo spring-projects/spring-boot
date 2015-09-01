@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.web;
 
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
@@ -25,10 +26,10 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  * @author Phillip Webb
  * @since 1.2.1
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter implements
-		Ordered {
+public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
+implements Ordered {
 
-	private int order = Ordered.HIGHEST_PRECEDENCE;
+	private int order = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 9800;
 
 	@Override
 	public int getOrder() {

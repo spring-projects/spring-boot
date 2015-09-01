@@ -49,7 +49,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
@@ -97,7 +96,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class,
-		WebMvcConfigurerAdapter.class })
+	WebMvcConfigurerAdapter.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
@@ -136,9 +135,6 @@ public class WebMvcAutoConfiguration {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
-
-		@Autowired
-		private ResourceLoader resourceLoader;
 
 		@Autowired
 		private HttpMessageConverters messageConverters;
@@ -317,7 +313,7 @@ public class WebMvcAutoConfiguration {
 			public ResourceHttpRequestHandler faviconRequestHandler() {
 				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
 				requestHandler
-						.setLocations(this.resourceProperties.getFaviconLocations());
+				.setLocations(this.resourceProperties.getFaviconLocations());
 				return requestHandler;
 			}
 
