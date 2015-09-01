@@ -148,7 +148,8 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 					jtaTransactionManager));
 		}
 		catch (LinkageError ex) {
-			// Can happen if Hibernate 4.2 is used
+			// NoClassDefFoundError can happen if Hibernate 4.2 is used
+			// And some container (e.g. JBoss EAP 6) wraps it up by its super class LinkageError
 			if (!isUsingJndi()) {
 				throw new IllegalStateException("Unable to set Hibernate JTA "
 						+ "platform, are you using the correct "
