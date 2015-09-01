@@ -864,7 +864,7 @@ public class SpringApplication {
 	public void setApplicationContextClass(
 			Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.applicationContextClass = applicationContextClass;
-		if (isSpringWebAvailable() && !WebApplicationContext.class.isAssignableFrom(
+		if (!isSpringWebAvailable() || !WebApplicationContext.class.isAssignableFrom(
 				applicationContextClass)) {
 			this.webEnvironment = false;
 		}
