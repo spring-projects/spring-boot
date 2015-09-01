@@ -111,6 +111,9 @@ tests there (e.g. in Eclipse go to `Preferences->Java->Installed JREs` and edit 
 JRE definition so that all processes are launched with those arguments). This property
 is automatically set if you use the maven wrapper.
 
+NOTE: Make sure that your Git config property "core.autocrlf" setting is set to true
+under Windows to avoid build and test failures due to missing CRLF EOL characters.
+
 _Also see link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] if you wish to submit pull requests,
 and in particular please fill out the
 https://support.springsource.com/spring_committer_signup[Contributor's Agreement]

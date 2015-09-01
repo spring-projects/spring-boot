@@ -91,7 +91,7 @@ public class StarterDependenciesIntegrationTests {
 
 	public StarterDependenciesIntegrationTests(String starter) {
 		this.buildArguments = new String[] { "-Pstarter=" + starter,
-				"-PbootVersion=" + bootVersion, "-PspringVersion=" + springVersion };
+				"-PbootVersion=" + bootVersion, "-PspringVersion=" + springVersion, "--stacktrace" };
 	}
 
 	@Test
