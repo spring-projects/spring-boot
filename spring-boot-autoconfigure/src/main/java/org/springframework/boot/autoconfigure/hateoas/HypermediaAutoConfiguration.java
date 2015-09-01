@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.LinkDiscoverers;
 import org.springframework.hateoas.RelProvider;
@@ -89,6 +90,10 @@ public class HypermediaAutoConfiguration {
 			@Autowired(required = false)
 			private ObjectMapper primaryObjectMapper;
 
+			@Autowired
+			@Qualifier("linkRelationMessageSource")
+			private MessageSourceAccessor linkRelationMessageSource;
+
 			@PostConstruct
 			public void configurePrimaryObjectMapper() {
 				if (this.primaryObjectMapper != null
@@ -101,7 +106,8 @@ public class HypermediaAutoConfiguration {
 				objectMapper.registerModule(new Jackson2HalModule());
 				Jackson2HalModule.HalHandlerInstantiator instantiator = new Jackson2HalModule.HalHandlerInstantiator(
 						HalObjectMapperConfiguration.this.relProvider,
-						HalObjectMapperConfiguration.this.curieProvider, null);
+						HalObjectMapperConfiguration.this.curieProvider,
+						this.linkRelationMessageSource);
 				objectMapper.setHandlerInstantiator(instantiator);
 			}
 
