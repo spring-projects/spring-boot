@@ -226,19 +226,10 @@ public class SpringApplication {
 		if (sources != null && sources.length > 0) {
 			this.sources.addAll(Arrays.asList(sources));
 		}
-		this.webEnvironment = deduceWebEnvironment();
+		this.webEnvironment = isSpringWebAvailable();
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
-	}
-
-	private boolean deduceWebEnvironment() {
-		for (String className : WEB_ENVIRONMENT_CLASSES) {
-			if (!ClassUtils.isPresent(className, null)) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -886,7 +877,8 @@ public class SpringApplication {
 	public void setApplicationContextClass(
 			Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.applicationContextClass = applicationContextClass;
-		if (!WebApplicationContext.class.isAssignableFrom(applicationContextClass)) {
+		if (isSpringWebAvailable() && !WebApplicationContext.class.isAssignableFrom(
+				applicationContextClass)) {
 			this.webEnvironment = false;
 		}
 	}
@@ -947,6 +939,15 @@ public class SpringApplication {
 	 */
 	public Set<ApplicationListener<?>> getListeners() {
 		return asUnmodifiableOrderedSet(this.listeners);
+	}
+
+	private boolean isSpringWebAvailable() {
+		for (String className : WEB_ENVIRONMENT_CLASSES) {
+			if (!ClassUtils.isPresent(className, null)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
