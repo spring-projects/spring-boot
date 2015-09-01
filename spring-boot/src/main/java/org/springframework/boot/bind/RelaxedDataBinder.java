@@ -61,6 +61,10 @@ public class RelaxedDataBinder extends DataBinder {
 					StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 					StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)));
 
+	private static final String DOT = ".";
+
+	private static final String UNDERSCORE = "_";
+
 	private static final Object BLANK = new Object();
 
 	private String namePrefix;
@@ -92,7 +96,7 @@ public class RelaxedDataBinder extends DataBinder {
 		if (!StringUtils.hasLength(namePrefix)) {
 			return null;
 		}
-		return (namePrefix.endsWith(".") ? namePrefix : namePrefix + ".");
+		return (namePrefix.endsWith(DOT) ? namePrefix : namePrefix + DOT);
 	}
 
 	/**
@@ -212,7 +216,7 @@ public class RelaxedDataBinder extends DataBinder {
 			for (String candidate : new RelaxedNames(this.namePrefix)) {
 				if (name.startsWith(candidate)) {
 					name = name.substring(candidate.length());
-					if (!(this.ignoreNestedProperties && name.contains("."))) {
+					if (!(this.ignoreNestedProperties && name.contains(DOT))) {
 						PropertyOrigin propertyOrigin = findPropertyOrigin(value);
 						rtn.addPropertyValue(new OriginCapablePropertyValue(name, value
 								.getValue(), propertyOrigin));
@@ -304,7 +308,17 @@ public class RelaxedDataBinder extends DataBinder {
 		String prefix = path.prefix(index);
 		String key = path.name(index);
 		if (path.isProperty(index)) {
-			key = getActualPropertyName(wrapper, prefix, key);
+			String actualPropertyName = getActualPropertyName(wrapper, prefix, key);
+			// Handle unresolved property name
+			if (actualPropertyName != null) {
+				key = actualPropertyName;
+			}
+			else if (actualPropertyName == null && key.contains(UNDERSCORE)) {
+				// Handle property name delimited by underscore.
+				path = new BeanPath(key.replace(UNDERSCORE, DOT));
+				String detectedPropertyName = getActualPropertyName(wrapper, path.prefix(index), path.name(index));
+				key = (detectedPropertyName != null) ? detectedPropertyName : path.name(index);
+			}
 			path.rename(index, key);
 		}
 		if (path.name(++index) == null) {
@@ -414,14 +428,14 @@ public class RelaxedDataBinder extends DataBinder {
 		if (propertyName == null) {
 			propertyName = resolveNestedPropertyName(target, prefix, name);
 		}
-		return (propertyName == null ? name : propertyName);
+		return propertyName;
 	}
 
 	private String resolveNestedPropertyName(BeanWrapper target, String prefix,
 			String name) {
 		StringBuilder candidate = new StringBuilder();
 		for (String field : name.split("[_\\-\\.]")) {
-			candidate.append(candidate.length() > 0 ? "." : "");
+			candidate.append(candidate.length() > 0 ? DOT : "");
 			candidate.append(field);
 			String nested = resolvePropertyName(target, prefix, candidate.toString());
 			if (nested != null) {
@@ -454,7 +468,7 @@ public class RelaxedDataBinder extends DataBinder {
 	}
 
 	private String joinString(String prefix, String name) {
-		return (StringUtils.hasLength(prefix) ? prefix + "." + name : name);
+		return (StringUtils.hasLength(prefix) ? prefix + DOT + name : name);
 	}
 
 	private Iterable<String> getNameAndAliases(String name) {
@@ -521,7 +535,7 @@ public class RelaxedDataBinder extends DataBinder {
 		private List<PathNode> splitPath(String path) {
 			List<PathNode> nodes = new ArrayList<PathNode>();
 			String current = extractIndexedPaths(path, nodes);
-			for (String name : StringUtils.delimitedListToStringArray(current, ".")) {
+			for (String name : StringUtils.delimitedListToStringArray(current, DOT)) {
 				if (StringUtils.hasText(name)) {
 					nodes.add(new PropertyNode(name));
 				}
@@ -560,7 +574,7 @@ public class RelaxedDataBinder extends DataBinder {
 			StringBuilder builder = new StringBuilder();
 			for (int i = index; i < this.nodes.size(); i++) {
 				if (i > index) {
-					builder.append(".");
+					builder.append(DOT);
 				}
 				builder.append(this.nodes.get(i).name);
 			}
@@ -597,7 +611,7 @@ public class RelaxedDataBinder extends DataBinder {
 				PathNode node = this.nodes.get(i);
 				builder.append(node);
 			}
-			if (builder.toString().startsWith(("."))) {
+			if (builder.toString().startsWith((DOT))) {
 				builder.replace(0, 1, "");
 			}
 			return builder.toString();
@@ -663,7 +677,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 			@Override
 			public String toString() {
-				return "." + this.name;
+				return DOT + this.name;
 			}
 		}
 

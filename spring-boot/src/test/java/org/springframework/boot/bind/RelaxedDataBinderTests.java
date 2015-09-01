@@ -324,6 +324,14 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedMapPropsWithUnderscores() throws Exception {
+		TargetWithNestedMap target = new TargetWithNestedMap();
+		bind(target, "nested_foo: bar\n" + "nested_value: 123");
+		assertEquals("123", target.getNested().get("value"));
+		assertEquals("bar", target.getNested().get("foo"));
+	}
+
+	@Test
 	public void testBindNestedUntypedMap() throws Exception {
 		TargetWithNestedUntypedMap target = new TargetWithNestedUntypedMap();
 		bind(target, "nested.foo: bar\n" + "nested.value: 123");
@@ -336,6 +344,22 @@ public class RelaxedDataBinderTests {
 		bind(target, "nested.foo: bar\n" + "nested.value.foo: 123");
 		assertEquals("bar", target.getNested().get("foo"));
 		assertEquals("123", target.getNested().get("value.foo"));
+	}
+
+	@Test
+	public void testBindNestedMapOfStringWithUnderscore() throws Exception {
+		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
+		bind(target, "nested_foo: bar\n" + "nested_value_foo: 123");
+		assertEquals("bar", target.getNested().get("foo"));
+		assertEquals("123", target.getNested().get("value.foo"));
+	}
+
+	@Test
+	public void testBindNestedMapOfStringWithUnderscoreAndupperCase() throws Exception {
+		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
+		bind(target, "NESTED_FOO: bar\n" + "NESTED_VALUE_FOO: 123");
+		assertEquals("bar", target.getNested().get("FOO"));
+		assertEquals("123", target.getNested().get("VALUE.FOO"));
 	}
 
 	@Test
