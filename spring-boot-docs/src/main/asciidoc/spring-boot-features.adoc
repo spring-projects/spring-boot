@@ -2660,6 +2660,137 @@ Mongo instance's configuration and logging routing.
 
 
 
+[[boot-features-neo4j]]
+=== Neo4j
+http://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a
+rich data model of nodes related by first class relationships which is better 
+suited for connected big data than traditional rdbms approaches. 
+Spring Boot offers several conveniences for working with Neo4j, including the
+`spring-boot-starter-data-neo4j` '`Starter POM`'.
+
+
+
+[[boot-features-connecting-to-neo4j]]
+==== Connecting to a Neo4j database
+You can inject an auto-configured `org.neo4j.ogm.session.Neo4jSession` to
+access Neo4j databases. By default the instance will attempt to connect to a Neo4j
+server using the URL `http://localhost:7474`:
+
+[source,java,indent=0]
+----
+	import org.neo4j.ogm.session.Neo4jSession;
+
+	@Component
+	public class MyBean {
+
+		private final Session session;
+
+		@Autowired
+		public MyBean(Session session) {
+			this.session = session;
+		}
+
+		// ...
+
+		public void example() {
+			Iterable result = session.query("MATCH (c:Customer) RETURN count(*)",null);
+			// ...
+		}
+
+	}
+----
+
+You can set `spring.data.neo4j.url` property to change the `url`.
+
+[source,properties,indent=0]
+----
+	spring.data.neo4j.url=http://user:password@host:port
+----
+
+Alternatively, specify a `host`/`port`. For example, you might declare the following in
+your `application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.data.neo4j.host=neo4jserver
+	spring.data.neo4j.port=7474
+----
+
+TIP: If `spring.data.neo4j.port` is not specified the default of `7474` is used. You
+could simply delete this line from the sample above.
+
+TIP: If you aren't using Spring Data Neo4j you can inject `org.neo4j.ogm.Neo4jSession` beans
+instead of using `Neo4jTemplate`.
+
+You can also declare your own `Neo4jTemplate` or `Neo4jSession` bean if you want to take
+complete control of establishing the Neo4j connection.
+
+
+
+[[boot-features-neo4j-template]]
+==== Neo4jTemplate
+Spring Data Neo4j provides a
+{spring-data-neo4j-javadoc}/core/Neo4jTemplate.html[`Neo4jTemplate`] class that is very
+similar in its design to Spring's `JdbcTemplate`. As with `JdbcTemplate` Spring Boot
+auto-configures a bean for you to simply inject:
+
+[source,java,indent=0]
+----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.data.neo4j.template.Neo4jTemplate;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyBean {
+
+		private final Neo4jTemplate neo4jTemplate;
+
+		@Autowired
+		public MyBean(Neo4jTemplate neo4jTemplate) {
+			this.neo4jTemplate = neo4jTemplate;
+		}
+
+		// ...
+
+	}
+----
+
+See the `Neo4jOperations` Javadoc for complete details.
+
+
+
+[[boot-features-spring-data-neo4j-repositories]]
+==== Spring Data Neo4j repositories
+Spring Data includes repository support for Neo4j. As with the JPA repositories
+discussed earlier, the basic principle is that Cypher queries are constructed for you
+automatically based on method names. They also support annotated finder methods that
+allow you to specify your own custom Cypher queries.
+
+In fact, both Spring Data JPA and Spring Data Neo4j share the same common
+infrastructure; so you could take the JPA example from earlier and, assuming that `City`
+is now a Neo4j data class rather than a JPA `@Entity`, it will work in the same way.
+
+[source,java,indent=0]
+----
+	package com.example.myapp.domain;
+
+	import org.springframework.data.domain.*;
+	import org.springframework.data.repository.*;
+
+	public interface CityRepository extends GraphRepository<City> {
+
+		Page<City> findAll(Pageable pageable);
+
+		City findByNameAndCountry(String name, String country);
+
+	}
+----
+
+TIP: For complete details of Spring Data Neo4j, including its rich object mapping
+technologies, refer to their http://projects.spring.io/spring-data-neo4j/[reference
+documentation].
+
+
 [[boot-features-gemfire]]
 === Gemfire
 https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides

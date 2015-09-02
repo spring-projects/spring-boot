@@ -71,6 +71,12 @@
     "defaultValue": true
   },
   {
+    "name": "spring.data.neo4j.repositories.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Enable Neo4j repositories.",
+    "defaultValue": true
+  },
+  {
     "name": "spring.data.solr.repositories.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable Solr repositories.",
