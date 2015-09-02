@@ -156,7 +156,7 @@
 		<undertow.version>1.2.11.Final</undertow.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
-		<webjars-hal-browser.version>b7669f1-1</webjars-hal-browser.version>
+		<webjars-hal-browser.version>9f96c74</webjars-hal-browser.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 	</properties>
 	<prerequisites>
