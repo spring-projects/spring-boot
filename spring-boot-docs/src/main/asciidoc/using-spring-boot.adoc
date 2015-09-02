@@ -420,6 +420,9 @@ and Hibernate.
 |`spring-boot-starter-data-redis`
 |Support for the REDIS key-value data store, including `spring-data-redis`.
 
+|`spring-boot-starter-data-neo4j`
+|Support for the Neo4j Graph Database, including `spring-data-neo4j`.
+
 |`spring-boot-starter-data-rest`
 |Support for exposing Spring Data repositories over REST via `spring-data-rest-webmvc`.
 
