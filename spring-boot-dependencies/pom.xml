@@ -46,7 +46,7 @@
 		<!-- Spring Boot -->
 		<spring-boot.version>1.3.0.BUILD-SNAPSHOT</spring-boot.version>
 		<!-- Third Party -->
-		<activemq.version>5.11.1</activemq.version>
+		<activemq.version>5.12.0</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
 		<artemis.version>1.0.0</artemis.version>
 		<aspectj.version>1.8.6</aspectj.version>
