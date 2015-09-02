@@ -328,7 +328,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		private Integer timeout;
 
 		/**
-		 * Session tracking modes (one or more of the following: "cookie", "url", "ssl")
+		 * Session tracking modes (one or more of the following: "cookie", "url", "ssl").
 		 */
 		private Set<SessionTrackingMode> trackingModes;
 
