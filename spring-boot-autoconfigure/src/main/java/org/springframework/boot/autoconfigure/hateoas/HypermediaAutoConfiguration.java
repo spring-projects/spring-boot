@@ -16,14 +16,10 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,18 +29,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.LinkDiscoverers;
-import org.springframework.hateoas.RelProvider;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
-import org.springframework.hateoas.hal.CurieProvider;
-import org.springframework.hateoas.hal.Jackson2HalModule;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.plugin.core.Plugin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,7 +57,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
 		HttpMessageConvertersAutoConfiguration.class })
-@EnableConfigurationProperties(HateoasProperties.class)
 public class HypermediaAutoConfiguration {
 
 	@Configuration
@@ -75,35 +66,6 @@ public class HypermediaAutoConfiguration {
 
 		@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, ObjectMapper.class })
 		protected static class HalObjectMapperConfiguration {
-
-			@Autowired
-			private HateoasProperties hateoasProperties;
-
-			@Autowired(required = false)
-			private CurieProvider curieProvider;
-
-			@Autowired
-			@Qualifier("_relProvider")
-			private RelProvider relProvider;
-
-			@Autowired(required = false)
-			private ObjectMapper primaryObjectMapper;
-
-			@PostConstruct
-			public void configurePrimaryObjectMapper() {
-				if (this.primaryObjectMapper != null
-						&& this.hateoasProperties.isApplyToPrimaryObjectMapper()) {
-					registerHalModule(this.primaryObjectMapper);
-				}
-			}
-
-			private void registerHalModule(ObjectMapper objectMapper) {
-				objectMapper.registerModule(new Jackson2HalModule());
-				Jackson2HalModule.HalHandlerInstantiator instantiator = new Jackson2HalModule.HalHandlerInstantiator(
-						HalObjectMapperConfiguration.this.relProvider,
-						HalObjectMapperConfiguration.this.curieProvider);
-				objectMapper.setHandlerInstantiator(instantiator);
-			}
 
 			@Bean
 			public static HalObjectMapperConfigurer halObjectMapperConfigurer() {
