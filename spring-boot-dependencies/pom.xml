@@ -115,7 +115,7 @@
 		<mongodb.version>2.13.2</mongodb.version>
 		<mysql.version>5.1.36</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<postgresql.version>9.4-1201-jdbc41</postgresql.version>
+		<postgresql.version>9.4-1202-jdbc41</postgresql.version>
 		<reactor.version>2.0.5.RELEASE</reactor.version>
 		<reactor-spring.version>2.0.5.RELEASE</reactor-spring.version>
 		<sendgrid.version>2.2.2</sendgrid.version>
