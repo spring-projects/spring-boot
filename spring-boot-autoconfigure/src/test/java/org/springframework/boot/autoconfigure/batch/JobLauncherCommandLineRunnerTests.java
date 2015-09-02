@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.batch;
-
-import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,10 +43,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Tests for {@link JobLauncherCommandLineRunner}.
  *
  * @author Dave Syer
+ * @author Jean-Pierre Bergamin
  */
 public class JobLauncherCommandLineRunnerTests {
 
@@ -136,9 +137,8 @@ public class JobLauncherCommandLineRunnerTests {
 				}).build()).incrementer(new RunIdIncrementer()).build();
 		this.runner.execute(this.job, new JobParameters());
 		this.runner.execute(this.job, new JobParameters());
-		/* A failed job that is not restartable does not re-use the job params of
-		 * the last execution, but creates a new job instance when running it again.
-		 */
+		// A failed job that is not restartable does not re-use the job params of
+		// the last execution, but creates a new job instance when running it again.
 		assertEquals(2, this.jobExplorer.getJobInstances("job", 0, 100).size());
 	}
 
