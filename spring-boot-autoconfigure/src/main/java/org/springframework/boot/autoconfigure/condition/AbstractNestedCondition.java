@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012-2015 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.boot.autoconfigure.condition;
 
 import java.io.IOException;
@@ -21,7 +37,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
-public abstract class AbstractNestedCondition extends SpringBootCondition implements
+/**
+ * @author Phillip Webb
+ */
+abstract class AbstractNestedCondition extends SpringBootCondition implements
 		ConfigurationCondition {
 
 	private final ConfigurationPhase configurationPhase;
@@ -39,14 +58,47 @@ public abstract class AbstractNestedCondition extends SpringBootCondition implem
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		MemberConditions memberConditions = new MemberConditions(context, getClass()
-				.getName());
-		List<ConditionOutcome> outcomes = memberConditions.getMatchOutcomes();
-		return buildConditionOutcome(outcomes);
+		String className = getClass().getName();
+		MemberConditions memberConditions = new MemberConditions(context, className);
+		MemberMatchOutcomes memberOutcomes = new MemberMatchOutcomes(memberConditions);
+		return getFinalMatchOutcome(memberOutcomes);
 	}
 
-	protected abstract ConditionOutcome buildConditionOutcome(
-			List<ConditionOutcome> outcomes);
+	protected abstract ConditionOutcome getFinalMatchOutcome(
+			MemberMatchOutcomes memberOutcomes);
+
+	protected static class MemberMatchOutcomes {
+
+		private final List<ConditionOutcome> all;
+
+		private final List<ConditionOutcome> matches;
+
+		private final List<ConditionOutcome> nonMatches;
+
+		public MemberMatchOutcomes(MemberConditions memberConditions) {
+			this.all = Collections.unmodifiableList(memberConditions.getMatchOutcomes());
+			List<ConditionOutcome> matches = new ArrayList<ConditionOutcome>();
+			List<ConditionOutcome> nonMatches = new ArrayList<ConditionOutcome>();
+			for (ConditionOutcome outcome : this.all) {
+				(outcome.isMatch() ? matches : nonMatches).add(outcome);
+			}
+			this.matches = Collections.unmodifiableList(matches);
+			this.nonMatches = Collections.unmodifiableList(nonMatches);
+		}
+
+		public List<ConditionOutcome> getAll() {
+			return this.all;
+		}
+
+		public List<ConditionOutcome> getMatches() {
+			return this.matches;
+		}
+
+		public List<ConditionOutcome> getNonMatches() {
+			return this.nonMatches;
+		}
+
+	}
 
 	private static class MemberConditions {
 

@@ -16,16 +16,13 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.context.annotation.Condition;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 /**
- * {@link Condition} that will match when any nested class condition matches.
- * Can be used to create composite conditions, for example:
+ * {@link Condition} that will match when any nested class condition matches. Can be used
+ * to create composite conditions, for example:
  *
  * <pre class="code">
  * static class OnJndiOrProperty extends AnyNestedCondition {
@@ -42,7 +39,7 @@ import org.springframework.core.annotation.Order;
  * </pre>
  *
  * @author Phillip Webb
- * @since 1.2.0
+ * @since 1.3.0
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
 public abstract class AnyNestedCondition extends AbstractNestedCondition {
@@ -52,18 +49,12 @@ public abstract class AnyNestedCondition extends AbstractNestedCondition {
 	}
 
 	@Override
-	protected ConditionOutcome buildConditionOutcome(List<ConditionOutcome> outcomes) {
-		List<ConditionOutcome> match = new ArrayList<ConditionOutcome>();
-		List<ConditionOutcome> nonMatch = new ArrayList<ConditionOutcome>();
-		for (ConditionOutcome outcome : outcomes) {
-			if (outcome.isMatch()) {
-				match.add(outcome);
-			} else {
-				nonMatch.add(outcome);
-			}
-		}
-		return new ConditionOutcome(match.size() > 0, "any match resulted in " + match + " matches and " + nonMatch
-				+ " non matches");
+	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
+		return new ConditionOutcome(memberOutcomes.getMatches().size() > 0,
+				"nested any match resulted in " + memberOutcomes.getMatches()
+						+ " matches and " + memberOutcomes.getNonMatches()
+						+ " non matches");
+
 	}
 
 }
