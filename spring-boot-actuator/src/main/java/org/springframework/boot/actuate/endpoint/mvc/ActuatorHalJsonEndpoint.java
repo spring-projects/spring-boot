@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.hateoas.ResourceSupport;
@@ -58,16 +57,18 @@ public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter implements
 	 */
 	private boolean enabled = true;
 
-	private final ManagementServerProperties management;
+	private final ManagementServletContext managementServletContext;
 
-	public ActuatorHalJsonEndpoint(ManagementServerProperties management) {
-		this.management = management;
-		if (StringUtils.hasText(management.getContextPath())) {
-			this.path = "";
+	public ActuatorHalJsonEndpoint(ManagementServletContext managementServletContext) {
+		this.managementServletContext = managementServletContext;
+		this.path = getDefaultPath(managementServletContext);
+	}
+
+	private String getDefaultPath(ManagementServletContext managementServletContext) {
+		if (StringUtils.hasText(managementServletContext.getContextPath())) {
+			return this.path = "";
 		}
-		else {
-			this.path = "/actuator";
-		}
+		return "/actuator";
 	}
 
 	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -107,8 +108,8 @@ public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter implements
 		return null;
 	}
 
-	protected final ManagementServerProperties getManagement() {
-		return this.management;
+	protected final ManagementServletContext getManagementServletContext() {
+		return this.managementServletContext;
 	}
 
 }

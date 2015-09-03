@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
@@ -39,7 +38,7 @@ public class ActuatorDocsEndpoint extends WebMvcConfigurerAdapter implements Mvc
 
 	private boolean sensitive;
 
-	private ManagementServerProperties management;
+	private final ManagementServletContext managementServletContext;
 
 	private Curies curies = new Curies();
 
@@ -47,23 +46,26 @@ public class ActuatorDocsEndpoint extends WebMvcConfigurerAdapter implements Mvc
 		return this.curies;
 	}
 
-	public ActuatorDocsEndpoint(ManagementServerProperties management) {
-		this.management = management;
+	public ActuatorDocsEndpoint(ManagementServletContext managementServletContext) {
+		this.managementServletContext = managementServletContext;
 	}
 
 	@RequestMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
 	public String browse() {
-		return "forward:" + this.management.getContextPath() + this.path + "/index.html";
+		return "forward:" + this.managementServletContext.getContextPath() + this.path
+				+ "/index.html";
 	}
 
 	@RequestMapping(value = "", produces = MediaType.TEXT_HTML_VALUE)
 	public String redirect() {
-		return "redirect:" + this.management.getContextPath() + this.path + "/";
+		return "redirect:" + this.managementServletContext.getContextPath() + this.path
+				+ "/";
 	}
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler(this.management.getContextPath() + this.path + "/**")
+		registry.addResourceHandler(
+				this.managementServletContext.getContextPath() + this.path + "/**")
 				.addResourceLocations(DOCS_LOCATION);
 	}
 

@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -118,6 +119,19 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Bean
 	public ManagementContextResolver managementContextResolver() {
 		return new ManagementContextResolver(this.applicationContext);
+	}
+
+	@Bean
+	public ManagementServletContext managementServletContext(
+			final ManagementServerProperties properties) {
+		return new ManagementServletContext() {
+
+			@Override
+			public String getContextPath() {
+				return properties.getContextPath();
+			}
+
+		};
 	}
 
 	@Override

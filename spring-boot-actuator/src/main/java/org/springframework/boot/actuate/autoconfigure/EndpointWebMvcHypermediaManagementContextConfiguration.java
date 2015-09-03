@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.endpoint.mvc.ActuatorDocsEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalBrowserEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.ActuatorHalJsonEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.HypermediaDisabled;
+import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -87,22 +88,36 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @EnableConfigurationProperties(ResourceProperties.class)
 public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
+	@Bean
+	public ManagementServletContext managementServletContext(
+			final ManagementServerProperties properties) {
+		return new ManagementServletContext() {
+
+			@Override
+			public String getContextPath() {
+				return properties.getContextPath();
+			}
+
+		};
+	}
+
 	@ConditionalOnProperty(prefix = "endpoints.actuator", name = "enabled", matchIfMissing = true)
 	@Bean
 	public ActuatorHalJsonEndpoint actuatorMvcEndpoint(
-			ManagementServerProperties management, ResourceProperties resources,
-			ResourceLoader resourceLoader) {
+			ManagementServletContext managementServletContext,
+			ResourceProperties resources, ResourceLoader resourceLoader) {
 		if (ActuatorHalBrowserEndpoint.getHalBrowserLocation(resourceLoader) != null) {
-			return new ActuatorHalBrowserEndpoint(management);
+			return new ActuatorHalBrowserEndpoint(managementServletContext);
 		}
-		return new ActuatorHalJsonEndpoint(management);
+		return new ActuatorHalJsonEndpoint(managementServletContext);
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "endpoints.docs", name = "enabled", matchIfMissing = true)
 	@ConditionalOnResource(resources = "classpath:/META-INF/resources/spring-boot-actuator/docs/index.html")
-	public ActuatorDocsEndpoint actuatorDocsEndpoint(ManagementServerProperties management) {
-		return new ActuatorDocsEndpoint(management);
+	public ActuatorDocsEndpoint actuatorDocsEndpoint(
+			ManagementServletContext managementServletContext) {
+		return new ActuatorDocsEndpoint(managementServletContext);
 	}
 
 	@Bean

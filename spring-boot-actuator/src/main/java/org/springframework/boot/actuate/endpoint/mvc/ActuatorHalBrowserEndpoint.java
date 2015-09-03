@@ -21,7 +21,6 @@ import java.nio.charset.Charset;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -47,13 +46,13 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 
 	private HalBrowserLocation location;
 
-	public ActuatorHalBrowserEndpoint(ManagementServerProperties management) {
-		super(management);
+	public ActuatorHalBrowserEndpoint(ManagementServletContext managementServletContext) {
+		super(managementServletContext);
 	}
 
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public String browse(HttpServletRequest request) {
-		String contextPath = getManagement().getContextPath()
+		String contextPath = getManagementServletContext().getContextPath()
 				+ (getPath().endsWith("/") ? getPath() : getPath() + "/");
 		if (request.getRequestURI().endsWith("/")) {
 			return "forward:" + contextPath + this.location.getHtmlFile();
@@ -71,7 +70,7 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 		// Make sure the root path is not cached so the browser comes back for the JSON
 		// and add a transformer to set the initial link
 		if (this.location != null) {
-			String start = getManagement().getContextPath() + getPath();
+			String start = getManagementServletContext().getContextPath() + getPath();
 			registry.addResourceHandler(start + "/", start + "/**")
 					.addResourceLocations(this.location.getResourceLocation())
 					.setCachePeriod(0).resourceChain(true)
@@ -138,9 +137,8 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 		private Resource replaceInitialLink(Resource resource) throws IOException {
 			byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
 			String content = new String(bytes, DEFAULT_CHARSET);
-			String initialLink = getManagement().getContextPath() + getPath();
-			content = content.replace("entryPoint: '/'", "entryPoint: '" + initialLink
-					+ "'");
+			String initial = getManagementServletContext().getContextPath() + getPath();
+			content = content.replace("entryPoint: '/'", "entryPoint: '" + initial + "'");
 			return new TransformedResource(resource, content.getBytes(DEFAULT_CHARSET));
 		}
 
