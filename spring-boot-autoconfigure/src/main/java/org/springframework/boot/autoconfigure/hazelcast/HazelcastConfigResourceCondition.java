@@ -23,9 +23,9 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link SpringBootCondition} used to check if the Hazelcast configuration is
- * available. This either kicks in if a default configuration has been found or
- * if configurable property referring to the resource to use has been set.
+ * {@link SpringBootCondition} used to check if the Hazelcast configuration is available.
+ * This either kicks in if a default configuration has been found or if configurable
+ * property referring to the resource to use has been set.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -43,8 +43,8 @@ public abstract class HazelcastConfigResourceCondition extends ResourceCondition
 	protected ConditionOutcome getResourceOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		if (System.getProperty(CONFIG_SYSTEM_PROPERTY) != null) {
-			return ConditionOutcome.match("System property '"
-					+ CONFIG_SYSTEM_PROPERTY + "' is set.");
+			return ConditionOutcome.match("System property '" + CONFIG_SYSTEM_PROPERTY
+					+ "' is set.");
 		}
 		return super.getResourceOutcome(context, metadata);
 	}

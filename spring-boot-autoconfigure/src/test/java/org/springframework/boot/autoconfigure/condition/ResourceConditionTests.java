@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -92,8 +91,7 @@ public class ResourceConditionTests {
 		}
 	}
 
-	private static class DefaultLocationResourceCondition extends
-			ResourceCondition {
+	private static class DefaultLocationResourceCondition extends ResourceCondition {
 
 		public DefaultLocationResourceCondition() {
 			super("test", "spring.foo.test.", "config", "classpath:/logging.properties");

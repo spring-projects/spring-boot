@@ -19,10 +19,6 @@ package org.springframework.boot.autoconfigure.cache;
 import java.io.Closeable;
 import java.io.IOException;
 
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.spring.cache.HazelcastCacheManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -30,26 +26,31 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastConfigResourceCondition;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastInstanceFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.spring.cache.HazelcastCacheManager;
+
 /**
- * Hazelcast cache configuration. Can either reuse the {@link HazelcastInstance} that
- * has been configured by the general {@link HazelcastAutoConfiguration} or create
- * a separate one if the {@code spring.cache.hazelcast.config} property has been set.
+ * Hazelcast cache configuration. Can either reuse the {@link HazelcastInstance} that has
+ * been configured by the general {@link HazelcastAutoConfiguration} or create a separate
+ * one if the {@code spring.cache.hazelcast.config} property has been set.
  * <p>
- * If the {@link HazelcastAutoConfiguration} has been disabled, an attempt to configure
- * a default {@link HazelcastInstance} is still made, using the same defaults.
+ * If the {@link HazelcastAutoConfiguration} has been disabled, an attempt to configure a
+ * default {@link HazelcastInstance} is still made, using the same defaults.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
  * @see HazelcastConfigResourceCondition
  */
 @Configuration
-@ConditionalOnClass({HazelcastInstance.class, HazelcastCacheManager.class})
+@ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
 @AutoConfigureAfter(HazelcastAutoConfiguration.class)
@@ -63,19 +64,16 @@ class HazelcastCacheConfiguration {
 		private CacheProperties cacheProperties;
 
 		@Bean
-		public HazelcastCacheManager cacheManager(HazelcastInstance existingHazelcastInstance)
-				throws IOException {
-			Resource location = this.cacheProperties
-					.resolveConfigLocation(this.cacheProperties.getHazelcast().getConfig());
+		public HazelcastCacheManager cacheManager(
+				HazelcastInstance existingHazelcastInstance) throws IOException {
+			Resource config = this.cacheProperties.getHazelcast().getConfig();
+			Resource location = this.cacheProperties.resolveConfigLocation(config);
 			if (location != null) {
-				HazelcastInstance cacheHazelcastInstance =
-						HazelcastAutoConfiguration.createHazelcastInstance(location);
+				HazelcastInstance cacheHazelcastInstance = new HazelcastInstanceFactory(
+						location).getHazelcastInstance();
 				return new CloseableHazelcastCacheManager(cacheHazelcastInstance);
 			}
-			else {
-				return new HazelcastCacheManager(existingHazelcastInstance);
-			}
-
+			return new HazelcastCacheManager(existingHazelcastInstance);
 		}
 	}
 
@@ -89,10 +87,10 @@ class HazelcastCacheConfiguration {
 
 		@Bean
 		public HazelcastInstance hazelcastInstance() throws IOException {
-			Resource location = this.cacheProperties
-					.resolveConfigLocation(this.cacheProperties.getHazelcast().getConfig());
+			Resource config = this.cacheProperties.getHazelcast().getConfig();
+			Resource location = this.cacheProperties.resolveConfigLocation(config);
 			if (location != null) {
-				HazelcastAutoConfiguration.createHazelcastInstance(location);
+				new HazelcastInstanceFactory(location).getHazelcastInstance();
 			}
 			return Hazelcast.newHazelcastInstance();
 		}
@@ -116,7 +114,9 @@ class HazelcastCacheConfiguration {
 
 	}
 
-	private static class CloseableHazelcastCacheManager extends HazelcastCacheManager implements Closeable {
+	private static class CloseableHazelcastCacheManager extends HazelcastCacheManager
+			implements Closeable {
+
 		private final HazelcastInstance hazelcastInstance;
 
 		public CloseableHazelcastCacheManager(HazelcastInstance hazelcastInstance) {
@@ -128,6 +128,7 @@ class HazelcastCacheConfiguration {
 		public void close() throws IOException {
 			this.hazelcastInstance.shutdown();
 		}
+
 	}
 
 }

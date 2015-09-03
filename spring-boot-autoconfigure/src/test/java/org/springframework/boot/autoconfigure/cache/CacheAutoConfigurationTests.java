@@ -375,13 +375,12 @@ public class CacheAutoConfigurationTests {
 		Collection<Class<?>> configs = new ArrayList<Class<?>>();
 		configs.add(DefaultCacheConfiguration.class);
 		configs.add(HazelcastAutoConfiguration.class);
-		String mainConfig =
-				"org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
-		doLoad(configs, "spring.cache.type=hazelcast",
-				"spring.hazelcast.config=" + mainConfig);
-
+		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
+		doLoad(configs, "spring.cache.type=hazelcast", "spring.hazelcast.config="
+				+ mainConfig);
 		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
-		HazelcastInstance hazelcastInstance = this.context.getBean(HazelcastInstance.class);
+		HazelcastInstance hazelcastInstance = this.context
+				.getBean(HazelcastInstance.class);
 		assertThat(
 				new DirectFieldAccessor(cacheManager)
 						.getPropertyValue("hazelcastInstance"),
@@ -398,17 +397,14 @@ public class CacheAutoConfigurationTests {
 		configs.add(HazelcastAutoConfiguration.class);
 		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
 		String cacheConfig = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
-		doLoad(configs, "spring.cache.type=hazelcast",
-				"spring.cache.hazelcast.config=" + cacheConfig,
-				"spring.hazelcast.config=" + mainConfig);
-		HazelcastInstance hazelcastInstance = this.context.getBean(HazelcastInstance.class);
+		doLoad(configs, "spring.cache.type=hazelcast", "spring.cache.hazelcast.config="
+				+ cacheConfig, "spring.hazelcast.config=" + mainConfig);
+		HazelcastInstance hazelcastInstance = this.context
+				.getBean(HazelcastInstance.class);
 		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
-		HazelcastInstance cacheHazelcastInstance = (HazelcastInstance)
-				new DirectFieldAccessor(cacheManager).getPropertyValue("hazelcastInstance");
-
-		assertThat(
-				cacheHazelcastInstance,
-				is(not(hazelcastInstance))); // Our custom cache instance
+		HazelcastInstance cacheHazelcastInstance = (HazelcastInstance) new DirectFieldAccessor(
+				cacheManager).getPropertyValue("hazelcastInstance");
+		assertThat(cacheHazelcastInstance, is(not(hazelcastInstance))); // Our custom
 		assertThat(hazelcastInstance.getConfig().getConfigurationFile(),
 				is(new ClassPathResource(mainConfig).getFile()));
 		assertThat(cacheHazelcastInstance.getConfig().getConfigurationFile(),
@@ -552,8 +548,7 @@ public class CacheAutoConfigurationTests {
 		doLoad(configs, environment);
 	}
 
-	private void doLoad(Collection<Class<?>> configs,
-			String... environment) {
+	private void doLoad(Collection<Class<?>> configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		for (Class<?> config : configs) {

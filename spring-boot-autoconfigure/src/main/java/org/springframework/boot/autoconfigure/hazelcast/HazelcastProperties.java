@@ -49,12 +49,12 @@ public class HazelcastProperties {
 	 * location
 	 */
 	public Resource resolveConfigLocation() {
-		if (this.config != null) {
-			Assert.isTrue(this.config.exists(), "Hazelcast configuration does not exist '"
-					+ this.config.getDescription() + "'");
-			return this.config;
+		if (this.config == null) {
+			return null;
 		}
-		return null;
+		Assert.isTrue(this.config.exists(), "Hazelcast configuration does not exist '"
+				+ this.config.getDescription() + "'");
+		return this.config;
 	}
 
 }

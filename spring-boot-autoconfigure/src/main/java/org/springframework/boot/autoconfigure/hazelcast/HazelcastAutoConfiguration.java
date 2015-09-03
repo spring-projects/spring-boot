@@ -17,12 +17,6 @@
 package org.springframework.boot.autoconfigure.hazelcast;
 
 import java.io.IOException;
-import java.net.URL;
-
-import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,9 +28,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
+
+import com.hazelcast.config.Config;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hazelcast. Creates a
@@ -53,37 +48,8 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(HazelcastProperties.class)
 public class HazelcastAutoConfiguration {
 
-
-	/**
-	 * Create a {@link HazelcastInstance} based on the specified configuration location.
-	 * @param location the location of the configuration file
-	 * @return a {@link HazelcastInstance} for the specified configuration
-	 * @throws IOException the configuration file could not be read
-	 */
-	public static HazelcastInstance createHazelcastInstance(Resource location)
-			throws IOException {
-		Assert.notNull(location, "Config must not be null");
-		URL configUrl = location.getURL();
-		Config config = new XmlConfigBuilder(configUrl).build();
-		if (ResourceUtils.isFileURL(configUrl)) {
-			config.setConfigurationFile(location.getFile());
-		}
-		else {
-			config.setConfigurationUrl(configUrl);
-		}
-		return createHazelcastInstance(config);
-	}
-
-	private static HazelcastInstance createHazelcastInstance(Config config) {
-		if (StringUtils.hasText(config.getInstanceName())) {
-			return Hazelcast.getOrCreateHazelcastInstance(config);
-		}
-		return Hazelcast.newHazelcastInstance(config);
-	}
-
-
 	@Configuration
-	@ConditionalOnMissingBean({HazelcastInstance.class, Config.class})
+	@ConditionalOnMissingBean({ HazelcastInstance.class, Config.class })
 	@Conditional(ConfigAvailableCondition.class)
 	static class HazelcastConfigFileConfiguration {
 
@@ -95,7 +61,7 @@ public class HazelcastAutoConfiguration {
 		public HazelcastInstance hazelcastInstance() throws IOException {
 			Resource config = this.hazelcastProperties.resolveConfigLocation();
 			if (config != null) {
-				return createHazelcastInstance(config);
+				return new HazelcastInstanceFactory(config).getHazelcastInstance();
 			}
 			return Hazelcast.newHazelcastInstance();
 		}
@@ -109,7 +75,7 @@ public class HazelcastAutoConfiguration {
 
 		@Bean
 		public HazelcastInstance hazelcastInstance(Config config) {
-			return createHazelcastInstance(config);
+			return new HazelcastInstanceFactory(config).getHazelcastInstance();
 		}
 
 	}
@@ -123,6 +89,7 @@ public class HazelcastAutoConfiguration {
 		public ConfigAvailableCondition() {
 			super("spring.hazelcast", "config");
 		}
+
 	}
 
 }
