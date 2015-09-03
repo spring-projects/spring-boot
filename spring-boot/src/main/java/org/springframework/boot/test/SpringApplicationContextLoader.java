@@ -82,6 +82,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			throws Exception {
 		assertValidAnnotations(config.getTestClass());
 		SpringApplication application = getSpringApplication();
+		application.setRegisterShutdownHook(false);
 		application.setMainApplicationClass(config.getTestClass());
 		application.setSources(getSources(config));
 		ConfigurableEnvironment environment = new StandardEnvironment();
