@@ -157,6 +157,7 @@
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
 		<webjars-hal-browser.version>9f96c74</webjars-hal-browser.version>
+		<webjars-locator.version>0.22</webjars-locator.version>
 		<wsdl4j.version>1.6.3</wsdl4j.version>
 	</properties>
 	<prerequisites>
@@ -1889,6 +1890,11 @@
 				<groupId>org.webjars</groupId>
 				<artifactId>hal-browser</artifactId>
 				<version>${webjars-hal-browser.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>webjars-locator</artifactId>
+				<version>${webjars-locator.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>
