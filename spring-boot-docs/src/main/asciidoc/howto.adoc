@@ -563,8 +563,8 @@ them unless you need different values:
 
 [indent=0]
 ----
-	server.tomcat.remote_ip_header=x-forwarded-for
-	server.tomcat.protocol_header=x-forwarded-proto
+	server.tomcat.remote-ip-header=x-forwarded-for
+	server.tomcat.protocol-header=x-forwarded-proto
 ----
 
 If your proxy uses different headers you can customize the valve's configuration by adding
@@ -572,8 +572,8 @@ some entries to `application.properties`, e.g.
 
 [indent=0]
 ----
-	server.tomcat.remote_ip_header=x-your-remote-ip-header
-	server.tomcat.protocol_header=x-your-protocol-header
+	server.tomcat.remote-ip-header=x-your-remote-ip-header
+	server.tomcat.protocol-header=x-your-protocol-header
 ----
 
 The valve is also configured with a default regular expression that matches internal
