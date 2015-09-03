@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package org.springframework.boot.bind;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +31,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ConfigurationProperties} binding with custom converters.
@@ -82,6 +82,7 @@ public class ConverterBindingTests {
 	}
 
 	public static class Foo {
+
 		private String name;
 
 		public String getName() {
@@ -96,6 +97,7 @@ public class ConverterBindingTests {
 
 	@ConfigurationProperties
 	public static class Wrapper {
+
 		private Foo foo;
 
 		public Foo getFoo() {
@@ -105,6 +107,7 @@ public class ConverterBindingTests {
 		public void setFoo(Foo foo) {
 			this.foo = foo;
 		}
+
 	}
 
 }

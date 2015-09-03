@@ -134,8 +134,8 @@ public class JpaProperties {
 
 		/**
 		 * DDL mode. This is actually a shortcut for the "hibernate.hbm2ddl.auto"
-		 * property. Default to "create-drop" when using an embedded database,
-		 * "none" otherwise.
+		 * property. Default to "create-drop" when using an embedded database, "none"
+		 * otherwise.
 		 */
 		private String ddlAuto;
 

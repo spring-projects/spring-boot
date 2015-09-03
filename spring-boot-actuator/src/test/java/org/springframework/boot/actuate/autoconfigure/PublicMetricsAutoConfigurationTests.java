@@ -16,14 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -66,6 +58,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.SocketUtils;
 
 import com.zaxxer.hikari.HikariDataSource;
+
+import static org.hamcrest.Matchers.hasKey;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link PublicMetricsAutoConfiguration}.
@@ -150,7 +150,7 @@ public class PublicMetricsAutoConfigurationTests {
 		jdbcTemplate.execute(new ConnectionCallback<Void>() {
 			@Override
 			public Void doInConnection(Connection connection) throws SQLException,
-			DataAccessException {
+					DataAccessException {
 				return null;
 			}
 		});
@@ -246,7 +246,8 @@ public class PublicMetricsAutoConfigurationTests {
 		}
 		context.register(DataSourcePoolMetadataProvidersConfiguration.class,
 				CacheStatisticsAutoConfiguration.class,
-				PublicMetricsAutoConfiguration.class, MockEmbeddedServletContainerFactory.class);
+				PublicMetricsAutoConfiguration.class,
+				MockEmbeddedServletContainerFactory.class);
 		context.refresh();
 		this.context = context;
 	}

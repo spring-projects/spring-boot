@@ -266,9 +266,9 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 	public void parseProjectOptions() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("-g=org.demo", "-a=acme", "-v=1.2.3-SNAPSHOT", "-n=acme-sample",
-				"--description=Acme sample project", "--package-name=demo.foo", "-t=ant-project",
-				"--build=grunt", "--format=web", "-p=war", "-j=1.9", "-l=groovy",
-				"-b=1.2.0.RELEASE", "-d=web,data-jpa");
+				"--description=Acme sample project", "--package-name=demo.foo",
+				"-t=ant-project", "--build=grunt", "--format=web", "-p=war", "-j=1.9",
+				"-l=groovy", "-b=1.2.0.RELEASE", "-d=web,data-jpa");
 		assertEquals("org.demo", this.handler.lastRequest.getGroupId());
 		assertEquals("acme", this.handler.lastRequest.getArtifactId());
 		assertEquals("1.2.3-SNAPSHOT", this.handler.lastRequest.getVersion());

@@ -43,8 +43,8 @@ public class MessageSourceAutoConfigurationTests {
 
 	@After
 	public void closeContext() {
-		if (context != null) {
-			context.close();
+		if (this.context != null) {
+			this.context.close();
 		}
 	}
 
@@ -72,7 +72,8 @@ public class MessageSourceAutoConfigurationTests {
 	@Test
 	public void testMultipleMessageSourceCreated() throws Exception {
 		load("spring.messages.basename:test/messages,test/messages2");
-		assertEquals("bar", this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertEquals("bar",
+				this.context.getMessage("foo", null, "Foo message", Locale.UK));
 		assertEquals("bar-bar",
 				this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK));
 	}
@@ -124,4 +125,5 @@ public class MessageSourceAutoConfigurationTests {
 	protected static class Config {
 
 	}
+
 }

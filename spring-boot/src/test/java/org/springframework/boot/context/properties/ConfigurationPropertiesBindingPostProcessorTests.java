@@ -97,7 +97,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 			fail("Expected exception");
 		}
 		catch (BeanCreationException ex) {
-			RelaxedBindingNotWritablePropertyException bex = (RelaxedBindingNotWritablePropertyException) ex.getRootCause();
+			RelaxedBindingNotWritablePropertyException bex = (RelaxedBindingNotWritablePropertyException) ex
+					.getRootCause();
 			assertThat(bex.getMessage(),
 					startsWith("Failed to bind 'com.example.baz' from 'test' to 'baz' "
 							+ "property on '" + TestConfiguration.class.getName()));

@@ -27,7 +27,7 @@ import org.springframework.web.filter.HttpPutFormContentFilter;
  * @since 1.3.0
  */
 public class OrderedHttpPutFormContentFilter extends HttpPutFormContentFilter implements
-Ordered {
+		Ordered {
 
 	/**
 	 * Higher order to ensure the filter is applied before Spring Security.

@@ -27,7 +27,7 @@ import org.springframework.web.filter.HiddenHttpMethodFilter;
  * @since 1.2.4
  */
 public class OrderedHiddenHttpMethodFilter extends HiddenHttpMethodFilter implements
-Ordered {
+		Ordered {
 
 	/**
 	 * The default order is high to ensure the filter is applied before Spring Security.

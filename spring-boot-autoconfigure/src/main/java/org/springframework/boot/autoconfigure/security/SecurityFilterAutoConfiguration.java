@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security;
 
 import javax.servlet.Filter;
@@ -44,15 +45,16 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 @AutoConfigureAfter(SpringBootWebSecurityConfiguration.class)
 public class SecurityFilterAutoConfiguration {
 
+	private static final String DEFAULT_FILTER_NAME = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME;
+
 	@Bean
-	@ConditionalOnBean(name = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME)
+	@ConditionalOnBean(name = DEFAULT_FILTER_NAME)
 	public FilterRegistrationBean securityFilterChainRegistration(
-			@Qualifier(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME) Filter securityFilter,
+			@Qualifier(DEFAULT_FILTER_NAME) Filter securityFilter,
 			SecurityProperties securityProperties) {
 		FilterRegistrationBean registration = new FilterRegistrationBean(securityFilter);
 		registration.setOrder(securityProperties.getFilterOrder());
-		registration
-				.setName(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME);
+		registration.setName(DEFAULT_FILTER_NAME);
 		return registration;
 	}
 

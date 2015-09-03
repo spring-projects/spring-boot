@@ -69,7 +69,6 @@ public class AuthenticationManagerConfiguration {
 	private static Log logger = LogFactory
 			.getLog(AuthenticationManagerConfiguration.class);
 
-	@SuppressWarnings("unused")
 	@Autowired
 	private List<SecurityPrerequisite> dependencies;
 
@@ -112,7 +111,7 @@ public class AuthenticationManagerConfiguration {
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE - 100)
 	private static class SpringBootAuthenticationConfigurerAdapter extends
-	GlobalAuthenticationConfigurerAdapter {
+			GlobalAuthenticationConfigurerAdapter {
 
 		private final SecurityProperties securityProperties;
 
@@ -152,7 +151,7 @@ public class AuthenticationManagerConfiguration {
 	 * </ul>
 	 */
 	private static class DefaultInMemoryUserDetailsManagerConfigurer extends
-	InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> {
+			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> {
 
 		private final SecurityProperties securityProperties;
 
@@ -169,7 +168,7 @@ public class AuthenticationManagerConfiguration {
 			User user = this.securityProperties.getUser();
 			if (user.isDefaultPassword()) {
 				logger.info("\n\nUsing default security password: " + user.getPassword()
-				+ "\n");
+						+ "\n");
 			}
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
 			withUser(user.getName()).password(user.getPassword()).roles(
@@ -197,7 +196,7 @@ public class AuthenticationManagerConfiguration {
 	 */
 	@Component
 	protected static class AuthenticationManagerConfigurationListener implements
-	SmartInitializingSingleton {
+			SmartInitializingSingleton {
 
 		@Autowired
 		private AuthenticationEventPublisher eventPublisher;
@@ -219,7 +218,7 @@ public class AuthenticationManagerConfiguration {
 		private void configureAuthenticationManager(AuthenticationManager manager) {
 			if (manager instanceof ProviderManager) {
 				((ProviderManager) manager)
-				.setAuthenticationEventPublisher(this.eventPublisher);
+						.setAuthenticationEventPublisher(this.eventPublisher);
 			}
 		}
 

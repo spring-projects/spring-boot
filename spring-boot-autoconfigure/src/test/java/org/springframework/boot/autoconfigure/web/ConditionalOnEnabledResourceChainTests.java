@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -70,7 +69,6 @@ public class ConditionalOnEnabledResourceChainTests {
 		load("spring.resources.chain.strategy.content.enabled:true");
 		assertTrue(this.context.containsBean("foo"));
 	}
-
 
 	private void load(String... environment) {
 		this.context.register(Config.class);

@@ -184,7 +184,7 @@ class ProjectGenerationRequest {
 	 * @return the package name or {@code null}
 	 */
 	public String getPackageName() {
-		return packageName;
+		return this.packageName;
 	}
 
 	public void setPackageName(String packageName) {

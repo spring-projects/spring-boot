@@ -164,7 +164,9 @@ public class JobLauncherCommandLineRunnerTests {
 	protected static class BatchConfiguration implements BatchConfigurer {
 
 		private ResourcelessTransactionManager transactionManager = new ResourcelessTransactionManager();
+
 		private JobRepository jobRepository;
+
 		private MapJobRepositoryFactoryBean jobRepositoryFactory = new MapJobRepositoryFactoryBean(
 				this.transactionManager);
 
@@ -198,6 +200,7 @@ public class JobLauncherCommandLineRunnerTests {
 		public JobExplorer getJobExplorer() throws Exception {
 			return new MapJobExplorerFactoryBean(this.jobRepositoryFactory).getObject();
 		}
+
 	}
 
 }

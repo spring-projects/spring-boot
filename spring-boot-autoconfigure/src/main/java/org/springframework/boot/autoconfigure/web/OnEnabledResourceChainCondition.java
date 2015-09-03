@@ -34,14 +34,16 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnEnabledResourceChainCondition extends SpringBootCondition {
 
 	@Override
-	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		ConfigurableEnvironment environment = (ConfigurableEnvironment) context.getEnvironment();
-		ResourceProperties resourceProperties = new ResourceProperties();
-		RelaxedDataBinder binder = new RelaxedDataBinder(resourceProperties, "spring.resources");
+	public ConditionOutcome getMatchOutcome(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
+		ConfigurableEnvironment environment = (ConfigurableEnvironment) context
+				.getEnvironment();
+		ResourceProperties properties = new ResourceProperties();
+		RelaxedDataBinder binder = new RelaxedDataBinder(properties, "spring.resources");
 		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources()));
-
-		Boolean match = resourceProperties.getChain().getEnabled();
-		return new ConditionOutcome(match, "Resource chain is " + (match ? "enabled" : "disabled" + ")"));
+		Boolean match = properties.getChain().getEnabled();
+		return new ConditionOutcome(match, "Resource chain is "
+				+ (match ? "enabled" : "disabled" + ")"));
 	}
 
 }

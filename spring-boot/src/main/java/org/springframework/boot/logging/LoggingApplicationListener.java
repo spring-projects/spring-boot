@@ -200,7 +200,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private String getExceptionConversionWord(ConfigurableEnvironment environment) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment, "logging.");
+		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+				"logging.");
 		return resolver.getProperty("exception-conversion-word", "%rEx");
 	}
 

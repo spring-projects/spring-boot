@@ -52,7 +52,7 @@ import org.springframework.util.Assert;
 public class FilterRegistrationBean extends RegistrationBean {
 
 	/**
-	 * Filters that wrap the servlet request should have an order less than or equal to this.
+	 * Filters that wrap the servlet request should be ordered less than or equal to this.
 	 */
 	public static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = 0;
 
@@ -296,7 +296,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 		else {
 			if (servletNames.size() > 0) {
 				logger.info("Mapping filter: '" + registration.getName()
-				+ "' to servlets: " + servletNames);
+						+ "' to servlets: " + servletNames);
 				registration.addMappingForServletNames(dispatcherTypes, this.matchAfter,
 						servletNames.toArray(new String[servletNames.size()]));
 			}

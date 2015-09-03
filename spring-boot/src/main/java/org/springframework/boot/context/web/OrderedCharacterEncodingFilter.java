@@ -26,8 +26,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  * @author Phillip Webb
  * @since 1.2.1
  */
-public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter
-implements Ordered {
+public class OrderedCharacterEncodingFilter extends CharacterEncodingFilter implements
+		Ordered {
 
 	private int order = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 9800;
 

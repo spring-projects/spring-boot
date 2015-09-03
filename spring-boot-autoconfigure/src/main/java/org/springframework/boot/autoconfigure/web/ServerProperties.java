@@ -283,7 +283,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat()
-			.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
+					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
 		}
 		if (container instanceof UndertowEmbeddedServletContainerFactory) {
 			getUndertow().customizeUndertow(
@@ -1015,7 +1015,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 * configuration.
 	 */
 	private static class SessionConfiguringInitializer implements
-	ServletContextInitializer {
+			ServletContextInitializer {
 
 		private final Session session;
 

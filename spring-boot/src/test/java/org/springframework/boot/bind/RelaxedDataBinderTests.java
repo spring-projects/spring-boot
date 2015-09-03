@@ -16,15 +16,6 @@
 
 package org.springframework.boot.bind;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -59,6 +50,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RelaxedDataBinder}.
@@ -710,7 +710,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	public static class RequiredKeysValidator implements
-	ConstraintValidator<RequiredKeys, Map<String, Object>> {
+			ConstraintValidator<RequiredKeys, Map<String, Object>> {
 
 		private String[] fields;
 

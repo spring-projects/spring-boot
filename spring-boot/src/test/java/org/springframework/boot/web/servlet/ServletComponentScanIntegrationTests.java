@@ -65,6 +65,7 @@ public class ServletComponentScanIntegrationTests {
 		public TomcatEmbeddedServletContainerFactory servletContainerFactory() {
 			return new TomcatEmbeddedServletContainerFactory(0);
 		}
+
 	}
 
 }

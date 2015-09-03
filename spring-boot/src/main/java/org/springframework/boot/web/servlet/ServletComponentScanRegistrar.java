@@ -53,16 +53,6 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 		}
 	}
 
-	private void addPostProcessor(BeanDefinitionRegistry registry,
-			Set<String> packagesToScan) {
-		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-		beanDefinition.setBeanClass(ServletComponentRegisteringPostProcessor.class);
-		beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(
-				packagesToScan);
-		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
-	}
-
 	private void updatePostProcessor(BeanDefinitionRegistry registry,
 			Set<String> packagesToScan) {
 		BeanDefinition definition = registry.getBeanDefinition(BEAN_NAME);
@@ -73,6 +63,16 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 				(Set<String>) constructorArguments.getValue());
 		mergedPackages.addAll(packagesToScan);
 		constructorArguments.setValue(packagesToScan);
+	}
+
+	private void addPostProcessor(BeanDefinitionRegistry registry,
+			Set<String> packagesToScan) {
+		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+		beanDefinition.setBeanClass(ServletComponentRegisteringPostProcessor.class);
+		beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(
+				packagesToScan);
+		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
 	}
 
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {

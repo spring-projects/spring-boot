@@ -40,8 +40,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	 * useful place to put user-defined access rules if you want to override the default
 	 * access rules.
 	 */
-	public static final int ACCESS_OVERRIDE_ORDER = SecurityProperties.BASIC_AUTH_ORDER
-			- 2;
+	public static final int ACCESS_OVERRIDE_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 2;
 
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
@@ -62,8 +61,7 @@ public class SecurityProperties implements SecurityPrerequisite {
 	 * other filters registered with the container). There is no connection between this
 	 * and the <code>@Order</code> on a WebSecurityConfigurer.
 	 */
-	public static final int DEFAULT_FILTER_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
-			- 100;
+	public static final int DEFAULT_FILTER_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100;
 
 	/**
 	 * Enable secure channel for all requests.

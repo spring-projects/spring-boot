@@ -66,8 +66,8 @@ import org.springframework.lang.UsesJava7;
 @Configuration
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, CacheAutoConfiguration.class,
-	MetricRepositoryAutoConfiguration.class, CacheStatisticsAutoConfiguration.class,
-	IntegrationAutoConfiguration.class })
+		MetricRepositoryAutoConfiguration.class, CacheStatisticsAutoConfiguration.class,
+		IntegrationAutoConfiguration.class })
 public class PublicMetricsAutoConfiguration {
 
 	@Autowired(required = false)

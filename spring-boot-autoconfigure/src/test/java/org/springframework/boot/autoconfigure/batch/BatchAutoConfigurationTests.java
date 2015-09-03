@@ -216,17 +216,17 @@ public class BatchAutoConfigurationTests {
 	public void testRenamePrefix() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-			"spring.datasource.name:batchtest",
-			"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
-			"spring.batch.tablePrefix:PREFIX_");
+				"spring.datasource.name:batchtest",
+				"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
+				"spring.batch.tablePrefix:PREFIX_");
 		this.context.register(TestConfiguration.class,
-			EmbeddedDataSourceConfiguration.class,
-			HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class);
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		assertEquals(0, new JdbcTemplate(this.context.getBean(DataSource.class))
-			.queryForList("select * from PREFIX_JOB_EXECUTION").size());
+				.queryForList("select * from PREFIX_JOB_EXECUTION").size());
 		JobExplorer jobExplorer = this.context.getBean(JobExplorer.class);
 		assertEquals(0, jobExplorer.findRunningJobExecutions("test").size());
 		JobRepository jobRepository = this.context.getBean(JobRepository.class);

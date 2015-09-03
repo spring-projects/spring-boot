@@ -65,7 +65,6 @@ public class DevToolsProperties {
 
 		private static final long DEFAULT_RESTART_QUIET_PERIOD = 400;
 
-
 		/**
 		 * Enable automatic restart.
 		 */
@@ -117,7 +116,8 @@ public class DevToolsProperties {
 				allExclude.addAll(StringUtils.commaDelimitedListToSet(this.exclude));
 			}
 			if (StringUtils.hasText(this.additionalExclude)) {
-				allExclude.addAll(StringUtils.commaDelimitedListToSet(this.additionalExclude));
+				allExclude.addAll(StringUtils
+						.commaDelimitedListToSet(this.additionalExclude));
 			}
 			return allExclude.toArray(new String[allExclude.size()]);
 		}

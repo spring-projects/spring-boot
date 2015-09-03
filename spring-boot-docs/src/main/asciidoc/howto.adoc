@@ -590,7 +590,8 @@ NOTE: The double backslashes are only required when you're using a properties fi
 configuration. If you are using YAML, single backslashes are sufficient and a value
 that's equivalent to the one shown above would be `192\.168\.\d{1,3}\.\d{1,3}`.
 
-NOTE: You can trust all proxies by setting the `internal_proxies` to empty (but don't do this in production).
+NOTE: You can trust all proxies by setting the `internal_proxies` to empty (but don't do
+this in production).
 
 You can take complete control of the configuration of the
 `RemoteIpValve` by switching the automatic one off (i.e. set one of
@@ -1164,16 +1165,17 @@ Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`W
 {sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
 
 
+
 [[howto-customize-view-resolvers-velocity]]
 === Velocity
-
-By default, Spring Boot configures a `VelocityViewResolver`. If you need a `VelocityLayoutViewResolver`
-instead, you can easily configure your own by creating a bean with name `velocityViewResolver`. You can
-also inject the `VelocityProperties` instance to apply the base defaults to your custom view resolver.
+By default, Spring Boot configures a `VelocityViewResolver`. If you need a
+`VelocityLayoutViewResolver` instead, you can easily configure your own by creating a bean
+with name `velocityViewResolver`. You can also inject the `VelocityProperties` instance to
+apply the base defaults to your custom view resolver.
 
 The following example replaces the auto-configured velocity view resolver with a
-`VelocityLayoutViewResolver` defining a customized `layoutUrl` and all settings that would have been
-applied from the auto-configuration:
+`VelocityLayoutViewResolver` defining a customized `layoutUrl` and all settings that would
+have been applied from the auto-configuration:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1185,6 +1187,7 @@ applied from the auto-configuration:
 		return resolver;
 	}
 ----
+
 
 
 [[howto-logging]]
@@ -1456,7 +1459,6 @@ entity manager based on the presence of a bean of that type.
 
 [[howto-use-two-entity-managers]]
 === Use Two EntityManagers
-
 Even if the default `EntityManagerFactory` works fine, you will need to define a new one
 because otherwise the presence of the second bean of that type will switch off the
 default. To make it easy to do that you can use the convenient `EntityManagerBuilder`
@@ -1488,7 +1490,6 @@ Example:
 				.persistenceUnit("orders")
 				.build();
 	}
-
 ----
 
 The configuration above almost works on its own. To complete the picture you need to
@@ -1501,7 +1502,6 @@ If you are using Spring Data, you need to configure `@EnableJpaRepositories` acc
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-
 	@Configuration
 	@EnableJpaRepositories(basePackageClasses = Customer.class,
 			entityManagerFactoryRef = "customerEntityManagerFactory")
@@ -1515,9 +1515,8 @@ If you are using Spring Data, you need to configure `@EnableJpaRepositories` acc
 	public class OrderConfiguration {
 		...
 	}
-
-
 ----
+
 
 
 [[howto-use-traditional-persistence-xml]]

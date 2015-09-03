@@ -31,9 +31,10 @@ import org.springframework.context.annotation.Conditional;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Conditional(OnEnabledResourceChainCondition.class)
 public @interface ConditionalOnEnabledResourceChain {
+
 }

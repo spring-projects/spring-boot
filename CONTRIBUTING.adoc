@@ -6,7 +6,6 @@ something, or simply want to hack on the code this document should help you get 
 
 
 == Using GitHub issues
-
 We use GitHub issues to track bugs and enhancements. If you have a general usage question
 please ask on http://stackoverflow.com[Stack Overflow]. The Spring Boot team and the
 broader community monitor the http://stackoverflow.com/tags/spring-boot[`spring-boot`]

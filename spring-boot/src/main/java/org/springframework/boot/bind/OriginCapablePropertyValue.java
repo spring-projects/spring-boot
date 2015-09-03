@@ -57,4 +57,12 @@ class OriginCapablePropertyValue extends PropertyValue {
 				.getName() : "unknown";
 		return "'" + name + "' from '" + source + "'";
 	}
+
+	public static PropertyOrigin getOrigin(PropertyValue propertyValue) {
+		if (propertyValue instanceof OriginCapablePropertyValue) {
+			return ((OriginCapablePropertyValue) propertyValue).getOrigin();
+		}
+		return new OriginCapablePropertyValue(propertyValue).getOrigin();
+	}
+
 }

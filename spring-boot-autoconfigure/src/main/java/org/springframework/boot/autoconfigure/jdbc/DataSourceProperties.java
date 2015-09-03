@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -48,8 +49,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private String name = "testdb";
 
 	/**
-	 * Fully qualified name of the connection pool implementation to use. By default,
-	 * it is auto-detected from the classpath.
+	 * Fully qualified name of the connection pool implementation to use. By default, it
+	 * is auto-detected from the classpath.
 	 */
 	private Class<? extends DataSource> type;
 

@@ -193,11 +193,13 @@ public class VelocityAutoConfigurationTests {
 	@Test
 	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
 		registerAndRefreshContext();
-		assertEquals(0, this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
+		assertEquals(0, this.context.getBeansOfType(ResourceUrlEncodingFilter.class)
+				.size());
 	}
 
 	@Test
-	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled() throws Exception {
+	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
+			throws Exception {
 		registerAndRefreshContext("spring.resources.chain.enabled:true");
 		assertNotNull(this.context.getBean(ResourceUrlEncodingFilter.class));
 	}

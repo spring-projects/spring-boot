@@ -96,7 +96,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class,
-	WebMvcConfigurerAdapter.class })
+		WebMvcConfigurerAdapter.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
@@ -313,7 +313,7 @@ public class WebMvcAutoConfiguration {
 			public ResourceHttpRequestHandler faviconRequestHandler() {
 				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
 				requestHandler
-				.setLocations(this.resourceProperties.getFaviconLocations());
+						.setLocations(this.resourceProperties.getFaviconLocations());
 				return requestHandler;
 			}
 

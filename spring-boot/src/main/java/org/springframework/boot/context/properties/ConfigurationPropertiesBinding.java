@@ -35,4 +35,5 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConfigurationPropertiesBinding {
+
 }

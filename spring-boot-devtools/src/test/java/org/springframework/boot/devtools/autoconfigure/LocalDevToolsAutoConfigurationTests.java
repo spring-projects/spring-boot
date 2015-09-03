@@ -255,4 +255,5 @@ public class LocalDevToolsAutoConfigurationTests {
 	public static class WebResourcesConfig {
 
 	}
+
 }

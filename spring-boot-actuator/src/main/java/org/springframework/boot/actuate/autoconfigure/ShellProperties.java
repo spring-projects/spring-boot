@@ -42,8 +42,8 @@ public class ShellProperties {
 	private static Log logger = LogFactory.getLog(ShellProperties.class);
 
 	/**
-	 * Authentication type. Auto-detected according to the environment (i.e. if
-	 * Spring Security is available, "spring" is used by default).
+	 * Authentication type. Auto-detected according to the environment (i.e. if Spring
+	 * Security is available, "spring" is used by default).
 	 */
 	private String auth = "simple";
 

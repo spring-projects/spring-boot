@@ -26,14 +26,13 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Logger;
+
 import javax.sql.DataSource;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -42,6 +41,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+
+import com.zaxxer.hikari.HikariDataSource;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -158,8 +159,8 @@ public class DataSourceAutoConfigurationTests {
 	public void explicitType() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
-				"spring.datasource.type:" + HikariDataSource.class.getName());
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb", "spring.datasource.type:"
+						+ HikariDataSource.class.getName());
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -271,7 +272,8 @@ public class DataSourceAutoConfigurationTests {
 
 	}
 
-	@SuppressWarnings("unused") // see testExplicitDriverClassClearsUserName
+	@SuppressWarnings("unused")
+	// see testExplicitDriverClassClearsUserName
 	public static class DatabaseDriver implements Driver {
 
 		@Override

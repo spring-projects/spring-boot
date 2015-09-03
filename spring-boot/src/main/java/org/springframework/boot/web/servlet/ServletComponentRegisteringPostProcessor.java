@@ -16,7 +16,7 @@
 
 package org.springframework.boot.web.servlet;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -43,8 +43,14 @@ import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcessor,
 		ApplicationContextAware {
 
-	private final List<ServletComponentHandler> handlers = Arrays.asList(
-			new WebServletHandler(), new WebFilterHandler(), new WebListenerHandler());
+	private static final List<ServletComponentHandler> HANDLERS;
+	static {
+		List<ServletComponentHandler> handers = new ArrayList<ServletComponentHandler>();
+		handers.add(new WebServletHandler());
+		handers.add(new WebFilterHandler());
+		handers.add(new WebListenerHandler());
+		HANDLERS = Collections.unmodifiableList(handers);
+	}
 
 	private final Set<String> packagesToScan;
 
@@ -60,14 +66,20 @@ class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcess
 		if (isRunningInEmbeddedContainer()) {
 			ClassPathScanningCandidateComponentProvider componentProvider = createComponentProvider();
 			for (String packageToScan : this.packagesToScan) {
-				for (BeanDefinition candidate : componentProvider
-						.findCandidateComponents(packageToScan)) {
-					if (candidate instanceof ScannedGenericBeanDefinition) {
-						for (ServletComponentHandler handler : this.handlers) {
-							handler.handle(((ScannedGenericBeanDefinition) candidate),
-									(BeanDefinitionRegistry) this.applicationContext);
-						}
-					}
+				scanPackage(componentProvider, packageToScan);
+			}
+		}
+	}
+
+	private void scanPackage(
+			ClassPathScanningCandidateComponentProvider componentProvider,
+			String packageToScan) {
+		for (BeanDefinition candidate : componentProvider
+				.findCandidateComponents(packageToScan)) {
+			if (candidate instanceof ScannedGenericBeanDefinition) {
+				for (ServletComponentHandler handler : HANDLERS) {
+					handler.handle(((ScannedGenericBeanDefinition) candidate),
+							(BeanDefinitionRegistry) this.applicationContext);
 				}
 			}
 		}
@@ -82,7 +94,7 @@ class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcess
 	private ClassPathScanningCandidateComponentProvider createComponentProvider() {
 		ClassPathScanningCandidateComponentProvider componentProvider = new ClassPathScanningCandidateComponentProvider(
 				false);
-		for (ServletComponentHandler handler : this.handlers) {
+		for (ServletComponentHandler handler : HANDLERS) {
 			componentProvider.addIncludeFilter(handler.getTypeFilter());
 		}
 		return componentProvider;

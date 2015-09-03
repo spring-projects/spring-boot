@@ -34,9 +34,11 @@ public class DevToolsPropertiesTests {
 	public void additionalExcludeKeepsDefaults() {
 		DevToolsProperties.Restart restart = this.devToolsProperties.getRestart();
 		restart.setAdditionalExclude("foo/**,bar/**");
-		assertThat(restart.getAllExclude(), arrayContaining("META-INF/maven/**",
-				"META-INF/resources/**", "resources/**", "static/**", "public/**",
-				"templates/**", "foo/**", "bar/**"));
+		assertThat(
+				restart.getAllExclude(),
+				arrayContaining("META-INF/maven/**", "META-INF/resources/**",
+						"resources/**", "static/**", "public/**", "templates/**",
+						"foo/**", "bar/**"));
 	}
 
 	@Test
