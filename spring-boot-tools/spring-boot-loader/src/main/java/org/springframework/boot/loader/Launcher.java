@@ -54,7 +54,7 @@ public abstract class Launcher {
 	 * called by a subclass {@code public static void main(String[] args)} method.
 	 * @param args the incoming arguments
 	 */
-	protected void launch(String[] args) {
+	public void launch(String[] args) {
 		try {
 			JarFile.registerUrlProtocolHandler();
 			ClassLoader classLoader = createClassLoader(getClassPathArchives());
