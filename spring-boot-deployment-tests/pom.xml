@@ -19,7 +19,6 @@
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 		<java.version>1.7</java.version>
-
 		<cargo.timeout>300000</cargo.timeout>
 		<cargo.container.download-dir>${user.home}/.cargo/installs</cargo.container.download-dir>
 	</properties>
@@ -28,7 +27,6 @@
 		<module>spring-boot-deployment-test-tomcat</module>
 		<module>spring-boot-deployment-test-wildfly</module>
 	</modules>
-
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -74,5 +72,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
 </project>
