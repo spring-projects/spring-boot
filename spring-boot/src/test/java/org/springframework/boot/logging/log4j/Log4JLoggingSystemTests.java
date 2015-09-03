@@ -43,6 +43,7 @@ import static org.junit.Assert.assertTrue;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@SuppressWarnings("deprecation")
 public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Rule

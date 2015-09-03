@@ -38,7 +38,10 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @deprecated in Spring Boot 1.3 in favor of Apache Log4j 2 (following Apache's EOL
+ * declaration for log4j 1.x)
  */
+@Deprecated
 public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
