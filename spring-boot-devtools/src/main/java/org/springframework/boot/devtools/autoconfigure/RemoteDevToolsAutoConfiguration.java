@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.devtools.remote.server.AccessManager;
 import org.springframework.boot.devtools.remote.server.Dispatcher;
@@ -47,13 +48,17 @@ import org.springframework.boot.devtools.tunnel.server.RemoteDebugPortProvider;
 import org.springframework.boot.devtools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for remote development support.
  *
  * @author Phillip Webb
  * @author Rob Winch
+ * @author Andy Wilkinson
  * @since 1.3.0
  */
 @Configuration
@@ -147,6 +152,32 @@ public class RemoteDevToolsAutoConfiguration {
 		public HttpTunnelServer remoteDebugHttpTunnelServer() {
 			return new HttpTunnelServer(new SocketTargetServerConnection(
 					new RemoteDebugPortProvider()));
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
+	static class RemoteDevToolsSecurityConfiguration {
+
+		@Bean
+		public RemoteRestartWebSecurityConfigurer remoteRestartWebSecurityConfigurer() {
+			return new RemoteRestartWebSecurityConfigurer();
+		}
+
+		@Order(SecurityProperties.IGNORED_ORDER + 2)
+		static class RemoteRestartWebSecurityConfigurer extends
+				WebSecurityConfigurerAdapter {
+
+			@Autowired
+			private DevToolsProperties properties;
+
+			@Override
+			public void configure(HttpSecurity http) throws Exception {
+				http.antMatcher(this.properties.getRemote().getContextPath() + "/**");
+				http.csrf().disable();
+			}
+
 		}
 
 	}
