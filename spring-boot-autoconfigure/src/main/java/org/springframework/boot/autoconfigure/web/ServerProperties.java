@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,10 @@ import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.validation.constraints.NotNull;
 
+import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
@@ -50,6 +55,7 @@ import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
@@ -67,6 +73,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Ivan Sopov
  * @author Marcos Barbero
+ * @author Eddú Meléndez
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
@@ -847,6 +854,22 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		private final Accesslog accesslog = new Accesslog();
 
+		/**
+		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
+		 */
+		private String protocolHeader;
+
+		/**
+		 * Name of the HTTP header used to override the original port value.
+		 */
+		private String portHeader = "x-forwarded-port";
+
+		/**
+		 * Name of the http header from which the remote ip is extracted. Configured as a
+		 * RemoteIpValve only if remoteIpHeader is also set.
+		 */
+		private String remoteIpHeader = "x-forwarded-for";
+
 		public Integer getBufferSize() {
 			return this.bufferSize;
 		}
@@ -889,6 +912,30 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
+		}
+
+		public String getProtocolHeader() {
+			return this.protocolHeader;
+		}
+
+		public void setProtocolHeader(String protocolHeader) {
+			this.protocolHeader = protocolHeader;
+		}
+
+		public String getPortHeader() {
+			return this.portHeader;
+		}
+
+		public void setPortHeader(String portHeader) {
+			this.portHeader = portHeader;
+		}
+
+		public String getRemoteIpHeader() {
+			return this.remoteIpHeader;
+		}
+
+		public void setRemoteIpHeader(String remoteIpHeader) {
+			this.remoteIpHeader = remoteIpHeader;
 		}
 
 		/**
@@ -963,6 +1010,31 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			factory.setAccessLogDirectory(this.accesslog.dir);
 			factory.setAccessLogPattern(this.accesslog.pattern);
 			factory.setAccessLogEnabled(this.accesslog.enabled);
+
+			customizeHeaders(factory);
+		}
+
+		private void customizeHeaders(UndertowEmbeddedServletContainerFactory factory) {
+			final String remoteIpHeader = getRemoteIpHeader();
+			final String protocolHeader = getProtocolHeader();
+			if (StringUtils.hasText(remoteIpHeader)
+					&& StringUtils.hasText(protocolHeader)) {
+				UndertowBuilderCustomizer customizer = new UndertowBuilderCustomizer() {
+					@Override
+					public void customize(io.undertow.Undertow.Builder builder) {
+						builder.setHandler(new HttpHandler() {
+							@Override
+							public void handleRequest(HttpServerExchange exchange)
+									throws Exception {
+								exchange.getResponseHeaders().put(Headers.X_FORWARDED_PORT, remoteIpHeader);
+								exchange.getResponseHeaders().put(Headers.X_FORWARDED_FOR, getPortHeader());
+								exchange.getResponseHeaders().put(Headers.X_FORWARDED_PROTO, protocolHeader);
+							}
+						});
+					}
+				};
+				factory.setBuilderCustomizers(Arrays.asList(customizer));
+			}
 		}
 
 		public static class Accesslog {

@@ -82,8 +82,8 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testPortBinding() throws Exception {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				Collections.singletonMap("server.port", "9000")));
+		new RelaxedDataBinder(this.properties, "server").bind(
+				new MutablePropertyValues(Collections.singletonMap("server.port", "9000")));
 		assertEquals(9000, this.properties.getPort().intValue());
 	}
 
@@ -222,8 +222,7 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.uriEncoding", "US-ASCII");
 		bindProperties(map);
-		assertEquals(Charset.forName("US-ASCII"), this.properties.getTomcat()
-				.getUriEncoding());
+		assertEquals(Charset.forName("US-ASCII"), this.properties.getTomcat().getUriEncoding());
 	}
 
 	@Test
@@ -313,9 +312,21 @@ public class ServerPropertiesTests {
 		assertEquals("192.168.0.1", remoteIpValve.getInternalProxies());
 	}
 
+	@Test
+	public void testUndertowBinding() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.undertow.protocol_header", "X-Forwarded-Protocol");
+		map.put("server.undertow.remote_ip_header", "Remote-Ip");
+		map.put("server.undertow.port-header", "x-my-forward-port");
+		bindProperties(map);
+		ServerProperties.Undertow undertow = this.properties.getUndertow();
+		assertEquals("Remote-Ip", undertow.getRemoteIpHeader());
+		assertEquals("X-Forwarded-Protocol", undertow.getProtocolHeader());
+		assertEquals("x-my-forward-port", undertow.getPortHeader());
+	}
+
 	private void bindProperties(Map<String, String> map) {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				map));
+		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(map));
 	}
 
 }
