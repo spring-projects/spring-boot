@@ -56,9 +56,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class JolokiaMvcEndpointContextPathTests {
 
 	@Autowired
-	private MvcEndpoints endpoints;
-
-	@Autowired
 	private WebApplicationContext context;
 
 	private MockMvc mvc;

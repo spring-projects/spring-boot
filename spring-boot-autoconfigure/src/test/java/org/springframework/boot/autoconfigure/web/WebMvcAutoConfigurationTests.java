@@ -468,7 +468,6 @@ public class WebMvcAutoConfigurationTests {
 				is(instanceOf(CustomWebBindingInitializer.class)));
 	}
 
-	@SuppressWarnings("unchecked")
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);

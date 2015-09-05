@@ -29,7 +29,6 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -70,9 +69,6 @@ public class JerseyAutoConfiguration implements WebApplicationInitializer {
 
 	@Autowired
 	private JerseyProperties jersey;
-
-	@Autowired
-	private ListableBeanFactory context;
 
 	@Autowired
 	private ResourceConfig config;

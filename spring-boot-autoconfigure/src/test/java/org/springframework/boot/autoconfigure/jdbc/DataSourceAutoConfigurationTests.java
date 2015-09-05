@@ -272,7 +272,6 @@ public class DataSourceAutoConfigurationTests {
 
 	}
 
-	@SuppressWarnings("unused")
 	// see testExplicitDriverClassClearsUserName
 	public static class DatabaseDriver implements Driver {
 

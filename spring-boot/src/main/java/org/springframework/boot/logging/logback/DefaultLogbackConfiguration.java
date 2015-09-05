@@ -72,7 +72,6 @@ class DefaultLogbackConfiguration {
 		return new RelaxedPropertyResolver(environment, "logging.pattern.");
 	}
 
-	@SuppressWarnings("unchecked")
 	public void apply(LogbackConfigurator config) {
 		synchronized (config.getConfigurationLock()) {
 			base(config);

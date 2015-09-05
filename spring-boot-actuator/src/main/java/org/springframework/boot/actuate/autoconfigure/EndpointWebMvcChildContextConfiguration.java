@@ -82,9 +82,6 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Value("${error.path:/error}")
 	private String errorPath = "/error";
 
-	@Autowired
-	private ManagementServerProperties managementServerProperties;
-
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 	public DispatcherServlet dispatcherServlet() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();

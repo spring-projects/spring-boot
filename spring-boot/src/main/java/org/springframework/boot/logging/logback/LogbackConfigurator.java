@@ -94,7 +94,8 @@ class LogbackConfigurator {
 		}
 	}
 
-	public void root(Level level, Appender<ILoggingEvent>... appenders) {
+	@SafeVarargs
+	public final void root(Level level, Appender<ILoggingEvent>... appenders) {
 		Logger logger = this.context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 		if (level != null) {
 			logger.setLevel(level);

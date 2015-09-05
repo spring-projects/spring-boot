@@ -402,7 +402,7 @@ public class SecurityAutoConfigurationTests {
 	protected static class SecurityCustomizer extends WebSecurityConfigurerAdapter {
 
 		@Autowired
-		private AuthenticationManager authenticationManager;
+		AuthenticationManager authenticationManager;
 
 	}
 

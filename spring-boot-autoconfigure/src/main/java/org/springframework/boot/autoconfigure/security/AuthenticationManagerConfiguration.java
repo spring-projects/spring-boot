@@ -69,9 +69,6 @@ public class AuthenticationManagerConfiguration {
 	private static Log logger = LogFactory
 			.getLog(AuthenticationManagerConfiguration.class);
 
-	@Autowired
-	private List<SecurityPrerequisite> dependencies;
-
 	@Bean
 	@Primary
 	public AuthenticationManager authenticationManager(
@@ -97,9 +94,8 @@ public class AuthenticationManagerConfiguration {
 	 * {@link GlobalAuthenticationConfigurerAdapter#init(AuthenticationManagerBuilder)}
 	 * exists that adds a {@link SecurityConfigurer} to the
 	 * {@link AuthenticationManagerBuilder}.</li>
-	 * <li>
-	 * {@link AuthenticationManagerConfiguration#init(AuthenticationManagerBuilder)} adds
-	 * {@link SpringBootAuthenticationConfigurerAdapter} so it is after the
+	 * <li>{@link AuthenticationManagerConfiguration#init(AuthenticationManagerBuilder)}
+	 * adds {@link SpringBootAuthenticationConfigurerAdapter} so it is after the
 	 * {@link SecurityConfigurer} in the first step.</li>
 	 * <li>We then can default an {@link AuthenticationProvider} if necessary. Note we can
 	 * only invoke the

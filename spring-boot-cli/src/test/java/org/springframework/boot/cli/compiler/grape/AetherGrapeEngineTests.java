@@ -121,7 +121,6 @@ public class AetherGrapeEngineTests {
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void dependencyResolutionWithExclusions() {
 		Map<String, Object> args = new HashMap<String, Object>();

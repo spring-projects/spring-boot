@@ -67,7 +67,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -220,15 +219,9 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	public static class MvcEndpointAdvice implements ResponseBodyAdvice<Object> {
 
 		@Autowired
-		private ManagementServerProperties management;
-
-		@Autowired
 		private HttpMessageConverters converters;
 
 		private Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
-
-		@Autowired
-		private ObjectMapper mapper;
 
 		@Override
 		public boolean supports(MethodParameter returnType,

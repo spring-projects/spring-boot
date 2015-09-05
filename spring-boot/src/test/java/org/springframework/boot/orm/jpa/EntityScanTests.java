@@ -170,7 +170,7 @@ public class EntityScanTests {
 	static class BeanPostProcessorConfiguration {
 
 		@Autowired
-		private EntityManagerFactory entityManagerFactory;
+		protected EntityManagerFactory entityManagerFactory;
 
 		@Bean
 		public BeanPostProcessor beanPostProcessor() {

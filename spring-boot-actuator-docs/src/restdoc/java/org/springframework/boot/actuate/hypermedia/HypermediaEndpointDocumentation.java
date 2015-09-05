@@ -16,14 +16,11 @@
 
 package org.springframework.boot.actuate.hypermedia;
 
-import groovy.text.TemplateEngine;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -48,12 +45,6 @@ public class HypermediaEndpointDocumentation {
 
 	@Autowired
 	private WebApplicationContext context;
-
-	@Autowired
-	private MvcEndpoints mvcEndpoints;
-
-	@Autowired
-	private TemplateEngine templates;
 
 	@Value("${org.springframework.restdocs.outputDir:target/generated-snippets}")
 	private String restdocsOutputDir;

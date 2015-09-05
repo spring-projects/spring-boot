@@ -41,7 +41,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -401,9 +400,6 @@ public class HornetQAutoConfigurationTests {
 
 	@Configuration
 	protected static class CustomHornetQConfiguration {
-
-		@Autowired
-		private HornetQProperties properties;
 
 		@Bean
 		public HornetQConfigurationCustomizer myHornetQCustomize() {

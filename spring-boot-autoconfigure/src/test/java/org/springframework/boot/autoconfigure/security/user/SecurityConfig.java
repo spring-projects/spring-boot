@@ -31,7 +31,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 public class SecurityConfig extends GlobalAuthenticationConfigurerAdapter {
 
 	@Autowired
-	private UserRepository userRepository;
+	protected UserRepository userRepository;
 
 	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
