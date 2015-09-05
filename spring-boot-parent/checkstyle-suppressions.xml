@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+<suppressions>
+	<suppress files="SpringApplicationTests\.java" checks="FinalClass" />
+	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />
+	<suppress files="SignalUtils\.java" checks="IllegalImport" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]cli[\\/]command[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="Javadoc*" />
+	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocVariable" />
+	<suppress files="[\\/]spring-boot-samples[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]spring-boot-integration-tests[\\/]" checks="JavadocType" />
+	<suppress files="Ansi.*\.java" checks="JavadocVariable" />
+	<suppress files="Ansi.*\.java" checks="JavadocStyle" />
+	<suppress files="LogLevel\.java" checks="JavadocVariable" />
+	<suppress files="HelpMojo\.java" checks=".*"/>
+
+	<!-- https://github.com/checkstyle/checkstyle/issues/2141 -->
+	<suppress files="ConfigurationProperties.java" checks="JavadocMethod" />
+	<suppress files="DeprecatedConfigurationProperty\.java" checks="JavadocMethod" />
+	<suppress files="EnableConfigurationProperties\.java" checks="JavadocMethod" />
+	<suppress files="EntityScan\.java" checks="JavadocMethod" />
+	<suppress files="SpringApplication\.java" checks="JavadocMethod" />
+	<suppress files="IntegrationTest\.java" checks="JavadocMethod" />
+	<suppress files="SpringApplicationConfiguration\.java" checks="JavadocMethod" />
+	<suppress files="WebIntegrationTest\.java" checks="JavadocMethod" />
+	<suppress files="ServletComponentScan\.java" checks="JavadocMethod" />
+	<suppress files="AutoConfigureAfter\.java" checks="JavadocMethod" />
+	<suppress files="AutoConfigureBefore\.java" checks="JavadocMethod" />
+	<suppress files="ConditionalOn.*\.java" checks="JavadocMethod" />
+	<suppress files="AutoConfigureOrder.java" checks="JavadocMethod" />
+	<suppress files="EnableAutoConfiguration.java" checks="JavadocMethod" />
+	<suppress files="SpringBootApplication.java" checks="JavadocMethod" />
+	<suppress files="ImportAutoConfiguration.java" checks="JavadocMethod" />
+</suppressions>
