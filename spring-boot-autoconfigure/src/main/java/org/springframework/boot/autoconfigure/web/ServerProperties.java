@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,8 @@ import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.validation.constraints.NotNull;
 
+import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
@@ -50,12 +53,14 @@ import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
+import org.xnio.Option;
 
 /**
  * {@link ConfigurationProperties} for a web server (e.g. port and path settings). Will be
@@ -847,6 +852,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		private final Accesslog accesslog = new Accesslog();
 
+		/**
+		 *
+		 */
+		private ServerOption serverOption;
+
 		public Integer getBufferSize() {
 			return this.bufferSize;
 		}
@@ -954,6 +964,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			getAccesslog().setDir(accessLogDir);
 		}
 
+		public ServerOption getServerOption() {
+			return this.serverOption;
+		}
+
+		public void setServerOption(ServerOption serverOption) {
+			this.serverOption = serverOption;
+		}
+
 		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
 			factory.setBufferSize(this.bufferSize);
 			factory.setBuffersPerRegion(this.buffersPerRegion);
@@ -963,6 +981,34 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			factory.setAccessLogDirectory(this.accesslog.dir);
 			factory.setAccessLogPattern(this.accesslog.pattern);
 			factory.setAccessLogEnabled(this.accesslog.enabled);
+
+			if (this.serverOption != null) {
+				UndertowBuilderCustomizer customizer = new UndertowBuilderCustomizer() {
+					@Override
+					public void customize(io.undertow.Undertow.Builder builder) {
+						builder.setServerOption(serverOption.getOption(), false);
+					}
+				};
+
+				factory.setBuilderCustomizers(Arrays.asList(customizer));
+			}
+		}
+
+		public enum ServerOption {
+
+			SPDY(UndertowOptions.ENABLE_SPDY),
+			HTTP2(UndertowOptions.ENABLE_HTTP2);
+
+			private Option<Boolean> option;
+
+			ServerOption(Option<Boolean> option) {
+				this.option = option;
+			}
+
+			public Option<Boolean> getOption() {
+				return this.option;
+			}
+
 		}
 
 		public static class Accesslog {

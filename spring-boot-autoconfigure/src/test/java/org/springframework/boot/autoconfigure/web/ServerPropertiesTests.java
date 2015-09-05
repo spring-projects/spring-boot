@@ -40,6 +40,8 @@ import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowBuilderCustomizer;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -311,6 +313,18 @@ public class ServerPropertiesTests {
 		assertEquals("x-my-remote-ip-header", remoteIpValve.getRemoteIpHeader());
 		assertEquals("x-my-forward-port", remoteIpValve.getPortHeader());
 		assertEquals("192.168.0.1", remoteIpValve.getInternalProxies());
+	}
+
+	@Test
+	public void enableUndertowHttp2() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.undertow.server-option", "HTTP2");
+		bindProperties(map);
+
+		UndertowEmbeddedServletContainerFactory container = new UndertowEmbeddedServletContainerFactory();
+		this.properties.customize(container);
+
+		assertEquals(1, container.getBuilderCustomizers().size());
 	}
 
 	private void bindProperties(Map<String, String> map) {
