@@ -379,6 +379,17 @@ public class EnableConfigurationPropertiesTests {
 		assertEquals("foo", this.context.getBean(External.class).getName());
 	}
 
+	/**
+	 * Strict tests need a known set of properties so we remove system items which may be
+	 * environment specific.
+	 */
+	private void removeSystemProperties() {
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		sources.remove("systemProperties");
+		sources.remove("systemEnvironment");
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class TestConfigurationWithAnnotatedBean {
@@ -389,17 +400,6 @@ public class EnableConfigurationPropertiesTests {
 			return new External();
 		}
 
-	}
-
-	/**
-	 * Strict tests need a known set of properties so we remove system items which may be
-	 * environment specific.
-	 */
-	private void removeSystemProperties() {
-		MutablePropertySources sources = this.context.getEnvironment()
-				.getPropertySources();
-		sources.remove("systemProperties");
-		sources.remove("systemEnvironment");
 	}
 
 	@Configuration

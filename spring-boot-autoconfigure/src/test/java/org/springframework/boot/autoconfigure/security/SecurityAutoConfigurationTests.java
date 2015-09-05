@@ -345,6 +345,7 @@ public class SecurityAutoConfigurationTests {
 			fail("Expected Exception");
 		}
 		catch (AuthenticationException success) {
+			// Expected
 		}
 
 		token = new UsernamePasswordAuthenticationToken("foo", "bar");

@@ -45,7 +45,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ConditionEvaluationReport {
+public final class ConditionEvaluationReport {
 
 	private static final String BEAN_NAME = "autoConfigurationReport";
 

@@ -21,8 +21,8 @@ import java.nio.charset.Charset;
 import org.junit.Test;
 import org.springframework.util.MimeTypeUtils;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasToString;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AbstractViewResolverProperties}.

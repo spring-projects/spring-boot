@@ -35,7 +35,10 @@ import org.springframework.core.io.ClassPathResource;
  * @since 1.3.0
  * @see RemoteClientConfiguration
  */
-public class RemoteSpringApplication {
+public final class RemoteSpringApplication {
+
+	private RemoteSpringApplication() {
+	}
 
 	private void run(String[] args) {
 		Restarter.initialize(args, RestartInitializer.NONE);
@@ -60,6 +63,7 @@ public class RemoteSpringApplication {
 				Thread.sleep(1000);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 		}
 	}

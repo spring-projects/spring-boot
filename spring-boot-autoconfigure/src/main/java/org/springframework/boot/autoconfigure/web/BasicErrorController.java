@@ -96,14 +96,15 @@ public class BasicErrorController implements ErrorController {
 	protected HttpStatus getStatus(HttpServletRequest request) {
 		Integer statusCode = (Integer) request
 				.getAttribute("javax.servlet.error.status_code");
-		if (statusCode != null) {
-			try {
-				return HttpStatus.valueOf(statusCode);
-			}
-			catch (Exception ex) {
-			}
+		if (statusCode == null) {
+			return HttpStatus.INTERNAL_SERVER_ERROR;
 		}
-		return HttpStatus.INTERNAL_SERVER_ERROR;
+		try {
+			return HttpStatus.valueOf(statusCode);
+		}
+		catch (Exception ex) {
+			return HttpStatus.INTERNAL_SERVER_ERROR;
+		}
 	}
 
 }

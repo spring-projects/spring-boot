@@ -19,6 +19,7 @@ package org.springframework.boot.bind;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +52,6 @@ import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -695,7 +695,7 @@ public class RelaxedDataBinderTests {
 
 	@Documented
 	@Target({ ElementType.FIELD })
-	@Retention(RUNTIME)
+	@Retention(RetentionPolicy.RUNTIME)
 	@Constraint(validatedBy = RequiredKeysValidator.class)
 	public @interface RequiredKeys {
 

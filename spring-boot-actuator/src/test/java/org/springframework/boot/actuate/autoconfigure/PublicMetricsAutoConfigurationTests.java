@@ -269,18 +269,18 @@ public class PublicMetricsAutoConfigurationTests {
 
 		@Bean
 		public DataSource tomcatDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.build();
+			return InitalizedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource hikariDS() {
-			return initializeBuilder().type(HikariDataSource.class).build();
+			return InitalizedBuilder.create().type(HikariDataSource.class).build();
 		}
 
 		@Bean
 		public DataSource commonsDbcpDataSource() {
-			return initializeBuilder().type(BasicDataSource.class).build();
+			return InitalizedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -290,13 +290,13 @@ public class PublicMetricsAutoConfigurationTests {
 		@Bean
 		@Primary
 		public DataSource myDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.build();
+			return InitalizedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource commonsDbcpDataSource() {
-			return initializeBuilder().type(BasicDataSource.class).build();
+			return InitalizedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -306,13 +306,13 @@ public class PublicMetricsAutoConfigurationTests {
 		@Bean
 		@Primary
 		public DataSource myDataSource() {
-			return initializeBuilder().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.build();
+			return InitalizedBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class).build();
 		}
 
 		@Bean
 		public DataSource dataSource() {
-			return initializeBuilder().type(BasicDataSource.class).build();
+			return InitalizedBuilder.create().type(BasicDataSource.class).build();
 		}
 	}
 
@@ -329,11 +329,6 @@ public class PublicMetricsAutoConfigurationTests {
 				}
 			};
 		}
-	}
-
-	private static DataSourceBuilder initializeBuilder() {
-		return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
-				.url("jdbc:hsqldb:mem:test").username("sa");
 	}
 
 	@Configuration
@@ -385,4 +380,13 @@ public class PublicMetricsAutoConfigurationTests {
 
 	}
 
+	private static class InitalizedBuilder {
+
+		public static DataSourceBuilder create() {
+			return DataSourceBuilder.create()
+					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+					.url("jdbc:hsqldb:mem:test").username("sa");
+		}
+
+	}
 }

@@ -90,6 +90,7 @@ class ProjectGenerator {
 				return ZIP_MIME_TYPE.equals(entity.getContentType().getMimeType());
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return false;

@@ -40,9 +40,12 @@ import static org.junit.Assert.assertTrue;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class Verify {
+public final class Verify {
 
 	public static final String SAMPLE_APP = "org.test.SampleApplication";
+
+	private Verify() {
+	}
 
 	public static void verifyJar(File file) throws Exception {
 		new JarArchiveVerification(file, SAMPLE_APP).verify();

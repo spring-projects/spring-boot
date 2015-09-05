@@ -31,7 +31,10 @@ import java.util.Set;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class Layouts {
+public final class Layouts {
+
+	private Layouts() {
+	}
 
 	/**
 	 * Return the a layout for the given source file.

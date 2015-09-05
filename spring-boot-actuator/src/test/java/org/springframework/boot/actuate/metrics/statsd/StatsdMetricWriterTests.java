@@ -120,6 +120,7 @@ public class StatsdMetricWriterTests {
 								.getData(), Charset.forName("UTF-8")).trim());
 					}
 					catch (Exception e) {
+						// Ignore
 					}
 				}
 			}).start();
@@ -135,6 +136,7 @@ public class StatsdMetricWriterTests {
 					Thread.sleep(50L);
 				}
 				catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 				}
 			}
 		}

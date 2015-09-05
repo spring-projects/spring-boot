@@ -160,13 +160,6 @@ public class JacksonAutoConfigurationTests {
 		assertThat(mapper.getDateFormat(), is(instanceOf(MyDateFormat.class)));
 	}
 
-	public static class MyDateFormat extends SimpleDateFormat {
-
-		public MyDateFormat() {
-			super("yyyy-MM-dd HH:mm:ss");
-		}
-	}
-
 	@Test
 	public void noCustomPropertyNamingStrategy() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
@@ -419,6 +412,13 @@ public class JacksonAutoConfigurationTests {
 				objectMapper.writeValueAsString(dateTime));
 	}
 
+	public static class MyDateFormat extends SimpleDateFormat {
+
+		public MyDateFormat() {
+			super("yyyy-MM-dd HH:mm:ss");
+		}
+	}
+
 	@Configuration
 	protected static class MockObjectMapperConfig {
 
@@ -469,7 +469,7 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
-	protected static class Foo {
+	protected static final class Foo {
 
 		private String name;
 

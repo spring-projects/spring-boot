@@ -152,8 +152,8 @@ public class ManagementWebSecurityAutoConfiguration {
 			List<String> ignored = SpringBootWebSecurityConfiguration
 					.getIgnored(this.security);
 			if (!this.management.getSecurity().isEnabled()) {
-				ignored.addAll(Arrays
-						.asList(getEndpointPaths(this.endpointHandlerMapping)));
+				ignored.addAll(Arrays.asList(EndpointPaths
+						.get(this.endpointHandlerMapping)));
 			}
 			if (ignored.contains("none")) {
 				ignored.remove("none");
@@ -333,44 +333,48 @@ public class ManagementWebSecurityAutoConfiguration {
 			private String[] getPaths() {
 				EndpointHandlerMapping endpointHandlerMapping = ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping;
 				if (this.sensitive) {
-					return getEndpointPaths(endpointHandlerMapping);
+					return EndpointPaths.get(endpointHandlerMapping);
 				}
-				return getEndpointPaths(endpointHandlerMapping, false);
+				return EndpointPaths.get(endpointHandlerMapping, false);
 			}
 
 		}
 
 	}
 
-	private static String[] getEndpointPaths(EndpointHandlerMapping endpointHandlerMapping) {
-		return StringUtils.mergeStringArrays(
-				getEndpointPaths(endpointHandlerMapping, false),
-				getEndpointPaths(endpointHandlerMapping, true));
-	}
+	private static class EndpointPaths {
 
-	private static String[] getEndpointPaths(
-			EndpointHandlerMapping endpointHandlerMapping, boolean secure) {
-		if (endpointHandlerMapping == null) {
-			return NO_PATHS;
+		public static String[] get(EndpointHandlerMapping endpointHandlerMapping) {
+			String[] insecure = get(endpointHandlerMapping, false);
+			String[] secure = get(endpointHandlerMapping, true);
+			return StringUtils.mergeStringArrays(insecure, secure);
 		}
-		Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
-		Set<String> paths = new LinkedHashSet<String>(endpoints.size());
-		for (MvcEndpoint endpoint : endpoints) {
-			if (endpoint.isSensitive() == secure) {
-				String path = endpointHandlerMapping.getPath(endpoint.getPath());
-				paths.add(path);
-				if (!path.equals("")) {
-					// Ensure that nested paths are secured
-					paths.add(path + "/**");
-					// Add Spring MVC-generated additional paths
-					paths.add(path + ".*");
-				}
-				else {
-					paths.add("/");
+
+		public static String[] get(EndpointHandlerMapping endpointHandlerMapping,
+				boolean secure) {
+			if (endpointHandlerMapping == null) {
+				return NO_PATHS;
+			}
+			Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
+			Set<String> paths = new LinkedHashSet<String>(endpoints.size());
+			for (MvcEndpoint endpoint : endpoints) {
+				if (endpoint.isSensitive() == secure) {
+					String path = endpointHandlerMapping.getPath(endpoint.getPath());
+					paths.add(path);
+					if (!path.equals("")) {
+						// Ensure that nested paths are secured
+						paths.add(path + "/**");
+						// Add Spring MVC-generated additional paths
+						paths.add(path + ".*");
+					}
+					else {
+						paths.add("/");
+					}
 				}
 			}
+			return paths.toArray(new String[paths.size()]);
 		}
-		return paths.toArray(new String[paths.size()]);
+
 	}
 
 }

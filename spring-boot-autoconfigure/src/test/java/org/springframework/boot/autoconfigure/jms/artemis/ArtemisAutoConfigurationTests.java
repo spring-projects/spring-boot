@@ -309,7 +309,7 @@ public class ArtemisAutoConfigurationTests {
 		return applicationContext;
 	}
 
-	private static class DestinationChecker {
+	private final static class DestinationChecker {
 
 		private final JmsTemplate jmsTemplate;
 

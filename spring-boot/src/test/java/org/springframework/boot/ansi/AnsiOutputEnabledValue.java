@@ -23,7 +23,10 @@ import org.springframework.boot.ansi.AnsiOutput.Enabled;
  *
  * @author Phillip Webb
  */
-public class AnsiOutputEnabledValue {
+public final class AnsiOutputEnabledValue {
+
+	private AnsiOutputEnabledValue() {
+	}
 
 	public static Enabled get() {
 		return AnsiOutput.getEnabled();

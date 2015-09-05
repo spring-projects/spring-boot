@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +70,6 @@ import org.springframework.util.SocketUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -110,6 +110,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				this.container.stop();
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 	}
@@ -584,8 +585,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		String testContent = setUpFactoryForCompression(contentSize, mimeTypes,
 				excludedUserAgents);
 		TestGzipInputStreamFactory inputStreamFactory = new TestGzipInputStreamFactory();
-		Map<String, InputStreamFactory> contentDecoderMap = singletonMap("gzip",
-				(InputStreamFactory) inputStreamFactory);
+		Map<String, InputStreamFactory> contentDecoderMap = Collections.singletonMap(
+				"gzip", (InputStreamFactory) inputStreamFactory);
 		String response = getResponse(
 				getLocalUrl("/test.txt"),
 				new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create()

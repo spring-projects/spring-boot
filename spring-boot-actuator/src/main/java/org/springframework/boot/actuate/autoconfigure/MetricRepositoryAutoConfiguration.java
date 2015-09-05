@@ -105,7 +105,7 @@ public class MetricRepositoryAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnJava(value = JavaVersion.EIGHT)
+	@ConditionalOnJava(JavaVersion.EIGHT)
 	@ConditionalOnMissingBean(GaugeService.class)
 	static class FastMetricServicesConfiguration {
 

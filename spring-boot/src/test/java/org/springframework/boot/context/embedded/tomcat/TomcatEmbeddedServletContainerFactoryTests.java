@@ -276,7 +276,7 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 					fail();
 				}
 				catch (IllegalStateException ex) {
-
+					// Ignore
 				}
 			}
 
@@ -306,7 +306,7 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 					fail();
 				}
 				catch (IllegalStateException ex) {
-
+					// Ignore
 				}
 			}
 

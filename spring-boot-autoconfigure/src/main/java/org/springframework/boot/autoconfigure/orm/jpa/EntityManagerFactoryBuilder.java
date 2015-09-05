@@ -80,7 +80,7 @@ public class EntityManagerFactoryBuilder {
 	/**
 	 * A fluent builder for a LocalContainerEntityManagerFactoryBean.
 	 */
-	public class Builder {
+	public final class Builder {
 
 		private DataSource dataSource;
 

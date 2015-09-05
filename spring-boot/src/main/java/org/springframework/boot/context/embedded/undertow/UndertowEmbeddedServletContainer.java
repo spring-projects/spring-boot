@@ -236,7 +236,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	/**
 	 * An active undertow port.
 	 */
-	private static class Port {
+	private final static class Port {
 
 		private final int number;
 

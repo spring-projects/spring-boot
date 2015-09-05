@@ -23,7 +23,7 @@ import java.nio.charset.Charset;
  *
  * @author Phillip Webb
  */
-class Base64Encoder {
+final class Base64Encoder {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
@@ -33,6 +33,9 @@ class Base64Encoder {
 	static final byte[] ALPHABET = ALPHABET_CHARS.getBytes(UTF_8);
 
 	private static final byte EQUALS_SIGN = '=';
+
+	private Base64Encoder() {
+	}
 
 	public static String encode(String string) {
 		return encode(string.getBytes(UTF_8));

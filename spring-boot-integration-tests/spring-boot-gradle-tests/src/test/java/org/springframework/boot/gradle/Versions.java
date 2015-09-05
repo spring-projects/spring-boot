@@ -27,7 +27,10 @@ import org.xml.sax.InputSource;
 /**
  * @author Andy Wilkinson
  */
-public class Versions {
+public final class Versions {
+
+	private Versions() {
+	}
 
 	public static String getBootVersion() {
 		return evaluateExpression("/*[local-name()='project']/*[local-name()='version']"

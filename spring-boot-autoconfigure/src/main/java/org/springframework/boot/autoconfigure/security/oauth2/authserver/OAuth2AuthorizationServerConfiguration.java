@@ -75,6 +75,35 @@ public class OAuth2AuthorizationServerConfiguration extends
 	@Autowired(required = false)
 	private TokenStore tokenStore;
 
+	@Override
+	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+		ClientDetailsServiceBuilder<InMemoryClientDetailsServiceBuilder>.ClientBuilder builder = clients
+				.inMemory().withClient(this.details.getClientId());
+		builder.secret(this.details.getClientSecret())
+				.resourceIds(this.details.getResourceIds().toArray(new String[0]))
+				.authorizedGrantTypes(
+						this.details.getAuthorizedGrantTypes().toArray(new String[0]))
+				.authorities(
+						AuthorityUtils.authorityListToSet(this.details.getAuthorities())
+								.toArray(new String[0]))
+				.scopes(this.details.getScope().toArray(new String[0]));
+		if (this.details.getRegisteredRedirectUri() != null) {
+			builder.redirectUris(this.details.getRegisteredRedirectUri().toArray(
+					new String[0]));
+		}
+	}
+
+	@Override
+	public void configure(AuthorizationServerEndpointsConfigurer endpoints)
+			throws Exception {
+		if (this.tokenStore != null) {
+			endpoints.tokenStore(this.tokenStore);
+		}
+		if (this.details.getAuthorizedGrantTypes().contains("password")) {
+			endpoints.authenticationManager(this.authenticationManager);
+		}
+	}
+
 	@Configuration
 	protected static class ClientDetailsLogger {
 
@@ -117,35 +146,6 @@ public class OAuth2AuthorizationServerConfiguration extends
 			return details;
 		}
 
-	}
-
-	@Override
-	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		ClientDetailsServiceBuilder<InMemoryClientDetailsServiceBuilder>.ClientBuilder builder = clients
-				.inMemory().withClient(this.details.getClientId());
-		builder.secret(this.details.getClientSecret())
-				.resourceIds(this.details.getResourceIds().toArray(new String[0]))
-				.authorizedGrantTypes(
-						this.details.getAuthorizedGrantTypes().toArray(new String[0]))
-				.authorities(
-						AuthorityUtils.authorityListToSet(this.details.getAuthorities())
-								.toArray(new String[0]))
-				.scopes(this.details.getScope().toArray(new String[0]));
-		if (this.details.getRegisteredRedirectUri() != null) {
-			builder.redirectUris(this.details.getRegisteredRedirectUri().toArray(
-					new String[0]));
-		}
-	}
-
-	@Override
-	public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-			throws Exception {
-		if (this.tokenStore != null) {
-			endpoints.tokenStore(this.tokenStore);
-		}
-		if (this.details.getAuthorizedGrantTypes().contains("password")) {
-			endpoints.authenticationManager(this.authenticationManager);
-		}
 	}
 
 }

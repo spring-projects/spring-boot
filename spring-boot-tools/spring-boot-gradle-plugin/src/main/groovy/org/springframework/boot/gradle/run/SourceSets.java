@@ -28,7 +28,10 @@ import org.gradle.api.tasks.SourceSet;
  * @author Dave Syer
  * @author Phillip Webb
  */
-class SourceSets {
+final class SourceSets {
+
+	private SourceSets() {
+	}
 
 	public static SourceSet findMainSourceSet(Project project) {
 		for (SourceSet sourceSet : getJavaSourceSets(project)) {

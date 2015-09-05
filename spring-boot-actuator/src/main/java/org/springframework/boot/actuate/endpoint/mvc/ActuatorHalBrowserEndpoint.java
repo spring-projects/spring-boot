@@ -87,6 +87,7 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;

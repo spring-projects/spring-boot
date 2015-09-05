@@ -166,20 +166,6 @@ public class MockEmbeddedServletContainerFactory extends
 			return (Enumeration<T>) EmptyEnumeration.EMPTY_ENUMERATION;
 		}
 
-		private static class EmptyEnumeration<E> implements Enumeration<E> {
-			static final EmptyEnumeration<Object> EMPTY_ENUMERATION = new EmptyEnumeration<Object>();
-
-			@Override
-			public boolean hasMoreElements() {
-				return false;
-			}
-
-			@Override
-			public E nextElement() {
-				throw new NoSuchElementException();
-			}
-		}
-
 		@Override
 		public void start() throws EmbeddedServletContainerException {
 		}
@@ -210,6 +196,21 @@ public class MockEmbeddedServletContainerFactory extends
 		public int getPort() {
 			return this.port;
 		}
+
+		private static class EmptyEnumeration<E> implements Enumeration<E> {
+			static final EmptyEnumeration<Object> EMPTY_ENUMERATION = new EmptyEnumeration<Object>();
+
+			@Override
+			public boolean hasMoreElements() {
+				return false;
+			}
+
+			@Override
+			public E nextElement() {
+				throw new NoSuchElementException();
+			}
+		}
+
 	}
 
 	public static class RegisteredServlet {

@@ -60,8 +60,7 @@ import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
 import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
-
-import static de.flapdoodle.embed.process.runtime.Network.localhostIsIPv6;
+import de.flapdoodle.embed.process.runtime.Network;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Embedded Mongo.
@@ -139,7 +138,7 @@ public class EmbeddedMongoAutoConfiguration {
 		MongodConfigBuilder builder = new MongodConfigBuilder()
 				.version(featureAwareVersion);
 		if (getPort() > 0) {
-			builder.net(new Net(getPort(), localhostIsIPv6()));
+			builder.net(new Net(getPort(), Network.localhostIsIPv6()));
 		}
 		return builder.build();
 	}
@@ -196,7 +195,7 @@ public class EmbeddedMongoAutoConfiguration {
 	 * A workaround for the lack of a {@code toString} implementation on
 	 * {@code GenericFeatureAwareVersion}.
 	 */
-	private static class ToStringFriendlyFeatureAwareVersion implements
+	private final static class ToStringFriendlyFeatureAwareVersion implements
 			IFeatureAwareVersion {
 
 		private final String version;

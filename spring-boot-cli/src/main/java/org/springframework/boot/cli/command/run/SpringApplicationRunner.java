@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command.run;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -89,22 +90,9 @@ public class SpringApplicationRunner {
 	 */
 	public synchronized void compileAndRun() throws Exception {
 		try {
-
 			stop();
-
-			// Compile
-			Object[] compiledSources = this.compiler.compile(this.sources);
-			if (compiledSources.length == 0) {
-				throw new RuntimeException("No classes found in '" + this.sources + "'");
-			}
-
-			// Start monitoring for changes
-			if (this.fileWatchThread == null
-					&& this.configuration.isWatchForFileChanges()) {
-				this.fileWatchThread = new FileWatchThread();
-				this.fileWatchThread.start();
-			}
-
+			Object[] compiledSources = compile();
+			monitorForChanges();
 			// Run in new thread to ensure that the context classloader is setup
 			this.runThread = new RunThread(compiledSources);
 			this.runThread.start();
@@ -117,6 +105,28 @@ public class SpringApplicationRunner {
 			else {
 				ex.printStackTrace();
 			}
+		}
+	}
+
+	public void stop() {
+		if (this.runThread != null) {
+			this.runThread.shutdown();
+			this.runThread = null;
+		}
+	}
+
+	private Object[] compile() throws IOException {
+		Object[] compiledSources = this.compiler.compile(this.sources);
+		if (compiledSources.length == 0) {
+			throw new RuntimeException("No classes found in '" + this.sources + "'");
+		}
+		return compiledSources;
+	}
+
+	private void monitorForChanges() {
+		if (this.fileWatchThread == null && this.configuration.isWatchForFileChanges()) {
+			this.fileWatchThread = new FileWatchThread();
+			this.fileWatchThread.start();
 		}
 	}
 
@@ -244,13 +254,6 @@ public class SpringApplicationRunner {
 			}
 		}
 
-	}
-
-	public void stop() {
-		if (this.runThread != null) {
-			this.runThread.shutdown();
-			this.runThread = null;
-		}
 	}
 
 }

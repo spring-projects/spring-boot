@@ -110,6 +110,7 @@ public class JooqAutoConfigurationTests {
 			fail("An DataIntegrityViolationException should have been thrown.");
 		}
 		catch (DataIntegrityViolationException ex) {
+			// Ignore
 		}
 		dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest;",
 				equalTo("2")));
@@ -137,6 +138,7 @@ public class JooqAutoConfigurationTests {
 			fail("A DataIntegrityViolationException should have been thrown.");
 		}
 		catch (DataIntegrityViolationException ex) {
+			// Ignore
 		}
 		dsl.transaction(new AssertFetch(dsl,
 				"select count(*) as total from jooqtest_tx;", equalTo("1")));

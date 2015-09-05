@@ -108,7 +108,7 @@ public class ConditionalOnSingleCandidateTests {
 	}
 
 	@Configuration
-	@ConditionalOnSingleCandidate(value = String.class)
+	@ConditionalOnSingleCandidate(String.class)
 	protected static class OnBeanSingleCandidateConfiguration {
 
 		@Bean

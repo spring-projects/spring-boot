@@ -294,18 +294,6 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 
 		private String name = "654321";
 
-		public static class Bar {
-			private String name = "123456";
-
-			public String getName() {
-				return this.name;
-			}
-
-			public void setName(String name) {
-				this.name = name;
-			}
-		}
-
 		private Bar bar = new Bar();
 
 		public Bar getBar() {
@@ -329,6 +317,18 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 			return "Name: " + this.name;
 		}
 
+		public static class Bar {
+			private String name = "123456";
+
+			public String getName() {
+				return this.name;
+			}
+
+			public void setName(String name) {
+				this.name = name;
+			}
+		}
+
 	}
 
 	public static class Cycle extends Foo {
@@ -346,6 +346,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		public void setSelf(Foo self) {
 			this.self = self;
 		}
+
 	}
 
 	public static class MapHolder extends Foo {
@@ -359,6 +360,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		public void setMap(Map<String, Object> map) {
 			this.map = map;
 		}
+
 	}
 
 	public static class ListHolder extends Foo {
@@ -372,6 +374,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 		public void setList(List<String> list) {
 			this.list = list;
 		}
+
 	}
 
 	public static class Addressed extends Foo {

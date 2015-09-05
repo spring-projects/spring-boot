@@ -52,7 +52,7 @@ public class FlywayAutoConfigurationTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();;
+	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Before
 	public void init() {

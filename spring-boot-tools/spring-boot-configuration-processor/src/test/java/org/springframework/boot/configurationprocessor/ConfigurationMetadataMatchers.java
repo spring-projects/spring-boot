@@ -37,7 +37,10 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.Ite
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ConfigurationMetadataMatchers {
+public final class ConfigurationMetadataMatchers {
+
+	private ConfigurationMetadataMatchers() {
+	}
 
 	public static ContainsItemMatcher containsGroup(String name) {
 		return new ContainsItemMatcher(ItemType.GROUP, name);

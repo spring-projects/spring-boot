@@ -55,6 +55,7 @@ public class Handler extends URLStreamHandler {
 					.getDeclaredMethod("openConnection", URL.class);
 		}
 		catch (Exception ex) {
+			// Swallow and ignore
 		}
 		OPEN_CONNECTION_METHOD = method;
 	}

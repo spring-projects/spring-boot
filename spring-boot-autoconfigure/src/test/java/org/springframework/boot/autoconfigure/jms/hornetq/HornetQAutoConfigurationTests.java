@@ -323,7 +323,7 @@ public class HornetQAutoConfigurationTests {
 		return applicationContext;
 	}
 
-	private static class DestinationChecker {
+	private final static class DestinationChecker {
 
 		private final JmsTemplate jmsTemplate;
 

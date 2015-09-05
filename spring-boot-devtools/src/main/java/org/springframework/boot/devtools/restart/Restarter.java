@@ -394,6 +394,7 @@ public class Restarter {
 			}
 		}
 		catch (final OutOfMemoryError ex) {
+			// Expected
 		}
 	}
 

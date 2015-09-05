@@ -18,10 +18,10 @@ package org.springframework.boot.gradle
 
 import java.io.File;
 import java.util.Map;
+import java.util.Set;
 
-import org.springframework.boot.loader.tools.Layout
-import org.springframework.boot.loader.tools.Layouts
-
+import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.Layouts;
 
 /**
  * Gradle DSL Extension for 'Spring Boot'.  Most of the time Spring Boot can guess the

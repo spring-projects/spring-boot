@@ -35,9 +35,9 @@ import com.hazelcast.config.QueueConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.hamcrest.collection.IsMapContaining.hasKey;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -65,7 +65,7 @@ public class HazelcastAutoConfigurationTests {
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
 		assertThat(hazelcastInstance.getConfig().getConfigurationUrl(),
-				is(new ClassPathResource("hazelcast.xml").getURL()));
+				equalTo(new ClassPathResource("hazelcast.xml").getURL()));
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class HazelcastAutoConfigurationTests {
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
 		assertThat(hazelcastInstance.getConfig().getConfigurationFile(),
-				is(new ClassPathResource(
+				equalTo(new ClassPathResource(
 						"org/springframework/boot/autoconfigure/hazelcast"
 								+ "/hazelcast-specific.xml").getFile()));
 	}
@@ -104,7 +104,7 @@ public class HazelcastAutoConfigurationTests {
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
 		assertThat(hazelcastInstance.getConfig().getConfigurationUrl(),
-				is(new ClassPathResource("hazelcast-default.xml").getURL()));
+				equalTo(new ClassPathResource("hazelcast-default.xml").getURL()));
 	}
 
 	@Test
@@ -125,9 +125,9 @@ public class HazelcastAutoConfigurationTests {
 			HazelcastInstance hazelcastInstance = this.context
 					.getBean(HazelcastInstance.class);
 			assertThat(hazelcastInstance.getConfig().getInstanceName(),
-					is("my-test-instance"));
+					equalTo("my-test-instance"));
 			// Should reuse any existing instance by default.
-			assertThat(hazelcastInstance, is(existingHazelcastInstance));
+			assertThat(hazelcastInstance, equalTo(existingHazelcastInstance));
 		}
 		finally {
 			existingHazelcastInstance.shutdown();

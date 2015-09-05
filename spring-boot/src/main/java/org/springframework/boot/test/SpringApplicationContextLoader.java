@@ -18,6 +18,7 @@ package org.springframework.boot.test;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -147,7 +148,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		disableJmx(properties);
 		properties.putAll(extractEnvironmentProperties(config
 				.getPropertySourceProperties()));
-		if (!isIntegrationTest(config.getTestClass())) {
+		if (!TestAnnotations.isIntegrationTest(config)) {
 			properties.putAll(getDefaultEnvironmentProperties());
 		}
 		return properties;
@@ -252,8 +253,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		void configure(MergedContextConfiguration configuration,
 				SpringApplication application,
 				List<ApplicationContextInitializer<?>> initializers) {
-			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
-			if (!isIntegrationTest(webConfiguration.getTestClass())) {
+			if (!TestAnnotations.isIntegrationTest(configuration)) {
+				WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
 				addMockServletContext(initializers, webConfiguration);
 				application.setApplicationContextClass(WEB_CONTEXT_CLASS);
 			}
@@ -268,11 +269,6 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 					servletContext));
 		}
 
-	}
-
-	private static boolean isIntegrationTest(Class<?> testClass) {
-		return ((AnnotationUtils.findAnnotation(testClass, IntegrationTest.class) != null) || (AnnotationUtils
-				.findAnnotation(testClass, WebIntegrationTest.class) != null));
 	}
 
 	/**
@@ -291,6 +287,21 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			TestPropertySourceUtils.addPropertiesFilesToEnvironment(applicationContext,
 					this.propertySourceLocations);
+		}
+
+	}
+
+	private static class TestAnnotations {
+
+		public static boolean isIntegrationTest(MergedContextConfiguration configuration) {
+			return (hasAnnotation(configuration, IntegrationTest.class) || hasAnnotation(
+					configuration, WebIntegrationTest.class));
+		}
+
+		private static boolean hasAnnotation(MergedContextConfiguration configuration,
+				Class<? extends Annotation> annotation) {
+			return (AnnotationUtils.findAnnotation(configuration.getTestClass(),
+					annotation) != null);
 		}
 
 	}

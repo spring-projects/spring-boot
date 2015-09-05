@@ -121,7 +121,7 @@ public class DropwizardMetricWriter implements MetricWriter {
 	/**
 	 * Simple {@link Gauge} implementation to {@literal double} value.
 	 */
-	private static class SimpleGauge implements Gauge<Double> {
+	private final static class SimpleGauge implements Gauge<Double> {
 
 		private final double value;
 

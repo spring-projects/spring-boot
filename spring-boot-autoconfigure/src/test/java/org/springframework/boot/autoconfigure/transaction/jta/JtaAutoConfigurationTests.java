@@ -64,8 +64,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link JtaAutoConfiguration}.
@@ -276,10 +276,10 @@ public class JtaAutoConfigurationTests {
 			XASession session = mock(XASession.class);
 			TemporaryQueue queue = mock(TemporaryQueue.class);
 			XAResource resource = mock(XAResource.class);
-			when(connectionFactory.createXAConnection()).thenReturn(connection);
-			when(connection.createXASession()).thenReturn(session);
-			when(session.createTemporaryQueue()).thenReturn(queue);
-			when(session.getXAResource()).thenReturn(resource);
+			given(connectionFactory.createXAConnection()).willReturn(connection);
+			given(connection.createXASession()).willReturn(session);
+			given(session.createTemporaryQueue()).willReturn(queue);
+			given(session.getXAResource()).willReturn(resource);
 			return wrapper.wrapConnectionFactory(connectionFactory);
 		}
 

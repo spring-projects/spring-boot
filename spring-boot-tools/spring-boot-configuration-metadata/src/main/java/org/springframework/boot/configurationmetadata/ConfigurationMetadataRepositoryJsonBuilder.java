@@ -32,7 +32,7 @@ import org.json.JSONException;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class ConfigurationMetadataRepositoryJsonBuilder {
+public final class ConfigurationMetadataRepositoryJsonBuilder {
 
 	public static final Charset UTF_8 = Charset.forName("UTF-8");
 

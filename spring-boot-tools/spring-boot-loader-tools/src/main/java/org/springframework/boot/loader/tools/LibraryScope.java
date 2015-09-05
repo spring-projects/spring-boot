@@ -25,6 +25,9 @@ package org.springframework.boot.loader.tools;
  */
 public interface LibraryScope {
 
+	@Override
+	String toString();
+
 	/**
 	 * The library is used at compile time and runtime.
 	 */

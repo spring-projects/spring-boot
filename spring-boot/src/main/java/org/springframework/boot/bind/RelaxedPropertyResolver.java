@@ -20,10 +20,7 @@ import java.util.Map;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
-
-import static java.lang.String.format;
 
 /**
  * {@link PropertyResolver} that attempts to resolve values using {@link RelaxedNames}.
@@ -56,7 +53,7 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	public <T> T getRequiredProperty(String key, Class<T> targetType)
 			throws IllegalStateException {
 		T value = getProperty(key, targetType);
-		Assert.state(value != null, format("required key [%s] not found", key));
+		Assert.state(value != null, String.format("required key [%s] not found", key));
 		return value;
 	}
 
@@ -137,8 +134,7 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	 * {@link ConfigurableEnvironment}.
 	 * @param keyPrefix the key prefix used to filter results
 	 * @return a map of all sub properties starting with the specified key prefix.
-	 * @see PropertySourceUtils#getSubProperties(PropertySources, String)
-	 * @see PropertySourceUtils#getSubProperties(PropertySources, String, String)
+	 * @see PropertySourceUtils#getSubProperties
 	 */
 	public Map<String, Object> getSubProperties(String keyPrefix) {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, this.resolver,

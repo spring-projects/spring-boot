@@ -219,6 +219,7 @@ class InitializrService {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;

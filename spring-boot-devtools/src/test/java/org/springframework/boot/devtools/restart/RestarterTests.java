@@ -228,6 +228,7 @@ public class RestarterTests {
 				Thread.sleep(1200);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 		}
 

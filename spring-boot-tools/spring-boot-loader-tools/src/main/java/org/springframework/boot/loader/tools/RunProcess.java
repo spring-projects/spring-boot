@@ -147,6 +147,7 @@ public class RunProcess {
 					reader.close();
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 

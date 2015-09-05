@@ -138,6 +138,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			}
 		}
 		catch (Exception ex) {
+			// Ignore and continue
 		}
 
 		// 2) Try to find locally
@@ -147,6 +148,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			return cls;
 		}
 		catch (Exception ex) {
+			// Ignore and continue
 		}
 
 		// 3) Use standard loading

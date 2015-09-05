@@ -95,10 +95,6 @@ public class MultipartAutoConfigurationTests {
 				equalTo(1));
 	}
 
-	@Configuration
-	public static class ContainerWithNothing {
-	}
-
 	@Test
 	public void containerWithNoMultipartJettyConfiguration() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
@@ -112,19 +108,6 @@ public class MultipartAutoConfigurationTests {
 		verifyServletWorks();
 	}
 
-	@Configuration
-	public static class ContainerWithNoMultipartJetty {
-		@Bean
-		JettyEmbeddedServletContainerFactory containerFactory() {
-			return new JettyEmbeddedServletContainerFactory();
-		}
-
-		@Bean
-		WebController controller() {
-			return new WebController();
-		}
-	}
-
 	@Test
 	public void containerWithNoMultipartUndertowConfiguration() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
@@ -136,19 +119,6 @@ public class MultipartAutoConfigurationTests {
 				.size(), equalTo(1));
 		assertThat(this.context.getBeansOfType(MultipartResolver.class).size(),
 				equalTo(1));
-	}
-
-	@Configuration
-	public static class ContainerWithNoMultipartUndertow {
-		@Bean
-		UndertowEmbeddedServletContainerFactory containerFactory() {
-			return new UndertowEmbeddedServletContainerFactory();
-		}
-
-		@Bean
-		WebController controller() {
-			return new WebController();
-		}
 	}
 
 	@Test
@@ -247,6 +217,36 @@ public class MultipartAutoConfigurationTests {
 		assertEquals("Hello", restTemplate.getForObject("http://localhost:"
 				+ this.context.getEmbeddedServletContainer().getPort() + "/",
 				String.class));
+	}
+
+	@Configuration
+	public static class ContainerWithNothing {
+	}
+
+	@Configuration
+	public static class ContainerWithNoMultipartJetty {
+		@Bean
+		JettyEmbeddedServletContainerFactory containerFactory() {
+			return new JettyEmbeddedServletContainerFactory();
+		}
+
+		@Bean
+		WebController controller() {
+			return new WebController();
+		}
+	}
+
+	@Configuration
+	public static class ContainerWithNoMultipartUndertow {
+		@Bean
+		UndertowEmbeddedServletContainerFactory containerFactory() {
+			return new UndertowEmbeddedServletContainerFactory();
+		}
+
+		@Bean
+		WebController controller() {
+			return new WebController();
+		}
 	}
 
 	@Configuration

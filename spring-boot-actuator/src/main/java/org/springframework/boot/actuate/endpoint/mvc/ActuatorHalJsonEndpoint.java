@@ -66,7 +66,7 @@ public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter implements
 
 	private String getDefaultPath(ManagementServletContext managementServletContext) {
 		if (StringUtils.hasText(managementServletContext.getContextPath())) {
-			return this.path = "";
+			return "";
 		}
 		return "/actuator";
 	}

@@ -166,6 +166,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 						close();
 					}
 					catch (IOException ex) {
+						// Ignore
 					}
 				}
 

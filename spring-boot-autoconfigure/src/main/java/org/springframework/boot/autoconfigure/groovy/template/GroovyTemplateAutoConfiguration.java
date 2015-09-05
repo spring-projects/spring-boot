@@ -103,10 +103,11 @@ public class GroovyTemplateAutoConfiguration {
 						&& codeSource.getLocation().toString().contains("-all")) {
 					return true;
 				}
+				return false;
 			}
 			catch (Exception ex) {
+				return false;
 			}
-			return false;
 		}
 
 		@Bean

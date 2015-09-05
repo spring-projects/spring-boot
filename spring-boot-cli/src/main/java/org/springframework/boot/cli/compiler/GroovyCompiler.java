@@ -200,7 +200,7 @@ public class GroovyCompiler {
 		for (Object loadedClass : collector.getLoadedClasses()) {
 			classes.add((Class<?>) loadedClass);
 		}
-		ClassNode mainClassNode = getMainClass(compilationUnit);
+		ClassNode mainClassNode = MainClass.get(compilationUnit);
 
 		Class<?> mainClass = null;
 		for (Class<?> loadedClass : classes) {
@@ -275,7 +275,7 @@ public class GroovyCompiler {
 
 			ImportCustomizer importCustomizer = new SmartImportCustomizer(source,
 					context, classNode);
-			ClassNode mainClassNode = getMainClass(source.getAST().getClasses());
+			ClassNode mainClassNode = MainClass.get(source.getAST().getClasses());
 
 			// Additional auto configuration
 			for (CompilerAutoConfiguration autoConfiguration : GroovyCompiler.this.compilerAutoConfigurations) {
@@ -300,22 +300,27 @@ public class GroovyCompiler {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private static ClassNode getMainClass(CompilationUnit source) {
-		return getMainClass(source.getAST().getClasses());
-	}
+	private static class MainClass {
 
-	private static ClassNode getMainClass(List<ClassNode> classes) {
-		for (ClassNode node : classes) {
-			if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
-				return null; // No need to enhance this
-			}
-			if (AstUtils.hasAtLeastOneAnnotation(node, "*Controller", "Configuration",
-					"Component", "*Service", "Repository", "Enable*")) {
-				return node;
-			}
+		@SuppressWarnings("unchecked")
+		public static ClassNode get(CompilationUnit source) {
+			return get(source.getAST().getClasses());
 		}
-		return (classes.isEmpty() ? null : classes.get(0));
+
+		public static ClassNode get(List<ClassNode> classes) {
+			for (ClassNode node : classes) {
+				if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
+					return null; // No need to enhance this
+				}
+				if (AstUtils
+						.hasAtLeastOneAnnotation(node, "*Controller", "Configuration",
+								"Component", "*Service", "Repository", "Enable*")) {
+					return node;
+				}
+			}
+			return (classes.isEmpty() ? null : classes.get(0));
+		}
+
 	}
 
 }

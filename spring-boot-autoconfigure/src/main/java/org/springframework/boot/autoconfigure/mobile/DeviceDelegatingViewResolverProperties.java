@@ -67,7 +67,7 @@ public class DeviceDelegatingViewResolverProperties {
 	}
 
 	public boolean isEnableFallback() {
-		return enableFallback;
+		return this.enableFallback;
 	}
 
 	public String getNormalPrefix() {

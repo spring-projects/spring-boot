@@ -67,6 +67,7 @@ public class AbstractSocialAutoConfigurationTests {
 			fail("Unexpected bean in context of type " + beanClass.getName());
 		}
 		catch (NoSuchBeanDefinitionException ex) {
+			// Expected
 		}
 	}
 

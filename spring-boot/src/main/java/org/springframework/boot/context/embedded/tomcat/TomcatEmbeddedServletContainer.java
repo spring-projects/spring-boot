@@ -174,6 +174,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			this.tomcat.stop();
 		}
 		catch (LifecycleException ex) {
+			// Ignore
 		}
 	}
 

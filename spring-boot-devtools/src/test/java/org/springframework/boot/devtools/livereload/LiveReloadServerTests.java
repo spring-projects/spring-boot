@@ -151,6 +151,25 @@ public class LiveReloadServerTests {
 		return socket;
 	}
 
+	/**
+	 * Useful main method for manual testing against a real browser.
+	 * @param args main args
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException {
+		LiveReloadServer server = new LiveReloadServer();
+		server.start();
+		while (true) {
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			server.triggerReload();
+		}
+	}
+
 	private static class Driver extends JettyListenerEventDriver {
 
 		private int pongCount;
@@ -195,25 +214,6 @@ public class LiveReloadServerTests {
 			return this.closeStatus;
 		}
 
-	}
-
-	/**
-	 * Useful main method for manual testing against a real browser.
-	 * @param args main args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-		LiveReloadServer server = new LiveReloadServer();
-		server.start();
-		while (true) {
-			try {
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-			server.triggerReload();
-		}
 	}
 
 	/**

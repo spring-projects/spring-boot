@@ -57,8 +57,8 @@ public class JarFileArchiveTests {
 
 	private void setup(boolean unpackNested) throws Exception {
 		this.rootJarFile = this.temporaryFolder.newFile();
-		this.rootJarFileUrl = rootJarFile.toURI().toString();
-		System.out.println(rootJarFileUrl);
+		this.rootJarFileUrl = this.rootJarFile.toURI().toString();
+		System.out.println(this.rootJarFileUrl);
 		TestJarCreator.createTestJar(this.rootJarFile, unpackNested);
 		this.archive = new JarFileArchive(this.rootJarFile);
 	}

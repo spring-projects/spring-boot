@@ -170,7 +170,7 @@ public class ElasticsearchHealthIndicatorTests {
 		assertThat((T) details.get(detail), is(equalTo(value)));
 	}
 
-	private static class StubClusterHealthResponse extends ClusterHealthResponse {
+	private final static class StubClusterHealthResponse extends ClusterHealthResponse {
 
 		private final ClusterHealthStatus status;
 

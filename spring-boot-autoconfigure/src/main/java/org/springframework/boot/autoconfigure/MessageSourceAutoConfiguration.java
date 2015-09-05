@@ -41,9 +41,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.StringUtils;
 
-import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
-import static org.springframework.util.StringUtils.trimAllWhitespace;
-
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
  *
@@ -90,8 +87,9 @@ public class MessageSourceAutoConfiguration {
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (StringUtils.hasText(this.basename)) {
-			messageSource
-					.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(this.basename)));
+			messageSource.setBasenames(StringUtils
+					.commaDelimitedListToStringArray(StringUtils
+							.trimAllWhitespace(this.basename)));
 		}
 		if (this.encoding != null) {
 			messageSource.setDefaultEncoding(this.encoding.name());
@@ -152,7 +150,8 @@ public class MessageSourceAutoConfiguration {
 
 		private ConditionOutcome getMatchOutcomeForBasename(ConditionContext context,
 				String basename) {
-			for (String name : commaDelimitedListToStringArray(trimAllWhitespace(basename))) {
+			for (String name : StringUtils.commaDelimitedListToStringArray(StringUtils
+					.trimAllWhitespace(basename))) {
 				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
 						return ConditionOutcome.match("Bundle found for "
@@ -193,6 +192,7 @@ public class MessageSourceAutoConfiguration {
 				}
 			}
 			catch (Throwable ex) {
+				// Ignore
 			}
 			ROOT_CLASSLOADER = classLoader;
 		}

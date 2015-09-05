@@ -31,7 +31,7 @@ import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
  */
 @Plugin(name = "WhitespaceThrowablePatternConverter", category = PatternConverter.CATEGORY)
 @ConverterKeys({ "wEx", "wThrowable", "wException" })
-public class WhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
+public final class WhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
 
 	private WhitespaceThrowablePatternConverter(String[] options) {
 		super("WhitespaceThrowable", "throwable", options);

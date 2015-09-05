@@ -149,6 +149,7 @@ public class FileSystemWatcher {
 							scan();
 						}
 						catch (InterruptedException ex) {
+							// Ignore
 						}
 						remainingScans = FileSystemWatcher.this.remainingScans.get();
 					}

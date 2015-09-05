@@ -39,6 +39,13 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class ActiveMQConnectionFactoryConfiguration {
 
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "false", matchIfMissing = true)
+	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
+		return new ActiveMQConnectionFactoryFactory(properties)
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
+	}
+
 	@ConditionalOnClass(PooledConnectionFactory.class)
 	static class PooledConnectionFactoryConfiguration {
 
@@ -53,13 +60,6 @@ class ActiveMQConnectionFactoryConfiguration {
 			return pooledConnectionFactory;
 
 		}
-	}
-
-	@Bean
-	@ConditionalOnProperty(prefix = "spring.activemq", name = "pooled", havingValue = "false", matchIfMissing = true)
-	public ActiveMQConnectionFactory jmsConnectionFactory(ActiveMQProperties properties) {
-		return new ActiveMQConnectionFactoryFactory(properties)
-				.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
 }

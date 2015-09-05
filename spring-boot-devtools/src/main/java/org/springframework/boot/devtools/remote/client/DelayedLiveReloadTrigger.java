@@ -95,6 +95,7 @@ class DelayedLiveReloadTrigger implements Runnable {
 			this.liveReloadServer.triggerReload();
 		}
 		catch (InterruptedException ex) {
+			// Ignore
 		}
 	}
 

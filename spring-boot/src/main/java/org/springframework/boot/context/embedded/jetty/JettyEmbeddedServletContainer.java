@@ -96,6 +96,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			this.server.stop();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 

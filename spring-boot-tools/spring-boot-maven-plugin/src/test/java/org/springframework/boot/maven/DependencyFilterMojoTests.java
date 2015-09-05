@@ -72,7 +72,7 @@ public class DependencyFilterMojoTests {
 		return a;
 	}
 
-	private static class TestableDependencyFilterMojo extends
+	private static final class TestableDependencyFilterMojo extends
 			AbstractDependencyFilterMojo {
 
 		private TestableDependencyFilterMojo(List<Exclude> excludes,

@@ -428,6 +428,7 @@ public class HttpTunnelServer {
 						}
 					}
 					catch (InterruptedException ex) {
+						// Ignore
 					}
 				}
 			}

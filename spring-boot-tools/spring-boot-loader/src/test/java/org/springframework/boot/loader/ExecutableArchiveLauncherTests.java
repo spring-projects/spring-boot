@@ -90,6 +90,17 @@ public class ExecutableArchiveLauncherTests {
 		assertArrayEquals(urls, ((URLClassLoader) classLoader).getURLs());
 	}
 
+	private void doWithTccl(ClassLoader classLoader, Callable<?> action) throws Exception {
+		ClassLoader old = Thread.currentThread().getContextClassLoader();
+		try {
+			Thread.currentThread().setContextClassLoader(classLoader);
+			action.call();
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(old);
+		}
+	}
+
 	private static final class UnitTestExecutableArchiveLauncher extends
 			ExecutableArchiveLauncher {
 
@@ -100,17 +111,6 @@ public class ExecutableArchiveLauncherTests {
 		@Override
 		protected boolean isNestedArchive(Entry entry) {
 			return false;
-		}
-	}
-
-	private void doWithTccl(ClassLoader classLoader, Callable<?> action) throws Exception {
-		ClassLoader old = Thread.currentThread().getContextClassLoader();
-		try {
-			Thread.currentThread().setContextClassLoader(classLoader);
-			action.call();
-		}
-		finally {
-			Thread.currentThread().setContextClassLoader(old);
 		}
 	}
 

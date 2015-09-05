@@ -18,12 +18,10 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 
+import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.core.env.Environment;
-
-import static org.springframework.boot.ansi.AnsiColor.DEFAULT;
-import static org.springframework.boot.ansi.AnsiColor.GREEN;
-import static org.springframework.boot.ansi.AnsiStyle.FAINT;
 
 /**
  * Default Banner implementation which writes the 'Spring' banner.
@@ -58,8 +56,8 @@ class SpringBootBanner implements Banner {
 			padding += " ";
 		}
 
-		printStream.println(AnsiOutput.toString(GREEN, SPRING_BOOT, DEFAULT, padding,
-				FAINT, version));
+		printStream.println(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT,
+				AnsiColor.DEFAULT, padding, AnsiStyle.FAINT, version));
 		printStream.println();
 	}
 

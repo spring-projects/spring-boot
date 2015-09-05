@@ -21,7 +21,10 @@ package org.springframework.boot.actuate.system;
  *
  * @author Phillip Webb
  */
-class SystemProperties {
+final class SystemProperties {
+
+	private SystemProperties() {
+	}
 
 	public static String get(String... properties) {
 		for (String property : properties) {

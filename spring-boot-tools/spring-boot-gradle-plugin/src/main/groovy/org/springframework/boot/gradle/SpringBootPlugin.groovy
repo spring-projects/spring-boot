@@ -24,7 +24,6 @@ import org.springframework.boot.gradle.dependencymanagement.DependencyManagement
 import org.springframework.boot.gradle.repackage.RepackagePluginFeatures
 import org.springframework.boot.gradle.run.RunPluginFeatures
 
-
 /**
  * Gradle 'Spring Boot' {@link Plugin}.
  *

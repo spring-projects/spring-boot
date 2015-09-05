@@ -174,7 +174,7 @@ public class BasicErrorControllerIntegrationTests {
 
 			}
 
-			@ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
+			@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
 			@SuppressWarnings("serial")
 			private static class NoReasonExpectedException extends RuntimeException {
 

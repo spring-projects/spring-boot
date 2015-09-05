@@ -27,7 +27,10 @@ import org.springframework.boot.cli.command.test.TestRunner;
  * @author Phillip Webb
  * @see TestRunner
  */
-public class DelegateTestRunner {
+public final class DelegateTestRunner {
+
+	private DelegateTestRunner() {
+	}
 
 	public static void run(Class<?>[] testClasses, Result result) {
 		JUnitCore jUnitCore = new JUnitCore();

@@ -26,9 +26,12 @@ import sun.misc.SignalHandler;
  * @since 1.1.0
  */
 @SuppressWarnings("restriction")
-public class SignalUtils {
+public final class SignalUtils {
 
 	private static final Signal SIG_INT = new Signal("INT");
+
+	private SignalUtils() {
+	}
 
 	/**
 	 * Handle {@literal INT} signals by calling the specified {@link Runnable}

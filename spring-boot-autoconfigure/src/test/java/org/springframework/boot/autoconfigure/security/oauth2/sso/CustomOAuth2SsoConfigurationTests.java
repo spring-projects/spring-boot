@@ -109,7 +109,7 @@ public class CustomOAuth2SsoConfigurationTests {
 		@RestController
 		public static class TestController {
 
-			@RequestMapping(value = "/ui/test")
+			@RequestMapping("/ui/test")
 			public String test() {
 				return "test";
 			}

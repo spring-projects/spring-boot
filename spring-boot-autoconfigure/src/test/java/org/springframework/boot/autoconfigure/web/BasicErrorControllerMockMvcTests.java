@@ -186,7 +186,7 @@ public class BasicErrorControllerMockMvcTests {
 
 	}
 
-	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
 	private static class NotFoundException extends RuntimeException {
 
 		public NotFoundException(String string) {

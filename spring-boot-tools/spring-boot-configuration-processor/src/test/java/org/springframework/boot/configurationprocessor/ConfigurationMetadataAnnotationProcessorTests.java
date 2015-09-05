@@ -68,7 +68,6 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsHint;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
-import static org.springframework.boot.configurationprocessor.MetadataStore.METADATA_PATH;
 
 /**
  * Tests for {@link ConfigurationMetadataAnnotationProcessor}.
@@ -491,10 +490,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void incrementalBuild() throws Exception {
 		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
 				BarProperties.class);
-		assertFalse(project.getOutputFile(METADATA_PATH).exists());
+		assertFalse(project.getOutputFile(MetadataStore.METADATA_PATH).exists());
 
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertTrue(project.getOutputFile(METADATA_PATH).exists());
+		assertTrue(project.getOutputFile(MetadataStore.METADATA_PATH).exists());
 
 		assertThat(metadata,
 				containsProperty("foo.counter").fromSource(FooProperties.class));

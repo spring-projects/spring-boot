@@ -124,6 +124,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 					Thread.sleep(this.delay);
 				}
 				catch (InterruptedException ex) {
+					// Ignore
 				}
 			}
 		}

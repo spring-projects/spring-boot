@@ -27,7 +27,10 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  */
-class CacheConfigurations {
+final class CacheConfigurations {
+
+	private CacheConfigurations() {
+	}
 
 	private static final Map<CacheType, Class<?>> MAPPINGS;
 	static {

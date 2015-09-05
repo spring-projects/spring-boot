@@ -30,11 +30,14 @@ import org.springframework.boot.cli.app.SpringApplicationLauncher;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-public class PackagedSpringApplicationLauncher {
+public final class PackagedSpringApplicationLauncher {
 
 	public static final String SOURCE_ENTRY = "Spring-Application-Source-Classes";
 
 	public static final String START_CLASS_ENTRY = "Start-Class";
+
+	private PackagedSpringApplicationLauncher() {
+	}
 
 	private void run(String[] args) throws Exception {
 		URLClassLoader classLoader = (URLClassLoader) Thread.currentThread()

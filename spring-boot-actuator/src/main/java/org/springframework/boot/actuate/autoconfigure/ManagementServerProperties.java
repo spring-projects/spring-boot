@@ -78,6 +78,13 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 
 	private final Security security = maybeCreateSecurity();
 
+	private Security maybeCreateSecurity() {
+		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
+			return new Security();
+		}
+		return null;
+	}
+
 	/**
 	 * Returns the management port or {@code null} if the
 	 * {@link ServerProperties#getPort() server port} should be used.
@@ -181,13 +188,6 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 			this.enabled = enabled;
 		}
 
-	}
-
-	private static Security maybeCreateSecurity() {
-		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
-			return new Security();
-		}
-		return null;
 	}
 
 }
