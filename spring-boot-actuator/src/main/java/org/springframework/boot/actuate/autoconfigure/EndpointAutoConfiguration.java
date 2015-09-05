@@ -20,16 +20,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-
-import liquibase.integration.spring.SpringLiquibase;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint;
@@ -48,6 +43,7 @@ import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.info.InfoProvider;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -59,15 +55,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
+
+import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
@@ -79,13 +72,12 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Meang Akira Tanaka
+ * 
  */
 @Configuration
 @AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 public class EndpointAutoConfiguration {
-
-	@Autowired
-	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
 	private HealthAggregator healthAggregator = new OrderedHealthAggregator();
@@ -93,6 +85,9 @@ public class EndpointAutoConfiguration {
 	@Autowired(required = false)
 	private Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
 
+	@Autowired(required = false)
+	private Map<String, InfoProvider> infoProviders = new HashMap<String, InfoProvider>();
+	
 	@Autowired(required = false)
 	private Collection<PublicMetrics> publicMetrics;
 
@@ -120,13 +115,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InfoEndpoint infoEndpoint() throws Exception {
-		LinkedHashMap<String, Object> info = new LinkedHashMap<String, Object>();
-		info.putAll(this.properties.infoMap());
-		GitInfo gitInfo = this.properties.gitInfo();
-		if (gitInfo.getBranch() != null) {
-			info.put("git", gitInfo);
-		}
-		return new InfoEndpoint(info);
+		return new InfoEndpoint(infoProviders);
 	}
 
 	@Bean
@@ -209,81 +198,4 @@ public class EndpointAutoConfiguration {
 		}
 
 	}
-
-	@Configuration
-	protected static class InfoPropertiesConfiguration {
-
-		@Autowired
-		private final ConfigurableEnvironment environment = new StandardEnvironment();
-
-		@Value("${spring.git.properties:classpath:git.properties}")
-		private Resource gitProperties;
-
-		public GitInfo gitInfo() throws Exception {
-			PropertiesConfigurationFactory<GitInfo> factory = new PropertiesConfigurationFactory<GitInfo>(
-					new GitInfo());
-			factory.setTargetName("git");
-			Properties properties = new Properties();
-			if (this.gitProperties.exists()) {
-				properties = PropertiesLoaderUtils.loadProperties(this.gitProperties);
-			}
-			factory.setProperties(properties);
-			return factory.getObject();
-		}
-
-		public Map<String, Object> infoMap() throws Exception {
-			PropertiesConfigurationFactory<Map<String, Object>> factory = new PropertiesConfigurationFactory<Map<String, Object>>(
-					new LinkedHashMap<String, Object>());
-			factory.setTargetName("info");
-			factory.setPropertySources(this.environment.getPropertySources());
-			return factory.getObject();
-		}
-
-	}
-
-	public static class GitInfo {
-
-		private String branch;
-
-		private final Commit commit = new Commit();
-
-		public String getBranch() {
-			return this.branch;
-		}
-
-		public void setBranch(String branch) {
-			this.branch = branch;
-		}
-
-		public Commit getCommit() {
-			return this.commit;
-		}
-
-		public static class Commit {
-
-			private String id;
-
-			private String time;
-
-			public String getId() {
-				return this.id == null ? "" : (this.id.length() > 7 ? this.id.substring(
-						0, 7) : this.id);
-			}
-
-			public void setId(String id) {
-				this.id = id;
-			}
-
-			public String getTime() {
-				return this.time;
-			}
-
-			public void setTime(String time) {
-				this.time = time;
-			}
-
-		}
-
-	}
-
 }

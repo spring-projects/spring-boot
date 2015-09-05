@@ -16,21 +16,24 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collections;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
+import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.info.Info;
+import org.springframework.boot.actuate.info.InfoProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link InfoEndpoint}.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Meang Akira Tanaka
  */
 public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
@@ -40,7 +43,8 @@ public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) "b"));
+		Info actual = ((Info) getEndpointBean().invoke().get("environment"));
+		assertThat(actual.get("key1"), equalTo((Object) "value1"));
 	}
 
 	@Configuration
@@ -48,9 +52,28 @@ public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 	public static class Config {
 
 		@Bean
-		public InfoEndpoint endpoint() {
-			return new InfoEndpoint(Collections.singletonMap("a", "b"));
+		public InfoProvider infoProvider() {
+			return new InfoProvider() {
+
+				@Override
+				public String name() {
+					return "environment";
+				}
+
+				@Override
+				public Info provide() {
+					Info result = new Info();
+					result.put("key1", "value1");
+					
+					return result;
+				}
+
+			};
 		}
 
+		@Bean
+		public InfoEndpoint endpoint(Map<String, InfoProvider> infoProviders) {
+			return new InfoEndpoint(infoProviders);
+		}
 	}
 }
