@@ -188,6 +188,8 @@ public class DataSourceAutoConfiguration {
 		/**
 		 * Returns the class loader for the {@link DataSource} class. Used to ensure that
 		 * the driver class can actually be loaded by the data source.
+		 * @param context the condition context
+		 * @return the class loader
 		 */
 		private ClassLoader getDataSourceClassLoader(ConditionContext context) {
 			Class<?> dataSourceClass = new DataSourceBuilder(context.getClassLoader())
@@ -222,7 +224,7 @@ public class DataSourceAutoConfiguration {
 
 	/**
 	 * {@link Condition} to detect when a {@link DataSource} is available (either because
-	 * the user provided one or because one will be auto-configured)
+	 * the user provided one or because one will be auto-configured).
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	static class DataSourceAvailableCondition extends SpringBootCondition {

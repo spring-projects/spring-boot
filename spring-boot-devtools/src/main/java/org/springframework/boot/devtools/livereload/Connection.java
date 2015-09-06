@@ -31,6 +31,8 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * A {@link LiveReloadServer} connection.
+ *
+ * @author Phillip Webb
  */
 class Connection {
 
@@ -58,7 +60,7 @@ class Connection {
 	 * @param socket the source socket
 	 * @param inputStream the socket input stream
 	 * @param outputStream the socket output stream
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	Connection(Socket socket, InputStream inputStream, OutputStream outputStream)
 			throws IOException {
@@ -71,7 +73,7 @@ class Connection {
 
 	/**
 	 * Run the connection.
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	public void run() throws Exception {
 		if (this.header.contains("Upgrade: websocket")
@@ -126,7 +128,7 @@ class Connection {
 
 	/**
 	 * Trigger livereload for the client using this connection.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void triggerReload() throws IOException {
 		if (this.webSocket) {
@@ -152,7 +154,7 @@ class Connection {
 
 	/**
 	 * Close the connection.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void close() throws IOException {
 		this.running = false;

@@ -380,7 +380,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Create a configuration object that adds error handlers
+	 * Create a configuration object that adds error handlers.
 	 * @return a configuration object for adding error pages
 	 */
 	private Configuration getErrorPageConfiguration() {
@@ -394,7 +394,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Create a configuration object that adds mime type mappings
+	 * Create a configuration object that adds mime type mappings.
 	 * @return a configuration object for adding mime type mappings
 	 */
 	private Configuration getMimeTypeConfiguration() {

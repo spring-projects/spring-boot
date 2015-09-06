@@ -40,7 +40,7 @@ class ConnectionInputStream extends FilterInputStream {
 	 * any HTTP content after the header since the initial request is usually just a
 	 * WebSocket upgrade.
 	 * @return the HTTP header
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public String readHeader() throws IOException {
 		byte[] buffer = new byte[BUFFER_SIZE];
@@ -58,7 +58,7 @@ class ConnectionInputStream extends FilterInputStream {
 	 * @param buffer the destination buffer
 	 * @param offset the buffer offset
 	 * @param length the amount of data to read
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void readFully(byte[] buffer, int offset, int length) throws IOException {
 		while (length > 0) {
@@ -72,7 +72,7 @@ class ConnectionInputStream extends FilterInputStream {
 	 * Read a single byte from the stream (checking that the end of the stream hasn't been
 	 * reached.
 	 * @return the content
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public int checkedRead() throws IOException {
 		int b = read();
@@ -84,12 +84,12 @@ class ConnectionInputStream extends FilterInputStream {
 
 	/**
 	 * Read a number of bytes from the stream (checking that the end of the stream hasn't
-	 * been reached)
+	 * been reached).
 	 * @param buffer the destination buffer
 	 * @param offset the buffer offset
 	 * @param length the length to read
 	 * @return the amount of data read
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public int checkedRead(byte[] buffer, int offset, int length) throws IOException {
 		int amountRead = read(buffer, offset, length);

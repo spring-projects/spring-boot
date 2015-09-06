@@ -42,7 +42,7 @@ class AnsiString {
 	}
 
 	/**
-	 * Append text with the given ANSI codes
+	 * Append text with the given ANSI codes.
 	 * @param text the text to append
 	 * @param codes the ANSI codes
 	 * @return this string

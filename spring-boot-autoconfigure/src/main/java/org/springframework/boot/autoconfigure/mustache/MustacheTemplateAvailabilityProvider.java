@@ -23,7 +23,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for
- * Mustache view templates
+ * Mustache view templates.
  *
  * @author Dave Syer
  * @since 1.2.2

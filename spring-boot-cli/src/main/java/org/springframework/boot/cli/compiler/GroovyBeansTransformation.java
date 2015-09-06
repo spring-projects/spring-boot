@@ -42,6 +42,9 @@ import org.springframework.core.annotation.Order;
 @Order(GroovyBeansTransformation.ORDER)
 public class GroovyBeansTransformation implements ASTTransformation {
 
+	/**
+	 * The order of the transformation.
+	 */
 	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 200;
 
 	@Override

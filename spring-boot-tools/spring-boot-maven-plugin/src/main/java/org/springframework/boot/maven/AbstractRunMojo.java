@@ -217,8 +217,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Run with a forked VM, using the specified command line arguments.
 	 * @param args the arguments (JVM arguments and application arguments)
-	 * @throws MojoExecutionException
-	 * @throws MojoFailureException
+	 * @throws MojoExecutionException in case of MOJO execution errors
+	 * @throws MojoFailureException in case of MOJO failures
 	 */
 	protected abstract void runWithForkedJvm(List<String> args)
 			throws MojoExecutionException, MojoFailureException;
@@ -227,8 +227,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * Run with the current VM, using the specified arguments.
 	 * @param startClassName the class to run
 	 * @param arguments the class arguments
-	 * @throws MojoExecutionException
-	 * @throws MojoFailureException
+	 * @throws MojoExecutionException in case of MOJO execution errors
+	 * @throws MojoFailureException in case of MOJO failures
 	 */
 	protected abstract void runWithMavenJvm(String startClassName, String... arguments)
 			throws MojoExecutionException, MojoFailureException;

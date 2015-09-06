@@ -96,6 +96,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
+	/**
+	 * The class name of default protocol used.
+	 */
 	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 
 	private File baseDirectory;
@@ -628,7 +631,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * Returns a mutable collection of the {@link Connector}s that will be added to the
-	 * Tomcat
+	 * Tomcat.
 	 * @return the additionalTomcatConnectors
 	 */
 	public List<Connector> getAdditionalTomcatConnectors() {

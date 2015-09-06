@@ -59,7 +59,7 @@ public interface GroovyCompilerConfiguration {
 	boolean isAutoconfigure();
 
 	/**
-	 * Returns the classpath for local resources
+	 * Returns the classpath for local resources.
 	 * @return a path for local resources
 	 */
 	String[] getClasspath();

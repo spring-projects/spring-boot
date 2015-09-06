@@ -62,7 +62,7 @@ public abstract class AutoConfigurationPackages {
 	}
 
 	/**
-	 * Return the auto-configuration base packages for the given bean factory
+	 * Return the auto-configuration base packages for the given bean factory.
 	 * @param beanFactory the source bean factory
 	 * @return a list of auto-configuration packages
 	 * @throws IllegalStateException if auto-configuration is not enabled

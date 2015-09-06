@@ -144,9 +144,17 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  */
 public class SpringApplication {
 
-	private static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
+	/**
+	 * The class name of application context that will be used by default for non-web
+	 * environments.
+	 */
+	public static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
 			+ "annotation.AnnotationConfigApplicationContext";
 
+	/**
+	 * The class name of application context that will be used by default for web
+	 * environments.
+	 */
 	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework."
 			+ "boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
 
@@ -293,11 +301,6 @@ public class SpringApplication {
 		}
 	}
 
-	/**
-	 * @param listeners
-	 * @param args
-	 * @return
-	 */
 	private ConfigurableApplicationContext doRun(SpringApplicationRunListeners listeners,
 			String... args) {
 		ConfigurableApplicationContext context;
@@ -633,6 +636,7 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Get the bean definition registry.
 	 * @param context the application context
 	 * @return the BeanDefinitionRegistry if it can be determined
 	 */

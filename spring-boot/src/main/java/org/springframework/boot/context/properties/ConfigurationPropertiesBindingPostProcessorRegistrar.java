@@ -31,6 +31,9 @@ import org.springframework.core.type.AnnotationMetadata;
 public class ConfigurationPropertiesBindingPostProcessorRegistrar implements
 		ImportBeanDefinitionRegistrar {
 
+	/**
+	 * The bean name of the {@link ConfigurationPropertiesBindingPostProcessor}.
+	 */
 	public static final String BINDER_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class
 			.getName();
 

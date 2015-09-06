@@ -69,22 +69,22 @@ enum DatabaseDriver {
 	GOOGLE("com.google.appengine.api.rdbms.AppEngineDriver"),
 
 	/**
-	 * Oracle
+	 * Oracle.
 	 */
 	ORACLE("oracle.jdbc.OracleDriver", "oracle.jdbc.xa.client.OracleXADataSource"),
 
 	/**
-	 * Postres
+	 * Postres.
 	 */
 	POSTGRESQL("org.postgresql.Driver", "org.postgresql.xa.PGXADataSource"),
 
 	/**
-	 * JTDS
+	 * JTDS.
 	 */
 	JTDS("net.sourceforge.jtds.jdbc.Driver"),
 
 	/**
-	 * SQL Server
+	 * SQL Server.
 	 */
 	SQLSERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver",
 			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
@@ -103,14 +103,16 @@ enum DatabaseDriver {
 	}
 
 	/**
-	 * @return the driverClassName or {@code null}
+	 * Return the driver class name.
+	 * @return the class name or {@code null}
 	 */
 	public String getDriverClassName() {
 		return this.driverClassName;
 	}
 
 	/**
-	 * @return the xaDataSourceClassName or {@code null}
+	 * Return the XA driver source class name.
+	 * @return the class name or {@code null}
 	 */
 	public String getXaDataSourceClassName() {
 		return this.xaDataSourceClassName;

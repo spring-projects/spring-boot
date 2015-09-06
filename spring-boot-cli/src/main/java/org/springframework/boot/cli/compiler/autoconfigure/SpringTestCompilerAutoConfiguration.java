@@ -32,7 +32,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import groovy.lang.GroovyClassLoader;
 
 /**
- * {@link CompilerAutoConfiguration} for Spring Test
+ * {@link CompilerAutoConfiguration} for Spring Test.
  *
  * @author Dave Syer
  * @since 1.1.0

@@ -25,7 +25,7 @@ import org.apache.activemq.artemis.core.remoting.impl.invm.TransportConstants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for Artemis
+ * Configuration properties for Artemis.
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll

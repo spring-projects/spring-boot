@@ -62,7 +62,7 @@ public class ErrorPage {
 	}
 
 	/**
-	 * Returns the exception type (or {@code null} for a page that matches by status)
+	 * Returns the exception type (or {@code null} for a page that matches by status).
 	 * @return the exception type or {@code null}
 	 */
 	public Class<? extends Throwable> getException() {
@@ -95,8 +95,9 @@ public class ErrorPage {
 	}
 
 	/**
-	 * @return is this error page a global one (matches all unmatched status and exception
-	 * types)
+	 * Return if this error page is a global one (matches all unmatched status and
+	 * exception types).
+	 * @return if this is a global error page
 	 */
 	public boolean isGlobal() {
 		return (this.status == null && this.exception == null);

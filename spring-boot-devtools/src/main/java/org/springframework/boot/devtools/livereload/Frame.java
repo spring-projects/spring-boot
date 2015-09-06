@@ -107,6 +107,9 @@ class Frame {
 		return new Frame(Type.forCode(firstByte & 0x0F), payload);
 	}
 
+	/**
+	 * Frame types.
+	 */
 	public enum Type {
 
 		/**

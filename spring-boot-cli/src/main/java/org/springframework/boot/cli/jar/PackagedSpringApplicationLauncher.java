@@ -32,8 +32,14 @@ import org.springframework.boot.cli.app.SpringApplicationLauncher;
  */
 public final class PackagedSpringApplicationLauncher {
 
+	/**
+	 * The entry containing the source class.
+	 */
 	public static final String SOURCE_ENTRY = "Spring-Application-Source-Classes";
 
+	/**
+	 * The entry containing the start class.
+	 */
 	public static final String START_CLASS_ENTRY = "Start-Class";
 
 	private PackagedSpringApplicationLauncher() {

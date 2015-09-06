@@ -51,7 +51,7 @@ class CentralDirectoryEndRecord {
 	 * {@link RandomAccessData}, searching backwards from the end until a valid block is
 	 * located.
 	 * @param data the source data
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	CentralDirectoryEndRecord(RandomAccessData data) throws IOException {
 		this.block = createBlockFromEndOfData(data, READ_BLOCK_SIZE);

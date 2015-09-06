@@ -46,7 +46,7 @@ public class LiquibaseServiceLocatorApplicationListener implements
 	}
 
 	/**
-	 * Inner class to prevent class not found issues
+	 * Inner class to prevent class not found issues.
 	 */
 	private static class LiquibasePresent {
 

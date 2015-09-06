@@ -256,7 +256,7 @@ public class Restarter {
 	/**
 	 * Start the application.
 	 * @param failureHandler a failure handler for application that won't start
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected void start(FailureHandler failureHandler) throws Exception {
 		do {
@@ -292,7 +292,7 @@ public class Restarter {
 	 * Relaunch the application using the specified classloader.
 	 * @param classLoader the classloader to use
 	 * @return any exception that caused the launch to fail or {@code null}
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
@@ -304,7 +304,7 @@ public class Restarter {
 
 	/**
 	 * Stop the application.
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	protected void stop() throws Exception {
 		this.logger.debug("Stopping application");

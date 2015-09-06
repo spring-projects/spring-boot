@@ -134,6 +134,9 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 		getSessionFile(deploymentName).delete();
 	}
 
+	/**
+	 * Session data in a serializable form.
+	 */
 	static class SerializablePersistentSession implements Serializable {
 
 		private static final long serialVersionUID = 0L;

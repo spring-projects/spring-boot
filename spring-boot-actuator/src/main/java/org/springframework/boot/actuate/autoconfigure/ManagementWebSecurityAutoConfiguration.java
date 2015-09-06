@@ -185,7 +185,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	}
 
 	/**
-	 * WebSecurityEnabler condition
+	 * WebSecurityEnabler condition.
 	 */
 	static class WebSecurityEnablerCondition extends SpringBootCondition {
 

@@ -97,8 +97,19 @@ public class SimpleInMemoryRepository<T> {
 		return this.values;
 	}
 
+	/**
+	 * Callback used to update a value.
+	 * @param <T> the value type
+	 */
 	public interface Callback<T> {
+
+		/**
+		 * Modify an existing value.
+		 * @param current the value to modify
+		 * @return the updated value
+		 */
 		T modify(T current);
+
 	}
 
 }

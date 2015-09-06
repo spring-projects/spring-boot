@@ -75,6 +75,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
 		InitializingBean, DisposableBean, PriorityOrdered {
 
+	/**
+	 * The bean name of the configuration properties validator.
+	 */
 	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
@@ -116,13 +119,15 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	/**
-	 * @param order the order to set
+	 * Set the order of the bean.
+	 * @param order the order
 	 */
 	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
+	 * Return the order of the bean.
 	 * @return the order
 	 */
 	@Override

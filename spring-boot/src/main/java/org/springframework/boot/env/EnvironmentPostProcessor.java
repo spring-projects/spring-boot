@@ -30,7 +30,7 @@ import org.springframework.core.env.Environment;
 public interface EnvironmentPostProcessor {
 
 	/**
-	 * Post-process the given {@code environment}
+	 * Post-process the given {@code environment}.
 	 * @param environment the environment to post-process
 	 * @param application the application to which the environment belongs
 	 */

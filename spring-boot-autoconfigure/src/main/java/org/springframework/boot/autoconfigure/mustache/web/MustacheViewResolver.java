@@ -55,14 +55,16 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	/**
-	 * @param compiler the compiler to set
+	 * Set the compiler.
+	 * @param compiler the compiler
 	 */
 	public void setCompiler(Compiler compiler) {
 		this.compiler = compiler;
 	}
 
 	/**
-	 * @param charset the charset to set
+	 * Set the charset.
+	 * @param charset the charset
 	 */
 	public void setCharset(String charset) {
 		this.charset = charset;

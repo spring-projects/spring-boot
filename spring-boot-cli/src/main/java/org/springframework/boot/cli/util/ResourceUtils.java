@@ -43,17 +43,17 @@ import org.springframework.util.StringUtils;
 public abstract class ResourceUtils {
 
 	/**
-	 * Pseudo URL prefix for loading from the class path: "classpath:"
+	 * Pseudo URL prefix for loading from the class path: "classpath:".
 	 */
 	public static final String CLASSPATH_URL_PREFIX = "classpath:";
 
 	/**
-	 * Pseudo URL prefix for loading all resources from the class path: "classpath*:"
+	 * Pseudo URL prefix for loading all resources from the class path: "classpath*:".
 	 */
 	public static final String ALL_CLASSPATH_URL_PREFIX = "classpath*:";
 
 	/**
-	 * URL prefix for loading from the file system: "file:"
+	 * URL prefix for loading from the file system: "file:".
 	 */
 	public static final String FILE_URL_PREFIX = "file:";
 

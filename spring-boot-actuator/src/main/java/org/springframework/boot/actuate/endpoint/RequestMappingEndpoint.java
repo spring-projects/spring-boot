@@ -58,14 +58,16 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 	}
 
 	/**
-	 * @param handlerMappings the mappings to set
+	 * Set the handler mappings.
+	 * @param handlerMappings the handler mappings
 	 */
 	public void setHandlerMappings(List<AbstractUrlHandlerMapping> handlerMappings) {
 		this.handlerMappings = handlerMappings;
 	}
 
 	/**
-	 * @param methodMappings the method mappings to set
+	 * Set the method mappings.
+	 * @param methodMappings the method mappings
 	 */
 	public void setMethodMappings(List<AbstractHandlerMethodMapping<?>> methodMappings) {
 		this.methodMappings = methodMappings;

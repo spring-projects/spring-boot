@@ -74,10 +74,9 @@ public class EndpointMvcAdapter implements MvcEndpoint {
 
 	/**
 	 * Returns the response that should be returned when the endpoint is disabled.
-	 *
-	 * @see Endpoint#isEnabled()
-	 * @since 1.2.4
 	 * @return The response to be returned when the endpoint is disabled
+	 * @since 1.2.4
+	 * @see Endpoint#isEnabled()
 	 */
 	protected ResponseEntity<?> getDisabledResponse() {
 		return MvcEndpoint.DISABLED_RESPONSE;

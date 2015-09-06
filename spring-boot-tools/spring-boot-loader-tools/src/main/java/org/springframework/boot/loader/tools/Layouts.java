@@ -151,7 +151,7 @@ public final class Layouts {
 	}
 
 	/**
-	 * Module layout (designed to be used as a "plug-in")
+	 * Module layout (designed to be used as a "plug-in").
 	 */
 	public static class Module implements Layout {
 

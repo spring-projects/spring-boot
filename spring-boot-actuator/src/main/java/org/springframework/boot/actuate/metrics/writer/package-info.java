@@ -15,7 +15,7 @@
  */
 
 /**
- * Support for writing metrics
+ * Support for writing metrics.
  */
 package org.springframework.boot.actuate.metrics.writer;
 

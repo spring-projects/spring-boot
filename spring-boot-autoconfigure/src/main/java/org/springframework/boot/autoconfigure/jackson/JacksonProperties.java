@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
- * Configuration properties to configure Jackson
+ * Configuration properties to configure Jackson.
  *
  * @author Andy Wilkinson
  * @author Marcel Overdijk

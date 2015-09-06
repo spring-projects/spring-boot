@@ -185,6 +185,9 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 
 	}
 
+	/**
+	 * Known database products.
+	 */
 	protected enum Product {
 
 		HSQLDB("HSQL Database Engine",

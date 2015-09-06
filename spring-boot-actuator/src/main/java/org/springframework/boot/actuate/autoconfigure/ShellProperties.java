@@ -221,7 +221,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * SSH properties
+	 * SSH properties.
 	 */
 	public static class Ssh extends CrshShellProperties {
 
@@ -279,7 +279,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Telnet properties
+	 * Telnet properties.
 	 */
 	public static class Telnet extends CrshShellProperties {
 
@@ -322,7 +322,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Auth specific properties for JAAS authentication
+	 * Auth specific properties for JAAS authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.jaas", ignoreUnknownFields = false)
 	public static class JaasAuthenticationProperties extends
@@ -351,7 +351,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Auth specific properties for key authentication
+	 * Auth specific properties for key authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.key", ignoreUnknownFields = false)
 	public static class KeyAuthenticationProperties extends
@@ -382,7 +382,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Auth specific properties for simple authentication
+	 * Auth specific properties for simple authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.simple", ignoreUnknownFields = false)
 	public static class SimpleAuthenticationProperties extends
@@ -457,7 +457,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Auth specific properties for Spring authentication
+	 * Auth specific properties for Spring authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.spring", ignoreUnknownFields = false)
 	public static class SpringAuthenticationProperties extends

@@ -19,7 +19,7 @@ package org.springframework.boot.cli.compiler.dependencies;
 import java.util.List;
 
 /**
- * An encapsulation of dependency management information
+ * An encapsulation of dependency management information.
  *
  * @author Andy Wilkinson
  * @since 1.3.0

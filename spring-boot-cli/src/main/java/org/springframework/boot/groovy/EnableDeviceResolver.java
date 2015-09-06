@@ -26,6 +26,8 @@ import org.springframework.boot.cli.compiler.autoconfigure.SpringMobileCompilerA
 
 /**
  * Pseudo annotation used to trigger {@link SpringMobileCompilerAutoConfiguration}.
+ *
+ * @author Phillip Webb
  */
 @Target(ElementType.TYPE)
 @Documented

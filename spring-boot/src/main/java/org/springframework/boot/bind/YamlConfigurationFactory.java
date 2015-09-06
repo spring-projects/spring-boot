@@ -80,7 +80,8 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 	}
 
 	/**
-	 * @param messageSource the messageSource to set
+	 * Set the message source.
+	 * @param messageSource the message source
 	 */
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
@@ -88,28 +89,32 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 	}
 
 	/**
-	 * @param propertyAliases the propertyAliases to set
+	 * Set the property aliases.
+	 * @param propertyAliases the property aliases
 	 */
 	public void setPropertyAliases(Map<Class<?>, Map<String, String>> propertyAliases) {
 		this.propertyAliases = new HashMap<Class<?>, Map<String, String>>(propertyAliases);
 	}
 
 	/**
-	 * @param yaml the yaml to set
+	 * Set the YAML.
+	 * @param yaml the YAML
 	 */
 	public void setYaml(String yaml) {
 		this.yaml = yaml;
 	}
 
 	/**
-	 * @param resource the resource to set
+	 * Set the resource.
+	 * @param resource the resource
 	 */
 	public void setResource(Resource resource) {
 		this.resource = resource;
 	}
 
 	/**
-	 * @param validator the validator to set
+	 * Set the validator.
+	 * @param validator the validator
 	 */
 	public void setValidator(Validator validator) {
 		this.validator = validator;

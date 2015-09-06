@@ -197,6 +197,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	/**
 	 * Returns the {@link ServletContextInitializer} that will be used to complete the
 	 * setup of this {@link WebApplicationContext}.
+	 * @return the self initializer
 	 * @see #prepareEmbeddedWebApplicationContext(ServletContext)
 	 */
 	private ServletContextInitializer getSelfInitializer() {

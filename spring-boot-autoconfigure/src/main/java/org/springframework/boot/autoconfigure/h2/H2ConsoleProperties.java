@@ -22,7 +22,7 @@ import javax.validation.constraints.Pattern;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for H2's console
+ * Configuration properties for H2's console.
  *
  * @author Andy Wilkinson
  * @since 1.3.0

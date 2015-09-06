@@ -32,7 +32,7 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import joptsimple.OptionSet;
 
 /**
- * {@link Command} to grab the dependencies of one or more Groovy scripts
+ * {@link Command} to grab the dependencies of one or more Groovy scripts.
  *
  * @author Andy Wilkinson
  */

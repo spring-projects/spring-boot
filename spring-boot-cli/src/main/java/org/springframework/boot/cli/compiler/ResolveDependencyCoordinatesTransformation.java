@@ -41,6 +41,9 @@ import groovy.lang.Grab;
 public class ResolveDependencyCoordinatesTransformation extends
 		AnnotatedNodeASTTransformation {
 
+	/**
+	 * The order of the transformation.
+	 */
 	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 300;
 
 	private static final Set<String> GRAB_ANNOTATION_NAMES = Collections

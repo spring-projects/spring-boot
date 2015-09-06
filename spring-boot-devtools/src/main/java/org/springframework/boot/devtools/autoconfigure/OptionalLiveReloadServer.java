@@ -45,7 +45,7 @@ public class OptionalLiveReloadServer {
 
 	/**
 	 * {@link PostConstruct} method to start the server if possible.
-	 * @throws Exception
+	 * @throws Exception in case of errors
 	 */
 	@PostConstruct
 	public void startServer() throws Exception {

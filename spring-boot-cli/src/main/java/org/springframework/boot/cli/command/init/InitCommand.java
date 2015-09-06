@@ -69,6 +69,9 @@ public class InitCommand extends OptionParsingCommand {
 		return examples;
 	}
 
+	/**
+	 * {@link OptionHandler} for {@link InitCommand}.
+	 */
 	static class InitOptionHandler extends OptionHandler {
 
 		private final ServiceCapabilitiesReportGenerator serviceCapabilitiesReport;

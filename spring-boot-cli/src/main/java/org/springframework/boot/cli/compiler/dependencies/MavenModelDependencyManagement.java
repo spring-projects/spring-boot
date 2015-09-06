@@ -25,7 +25,7 @@ import org.apache.maven.model.Model;
 import org.springframework.boot.cli.compiler.dependencies.Dependency.Exclusion;
 
 /**
- * {@link DependencyManagement} derived from a Maven {@link Model}
+ * {@link DependencyManagement} derived from a Maven {@link Model}.
  *
  * @author Andy Wilkinson
  * @since 1.3.0

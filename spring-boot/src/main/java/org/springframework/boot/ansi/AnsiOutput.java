@@ -164,12 +164,12 @@ public abstract class AnsiOutput {
 		DETECT,
 
 		/**
-		 * Enable ANSI-colored output
+		 * Enable ANSI-colored output.
 		 */
 		ALWAYS,
 
 		/**
-		 * Disable ANSI-colored output
+		 * Disable ANSI-colored output.
 		 */
 		NEVER
 

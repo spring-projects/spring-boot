@@ -60,7 +60,7 @@ public class DependencyCustomizer {
 
 	/**
 	 * Create a new nested {@link DependencyCustomizer}.
-	 * @param parent
+	 * @param parent the parent customizer
 	 */
 	protected DependencyCustomizer(DependencyCustomizer parent) {
 		this.loader = parent.loader;

@@ -15,7 +15,7 @@
  */
 
 /**
- * Support for classpath monitoring
+ * Support for classpath monitoring.
  */
 package org.springframework.boot.devtools.classpath;
 

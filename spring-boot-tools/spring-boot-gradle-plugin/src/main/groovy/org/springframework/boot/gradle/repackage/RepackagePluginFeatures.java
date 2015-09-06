@@ -45,6 +45,9 @@ import org.springframework.util.StringUtils;
  */
 public class RepackagePluginFeatures implements PluginFeatures {
 
+	/**
+	 * The name of the repackage task.
+	 */
 	public static final String REPACKAGE_TASK_NAME = "bootRepackage";
 
 	@Override
@@ -97,6 +100,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 
 	/**
 	 * Register BootRepackage so that we can use task {@code foo(type: BootRepackage)}.
+	 * @param project the source project
 	 */
 	private void registerRepackageTaskProperty(Project project) {
 		project.getExtensions().getExtraProperties()
@@ -104,7 +108,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 	}
 
 	/**
-	 * Register task input/outputs when classifiers are used
+	 * Register task input/outputs when classifiers are used.
 	 */
 	private static class RegisterInputsOutputsAction implements Action<Jar> {
 

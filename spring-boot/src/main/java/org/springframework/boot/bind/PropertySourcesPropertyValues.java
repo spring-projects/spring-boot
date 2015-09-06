@@ -50,7 +50,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	private final PropertyNamePatternsMatcher includes;
 
 	/**
-	 * Create a new PropertyValues from the given PropertySources
+	 * Create a new PropertyValues from the given PropertySources.
 	 * @param propertySources a PropertySources instance
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
@@ -58,7 +58,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	}
 
 	/**
-	 * Create a new PropertyValues from the given PropertySources
+	 * Create a new PropertyValues from the given PropertySources.
 	 * @param propertySources a PropertySources instance
 	 * @param includePatterns property name patterns to include from system properties and
 	 * environment variables
@@ -72,7 +72,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	}
 
 	/**
-	 * Create a new PropertyValues from the given PropertySources
+	 * Create a new PropertyValues from the given PropertySources.
 	 * @param propertySources a PropertySources instance
 	 * @param propertyNames the property names to use in lieu of an
 	 * {@link EnumerablePropertySource}.

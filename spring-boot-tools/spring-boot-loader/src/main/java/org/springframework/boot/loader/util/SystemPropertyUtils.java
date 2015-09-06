@@ -38,17 +38,17 @@ import java.util.Set;
 public abstract class SystemPropertyUtils {
 
 	/**
-	 * Prefix for system property placeholders: "${"
+	 * Prefix for system property placeholders: "${".
 	 */
 	public static final String PLACEHOLDER_PREFIX = "${";
 
 	/**
-	 * Suffix for system property placeholders: "}"
+	 * Suffix for system property placeholders: "}".
 	 */
 	public static final String PLACEHOLDER_SUFFIX = "}";
 
 	/**
-	 * Value separator for system property placeholders: ":"
+	 * Value separator for system property placeholders: ":".
 	 */
 	public static final String VALUE_SEPARATOR = ":";
 
@@ -59,9 +59,9 @@ public abstract class SystemPropertyUtils {
 	 * system property values.
 	 * @param text the String to resolve
 	 * @return the resolved String
+	 * @throws IllegalArgumentException if there is an unresolvable placeholder
 	 * @see #PLACEHOLDER_PREFIX
 	 * @see #PLACEHOLDER_SUFFIX
-	 * @throws IllegalArgumentException if there is an unresolvable placeholder
 	 */
 	public static String resolvePlaceholders(String text) {
 		if (text == null) {
@@ -76,9 +76,9 @@ public abstract class SystemPropertyUtils {
 	 * @param properties a properties instance to use in addition to System
 	 * @param text the String to resolve
 	 * @return the resolved String
+	 * @throws IllegalArgumentException if there is an unresolvable placeholder
 	 * @see #PLACEHOLDER_PREFIX
 	 * @see #PLACEHOLDER_SUFFIX
-	 * @throws IllegalArgumentException if there is an unresolvable placeholder
 	 */
 	public static String resolvePlaceholders(Properties properties, String text) {
 		if (text == null) {

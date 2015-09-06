@@ -183,7 +183,7 @@ public class MongoProperties {
 	}
 
 	/**
-	 * Creates a {@link MongoClient} using the given {@code options}
+	 * Creates a {@link MongoClient} using the given {@code options}.
 	 *
 	 * @param options the options
 	 * @return the Mongo client

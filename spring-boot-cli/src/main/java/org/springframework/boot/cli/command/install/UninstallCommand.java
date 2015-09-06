@@ -28,7 +28,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 /**
- * {@link Command} to uninstall dependencies from the CLI's lib directory
+ * {@link Command} to uninstall dependencies from the CLI's lib directory.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

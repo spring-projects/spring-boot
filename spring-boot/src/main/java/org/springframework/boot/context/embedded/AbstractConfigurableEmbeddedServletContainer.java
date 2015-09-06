@@ -156,7 +156,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * @return the address the embedded container binds to
+	 * Return the address that the embedded container binds to.
+	 * @return the address
 	 */
 	public InetAddress getAddress() {
 		return this.address;
@@ -174,7 +175,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	}
 
 	/**
-	 * @return the session timeout in seconds
+	 * Return the session timeout in seconds.
+	 * @return the timeout in seconds
 	 */
 	public int getSessionTimeout() {
 		return this.sessionTimeout;

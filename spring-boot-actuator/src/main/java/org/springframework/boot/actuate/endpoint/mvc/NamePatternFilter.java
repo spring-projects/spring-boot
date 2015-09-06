@@ -26,9 +26,9 @@ import java.util.regex.Pattern;
  * must provide implementations of {@link #getValue(Object, String)} and
  * {@link #getNames(Object, NameCallback)}.
  *
+ * @param <T> The source data type
  * @author Phillip Webb
  * @author Sergei Egorov
- * @param <T> The source data type
  * @since 1.3.0
  */
 abstract class NamePatternFilter<T> {
@@ -66,12 +66,18 @@ abstract class NamePatternFilter<T> {
 
 	protected abstract Object getValue(T source, String name);
 
+	/**
+	 * Callback used to add a name.
+	 */
 	protected interface NameCallback {
 
 		void addName(String name);
 
 	}
 
+	/**
+	 * {@link NameCallback} implementation to collect results.
+	 */
 	private class ResultCollectingNameCallback implements NameCallback {
 
 		private final Pattern pattern;

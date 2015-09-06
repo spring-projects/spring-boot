@@ -72,7 +72,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 	/**
 	 * Start the client and accept incoming connections on the port.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public synchronized void start() throws IOException {
 		Assert.state(this.serverThread == null, "Server already started");
@@ -85,7 +85,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 	/**
 	 * Stop the client, disconnecting any servers.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public synchronized void stop() throws IOException {
 		if (this.serverThread != null) {

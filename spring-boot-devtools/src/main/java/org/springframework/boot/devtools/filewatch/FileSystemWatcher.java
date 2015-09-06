@@ -35,8 +35,8 @@ import org.springframework.util.Assert;
  *
  * @author Andy Clement
  * @author Phillip Webb
- * @see FileChangeListener
  * @since 1.3.0
+ * @see FileChangeListener
  */
 public class FileSystemWatcher {
 

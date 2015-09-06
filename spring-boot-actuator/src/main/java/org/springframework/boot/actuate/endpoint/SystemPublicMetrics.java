@@ -76,6 +76,7 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	/**
 	 * Add metrics from ManagementFactory if possible. Note that ManagementFactory is not
 	 * available on Google App Engine.
+	 * @param result the result
 	 */
 	private void addManagementMetrics(Collection<Metric<?>> result) {
 		try {
@@ -153,6 +154,8 @@ public class SystemPublicMetrics implements PublicMetrics, Ordered {
 	/**
 	 * Turn GC names like 'PS Scavenge' or 'PS MarkSweep' into something that is more
 	 * metrics friendly.
+	 * @param name the source name
+	 * @return a metric friendly name
 	 */
 	private String beautifyGcName(String name) {
 		return StringUtils.replace(name, " ", "_").toLowerCase();

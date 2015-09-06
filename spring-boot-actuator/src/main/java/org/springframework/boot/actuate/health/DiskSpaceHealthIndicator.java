@@ -37,7 +37,7 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 	private final DiskSpaceHealthIndicatorProperties properties;
 
 	/**
-	 * Create a new {@code DiskSpaceHealthIndicator}
+	 * Create a new {@code DiskSpaceHealthIndicator}.
 	 * @param properties the disk space properties
 	 */
 	@Autowired

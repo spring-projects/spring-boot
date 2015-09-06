@@ -66,6 +66,7 @@ class RawConfigurationMetadata {
 
 	/**
 	 * Resolve the name of an item against this instance.
+	 * @param item the item to resolve
 	 * @see ConfigurationMetadataProperty#setName(String)
 	 */
 	private void resolveName(ConfigurationMetadataItem item) {

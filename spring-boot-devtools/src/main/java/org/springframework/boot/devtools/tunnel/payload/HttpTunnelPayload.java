@@ -75,7 +75,7 @@ public class HttpTunnelPayload {
 	/**
 	 * Assign this payload to the given {@link HttpOutputMessage}.
 	 * @param message the message to assign this payload to
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void assignTo(HttpOutputMessage message) throws IOException {
 		Assert.notNull(message, "Message must not be null");
@@ -93,7 +93,7 @@ public class HttpTunnelPayload {
 	/**
 	 * Write the content of this payload to the given target channel.
 	 * @param channel the channel to write to
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void writeTo(WritableByteChannel channel) throws IOException {
 		Assert.notNull(channel, "Channel must not be null");
@@ -107,7 +107,7 @@ public class HttpTunnelPayload {
 	 * is no payload.
 	 * @param message the HTTP message
 	 * @return the payload or {@code null}
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public static HttpTunnelPayload get(HttpInputMessage message) throws IOException {
 		long length = message.getHeaders().getContentLength();
@@ -131,7 +131,7 @@ public class HttpTunnelPayload {
 	 * the channel timed out whilst reading.
 	 * @param channel the source channel
 	 * @return payload data or {@code null}
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public static ByteBuffer getPayloadData(ReadableByteChannel channel)
 			throws IOException {

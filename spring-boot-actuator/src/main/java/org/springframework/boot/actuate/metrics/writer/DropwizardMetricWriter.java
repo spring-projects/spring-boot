@@ -32,7 +32,7 @@ import com.codahale.metrics.Timer;
 
 /**
  * A {@link MetricWriter} that send data to a Dropwizard {@link MetricRegistry} based on a
- * naming convention:
+ * naming convention.
  *
  * <ul>
  * <li>Updates to {@link #increment(Delta)} with names in "meter.*" are treated as

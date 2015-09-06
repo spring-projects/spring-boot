@@ -88,7 +88,7 @@ public final class ConditionEvaluationReport {
 	}
 
 	/**
-	 * Records the name of the classes that have been excluded from condition evaluation
+	 * Records the name of the classes that have been excluded from condition evaluation.
 	 * @param exclusions the names of the excluded classes
 	 */
 	public void recordExclusions(Collection<String> exclusions) {
@@ -97,7 +97,7 @@ public final class ConditionEvaluationReport {
 	}
 
 	/**
-	 * Records the names of the classes that are candidates for condition evaluation
+	 * Records the names of the classes that are candidates for condition evaluation.
 	 * @param evaluationCandidates the names of the classes whose conditions will be
 	 * evaluated
 	 */

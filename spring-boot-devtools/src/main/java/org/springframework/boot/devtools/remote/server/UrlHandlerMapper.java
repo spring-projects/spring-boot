@@ -20,7 +20,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.util.Assert;
 
 /**
- * {@link HandlerMapper} implementation that maps incoming URLs
+ * {@link HandlerMapper} implementation that maps incoming URLs.
  *
  * @author Rob Winch
  * @author Phillip Webb

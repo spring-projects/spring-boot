@@ -65,7 +65,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 /**
- * {@link Command} to create a self-contained executable jar file from a CLI application
+ * {@link Command} to create a self-contained executable jar file from a CLI application.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb

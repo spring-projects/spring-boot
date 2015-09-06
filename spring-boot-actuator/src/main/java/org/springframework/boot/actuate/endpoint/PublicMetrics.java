@@ -29,7 +29,8 @@ import org.springframework.boot.actuate.metrics.Metric;
 public interface PublicMetrics {
 
 	/**
-	 * @return an indication of current state through metrics
+	 * Return an indication of current state through metrics.
+	 * @return the public metrics
 	 */
 	Collection<Metric<?>> metrics();
 

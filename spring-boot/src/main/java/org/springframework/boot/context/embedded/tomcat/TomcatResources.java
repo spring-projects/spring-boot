@@ -46,7 +46,7 @@ abstract class TomcatResources {
 	}
 
 	/**
-	 * Add resources from the classpath
+	 * Add resources from the classpath.
 	 */
 	public void addClasspathResources() {
 		ClassLoader loader = getClass().getClassLoader();

@@ -38,22 +38,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class Status {
 
 	/**
-	 * Convenient constant value representing unknown state
+	 * Convenient constant value representing unknown state.
 	 */
 	public static final Status UNKNOWN = new Status("UNKNOWN");
 
 	/**
-	 * Convenient constant value representing up state
+	 * Convenient constant value representing up state.
 	 */
 	public static final Status UP = new Status("UP");
 
 	/**
-	 * Convenient constant value representing down state
+	 * Convenient constant value representing down state.
 	 */
 	public static final Status DOWN = new Status("DOWN");
 
 	/**
-	 * Convenient constant value representing out-of-service state
+	 * Convenient constant value representing out-of-service state.
 	 */
 	public static final Status OUT_OF_SERVICE = new Status("OUT_OF_SERVICE");
 
@@ -82,7 +82,8 @@ public final class Status {
 	}
 
 	/**
-	 * @return the code for this status
+	 * Return the code for this status.
+	 * @return the code
 	 */
 	@JsonProperty("status")
 	public String getCode() {
@@ -90,7 +91,8 @@ public final class Status {
 	}
 
 	/**
-	 * @return the description of this status
+	 * Return the description of this status.
+	 * @return the description
 	 */
 	@JsonInclude(Include.NON_EMPTY)
 	public String getDescription() {

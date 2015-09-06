@@ -26,7 +26,7 @@ package org.springframework.boot.devtools.tunnel.server;
 public interface PortProvider {
 
 	/**
-	 * Return the port number
+	 * Return the port number.
 	 * @return the port number
 	 */
 	int getPort();

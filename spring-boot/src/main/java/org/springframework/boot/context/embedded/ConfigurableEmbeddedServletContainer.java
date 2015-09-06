@@ -171,7 +171,7 @@ public interface ConfigurableEmbeddedServletContainer {
 	void setSsl(Ssl ssl);
 
 	/**
-	 * Sets the configuration that will be applied to the container's JSP servlet
+	 * Sets the configuration that will be applied to the container's JSP servlet.
 	 * @param jspServlet the JSP servlet configuration
 	 */
 	void setJspServlet(JspServlet jspServlet);

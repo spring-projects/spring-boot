@@ -83,6 +83,8 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 	/**
 	 * Turns the bean name into a key that can be used in the map of health information.
+	 * @param name the bean name
+	 * @return the key
 	 */
 	private String getKey(String name) {
 		int index = name.toLowerCase().indexOf("healthindicator");

@@ -41,7 +41,8 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 	private final Properties data = new Properties();
 
 	/**
-	 * @return the data the properties being merged
+	 * Return the data the properties being merged.
+	 * @return the data
 	 */
 	public Properties getData() {
 		return this.data;

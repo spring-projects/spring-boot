@@ -27,7 +27,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link Condition} that checks for a required version of Java
+ * {@link Condition} that checks for a required version of Java.
  *
  * @author Oliver Gierke
  * @author Phillip Webb

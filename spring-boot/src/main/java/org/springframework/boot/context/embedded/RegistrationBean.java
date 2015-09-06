@@ -80,7 +80,8 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	}
 
 	/**
-	 * @return the enabled flag (default true)
+	 * Return if the registration is enabled.
+	 * @return if enabled (default {@code true})
 	 */
 	public boolean isEnabled() {
 		return this.enabled;
@@ -141,13 +142,15 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	}
 
 	/**
-	 * @param order the order to set
+	 * Set the order of the registration bean.
+	 * @param order the order
 	 */
 	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	/**
+	 * Get the order of the registration bean.
 	 * @return the order
 	 */
 	@Override

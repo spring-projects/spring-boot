@@ -27,7 +27,7 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.util.StringUtils;
 
 /**
- * Handler for {@link WebServlet}-annotated classes
+ * Handler for {@link WebServlet}-annotated classes.
  *
  * @author Andy Wilkinson
  */

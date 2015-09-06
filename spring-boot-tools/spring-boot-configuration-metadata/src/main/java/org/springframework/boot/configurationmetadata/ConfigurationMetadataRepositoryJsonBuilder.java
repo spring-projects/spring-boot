@@ -34,6 +34,9 @@ import org.json.JSONException;
  */
 public final class ConfigurationMetadataRepositoryJsonBuilder {
 
+	/**
+	 * UTF-8 Charset.
+	 */
 	public static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	private Charset defaultCharset = UTF_8;
@@ -54,7 +57,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	 * Leaves the stream open when done.
 	 * @param inputStream the source input stream
 	 * @return this builder
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public ConfigurationMetadataRepositoryJsonBuilder withJsonResource(
 			InputStream inputStream) throws IOException {
@@ -71,7 +74,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	 * @param inputstream the source input stream
 	 * @param charset the charset of the input
 	 * @return this builder
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public ConfigurationMetadataRepositoryJsonBuilder withJsonResource(
 			InputStream inputstream, Charset charset) throws IOException {

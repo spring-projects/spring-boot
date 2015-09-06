@@ -28,7 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Read standard json metadata format as {@link ConfigurationMetadataRepository}
+ * Read standard json metadata format as {@link ConfigurationMetadataRepository}.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

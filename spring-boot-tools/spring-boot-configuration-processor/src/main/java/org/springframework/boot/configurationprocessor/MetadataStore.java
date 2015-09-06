@@ -33,7 +33,7 @@ import org.springframework.boot.configurationprocessor.metadata.InvalidConfigura
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 
 /**
- * A {@code MetadataStore} is responsible for the storage of metadata on the filesystem
+ * A {@code MetadataStore} is responsible for the storage of metadata on the filesystem.
  *
  * @author Andy Wilkinson
  * @since 1.2.2

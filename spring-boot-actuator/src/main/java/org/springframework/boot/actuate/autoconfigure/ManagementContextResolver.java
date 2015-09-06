@@ -52,7 +52,7 @@ public class ManagementContextResolver {
 	}
 
 	/**
-	 * Return the management {@link ApplicationContext}
+	 * Return the management {@link ApplicationContext}.
 	 * @return the management {@link ApplicationContext}
 	 */
 	public ApplicationContext getApplicationContext() {

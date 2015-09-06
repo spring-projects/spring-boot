@@ -292,7 +292,7 @@ public class OAuth2AutoConfigurationTests {
 	/**
 	 * Connect to the oauth service, get a token, and then attempt some operations using
 	 * it.
-	 * @param config
+	 * @param config the client details.
 	 */
 	private void verifyAuthentication(ClientDetails config) {
 		verifyAuthentication(config, HttpStatus.FORBIDDEN);

@@ -222,7 +222,7 @@ public class JarWriter {
 	 * delegate to this one.
 	 * @param entry the entry to write
 	 * @param entryWriter the entry writer or {@code null} if there is no content
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	private void writeEntry(JarEntry entry, EntryWriter entryWriter) throws IOException {
 		String parent = entry.getName();
@@ -251,9 +251,9 @@ public class JarWriter {
 	private interface EntryWriter {
 
 		/**
-		 * Write entry data to the specified output stream
+		 * Write entry data to the specified output stream.
 		 * @param outputStream the destination for the data
-		 * @throws IOException
+		 * @throws IOException in case of I/O errors
 		 */
 		void write(OutputStream outputStream) throws IOException;
 
@@ -338,7 +338,7 @@ public class JarWriter {
 	}
 
 	/**
-	 * Data holder for CRC and Size
+	 * Data holder for CRC and Size.
 	 */
 	private static class CrcAndSize {
 

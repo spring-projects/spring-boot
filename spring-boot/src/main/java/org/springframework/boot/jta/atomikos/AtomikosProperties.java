@@ -27,8 +27,8 @@ import java.util.TreeMap;
  * binding.
  *
  * @author Phillip Webb
- * @see #asProperties()
  * @since 1.2.0
+ * @see #asProperties()
  */
 public class AtomikosProperties {
 

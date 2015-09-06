@@ -160,7 +160,7 @@ public class TestProject {
 	/**
 	 * Restore source code of given class to its original contents.
 	 * @param type the class to revert
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void revert(Class<?> type) throws IOException {
 		Assert.assertTrue(getSourceFile(type).exists());
@@ -170,7 +170,7 @@ public class TestProject {
 	/**
 	 * Add source code of given class to this project.
 	 * @param type the class to add
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public void add(Class<?> type) throws IOException {
 		Assert.assertFalse(getSourceFile(type).exists());

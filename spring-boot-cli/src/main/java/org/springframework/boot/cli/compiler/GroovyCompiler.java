@@ -171,8 +171,9 @@ public class GroovyCompiler {
 	 * returned from this method.
 	 * @param sources the sources to compile
 	 * @return compiled classes
-	 * @throws CompilationFailedException
-	 * @throws IOException
+	 * @throws CompilationFailedException in case of compilation failures
+	 * @throws IOException in case of I/O errors
+	 * @throws CompilationFailedException in case of compilation errors
 	 */
 	public Class<?>[] compile(String... sources) throws CompilationFailedException,
 			IOException {

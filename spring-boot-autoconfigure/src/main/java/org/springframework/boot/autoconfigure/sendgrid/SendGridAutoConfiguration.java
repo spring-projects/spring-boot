@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import com.sendgrid.SendGrid;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for SendGrid
+ * {@link EnableAutoConfiguration Auto-configuration} for SendGrid.
  *
  * @author Maciej Walkowiak
  * @since 1.3.0

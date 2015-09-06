@@ -32,6 +32,14 @@ import org.springframework.web.servlet.resource.ResourceTransformer;
 import org.springframework.web.servlet.resource.ResourceTransformerChain;
 import org.springframework.web.servlet.resource.TransformedResource;
 
+/**
+ * {@link MvcEndpoint} to expose a HAL browser.
+ *
+ * @author Dave Syer
+ * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @since 1.3.0
+ */
 public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implements
 		ResourceLoaderAware {
 
@@ -93,6 +101,9 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 		return null;
 	}
 
+	/**
+	 * HAL Browser properties.
+	 */
 	public static class HalBrowserLocation {
 
 		private final String resourceLocation;

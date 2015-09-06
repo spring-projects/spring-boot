@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
 /**
  * Abstract base class for a {@link BeanFactoryPostProcessor} that can be used to
  * dynamically declare that all beans of a specific type should depend on one or more
- * specific beans
+ * specific beans.
  *
  * @author Marcel Overdijk
  * @author Dave Syer

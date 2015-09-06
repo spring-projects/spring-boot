@@ -32,6 +32,7 @@ public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent 
 	private final ConfigurableEnvironment environment;
 
 	/**
+	 * Create a new {@link ApplicationEnvironmentPreparedEvent} instance.
 	 * @param application the current application
 	 * @param args the argumemts the application is running with
 	 * @param environment the environment that was just created
@@ -43,6 +44,7 @@ public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent 
 	}
 
 	/**
+	 * Return the environment.
 	 * @return the environment
 	 */
 	public ConfigurableEnvironment getEnvironment() {

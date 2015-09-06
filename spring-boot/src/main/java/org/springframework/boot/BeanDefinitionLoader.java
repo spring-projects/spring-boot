@@ -107,7 +107,7 @@ class BeanDefinitionLoader {
 
 	/**
 	 * Set the environment to be used by the underlying readers and scanner.
-	 * @param environment
+	 * @param environment the environment
 	 */
 	public void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
@@ -302,6 +302,9 @@ class BeanDefinitionLoader {
 
 	}
 
+	/**
+	 * Source for Bean definitions defined in Groovy.
+	 */
 	protected interface GroovyBeanDefinitionSource {
 
 		Closure<?> getBeans();

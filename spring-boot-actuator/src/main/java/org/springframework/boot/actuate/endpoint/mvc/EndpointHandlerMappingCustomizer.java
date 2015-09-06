@@ -25,7 +25,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 public interface EndpointHandlerMappingCustomizer {
 
 	/**
-	 * Customize the specified {@link EndpointHandlerMapping}
+	 * Customize the specified {@link EndpointHandlerMapping}.
 	 * @param mapping the {@link EndpointHandlerMapping} to customize
 	 */
 	void customize(EndpointHandlerMapping mapping);

@@ -141,7 +141,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	}
 
 	/**
-	 * @return the jtaTransactionManager or {@code null}
+	 * Return the JTA transaction manager.
+	 * @return the transaction manager or {@code null}
 	 */
 	protected JtaTransactionManager getJtaTransactionManager() {
 		return this.jtaTransactionManager;

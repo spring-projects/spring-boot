@@ -97,7 +97,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 
 	/**
 	 * Since all handler beans are passed into the constructor there is no need to detect
-	 * anything here
+	 * anything here.
 	 */
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
@@ -149,7 +149,8 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 	}
 
 	/**
-	 * @param prefix the prefix to set
+	 * Set the prefix used in mappings.
+	 * @param prefix the prefix
 	 */
 	public void setPrefix(String prefix) {
 		Assert.isTrue("".equals(prefix) || StringUtils.startsWithIgnoreCase(prefix, "/"),
@@ -158,13 +159,15 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 	}
 
 	/**
-	 * @return the prefix used in mappings
+	 * Get the prefix used in mappings.
+	 * @return the prefix
 	 */
 	public String getPrefix() {
 		return this.prefix;
 	}
 
 	/**
+	 * Get the path of the endpoint.
 	 * @param endpoint the endpoint
 	 * @return the path used in mappings
 	 */
@@ -189,7 +192,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping {
 	}
 
 	/**
-	 * Return the endpoints
+	 * Return the endpoints.
 	 * @return the endpoints
 	 */
 	public Set<? extends MvcEndpoint> getEndpoints() {

@@ -155,23 +155,23 @@ public class RunProcess {
 	}
 
 	/**
-	 * @return the running process or {@code null}
+	 * Return the running process.
+	 * @return the process or {@code null}
 	 */
 	public Process getRunningProcess() {
 		return this.process;
 	}
 
 	/**
-	 * @return {@code true} if the process was stopped.
+	 * Return if the process was stopped.
+	 * @return {@code true} if stopped
 	 */
 	public boolean handleSigInt() {
-
 		// if the process has just ended, probably due to this SIGINT, consider handled.
 		if (hasJustEnded()) {
 			return true;
 		}
 		return doKill();
-
 	}
 
 	/**

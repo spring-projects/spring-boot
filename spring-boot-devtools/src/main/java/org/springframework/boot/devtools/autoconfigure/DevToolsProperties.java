@@ -54,7 +54,7 @@ public class DevToolsProperties {
 	}
 
 	/**
-	 * Restart properties
+	 * Restart properties.
 	 */
 	public static class Restart {
 
@@ -173,7 +173,7 @@ public class DevToolsProperties {
 	}
 
 	/**
-	 * LiveReload properties
+	 * LiveReload properties.
 	 */
 	public static class Livereload {
 

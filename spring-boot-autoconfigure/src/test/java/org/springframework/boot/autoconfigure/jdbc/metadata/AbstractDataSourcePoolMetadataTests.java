@@ -30,8 +30,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * Abstract base class for {@link DataSourcePoolMetadata} tests.
  *
- * @author Stephane Nicoll
  * @param <D> the data source pool metadata type
+ * @author Stephane Nicoll
  */
 public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourcePoolMetadata<?>> {
 

@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for ActiveMQ
+ * Configuration properties for ActiveMQ.
  *
  * @author Greg Turnquist
  * @author Stephane Nicoll

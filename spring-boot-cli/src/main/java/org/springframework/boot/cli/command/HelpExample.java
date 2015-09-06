@@ -29,6 +29,7 @@ public class HelpExample {
 	private final String example;
 
 	/**
+	 * Create a new {@link HelpExample} instance.
 	 * @param description The description (in the form "to ....")
 	 * @param example the example
 	 */

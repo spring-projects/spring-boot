@@ -37,7 +37,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for H2's web console
+ * {@link EnableAutoConfiguration Auto-configuration} for H2's web console.
  *
  * @author Andy Wilkinson
  * @since 1.3.0

@@ -17,14 +17,14 @@
 package org.springframework.boot.cli.compiler.grape;
 
 /**
- * Reports progress on a dependency resolution operation
+ * Reports progress on a dependency resolution operation.
  *
  * @author Andy Wilkinson
  */
 interface ProgressReporter {
 
 	/**
-	 * Notification that the operation has completed
+	 * Notification that the operation has completed.
 	 */
 	void finished();
 

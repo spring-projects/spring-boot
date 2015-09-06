@@ -130,6 +130,9 @@ public class TestRestTemplate extends RestTemplate {
 
 	}
 
+	/**
+	 * {@link HttpComponentsClientHttpRequestFactory} to apply customizations.
+	 */
 	protected static class CustomHttpComponentsClientHttpRequestFactory extends
 			HttpComponentsClientHttpRequestFactory {
 

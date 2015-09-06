@@ -50,12 +50,12 @@ public class ContextIdApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
 	/**
-	 * Placeholder pattern to resolve for application name
+	 * Placeholder pattern to resolve for application name.
 	 */
 	private static final String NAME_PATTERN = "${vcap.application.name:${spring.application.name:${spring.config.name:application}}}";
 
 	/**
-	 * Placeholder pattern to resolve for application index
+	 * Placeholder pattern to resolve for application index.
 	 */
 	private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
 

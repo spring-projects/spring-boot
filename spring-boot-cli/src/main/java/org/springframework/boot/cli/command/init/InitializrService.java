@@ -81,7 +81,7 @@ class InitializrService {
 	}
 
 	/**
-	 * Generate a project based on the specified {@link ProjectGenerationRequest}
+	 * Generate a project based on the specified {@link ProjectGenerationRequest}.
 	 * @param request the generation request
 	 * @return an entity defining the project
 	 * @throws IOException if generation fails
@@ -166,14 +166,18 @@ class InitializrService {
 	}
 
 	/**
-	 * Request the creation of the project using the specified URL
+	 * Request the creation of the project using the specified URL.
+	 * @param url the URL
+	 * @return the response
 	 */
 	private CloseableHttpResponse executeProjectGenerationRequest(URI url) {
 		return execute(new HttpGet(url), url, "generate project");
 	}
 
 	/**
-	 * Retrieves the meta-data of the service at the specified URL
+	 * Retrieves the meta-data of the service at the specified URL.
+	 * @param url the URL
+	 * @return the response
 	 */
 	private CloseableHttpResponse executeInitializrMetadataRetrieval(String url) {
 		HttpGet request = new HttpGet(url);

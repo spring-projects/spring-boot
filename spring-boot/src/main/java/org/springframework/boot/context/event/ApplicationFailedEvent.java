@@ -33,6 +33,7 @@ public class ApplicationFailedEvent extends SpringApplicationEvent {
 	private final Throwable exception;
 
 	/**
+	 * Create a new {@link ApplicationFailedEvent} instance.
 	 * @param application the current application
 	 * @param args the arguments the application was running with
 	 * @param context the context that was being created (maybe null)
@@ -46,6 +47,7 @@ public class ApplicationFailedEvent extends SpringApplicationEvent {
 	}
 
 	/**
+	 * Return the application context.
 	 * @return the context
 	 */
 	public ConfigurableApplicationContext getApplicationContext() {
@@ -53,6 +55,7 @@ public class ApplicationFailedEvent extends SpringApplicationEvent {
 	}
 
 	/**
+	 * Return the exception that caused the failure.
 	 * @return the exception
 	 */
 	public Throwable getException() {

@@ -31,16 +31,34 @@ import org.springframework.util.Assert;
  */
 public final class RichGauge {
 
+	/**
+	 * The suffix for count gauges.
+	 */
 	public static final String COUNT = ".count";
 
+	/**
+	 * The suffix for max gauges.
+	 */
 	public static final String MAX = ".max";
 
+	/**
+	 * The suffix for min gauges.
+	 */
 	public static final String MIN = ".min";
 
+	/**
+	 * The suffix for average value gauges.
+	 */
 	public static final String AVG = ".avg";
 
+	/**
+	 * The suffix for alpha gauges.
+	 */
 	public static final String ALPHA = ".alpha";
 
+	/**
+	 * The suffix for value gauges.
+	 */
 	public static final String VAL = ".val";
 
 	private final String name;
@@ -90,23 +108,24 @@ public final class RichGauge {
 	}
 
 	/**
-	 * @return the name of the gauge
+	 * Return the name of the gauge.
+	 * @return the name
 	 */
 	public String getName() {
 		return this.name;
 	}
 
 	/**
-	 * @return the current value
+	 * Return the current value of the gauge.
+	 * @return the value
 	 */
 	public double getValue() {
 		return this.value;
 	}
 
 	/**
-	 * Either an exponential weighted moving average or a simple mean, respectively,
-	 * depending on whether the weight 'alpha' has been set for this gauge.
-	 *
+	 * Return either an exponential weighted moving average or a simple mean,
+	 * respectively, depending on whether the weight 'alpha' has been set for this gauge.
 	 * @return The average over all the accumulated values
 	 */
 	public double getAverage() {
@@ -114,6 +133,7 @@ public final class RichGauge {
 	}
 
 	/**
+	 * Return the maximum value of the gauge.
 	 * @return the maximum value
 	 */
 	public double getMax() {
@@ -121,6 +141,7 @@ public final class RichGauge {
 	}
 
 	/**
+	 * Return the minimum value of the gauge.
 	 * @return the minimum value
 	 */
 	public double getMin() {
@@ -128,14 +149,16 @@ public final class RichGauge {
 	}
 
 	/**
-	 * @return Number of times the value has been set.
+	 * Return the number of times the value has been set.
+	 * @return the value set count
 	 */
 	public long getCount() {
 		return this.count;
 	}
 
 	/**
-	 * @return the smoothing constant value.
+	 * Return the smoothing constant value.
+	 * @return the alpha smoothing value
 	 */
 	public double getAlpha() {
 		return this.alpha;

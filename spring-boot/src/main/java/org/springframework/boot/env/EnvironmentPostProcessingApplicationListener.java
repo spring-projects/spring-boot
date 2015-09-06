@@ -40,6 +40,9 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 public class EnvironmentPostProcessingApplicationListener implements
 		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
+	/**
+	 * The order for the {@link EnvironmentPostProcessingApplicationListener}.
+	 */
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 	@Override

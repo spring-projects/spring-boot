@@ -55,7 +55,7 @@ public class Dispatcher {
 	 * @param request the request
 	 * @param response the response
 	 * @return {@code true} if the request was dispatched
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public boolean handle(ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException {

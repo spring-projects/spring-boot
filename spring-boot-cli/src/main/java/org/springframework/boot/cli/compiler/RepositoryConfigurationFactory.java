@@ -47,6 +47,7 @@ public final class RepositoryConfigurationFactory {
 	}
 
 	/**
+	 * Create a new default repository configuration.
 	 * @return the newly-created default repository configuration
 	 */
 	public static List<RepositoryConfiguration> createDefaultRepositoryConfiguration() {

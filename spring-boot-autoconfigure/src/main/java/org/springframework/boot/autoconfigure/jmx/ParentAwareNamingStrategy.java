@@ -48,7 +48,8 @@ public class ParentAwareNamingStrategy extends MetadataNamingStrategy implements
 	}
 
 	/**
-	 * @param ensureUniqueRuntimeObjectNames the ensureUniqueRuntimeObjectNames to set
+	 * Set if unique runtime object names should be ensured.
+	 * @param ensureUniqueRuntimeObjectNames {@code true} if unique names should ensured.
 	 */
 	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
 		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;

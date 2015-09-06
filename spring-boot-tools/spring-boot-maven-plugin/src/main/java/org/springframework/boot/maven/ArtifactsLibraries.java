@@ -33,7 +33,7 @@ import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
 /**
- * {@link Libraries} backed by Maven {@link Artifact}s
+ * {@link Libraries} backed by Maven {@link Artifact}s.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson

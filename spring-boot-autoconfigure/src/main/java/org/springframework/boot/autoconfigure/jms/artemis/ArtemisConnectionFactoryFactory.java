@@ -92,6 +92,7 @@ class ArtemisConnectionFactoryFactory {
 
 	/**
 	 * Deduce the {@link ArtemisMode} to use if none has been set.
+	 * @return the mode
 	 */
 	private ArtemisMode deduceMode() {
 		if (this.properties.getEmbedded().isEnabled()

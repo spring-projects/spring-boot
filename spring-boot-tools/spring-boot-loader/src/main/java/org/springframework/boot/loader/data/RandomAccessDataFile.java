@@ -74,6 +74,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 	/**
 	 * Private constructor used to create a {@link #getSubsection(long, long) subsection}.
+	 * @param file the underlying file
 	 * @param pool the underlying pool
 	 * @param offset the offset of the section
 	 * @param length the length of the section
@@ -158,7 +159,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		 * @param len the length of data to read
 		 * @return the number of bytes read into {@code b} or the actual read byte if
 		 * {@code b} is {@code null}. Returns -1 when the end of the stream is reached
-		 * @throws IOException
+		 * @throws IOException in case of I/O errors
 		 */
 		public int doRead(byte[] b, int off, int len) throws IOException {
 			if (len == 0) {
@@ -213,7 +214,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		}
 
 		/**
-		 * Move the stream position forwards the specified amount
+		 * Move the stream position forwards the specified amount.
 		 * @param amount the amount to move
 		 * @return the amount moved
 		 */

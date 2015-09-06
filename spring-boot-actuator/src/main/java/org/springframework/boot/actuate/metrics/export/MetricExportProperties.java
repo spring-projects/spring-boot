@@ -109,6 +109,9 @@ public class MetricExportProperties extends TriggerProperties {
 		return this;
 	}
 
+	/**
+	 * Aggregate properties.
+	 */
 	public static class Aggregate {
 
 		/**
@@ -147,6 +150,9 @@ public class MetricExportProperties extends TriggerProperties {
 
 	}
 
+	/**
+	 * Redis properties.
+	 */
 	public static class Redis {
 
 		/**

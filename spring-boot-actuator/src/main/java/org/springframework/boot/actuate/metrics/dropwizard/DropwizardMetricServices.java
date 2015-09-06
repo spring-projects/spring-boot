@@ -32,8 +32,7 @@ import com.codahale.metrics.Timer;
 
 /**
  * A {@link GaugeService} and {@link CounterService} that sends data to a Dropwizard
- * {@link MetricRegistry} based on a naming convention:
- *
+ * {@link MetricRegistry} based on a naming convention.
  * <ul>
  * <li>Updates to {@link #increment(String)} with names in "meter.*" are treated as
  * {@link Meter} events</li>

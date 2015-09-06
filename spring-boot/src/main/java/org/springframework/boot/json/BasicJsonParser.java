@@ -31,8 +31,8 @@ import org.springframework.util.StringUtils;
  * YAML are supported).
  *
  * @author Dave Syer
- * @see JsonParserFactory
  * @since 1.2.0
+ * @see JsonParserFactory
  */
 public class BasicJsonParser implements JsonParser {
 

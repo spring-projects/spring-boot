@@ -28,7 +28,7 @@ import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
 /**
- * Tests for {@WebListenerHandler}
+ * Tests for {@link WebListenerHandler}.
  *
  * @author Andy Wilkinson
  */

@@ -84,6 +84,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	private ConversionService conversionService;
 
 	/**
+	 * Create a new {@link PropertiesConfigurationFactory} instance.
 	 * @param target the target object to bind too
 	 * @see #PropertiesConfigurationFactory(Class)
 	 */
@@ -93,7 +94,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	/**
-	 * Create a new factory for an object of the given type.
+	 * Create a new {@link PropertiesConfigurationFactory} instance.
 	 * @param type the target type
 	 * @see #PropertiesConfigurationFactory(Class)
 	 */
@@ -139,14 +140,16 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	/**
-	 * @param targetName the target name to set
+	 * Set the target name.
+	 * @param targetName the target name
 	 */
 	public void setTargetName(String targetName) {
 		this.targetName = targetName;
 	}
 
 	/**
-	 * @param messageSource the messageSource to set
+	 * Set the message source.
+	 * @param messageSource the message source
 	 */
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
@@ -154,37 +157,40 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	/**
-	 * @param properties the properties to set
+	 * Set the properties.
+	 * @param properties the properties
 	 */
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}
 
 	/**
-	 * @param propertySources the propertySources to set
+	 * Set the property sources.
+	 * @param propertySources the property sources
 	 */
 	public void setPropertySources(PropertySources propertySources) {
 		this.propertySources = propertySources;
 	}
 
 	/**
-	 * @param conversionService the conversionService to set
+	 * Set the conversion service.
+	 * @param conversionService the conversion service
 	 */
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
 	/**
-	 * @param validator the validator to set
+	 * Set the validator.
+	 * @param validator the validator
 	 */
 	public void setValidator(Validator validator) {
 		this.validator = validator;
 	}
 
 	/**
-	 * Flag to indicate that an exception should be raised if a Validator is available and
-	 * validation fails.
-	 *
+	 * Set a flag to indicate that an exception should be raised if a Validator is
+	 * available and validation fails.
 	 * @param exceptionIfInvalid the flag to set
 	 */
 	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
@@ -342,6 +348,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	/**
+	 * Customize the databinder.
 	 * @param dataBinder the data binder that will be used to bind and validate
 	 */
 	protected void customizeBinder(DataBinder dataBinder) {

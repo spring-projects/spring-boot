@@ -35,8 +35,8 @@ import org.springframework.util.StringUtils;
  * @author Maciej Walkowiak
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @see ConditionalOnProperty
  * @since 1.1.0
+ * @see ConditionalOnProperty
  */
 class OnPropertyCondition extends SpringBootCondition {
 

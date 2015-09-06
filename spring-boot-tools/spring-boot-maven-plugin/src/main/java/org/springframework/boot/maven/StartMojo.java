@@ -250,12 +250,13 @@ public class StartMojo extends AbstractRunMojo {
 
 	/**
 	 * Execute a task, retrying it on failure.
+	 * @param <T> the result type
 	 * @param wait the wait time
 	 * @param maxAttempts the maximum number of attempts
 	 * @param callback the task to execute (possibly multiple times). The callback should
 	 * return {@code null} to indicate that another attempt should be made
 	 * @return the result
-	 * @throws Exception
+	 * @throws Exception in case of execution errors
 	 */
 	public <T> T execute(long wait, int maxAttempts, Callable<T> callback)
 			throws Exception {

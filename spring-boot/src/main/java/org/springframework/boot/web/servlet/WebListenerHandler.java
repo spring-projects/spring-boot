@@ -26,7 +26,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.context.embedded.ServletListenerRegistrationBean;
 
 /**
- * Handler for {@link WebListener}-annotated classes
+ * Handler for {@link WebListener}-annotated classes.
  *
  * @author Andy Wilkinson
  */

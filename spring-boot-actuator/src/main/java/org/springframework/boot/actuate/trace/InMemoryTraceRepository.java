@@ -48,7 +48,8 @@ public class InMemoryTraceRepository implements TraceRepository {
 	}
 
 	/**
-	 * @param capacity the capacity to set
+	 * Set the capacity of the in-memory repository.
+	 * @param capacity the capacity
 	 */
 	public void setCapacity(int capacity) {
 		synchronized (this.traces) {

@@ -22,7 +22,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * External configuration properties for {@link ElasticsearchHealthIndicator}
+ * External configuration properties for {@link ElasticsearchHealthIndicator}.
  *
  * @author Binwei Yang
  * @author Andy Wilkinson

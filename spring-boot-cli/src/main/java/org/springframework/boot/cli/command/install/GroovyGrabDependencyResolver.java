@@ -31,7 +31,7 @@ import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
- * A {@code DependencyResolver} implemented using Groovy's {@code @Grab}
+ * A {@code DependencyResolver} implemented using Groovy's {@code @Grab}.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

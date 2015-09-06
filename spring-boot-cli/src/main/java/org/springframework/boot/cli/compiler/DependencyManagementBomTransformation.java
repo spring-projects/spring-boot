@@ -55,7 +55,7 @@ import org.springframework.core.annotation.Order;
 import groovy.grape.Grape;
 
 /**
- * {@link ASTTransformation} for processing {@link DependencyManagementBom} annotations
+ * {@link ASTTransformation} for processing {@link DependencyManagementBom} annotations.
  *
  * @author Andy Wilkinson
  * @since 1.3.0
@@ -63,6 +63,9 @@ import groovy.grape.Grape;
 @Order(DependencyManagementBomTransformation.ORDER)
 public class DependencyManagementBomTransformation extends AnnotatedNodeASTTransformation {
 
+	/**
+	 * The order of the transformation.
+	 */
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 	private static final Set<String> DEPENDENCY_MANAGEMENT_BOM_ANNOTATION_NAMES = Collections

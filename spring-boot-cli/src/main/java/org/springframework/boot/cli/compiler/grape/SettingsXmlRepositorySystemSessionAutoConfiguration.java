@@ -24,7 +24,7 @@ import org.springframework.boot.cli.compiler.MavenSettingsReader;
 
 /**
  * Auto-configuration for a RepositorySystemSession that uses Maven's settings.xml to
- * determine the configuration settings
+ * determine the configuration settings.
  *
  * @author Andy Wilkinson
  */

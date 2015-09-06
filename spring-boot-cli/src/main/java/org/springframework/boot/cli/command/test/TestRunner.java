@@ -43,9 +43,9 @@ public class TestRunner {
 
 	/**
 	 * Create a new {@link TestRunner} instance.
-	 * @param configuration
-	 * @param sources
-	 * @param args
+	 * @param configuration the configuration
+	 * @param sources the sources
+	 * @param args the args
 	 */
 	TestRunner(TestRunnerConfiguration configuration, String[] sources, String[] args) {
 		this.sources = sources.clone();

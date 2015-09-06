@@ -23,7 +23,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for Groovy
- * view templates
+ * view templates.
  *
  * @author Dave Syer
  * @since 1.1.0

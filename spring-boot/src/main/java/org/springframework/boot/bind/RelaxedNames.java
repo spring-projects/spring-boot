@@ -70,6 +70,9 @@ public final class RelaxedNames implements Iterable<String> {
 		}
 	}
 
+	/**
+	 * Name variations.
+	 */
 	enum Variation {
 
 		NONE {
@@ -97,6 +100,9 @@ public final class RelaxedNames implements Iterable<String> {
 
 	}
 
+	/**
+	 * Name manipulations.
+	 */
 	enum Manipulation {
 
 		NONE {
@@ -189,7 +195,7 @@ public final class RelaxedNames implements Iterable<String> {
 	}
 
 	/**
-	 * Return a {@link RelaxedNames} for the given source camelCase source name
+	 * Return a {@link RelaxedNames} for the given source camelCase source name.
 	 * @param name the source name in camelCase
 	 * @return the relaxed names
 	 */

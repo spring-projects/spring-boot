@@ -38,6 +38,9 @@ import groovy.lang.GroovyClassLoader;
 @Order(DependencyAutoConfigurationTransformation.ORDER)
 public class DependencyAutoConfigurationTransformation implements ASTTransformation {
 
+	/**
+	 * The order of the transformation.
+	 */
 	public static final int ORDER = DependencyManagementBomTransformation.ORDER + 100;
 
 	private final GroovyClassLoader loader;

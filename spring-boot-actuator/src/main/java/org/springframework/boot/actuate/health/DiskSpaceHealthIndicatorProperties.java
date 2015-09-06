@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
- * External configuration properties for {@link DiskSpaceHealthIndicator}
+ * External configuration properties for {@link DiskSpaceHealthIndicator}.
  *
  * @author Andy Wilkinson
  * @since 1.2.0

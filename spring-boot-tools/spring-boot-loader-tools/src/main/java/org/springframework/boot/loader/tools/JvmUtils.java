@@ -29,7 +29,7 @@ import java.net.URLClassLoader;
 abstract class JvmUtils {
 
 	/**
-	 * Various search locations for tools, including the odd Java 6 OSX jar
+	 * Various search locations for tools, including the odd Java 6 OSX jar.
 	 */
 	private static final String[] TOOLS_LOCATIONS = { "lib/tools.jar",
 			"../lib/tools.jar", "../Classes/classes.jar" };

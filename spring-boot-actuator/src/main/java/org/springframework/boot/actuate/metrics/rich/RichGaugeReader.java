@@ -37,7 +37,8 @@ public interface RichGaugeReader {
 	Iterable<RichGauge> findAll();
 
 	/**
-	 * @return the number of gauge values available
+	 * Return the number of gauge values available.
+	 * @return the number of values
 	 */
 	long count();
 

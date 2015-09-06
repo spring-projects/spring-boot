@@ -84,14 +84,16 @@ public class ConfigurationMetadata {
 	}
 
 	/**
-	 * @return the meta-data properties.
+	 * Return item meta-data.
+	 * @return the items
 	 */
 	public List<ItemMetadata> getItems() {
 		return flattenValues(this.items);
 	}
 
 	/**
-	 * @return the meta-data hints.
+	 * Return hint meta-data.
+	 * @return the hints
 	 */
 	public List<ItemHint> getHints() {
 		return flattenValues(this.hints);

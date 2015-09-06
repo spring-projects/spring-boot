@@ -154,7 +154,7 @@ public class LiveReloadServerTests {
 	/**
 	 * Useful main method for manual testing against a real browser.
 	 * @param args main args
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	public static void main(String[] args) throws IOException {
 		LiveReloadServer server = new LiveReloadServer();

@@ -55,6 +55,9 @@ public class FlywayEndpoint extends AbstractEndpoint<List<FlywayMigration>> {
 		return migrations;
 	}
 
+	/**
+	 * Migration properties.
+	 */
 	public static class FlywayMigration {
 
 		private MigrationType type;

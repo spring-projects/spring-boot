@@ -235,35 +235,38 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		return null;
 	}
 
+	/**
+	 * Archive layout types.
+	 */
 	public enum LayoutType {
 
 		/**
-		 * Jar Layout
+		 * Jar Layout.
 		 */
 		JAR(new Layouts.Jar()),
 
 		/**
-		 * War Layout
+		 * War Layout.
 		 */
 		WAR(new Layouts.War()),
 
 		/**
-		 * Zip Layout
+		 * Zip Layout.
 		 */
 		ZIP(new Layouts.Expanded()),
 
 		/**
-		 * Dir Layout
+		 * Dir Layout.
 		 */
 		DIR(new Layouts.Expanded()),
 
 		/**
-		 * Module Layout
+		 * Module Layout.
 		 */
 		MODULE(new Layouts.Module()),
 
 		/**
-		 * No Layout
+		 * No Layout.
 		 */
 		NONE(new Layouts.None());
 

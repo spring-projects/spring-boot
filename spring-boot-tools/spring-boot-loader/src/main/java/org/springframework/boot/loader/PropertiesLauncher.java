@@ -112,7 +112,7 @@ public class PropertiesLauncher extends Launcher {
 
 	/**
 	 * Properties key for config file location (including optional classpath:, file: or
-	 * URL prefix)
+	 * URL prefix).
 	 */
 	public static final String CONFIG_LOCATION = "loader.config.location";
 

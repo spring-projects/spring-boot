@@ -144,6 +144,10 @@ public class ConfigurationPropertiesReportEndpoint extends
 	/**
 	 * Cautiously serialize the bean to a map (returning a map with an error message
 	 * instead of throwing an exception if there is a problem).
+	 * @param mapper the object mapper
+	 * @param bean the source bean
+	 * @param prefix the prefix
+	 * @return the serialized instance
 	 */
 	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean,
 			String prefix) {
@@ -173,6 +177,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	/**
 	 * Ensure only bindable and non-cyclic bean properties are reported.
+	 * @param mapper the object mapper
 	 */
 	private void applySerializationModifier(ObjectMapper mapper) {
 		SerializerFactory factory = BeanSerializerFactory.instance
@@ -183,6 +188,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	/**
 	 * Configure PropertyFilter to make sure Jackson doesn't process CGLIB generated bean
 	 * properties.
+	 * @param mapper the object mapper
 	 */
 	private void applyCglibFilters(ObjectMapper mapper) {
 		mapper.setAnnotationIntrospector(new CglibAnnotationIntrospector());
@@ -192,7 +198,11 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	/**
 	 * Extract configuration prefix from {@link ConfigurationProperties} annotation.
-	 * @param beanFactoryMetaData
+	 * @param context the application context
+	 * @param beanFactoryMetaData the bean factory meta-data
+	 * @param beanName the bean name
+	 * @param bean the bean
+	 * @return the prefix
 	 */
 	private String extractPrefix(ApplicationContext context,
 			ConfigurationBeanFactoryMetaData beanFactoryMetaData, String beanName,
@@ -216,6 +226,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 	/**
 	 * Sanitize all unwanted configuration properties to avoid leaking of sensitive
 	 * information.
+	 * @param map the source map
+	 * @return the sanitized map
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> sanitize(Map<String, Object> map) {

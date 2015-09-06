@@ -90,7 +90,7 @@ public class FindMainClass extends Task {
 
 	/**
 	 * Set the main class, which will cause the search to be bypassed.
-	 * @param mainClass
+	 * @param mainClass the main class name
 	 */
 	public void setMainClass(String mainClass) {
 		this.mainClass = mainClass;
@@ -98,15 +98,15 @@ public class FindMainClass extends Task {
 
 	/**
 	 * Set the root location of classes to be searched.
-	 * @param classesRoot
+	 * @param classesRoot the root location
 	 */
 	public void setClassesRoot(File classesRoot) {
 		this.classesRoot = classesRoot;
 	}
 
 	/**
-	 * Set the property to set (if unset, result will be printed to the log).
-	 * @param property
+	 * Set the ANT property to set (if left unset, result will be printed to the log).
+	 * @param property the ANT property to set
 	 */
 	public void setProperty(String property) {
 		this.property = property;

@@ -109,7 +109,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 	}
 
 	/**
-	 * Skip patterns used by Spring Boot
+	 * Skip patterns used by Spring Boot.
 	 */
 	private static class SkipPattern {
 

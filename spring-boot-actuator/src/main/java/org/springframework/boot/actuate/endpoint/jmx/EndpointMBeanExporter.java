@@ -61,6 +61,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle,
 		ApplicationContextAware {
 
+	/**
+	 * The default JMX domain.
+	 */
 	public static final String DEFAULT_DOMAIN = "org.springframework.boot";
 
 	private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);

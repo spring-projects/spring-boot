@@ -34,7 +34,7 @@ public final class SignalUtils {
 	}
 
 	/**
-	 * Handle {@literal INT} signals by calling the specified {@link Runnable}
+	 * Handle {@literal INT} signals by calling the specified {@link Runnable}.
 	 * @param runnable the runnable to call on SIGINT.
 	 */
 	public static void attachSignalHandler(final Runnable runnable) {

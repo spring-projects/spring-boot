@@ -25,8 +25,8 @@ import org.springframework.util.Assert;
  * files that have been added, modified or deleted since the original JAR was created.
  *
  * @author Phillip Webb
- * @see ClassLoaderFileRepository
  * @since 1.3.0
+ * @see ClassLoaderFileRepository
  */
 public class ClassLoaderFile implements Serializable {
 

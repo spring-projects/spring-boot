@@ -102,10 +102,11 @@ public abstract class MainClassFinder {
 	/**
 	 * Perform the given callback operation on all main classes from the given root
 	 * folder.
+	 * @param <T> the result type
 	 * @param rootFolder the root folder
 	 * @param callback the callback
 	 * @return the first callback result or {@code null}
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	static <T> T doWithMainClasses(File rootFolder, ClassNameCallback<T> callback)
 			throws IOException {
@@ -190,11 +191,12 @@ public abstract class MainClassFinder {
 
 	/**
 	 * Perform the given callback operation on all main classes from the given jar.
+	 * @param <T> the result type
 	 * @param jarFile the jar file to search
 	 * @param classesLocation the location within the jar containing classes
 	 * @param callback the callback
 	 * @return the first callback result or {@code null}
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	static <T> T doWithMainClasses(JarFile jarFile, String classesLocation,
 			ClassNameCallback<T> callback) throws IOException {
@@ -316,7 +318,7 @@ public abstract class MainClassFinder {
 	public interface ClassNameCallback<T> {
 
 		/**
-		 * Handle the specified class name
+		 * Handle the specified class name.
 		 * @param className the class name
 		 * @return a non-null value if processing should end or {@code null} to continue
 		 */

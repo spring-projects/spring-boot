@@ -65,7 +65,7 @@ public class Shell {
 
 	/**
 	 * Create a new {@link Shell} instance.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
 	Shell() throws IOException {
 		attachSignalHandler();
@@ -174,7 +174,7 @@ public class Shell {
 	}
 
 	/**
-	 * Final handle an interrup signal (CTRL-C)
+	 * Final handle an interrup signal (CTRL-C).
 	 */
 	protected void handleSigInt() {
 		if (this.commandRunner.handleSigInt()) {

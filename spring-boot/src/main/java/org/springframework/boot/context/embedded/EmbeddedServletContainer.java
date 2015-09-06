@@ -45,7 +45,8 @@ public interface EmbeddedServletContainer {
 	void stop() throws EmbeddedServletContainerException;
 
 	/**
-	 * @return the port this server is listening on (or -1 if none)
+	 * Return the port this server is listening on.
+	 * @return the port (or -1 if none)
 	 */
 	int getPort();
 

@@ -53,7 +53,7 @@ class DriverClassNameProvider {
 	}
 
 	/**
-	 * Find a JDBC driver class name based on given JDBC URL
+	 * Find a JDBC driver class name based on given JDBC URL.
 	 * @param jdbcUrl JDBC URL
 	 * @return driver class name or null if not found
 	 */

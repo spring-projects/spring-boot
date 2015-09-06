@@ -99,14 +99,29 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 
 	private static final String DEFAULT_NAMES = "application";
 
+	/**
+	 * The "active profiles" property name.
+	 */
 	public static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
 
+	/**
+	 * The "includes profiles" property name.
+	 */
 	public static final String INCLUDE_PROFILES_PROPERTY = "spring.profiles.include";
 
+	/**
+	 * The "config name" property name.
+	 */
 	public static final String CONFIG_NAME_PROPERTY = "spring.config.name";
 
+	/**
+	 * The "config location" property name.
+	 */
 	public static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
 
+	/**
+	 * The default order for the processor.
+	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
 	private final DeferredLog logger = new DeferredLog();

@@ -76,8 +76,8 @@ class ProjectGenerationRequest {
 
 	/**
 	 * The URL of the service to use.
-	 * @see #DEFAULT_SERVICE_URL
 	 * @return the service URL
+	 * @see #DEFAULT_SERVICE_URL
 	 */
 	public String getServiceUrl() {
 		return this.serviceUrl;
@@ -299,7 +299,7 @@ class ProjectGenerationRequest {
 	}
 
 	/**
-	 * Generates the URI to use to generate a project represented by this request
+	 * Generates the URI to use to generate a project represented by this request.
 	 * @param metadata the metadata that describes the service
 	 * @return the project generation URI
 	 */

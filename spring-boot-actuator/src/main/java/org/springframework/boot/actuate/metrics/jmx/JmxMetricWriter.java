@@ -127,6 +127,9 @@ public class JmxMetricWriter implements MetricWriter {
 		return this.namingStrategy.getObjectName(value, key);
 	}
 
+	/**
+	 * A single metric value.
+	 */
 	@ManagedResource
 	public static class MetricValue {
 

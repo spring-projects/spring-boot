@@ -29,12 +29,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
- * {@link MvcEndpoint} for the actuator. Uses content negotiation to provide access to the
- * HAL browser (when on the classpath), and to HAL-formatted JSON.
+ * {@link MvcEndpoint} to expose HAL-formatted JSON.
  *
  * @author Dave Syer
- * @author Phil Webb
+ * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.3.0
  */
 @ConfigurationProperties("endpoints.actuator")
 public class ActuatorHalJsonEndpoint extends WebMvcConfigurerAdapter implements

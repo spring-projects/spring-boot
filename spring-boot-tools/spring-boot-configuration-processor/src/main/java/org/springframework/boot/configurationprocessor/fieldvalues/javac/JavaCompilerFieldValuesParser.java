@@ -54,6 +54,9 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 		return Collections.emptyMap();
 	}
 
+	/**
+	 * {@link TreeVisitor} to collect fields.
+	 */
 	private static class FieldCollector implements TreeVisitor {
 
 		private static final Map<String, Class<?>> WRAPPER_TYPES;

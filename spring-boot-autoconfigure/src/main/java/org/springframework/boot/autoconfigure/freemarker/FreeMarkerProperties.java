@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResol
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring FreeMarker
+ * {@link ConfigurationProperties} for configuring FreeMarker.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

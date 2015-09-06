@@ -58,6 +58,9 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 				ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName() };
 	}
 
+	/**
+	 * {@link ImportBeanDefinitionRegistrar} for configuration properties support.
+	 */
 	public static class ConfigurationPropertiesBeanRegistrar implements
 			ImportBeanDefinitionRegistrar {
 

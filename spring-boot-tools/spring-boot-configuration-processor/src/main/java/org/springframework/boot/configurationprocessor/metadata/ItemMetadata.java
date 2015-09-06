@@ -172,7 +172,17 @@ public class ItemMetadata implements Comparable<ItemMetadata> {
 	 * The item type.
 	 */
 	public enum ItemType {
-		GROUP, PROPERTY
+
+		/**
+		 * Group item type.
+		 */
+		GROUP,
+
+		/**
+		 * Property item type.
+		 */
+		PROPERTY
+
 	}
 
 }

@@ -134,6 +134,7 @@ public class RelaxedDataBinder extends DataBinder {
 	 * is also accepted.
 	 * @param propertyValues the property values
 	 * @param target the target object
+	 * @return modified property values
 	 */
 	private MutablePropertyValues modifyProperties(MutablePropertyValues propertyValues,
 			Object target) {

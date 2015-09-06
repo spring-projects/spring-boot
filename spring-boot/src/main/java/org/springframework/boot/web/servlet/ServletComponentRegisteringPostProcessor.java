@@ -36,9 +36,9 @@ import org.springframework.context.annotation.ScannedGenericBeanDefinition;
  * {@link BeanFactoryPostProcessor} that registers beans for Servlet components found via
  * package scanning.
  *
+ * @author Andy Wilkinson
  * @see ServletComponentScan
  * @see ServletComponentScanRegistrar
- * @author Andy Wilkinson
  */
 class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcessor,
 		ApplicationContextAware {

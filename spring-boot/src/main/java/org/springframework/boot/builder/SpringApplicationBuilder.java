@@ -265,7 +265,7 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Add more sources (configuration classes and components) to this application
+	 * Add more sources (configuration classes and components) to this application.
 	 * @param sources the sources to add
 	 * @return the current builder
 	 */

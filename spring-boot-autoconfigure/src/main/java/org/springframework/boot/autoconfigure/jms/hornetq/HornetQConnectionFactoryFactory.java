@@ -92,6 +92,7 @@ class HornetQConnectionFactoryFactory {
 
 	/**
 	 * Deduce the {@link HornetQMode} to use if none has been set.
+	 * @return the mode
 	 */
 	private HornetQMode deduceMode() {
 		if (this.properties.getEmbedded().isEnabled()

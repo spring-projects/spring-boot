@@ -33,6 +33,9 @@ import liquibase.logging.core.AbstractLogger;
  */
 public class CommonsLoggingLiquibaseLogger extends AbstractLogger {
 
+	/**
+	 * The priority for the {@link CommonsLoggingLiquibaseLogger}.
+	 */
 	public static final int PRIORITY = 10;
 
 	private Log logger;

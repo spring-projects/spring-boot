@@ -32,9 +32,9 @@ import org.springframework.util.StringUtils;
 /**
  * Main class used to run {@link Command}s.
  *
+ * @author Phillip Webb
  * @see #addCommand(Command)
  * @see CommandRunner#runAndHandleErrors(String[])
- * @author Phillip Webb
  */
 public class CommandRunner implements Iterable<Command> {
 
@@ -201,8 +201,8 @@ public class CommandRunner implements Iterable<Command> {
 	/**
 	 * Parse the arguments and run a suitable command.
 	 * @param args the arguments
-	 * @throws Exception if the command fails
 	 * @return the outcome of the command
+	 * @throws Exception if the command fails
 	 */
 	protected ExitStatus run(String... args) throws Exception {
 		if (args.length == 0) {

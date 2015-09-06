@@ -70,6 +70,9 @@ class ProjectGenerator {
 
 	/**
 	 * Detect if the project should be extracted.
+	 * @param request the generation request
+	 * @param response the generation response
+	 * @return if the project should be extracted
 	 */
 	private boolean shouldExtract(ProjectGenerationRequest request,
 			ProjectGenerationResponse response) {

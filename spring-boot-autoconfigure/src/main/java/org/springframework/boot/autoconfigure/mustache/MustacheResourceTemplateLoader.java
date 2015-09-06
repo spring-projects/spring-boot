@@ -59,14 +59,16 @@ public class MustacheResourceTemplateLoader implements TemplateLoader,
 	}
 
 	/**
-	 * @param charSet the charSet to set
+	 * Set the charset.
+	 * @param charSet the charset
 	 */
 	public void setCharset(String charSet) {
 		this.charSet = charSet;
 	}
 
 	/**
-	 * @param resourceLoader the resourceLoader to set
+	 * Set the resource loader.
+	 * @param resourceLoader the resource loader
 	 */
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {

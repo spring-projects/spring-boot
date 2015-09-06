@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 /**
- * Configuration for HTTP message converters that use Jackson
+ * Configuration for HTTP message converters that use Jackson.
  *
  * @author Andy Wilkinson
  * @since 1.2.2

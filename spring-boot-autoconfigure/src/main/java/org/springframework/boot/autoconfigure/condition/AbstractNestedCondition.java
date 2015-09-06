@@ -38,6 +38,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
+ * Abstract base class for nested conditions.
+ *
  * @author Phillip Webb
  */
 abstract class AbstractNestedCondition extends SpringBootCondition implements

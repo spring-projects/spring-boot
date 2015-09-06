@@ -24,7 +24,7 @@ import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
- * {@link CompilerAutoConfiguration} for JUnit
+ * {@link CompilerAutoConfiguration} for JUnit.
  *
  * @author Greg Turnquist
  */
