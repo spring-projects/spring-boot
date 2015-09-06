@@ -56,7 +56,7 @@ Here is a quick teaser of a complete Spring Boot application in Java:
 
 
 == Getting help
-Having trouble with Spring Boot, We'd like to help!
+Having trouble with Spring Boot? We'd like to help!
 
 * Check the {docs}/htmlsingle/[reference documentation], especially the
   {docs}/htmlsingle/#howto[How-to's] -- they provide solutions to the most common
