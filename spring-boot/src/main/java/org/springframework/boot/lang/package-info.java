@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * @author pwebb
+ * Language feature annotations.
  */
 package org.springframework.boot.lang;
+
