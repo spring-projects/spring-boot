@@ -8,8 +8,8 @@
 		<version>1.3.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-metrics-opentsdb</artifactId>
-	<name>spring-boot-sample-metrics-opentsdb</name>
-	<description>Spring Boot Actuator Sample</description>
+	<name>Spring Boot Metrics OpenTSDB Sample</name>
+	<description>Spring Boot Metrics OpenTSDB Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
