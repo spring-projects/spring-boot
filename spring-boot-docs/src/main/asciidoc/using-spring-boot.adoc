@@ -860,7 +860,7 @@ to set these properties manually, the `spring-boot-devtools` module will automat
 apply sensible development-time configuration.
 
 TIP: For a complete list of the properties that are applied see
-{sc-spring-boot-devtools}/autoconfigure/DevToolsPropertyDefaultsPostProcessor.{sc-ext}[DevToolsPropertyDefaultsPostProcessor].
+{sc-spring-boot-devtools}/env/DevToolsPropertyDefaultsPostProcessor.{sc-ext}[DevToolsPropertyDefaultsPostProcessor].
 
 
 
