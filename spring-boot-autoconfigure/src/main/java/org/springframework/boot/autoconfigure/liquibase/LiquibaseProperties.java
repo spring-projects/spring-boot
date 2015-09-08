@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
 import liquibase.integration.spring.SpringLiquibase;
@@ -77,6 +79,16 @@ public class LiquibaseProperties {
 	 * is used.
 	 */
 	private String url;
+
+	/**
+	 * Comma-separated list of runtime labels to use.
+	 */
+	private String labels;
+
+	/**
+	 * A map of Change Log Parameters.
+	 */
+	private Map<String, String> parameters;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -148,6 +160,22 @@ public class LiquibaseProperties {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getLabels() {
+		return this.labels;
+	}
+
+	public void setLabels(String labels) {
+		this.labels = labels;
+	}
+
+	public Map<String, String> getParameters() {
+		return this.parameters;
+	}
+
+	public void setParameters(Map<String, String> parameters) {
+		this.parameters = parameters;
 	}
 
 }

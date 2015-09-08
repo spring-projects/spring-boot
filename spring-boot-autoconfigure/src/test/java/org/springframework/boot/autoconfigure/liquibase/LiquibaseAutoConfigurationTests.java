@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
+import java.util.Map;
+
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.junit.After;
@@ -165,6 +167,36 @@ public class LiquibaseAutoConfigurationTests {
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		Object log = ReflectionTestUtils.getField(liquibase, "log");
 		assertThat(log, instanceOf(CommonsLoggingLiquibaseLogger.class));
+	}
+
+	@Test
+	public void testOverrideLabels() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"liquibase.labels:test, production");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+		assertEquals("test, production", liquibase.getLabels());
+	}
+
+	@Test
+	public void testOverrideParameters() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context, "liquibase.parameters.foo:bar");
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				LiquibaseAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
+
+		// SpringLiquibase parameters field is protected. Using reflection to get the
+		// value.
+		Object parametersValue = ReflectionTestUtils.getField(liquibase, "parameters");
+		@SuppressWarnings("unchecked")
+		Map<String, String> parameters = (Map<String, String>) parametersValue;
+		assertTrue(parameters.containsKey("foo"));
+		assertEquals("bar", parameters.get("foo"));
 	}
 
 }

@@ -100,6 +100,8 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
 			liquibase.setDropFirst(this.properties.isDropFirst());
 			liquibase.setShouldRun(this.properties.isEnabled());
+			liquibase.setLabels(this.properties.getLabels());
+			liquibase.setChangeLogParameters(this.properties.getParameters());
 			return liquibase;
 		}
 
