@@ -16,12 +16,6 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
-import io.undertow.Handlers;
-import io.undertow.Undertow;
-import io.undertow.Undertow.Builder;
-import io.undertow.server.HttpHandler;
-import io.undertow.servlet.api.DeploymentManager;
-
 import java.lang.reflect.Field;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -35,6 +29,12 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+
+import io.undertow.Handlers;
+import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
+import io.undertow.server.HttpHandler;
+import io.undertow.servlet.api.DeploymentManager;
 
 /**
  * {@link EmbeddedServletContainer} that can be used to control an embedded Undertow

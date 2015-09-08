@@ -16,10 +16,10 @@
 
 package org.springframework.boot.cli.command.shell;
 
-import jline.Terminal;
-
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.AnsiRenderer.Code;
+
+import jline.Terminal;
 
 /**
  * Simple utitliy class to build an ANSI string when supported by the {@link Terminal}.

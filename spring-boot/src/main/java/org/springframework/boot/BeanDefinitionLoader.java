@@ -16,8 +16,6 @@
 
 package org.springframework.boot;
 
-import groovy.lang.Closure;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +40,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+
+import groovy.lang.Closure;
 
 /**
  * Loads bean definitions from underlying sources, including XML and JavaConfig. Acts as a

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.grape.Grape;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -45,6 +43,8 @@ import org.springframework.boot.dependency.tools.PropertiesFileDependencies;
 import org.springframework.boot.groovy.GrabMetadata;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+
+import groovy.grape.Grape;
 
 /**
  * {@link ASTTransformation} for processing {@link GrabMetadata @GrabMetadata}

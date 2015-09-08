@@ -22,8 +22,6 @@ import java.util.Collections;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
-import nz.net.ultraq.thymeleaf.LayoutDialect;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -49,6 +47,8 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
+
+import nz.net.ultraq.thymeleaf.LayoutDialect;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.

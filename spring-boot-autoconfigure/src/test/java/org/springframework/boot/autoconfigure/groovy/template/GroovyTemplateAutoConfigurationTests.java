@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.groovy.template;
 
-import groovy.text.markup.MarkupTemplateEngine;
-
 import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -43,6 +41,8 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
+
+import groovy.text.markup.MarkupTemplateEngine;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;

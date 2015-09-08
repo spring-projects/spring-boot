@@ -16,10 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyClassLoader.ClassCollector;
-import groovy.lang.GroovyCodeSource;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -48,6 +44,10 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.util.ResourceUtils;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyClassLoader.ClassCollector;
+import groovy.lang.GroovyCodeSource;
 
 /**
  * Compiler for Groovy sources. Primarily a simple Facade for

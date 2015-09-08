@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.Grab;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,6 +28,8 @@ import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.core.annotation.Order;
+
+import groovy.lang.Grab;
 
 /**
  * {@link ASTTransformation} to resolve {@link Grab} artifact coordinates.

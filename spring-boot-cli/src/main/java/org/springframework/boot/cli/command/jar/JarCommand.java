@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.command.jar;
 
-import groovy.lang.Grab;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,9 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.jar.Manifest;
-
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotatedNode;
@@ -63,6 +58,10 @@ import org.springframework.boot.loader.tools.LibraryScope;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
+
+import groovy.lang.Grab;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 
 /**
  * {@link Command} to create a self-contained executable jar file from a CLI application

@@ -15,16 +15,16 @@
  */
 package org.springframework.boot.autoconfigure.groovy.template;
 
-import groovy.text.markup.MarkupTemplateEngine;
-import groovy.text.markup.TemplateConfiguration;
-import groovy.text.markup.TemplateResolver;
-
 import java.io.IOException;
 import java.net.URL;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
+
+import groovy.text.markup.MarkupTemplateEngine;
+import groovy.text.markup.TemplateConfiguration;
+import groovy.text.markup.TemplateResolver;
 
 /**
  * A custom {@link groovy.text.markup.TemplateResolver template resolver} which resolves

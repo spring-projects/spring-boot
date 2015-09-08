@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -39,6 +37,8 @@ import org.codehaus.groovy.control.SourceUnit;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
+
+import groovy.lang.GroovyClassLoader;
 
 /**
  * Extension of the {@link GroovyClassLoader} with support for obtaining '.class' files as
