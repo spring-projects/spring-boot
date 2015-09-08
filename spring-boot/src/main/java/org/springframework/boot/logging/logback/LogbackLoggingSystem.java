@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.jul.LevelChangePropagator;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.spi.FilterReply;
@@ -99,8 +100,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void loadDefaults(LogFile logFile) {
 		LoggerContext context = getLoggerContext();
-		context.stop();
-		context.reset();
+		stopAndReset(context);
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
 		new DefaultLogbackConfiguration(logFile).apply(configurator);
 	}
@@ -112,8 +112,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			logFile.applyToSystemProperties();
 		}
 		LoggerContext context = getLoggerContext();
-		context.stop();
-		context.reset();
+		stopAndReset(context);
 		try {
 			URL url = ResourceUtils.getURL(location);
 			new ContextInitializer(context).configureByResource(url);
@@ -122,6 +121,21 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			throw new IllegalStateException("Could not initialize Logback logging from "
 					+ location, ex);
 		}
+	}
+
+	private void stopAndReset(LoggerContext loggerContext) {
+		loggerContext.stop();
+		loggerContext.reset();
+		if (isBridgeHandlerAvailable()) {
+			addLevelChangePropagator(loggerContext);
+		}
+	}
+
+	private void addLevelChangePropagator(LoggerContext loggerContext) {
+		LevelChangePropagator levelChangePropagator = new LevelChangePropagator();
+		levelChangePropagator.setResetJUL(true);
+		levelChangePropagator.setContext(loggerContext);
+		loggerContext.addListener(levelChangePropagator);
 	}
 
 	@Override
