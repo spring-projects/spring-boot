@@ -41,15 +41,15 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableConfigurationProperties(AsyncTaskExecutorProperties.class)
 public class AsyncTaskExecutorAutoConfiguration {
 
-    @Autowired
-    private AsyncTaskExecutorProperties taskProperties;
+	@Autowired
+	private AsyncTaskExecutorProperties taskProperties;
 
-    @Bean
-    @ConditionalOnMissingBean
-    public AsyncTaskExecutor simpleAsyncTaskExecutor() {
-        SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
-        asyncTaskExecutor.setConcurrencyLimit(taskProperties.getConcurrencyLimit());
-        asyncTaskExecutor.setThreadNamePrefix(taskProperties.getThreadNamePrefix());
-        return asyncTaskExecutor;
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public AsyncTaskExecutor simpleAsyncTaskExecutor() {
+		SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
+		asyncTaskExecutor.setConcurrencyLimit(taskProperties.getConcurrencyLimit());
+		asyncTaskExecutor.setThreadNamePrefix(taskProperties.getThreadNamePrefix());
+		return asyncTaskExecutor;
+	}
 }
