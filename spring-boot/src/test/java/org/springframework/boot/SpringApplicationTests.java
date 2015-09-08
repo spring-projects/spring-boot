@@ -363,7 +363,7 @@ public class SpringApplicationTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addFirst(
 				new MapPropertySource("commandLineArgs", Collections
-						.<String, Object> singletonMap("foo", "original")));
+						.<String, Object>singletonMap("foo", "original")));
 		application.setEnvironment(environment);
 		application.run("--foo=bar", "--bar=foo");
 		assertTrue(hasPropertySource(environment, CompositePropertySource.class,

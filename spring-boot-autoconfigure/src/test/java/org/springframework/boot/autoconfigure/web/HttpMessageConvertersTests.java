@@ -58,7 +58,7 @@ public class HttpMessageConvertersTests {
 		for (HttpMessageConverter<?> converter : converters) {
 			converterClasses.add(converter.getClass());
 		}
-		assertThat(converterClasses, equalTo(Arrays.<Class<?>> asList(
+		assertThat(converterClasses, equalTo(Arrays.<Class<?>>asList(
 				ByteArrayHttpMessageConverter.class, StringHttpMessageConverter.class,
 				ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class,
@@ -117,7 +117,7 @@ public class HttpMessageConvertersTests {
 		for (HttpMessageConverter<?> converter : converters) {
 			converterClasses.add(converter.getClass());
 		}
-		assertThat(converterClasses, equalTo(Arrays.<Class<?>> asList(
+		assertThat(converterClasses, equalTo(Arrays.<Class<?>>asList(
 				ByteArrayHttpMessageConverter.class, StringHttpMessageConverter.class,
 				ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
 				AllEncompassingFormHttpMessageConverter.class,

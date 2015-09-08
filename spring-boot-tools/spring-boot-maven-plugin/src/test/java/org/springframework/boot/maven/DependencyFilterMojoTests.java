@@ -42,7 +42,7 @@ public class DependencyFilterMojoTests {
 	@Test
 	public void filterDependencies() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.<Exclude> emptyList(), "com.foo", "exclude-id");
+				Collections.<Exclude>emptyList(), "com.foo", "exclude-id");
 
 		Artifact artifact = createArtifact("com.bar", "one");
 		Set<Artifact> artifacts = mojo.filterDependencies(
@@ -55,7 +55,7 @@ public class DependencyFilterMojoTests {
 	@Test
 	public void filterGroupIdExactMatch() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.<Exclude> emptyList(), "com.foo", "");
+				Collections.<Exclude>emptyList(), "com.foo", "");
 
 		Artifact artifact = createArtifact("com.foo.bar", "one");
 		Set<Artifact> artifacts = mojo.filterDependencies(

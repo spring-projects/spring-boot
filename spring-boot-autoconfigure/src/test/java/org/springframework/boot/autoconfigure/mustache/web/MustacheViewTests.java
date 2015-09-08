@@ -20,7 +20,6 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.mustache.web.MustacheView;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;

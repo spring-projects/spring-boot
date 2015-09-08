@@ -106,7 +106,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 			PublicMetrics metrics = new PublicMetrics() {
 				@Override
 				public Collection<Metric<?>> metrics() {
-					return Collections.<Metric<?>> singleton(metric);
+					return Collections.<Metric<?>>singleton(metric);
 				}
 			};
 			return new MetricsEndpoint(metrics);

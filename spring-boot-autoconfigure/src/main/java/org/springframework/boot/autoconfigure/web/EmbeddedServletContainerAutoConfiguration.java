@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import io.undertow.Undertow;
-
 import javax.servlet.Servlet;
 
 import org.apache.catalina.startup.Tomcat;
@@ -49,6 +47,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ObjectUtils;
 import org.xnio.SslClientAuthMode;
+
+import io.undertow.Undertow;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for an embedded servlet containers.

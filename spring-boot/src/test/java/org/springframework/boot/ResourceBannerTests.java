@@ -103,7 +103,7 @@ public class ResourceBannerTests {
 		ResourceBanner banner = new MockResourceBanner(resource, bootVersion,
 				applicationVersion);
 		ConfigurableEnvironment environment = new MockEnvironment();
-		Map<String, Object> source = Collections.<String, Object> singletonMap("a", "1");
+		Map<String, Object> source = Collections.<String, Object>singletonMap("a", "1");
 		environment.getPropertySources().addLast(new MapPropertySource("map", source));
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		banner.printBanner(environment, getClass(), new PrintStream(out));

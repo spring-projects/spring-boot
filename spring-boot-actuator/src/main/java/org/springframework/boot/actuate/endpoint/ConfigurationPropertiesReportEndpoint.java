@@ -154,7 +154,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 			return result;
 		}
 		catch (Exception ex) {
-			return new HashMap<String, Object>(Collections.<String, Object> singletonMap(
+			return new HashMap<String, Object>(Collections.<String, Object>singletonMap(
 					"error", "Cannot serialize '" + prefix + "'"));
 		}
 	}

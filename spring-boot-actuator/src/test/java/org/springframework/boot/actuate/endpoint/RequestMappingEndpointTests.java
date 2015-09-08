@@ -53,7 +53,7 @@ public class RequestMappingEndpointTests {
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.initApplicationContext();
 		this.endpoint.setHandlerMappings(Collections
-				.<AbstractUrlHandlerMapping> singletonList(mapping));
+				.<AbstractUrlHandlerMapping>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
 		assertEquals(1, result.size());
 		@SuppressWarnings("unchecked")
@@ -114,7 +114,7 @@ public class RequestMappingEndpointTests {
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.afterPropertiesSet();
 		this.endpoint.setMethodMappings(Collections
-				.<AbstractHandlerMethodMapping<?>> singletonList(mapping));
+				.<AbstractHandlerMethodMapping<?>>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
 		assertEquals(1, result.size());
 		assertTrue(result.keySet().iterator().next().contains("/dump"));

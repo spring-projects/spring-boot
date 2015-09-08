@@ -198,7 +198,7 @@ public class EndpointAutoConfigurationTests {
 				@Override
 				public Collection<Metric<?>> metrics() {
 					Metric<Integer> metric = new Metric<Integer>("foo", 1);
-					return Collections.<Metric<?>> singleton(metric);
+					return Collections.<Metric<?>>singleton(metric);
 				}
 			};
 		}

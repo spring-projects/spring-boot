@@ -337,7 +337,7 @@ public class CrshAutoConfiguration {
 
 		@Override
 		protected Iterable<PropertyDescriptor<?>> createConfigurationCapabilities() {
-			return Arrays.<PropertyDescriptor<?>> asList(ROLES);
+			return Arrays.<PropertyDescriptor<?>>asList(ROLES);
 		}
 
 	}
@@ -457,7 +457,7 @@ public class CrshAutoConfiguration {
 				return Collections.singletonList(((FileHandle) handle).openStream())
 						.iterator();
 			}
-			return Collections.<InputStream> emptyList().iterator();
+			return Collections.<InputStream>emptyList().iterator();
 		}
 
 		@Override

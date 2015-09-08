@@ -100,7 +100,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	public void isSensitiveOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap(this.property + ".sensitive",
+				Collections.<String, Object>singletonMap(this.property + ".sensitive",
 						String.valueOf(!this.sensitive)));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
@@ -117,7 +117,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	public void isEnabledFallbackToEnvironment() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap(this.property + ".enabled",
+				Collections.<String, Object>singletonMap(this.property + ".enabled",
 						false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
@@ -130,7 +130,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	public void isExplicitlyEnabled() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap(this.property + ".enabled",
+				Collections.<String, Object>singletonMap(this.property + ".enabled",
 						false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
@@ -143,7 +143,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	public void isAllEndpointsDisabled() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap("endpoints.enabled", false));
+				Collections.<String, Object>singletonMap("endpoints.enabled", false));
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();

@@ -33,8 +33,7 @@ import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCom
 public interface FieldValuesParser {
 
 	/**
-	 * Implementation of {@link FieldValuesParser} that always returns an empty
-	 * result.
+	 * Implementation of {@link FieldValuesParser} that always returns an empty result.
 	 */
 	FieldValuesParser NONE = new FieldValuesParser() {
 

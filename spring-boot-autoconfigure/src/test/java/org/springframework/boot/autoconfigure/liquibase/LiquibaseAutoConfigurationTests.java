@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
-import liquibase.integration.spring.SpringLiquibase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,6 +28,8 @@ import org.springframework.boot.liquibase.CommonsLoggingLiquibaseLogger;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import liquibase.integration.spring.SpringLiquibase;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;

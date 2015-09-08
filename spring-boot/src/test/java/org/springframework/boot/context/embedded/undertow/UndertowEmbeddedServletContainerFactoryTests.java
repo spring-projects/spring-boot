@@ -16,9 +16,6 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
-import io.undertow.Undertow.Builder;
-import io.undertow.servlet.api.DeploymentInfo;
-
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -30,6 +27,9 @@ import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.ExampleServlet;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
+
+import io.undertow.Undertow.Builder;
+import io.undertow.servlet.api.DeploymentInfo;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;

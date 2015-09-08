@@ -42,7 +42,7 @@ import static org.junit.Assert.assertEquals;
 public class ProjectGenerationRequestTests {
 
 	public static final Map<String, String> EMPTY_TAGS = Collections
-			.<String, String> emptyMap();
+			.<String, String>emptyMap();
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();

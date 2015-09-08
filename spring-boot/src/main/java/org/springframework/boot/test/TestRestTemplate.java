@@ -85,7 +85,7 @@ public class TestRestTemplate extends RestTemplate {
 			return;
 		}
 		List<ClientHttpRequestInterceptor> interceptors = Collections
-				.<ClientHttpRequestInterceptor> singletonList(new BasicAuthorizationInterceptor(
+				.<ClientHttpRequestInterceptor>singletonList(new BasicAuthorizationInterceptor(
 						username, password));
 		setRequestFactory(new InterceptingClientHttpRequestFactory(getRequestFactory(),
 				interceptors));

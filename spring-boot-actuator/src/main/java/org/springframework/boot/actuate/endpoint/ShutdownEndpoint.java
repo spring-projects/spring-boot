@@ -48,12 +48,12 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 	public Map<String, Object> invoke() {
 
 		if (this.context == null) {
-			return Collections.<String, Object> singletonMap("message",
+			return Collections.<String, Object>singletonMap("message",
 					"No context to shutdown.");
 		}
 
 		try {
-			return Collections.<String, Object> singletonMap("message",
+			return Collections.<String, Object>singletonMap("message",
 					"Shutting down, bye...");
 		}
 		finally {

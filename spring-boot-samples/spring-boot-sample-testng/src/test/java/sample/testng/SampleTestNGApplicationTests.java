@@ -26,7 +26,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.Test;
 
-import sample.testng.SampleTestNGApplication;
 import static org.testng.Assert.assertEquals;
 
 /**

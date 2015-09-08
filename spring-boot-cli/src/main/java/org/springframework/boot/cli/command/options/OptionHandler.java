@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.command.options;
 
-import groovy.lang.Closure;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,15 +29,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.boot.cli.command.OptionParsingCommand;
+import org.springframework.boot.cli.command.status.ExitStatus;
+
+import groovy.lang.Closure;
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.HelpFormatter;
 import joptsimple.OptionDescriptor;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
-
-import org.springframework.boot.cli.command.OptionParsingCommand;
-import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * Delegate used by {@link OptionParsingCommand} to parse options and run the command.

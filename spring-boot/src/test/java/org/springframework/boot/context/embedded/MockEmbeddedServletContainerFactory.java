@@ -149,7 +149,7 @@ public class MockEmbeddedServletContainerFactory extends
 							}
 						});
 				given(this.servletContext.getAttributeNames()).willReturn(
-						MockEmbeddedServletContainer.<String> emptyEnumeration());
+						MockEmbeddedServletContainer.<String>emptyEnumeration());
 				given(this.servletContext.getNamedDispatcher("default")).willReturn(
 						mock(RequestDispatcher.class));
 				for (ServletContextInitializer initializer : this.initializers) {
