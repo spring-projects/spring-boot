@@ -420,9 +420,6 @@ code.
 === Use a random unassigned HTTP port
 To scan for a free port (using OS natives to prevent clashes) use `server.port=0`.
 
-TIP: You can know what port got allocated at runtime by looking at the `local.server.port`
-property in the `Environment`.
-
 
 
 [[howto-discover-the-http-port-at-runtime]]
@@ -454,6 +451,12 @@ and then inject the actual ('`local`') port as a `@Value`. For example:
 	}
 ----
 
+[NOTE]
+====
+Don't try to inject the port with `@Value` in a regular application. As we just saw, the
+value is only set once the container has initialized; contrary to a test, application code
+callbacks are processed early (i.e. before the value is actually available).
+====
 
 
 [[howto-configure-ssl]]
