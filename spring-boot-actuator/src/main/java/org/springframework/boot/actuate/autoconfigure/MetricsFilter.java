@@ -105,18 +105,30 @@ final class MetricsFilter extends OncePerRequestFilter {
 	}
 
 	private String fixSpecialCharacters(String value) {
-		String result = value.replaceAll("[{}]", "-");
-		result = result.replace("**", "-star-star-");
-		result = result.replace("*", "-star-");
-		result = result.replace("/-", "/");
-		result = result.replace("-/", "/");
-		if (result.endsWith("-")) {
-			result = result.substring(0, result.length() - 1);
+		final StringBuilder sb = new StringBuilder(value);
+		replaceAll(sb, "{", "-");
+		replaceAll(sb, "}", "-");
+		replaceAll(sb, "**", "-star-star-");
+		replaceAll(sb, "*", "-star-");
+		replaceAll(sb, "/-", "/");
+		replaceAll(sb, "-/", "/");
+		if (sb.charAt(sb.length() - 1) == '-') {
+			sb.setLength(sb.length() - 1);
 		}
-		if (result.startsWith("-")) {
-			result = result.substring(1);
+		if (sb.charAt(0) == '-') {
+			sb.deleteCharAt(0);
 		}
-		return result;
+		return sb.toString();
+	}
+
+	// Method from http://stackoverflow.com/a/3472705
+	private static void replaceAll(final StringBuilder builder, final String from, final String to) {
+		int index = builder.indexOf(from);
+		while (index != -1) {
+			builder.replace(index, index + from.length(), to);
+			index += to.length(); // Move to the end of the replacement
+			index = builder.indexOf(from, index);
+		}
 	}
 
 	private Series getSeries(int status) {
@@ -131,15 +143,16 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	private String getKey(String string) {
 		// graphite compatible metric names
-		String value = string.replace("/", ".");
-		value = value.replace("..", ".");
-		if (value.endsWith(".")) {
-			value = value + "root";
+		final StringBuilder sb = new StringBuilder(string);
+		replaceAll(sb, "/", ".");
+		replaceAll(sb, "..", ".");
+		if (sb.charAt(sb.length() - 1) == '.') {
+			sb.append("root");
 		}
-		if (value.startsWith("_")) {
-			value = value.substring(1);
+		if (sb.charAt(0) == '_') {
+			sb.deleteCharAt(0);
 		}
-		return value;
+		return sb.toString();
 	}
 
 	private void submitToGauge(String metricName, double value) {
