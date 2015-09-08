@@ -56,7 +56,7 @@ public abstract class Slf4JLoggingSystem extends AbstractLoggingSystem {
 		}
 	}
 
-	private boolean bridgeHandlerIsAvailable() {
+	protected boolean bridgeHandlerIsAvailable() {
 		return ClassUtils.isPresent(BRIDGE_HANDLER, getClassLoader());
 	}
 
