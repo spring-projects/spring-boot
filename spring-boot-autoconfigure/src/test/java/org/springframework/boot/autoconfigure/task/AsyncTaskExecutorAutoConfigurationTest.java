@@ -24,8 +24,10 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * Test case for {@link AsyncTaskExecutorAutoConfiguration}
@@ -49,7 +51,8 @@ public class AsyncTaskExecutorAutoConfigurationTest {
 	public void testTaskExecutorCreated() {
 		this.context = new AnnotationConfigApplicationContext();
 
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+		this.context.register(CustomAsyncAnnotationConfig.class,
+				PropertyPlaceholderAutoConfiguration.class,
 				AsyncTaskExecutorAutoConfiguration.class);
 		this.context.refresh();
 
@@ -68,7 +71,8 @@ public class AsyncTaskExecutorAutoConfigurationTest {
 				"spring.task.concurrency-limit:30",
 				"spring.task.thread-name-prefix:spring");
 
-		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+		this.context.register(CustomAsyncAnnotationConfig.class,
+				PropertyPlaceholderAutoConfiguration.class,
 				AsyncTaskExecutorAutoConfiguration.class);
 
 		this.context.refresh();
@@ -78,6 +82,11 @@ public class AsyncTaskExecutorAutoConfigurationTest {
 		assertEquals(30, bean.getConcurrencyLimit());
 		assertEquals("spring", bean.getThreadNamePrefix());
 
+	}
+
+	@Configuration
+	@EnableAsync
+	static class CustomAsyncAnnotationConfig {
 	}
 
 }
