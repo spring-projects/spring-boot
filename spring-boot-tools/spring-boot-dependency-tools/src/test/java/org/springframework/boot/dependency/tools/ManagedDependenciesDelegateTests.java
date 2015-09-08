@@ -41,7 +41,7 @@ public class ManagedDependenciesDelegateTests {
 		PropertiesFileDependencies extra = new PropertiesFileDependencies(getClass()
 				.getResourceAsStream("additional-external.properties"));
 		this.dependencies = new ManagedDependenciesDelegate(root,
-				Collections.<Dependencies> singleton(extra));
+				Collections.<Dependencies>singleton(extra));
 	}
 
 	@Test

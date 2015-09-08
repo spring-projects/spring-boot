@@ -93,7 +93,7 @@ public abstract class ManagedDependencies implements Dependencies {
 	 * @see #get(Collection)
 	 */
 	public static ManagedDependencies get() {
-		return get(Collections.<Dependencies> emptySet());
+		return get(Collections.<Dependencies>emptySet());
 	}
 
 	/**

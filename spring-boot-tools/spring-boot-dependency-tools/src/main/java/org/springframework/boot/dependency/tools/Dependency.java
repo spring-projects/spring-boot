@@ -42,7 +42,7 @@ public final class Dependency {
 	 * @param version the version
 	 */
 	public Dependency(String groupId, String artifactId, String version) {
-		this(groupId, artifactId, version, Collections.<Exclusion> emptyList());
+		this(groupId, artifactId, version, Collections.<Exclusion>emptyList());
 	}
 
 	/**

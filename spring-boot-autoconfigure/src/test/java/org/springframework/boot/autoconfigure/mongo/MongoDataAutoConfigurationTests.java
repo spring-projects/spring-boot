@@ -109,7 +109,7 @@ public class MongoDataAutoConfigurationTests {
 		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils.getField(
 				mappingContext, "initialEntitySet");
 		assertThat(initialEntitySet, hasSize(types.length));
-		assertThat(initialEntitySet, Matchers.<Class> hasItems(types));
+		assertThat(initialEntitySet, Matchers.<Class>hasItems(types));
 	}
 
 	@Configuration

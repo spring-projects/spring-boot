@@ -72,7 +72,7 @@ public class SampleAtmosphereApplication {
 
 		@Override
 		public void onStartup(ServletContext servletContext) throws ServletException {
-			onStartup(Collections.<Class<?>> emptySet(), servletContext);
+			onStartup(Collections.<Class<?>>emptySet(), servletContext);
 		}
 
 	}

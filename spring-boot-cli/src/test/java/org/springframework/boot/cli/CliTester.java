@@ -81,7 +81,8 @@ public class CliTester implements TestRule {
 		try {
 			this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 			return getOutput();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			return getOutput();
 		}
 	}

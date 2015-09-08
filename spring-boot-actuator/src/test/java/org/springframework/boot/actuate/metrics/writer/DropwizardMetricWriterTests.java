@@ -36,7 +36,8 @@ import static org.junit.Assert.assertFalse;
 public class DropwizardMetricWriterTests {
 
 	private final MetricRegistry registry = new MetricRegistry();
-	private final DropwizardMetricWriter writer = new DropwizardMetricWriter(this.registry);
+	private final DropwizardMetricWriter writer = new DropwizardMetricWriter(
+			this.registry);
 
 	@Test
 	public void incrementCounter() {

@@ -49,7 +49,7 @@ import static org.mockito.Mockito.mock;
 public class HealthMvcEndpointTests {
 
 	private static final PropertySource<?> NON_SENSITIVE = new MapPropertySource("test",
-			Collections.<String, Object> singletonMap("endpoints.health.sensitive",
+			Collections.<String, Object>singletonMap("endpoints.health.sensitive",
 					"false"));
 
 	private HealthEndpoint endpoint = null;

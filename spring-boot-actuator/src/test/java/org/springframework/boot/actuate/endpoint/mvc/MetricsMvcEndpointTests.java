@@ -108,7 +108,7 @@ public class MetricsMvcEndpointTests {
 
 				@Override
 				public Collection<Metric<?>> metrics() {
-					return Arrays.<Metric<?>> asList(new Metric<Integer>("foo", 1));
+					return Arrays.<Metric<?>>asList(new Metric<Integer>("foo", 1));
 				}
 
 			});
