@@ -50,7 +50,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
-			<artifactId>spring-restdocs</artifactId>
+			<artifactId>spring-restdocs-mockmvc</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -96,9 +96,6 @@
 					<includes>
 						<include>**/*Documentation.java</include>
 					</includes>
-					<systemPropertyVariables>
-						<org.springframework.restdocs.outputDir>${project.build.directory}/generated-snippets</org.springframework.restdocs.outputDir>
-					</systemPropertyVariables>
 					<skipTests>false</skipTests>
 				</configuration>
 				<executions>
