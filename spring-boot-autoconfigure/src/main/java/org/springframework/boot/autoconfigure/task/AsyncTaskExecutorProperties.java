@@ -20,7 +20,6 @@ package org.springframework.boot.autoconfigure.task;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- *
  * Configuration properties for TaskExecutor
  *
  * @author Tiarê Balbi Bonamini
@@ -28,27 +27,30 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.task")
 public class AsyncTaskExecutorProperties {
 
-	private String threadNamePrefix = "";
+    /**
+     * Prefix to use for the names of newly created threads
+     */
+    private String threadNamePrefix = "async-executor-task-";
 
-	private int concurrencyLimit = -1;
+    /**
+     * Set the maximum number of concurrent access attempts allowed.
+     * -1 indicates unbounded concurrency.
+     */
+    private int concurrencyLimit = -1;
 
-	public String getThreadNamePrefix() {
-		return threadNamePrefix;
-	}
+    public String getThreadNamePrefix() {
+        return threadNamePrefix;
+    }
 
-	public void setThreadNamePrefix(String threadNamePrefix) {
-		this.threadNamePrefix = threadNamePrefix;
-	}
+    public void setThreadNamePrefix(String threadNamePrefix) {
+        this.threadNamePrefix = threadNamePrefix;
+    }
 
-	/**
-	 * Set the maximum number of concurrent access attempts allowed. -1 indicates
-	 * unbounded concurrency.
-	 */
-	public int getConcurrencyLimit() {
-		return concurrencyLimit;
-	}
+    public int getConcurrencyLimit() {
+        return concurrencyLimit;
+    }
 
-	public void setConcurrencyLimit(int concurrencyLimit) {
-		this.concurrencyLimit = concurrencyLimit;
-	}
+    public void setConcurrencyLimit(int concurrencyLimit) {
+        this.concurrencyLimit = concurrencyLimit;
+    }
 }

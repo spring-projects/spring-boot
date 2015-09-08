@@ -19,36 +19,37 @@ package org.springframework.boot.autoconfigure.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Async Task Executor.
  *
  * @author Tiarê Balbi Bonamini
- * @see TaskExecutor
+ * @see EnableAsync
+ * @see AsyncTaskExecutor
  * @see SimpleAsyncTaskExecutor
  */
 @Configuration
-@ConditionalOnClass(value = SimpleAsyncTaskExecutor.class)
+@ConditionalOnBean(annotation = EnableAsync.class)
 @EnableConfigurationProperties(AsyncTaskExecutorProperties.class)
 public class AsyncTaskExecutorAutoConfiguration {
 
-	@Autowired
-	private AsyncTaskExecutorProperties taskProperties;
+    @Autowired
+    private AsyncTaskExecutorProperties taskProperties;
 
-	@Bean
-	@ConditionalOnMissingBean
-	public AsyncTaskExecutor simpleAsyncTaskExecutor() {
-		SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
-		asyncTaskExecutor.setConcurrencyLimit(taskProperties.getConcurrencyLimit());
-		asyncTaskExecutor.setThreadNamePrefix(taskProperties.getThreadNamePrefix());
-		return asyncTaskExecutor;
-	}
+    @Bean
+    @ConditionalOnMissingBean
+    public AsyncTaskExecutor simpleAsyncTaskExecutor() {
+        SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
+        asyncTaskExecutor.setConcurrencyLimit(taskProperties.getConcurrencyLimit());
+        asyncTaskExecutor.setThreadNamePrefix(taskProperties.getThreadNamePrefix());
+        return asyncTaskExecutor;
+    }
 }
