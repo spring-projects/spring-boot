@@ -19,12 +19,6 @@ package org.springframework.boot.dependency.tools;
 import java.util.Collections;
 import java.util.Iterator;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-
 /**
  * Tests for {@link ManagedDependenciesDelegate}.
  *

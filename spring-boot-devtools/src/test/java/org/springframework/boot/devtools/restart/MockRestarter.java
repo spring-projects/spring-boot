@@ -27,7 +27,6 @@ import org.junit.runners.model.Statement;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.devtools.restart.Restarter;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;

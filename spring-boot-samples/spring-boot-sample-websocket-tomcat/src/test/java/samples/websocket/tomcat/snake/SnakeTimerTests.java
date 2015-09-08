@@ -20,8 +20,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import samples.websocket.tomcat.snake.Snake;
-import samples.websocket.tomcat.snake.SnakeTimer;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.willThrow;

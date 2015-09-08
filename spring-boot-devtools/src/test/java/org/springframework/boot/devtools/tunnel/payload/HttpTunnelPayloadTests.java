@@ -28,7 +28,6 @@ import java.nio.channels.WritableByteChannel;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.server.ServletServerHttpRequest;

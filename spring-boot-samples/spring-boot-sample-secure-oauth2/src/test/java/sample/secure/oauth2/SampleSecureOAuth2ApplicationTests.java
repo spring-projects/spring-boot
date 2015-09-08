@@ -19,9 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
-import sample.secure.oauth2.SampleSecureOAuth2Application;
-import sample.secure.oauth2.Flight;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.hamcrest.CoreMatchers.is;

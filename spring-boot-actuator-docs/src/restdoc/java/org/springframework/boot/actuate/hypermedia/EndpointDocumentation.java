@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.hypermedia;
 
-import groovy.text.Template;
-import groovy.text.TemplateEngine;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -52,6 +49,9 @@ import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
+
+import groovy.text.Template;
+import groovy.text.TemplateEngine;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;

@@ -26,8 +26,6 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 
-import net.sf.ehcache.Status;
-
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.jcache.embedded.JCachingProvider;
 import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
@@ -68,6 +66,8 @@ import com.google.common.cache.CacheBuilder;
 import com.hazelcast.cache.HazelcastCachingProvider;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
+
+import net.sf.ehcache.Status;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;

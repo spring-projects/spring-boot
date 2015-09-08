@@ -16,9 +16,6 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
-import io.undertow.servlet.UndertowServletLogger;
-import io.undertow.servlet.api.SessionPersistenceManager;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,6 +26,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import io.undertow.servlet.UndertowServletLogger;
+import io.undertow.servlet.api.SessionPersistenceManager;
 
 /**
  * {@link SessionPersistenceManager} that stores session information in a file.

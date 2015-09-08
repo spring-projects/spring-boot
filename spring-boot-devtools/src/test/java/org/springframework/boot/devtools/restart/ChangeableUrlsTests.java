@@ -23,7 +23,6 @@ import java.net.URL;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.devtools.restart.ChangeableUrls;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

@@ -24,9 +24,6 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import sample.cache.Country;
-import sample.cache.CountryRepository;
-import sample.cache.SampleCacheApplication;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

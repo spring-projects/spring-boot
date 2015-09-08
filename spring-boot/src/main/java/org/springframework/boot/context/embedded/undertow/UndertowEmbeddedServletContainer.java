@@ -16,20 +16,6 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
-import io.undertow.Handlers;
-import io.undertow.Undertow;
-import io.undertow.Undertow.Builder;
-import io.undertow.attribute.RequestHeaderAttribute;
-import io.undertow.predicate.Predicate;
-import io.undertow.predicate.Predicates;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.server.handlers.encoding.ContentEncodingRepository;
-import io.undertow.server.handlers.encoding.EncodingHandler;
-import io.undertow.server.handlers.encoding.GzipEncodingProvider;
-import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.util.HttpString;
-
 import java.lang.reflect.Field;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -47,6 +33,20 @@ import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+
+import io.undertow.Handlers;
+import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
+import io.undertow.attribute.RequestHeaderAttribute;
+import io.undertow.predicate.Predicate;
+import io.undertow.predicate.Predicates;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.encoding.ContentEncodingRepository;
+import io.undertow.server.handlers.encoding.EncodingHandler;
+import io.undertow.server.handlers.encoding.GzipEncodingProvider;
+import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.util.HttpString;
 
 /**
  * {@link EmbeddedServletContainer} that can be used to control an embedded Undertow

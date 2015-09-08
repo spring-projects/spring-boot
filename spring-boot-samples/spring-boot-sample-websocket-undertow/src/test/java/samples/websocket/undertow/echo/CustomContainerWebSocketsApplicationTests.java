@@ -47,6 +47,7 @@ import samples.websocket.undertow.client.GreetingService;
 import samples.websocket.undertow.client.SimpleClientWebSocketHandler;
 import samples.websocket.undertow.client.SimpleGreetingService;
 import samples.websocket.undertow.echo.CustomContainerWebSocketsApplicationTests.CustomContainerConfiguration;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)

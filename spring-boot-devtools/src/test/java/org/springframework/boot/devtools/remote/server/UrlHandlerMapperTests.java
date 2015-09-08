@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.devtools.remote.server.Handler;
-import org.springframework.boot.devtools.remote.server.UrlHandlerMapper;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;

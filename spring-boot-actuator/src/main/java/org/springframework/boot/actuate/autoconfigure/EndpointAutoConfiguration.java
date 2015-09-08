@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import liquibase.integration.spring.SpringLiquibase;
-
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +66,8 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
+
+import liquibase.integration.spring.SpringLiquibase;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management

@@ -31,7 +31,6 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
-import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection;
 import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection.TunnelChannel;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.SocketUtils;

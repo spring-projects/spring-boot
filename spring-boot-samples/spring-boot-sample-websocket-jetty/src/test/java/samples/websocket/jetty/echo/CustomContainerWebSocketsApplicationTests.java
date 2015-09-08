@@ -47,6 +47,7 @@ import samples.websocket.jetty.client.GreetingService;
 import samples.websocket.jetty.client.SimpleClientWebSocketHandler;
 import samples.websocket.jetty.client.SimpleGreetingService;
 import samples.websocket.jetty.echo.CustomContainerWebSocketsApplicationTests.CustomContainerConfiguration;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)

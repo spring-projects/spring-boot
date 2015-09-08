@@ -39,10 +39,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
-import samples.websocket.undertow.SampleUndertowWebSocketsApplication;
 import samples.websocket.undertow.client.GreetingService;
 import samples.websocket.undertow.client.SimpleClientWebSocketHandler;
 import samples.websocket.undertow.client.SimpleGreetingService;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)

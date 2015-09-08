@@ -19,7 +19,6 @@ package org.springframework.boot.devtools.restart;
 import java.net.URL;
 
 import org.junit.Test;
-import org.springframework.boot.devtools.restart.DefaultRestartInitializer;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;

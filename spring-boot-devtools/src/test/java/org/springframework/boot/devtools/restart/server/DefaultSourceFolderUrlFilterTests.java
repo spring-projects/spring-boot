@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.boot.devtools.restart.server.DefaultSourceFolderUrlFilter;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

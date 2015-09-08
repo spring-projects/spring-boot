@@ -36,8 +36,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
-import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer;
-import org.springframework.boot.devtools.tunnel.server.TargetServerConnection;
 import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer.HttpConnection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpAsyncRequestControl;

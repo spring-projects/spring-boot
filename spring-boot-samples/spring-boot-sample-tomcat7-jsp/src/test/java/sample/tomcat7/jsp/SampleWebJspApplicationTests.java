@@ -28,7 +28,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import sample.tomcat7.jsp.SampleTomcat7JspApplication;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

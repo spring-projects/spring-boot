@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import javax.cache.Caching;
 
-import net.sf.ehcache.Ehcache;
-
 import org.infinispan.spring.provider.SpringCache;
 import org.springframework.boot.actuate.cache.CacheStatistics;
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
@@ -45,6 +43,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.hazelcast.core.IMap;
 import com.hazelcast.spring.cache.HazelcastCache;
+
+import net.sf.ehcache.Ehcache;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CacheStatisticsProvider}

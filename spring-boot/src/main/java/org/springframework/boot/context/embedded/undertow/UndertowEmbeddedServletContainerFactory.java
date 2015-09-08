@@ -16,30 +16,6 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
-import io.undertow.Undertow;
-import io.undertow.Undertow.Builder;
-import io.undertow.UndertowMessages;
-import io.undertow.server.HandlerWrapper;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.accesslog.AccessLogHandler;
-import io.undertow.server.handlers.accesslog.AccessLogReceiver;
-import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
-import io.undertow.server.handlers.resource.ClassPathResourceManager;
-import io.undertow.server.handlers.resource.FileResourceManager;
-import io.undertow.server.handlers.resource.Resource;
-import io.undertow.server.handlers.resource.ResourceChangeListener;
-import io.undertow.server.handlers.resource.ResourceManager;
-import io.undertow.server.handlers.resource.URLResource;
-import io.undertow.server.session.SessionManager;
-import io.undertow.servlet.Servlets;
-import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.servlet.api.MimeMapping;
-import io.undertow.servlet.api.ServletContainerInitializerInfo;
-import io.undertow.servlet.api.ServletStackTraces;
-import io.undertow.servlet.handlers.DefaultServlet;
-import io.undertow.servlet.util.ImmediateInstanceFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -80,6 +56,30 @@ import org.xnio.Options;
 import org.xnio.SslClientAuthMode;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
+
+import io.undertow.Undertow;
+import io.undertow.Undertow.Builder;
+import io.undertow.UndertowMessages;
+import io.undertow.server.HandlerWrapper;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
+import io.undertow.server.handlers.accesslog.AccessLogReceiver;
+import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
+import io.undertow.server.handlers.resource.ClassPathResourceManager;
+import io.undertow.server.handlers.resource.FileResourceManager;
+import io.undertow.server.handlers.resource.Resource;
+import io.undertow.server.handlers.resource.ResourceChangeListener;
+import io.undertow.server.handlers.resource.ResourceManager;
+import io.undertow.server.handlers.resource.URLResource;
+import io.undertow.server.session.SessionManager;
+import io.undertow.servlet.Servlets;
+import io.undertow.servlet.api.DeploymentInfo;
+import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.MimeMapping;
+import io.undertow.servlet.api.ServletContainerInitializerInfo;
+import io.undertow.servlet.api.ServletStackTraces;
+import io.undertow.servlet.handlers.DefaultServlet;
+import io.undertow.servlet.util.ImmediateInstanceFactory;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create

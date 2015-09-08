@@ -39,10 +39,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
-import samples.websocket.tomcat.SampleTomcatWebSocketApplication;
 import samples.websocket.tomcat.client.GreetingService;
 import samples.websocket.tomcat.client.SimpleClientWebSocketHandler;
 import samples.websocket.tomcat.client.SimpleGreetingService;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.devtools.restart.MainMethod;
 import org.springframework.util.ReflectionUtils;
 
 import static org.hamcrest.Matchers.equalTo;

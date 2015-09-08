@@ -20,8 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.devtools.restart.RestartScope;
-import org.springframework.boot.devtools.restart.RestartScopeInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;

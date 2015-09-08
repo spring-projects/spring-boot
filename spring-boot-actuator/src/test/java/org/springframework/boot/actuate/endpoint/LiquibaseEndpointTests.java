@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import liquibase.integration.spring.SpringLiquibase;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -25,6 +23,8 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurati
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
+import liquibase.integration.spring.SpringLiquibase;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

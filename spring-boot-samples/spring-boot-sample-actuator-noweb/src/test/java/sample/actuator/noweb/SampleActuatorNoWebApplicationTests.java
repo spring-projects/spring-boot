@@ -24,7 +24,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import sample.actuator.noweb.SampleActuatorNoWebApplication;
 import static org.junit.Assert.assertNotNull;
 
 /**

@@ -19,7 +19,6 @@ package org.springframework.boot.devtools.tunnel.server;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.devtools.tunnel.server.StaticPortProvider;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.grape.Grape;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -53,6 +51,8 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 import org.springframework.boot.groovy.DependencyManagementBom;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+
+import groovy.grape.Grape;
 
 /**
  * {@link ASTTransformation} for processing {@link DependencyManagementBom} annotations
