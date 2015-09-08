@@ -20,7 +20,6 @@ import java.util.Map;
 
 import liquibase.integration.spring.SpringLiquibase;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -193,8 +192,7 @@ public class LiquibaseAutoConfigurationTests {
 
 		// SpringLiquibase parameters field is protected. Using reflection to get the
 		// value.
-		Object parametersValue = FieldUtils.readDeclaredField(liquibase, "parameters",
-				true);
+		Object parametersValue = ReflectionTestUtils.getField(liquibase, "parameters");
 		@SuppressWarnings("unchecked")
 		Map<String, String> parameters = (Map<String, String>) parametersValue;
 		assertTrue(parameters.containsKey("foo"));
