@@ -81,7 +81,7 @@ public class UserInfoTokenServicesTests {
 		this.services.setRestTemplate(this.template);
 		given(this.template.getForEntity(any(String.class), any(Class.class))).willThrow(
 				new UserRedirectRequiredException("foo:bar", Collections
-						.<String, String> emptyMap()));
+						.<String, String>emptyMap()));
 		this.expected.expect(InvalidTokenException.class);
 		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
 	}

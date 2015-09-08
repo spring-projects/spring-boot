@@ -200,8 +200,8 @@ public class MongoProperties {
 	/**
 	 * Creates a {@link MongoClient} using the given {@code options} and
 	 * {@code environment}. If the configured port is zero, the value of the
-	 * {@code local.mongo.port} property retrieved from the {@code environment} is used
-	 * to configure the client.
+	 * {@code local.mongo.port} property retrieved from the {@code environment} is used to
+	 * configure the client.
 	 *
 	 * @param options the options
 	 * @param environment the environment

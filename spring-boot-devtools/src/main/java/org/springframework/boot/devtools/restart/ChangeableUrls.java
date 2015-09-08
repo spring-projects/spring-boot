@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
 class ChangeableUrls implements Iterable<URL> {
 
 	private static final String[] SKIPPED_PROJECTS = { "spring-boot",
-			"spring-boot-devtools", "spring-boot-autoconfigure",
-			"spring-boot-actuator", "spring-boot-starter" };
+			"spring-boot-devtools", "spring-boot-autoconfigure", "spring-boot-actuator",
+			"spring-boot-starter" };
 
 	private static final Pattern STARTER_PATTERN = Pattern
 			.compile("\\/spring-boot-starter-[\\w-]+\\/");

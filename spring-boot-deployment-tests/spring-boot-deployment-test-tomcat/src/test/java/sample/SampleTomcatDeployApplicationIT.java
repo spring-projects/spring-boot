@@ -24,7 +24,7 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Integration Tests for {@link SampleTomcatDeployApplication}. 
+ * Integration Tests for {@link SampleTomcatDeployApplication}.
  */
 public class SampleTomcatDeployApplicationIT {
 

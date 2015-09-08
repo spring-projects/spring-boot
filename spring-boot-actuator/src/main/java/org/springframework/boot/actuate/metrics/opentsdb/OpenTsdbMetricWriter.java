@@ -39,8 +39,8 @@ import org.springframework.web.client.RestTemplate;
  * HTTP endpoint provided by the server. Data are buffered according to the
  * {@link #setBufferSize(int) bufferSize} property, and only flushed automatically when
  * the buffer size is reached. Users should either manually {@link #flush()} after writing
- * a batch of data if that makes sense, or consider adding a {@link Scheduled
- * Scheduled} task to flush periodically.
+ * a batch of data if that makes sense, or consider adding a {@link Scheduled Scheduled}
+ * task to flush periodically.
  *
  * @author Dave Syer
  * @since 1.3.0

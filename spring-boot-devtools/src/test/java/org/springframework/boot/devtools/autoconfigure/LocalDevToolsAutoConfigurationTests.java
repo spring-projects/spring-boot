@@ -119,7 +119,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles> emptySet(), false);
+				Collections.<ChangedFiles>emptySet(), false);
 		this.context.publishEvent(event);
 		verify(server).triggerReload();
 	}
@@ -130,7 +130,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles> emptySet(), true);
+				Collections.<ChangedFiles>emptySet(), true);
 		this.context.publishEvent(event);
 		verify(server, never()).triggerReload();
 	}
@@ -148,7 +148,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void restartTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles> emptySet(), true);
+				Collections.<ChangedFiles>emptySet(), true);
 		this.context.publishEvent(event);
 		verify(this.mockRestarter.getMock()).restart(any(FailureHandler.class));
 	}
@@ -157,7 +157,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void restartNotTriggeredOnClassPathChangeWithRestart() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context,
-				Collections.<ChangedFiles> emptySet(), false);
+				Collections.<ChangedFiles>emptySet(), false);
 		this.context.publishEvent(event);
 		verify(this.mockRestarter.getMock(), never()).restart();
 	}
@@ -211,7 +211,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config) {
-		return initializeAndRun(config, Collections.<String, Object> emptyMap());
+		return initializeAndRun(config, Collections.<String, Object>emptyMap());
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,

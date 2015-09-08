@@ -241,7 +241,7 @@ public class ManagementWebSecurityAutoConfiguration {
 				}
 				if (this.endpointHandlerMapping == null) {
 					this.endpointHandlerMapping = new EndpointHandlerMapping(
-							Collections.<MvcEndpoint> emptySet());
+							Collections.<MvcEndpoint>emptySet());
 				}
 			}
 		}

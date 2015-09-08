@@ -138,8 +138,8 @@ public abstract class AstUtils {
 	}
 
 	/**
-	 * Extract a top-level {@code name} closure from inside this block if there is
-	 * one, optionally removing it from the block at the same time.
+	 * Extract a top-level {@code name} closure from inside this block if there is one,
+	 * optionally removing it from the block at the same time.
 	 * @param block a block statement (class definition)
 	 * @param name the name to look for
 	 * @param remove whether or not the extracted closure should be removed

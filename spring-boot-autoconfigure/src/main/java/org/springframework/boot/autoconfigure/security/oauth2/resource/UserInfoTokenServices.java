@@ -125,7 +125,7 @@ public class UserInfoTokenServices implements ResourceServerTokenServices {
 		catch (Exception ex) {
 			this.logger.info("Could not fetch user details: " + ex.getClass() + ", "
 					+ ex.getMessage());
-			return Collections.<String, Object> singletonMap("error",
+			return Collections.<String, Object>singletonMap("error",
 					"Could not fetch user details");
 		}
 	}

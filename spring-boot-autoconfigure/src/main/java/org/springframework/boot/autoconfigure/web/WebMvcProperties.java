@@ -49,8 +49,7 @@ public class WebMvcProperties {
 	private String dateFormat;
 
 	/**
-	 * If the content of the "default" model should be ignored during redirect
-	 * scenarios.
+	 * If the content of the "default" model should be ignored during redirect scenarios.
 	 */
 	private boolean ignoreDefaultModelOnRedirect = true;
 

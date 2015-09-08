@@ -79,7 +79,7 @@ public class ItemHint implements Comparable<ItemHint> {
 
 	public static ItemHint newHint(String name, ValueHint... values) {
 		return new ItemHint(name, Arrays.asList(values),
-				Collections.<ValueProvider> emptyList());
+				Collections.<ValueProvider>emptyList());
 	}
 
 	@Override

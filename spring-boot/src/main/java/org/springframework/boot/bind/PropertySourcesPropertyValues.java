@@ -83,7 +83,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		Assert.notNull(propertySources, "PropertySources must not be null");
 		Assert.notNull(includes, "Includes must not be null");
 		this.propertySources = propertySources;
-		this.propertyNames = (propertyNames == null ? Collections.<String> emptySet()
+		this.propertyNames = (propertyNames == null ? Collections.<String>emptySet()
 				: propertyNames);
 		this.includes = includes;
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(

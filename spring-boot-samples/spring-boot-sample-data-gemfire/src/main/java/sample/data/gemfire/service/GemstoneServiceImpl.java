@@ -97,8 +97,8 @@ public class GemstoneServiceImpl implements GemstoneService {
 	 * Return a listing of Gemstones currently stored in the GemFire Cache.
 	 * <p/>
 	 *
-	 * @return an Iterable object to iterate over the list of Gemstones currently stored in
-	 * the GemFire Cache.
+	 * @return an Iterable object to iterate over the list of Gemstones currently stored
+	 * in the GemFire Cache.
 	 * @see java.lang.Iterable
 	 * @see sample.data.gemfire.domain.Gemstone
 	 */

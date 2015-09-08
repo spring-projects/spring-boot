@@ -48,10 +48,12 @@ public class SampleAntApplicationIT {
 
 		});
 		assertThat("Number of jars", jarFiles.length, equalTo(1));
-		Process process = new JavaExecutable().processBuilder("-jar", jarFiles[0].getName()).directory(target).start();
+		Process process = new JavaExecutable()
+				.processBuilder("-jar", jarFiles[0].getName()).directory(target).start();
 		process.waitFor(5, TimeUnit.MINUTES);
 		assertThat(process.exitValue(), equalTo(0));
-		String output = FileCopyUtils.copyToString(new InputStreamReader(process.getInputStream()));
+		String output = FileCopyUtils.copyToString(new InputStreamReader(process
+				.getInputStream()));
 		assertThat(output, containsString("Spring Boot Ant Example"));
 	}
 

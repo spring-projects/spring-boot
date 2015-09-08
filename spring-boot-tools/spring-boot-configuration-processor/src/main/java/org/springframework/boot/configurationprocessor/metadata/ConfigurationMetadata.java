@@ -138,17 +138,17 @@ public class ConfigurationMetadata {
 				it.remove();
 			}
 		}
-		if (candidates.size() == 1)  {
+		if (candidates.size() == 1) {
 			return candidates.get(0);
 		}
 		for (ItemMetadata candidate : candidates) {
-			if (ObjectUtils.nullSafeEquals(candidate.getSourceType(), metadata.getSourceType())) {
+			if (ObjectUtils.nullSafeEquals(candidate.getSourceType(),
+					metadata.getSourceType())) {
 				return candidate;
 			}
 		}
 		return null;
 	}
-
 
 	public static String nestedPrefix(String prefix, String name) {
 		String nestedPrefix = (prefix == null ? "" : prefix);

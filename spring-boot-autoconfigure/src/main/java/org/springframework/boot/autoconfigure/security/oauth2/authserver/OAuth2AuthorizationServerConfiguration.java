@@ -113,7 +113,7 @@ public class OAuth2AuthorizationServerConfiguration extends
 					"password", "client_credentials", "implicit", "refresh_token"));
 			details.setAuthorities(AuthorityUtils
 					.commaSeparatedStringToAuthorityList("ROLE_USER"));
-			details.setRegisteredRedirectUri(Collections.<String> emptySet());
+			details.setRegisteredRedirectUri(Collections.<String>emptySet());
 			return details;
 		}
 

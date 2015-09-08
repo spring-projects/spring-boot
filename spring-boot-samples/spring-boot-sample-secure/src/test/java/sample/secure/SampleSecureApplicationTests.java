@@ -43,8 +43,7 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration({ SampleSecureApplication.class,
-		TestConfiguration.class })
+@SpringApplicationConfiguration({ SampleSecureApplication.class, TestConfiguration.class })
 public class SampleSecureApplicationTests {
 
 	@Autowired

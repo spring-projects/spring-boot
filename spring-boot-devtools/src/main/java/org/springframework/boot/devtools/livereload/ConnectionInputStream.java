@@ -83,8 +83,8 @@ class ConnectionInputStream extends FilterInputStream {
 	}
 
 	/**
-	 * Read a number of bytes from the stream (checking that the end of the stream
-	 * hasn't been reached)
+	 * Read a number of bytes from the stream (checking that the end of the stream hasn't
+	 * been reached)
 	 * @param buffer the destination buffer
 	 * @param offset the buffer offset
 	 * @param length the length to read
