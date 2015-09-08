@@ -91,7 +91,7 @@ public class OAuth2SsoCustomConfiguration implements ImportAware, BeanPostProces
 
 		private SsoSecurityConfigurer configurer;
 
-		public SsoSecurityAdapter(BeanFactory beanFactory) {
+		SsoSecurityAdapter(BeanFactory beanFactory) {
 			this.configurer = new SsoSecurityConfigurer(beanFactory);
 		}
 

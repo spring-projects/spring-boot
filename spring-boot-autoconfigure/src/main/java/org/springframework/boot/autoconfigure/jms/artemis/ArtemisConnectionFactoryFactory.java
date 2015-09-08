@@ -47,7 +47,7 @@ class ArtemisConnectionFactoryFactory {
 
 	private final ListableBeanFactory beanFactory;
 
-	public ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory,
+	ArtemisConnectionFactoryFactory(ListableBeanFactory beanFactory,
 			ArtemisProperties properties) {
 		Assert.notNull(beanFactory, "BeanFactory must not be null");
 		Assert.notNull(properties, "Properties must not be null");

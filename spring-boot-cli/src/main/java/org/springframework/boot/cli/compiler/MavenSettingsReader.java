@@ -106,9 +106,11 @@ public class MavenSettingsReader {
 
 	private class SpringBootSecDispatcher extends DefaultSecDispatcher {
 
-		public SpringBootSecDispatcher() {
-			this._configurationFile = new File(MavenSettingsReader.this.homeDir,
-					".m2/settings-security.xml").getAbsolutePath();
+		private static final String SECURITY_XML = ".m2/settings-security.xml";
+
+		SpringBootSecDispatcher() {
+			File file = new File(MavenSettingsReader.this.homeDir, SECURITY_XML);
+			this._configurationFile = file.getAbsolutePath();
 			try {
 				this._cipher = new DefaultPlexusCipher();
 			}

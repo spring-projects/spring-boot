@@ -32,7 +32,7 @@ class SpringTransaction implements Transaction {
 
 	private final TransactionStatus transactionStatus;
 
-	public SpringTransaction(TransactionStatus transactionStatus) {
+	SpringTransaction(TransactionStatus transactionStatus) {
 		this.transactionStatus = transactionStatus;
 	}
 

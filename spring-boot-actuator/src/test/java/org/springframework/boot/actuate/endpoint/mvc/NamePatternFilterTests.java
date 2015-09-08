@@ -50,7 +50,7 @@ public class NamePatternFilterTests {
 
 	private static class MockNamePatternFilter extends NamePatternFilter<Object> {
 
-		public MockNamePatternFilter() {
+		MockNamePatternFilter() {
 			super(null);
 		}
 

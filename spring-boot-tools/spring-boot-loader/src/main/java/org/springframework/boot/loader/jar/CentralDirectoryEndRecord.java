@@ -53,7 +53,7 @@ class CentralDirectoryEndRecord {
 	 * @param data the source data
 	 * @throws IOException
 	 */
-	public CentralDirectoryEndRecord(RandomAccessData data) throws IOException {
+	CentralDirectoryEndRecord(RandomAccessData data) throws IOException {
 		this.block = createBlockFromEndOfData(data, READ_BLOCK_SIZE);
 		this.size = MINIMUM_SIZE;
 		this.offset = this.block.length - this.size;

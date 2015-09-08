@@ -68,7 +68,7 @@ public class OAuth2MethodSecurityConfiguration implements BeanFactoryPostProcess
 
 		private ApplicationContext applicationContext;
 
-		public OAuth2ExpressionHandlerInjectionPostProcessor(
+		OAuth2ExpressionHandlerInjectionPostProcessor(
 				ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}

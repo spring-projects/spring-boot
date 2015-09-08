@@ -220,7 +220,7 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 
 		private ConfigurableApplicationContext context;
 
-		public PropertySourceOrderingPostProcessor(ConfigurableApplicationContext context) {
+		PropertySourceOrderingPostProcessor(ConfigurableApplicationContext context) {
 			this.context = context;
 		}
 
@@ -264,7 +264,7 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 
 		private boolean activatedProfiles;
 
-		public Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
+		Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
 			this.resourceLoader = resourceLoader == null ? new DefaultResourceLoader()
 					: resourceLoader;
@@ -499,7 +499,7 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 
 		private final String[] names;
 
-		public ConfigurationPropertySources(Collection<PropertySource<?>> sources) {
+		ConfigurationPropertySources(Collection<PropertySource<?>> sources) {
 			super(NAME, sources);
 			this.sources = sources;
 			List<String> names = new ArrayList<String>();

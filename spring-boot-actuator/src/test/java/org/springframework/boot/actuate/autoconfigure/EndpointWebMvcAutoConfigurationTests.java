@@ -589,7 +589,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 		private EmbeddedServletContainer servletContainer;
 
-		public GrabManagementPort(ApplicationContext rootContext) {
+		GrabManagementPort(ApplicationContext rootContext) {
 			this.rootContext = rootContext;
 		}
 

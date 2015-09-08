@@ -68,7 +68,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
 	 */
 	private class NamePatternEnvironmentFilter extends NamePatternFilter<Environment> {
 
-		public NamePatternEnvironmentFilter(Environment source) {
+		NamePatternEnvironmentFilter(Environment source) {
 			super(source);
 		}
 

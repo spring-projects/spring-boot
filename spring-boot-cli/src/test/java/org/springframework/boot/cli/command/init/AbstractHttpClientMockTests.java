@@ -191,7 +191,7 @@ public abstract class AbstractHttpClientMockTests {
 
 		private final boolean shouldMatch;
 
-		public HasAcceptHeader(String value, boolean shouldMatch) {
+		HasAcceptHeader(String value, boolean shouldMatch) {
 			this.value = value;
 			this.shouldMatch = shouldMatch;
 		}

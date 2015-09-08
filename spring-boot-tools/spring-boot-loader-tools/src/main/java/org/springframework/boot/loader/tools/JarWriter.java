@@ -268,7 +268,7 @@ public class JarWriter {
 
 		private final boolean close;
 
-		public InputStreamEntryWriter(InputStream inputStream, boolean close) {
+		InputStreamEntryWriter(InputStream inputStream, boolean close) {
 			this.inputStream = inputStream;
 			this.close = close;
 		}
@@ -346,7 +346,7 @@ public class JarWriter {
 
 		private long size;
 
-		public CrcAndSize(File file) throws IOException {
+		CrcAndSize(File file) throws IOException {
 			FileInputStream inputStream = new FileInputStream(file);
 			try {
 				load(inputStream);
@@ -356,7 +356,7 @@ public class JarWriter {
 			}
 		}
 
-		public CrcAndSize(InputStream inputStream) throws IOException {
+		CrcAndSize(InputStream inputStream) throws IOException {
 			load(inputStream);
 		}
 

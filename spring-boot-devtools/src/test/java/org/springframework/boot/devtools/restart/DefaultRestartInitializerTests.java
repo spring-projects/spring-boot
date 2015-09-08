@@ -90,7 +90,7 @@ public class DefaultRestartInitializerTests {
 
 	private static class MockAppClassLoader extends ClassLoader {
 
-		public MockAppClassLoader(ClassLoader parent) {
+		MockAppClassLoader(ClassLoader parent) {
 			super(parent);
 		}
 
@@ -98,7 +98,7 @@ public class DefaultRestartInitializerTests {
 
 	private static class MockLauncherClassLoader extends ClassLoader {
 
-		public MockLauncherClassLoader(ClassLoader parent) {
+		MockLauncherClassLoader(ClassLoader parent) {
 			super(parent);
 		}
 
@@ -108,7 +108,7 @@ public class DefaultRestartInitializerTests {
 
 		private final boolean considerStackElements;
 
-		public MockRestartInitializer(boolean considerStackElements) {
+		MockRestartInitializer(boolean considerStackElements) {
 			this.considerStackElements = considerStackElements;
 		}
 

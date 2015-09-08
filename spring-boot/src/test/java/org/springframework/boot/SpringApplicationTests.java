@@ -657,11 +657,11 @@ public class SpringApplicationTests {
 
 		private boolean showBanner;
 
-		public TestSpringApplication(Object... sources) {
+		TestSpringApplication(Object... sources) {
 			super(sources);
 		}
 
-		public TestSpringApplication(ResourceLoader resourceLoader, Object... sources) {
+		TestSpringApplication(ResourceLoader resourceLoader, Object... sources) {
 			super(resourceLoader, sources);
 		}
 
@@ -752,7 +752,7 @@ public class SpringApplicationTests {
 
 		private boolean run;
 
-		public AbstractTestRunner(int order, String... expectedBefore) {
+		AbstractTestRunner(int order, String... expectedBefore) {
 			this.expectedBefore = expectedBefore;
 			this.order = order;
 		}
@@ -786,7 +786,7 @@ public class SpringApplicationTests {
 	private static class TestCommandLineRunner extends AbstractTestRunner implements
 			CommandLineRunner {
 
-		public TestCommandLineRunner(int order, String... expectedBefore) {
+		TestCommandLineRunner(int order, String... expectedBefore) {
 			super(order, expectedBefore);
 		}
 
@@ -800,7 +800,7 @@ public class SpringApplicationTests {
 	private static class TestApplicationRunner extends AbstractTestRunner implements
 			ApplicationRunner {
 
-		public TestApplicationRunner(int order, String... expectedBefore) {
+		TestApplicationRunner(int order, String... expectedBefore) {
 			super(order, expectedBefore);
 		}
 

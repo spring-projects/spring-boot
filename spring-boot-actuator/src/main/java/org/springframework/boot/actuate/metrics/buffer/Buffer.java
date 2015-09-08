@@ -27,7 +27,7 @@ abstract class Buffer<T extends Number> {
 
 	private volatile long timestamp;
 
-	public Buffer(long timestamp) {
+	Buffer(long timestamp) {
 		this.timestamp = timestamp;
 	}
 

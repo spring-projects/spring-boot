@@ -76,7 +76,6 @@ public class SpringApplicationLauncherTests {
 	public void sourcesDefaultPropertiesAndArgsAreUsedToLaunch() throws Exception {
 		System.setProperty("spring.application.class.name",
 				TestSpringApplication.class.getName());
-
 		Object[] sources = new Object[0];
 		String[] args = new String[0];
 		new SpringApplicationLauncher(getClass().getClassLoader()).launch(sources, args);
@@ -108,7 +107,7 @@ public class SpringApplicationLauncherTests {
 
 		private List<String> classes = new ArrayList<String>();
 
-		public TestClassLoader(ClassLoader parent) {
+		TestClassLoader(ClassLoader parent) {
 			super(parent);
 		}
 
@@ -120,8 +119,7 @@ public class SpringApplicationLauncherTests {
 
 	}
 
-	@SuppressWarnings("unused")
-	private static class TestSpringApplication {
+	public static class TestSpringApplication {
 
 		private static Object[] sources;
 
@@ -144,7 +142,7 @@ public class SpringApplicationLauncherTests {
 
 	private class TestSpringApplicationLauncher extends SpringApplicationLauncher {
 
-		public TestSpringApplicationLauncher(ClassLoader classLoader) {
+		TestSpringApplicationLauncher(ClassLoader classLoader) {
 			super(classLoader);
 		}
 

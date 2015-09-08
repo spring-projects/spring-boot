@@ -265,7 +265,7 @@ public class GroovyCompiler {
 	 */
 	private class CompilerAutoConfigureCustomizer extends CompilationCustomizer {
 
-		public CompilerAutoConfigureCustomizer() {
+		CompilerAutoConfigureCustomizer() {
 			super(CompilePhase.CONVERSION);
 		}
 

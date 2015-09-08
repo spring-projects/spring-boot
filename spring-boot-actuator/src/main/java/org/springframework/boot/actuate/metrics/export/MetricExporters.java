@@ -102,7 +102,7 @@ public class MetricExporters implements SchedulingConfigurer {
 
 		private final Exporter exporter;
 
-		public ExportRunner(Exporter exporter) {
+		ExportRunner(Exporter exporter) {
 			this.exporter = exporter;
 		}
 

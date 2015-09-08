@@ -302,12 +302,12 @@ public class ManagementWebSecurityAutoConfiguration {
 
 			private RequestMatcher delegate;
 
-			public EndpointPathRequestMatcher(boolean sensitive) {
-				this.sensitive = sensitive;
+			EndpointPathRequestMatcher() {
+				this(true);
 			}
 
-			public EndpointPathRequestMatcher() {
-				this(true);
+			EndpointPathRequestMatcher(boolean sensitive) {
+				this.sensitive = sensitive;
 			}
 
 			@Override

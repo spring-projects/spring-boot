@@ -111,7 +111,7 @@ public class SpringApplicationContextLoaderTests {
 	 */
 	private static class ExposedTestContextManager extends TestContextManager {
 
-		public ExposedTestContextManager(Class<?> testClass) {
+		ExposedTestContextManager(Class<?> testClass) {
 			super(testClass);
 		}
 

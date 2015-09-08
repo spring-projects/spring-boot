@@ -31,7 +31,7 @@ class SsoSecurityConfigurer {
 
 	private BeanFactory beanFactory;
 
-	public SsoSecurityConfigurer(BeanFactory beanFactory) {
+	SsoSecurityConfigurer(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 
@@ -62,7 +62,7 @@ class SsoSecurityConfigurer {
 
 		private OAuth2ClientAuthenticationProcessingFilter filter;
 
-		public OAuth2ClientAuthenticationConfigurer(
+		OAuth2ClientAuthenticationConfigurer(
 				OAuth2ClientAuthenticationProcessingFilter filter) {
 			this.filter = filter;
 		}

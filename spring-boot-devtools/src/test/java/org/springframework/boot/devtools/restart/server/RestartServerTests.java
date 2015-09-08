@@ -118,7 +118,7 @@ public class RestartServerTests {
 
 	private static class MockRestartServer extends RestartServer {
 
-		public MockRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter,
+		MockRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter,
 				ClassLoader classLoader) {
 			super(sourceFolderUrlFilter, classLoader);
 		}

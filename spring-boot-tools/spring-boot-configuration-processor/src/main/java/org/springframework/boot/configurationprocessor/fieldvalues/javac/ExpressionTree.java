@@ -43,7 +43,7 @@ class ExpressionTree extends ReflectionWrapper {
 	private final Method arrayValueMethod = findMethod(this.newArrayTreeType,
 			"getInitializers");
 
-	public ExpressionTree(Object instance) {
+	ExpressionTree(Object instance) {
 		super(instance);
 	}
 

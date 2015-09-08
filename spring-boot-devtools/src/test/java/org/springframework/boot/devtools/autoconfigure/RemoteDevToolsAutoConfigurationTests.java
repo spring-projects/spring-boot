@@ -228,7 +228,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 		private boolean invoked;
 
-		public MockHttpTunnelServer(TargetServerConnection serverConnection) {
+		MockHttpTunnelServer(TargetServerConnection serverConnection) {
 			super(serverConnection);
 		}
 
@@ -247,7 +247,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 		private boolean invoked;
 
-		public MockHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
+		MockHttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
 			super(sourceFolderUrlFilter);
 		}
 

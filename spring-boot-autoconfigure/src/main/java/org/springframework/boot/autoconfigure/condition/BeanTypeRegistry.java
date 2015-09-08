@@ -188,7 +188,7 @@ abstract class BeanTypeRegistry {
 
 		private final ListableBeanFactory beanFactory;
 
-		public DefaultBeanTypeRegistry(ListableBeanFactory beanFactory) {
+		DefaultBeanTypeRegistry(ListableBeanFactory beanFactory) {
 			this.beanFactory = beanFactory;
 		}
 
@@ -236,7 +236,7 @@ abstract class BeanTypeRegistry {
 
 		private int lastBeanDefinitionCount = 0;
 
-		public OptimizedBeanTypeRegistry(DefaultListableBeanFactory beanFactory) {
+		OptimizedBeanTypeRegistry(DefaultListableBeanFactory beanFactory) {
 			this.beanFactory = beanFactory;
 		}
 

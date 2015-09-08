@@ -61,7 +61,7 @@ public class SilentExitExceptionHandlerTests {
 
 		private Throwable thrown;
 
-		public TestThread() {
+		TestThread() {
 			setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 				@Override
 				public void uncaughtException(Thread t, Throwable e) {

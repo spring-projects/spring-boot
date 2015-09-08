@@ -112,8 +112,7 @@ public class AuthenticationManagerConfiguration {
 		private final SecurityProperties securityProperties;
 
 		@Autowired
-		public SpringBootAuthenticationConfigurerAdapter(
-				SecurityProperties securityProperties) {
+		SpringBootAuthenticationConfigurerAdapter(SecurityProperties securityProperties) {
 			this.securityProperties = securityProperties;
 		}
 
@@ -151,8 +150,7 @@ public class AuthenticationManagerConfiguration {
 
 		private final SecurityProperties securityProperties;
 
-		public DefaultInMemoryUserDetailsManagerConfigurer(
-				SecurityProperties securityProperties) {
+		DefaultInMemoryUserDetailsManagerConfigurer(SecurityProperties securityProperties) {
 			this.securityProperties = securityProperties;
 		}
 

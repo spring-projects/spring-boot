@@ -56,7 +56,7 @@ class ProjectLibraries implements Libraries {
 	 * @param project the gradle project
 	 * @param extension the extension
 	 */
-	public ProjectLibraries(Project project, SpringBootPluginExtension extension) {
+	ProjectLibraries(Project project, SpringBootPluginExtension extension) {
 		this.project = project;
 		this.extension = extension;
 	}
@@ -177,7 +177,7 @@ class ProjectLibraries implements Libraries {
 
 		private boolean includeGroupName;
 
-		public GradleLibrary(String group, File file, LibraryScope scope) {
+		GradleLibrary(String group, File file, LibraryScope scope) {
 			super(file, scope);
 			this.group = group;
 		}
@@ -221,7 +221,7 @@ class ProjectLibraries implements Libraries {
 
 		private final ResolvedArtifact artifact;
 
-		public ResolvedArtifactLibrary(ResolvedArtifact artifact, LibraryScope scope) {
+		ResolvedArtifactLibrary(ResolvedArtifact artifact, LibraryScope scope) {
 			super(artifact.getModuleVersion().getId().getGroup(), artifact.getFile(),
 					scope);
 			this.artifact = artifact;

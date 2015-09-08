@@ -427,12 +427,12 @@ public class HttpTunnelServerTests {
 	 */
 	private static class MockHttpConnection extends HttpConnection {
 
-		public MockHttpConnection() {
+		MockHttpConnection() {
 			super(new ServletServerHttpRequest(new MockHttpServletRequest()),
 					new ServletServerHttpResponse(new MockHttpServletResponse()));
 		}
 
-		public MockHttpConnection(String content, int seq) {
+		MockHttpConnection(String content, int seq) {
 			this();
 			MockHttpServletRequest request = getServletRequest();
 			request.setContent(content.getBytes());

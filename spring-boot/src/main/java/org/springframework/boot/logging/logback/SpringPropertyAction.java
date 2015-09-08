@@ -39,7 +39,7 @@ class SpringPropertyAction extends Action {
 
 	private final Environment environment;
 
-	public SpringPropertyAction(Environment environment) {
+	SpringPropertyAction(Environment environment) {
 		this.environment = environment;
 	}
 

@@ -281,7 +281,7 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 		private boolean hasErrorToSend = false;
 
-		public ErrorWrapperResponse(HttpServletResponse response) {
+		ErrorWrapperResponse(HttpServletResponse response) {
 			super(response);
 		}
 

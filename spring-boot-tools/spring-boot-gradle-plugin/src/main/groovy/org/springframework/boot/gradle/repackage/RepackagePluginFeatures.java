@@ -112,7 +112,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 
 		private final Project project;
 
-		public RegisterInputsOutputsAction(RepackageTask task) {
+		RegisterInputsOutputsAction(RepackageTask task) {
 			this.task = task;
 			this.project = task.getProject();
 		}

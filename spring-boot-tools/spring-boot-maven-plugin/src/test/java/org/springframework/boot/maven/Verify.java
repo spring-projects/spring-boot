@@ -157,7 +157,7 @@ public final class Verify {
 
 		private final File file;
 
-		public AbstractArchiveVerification(File file) {
+		AbstractArchiveVerification(File file) {
 			this.file = file;
 		}
 
@@ -271,7 +271,7 @@ public final class Verify {
 
 	private static class ZipArchiveVerification extends AbstractArchiveVerification {
 
-		public ZipArchiveVerification(File file) {
+		ZipArchiveVerification(File file) {
 			super(file);
 		}
 
@@ -287,7 +287,7 @@ public final class Verify {
 
 	private static class ModuleArchiveVerification extends AbstractArchiveVerification {
 
-		public ModuleArchiveVerification(File file) {
+		ModuleArchiveVerification(File file) {
 			super(file);
 		}
 

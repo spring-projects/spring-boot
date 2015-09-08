@@ -126,7 +126,7 @@ public class LevelRemappingAppender extends AppenderBase<ILoggingEvent> {
 
 		private final ILoggingEvent event;
 
-		public RemappedLoggingEvent(ILoggingEvent event) {
+		RemappedLoggingEvent(ILoggingEvent event) {
 			this.event = event;
 		}
 

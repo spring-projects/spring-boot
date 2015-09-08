@@ -61,12 +61,16 @@ public class GroovyBeansTransformation implements ASTTransformation {
 	private class ClassVisitor extends ClassCodeVisitorSupport {
 
 		private static final String SOURCE_INTERFACE = "org.springframework.boot.BeanDefinitionLoader.GroovyBeanDefinitionSource";
+
 		private static final String BEANS = "beans";
+
 		private final SourceUnit source;
+
 		private final ClassNode classNode;
+
 		private boolean xformed = false;
 
-		public ClassVisitor(SourceUnit source, ClassNode classNode) {
+		ClassVisitor(SourceUnit source, ClassNode classNode) {
 			this.source = source;
 			this.classNode = classNode;
 		}
@@ -105,5 +109,7 @@ public class GroovyBeansTransformation implements ASTTransformation {
 		private ClosureExpression beans(BlockStatement block) {
 			return AstUtils.getClosure(block, BEANS, true);
 		}
+
 	}
+
 }

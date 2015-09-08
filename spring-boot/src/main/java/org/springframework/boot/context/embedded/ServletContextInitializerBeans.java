@@ -68,7 +68,7 @@ class ServletContextInitializerBeans extends
 
 	private List<ServletContextInitializer> sortedList;
 
-	public ServletContextInitializerBeans(ListableBeanFactory beanFactory) {
+	ServletContextInitializerBeans(ListableBeanFactory beanFactory) {
 		this.initializers = new LinkedMultiValueMap<Class<?>, ServletContextInitializer>();
 		addServletContextInitializerBeans(beanFactory);
 		addAdaptableBeans(beanFactory);
@@ -242,7 +242,7 @@ class ServletContextInitializerBeans extends
 
 		private final MultipartConfigElement multipartConfig;
 
-		public ServletRegistrationBeanAdapter(MultipartConfigElement multipartConfig) {
+		ServletRegistrationBeanAdapter(MultipartConfigElement multipartConfig) {
 			this.multipartConfig = multipartConfig;
 		}
 

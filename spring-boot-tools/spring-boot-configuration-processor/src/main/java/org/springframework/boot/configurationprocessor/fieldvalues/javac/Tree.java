@@ -36,7 +36,7 @@ class Tree extends ReflectionWrapper {
 	private final Method GET_CLASS_TREE_MEMBERS = findMethod(
 			findClass("com.sun.source.tree.ClassTree"), "getMembers");
 
-	public Tree(Object instance) {
+	Tree(Object instance) {
 		super("com.sun.source.tree.Tree", instance);
 	}
 
@@ -53,7 +53,7 @@ class Tree extends ReflectionWrapper {
 
 		private TreeVisitor treeVisitor;
 
-		public TreeVisitorInvocationHandler(TreeVisitor treeVisitor) {
+		TreeVisitorInvocationHandler(TreeVisitor treeVisitor) {
 			this.treeVisitor = treeVisitor;
 		}
 

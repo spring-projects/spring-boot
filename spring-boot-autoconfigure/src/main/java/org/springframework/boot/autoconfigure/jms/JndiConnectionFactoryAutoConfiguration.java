@@ -86,7 +86,7 @@ public class JndiConnectionFactoryAutoConfiguration {
 	 */
 	static class JndiOrPropertyCondition extends AnyNestedCondition {
 
-		public JndiOrPropertyCondition() {
+		JndiOrPropertyCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 

@@ -273,7 +273,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			return this.layout;
 		}
 
-		private LayoutType(Layout layout) {
+		LayoutType(Layout layout) {
 			this.layout = layout;
 		}
 	}

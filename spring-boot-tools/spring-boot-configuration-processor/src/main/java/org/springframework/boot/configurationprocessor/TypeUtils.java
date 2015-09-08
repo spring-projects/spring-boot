@@ -59,7 +59,7 @@ class TypeUtils {
 
 	private final TypeMirror mapType;
 
-	public TypeUtils(ProcessingEnvironment env) {
+	TypeUtils(ProcessingEnvironment env) {
 		this.env = env;
 		Types types = env.getTypeUtils();
 		WildcardType wc = types.getWildcardType(null, null);
@@ -67,7 +67,6 @@ class TypeUtils {
 				.getTypeElement(Collection.class.getName()), wc);
 		this.mapType = types.getDeclaredType(
 				this.env.getElementUtils().getTypeElement(Map.class.getName()), wc, wc);
-
 	}
 
 	public String getType(Element element) {

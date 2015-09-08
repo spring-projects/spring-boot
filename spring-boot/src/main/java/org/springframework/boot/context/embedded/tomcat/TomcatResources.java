@@ -41,7 +41,7 @@ abstract class TomcatResources {
 
 	private final Context context;
 
-	public TomcatResources(Context context) {
+	TomcatResources(Context context) {
 		this.context = context;
 	}
 
@@ -107,7 +107,7 @@ abstract class TomcatResources {
 
 		private final Method addResourceJarUrlMethod;
 
-		public Tomcat7Resources(Context context) {
+		Tomcat7Resources(Context context) {
 			super(context);
 			this.addResourceJarUrlMethod = ReflectionUtils.findMethod(context.getClass(),
 					"addResourceJarUrl", URL.class);
@@ -163,7 +163,7 @@ abstract class TomcatResources {
 	 */
 	static class Tomcat8Resources extends TomcatResources {
 
-		public Tomcat8Resources(Context context) {
+		Tomcat8Resources(Context context) {
 			super(context);
 		}
 

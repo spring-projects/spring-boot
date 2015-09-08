@@ -69,7 +69,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	/**
 	 * {@code NoJtaPlatform} implementations for various Hibernate versions.
 	 */
-	private static final String NO_JTA_PLATFORM_CLASSES[] = {
+	private static final String[] NO_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.NoJtaPlatform" };
 
@@ -77,7 +77,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	 * {@code WebSphereExtendedJtaPlatform} implementations for various Hibernate
 	 * versions.
 	 */
-	private static final String WEBSHERE_JTA_PLATFORM_CLASSES[] = {
+	private static final String[] WEBSHERE_JTA_PLATFORM_CLASSES = {
 			"org.hibernate.engine.transaction.jta.platform.internal.WebSphereExtendedJtaPlatform",
 			"org.hibernate.service.jta.platform.internal.WebSphereExtendedJtaPlatform", };
 

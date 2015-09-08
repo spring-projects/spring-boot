@@ -72,7 +72,7 @@ class BeanDefinitionLoader {
 	 * @param registry the bean definition registry that will contain the loaded beans
 	 * @param sources the bean sources
 	 */
-	public BeanDefinitionLoader(BeanDefinitionRegistry registry, Object... sources) {
+	BeanDefinitionLoader(BeanDefinitionRegistry registry, Object... sources) {
 		Assert.notNull(registry, "Registry must not be null");
 		Assert.notEmpty(sources, "Sources must not be empty");
 		this.sources = sources;
@@ -286,7 +286,7 @@ class BeanDefinitionLoader {
 
 		private final Set<String> classNames = new HashSet<String>();
 
-		public ClassExcludeFilter(Object... sources) {
+		ClassExcludeFilter(Object... sources) {
 			super(false, false);
 			for (Object source : sources) {
 				if (source instanceof Class<?>) {

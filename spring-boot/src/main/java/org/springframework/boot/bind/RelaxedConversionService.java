@@ -44,7 +44,7 @@ class RelaxedConversionService implements ConversionService {
 	 * Create a new {@link RelaxedConversionService} instance.
 	 * @param conversionService and option root conversion service
 	 */
-	public RelaxedConversionService(ConversionService conversionService) {
+	RelaxedConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 		this.additionalConverters = new GenericConversionService();
 		this.additionalConverters
@@ -111,7 +111,7 @@ class RelaxedConversionService implements ConversionService {
 
 			private final Class<T> enumType;
 
-			public StringToEnum(Class<T> enumType) {
+			StringToEnum(Class<T> enumType) {
 				this.enumType = enumType;
 			}
 

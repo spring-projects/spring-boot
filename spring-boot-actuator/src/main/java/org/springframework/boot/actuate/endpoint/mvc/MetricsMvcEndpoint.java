@@ -59,7 +59,7 @@ public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 	 */
 	private class NamePatternMapFilter extends NamePatternFilter<Map<String, ?>> {
 
-		public NamePatternMapFilter(Map<String, ?> source) {
+		NamePatternMapFilter(Map<String, ?> source) {
 			super(source);
 		}
 

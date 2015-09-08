@@ -52,7 +52,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	private final GaugeService gaugeService;
 
-	public MetricsFilter(CounterService counterService, GaugeService gaugeService) {
+	MetricsFilter(CounterService counterService, GaugeService gaugeService) {
 		this.counterService = counterService;
 		this.gaugeService = gaugeService;
 	}

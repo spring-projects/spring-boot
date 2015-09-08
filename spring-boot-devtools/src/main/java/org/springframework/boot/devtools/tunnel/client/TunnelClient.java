@@ -192,7 +192,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 		private boolean closed = false;
 
-		public SocketCloseable(SocketChannel socketChannel) {
+		SocketCloseable(SocketChannel socketChannel) {
 			this.socketChannel = socketChannel;
 		}
 

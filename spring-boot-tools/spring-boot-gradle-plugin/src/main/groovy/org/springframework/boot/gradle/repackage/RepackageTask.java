@@ -123,7 +123,7 @@ public class RepackageTask extends DefaultTask {
 
 		private final ProjectLibraries libraries;
 
-		public RepackageAction(SpringBootPluginExtension extension,
+		RepackageAction(SpringBootPluginExtension extension,
 				ProjectLibraries libraries) {
 			this.extension = extension;
 			this.libraries = libraries;
@@ -238,7 +238,7 @@ public class RepackageTask extends DefaultTask {
 	 */
 	private class LoggingRepackager extends Repackager {
 
-		public LoggingRepackager(File source) {
+		LoggingRepackager(File source) {
 			super(source);
 		}
 

@@ -150,7 +150,7 @@ public class EndpointHandlerMappingTests {
 
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
 
-		public TestEndpoint(String path) {
+		TestEndpoint(String path) {
 			super(path);
 		}
 
@@ -163,7 +163,7 @@ public class EndpointHandlerMappingTests {
 
 	private static class TestMvcEndpoint extends EndpointMvcAdapter {
 
-		public TestMvcEndpoint(TestEndpoint delegate) {
+		TestMvcEndpoint(TestEndpoint delegate) {
 			super(delegate);
 		}
 
@@ -171,7 +171,7 @@ public class EndpointHandlerMappingTests {
 
 	private static class TestActionEndpoint extends EndpointMvcAdapter {
 
-		public TestActionEndpoint(TestEndpoint delegate) {
+		TestActionEndpoint(TestEndpoint delegate) {
 			super(delegate);
 		}
 

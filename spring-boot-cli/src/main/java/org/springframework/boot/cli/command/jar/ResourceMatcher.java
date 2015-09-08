@@ -136,7 +136,7 @@ class ResourceMatcher {
 
 		private final File rootFolder;
 
-		public FolderResourceLoader(File root) throws MalformedURLException {
+		FolderResourceLoader(File root) throws MalformedURLException {
 			super(new FolderClassLoader(root));
 			this.rootFolder = root;
 		}
@@ -153,7 +153,7 @@ class ResourceMatcher {
 	 */
 	private static class FolderClassLoader extends URLClassLoader {
 
-		public FolderClassLoader(File rootFolder) throws MalformedURLException {
+		FolderClassLoader(File rootFolder) throws MalformedURLException {
 			super(new URL[] { rootFolder.toURI().toURL() });
 		}
 

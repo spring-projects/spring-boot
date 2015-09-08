@@ -46,7 +46,7 @@ class SpringApplicationAdminClient {
 
 	private final ObjectName objectName;
 
-	public SpringApplicationAdminClient(MBeanServerConnection connection, String jmxName) {
+	SpringApplicationAdminClient(MBeanServerConnection connection, String jmxName) {
 		this.connection = connection;
 		this.objectName = toObjectName(jmxName);
 	}

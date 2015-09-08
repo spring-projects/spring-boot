@@ -206,7 +206,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 
 		private final Enumeration<E> enumeration;
 
-		public CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
+		CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
 			this.firstElement = firstElement;
 			this.enumeration = enumeration;
 		}

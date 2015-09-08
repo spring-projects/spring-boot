@@ -230,7 +230,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		private ManagementServerProperties properties;
 
-		public ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
+		ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
@@ -262,7 +262,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		private final ConfigurableApplicationContext childContext;
 
-		public CloseEventPropagationListener(ApplicationContext parentContext,
+		CloseEventPropagationListener(ApplicationContext parentContext,
 				ConfigurableApplicationContext childContext) {
 			this.parentContext = parentContext;
 			this.childContext = childContext;

@@ -59,7 +59,7 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 
 		private final WebAppContext context;
 
-		public Initializer(WebAppContext context) {
+		Initializer(WebAppContext context) {
 			this.context = context;
 		}
 

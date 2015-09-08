@@ -96,7 +96,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 
 		private final StandardJarScanner jarScanner;
 
-		public Tomcat8TldSkipSetter(StandardJarScanner jarScanner) {
+		Tomcat8TldSkipSetter(StandardJarScanner jarScanner) {
 			this.jarScanner = jarScanner;
 		}
 
@@ -202,7 +202,7 @@ class SkipPatternJarScanner extends StandardJarScanner {
 			add("xml-apis-*.jar");
 		}
 
-		public SkipPattern(String patterns) {
+		SkipPattern(String patterns) {
 			StringTokenizer tokenizer = new StringTokenizer(patterns, ",");
 			while (tokenizer.hasMoreElements()) {
 				add(tokenizer.nextToken());

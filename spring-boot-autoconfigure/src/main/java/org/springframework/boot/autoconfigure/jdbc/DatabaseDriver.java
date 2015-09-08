@@ -93,11 +93,11 @@ enum DatabaseDriver {
 
 	private final String xaDataSourceClassName;
 
-	private DatabaseDriver(String driverClassName) {
+	DatabaseDriver(String driverClassName) {
 		this(driverClassName, null);
 	}
 
-	private DatabaseDriver(String driverClassName, String xaDataSourceClassName) {
+	DatabaseDriver(String driverClassName, String xaDataSourceClassName) {
 		this.driverClassName = driverClassName;
 		this.xaDataSourceClassName = xaDataSourceClassName;
 	}

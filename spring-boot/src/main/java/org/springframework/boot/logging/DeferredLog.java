@@ -157,7 +157,7 @@ public class DeferredLog implements Log {
 
 		private final Throwable throwable;
 
-		public Line(LogLevel level, Object message, Throwable throwable) {
+		Line(LogLevel level, Object message, Throwable throwable) {
 			this.level = level;
 			this.message = message;
 			this.throwable = throwable;

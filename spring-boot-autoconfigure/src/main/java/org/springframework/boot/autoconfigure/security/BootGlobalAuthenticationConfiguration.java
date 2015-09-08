@@ -64,7 +64,7 @@ public class BootGlobalAuthenticationConfiguration {
 
 		private final ApplicationContext context;
 
-		public BootGlobalAuthenticationConfigurationAdapter(ApplicationContext context) {
+		BootGlobalAuthenticationConfigurationAdapter(ApplicationContext context) {
 			this.context = context;
 		}
 

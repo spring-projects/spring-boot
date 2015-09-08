@@ -141,7 +141,7 @@ public class ClassPathFileSystemWatcherTests {
 
 		private final FileSystemWatcher watcher;
 
-		public MockFileSystemWatcherFactory(FileSystemWatcher watcher) {
+		MockFileSystemWatcherFactory(FileSystemWatcher watcher) {
 			this.watcher = watcher;
 		}
 

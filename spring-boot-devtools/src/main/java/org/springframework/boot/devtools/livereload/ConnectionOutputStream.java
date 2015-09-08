@@ -30,7 +30,7 @@ import org.springframework.util.FileCopyUtils;
  */
 class ConnectionOutputStream extends FilterOutputStream {
 
-	public ConnectionOutputStream(OutputStream out) {
+	ConnectionOutputStream(OutputStream out) {
 		super(out);
 	}
 

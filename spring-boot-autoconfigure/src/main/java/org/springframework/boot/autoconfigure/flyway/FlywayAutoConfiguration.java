@@ -153,7 +153,7 @@ public class FlywayAutoConfiguration {
 
 		private final FlywayMigrationStrategy migrationStrategy;
 
-		public FlywayMigrationInitializer(Flyway flyway,
+		FlywayMigrationInitializer(Flyway flyway,
 				FlywayMigrationStrategy migrationStrategy) {
 			this.flyway = flyway;
 			this.migrationStrategy = migrationStrategy;

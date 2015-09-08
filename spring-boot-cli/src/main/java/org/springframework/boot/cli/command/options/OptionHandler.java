@@ -180,7 +180,7 @@ public class OptionHandler {
 
 		private final String description;
 
-		public OptionHelpAdapter(OptionDescriptor descriptor) {
+		OptionHelpAdapter(OptionDescriptor descriptor) {
 			this.options = new LinkedHashSet<String>();
 			for (String option : descriptor.options()) {
 				this.options.add((option.length() == 1 ? "-" : "--") + option);

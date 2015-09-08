@@ -36,7 +36,7 @@ class FileWatchingFailureHandler implements FailureHandler {
 
 	private final FileSystemWatcherFactory fileSystemWatcherFactory;
 
-	public FileWatchingFailureHandler(FileSystemWatcherFactory fileSystemWatcherFactory) {
+	FileWatchingFailureHandler(FileSystemWatcherFactory fileSystemWatcherFactory) {
 		this.fileSystemWatcherFactory = fileSystemWatcherFactory;
 	}
 
@@ -62,7 +62,7 @@ class FileWatchingFailureHandler implements FailureHandler {
 
 		private final CountDownLatch latch;
 
-		public Listener(CountDownLatch latch) {
+		Listener(CountDownLatch latch) {
 			this.latch = latch;
 		}
 

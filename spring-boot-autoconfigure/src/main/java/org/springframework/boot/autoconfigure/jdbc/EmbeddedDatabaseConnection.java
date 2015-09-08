@@ -64,8 +64,7 @@ public enum EmbeddedDatabaseConnection {
 
 	private final String url;
 
-	private EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass,
-			String url) {
+	EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass, String url) {
 		this.type = type;
 		this.driverClass = driverClass;
 		this.url = url;

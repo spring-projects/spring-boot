@@ -279,7 +279,7 @@ public abstract class MainClassFinder {
 
 		private boolean found;
 
-		public MainMethodFinder() {
+		MainMethodFinder() {
 			super(Opcodes.ASM4);
 		}
 

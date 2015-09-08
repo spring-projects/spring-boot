@@ -75,7 +75,7 @@ public class RedisTestServer implements TestRule {
 
 		private final JedisConnectionFactory connectionFactory;
 
-		public RedisStatement(Statement base, JedisConnectionFactory connectionFactory) {
+		RedisStatement(Statement base, JedisConnectionFactory connectionFactory) {
 			this.base = base;
 			this.connectionFactory = connectionFactory;
 		}

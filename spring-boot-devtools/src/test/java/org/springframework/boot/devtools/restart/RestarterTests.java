@@ -238,7 +238,7 @@ public class RestarterTests {
 
 		private ClassLoader relaunchClassLoader;
 
-		public TestableRestarter() {
+		TestableRestarter() {
 			this(Thread.currentThread(), new String[] {}, false,
 					new MockRestartInitializer());
 		}

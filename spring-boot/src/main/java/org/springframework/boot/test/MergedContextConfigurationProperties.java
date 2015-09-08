@@ -33,7 +33,7 @@ class MergedContextConfigurationProperties {
 
 	private final MergedContextConfiguration configuration;
 
-	public MergedContextConfigurationProperties(MergedContextConfiguration configuration) {
+	MergedContextConfigurationProperties(MergedContextConfiguration configuration) {
 		this.configuration = configuration;
 	}
 

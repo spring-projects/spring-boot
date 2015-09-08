@@ -56,7 +56,7 @@ class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcess
 
 	private ApplicationContext applicationContext;
 
-	public ServletComponentRegisteringPostProcessor(Set<String> packagesToScan) {
+	ServletComponentRegisteringPostProcessor(Set<String> packagesToScan) {
 		this.packagesToScan = packagesToScan;
 	}
 

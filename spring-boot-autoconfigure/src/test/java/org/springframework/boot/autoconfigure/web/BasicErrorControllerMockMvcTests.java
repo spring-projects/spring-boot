@@ -189,7 +189,7 @@ public class BasicErrorControllerMockMvcTests {
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	private static class NotFoundException extends RuntimeException {
 
-		public NotFoundException(String string) {
+		NotFoundException(String string) {
 			super(string);
 		}
 
@@ -198,9 +198,10 @@ public class BasicErrorControllerMockMvcTests {
 	private class ErrorDispatcher implements RequestBuilder {
 
 		private MvcResult result;
+
 		private String path;
 
-		public ErrorDispatcher(MvcResult result, String path) {
+		ErrorDispatcher(MvcResult result, String path) {
 			this.result = result;
 			this.path = path;
 		}

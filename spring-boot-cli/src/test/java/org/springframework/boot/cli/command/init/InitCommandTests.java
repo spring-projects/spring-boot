@@ -386,7 +386,7 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 
 		private ProjectGenerationRequest lastRequest;
 
-		public TestableInitCommandOptionHandler(InitializrService initializrService) {
+		TestableInitCommandOptionHandler(InitializrService initializrService) {
 			super(initializrService);
 		}
 

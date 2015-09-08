@@ -174,7 +174,7 @@ public class LiveReloadServerTests {
 
 		private int pongCount;
 
-		public Driver(WebSocketListener listener) {
+		Driver(WebSocketListener listener) {
 			super(WebSocketPolicy.newClientPolicy(), listener);
 		}
 
@@ -223,7 +223,7 @@ public class LiveReloadServerTests {
 
 		private List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
 
-		public MonitoredLiveReloadServer(int port) {
+		MonitoredLiveReloadServer(int port) {
 			super(port);
 		}
 
@@ -239,7 +239,7 @@ public class LiveReloadServerTests {
 
 		private class MonitoredConnection extends Connection {
 
-			public MonitoredConnection(java.net.Socket socket, InputStream inputStream,
+			MonitoredConnection(java.net.Socket socket, InputStream inputStream,
 					OutputStream outputStream) throws IOException {
 				super(socket, inputStream, outputStream);
 			}

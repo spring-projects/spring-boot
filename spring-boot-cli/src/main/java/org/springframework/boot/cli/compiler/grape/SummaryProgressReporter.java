@@ -48,10 +48,10 @@ final class SummaryProgressReporter implements ProgressReporter {
 
 	private boolean finished;
 
-	public SummaryProgressReporter(DefaultRepositorySystemSession session, PrintStream out) {
+	SummaryProgressReporter(DefaultRepositorySystemSession session, PrintStream out) {
 		this.out = out;
-
 		session.setTransferListener(new AbstractTransferListener() {
+
 			@Override
 			public void transferStarted(TransferEvent event)
 					throws TransferCancelledException {
@@ -63,13 +63,15 @@ final class SummaryProgressReporter implements ProgressReporter {
 					throws TransferCancelledException {
 				reportProgress();
 			}
-		});
 
+		});
 		session.setRepositoryListener(new AbstractRepositoryListener() {
+
 			@Override
 			public void artifactResolved(RepositoryEvent event) {
 				reportProgress();
 			}
+
 		});
 	}
 

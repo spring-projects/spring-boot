@@ -33,8 +33,7 @@ class SmartImportCustomizer extends ImportCustomizer {
 
 	private SourceUnit source;
 
-	public SmartImportCustomizer(SourceUnit source, GeneratorContext context,
-			ClassNode classNode) {
+	SmartImportCustomizer(SourceUnit source, GeneratorContext context, ClassNode classNode) {
 		this.source = source;
 	}
 

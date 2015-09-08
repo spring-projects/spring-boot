@@ -138,7 +138,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 
 		private final UrlPathHelper urlPathHelper;
 
-		public PathStripper(HttpServletRequest request, String path) {
+		PathStripper(HttpServletRequest request, String path) {
 			super(request);
 			this.path = path;
 			this.urlPathHelper = new UrlPathHelper();

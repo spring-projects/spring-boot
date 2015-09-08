@@ -36,7 +36,7 @@ class SpringApplicationRunListeners {
 
 	private final List<SpringApplicationRunListener> listeners;
 
-	public SpringApplicationRunListeners(Log log,
+	SpringApplicationRunListeners(Log log,
 			Collection<? extends SpringApplicationRunListener> listeners) {
 		this.log = log;
 		this.listeners = new ArrayList<SpringApplicationRunListener>(listeners);

@@ -67,7 +67,7 @@ public class Shell {
 	 * Create a new {@link Shell} instance.
 	 * @throws IOException
 	 */
-	public Shell() throws IOException {
+	Shell() throws IOException {
 		attachSignalHandler();
 		this.consoleReader = new ConsoleReader();
 		this.commandRunner = createCommandRunner();
@@ -194,7 +194,7 @@ public class Shell {
 
 		private final Map<String, String> aliases = new HashMap<String, String>();
 
-		public ShellCommandRunner() {
+		ShellCommandRunner() {
 			super(null);
 		}
 

@@ -104,7 +104,7 @@ public class ExecutableArchiveLauncherTests {
 	private static final class UnitTestExecutableArchiveLauncher extends
 			ExecutableArchiveLauncher {
 
-		public UnitTestExecutableArchiveLauncher(JavaAgentDetector javaAgentDetector) {
+		UnitTestExecutableArchiveLauncher(JavaAgentDetector javaAgentDetector) {
 			super(javaAgentDetector);
 		}
 

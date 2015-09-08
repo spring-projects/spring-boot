@@ -526,11 +526,11 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 		private final String jarPath;
 
-		public JarResourcemanager(File jarFile) {
+		JarResourcemanager(File jarFile) {
 			this(jarFile.getAbsolutePath());
 		}
 
-		public JarResourcemanager(String jarPath) {
+		JarResourcemanager(String jarPath) {
 			this.jarPath = jarPath;
 		}
 
@@ -574,7 +574,7 @@ public class UndertowEmbeddedServletContainerFactory extends
 
 		private final ServletContextInitializer[] initializers;
 
-		public Initializer(ServletContextInitializer[] initializers) {
+		Initializer(ServletContextInitializer[] initializers) {
 			this.initializers = initializers;
 		}
 

@@ -79,7 +79,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 		private final List<Metric<?>> metrics;
 
-		public TestPublicMetrics(int order, Metric<?>... metrics) {
+		TestPublicMetrics(int order, Metric<?>... metrics) {
 			this.order = order;
 			this.metrics = Arrays.asList(metrics);
 		}

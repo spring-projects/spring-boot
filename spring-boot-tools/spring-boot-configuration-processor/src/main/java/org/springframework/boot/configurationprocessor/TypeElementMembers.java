@@ -48,7 +48,7 @@ class TypeElementMembers {
 
 	private final Map<String, ExecutableElement> publicSetters = new LinkedHashMap<String, ExecutableElement>();
 
-	public TypeElementMembers(ProcessingEnvironment env, TypeElement element) {
+	TypeElementMembers(ProcessingEnvironment env, TypeElement element) {
 		this.env = env;
 		process(element);
 	}

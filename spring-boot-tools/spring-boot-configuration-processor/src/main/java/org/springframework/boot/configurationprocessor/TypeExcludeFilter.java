@@ -32,7 +32,7 @@ class TypeExcludeFilter {
 
 	private final Set<String> excludes = new HashSet<String>();
 
-	public TypeExcludeFilter() {
+	TypeExcludeFilter() {
 		add("com.zaxxer.hikari.IConnectionCustomizer");
 		add("groovy.text.markup.MarkupTemplateEngine");
 		add("java.io.Writer");

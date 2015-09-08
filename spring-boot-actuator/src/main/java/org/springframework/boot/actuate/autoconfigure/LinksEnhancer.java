@@ -37,7 +37,7 @@ class LinksEnhancer {
 
 	private final MvcEndpoints endpoints;
 
-	public LinksEnhancer(String rootPath, MvcEndpoints endpoints) {
+	LinksEnhancer(String rootPath, MvcEndpoints endpoints) {
 		this.rootPath = rootPath;
 		this.endpoints = endpoints;
 	}

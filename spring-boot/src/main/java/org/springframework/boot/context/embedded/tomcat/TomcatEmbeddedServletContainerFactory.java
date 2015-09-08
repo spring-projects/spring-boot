@@ -662,7 +662,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 		private final Object nativePage;
 
-		public TomcatErrorPage(ErrorPage errorPage) {
+		TomcatErrorPage(ErrorPage errorPage) {
 			this.location = errorPage.getPath();
 			this.exceptionType = errorPage.getExceptionName();
 			this.errorCode = errorPage.getStatusCode();

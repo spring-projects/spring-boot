@@ -289,7 +289,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private final String getStartClass() throws MojoExecutionException {
+	private String getStartClass() throws MojoExecutionException {
 		String mainClass = this.mainClass;
 		if (mainClass == null) {
 			try {
@@ -368,7 +368,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
 
-		public TestArtifactFilter() {
+		TestArtifactFilter() {
 			super("", Artifact.SCOPE_TEST);
 		}
 
@@ -386,7 +386,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 		private Throwable exception;
 
-		public IsolatedThreadGroup(String name) {
+		IsolatedThreadGroup(String name) {
 			super(name);
 		}
 
@@ -417,7 +417,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		private final String startClassName;
 		private final String[] args;
 
-		public LaunchRunner(String startClassName, String... args) {
+		LaunchRunner(String startClassName, String... args) {
 			this.startClassName = startClassName;
 			this.args = (args != null ? args : new String[] {});
 		}

@@ -109,7 +109,7 @@ public class SocketTargetServerConnectionTests {
 
 		private ServerThread thread;
 
-		public MockServer(int port) throws IOException {
+		MockServer(int port) throws IOException {
 			this.serverSocket = ServerSocketChannel.open();
 			this.serverSocket.bind(new InetSocketAddress(port));
 		}

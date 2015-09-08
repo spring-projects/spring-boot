@@ -141,7 +141,7 @@ class JCacheCacheConfiguration {
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	static class JCacheAvailableCondition extends AnyNestedCondition {
 
-		public JCacheAvailableCondition() {
+		JCacheAvailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 

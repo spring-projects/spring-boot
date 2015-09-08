@@ -101,7 +101,7 @@ public @interface ConditionalOnJava {
 
 		private final String name;
 
-		private JavaVersion(int value, String name) {
+		JavaVersion(int value, String name) {
 			this.value = value;
 			this.name = name;
 		}

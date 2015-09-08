@@ -31,7 +31,7 @@ class ConnectionInputStream extends FilterInputStream {
 
 	private static final int BUFFER_SIZE = 4096;
 
-	public ConnectionInputStream(InputStream in) {
+	ConnectionInputStream(InputStream in) {
 		super(in);
 	}
 

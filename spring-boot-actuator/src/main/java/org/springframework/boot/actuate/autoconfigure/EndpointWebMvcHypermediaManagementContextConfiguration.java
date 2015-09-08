@@ -309,7 +309,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private Map<String, Object> embedded;
 
 		@SuppressWarnings("unchecked")
-		public EndpointResource(Object content, String path) {
+		EndpointResource(Object content, String path) {
 			this.content = content instanceof Map ? null : content;
 			this.embedded = (Map<String, Object>) (this.content == null ? content : null);
 			add(linkTo(Object.class).slash(path).withSelfRel());

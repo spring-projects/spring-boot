@@ -82,7 +82,7 @@ public class AnyNestedConditionTests {
 
 	static class OnPropertyAorBCondition extends AnyNestedCondition {
 
-		public OnPropertyAorBCondition() {
+		OnPropertyAorBCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 

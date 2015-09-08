@@ -40,7 +40,7 @@ class HornetQEmbeddedConfigurationFactory {
 
 	private final Embedded properties;
 
-	public HornetQEmbeddedConfigurationFactory(HornetQProperties properties) {
+	HornetQEmbeddedConfigurationFactory(HornetQProperties properties) {
 		this.properties = properties.getEmbedded();
 	}
 

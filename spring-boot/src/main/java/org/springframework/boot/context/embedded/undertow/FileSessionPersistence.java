@@ -142,7 +142,7 @@ public class FileSessionPersistence implements SessionPersistenceManager {
 
 		private final Map<String, Object> sessionData;
 
-		public SerializablePersistentSession(PersistentSession session) {
+		SerializablePersistentSession(PersistentSession session) {
 			this.expiration = session.getExpiration();
 			this.sessionData = new LinkedHashMap<String, Object>(session.getSessionData());
 		}

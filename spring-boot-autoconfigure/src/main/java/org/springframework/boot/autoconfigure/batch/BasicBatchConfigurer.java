@@ -65,7 +65,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 	 * @param properties the batch properties
 	 * @param dataSource the underlying data source
 	 */
-	public BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
+	BasicBatchConfigurer(BatchProperties properties, DataSource dataSource) {
 		this(properties, dataSource, null);
 	}
 
@@ -75,7 +75,7 @@ class BasicBatchConfigurer implements BatchConfigurer {
 	 * @param dataSource the underlying data source
 	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */
-	public BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
+	BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
 			EntityManagerFactory entityManagerFactory) {
 		this.properties = properties;
 		this.entityManagerFactory = entityManagerFactory;

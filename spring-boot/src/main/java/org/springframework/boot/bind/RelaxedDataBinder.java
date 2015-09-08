@@ -440,7 +440,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private Map<String, Object> map;
 
-		public MapHolder(Map<String, Object> map) {
+		MapHolder(Map<String, Object> map) {
 			this.map = map;
 		}
 
@@ -461,7 +461,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private List<PathNode> nodes;
 
-		public BeanPath(String path) {
+		BeanPath(String path) {
 			this.nodes = splitPath(path);
 		}
 
@@ -579,7 +579,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 			protected String name;
 
-			public PathNode(String name) {
+			PathNode(String name) {
 				this.name = name;
 			}
 
@@ -587,7 +587,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private static class ArrayIndexNode extends PathNode {
 
-			public ArrayIndexNode(String name) {
+			ArrayIndexNode(String name) {
 				super(name);
 			}
 
@@ -600,7 +600,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private static class MapIndexNode extends PathNode {
 
-			public MapIndexNode(String name) {
+			MapIndexNode(String name) {
 				super(name);
 			}
 
@@ -612,7 +612,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private static class PropertyNode extends PathNode {
 
-			public PropertyNode(String name) {
+			PropertyNode(String name) {
 				super(name);
 			}
 
@@ -636,7 +636,7 @@ public class RelaxedDataBinder extends DataBinder {
 
 		private RelaxedConversionService conversionService;
 
-		public RelaxedBeanPropertyBindingResult(Object target, String objectName,
+		RelaxedBeanPropertyBindingResult(Object target, String objectName,
 				boolean autoGrowNestedPaths, int autoGrowCollectionLimit,
 				ConversionService conversionService) {
 			super(target, objectName, autoGrowNestedPaths, autoGrowCollectionLimit);
@@ -666,7 +666,7 @@ public class RelaxedDataBinder extends DataBinder {
 			BENIGN_PROPERTY_SOURCE_NAMES = Collections.unmodifiableSet(names);
 		}
 
-		public RelaxedBeanWrapper(Object target) {
+		RelaxedBeanWrapper(Object target) {
 			super(target);
 		}
 

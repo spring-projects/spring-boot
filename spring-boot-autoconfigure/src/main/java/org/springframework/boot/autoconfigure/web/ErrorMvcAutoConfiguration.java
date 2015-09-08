@@ -171,7 +171,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 		private PlaceholderResolver resolver;
 
-		public SpelView(String template) {
+		SpelView(String template) {
 			this.template = template;
 			this.context.addPropertyAccessor(new MapAccessor());
 			this.helper = new PropertyPlaceholderHelper("${", "}");
@@ -207,7 +207,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 		private final StandardEvaluationContext context;
 
-		public SpelPlaceholderResolver(StandardEvaluationContext context) {
+		SpelPlaceholderResolver(StandardEvaluationContext context) {
 			this.context = context;
 		}
 

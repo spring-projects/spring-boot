@@ -37,7 +37,7 @@ abstract class NamePatternFilter<T> {
 
 	private final T source;
 
-	public NamePatternFilter(T source) {
+	NamePatternFilter(T source) {
 		this.source = source;
 	}
 
@@ -78,7 +78,7 @@ abstract class NamePatternFilter<T> {
 
 		private final Map<String, Object> results = new LinkedHashMap<String, Object>();
 
-		public ResultCollectingNameCallback(Pattern pattern) {
+		ResultCollectingNameCallback(Pattern pattern) {
 			this.pattern = pattern;
 		}
 

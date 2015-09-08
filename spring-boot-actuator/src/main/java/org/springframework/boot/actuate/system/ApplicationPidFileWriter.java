@@ -204,7 +204,7 @@ public class ApplicationPidFileWriter implements
 
 		private final String key;
 
-		public SpringProperty(String prefix, String key) {
+		SpringProperty(String prefix, String key) {
 			this.prefix = prefix;
 			this.key = key;
 		}
@@ -239,7 +239,7 @@ public class ApplicationPidFileWriter implements
 
 		private final String[] properties;
 
-		public SystemProperty(String name) {
+		SystemProperty(String name) {
 			this.properties = new String[] { name.toUpperCase(), name.toLowerCase() };
 		}
 

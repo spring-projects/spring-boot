@@ -66,7 +66,7 @@ class InitializrService {
 	 */
 	private CloseableHttpClient http;
 
-	public InitializrService() {
+	InitializrService() {
 	}
 
 	InitializrService(CloseableHttpClient http) {

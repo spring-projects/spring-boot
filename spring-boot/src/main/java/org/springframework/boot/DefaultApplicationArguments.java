@@ -36,7 +36,7 @@ class DefaultApplicationArguments implements ApplicationArguments {
 
 	private final String[] args;
 
-	public DefaultApplicationArguments(String[] args) {
+	DefaultApplicationArguments(String[] args) {
 		Assert.notNull(args, "Args must not be null");
 		this.source = new Source(args);
 		this.args = args;
@@ -71,7 +71,7 @@ class DefaultApplicationArguments implements ApplicationArguments {
 
 	private static class Source extends SimpleCommandLinePropertySource {
 
-		public Source(String[] args) {
+		Source(String[] args) {
 			super(args);
 		}
 

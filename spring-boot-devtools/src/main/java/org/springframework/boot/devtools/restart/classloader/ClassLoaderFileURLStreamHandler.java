@@ -32,7 +32,7 @@ class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 
 	private ClassLoaderFile file;
 
-	public ClassLoaderFileURLStreamHandler(ClassLoaderFile file) {
+	ClassLoaderFileURLStreamHandler(ClassLoaderFile file) {
 		this.file = file;
 	}
 
@@ -43,7 +43,7 @@ class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 
 	private class Connection extends URLConnection {
 
-		public Connection(URL url) {
+		Connection(URL url) {
 			super(url);
 		}
 

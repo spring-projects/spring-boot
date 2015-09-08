@@ -217,7 +217,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 		private String contentType;
 
-		public JarEntryName(String spec) {
+		JarEntryName(String spec) {
 			this.name = decode(spec);
 		}
 

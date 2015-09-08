@@ -46,13 +46,13 @@ class Installer {
 
 	private final Properties installCounts;
 
-	public Installer(OptionSet options, CompilerOptionHandler compilerOptionHandler)
+	Installer(OptionSet options, CompilerOptionHandler compilerOptionHandler)
 			throws IOException {
 		this(new GroovyGrabDependencyResolver(createCompilerConfiguration(options,
 				compilerOptionHandler)));
 	}
 
-	public Installer(DependencyResolver resolver) throws IOException {
+	Installer(DependencyResolver resolver) throws IOException {
 		this.dependencyResolver = resolver;
 		this.installCounts = loadInstallCounts();
 	}

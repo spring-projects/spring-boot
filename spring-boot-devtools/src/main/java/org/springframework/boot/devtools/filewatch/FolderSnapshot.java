@@ -50,7 +50,7 @@ class FolderSnapshot {
 	 * Create a new {@link FolderSnapshot} for the given folder.
 	 * @param folder the source folder
 	 */
-	public FolderSnapshot(File folder) {
+	FolderSnapshot(File folder) {
 		Assert.notNull(folder, "Folder must not be null");
 		Assert.isTrue(folder.isDirectory(), "Folder must not be a file");
 		this.folder = folder;

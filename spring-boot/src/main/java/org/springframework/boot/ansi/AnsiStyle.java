@@ -36,7 +36,7 @@ public enum AnsiStyle implements AnsiElement {
 
 	private final String code;
 
-	private AnsiStyle(String code) {
+	AnsiStyle(String code) {
 		this.code = code;
 	}
 

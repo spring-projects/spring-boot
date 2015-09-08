@@ -102,7 +102,7 @@ public class StatsdMetricWriterTests {
 
 		private final DatagramSocket server;
 
-		public DummyStatsDServer(int port) {
+		DummyStatsDServer(int port) {
 			try {
 				this.server = new DatagramSocket(port);
 			}

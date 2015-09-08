@@ -116,7 +116,7 @@ public class ResourceBannerTests {
 
 		private final String applicationVersion;
 
-		public MockResourceBanner(Resource resource, String bootVersion,
+		MockResourceBanner(Resource resource, String bootVersion,
 				String applicationVersion) {
 			super(resource);
 			this.bootVersion = bootVersion;

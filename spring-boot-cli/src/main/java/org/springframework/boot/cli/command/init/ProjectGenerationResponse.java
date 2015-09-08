@@ -32,7 +32,7 @@ class ProjectGenerationResponse {
 
 	private String fileName;
 
-	public ProjectGenerationResponse(ContentType contentType) {
+	ProjectGenerationResponse(ContentType contentType) {
 		this.contentType = contentType;
 	}
 

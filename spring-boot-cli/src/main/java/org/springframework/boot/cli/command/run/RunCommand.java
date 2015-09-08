@@ -117,7 +117,7 @@ public class RunCommand extends OptionParsingCommand {
 				OptionSetGroovyCompilerConfiguration implements
 				SpringApplicationRunnerConfiguration {
 
-			public SpringApplicationRunnerConfigurationAdapter(OptionSet options,
+			SpringApplicationRunnerConfigurationAdapter(OptionSet options,
 					CompilerOptionHandler optionHandler,
 					List<RepositoryConfiguration> repositoryConfiguration) {
 				super(options, optionHandler, repositoryConfiguration);

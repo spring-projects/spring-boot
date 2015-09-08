@@ -207,7 +207,7 @@ public class MessageSourceAutoConfiguration {
 				"hibernate-entitymanager-", "hibernate-validator-", "logback-classic-",
 				"logback-core-", "thymeleaf-" };
 
-		public SkipPatternPathMatchingResourcePatternResolver(ClassLoader classLoader) {
+		SkipPatternPathMatchingResourcePatternResolver(ClassLoader classLoader) {
 			super(classLoader);
 		}
 

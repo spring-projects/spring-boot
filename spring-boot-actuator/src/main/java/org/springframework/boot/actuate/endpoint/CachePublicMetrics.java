@@ -108,7 +108,7 @@ public class CachePublicMetrics implements PublicMetrics {
 
 		private final CacheManager cacheManager;
 
-		public CacheManagerBean(String beanName, CacheManager cacheManager) {
+		CacheManagerBean(String beanName, CacheManager cacheManager) {
 			this.beanName = beanName;
 			this.cacheManager = cacheManager;
 		}

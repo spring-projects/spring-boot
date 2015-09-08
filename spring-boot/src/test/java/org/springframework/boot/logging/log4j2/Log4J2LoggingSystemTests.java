@@ -242,7 +242,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 		private List<String> availableClasses = new ArrayList<String>();
 
-		public TestLog4J2LoggingSystem() {
+		TestLog4J2LoggingSystem() {
 			super(TestLog4J2LoggingSystem.class.getClassLoader());
 		}
 

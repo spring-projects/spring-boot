@@ -62,9 +62,8 @@ public class SpringApplicationRunner {
 	 * @param sources the files to compile/watch
 	 * @param args input arguments
 	 */
-	public SpringApplicationRunner(
-			final SpringApplicationRunnerConfiguration configuration, String[] sources,
-			String... args) {
+	SpringApplicationRunner(final SpringApplicationRunnerConfiguration configuration,
+			String[] sources, String... args) {
 		this.configuration = configuration;
 		this.sources = sources.clone();
 		this.args = args.clone();
@@ -143,7 +142,7 @@ public class SpringApplicationRunner {
 		 * Create a new {@link RunThread} instance.
 		 * @param compiledSources the sources to launch
 		 */
-		public RunThread(Object... compiledSources) {
+		RunThread(Object... compiledSources) {
 			super("runner-" + (runnerCounter++));
 			this.compiledSources = compiledSources;
 			if (compiledSources.length != 0 && compiledSources[0] instanceof Class) {
@@ -195,7 +194,7 @@ public class SpringApplicationRunner {
 
 		private List<File> sources;
 
-		public FileWatchThread() {
+		FileWatchThread() {
 			super("filewatcher-" + (watcherCounter++));
 			this.previous = 0;
 			this.sources = getSourceFiles();

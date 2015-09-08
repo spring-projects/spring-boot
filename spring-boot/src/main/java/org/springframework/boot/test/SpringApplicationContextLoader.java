@@ -279,7 +279,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 		private final String[] propertySourceLocations;
 
-		public PropertySourceLocationsInitializer(String[] propertySourceLocations) {
+		PropertySourceLocationsInitializer(String[] propertySourceLocations) {
 			this.propertySourceLocations = propertySourceLocations;
 		}
 

@@ -1019,7 +1019,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		private final Session session;
 
-		public SessionConfiguringInitializer(Session session) {
+		SessionConfiguringInitializer(Session session) {
 			this.session = session;
 		}
 

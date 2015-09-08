@@ -162,7 +162,7 @@ public class TunnelClientTests {
 
 			private final Closeable closeable;
 
-			public TunnelChannel(WritableByteChannel incomingChannel, Closeable closeable) {
+			TunnelChannel(WritableByteChannel incomingChannel, Closeable closeable) {
 				this.incomingChannel = incomingChannel;
 				this.closeable = closeable;
 			}

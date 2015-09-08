@@ -91,7 +91,7 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 
 		private final Set<E> enums;
 
-		public MappedEnum(String prefix, Class<E> enumType) {
+		MappedEnum(String prefix, Class<E> enumType) {
 			this.prefix = prefix;
 			this.enums = EnumSet.allOf(enumType);
 

@@ -195,8 +195,7 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 
 		private final MongoProperties properties;
 
-		public GridFsMongoDbFactory(MongoDbFactory mongoDbFactory,
-				MongoProperties properties) {
+		GridFsMongoDbFactory(MongoDbFactory mongoDbFactory, MongoProperties properties) {
 			Assert.notNull(mongoDbFactory, "MongoDbFactory must not be null");
 			Assert.notNull(properties, "Properties must not be null");
 			this.mongoDbFactory = mongoDbFactory;

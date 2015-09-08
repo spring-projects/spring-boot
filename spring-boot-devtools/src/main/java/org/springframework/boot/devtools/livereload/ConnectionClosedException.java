@@ -25,7 +25,7 @@ import java.io.IOException;
  */
 class ConnectionClosedException extends IOException {
 
-	public ConnectionClosedException() {
+	ConnectionClosedException() {
 		super("Connection closed");
 	}
 

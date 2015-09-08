@@ -39,7 +39,7 @@ class ProjectGenerator {
 
 	private final InitializrService initializrService;
 
-	public ProjectGenerator(InitializrService initializrService) {
+	ProjectGenerator(InitializrService initializrService) {
 		this.initializrService = initializrService;
 	}
 

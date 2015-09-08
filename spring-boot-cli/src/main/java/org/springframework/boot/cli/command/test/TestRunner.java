@@ -47,8 +47,7 @@ public class TestRunner {
 	 * @param sources
 	 * @param args
 	 */
-	public TestRunner(TestRunnerConfiguration configuration, String[] sources,
-			String[] args) {
+	TestRunner(TestRunnerConfiguration configuration, String[] sources, String[] args) {
 		this.sources = sources.clone();
 		this.compiler = new GroovyCompiler(configuration);
 	}
@@ -90,7 +89,7 @@ public class TestRunner {
 		 * Create a new {@link RunThread} instance.
 		 * @param sources the sources to launch
 		 */
-		public RunThread(Object... sources) {
+		RunThread(Object... sources) {
 			super("testrunner");
 			setDaemon(true);
 			if (sources.length != 0 && sources[0] instanceof Class) {

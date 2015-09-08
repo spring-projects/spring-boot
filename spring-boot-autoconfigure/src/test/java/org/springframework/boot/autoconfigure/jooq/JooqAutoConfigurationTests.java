@@ -185,7 +185,7 @@ public class JooqAutoConfigurationTests {
 
 		private final Matcher<? super String> matcher;
 
-		public AssertFetch(DSLContext dsl, String sql, Matcher<? super String> matcher) {
+		AssertFetch(DSLContext dsl, String sql, Matcher<? super String> matcher) {
 			this.dsl = dsl;
 			this.sql = sql;
 			this.matcher = matcher;
@@ -204,7 +204,7 @@ public class JooqAutoConfigurationTests {
 
 		private final String[] sql;
 
-		public ExecuteSql(DSLContext dsl, String... sql) {
+		ExecuteSql(DSLContext dsl, String... sql) {
 			this.dsl = dsl;
 			this.sql = sql;
 		}

@@ -59,8 +59,8 @@ class DefaultLogbackConfiguration {
 
 	private final LogFile logFile;
 
-	public DefaultLogbackConfiguration(
-			LoggingInitializationContext initializationContext, LogFile logFile) {
+	DefaultLogbackConfiguration(LoggingInitializationContext initializationContext,
+			LogFile logFile) {
 		this.patterns = getPatternsResolver(initializationContext.getEnvironment());
 		this.logFile = logFile;
 	}

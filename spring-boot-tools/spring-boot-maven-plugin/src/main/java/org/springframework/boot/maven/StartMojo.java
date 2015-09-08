@@ -287,7 +287,7 @@ public class StartMojo extends AbstractRunMojo {
 
 		private final int port;
 
-		public CreateJmxConnector(int port) {
+		CreateJmxConnector(int port) {
 			this.port = port;
 		}
 

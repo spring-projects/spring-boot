@@ -220,7 +220,7 @@ public class EndpointMBeanExportAutoConfigurationTests {
 
 		class Nested extends AbstractEndpoint<Boolean> {
 
-			public Nested() {
+			Nested() {
 				super("managed", true);
 			}
 

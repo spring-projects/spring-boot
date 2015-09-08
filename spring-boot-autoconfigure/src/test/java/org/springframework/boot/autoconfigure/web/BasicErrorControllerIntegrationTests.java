@@ -178,7 +178,7 @@ public class BasicErrorControllerIntegrationTests {
 			@SuppressWarnings("serial")
 			private static class NoReasonExpectedException extends RuntimeException {
 
-				public NoReasonExpectedException(String message) {
+				NoReasonExpectedException(String message) {
 					super(message);
 				}
 

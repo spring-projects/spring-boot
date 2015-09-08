@@ -125,7 +125,7 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache> implem
 
 		private final ObjectName objectName;
 
-		public ObjectNameWrapper(ObjectName objectName) {
+		ObjectNameWrapper(ObjectName objectName) {
 			this.objectName = objectName;
 		}
 

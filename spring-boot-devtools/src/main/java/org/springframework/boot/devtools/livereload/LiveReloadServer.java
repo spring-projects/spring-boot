@@ -248,7 +248,7 @@ public class LiveReloadServer {
 
 		private final InputStream inputStream;
 
-		public ConnectionHandler(Socket socket) throws IOException {
+		ConnectionHandler(Socket socket) throws IOException {
 			this.socket = socket;
 			this.inputStream = socket.getInputStream();
 		}

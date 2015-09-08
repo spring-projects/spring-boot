@@ -80,7 +80,7 @@ public class NoneNestedConditionsTests {
 
 	static class NeitherPropertyANorPropertyBCondition extends NoneNestedConditions {
 
-		public NeitherPropertyANorPropertyBCondition() {
+		NeitherPropertyANorPropertyBCondition() {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 

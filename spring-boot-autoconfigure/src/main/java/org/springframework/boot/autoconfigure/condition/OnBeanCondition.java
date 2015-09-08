@@ -252,7 +252,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 		private final SearchStrategy strategy;
 
-		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
+		BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
 				Class<?> annotationType) {
 			this.annotationType = annotationType;
 			MultiValueMap<String, Object> attributes = metadata
@@ -388,7 +388,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private static class SingleCandidateBeanSearchSpec extends BeanSearchSpec {
 
-		public SingleCandidateBeanSearchSpec(ConditionContext context,
+		SingleCandidateBeanSearchSpec(ConditionContext context,
 				AnnotatedTypeMetadata metadata, Class<?> annotationType) {
 			super(context, metadata, annotationType);
 		}

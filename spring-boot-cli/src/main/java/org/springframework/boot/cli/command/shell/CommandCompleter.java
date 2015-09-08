@@ -126,7 +126,7 @@ public class CommandCompleter extends StringsCompleter {
 
 		private final String usage;
 
-		public OptionHelpLine(OptionHelp optionHelp) {
+		OptionHelpLine(OptionHelp optionHelp) {
 			StringBuffer options = new StringBuffer();
 			for (String option : optionHelp.getOptions()) {
 				options.append(options.length() == 0 ? "" : ", ");

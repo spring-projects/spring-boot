@@ -49,7 +49,7 @@ class SpringProfileAction extends Action implements InPlayListener {
 
 	private List<SaxEvent> events;
 
-	public SpringProfileAction(Environment environment) {
+	SpringProfileAction(Environment environment) {
 		this.environment = environment;
 	}
 

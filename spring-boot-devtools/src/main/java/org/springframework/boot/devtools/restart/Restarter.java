@@ -558,7 +558,7 @@ public class Restarter {
 
 		private Object result;
 
-		public LeakSafeThread() {
+		LeakSafeThread() {
 			setDaemon(false);
 		}
 

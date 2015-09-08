@@ -353,7 +353,7 @@ public class CrshAutoConfiguration {
 
 		private final String[] disabledPlugins;
 
-		public BeanFactoryFilteringPluginDiscovery(ClassLoader classLoader,
+		BeanFactoryFilteringPluginDiscovery(ClassLoader classLoader,
 				ListableBeanFactory beanFactory, String[] disabledPlugins)
 				throws NullPointerException {
 			super(classLoader);
@@ -420,7 +420,7 @@ public class CrshAutoConfiguration {
 
 		private final ResourceHandle root;
 
-		public SimpleFileSystemDriver(ResourceHandle handle) {
+		SimpleFileSystemDriver(ResourceHandle handle) {
 			this.root = handle;
 		}
 
@@ -474,7 +474,7 @@ public class CrshAutoConfiguration {
 
 		private final String name;
 
-		public ResourceHandle(String name) {
+		ResourceHandle(String name) {
 			this.name = name;
 		}
 
@@ -495,7 +495,7 @@ public class CrshAutoConfiguration {
 
 		private final AntPathMatcher matcher = new AntPathMatcher();
 
-		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader,
+		DirectoryHandle(String name, ResourcePatternResolver resourceLoader,
 				String[] filterPatterns) {
 			super(name);
 			this.resourceLoader = resourceLoader;
@@ -530,7 +530,7 @@ public class CrshAutoConfiguration {
 
 		private final Resource resource;
 
-		public FileHandle(String name, Resource resource) {
+		FileHandle(String name, Resource resource) {
 			super(name);
 			this.resource = resource;
 		}

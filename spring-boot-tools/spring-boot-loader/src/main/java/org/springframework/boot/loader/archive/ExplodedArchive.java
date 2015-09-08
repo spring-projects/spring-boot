@@ -174,7 +174,7 @@ public class ExplodedArchive extends Archive {
 
 		private final File file;
 
-		public FileEntry(AsciiBytes name, File file) {
+		FileEntry(AsciiBytes name, File file) {
 			this.name = name;
 			this.file = file;
 		}
@@ -199,9 +199,6 @@ public class ExplodedArchive extends Archive {
 	 */
 	private class FilteredURLStreamHandler extends URLStreamHandler {
 
-		public FilteredURLStreamHandler() {
-		}
-
 		@Override
 		protected URLConnection openConnection(URL url) throws IOException {
 			String name = url.getPath().substring(
@@ -220,7 +217,7 @@ public class ExplodedArchive extends Archive {
 
 		private final String name;
 
-		public FileNotFoundURLConnection(URL url, String name) {
+		FileNotFoundURLConnection(URL url, String name) {
 			super(url);
 			this.name = name;
 		}

@@ -45,7 +45,7 @@ abstract class AbstractNestedCondition extends SpringBootCondition implements
 
 	private final ConfigurationPhase configurationPhase;
 
-	public AbstractNestedCondition(ConfigurationPhase configurationPhase) {
+	AbstractNestedCondition(ConfigurationPhase configurationPhase) {
 		Assert.notNull(configurationPhase, "ConfigurationPhase must not be null");
 		this.configurationPhase = configurationPhase;
 	}
@@ -108,7 +108,7 @@ abstract class AbstractNestedCondition extends SpringBootCondition implements
 
 		private final Map<AnnotationMetadata, List<Condition>> memberConditions;
 
-		public MemberConditions(ConditionContext context, String className) {
+		MemberConditions(ConditionContext context, String className) {
 			this.context = context;
 			this.readerFactory = new SimpleMetadataReaderFactory(
 					context.getResourceLoader());

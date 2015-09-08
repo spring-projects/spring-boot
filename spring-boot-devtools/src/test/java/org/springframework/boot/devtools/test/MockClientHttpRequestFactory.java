@@ -74,7 +74,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 	private class MockRequest extends MockClientHttpRequest {
 
-		public MockRequest(URI uri, HttpMethod httpMethod) {
+		MockRequest(URI uri, HttpMethod httpMethod) {
 			super(httpMethod, uri);
 		}
 
@@ -98,7 +98,7 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 		private final HttpStatus status;
 
-		public Response(int delay, byte[] payload, HttpStatus status) {
+		Response(int delay, byte[] payload, HttpStatus status) {
 			this.delay = delay;
 			this.payload = payload;
 			this.status = status;

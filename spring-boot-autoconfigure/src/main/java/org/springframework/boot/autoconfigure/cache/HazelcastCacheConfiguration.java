@@ -108,7 +108,7 @@ class HazelcastCacheConfiguration {
 	 */
 	static class ConfigAvailableCondition extends HazelcastConfigResourceCondition {
 
-		public ConfigAvailableCondition() {
+		ConfigAvailableCondition() {
 			super("spring.cache.hazelcast", "config");
 		}
 
@@ -119,7 +119,7 @@ class HazelcastCacheConfiguration {
 
 		private final HazelcastInstance hazelcastInstance;
 
-		public CloseableHazelcastCacheManager(HazelcastInstance hazelcastInstance) {
+		CloseableHazelcastCacheManager(HazelcastInstance hazelcastInstance) {
 			super(hazelcastInstance);
 			this.hazelcastInstance = hazelcastInstance;
 		}

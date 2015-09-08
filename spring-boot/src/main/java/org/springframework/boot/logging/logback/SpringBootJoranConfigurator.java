@@ -34,7 +34,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 
 	private LoggingInitializationContext initializationContext;
 
-	public SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
+	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
 		this.initializationContext = initializationContext;
 	}
 

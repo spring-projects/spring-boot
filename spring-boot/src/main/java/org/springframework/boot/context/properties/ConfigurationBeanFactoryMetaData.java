@@ -99,7 +99,7 @@ public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcesso
 
 		private String method;
 
-		public MetaData(String bean, String method) {
+		MetaData(String bean, String method) {
 			this.bean = bean;
 			this.method = method;
 		}

@@ -41,7 +41,7 @@ class GroovyGrabDependencyResolver implements DependencyResolver {
 
 	private final GroovyCompilerConfiguration configuration;
 
-	public GroovyGrabDependencyResolver(GroovyCompilerConfiguration configuration) {
+	GroovyGrabDependencyResolver(GroovyCompilerConfiguration configuration) {
 		this.configuration = configuration;
 	}
 

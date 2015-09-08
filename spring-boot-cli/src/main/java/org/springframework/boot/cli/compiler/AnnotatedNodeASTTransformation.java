@@ -118,7 +118,7 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 
 		private final SourceUnit source;
 
-		public ClassVisitor(SourceUnit source) {
+		ClassVisitor(SourceUnit source) {
 			this.source = source;
 		}
 

@@ -151,7 +151,7 @@ public abstract class ResourceUtils {
 
 		private final FileSystemResourceLoader files;
 
-		public FileSearchResourceLoader(ClassLoader classLoader) {
+		FileSearchResourceLoader(ClassLoader classLoader) {
 			super(classLoader);
 			this.files = new FileSystemResourceLoader();
 		}

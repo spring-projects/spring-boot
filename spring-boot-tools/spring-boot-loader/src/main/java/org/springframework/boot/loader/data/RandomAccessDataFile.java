@@ -126,7 +126,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		private int position;
 
-		public DataInputStream(ResourceAccess access) throws IOException {
+		DataInputStream(ResourceAccess access) throws IOException {
 			if (access == ResourceAccess.ONCE) {
 				this.file = new RandomAccessFile(RandomAccessDataFile.this.file, "r");
 				this.file.seek(RandomAccessDataFile.this.offset);
@@ -236,7 +236,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		private final Queue<RandomAccessFile> files;
 
-		public FilePool(int size) {
+		FilePool(int size) {
 			this.size = size;
 			this.available = new Semaphore(size);
 			this.files = new ConcurrentLinkedQueue<RandomAccessFile>();

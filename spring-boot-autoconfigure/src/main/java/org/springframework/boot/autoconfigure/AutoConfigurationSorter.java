@@ -46,7 +46,7 @@ class AutoConfigurationSorter {
 
 	private final CachingMetadataReaderFactory metadataReaderFactory;
 
-	public AutoConfigurationSorter(ResourceLoader resourceLoader) {
+	AutoConfigurationSorter(ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
 	}
@@ -105,7 +105,7 @@ class AutoConfigurationSorter {
 
 		private final Map<String, AutoConfigurationClass> classes = new HashMap<String, AutoConfigurationClass>();
 
-		public AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
+		AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
 				Collection<String> classNames) throws IOException {
 			for (String className : classNames) {
 				MetadataReader metadataReader = metadataReaderFactory
@@ -135,7 +135,7 @@ class AutoConfigurationSorter {
 
 		private final AnnotationMetadata metadata;
 
-		public AutoConfigurationClass(MetadataReader metadataReader) {
+		AutoConfigurationClass(MetadataReader metadataReader) {
 			this.metadata = metadataReader.getAnnotationMetadata();
 		}
 

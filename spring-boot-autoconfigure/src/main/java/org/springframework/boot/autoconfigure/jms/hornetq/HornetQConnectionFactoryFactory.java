@@ -47,7 +47,7 @@ class HornetQConnectionFactoryFactory {
 
 	private final ListableBeanFactory beanFactory;
 
-	public HornetQConnectionFactoryFactory(ListableBeanFactory beanFactory,
+	HornetQConnectionFactoryFactory(ListableBeanFactory beanFactory,
 			HornetQProperties properties) {
 		Assert.notNull(beanFactory, "BeanFactory must not be null");
 		Assert.notNull(properties, "Properties must not be null");

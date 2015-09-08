@@ -56,7 +56,7 @@ class GsonHttpMessageConvertersConfiguration {
 
 	private static class PreferGsonOrMissingJacksonCondition extends AnyNestedCondition {
 
-		public PreferGsonOrMissingJacksonCondition() {
+		PreferGsonOrMissingJacksonCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 

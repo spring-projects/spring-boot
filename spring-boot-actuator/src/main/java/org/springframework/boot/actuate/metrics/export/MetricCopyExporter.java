@@ -140,7 +140,7 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 
 		private final MetricReader reader;
 
-		public PatternMatchingIterable(MetricReader reader) {
+		PatternMatchingIterable(MetricReader reader) {
 			this.reader = reader;
 		}
 
@@ -157,7 +157,7 @@ public class MetricCopyExporter extends AbstractMetricExporter {
 
 		private Iterator<Metric<?>> iterator;
 
-		public PatternMatchingIterator(Iterator<Metric<?>> iterator) {
+		PatternMatchingIterator(Iterator<Metric<?>> iterator) {
 			this.iterator = iterator;
 		}
 

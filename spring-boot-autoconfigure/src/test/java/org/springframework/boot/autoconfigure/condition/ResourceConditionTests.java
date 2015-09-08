@@ -93,14 +93,15 @@ public class ResourceConditionTests {
 
 	private static class DefaultLocationResourceCondition extends ResourceCondition {
 
-		public DefaultLocationResourceCondition() {
+		DefaultLocationResourceCondition() {
 			super("test", "spring.foo.test.", "config", "classpath:/logging.properties");
 		}
 	}
 
 	private static class UnknownDefaultLocationResourceCondition extends
 			ResourceCondition {
-		public UnknownDefaultLocationResourceCondition() {
+
+		UnknownDefaultLocationResourceCondition() {
 			super("test", "spring.foo.test", "config",
 					"classpath:/this-file-does-not-exist.xml");
 		}

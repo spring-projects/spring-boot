@@ -142,7 +142,7 @@ public abstract class AutoConfigurationPackages {
 
 		private boolean loggedBasePackageInfo;
 
-		public BasePackages(String... names) {
+		BasePackages(String... names) {
 			List<String> packages = new ArrayList<String>();
 			for (String name : names) {
 				if (StringUtils.hasText(name)) {

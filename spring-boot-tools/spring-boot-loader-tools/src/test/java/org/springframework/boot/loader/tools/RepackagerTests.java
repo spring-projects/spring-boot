@@ -522,7 +522,7 @@ public class RepackagerTests {
 
 		private final byte[] bytes;
 
-		public MockLauncherScript(String script) {
+		MockLauncherScript(String script) {
 			this.bytes = script.getBytes();
 		}
 

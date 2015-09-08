@@ -60,7 +60,7 @@ class Connection {
 	 * @param outputStream the socket output stream
 	 * @throws IOException
 	 */
-	public Connection(Socket socket, InputStream inputStream, OutputStream outputStream)
+	Connection(Socket socket, InputStream inputStream, OutputStream outputStream)
 			throws IOException {
 		this.socket = socket;
 		this.inputStream = new ConnectionInputStream(inputStream);

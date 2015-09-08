@@ -108,7 +108,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 
 		private final EntityManager entityManger;
 
-		public TestRepository(EntityManager entityManager) {
+		TestRepository(EntityManager entityManager) {
 			this.entityManger = entityManager;
 		}
 

@@ -115,7 +115,7 @@ public class TestRestTemplate extends RestTemplate {
 
 		private final String password;
 
-		public BasicAuthorizationInterceptor(String username, String password) {
+		BasicAuthorizationInterceptor(String username, String password) {
 			this.username = username;
 			this.password = (password == null ? "" : password);
 		}

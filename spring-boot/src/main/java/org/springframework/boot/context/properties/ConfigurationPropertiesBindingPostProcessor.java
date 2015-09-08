@@ -409,7 +409,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 		private Validator[] validators;
 
-		public ChainingValidator(Validator... validators) {
+		ChainingValidator(Validator... validators) {
 			Assert.notNull(validators, "Validators must not be null");
 			this.validators = validators;
 		}
@@ -443,7 +443,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 		private PropertySources propertySources;
 
-		public FlatPropertySources(PropertySources propertySources) {
+		FlatPropertySources(PropertySources propertySources) {
 			this.propertySources = propertySources;
 		}
 

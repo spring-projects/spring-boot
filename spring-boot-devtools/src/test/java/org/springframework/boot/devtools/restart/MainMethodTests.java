@@ -98,7 +98,7 @@ public class MainMethodTests {
 
 		private MainMethod mainMethod;
 
-		public TestThread(Runnable runnable) {
+		TestThread(Runnable runnable) {
 			this.runnable = runnable;
 		}
 
