@@ -20,7 +20,7 @@
 		<tomee.version>1.7.1</tomee.version>
 		<cargo.container.id>tomee1x</cargo.container.id>
 		<cargo.container.url>
-			http://mirrors.ibiblio.org/apache/tomee/tomee-${tomee.version}/apache-tomee-${tomee.version}-webprofile.zip
+			http://archive.apache.org/dist/tomee/tomee-${tomee.version}/apache-tomee-${tomee.version}-webprofile.zip
 		</cargo.container.url>
 	</properties>
 	<dependencies>

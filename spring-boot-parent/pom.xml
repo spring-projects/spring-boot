@@ -300,7 +300,7 @@
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven2-plugin</artifactId>
-					<version>1.4.11</version>
+					<version>1.4.15</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
