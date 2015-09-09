@@ -1,0 +1,6 @@
+== Spring Boot Flyway Sample
+
+This sample demonstrates the flyway auto-configuration support.
+
+You can look at the `/flyway` endpoint to review the list of scripts executed.
+E.g: http//localhost:8080/flyway
