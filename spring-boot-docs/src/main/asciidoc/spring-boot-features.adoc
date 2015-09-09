@@ -3706,7 +3706,7 @@ Auto-configuration classes can be bundled in external jars and still be picked-u
 Spring Boot.
 
 Auto-configuration can be associated to a "starter" that provides the auto-configuration
-code as well as the typical libraries that you would use with it. We will fist cover what
+code as well as the typical libraries that you would use with it. We will first cover what
 you need to know to build your own auto-configuration and we will move on to the
 <<boot-features-custom-starter,typical steps required to create a custom starter>>.
 
@@ -3828,8 +3828,8 @@ A full Spring Boot starter for a library may contain the following components:
 
 * The `autoconfigure` module that contains the auto-configuration code.
 * The `starter` module that provides a dependency to the autoconfigure module as well as
-  the library and any additional dependencies that are typically useful . In a nutshell,
-  adding the starter should be enough to start using that library
+  the library and any additional dependencies that are typically useful. In a nutshell,
+  adding the starter should be enough to start using that library.
 
 TIP: You may combine the auto-configuration code and the dependency management in a single
 module if you don't need to separate those two concerns.
@@ -3838,7 +3838,7 @@ module if you don't need to separate those two concerns.
 
 [[boot-features-custom-starter-naming]]
 ==== Naming
-FPlease make sure to provide a proper namespace for your starter. Do not start your module
+Please make sure to provide a proper namespace for your starter. Do not start your module
 names with `spring-boot`, even if you are using a different Maven groupId. We may offer an
 official support for the thing you're auto-configuring in the future.
 
@@ -3869,7 +3869,7 @@ initialized.
 
 TIP: You should mark the dependencies to the library as optional so that you can include
 the autoconfigure module in your projects more easily. If you do it that way, the library
-won't be provided and boot will backoff by default.
+won't be provided and Spring Boot will backoff by default.
 
 
 
@@ -3879,7 +3879,7 @@ The starter is an empty jar, really. Its only purpose is to provide the necessar
 dependencies to work with the library; see it as an opinionated view of what is required
 to get started.
 
-Do not make assumptions about the project in which your starter is added . If the library
+Do not make assumptions about the project in which your starter is added. If the library
 you are auto-configuring typically requires other starters, mention them as well. Providing
 a proper set of _default_ dependencies may be hard if the number of optional dependencies
 is high as you should avoid bringing unnecessary dependencies for a typical usage of the
