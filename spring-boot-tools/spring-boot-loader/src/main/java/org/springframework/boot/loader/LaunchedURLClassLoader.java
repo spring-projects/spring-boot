@@ -47,7 +47,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * @param urls the URLs from which to load classes and resources
 	 * @param parent the parent class loader for delegation
 	 */
-	LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
+	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 		this.rootClassLoader = findRootClassLoader(parent);
 	}
