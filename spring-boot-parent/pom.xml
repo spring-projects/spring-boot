@@ -420,7 +420,7 @@
 							<outputDirectory>${project.build.directory}</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${main.basedir}/spring-boot-parent</directory>
+									<directory>${main.basedir}/spring-boot-parent/src/checkstyle</directory>
 									<includes>
 										<include>checkstyle-import-control.xml</include>
 									</includes>
@@ -438,9 +438,9 @@
 						<id>checkstyle-validation</id>
 						<phase>validate</phase>
 						<configuration>
-							<configLocation>checkstyle.xml</configLocation>
-							<suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
-							<headerLocation>checkstyle-header.txt</headerLocation>
+							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
+							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+							<headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
 							<propertyExpansion>checkstyle.build.directory=${project.build.directory}</propertyExpansion>
 							<encoding>UTF-8</encoding>
 							<consoleOutput>true</consoleOutput>
