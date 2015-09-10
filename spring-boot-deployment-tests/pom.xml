@@ -20,7 +20,7 @@
 		<main.basedir>${basedir}/..</main.basedir>
 		<java.version>1.7</java.version>
 		<cargo.timeout>300000</cargo.timeout>
-		<cargo.container.download-dir>${user.home}/.cargo/installs</cargo.container.download-dir>
+		<cargo.container.download-dir>${java.io.tmpdir}/cargo/installs</cargo.container.download-dir>
 	</properties>
 	<modules>
 		<module>spring-boot-deployment-test-tomee</module>
