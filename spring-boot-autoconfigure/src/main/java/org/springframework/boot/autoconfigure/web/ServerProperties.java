@@ -68,7 +68,7 @@ import org.springframework.util.StringUtils;
  * @author Ivan Sopov
  * @author Marcos Barbero
  */
-@ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
 public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
 
 	/**

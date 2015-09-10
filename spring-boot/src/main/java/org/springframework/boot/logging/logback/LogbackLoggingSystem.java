@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.classic.jul.LevelChangePropagator;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -106,8 +107,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	protected void loadDefaults(LoggingInitializationContext initializationContext,
 			LogFile logFile) {
 		LoggerContext context = getLoggerContext();
-		context.stop();
-		context.reset();
+		stopAndReset(context);
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
@@ -121,8 +121,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			logFile.applyToSystemProperties();
 		}
 		LoggerContext loggerContext = getLoggerContext();
-		loggerContext.stop();
-		loggerContext.reset();
+		stopAndReset(loggerContext);
 		try {
 			configureByResourceUrl(initializationContext, loggerContext,
 					ResourceUtils.getURL(location));
@@ -157,6 +156,21 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		else {
 			new ContextInitializer(loggerContext).configureByResource(url);
 		}
+	}
+
+	private void stopAndReset(LoggerContext loggerContext) {
+		loggerContext.stop();
+		loggerContext.reset();
+		if (isBridgeHandlerAvailable()) {
+			addLevelChangePropagator(loggerContext);
+		}
+	}
+
+	private void addLevelChangePropagator(LoggerContext loggerContext) {
+		LevelChangePropagator levelChangePropagator = new LevelChangePropagator();
+		levelChangePropagator.setResetJUL(true);
+		levelChangePropagator.setContext(loggerContext);
+		loggerContext.addListener(levelChangePropagator);
 	}
 
 	@Override

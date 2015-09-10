@@ -171,6 +171,18 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void loggingLevelIsPropagatedToJulI() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
+		java.util.logging.Logger julLogger = java.util.logging.Logger
+				.getLogger(getClass().getName());
+		julLogger.fine("Hello debug world");
+		String output = this.output.toString().trim();
+		assertTrue("Wrong output:\n" + output, output.contains("Hello debug world"));
+	}
+
+	@Test
 	public void jbossLoggingIsConfiguredToUseSlf4j() {
 		this.loggingSystem.beforeInitialize();
 		assertEquals("slf4j", System.getProperty("org.jboss.logging.provider"));

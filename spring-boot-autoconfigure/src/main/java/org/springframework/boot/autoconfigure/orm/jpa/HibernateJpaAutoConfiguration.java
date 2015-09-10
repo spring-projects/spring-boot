@@ -146,8 +146,9 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 			vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(
 					jtaTransactionManager));
 		}
-		catch (NoClassDefFoundError ex) {
-			// Can happen if Hibernate 4.2 is used
+		catch (LinkageError ex) {
+			// NoClassDefFoundError can happen if Hibernate 4.2 is used and some
+			// containers (e.g. JBoss EAP 6) wraps it in the superclass LinkageError
 			if (!isUsingJndi()) {
 				throw new IllegalStateException("Unable to set Hibernate JTA "
 						+ "platform, are you using the correct "
