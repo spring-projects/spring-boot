@@ -173,7 +173,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void loggingLevelIsPropagatedToJulI() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null);
+		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		java.util.logging.Logger julLogger = java.util.logging.Logger
 				.getLogger(getClass().getName());
