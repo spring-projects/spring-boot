@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.qos.logback.classic.jul.LevelChangePropagator;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -108,6 +109,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LoggerContext context = getLoggerContext();
 		context.stop();
 		context.reset();
+		configureJdkLoggingLevelPropagator();
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
@@ -123,6 +125,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LoggerContext loggerContext = getLoggerContext();
 		loggerContext.stop();
 		loggerContext.reset();
+		configureJdkLoggingLevelPropagator();
 		try {
 			configureByResourceUrl(initializationContext, loggerContext,
 					ResourceUtils.getURL(location));
@@ -174,6 +177,17 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	private void configureJBossLoggingToUseSlf4j() {
 		System.setProperty("org.jboss.logging.provider", "slf4j");
+	}
+
+	private void configureJdkLoggingLevelPropagator() {
+		if (bridgeHandlerIsAvailable()) {
+			LoggerContext loggerContext = getLoggerContext();
+
+			LevelChangePropagator levelChangePropagator = new LevelChangePropagator();
+			levelChangePropagator.setResetJUL(true);
+			levelChangePropagator.setContext(loggerContext);
+			loggerContext.addListener(levelChangePropagator);
+		}
 	}
 
 	@Override
