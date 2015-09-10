@@ -914,7 +914,7 @@ you can use the `spring.devtools.restart.exclude` property. For example, to excl
 ----
 
 TIP: if you want to keep those defaults and _add_ additional exclusions, use the
-`spring.devtools.restart.exclude.additional-exclude` property instead.
+`spring.devtools.restart.additional-exclude` property instead.
 
 
 [[using-boot-devtools-restart-additional-paths]]
