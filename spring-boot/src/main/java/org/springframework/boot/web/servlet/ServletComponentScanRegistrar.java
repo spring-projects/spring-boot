@@ -62,7 +62,7 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 		Set<String> mergedPackages = new LinkedHashSet<String>(
 				(Set<String>) constructorArguments.getValue());
 		mergedPackages.addAll(packagesToScan);
-		constructorArguments.setValue(packagesToScan);
+		constructorArguments.setValue(mergedPackages);
 	}
 
 	private void addPostProcessor(BeanDefinitionRegistry registry,
