@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link SpringBootServletInitializerTests}.
+ * Tests for {@link SpringBootServletInitializer}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -75,8 +75,8 @@ public class SpringBootServletInitializerTests {
 				equalToSet(Config.class, ErrorPageFilter.class));
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void mainClassHasSensibleDefault() throws Exception {
 		new WithConfigurationAnnotation()
 				.createRootApplicationContext(this.servletContext);
@@ -84,6 +84,14 @@ public class SpringBootServletInitializerTests {
 				.getPropertyValue("mainApplicationClass");
 		assertThat(mainApplicationClass,
 				is(equalTo((Class) WithConfigurationAnnotation.class)));
+	}
+
+	@Test
+	public void withErrorPageFilterNotRegistered() throws Exception {
+		new WithErrorPageFilterNotRegistered()
+				.createRootApplicationContext(this.servletContext);
+		assertThat(this.application.getSources(),
+				equalToSet(WithErrorPageFilterNotRegistered.class));
 	}
 
 	private Matcher<? super Set<Object>> equalToSet(Object... items) {
@@ -111,6 +119,16 @@ public class SpringBootServletInitializerTests {
 		@Override
 		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 			return application.sources(Config.class);
+		}
+
+	}
+
+	@Configuration
+	public class WithErrorPageFilterNotRegistered extends
+			MockSpringBootServletInitializer {
+
+		public WithErrorPageFilterNotRegistered() {
+			setRegisterErrorPageFilter(false);
 		}
 
 	}

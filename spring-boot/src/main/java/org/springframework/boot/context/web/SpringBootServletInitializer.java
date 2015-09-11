@@ -64,6 +64,18 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	private boolean registerErrorPageFilter = true;
+
+	/**
+	 * Set if the {@link ErrorPageFilter} should be registered. Set to {@code false} if
+	 * error page mappings should be handled via the Servlet container and not Spring
+	 * Boot.
+	 * @param registerErrorPageFilter if the {@link ErrorPageFilter} should be registered.
+	 */
+	protected final void setRegisterErrorPageFilter(boolean registerErrorPageFilter) {
+		this.registerErrorPageFilter = registerErrorPageFilter;
+	}
+
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		WebApplicationContext rootAppContext = createRootApplicationContext(servletContext);
@@ -106,7 +118,9 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 				"No SpringApplication sources have been defined. Either override the "
 						+ "configure method or add an @Configuration annotation");
 		// Ensure error pages are registered
-		application.getSources().add(ErrorPageFilter.class);
+		if (this.registerErrorPageFilter) {
+			application.getSources().add(ErrorPageFilter.class);
+		}
 		return run(application);
 	}
 
