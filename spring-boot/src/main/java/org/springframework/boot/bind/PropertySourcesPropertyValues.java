@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
@@ -39,16 +41,21 @@ import org.springframework.validation.DataBinder;
  * used with the latter.
  *
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class PropertySourcesPropertyValues implements PropertyValues {
-
-	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
-
-	private final PropertySources propertySources;
 
 	private static final Collection<String> PATTERN_MATCHED_PROPERTY_SOURCES = Arrays
 			.asList(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 					StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
+
+	private static final Pattern COLLECTION_PROPERTY = Pattern.compile("\\[(\\d+)\\]");
+
+	private final PropertySources propertySources;
+
+	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
+
+	private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners = new ConcurrentHashMap<String, PropertySource<?>>();
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
@@ -122,10 +129,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 					continue;
 				}
 				Object value = getEnumerableProperty(source, resolver, propertyName);
-				if (!this.propertyValues.containsKey(propertyName)) {
-					this.propertyValues.put(propertyName, new PropertyValue(propertyName,
-							value));
-				}
+				putIfAbsent(propertyName, value, source);
 			}
 		}
 	}
@@ -166,9 +170,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			if (value == null) {
 				value = source.getProperty(propertyName.toUpperCase());
 			}
-			if (value != null && !this.propertyValues.containsKey(propertyName)) {
-				this.propertyValues.put(propertyName, new PropertyValue(propertyName,
-						value));
+			if (putIfAbsent(propertyName, value, source) != null) {
 				continue;
 			}
 		}
@@ -188,8 +190,22 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		}
 		for (PropertySource<?> source : this.propertySources) {
 			Object value = source.getProperty(propertyName);
-			if (value != null) {
-				propertyValue = new PropertyValue(propertyName, value);
+			propertyValue = putIfAbsent(propertyName, value, source);
+			if (propertyValue != null) {
+				return propertyValue;
+			}
+		}
+		return null;
+	}
+
+	private PropertyValue putIfAbsent(String propertyName, Object value,
+			PropertySource<?> source) {
+		if (value != null && !this.propertyValues.containsKey(propertyName)) {
+			PropertySource<?> collectionOwner = this.collectionOwners.putIfAbsent(
+					COLLECTION_PROPERTY.matcher(propertyName).replaceAll("[]"), source);
+			if (collectionOwner == null || collectionOwner == source) {
+				this.collectionOwners.get(this.collectionOwners);
+				PropertyValue propertyValue = new PropertyValue(propertyName, value);
 				this.propertyValues.put(propertyName, propertyValue);
 				return propertyValue;
 			}
