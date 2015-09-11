@@ -114,9 +114,9 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		ErrorWrapperResponse wrapped = new ErrorWrapperResponse(response);
 		try {
 			chain.doFilter(request, wrapped);
-			int status = wrapped.getStatus();
-			if (status >= 400) {
-				handleErrorStatus(request, response, status, wrapped.getMessage());
+			if (wrapped.hasErrorToSend()) {
+				handleErrorStatus(request, response, wrapped.getStatus(),
+						wrapped.getMessage());
 				response.flushBuffer();
 			}
 			else if (!request.isAsyncStarted() && !response.isCommitted()) {
@@ -140,7 +140,6 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 			handleCommittedResponse(request, null);
 			return;
 		}
-
 		String errorPath = getErrorPath(this.statuses, status);
 		if (errorPath == null) {
 			response.sendError(status, message);
@@ -319,6 +318,10 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 		public String getMessage() {
 			return this.message;
+		}
+
+		public boolean hasErrorToSend() {
+			return this.hasErrorToSend;
 		}
 
 	}
