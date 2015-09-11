@@ -88,7 +88,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void unknonwFieldFailureMessageContainsDetailsOfPropertyOrigin() {
+	public void unknownFieldFailureMessageContainsDetailsOfPropertyOrigin() {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "com.example.baz:spam");
 		this.context.register(TestConfiguration.class);
