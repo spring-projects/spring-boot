@@ -97,7 +97,6 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setPropertySources(propertySources);
 		this.factory.setIgnoreUnknownFields(false);
 		this.factory.afterPropertiesSet();
-		this.factory.getObject();
 		Foo foo = this.factory.getObject();
 		assertEquals("bar", foo.name);
 	}
