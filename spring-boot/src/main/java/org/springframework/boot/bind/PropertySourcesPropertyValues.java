@@ -17,7 +17,6 @@
 package org.springframework.boot.bind;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,11 +40,11 @@ import org.springframework.validation.DataBinder;
  */
 public class PropertySourcesPropertyValues implements PropertyValues {
 
-	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
-
 	private final PropertySources propertySources;
 
-	private final Collection<String> propertyNames;
+	private final Map<String, PropertyValue> propertyValues = new LinkedHashMap<String, PropertyValue>();
+
+	private final Collection<String> nonEnumerableFallbackNames;
 
 	private final PropertyNamePatternsMatcher includes;
 
@@ -62,29 +61,30 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	 * @param propertySources a PropertySources instance
 	 * @param includePatterns property name patterns to include from system properties and
 	 * environment variables
-	 * @param propertyNames the property names to use in lieu of an
+	 * @param nonEnumerableFallbackNames the property names to try in lieu of an
 	 * {@link EnumerablePropertySource}.
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources,
-			Collection<String> includePatterns, Collection<String> propertyNames) {
-		this(propertySources, propertyNames, new PatternPropertyNamePatternsMatcher(
-				includePatterns));
+			Collection<String> includePatterns,
+			Collection<String> nonEnumerableFallbackNames) {
+		this(propertySources, nonEnumerableFallbackNames,
+				new PatternPropertyNamePatternsMatcher(includePatterns));
 	}
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources.
 	 * @param propertySources a PropertySources instance
-	 * @param propertyNames the property names to use in lieu of an
+	 * @param nonEnumerableFallbackNames the property names to try in lieu of an
 	 * {@link EnumerablePropertySource}.
 	 * @param includes the property name patterns to include
 	 */
 	PropertySourcesPropertyValues(PropertySources propertySources,
-			Collection<String> propertyNames, PropertyNamePatternsMatcher includes) {
+			Collection<String> nonEnumerableFallbackNames,
+			PropertyNamePatternsMatcher includes) {
 		Assert.notNull(propertySources, "PropertySources must not be null");
 		Assert.notNull(includes, "Includes must not be null");
 		this.propertySources = propertySources;
-		this.propertyNames = (propertyNames == null ? Collections.<String>emptySet()
-				: propertyNames);
+		this.nonEnumerableFallbackNames = nonEnumerableFallbackNames;
 		this.includes = includes;
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 				propertySources);
@@ -141,7 +141,10 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertySourcesPropertyResolver resolver) {
 		// We can only do exact matches for non-enumerable property names, but
 		// that's better than nothing...
-		for (String propertyName : this.propertyNames) {
+		if (this.nonEnumerableFallbackNames == null) {
+			return;
+		}
+		for (String propertyName : this.nonEnumerableFallbackNames) {
 			if (!source.containsProperty(propertyName)) {
 				continue;
 			}
@@ -159,13 +162,6 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		}
 	}
 
-	private void putIfAbsent(String propertyName, Object value, PropertySource<?> source) {
-		if (value != null && !this.propertyValues.containsKey(propertyName)) {
-			this.propertyValues.put(propertyName, new OriginCapablePropertyValue(
-					propertyName, value, propertyName, source));
-		}
-	}
-
 	@Override
 	public PropertyValue[] getPropertyValues() {
 		Collection<PropertyValue> values = this.propertyValues.values();
@@ -180,12 +176,21 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		}
 		for (PropertySource<?> source : this.propertySources) {
 			Object value = source.getProperty(propertyName);
-			if (value != null) {
-				propertyValue = new OriginCapablePropertyValue(propertyName, value,
-						propertyName, source);
-				this.propertyValues.put(propertyName, propertyValue);
+			propertyValue = putIfAbsent(propertyName, value, source);
+			if (propertyValue != null) {
 				return propertyValue;
 			}
+		}
+		return null;
+	}
+
+	private PropertyValue putIfAbsent(String propertyName, Object value,
+			PropertySource<?> source) {
+		if (value != null && !this.propertyValues.containsKey(propertyName)) {
+			PropertyValue propertyValue = new OriginCapablePropertyValue(propertyName,
+					value, propertyName, source);
+			this.propertyValues.put(propertyName, propertyValue);
+			return propertyValue;
 		}
 		return null;
 	}
