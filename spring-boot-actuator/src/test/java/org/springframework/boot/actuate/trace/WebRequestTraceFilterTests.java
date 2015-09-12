@@ -16,12 +16,23 @@
 
 package org.springframework.boot.actuate.trace;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+
 import java.util.Map;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,35 +40,54 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link WebRequestTraceFilter}.
  *
  * @author Dave Syer
+ * @author Wallace Wadge
  */
 public class WebRequestTraceFilterTests {
 
-	private final WebRequestTraceFilter filter = new WebRequestTraceFilter(
-			new InMemoryTraceRepository());
+	private final InMemoryTraceRepository inMemoryTraceRepository = new InMemoryTraceRepository();
+
+	private final WebRequestTraceFilter filter = new WebRequestTraceFilter(this.inMemoryTraceRepository);
+
 
 	@Test
-	public void filterDumpsRequest() {
+	public void filterDumpsRequestResponse() throws IOException, ServletException {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Accept", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		assertEquals("GET", trace.get("method"));
-		assertEquals("/foo", trace.get("path"));
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
-		assertEquals("{Accept=application/json}", map.get("request").toString());
-	}
 
-	@Test
-	public void filterDumpsResponse() {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		request.setContent("Hello, World!".getBytes());
+
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
-		this.filter.enhanceTrace(trace, response);
+
+		this.filter.setIncludePayload(true);
+		this.filter.setIncludePayloadResponse(true);
+		this.filter.setDumpRequests(true);
+
+		this.filter.doFilterInternal(request, response, new FilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
+				BufferedReader bufferedReader = request.getReader();
+				while (bufferedReader.readLine() != null) {
+					// read the contents as normal (forces cache to fill up too)
+				}
+				response.getWriter().println("Goodbye, World!");
+			}
+		});
+
+
+		assertEquals(1, this.inMemoryTraceRepository.findAll().size());
+		Map<String, Object> trace = this.inMemoryTraceRepository.findAll().iterator().next().getInfo();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
 		assertEquals("{Content-Type=application/json, status=200}", map.get("response")
 				.toString());
+
+		assertEquals("GET", trace.get("method"));
+		assertEquals("/foo", trace.get("path"));
+		assertEquals("Hello, World!", trace.get(WebRequestTraceFilter.TRACE_RQ_KEY));
+		assertEquals("Goodbye, World!", trace.get(WebRequestTraceFilter.TRACE_RESP_KEY));
+		assertEquals("{Accept=application/json}", map.get("request").toString());
+
 	}
 
 	@Test
@@ -66,7 +96,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.setStatus(404);
 		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
+		Map<String, Object> trace = this.filter.getTrace(request, this.filter.createMessage(new ContentCachingRequestWrapper(request), null, null));
 		this.filter.enhanceTrace(trace, response);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
@@ -83,7 +113,7 @@ public class WebRequestTraceFilterTests {
 		request.setAttribute("javax.servlet.error.exception", new IllegalStateException(
 				"Foo"));
 		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request);
+		Map<String, Object> trace = this.filter.getTrace(request, this.filter.createMessage(new ContentCachingRequestWrapper(request), null, null));
 		this.filter.enhanceTrace(trace, response);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) trace.get("error");

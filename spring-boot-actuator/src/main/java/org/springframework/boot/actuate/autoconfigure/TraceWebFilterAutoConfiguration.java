@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
 
@@ -30,6 +31,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
+
+
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link WebRequestTraceFilter
@@ -50,10 +53,23 @@ public class TraceWebFilterAutoConfiguration {
 	@Value("${management.dump_requests:false}")
 	private boolean dumpRequests;
 
+	@Value("${management.trace.include_payload:false}")
+	private boolean includePayload;
+
+	@Value("${management.trace.include_payload_response:false}")
+	private boolean includePayloadResponse;
+
+	@Value("${management.trace.max_payload_length:50}")
+	private int maxPayloadLength;
+
 	@Bean
 	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
 		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository);
 		filter.setDumpRequests(this.dumpRequests);
+		filter.setIncludePayload(this.includePayload);
+		filter.setMaxPayloadLength(this.maxPayloadLength);
+		filter.setIncludePayloadResponse(this.includePayloadResponse);
+
 		if (this.errorAttributes != null) {
 			filter.setErrorAttributes(this.errorAttributes);
 		}
