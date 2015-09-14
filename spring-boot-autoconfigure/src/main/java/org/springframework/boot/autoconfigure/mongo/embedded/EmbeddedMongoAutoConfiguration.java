@@ -171,8 +171,8 @@ public class EmbeddedMongoAutoConfiguration {
 			}
 			map.put("local.mongo.port", port);
 		}
-		if (this.context.getParent() != null) {
-			setPortProperty(this.context.getParent(), port);
+		if (context.getParent() != null) {
+			setPortProperty(context.getParent(), port);
 		}
 	}
 
