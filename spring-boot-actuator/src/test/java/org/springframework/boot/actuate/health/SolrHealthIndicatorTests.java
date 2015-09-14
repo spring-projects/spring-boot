@@ -18,7 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import java.io.IOException;
 
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
+
 import org.apache.solr.client.solrj.response.SolrPingResponse;
 import org.apache.solr.common.util.NamedList;
 import org.junit.After;
@@ -56,7 +57,7 @@ public class SolrHealthIndicatorTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, SolrAutoConfiguration.class,
 				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(SolrServer.class).length);
+		assertEquals(1, this.context.getBeanNamesForType(SolrClient.class).length);
 		SolrHealthIndicator healthIndicator = this.context
 				.getBean(SolrHealthIndicator.class);
 		assertNotNull(healthIndicator);
@@ -64,14 +65,14 @@ public class SolrHealthIndicatorTests {
 
 	@Test
 	public void solrIsUp() throws Exception {
-		SolrServer solrServer = mock(SolrServer.class);
+		SolrClient solrClient = mock(SolrClient.class);
 		SolrPingResponse pingResponse = new SolrPingResponse();
 		NamedList<Object> response = new NamedList<Object>();
 		response.add("status", "OK");
 		pingResponse.setResponse(response);
-		given(solrServer.ping()).willReturn(pingResponse);
+		given(solrClient.ping()).willReturn(pingResponse);
 
-		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertEquals(Status.UP, health.getStatus());
 		assertEquals("OK", health.getDetails().get("solrStatus"));
@@ -79,10 +80,10 @@ public class SolrHealthIndicatorTests {
 
 	@Test
 	public void solrIsDown() throws Exception {
-		SolrServer solrServer = mock(SolrServer.class);
-		given(solrServer.ping()).willThrow(new IOException("Connection failed"));
+		SolrClient solrClient = mock(SolrClient.class);
+		given(solrClient.ping()).willThrow(new IOException("Connection failed"));
 
-		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
+		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertEquals(Status.DOWN, health.getStatus());
 		assertTrue(((String) health.getDetails().get("error"))

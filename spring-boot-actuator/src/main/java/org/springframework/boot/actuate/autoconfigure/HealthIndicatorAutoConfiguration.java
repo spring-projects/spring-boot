@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 import org.elasticsearch.client.Client;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.InitializingBean;
@@ -244,18 +244,18 @@ public class HealthIndicatorAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnBean(SolrServer.class)
+	@ConditionalOnBean(SolrClient.class)
 	@ConditionalOnEnabledHealthIndicator("solr")
 	public static class SolrHealthIndicatorConfiguration extends
-			CompositeHealthIndicatorConfiguration<SolrHealthIndicator, SolrServer> {
+			CompositeHealthIndicatorConfiguration<SolrHealthIndicator, SolrClient> {
 
 		@Autowired
-		private Map<String, SolrServer> solrServers;
+		private Map<String, SolrClient> solrClients;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "solrHealthIndicator")
 		public HealthIndicator solrHealthIndicator() {
-			return createHealthIndicator(this.solrServers);
+			return createHealthIndicator(this.solrClients);
 		}
 
 	}
