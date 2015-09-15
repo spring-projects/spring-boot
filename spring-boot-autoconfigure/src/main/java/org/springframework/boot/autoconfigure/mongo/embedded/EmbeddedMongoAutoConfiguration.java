@@ -47,8 +47,8 @@ import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.ArtifactStoreBuilder;
 import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
+import de.flapdoodle.embed.mongo.config.ExtractedArtifactStoreBuilder;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
@@ -123,10 +123,12 @@ public class EmbeddedMongoAutoConfiguration {
 				.defaultsWithLogger(Command.MongoD, logger)
 				.processOutput(processOutput)
 				.artifactStore(
-						new ArtifactStoreBuilder().defaults(Command.MongoD).download(
-								new DownloadConfigBuilder().defaultsForCommand(
-										Command.MongoD).progressListener(
-										new Slf4jProgressListener(logger)))).build();
+						new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
+								.download(
+										new DownloadConfigBuilder().defaultsForCommand(
+												Command.MongoD).progressListener(
+												new Slf4jProgressListener(logger))))
+				.build();
 	}
 
 	@Bean
@@ -152,9 +154,9 @@ public class EmbeddedMongoAutoConfiguration {
 		setPortProperty(this.context, port);
 	}
 
-	private void setPortProperty(ApplicationContext context, int port) {
-		if (context instanceof ConfigurableApplicationContext) {
-			ConfigurableEnvironment environment = ((ConfigurableApplicationContext) context)
+	private void setPortProperty(ApplicationContext currentContext, int port) {
+		if (currentContext instanceof ConfigurableApplicationContext) {
+			ConfigurableEnvironment environment = ((ConfigurableApplicationContext) currentContext)
 					.getEnvironment();
 			MutablePropertySources sources = environment.getPropertySources();
 			Map<String, Object> map;
@@ -171,8 +173,8 @@ public class EmbeddedMongoAutoConfiguration {
 			}
 			map.put("local.mongo.port", port);
 		}
-		if (this.context.getParent() != null) {
-			setPortProperty(this.context.getParent(), port);
+		if (currentContext.getParent() != null) {
+			setPortProperty(currentContext.getParent(), port);
 		}
 	}
 
