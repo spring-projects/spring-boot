@@ -57,10 +57,9 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 			Set<String> packagesToScan) {
 		BeanDefinition definition = registry.getBeanDefinition(BEAN_NAME);
 		ValueHolder constructorArguments = definition.getConstructorArgumentValues()
-				.getGenericArgumentValue(String[].class);
+				.getGenericArgumentValue(Set.class);
 		@SuppressWarnings("unchecked")
-		Set<String> mergedPackages = new LinkedHashSet<String>(
-				(Set<String>) constructorArguments.getValue());
+		Set<String> mergedPackages = (Set<String>) constructorArguments.getValue();
 		mergedPackages.addAll(packagesToScan);
 		constructorArguments.setValue(mergedPackages);
 	}
