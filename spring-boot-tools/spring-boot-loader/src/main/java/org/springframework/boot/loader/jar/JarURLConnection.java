@@ -79,7 +79,6 @@ class JarURLConnection extends java.net.JarURLConnection {
 		}
 
 		String spec = url.getFile().substring(jarFile.getUrl().getFile().length());
-
 		int separator;
 		while ((separator = spec.indexOf(SEPARATOR)) > 0) {
 			jarFile = getNestedJarFile(jarFile, spec.substring(0, separator));
