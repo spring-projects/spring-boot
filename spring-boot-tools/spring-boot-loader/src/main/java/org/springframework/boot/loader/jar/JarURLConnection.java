@@ -73,6 +73,11 @@ class JarURLConnection extends java.net.JarURLConnection {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
+
+		if (!url.getFile().contains(jarFile.getUrl().getFile())) {
+			throw new IllegalArgumentException("this jar "+ jarFile.getUrl().getFile() +" file can't contains url " + url.getFile());
+		}
+
 		String spec = url.getFile().substring(jarFile.getUrl().getFile().length());
 
 		int separator = spec.indexOf("!/");
