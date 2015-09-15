@@ -74,7 +74,12 @@ class JarURLConnection extends java.net.JarURLConnection {
 		super(EMPTY_JAR_URL);
 		this.url = url;
 		String spec = url.getFile().substring(jarFile.getUrl().getFile().length());
-		int separator;
+
+		int separator = spec.indexOf("!/");
+		if (separator == -1) {
+			throw new MalformedURLException("no !/ found in url spec:" + spec);
+		}
+
 		while ((separator = spec.indexOf(SEPARATOR)) > 0) {
 			jarFile = getNestedJarFile(jarFile, spec.substring(0, separator));
 			spec = spec.substring(separator + SEPARATOR.length());
