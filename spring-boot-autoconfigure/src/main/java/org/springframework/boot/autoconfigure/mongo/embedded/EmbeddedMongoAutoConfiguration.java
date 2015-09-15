@@ -47,8 +47,8 @@ import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.ArtifactStoreBuilder;
 import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
+import de.flapdoodle.embed.mongo.config.ExtractedArtifactStoreBuilder;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
@@ -123,10 +123,12 @@ public class EmbeddedMongoAutoConfiguration {
 				.defaultsWithLogger(Command.MongoD, logger)
 				.processOutput(processOutput)
 				.artifactStore(
-						new ArtifactStoreBuilder().defaults(Command.MongoD).download(
-								new DownloadConfigBuilder().defaultsForCommand(
-										Command.MongoD).progressListener(
-										new Slf4jProgressListener(logger)))).build();
+						new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
+								.download(
+										new DownloadConfigBuilder().defaultsForCommand(
+												Command.MongoD).progressListener(
+												new Slf4jProgressListener(logger))))
+				.build();
 	}
 
 	@Bean
@@ -205,7 +207,8 @@ public class EmbeddedMongoAutoConfiguration {
 		private ToStringFriendlyFeatureAwareVersion(String version, Set<Feature> features) {
 			Assert.notNull(version, "version must not be null");
 			this.version = version;
-			this.features = features == null ? Collections.<Feature>emptySet() : features;
+			this.features = features == null ? Collections.<Feature> emptySet()
+					: features;
 		}
 
 		@Override
