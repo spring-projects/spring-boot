@@ -154,9 +154,9 @@ public class EmbeddedMongoAutoConfiguration {
 		setPortProperty(this.context, port);
 	}
 
-	private void setPortProperty(ApplicationContext context, int port) {
-		if (context instanceof ConfigurableApplicationContext) {
-			ConfigurableEnvironment environment = ((ConfigurableApplicationContext) context)
+	private void setPortProperty(ApplicationContext currentContext, int port) {
+		if (currentContext instanceof ConfigurableApplicationContext) {
+			ConfigurableEnvironment environment = ((ConfigurableApplicationContext) currentContext)
 					.getEnvironment();
 			MutablePropertySources sources = environment.getPropertySources();
 			Map<String, Object> map;
@@ -173,8 +173,8 @@ public class EmbeddedMongoAutoConfiguration {
 			}
 			map.put("local.mongo.port", port);
 		}
-		if (context.getParent() != null) {
-			setPortProperty(context.getParent(), port);
+		if (currentContext.getParent() != null) {
+			setPortProperty(currentContext.getParent(), port);
 		}
 	}
 
