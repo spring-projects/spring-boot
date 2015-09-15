@@ -74,7 +74,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 		super(EMPTY_JAR_URL);
 		this.url = url;
 
-		if (!url.getFile().contains(jarFile.getUrl().getFile())) {
+		if (!url.getFile().startsWith(jarFile.getUrl().getFile())) {
 			throw new IllegalArgumentException("this jar file "+ jarFile.getUrl().getFile() +" can't contains url " + url.getFile());
 		}
 
