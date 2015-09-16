@@ -24,6 +24,10 @@ package org.springframework.boot.context.embedded;
 @SuppressWarnings("serial")
 public class EmbeddedServletContainerException extends RuntimeException {
 
+	public EmbeddedServletContainerException(String message) {
+		super(message);
+	}
+
 	public EmbeddedServletContainerException(String message, Throwable cause) {
 		super(message, cause);
 	}
