@@ -53,11 +53,35 @@ public class TraceWebFilterAutoConfiguration {
 	@Value("${management.dump_requests:false}")
 	private boolean dumpRequests;
 
-	@Value("${management.trace.include_payload:false}")
+	@Value("${management.trace.include.payload:false}")
 	private boolean includePayload;
 
-	@Value("${management.trace.include_payload_response:false}")
+	@Value("${management.trace.include.client_info:false}")
+	private boolean includeClientInfo;
+
+	@Value("${management.trace.include.querystring:false}")
+	private boolean includeQueryString;
+
+	@Value("${management.trace.include.payload_response:false}")
 	private boolean includePayloadResponse;
+
+	@Value("${management.trace.include.parameters:false}")
+	private boolean includeParameters;
+
+	@Value("${management.trace.include.cookies:false}")
+	private boolean includeCookies = false;
+
+	@Value("${management.trace.include.authType:false}")
+	private boolean includeAuthType = false;
+
+	@Value("${management.trace.include.userPrincipal:false}")
+	private boolean includeUserPrincipal = false;
+
+	@Value("${management.trace.include.pathInfo:false}")
+	private boolean includePathInfo = false;
+
+	@Value("${management.trace.include.contextPath:false}")
+	private boolean includeContextPath = false;
 
 	@Value("${management.trace.max_payload_length:50}")
 	private int maxPayloadLength;
@@ -66,9 +90,17 @@ public class TraceWebFilterAutoConfiguration {
 	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
 		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository);
 		filter.setDumpRequests(this.dumpRequests);
+		filter.setIncludeClientInfo(this.includeClientInfo);
+		filter.setIncludeContextPath(this.includeContextPath);
+		filter.setIncludeCookies(this.includeCookies);
+		filter.setIncludeParameters(this.includeParameters);
+		filter.setIncludePathInfo(this.includePathInfo);
 		filter.setIncludePayload(this.includePayload);
-		filter.setMaxPayloadLength(this.maxPayloadLength);
 		filter.setIncludePayloadResponse(this.includePayloadResponse);
+		filter.setIncludeQueryString(this.includeQueryString);
+		filter.setIncludeUserPrincipal(this.includeUserPrincipal);
+		filter.setIncludeUserPrincipal(this.includeUserPrincipal);
+		filter.setMaxPayloadLength(this.maxPayloadLength);
 
 		if (this.errorAttributes != null) {
 			filter.setErrorAttributes(this.errorAttributes);

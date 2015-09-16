@@ -16,9 +16,10 @@
 
 package org.springframework.boot.actuate.trace;
 
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
+import java.security.Principal;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -28,18 +29,22 @@ import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.core.Ordered;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.AbstractRequestLoggingFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
+
 
 /**
  * Servlet {@link Filter} that logs all requests to a {@link TraceRepository}.
@@ -49,10 +54,26 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
  */
 public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implements Ordered {
 
+	/** Holds request.getRemoteAddr(). */
+	public static final String TRACE_RQ_REMOTE_ADDR = "requestRemoteAddr";
+
+	/** Holds the request parameter map. */
+	public static final String TRACE_RQ_PARAMS = "requestParams";
+	/** Key used in trace to store the request auth type.  */
+	public static final String TRACE_RQ_AUTH_TYPE = "requestAuthType";
+	/** Key used in trace to store the request cookies.  */
+	public static final String TRACE_RQ_COOKIES = "requestCookies";
+	/** Key used in trace to store the request query string. */
+	public static final String TRACE_RQ_QUERYSTRING = "requestQueryString";
 	/** Key used in trace to store the request payload. */
 	public static final String TRACE_RQ_KEY = "requestPayload";
 	/** Key used in trace to store the response payload. */
 	public static final String TRACE_RESP_KEY = "responsePayload";
+	/** Holds session id. */
+	public static final String TRACE_RQ_SESSION_ID = "requestSessionId";
+	/** Holds request.getRemoteUser(). */
+	public static final String TRACE_RQ_REMOTE_USER = "requestRemoteUser";
+	/** A simple optimization flag. */
 	private static final String ONE_TIME_CHECK = "webRqFilter.beforeMessage.done";
 
 	private final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
@@ -60,6 +81,20 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 	private boolean dumpRequests = false;
 
 	private boolean includePayloadResponse = false;
+
+	private boolean includeParameters = false;
+
+	private boolean includeCookies = false;
+
+	private boolean includeAuthType = false;
+
+	private boolean includePathInfo = false;
+
+	private boolean includeUserPrincipal = false;
+
+	private boolean includePathTranslated = false;
+
+	private boolean includeContextPath = false;
 
 	// Not LOWEST_PRECEDENCE, but near the end, so it has a good chance of catching all
 	// enriched headers, but users can add stuff after this if they want to
@@ -71,7 +106,7 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 
 	/**
 	 * Create a new {@link WebRequestTraceFilter} instance.
-	 * @param traceRepository the trace repository
+	 * @param traceRepository the trace repository.
 	 */
 	public WebRequestTraceFilter(TraceRepository traceRepository) {
 		this.traceRepository = traceRepository;
@@ -80,18 +115,142 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 	/**
 	 * Debugging feature. If enabled, and trace logging is enabled then web request
 	 * headers will be logged.
-	 * @param dumpRequests if requests should be logged
+	 * @param dumpRequests if requests should be logged.
 	 */
 	public void setDumpRequests(boolean dumpRequests) {
 		this.dumpRequests = dumpRequests;
 	}
 
 	/**
+	 * If enabled, includePathInfo is included as part of the trace.
+	 * @param includePathInfo if pathInfo should be set in the trace.
+	 */
+	public void setIncludePathInfo(boolean includePathInfo) {
+		this.includePathInfo = includePathInfo;
+	}
+
+	/**
+	 * If enabled, userPrinciple is included as part of the trace.
+	 * @param includeUserPrincipal if pathInfo should be set in the trace.
+	 */
+	public void setIncludeUserPrincipal(boolean includeUserPrincipal) {
+		this.includeUserPrincipal = includeUserPrincipal;
+	}
+
+
+	/**
+	 * If enabled, contextPath is included as part of the trace.
+	 * @param includeContextPath if pathInfo should be set in the trace.
+	 */
+	public void setIncludeContextPath(boolean includeContextPath) {
+		this.includeContextPath = includeContextPath;
+	}
+
+
+	/**
+	 * If enabled, pathTranslated is included as part of the trace.
+	 * @param includePathTranslated if pathInfo should be set in the trace.
+	 */
+	public void setIncludePathTranslated(boolean includePathTranslated) {
+		this.includePathTranslated = includePathTranslated;
+	}
+
+
+	/**
 	 * If enabled, payload response is included as part of the trace (under responsePayload key).
-	 * @param includePayloadResponse if response payload should be logged
+	 * @param includePayloadResponse if response payload should be logged.
 	 */
 	public void setIncludePayloadResponse(boolean includePayloadResponse) {
 		this.includePayloadResponse = includePayloadResponse;
+	}
+
+	/**
+	 * If enabled, auth type is included as part of the trace.
+	 * @param includeAuthType if auth type should be set in the trace.
+	 */
+	public void setIncludeAuthType(boolean includeAuthType) {
+		this.includeAuthType = includeAuthType;
+	}
+
+	/**
+	 * If enabled, cookies are included as part of the trace.
+	 * @param includeCookies if cookies should be set in the trace.
+	 */
+	public void setIncludeCookies(boolean includeCookies) {
+		this.includeCookies = includeCookies;
+	}
+
+	/**
+	 * If enabled, request parameters are included as part of the trace.
+	 * @param includeParameters if response payload should be logged.
+	 */
+	public void setIncludeParameters(boolean includeParameters) {
+		this.includeParameters = includeParameters;
+	}
+
+	/** Returns if web request headers will be logged.
+	 * @return true if request headers will be logged when tracing is enabled. */
+	protected boolean isDumpRequests() {
+		return this.dumpRequests;
+	}
+
+
+	/**
+	 * Returns whether auth type is added to the trace.
+	 * @return true if auth type is added.
+	 */
+	protected boolean isIncludeAuthType() {
+		return this.includeAuthType;
+	}
+
+	/**
+	 * Returns whether payload response is added to the trace.
+	 * @return true if payload is added.
+	 */
+	protected boolean isIncludePayloadResponse() {
+		return this.includePayloadResponse;
+	}
+
+	/** Returns whether query parameters are included in the trace.
+	 * @return true if they are included.
+	 */
+	protected boolean isIncludeParameters() {
+		return this.includeParameters;
+	}
+
+	/** Returns whether cookies are included in the trace.
+	 * @return true if they are included.
+	 */
+	protected boolean isIncludeCookies() {
+		return this.includeCookies;
+	}
+
+	/** Returns whether pathInfo is included in the trace.
+	 * @return true if included.
+	 */
+	protected boolean isIncludePathInfo() {
+		return this.includePathInfo;
+	}
+
+	/** Returns whether userPrincipal is included in the trace.
+	 * @return true if included.
+	 */
+	protected boolean isIncludeUserPrincipal() {
+		return this.includeUserPrincipal;
+	}
+
+	/** Returns whether pathTranslated is included in the trace.
+	 * @return true if included.
+	 */
+	protected boolean isIncludePathTranslated() {
+		return this.includePathTranslated;
+	}
+
+	/** Returns whether contextPath is included in the trace.
+	 * @return true if included.
+	 */
+	protected boolean isIncludeContextPath() {
+		return this.includeContextPath;
 	}
 
 
@@ -124,7 +283,7 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 			Map<String, Object> trace = (Map<String, Object>) request.getAttribute(TRACE_RQ_KEY);
 			enhanceTrace(trace, responseToUse);
 
-			if (this.includePayloadResponse) {
+			if (isIncludePayloadResponse()) {
 				trace.put(TRACE_RESP_KEY, createResponse(responseToUse));
 			}
 
@@ -141,6 +300,7 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 			request.setAttribute(ONE_TIME_CHECK, true);
 		}
 		else {
+
 			if (isIncludePayload() && request instanceof ContentCachingRequestWrapper) {
 				ContentCachingRequestWrapper wrapper = (ContentCachingRequestWrapper) request;
 				result = payloadBufferToString(wrapper.getCharacterEncoding(), wrapper.getContentAsByteArray());
@@ -239,8 +399,81 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 		trace.put("path", request.getRequestURI());
 		trace.put("headers", allHeaders);
 
+		if (isIncludePathInfo()) {
+			String pathInfo = request.getPathInfo();
+			if (pathInfo != null) {
+				trace.put("pathInfo", pathInfo);
+			}
+		}
+
+		if (isIncludePathTranslated()) {
+			String pathTranslated = request.getPathTranslated();
+			if (pathTranslated != null) {
+				trace.put("pathTranslated", pathTranslated);
+			}
+		}
+		if (isIncludeContextPath()) {
+			String contextPath = request.getContextPath();
+			if (contextPath != null) {
+				trace.put("contextPath", contextPath);
+			}
+		}
+
+		if (isIncludeUserPrincipal()) {
+			Principal principal = request.getUserPrincipal();
+			if (principal != null) {
+				trace.put("userPrincipal", principal);
+			}
+		}
+
+
+
+
 		if (isIncludePayload()) {
 			trace.put(TRACE_RQ_KEY, payload);
+		}
+
+		if (isIncludeParameters()) {
+			trace.put(TRACE_RQ_PARAMS, request.getParameterMap());
+		}
+
+		if (isIncludeQueryString()) {
+			String queryString = request.getQueryString();
+			if (queryString != null) {
+				trace.put(TRACE_RQ_QUERYSTRING, queryString);
+			}
+		}
+
+		if (isIncludeCookies()) {
+			Cookie[] cookies = request.getCookies();
+			if (cookies != null) {
+				trace.put(TRACE_RQ_COOKIES, cookies);
+			}
+		}
+
+		if (isIncludeAuthType()) {
+			String authType = request.getAuthType();
+			if (authType != null) {
+				trace.put(TRACE_RQ_AUTH_TYPE, authType);
+			}
+		}
+
+
+		if (isIncludeClientInfo()) {
+			String client = request.getRemoteAddr();
+			if (StringUtils.hasLength(client)) {
+				trace.put(TRACE_RQ_REMOTE_ADDR, client);
+			}
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				trace.put(TRACE_RQ_SESSION_ID, session.getId());
+			}
+			String user = request.getRemoteUser();
+			if (user != null) {
+				trace.put(TRACE_RQ_REMOTE_USER, user);
+			}
+
+
 		}
 
 		Throwable exception = (Throwable) request

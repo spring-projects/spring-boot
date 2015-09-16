@@ -19,13 +19,13 @@ package org.springframework.boot.actuate.trace;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import java.security.Principal;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
@@ -51,24 +51,45 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	public void filterDumpsRequestResponse() throws IOException, ServletException {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET",  "/foo");
 		request.addHeader("Accept", "application/json");
 
+		request.setContextPath("some.context.path");
 		request.setContent("Hello, World!".getBytes());
+		request.setRemoteAddr("some.remote.addr");
+		request.setQueryString("some.query.string");
+		request.setParameter("param", "paramvalue");
+		request.setAuthType("authType");
+		Principal principal = new Principal() {
+			@Override
+			public String getName() {
+				return "principalTest";
+			}
+		};
+		request.setUserPrincipal(principal);
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
 
+
+		this.filter.setIncludeClientInfo(true);
+		this.filter.setIncludeContextPath(true);
+		this.filter.setIncludeCookies(true);
+		this.filter.setIncludeParameters(true);
+		this.filter.setIncludePathInfo(true);
 		this.filter.setIncludePayload(true);
 		this.filter.setIncludePayloadResponse(true);
-		this.filter.setDumpRequests(true);
+		this.filter.setIncludeQueryString(true);
+		this.filter.setIncludeUserPrincipal(true);
+		this.filter.setIncludeUserPrincipal(true);
+
 
 		this.filter.doFilterInternal(request, response, new FilterChain() {
 			@Override
 			public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
 				BufferedReader bufferedReader = request.getReader();
 				while (bufferedReader.readLine() != null) {
-					// read the contents as normal (forces cache to fill up too)
+					// read the contents as normal (forces cache to fill up)
 				}
 				response.getWriter().println("Goodbye, World!");
 			}
@@ -84,6 +105,11 @@ public class WebRequestTraceFilterTests {
 
 		assertEquals("GET", trace.get("method"));
 		assertEquals("/foo", trace.get("path"));
+		assertEquals("paramvalue", ((String[]) ((Map) trace.get("requestParams")).get("param"))[0]);
+		assertEquals("some.remote.addr", trace.get("requestRemoteAddr"));
+		assertEquals("some.query.string", trace.get("requestQueryString"));
+		assertEquals(principal.getName(), ((Principal) trace.get("userPrincipal")).getName());
+		assertEquals("some.context.path", trace.get("contextPath"));
 		assertEquals("Hello, World!", trace.get(WebRequestTraceFilter.TRACE_RQ_KEY));
 		assertEquals("Goodbye, World!", trace.get(WebRequestTraceFilter.TRACE_RESP_KEY));
 		assertEquals("{Accept=application/json}", map.get("request").toString());
