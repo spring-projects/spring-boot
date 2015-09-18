@@ -11,6 +11,9 @@ Usage
 
   The plugin provides several goals to work with a Spring Boot application:
 
+  * <<<debug>>>: debug your Spring Boot application on default port 5005 or specified port with several options to
+    pass parameters to it.
+
   * <<<repackage>>>: create a jar or war file that is auto-executable. It can replace the regular artifact or can be
     attached to the build lifecyle with a separate <<classifier>>.
 
@@ -22,6 +25,21 @@ Usage
    []
 
   Each goal is further described below.
+
+* Debugging the application
+
+  The plugin includes a debug goal which can be used to launch your application in debug mode from the command
+  line:
+
+---
+mvn spring-boot:debug
+---
+
+  This goal by default will fork a new jvm with debug parameters and binds the process on default port 5005.
+  If you need to change the debug port, you can use the <<<debugPort>>> parameter.
+
+  Rest the of functionality will be same as <<<run>>> goal. All parameters from <<<run>>> goal can be used as is
+  in <<<debug>>> goal.
 
 * Repackaging an application
 
@@ -115,8 +133,7 @@ mvn spring-boot:run
   'jvmArguments' or 'agent' options are specified.
 
   If you need to specify some JVM arguments (i.e. for debugging purposes), you can use
-  the <<<jvmArguments>>> parameter, see {{{./examples/run-debug.html}Debug the application}}
-  for more details.
+  the <<<jvmArguments>>> parameter.
 
   By default, any <<src/main/resources>> folder will be added to the application classpath
   when you run the application and any duplicate found in <<target/classes>> will be
