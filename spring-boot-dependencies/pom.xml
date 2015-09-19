@@ -64,6 +64,7 @@
 		<dropwizard-metrics.version>3.1.2</dropwizard-metrics.version>
 		<ehcache.version>2.10.0</ehcache.version>
 		<embedded-mongo.version>1.50.0</embedded-mongo.version>
+		<embedded-redis.version>0.6</embedded-redis.version>
 		<flyway.version>3.2.1</flyway.version>
 		<freemarker.version>2.3.23</freemarker.version>
 		<elasticsearch.version>1.5.2</elasticsearch.version>
@@ -679,6 +680,11 @@
 				<groupId>de.flapdoodle.embed</groupId>
 				<artifactId>de.flapdoodle.embed.mongo</artifactId>
 				<version>${embedded-mongo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.kstyrc</groupId>
+				<artifactId>embedded-redis</artifactId>
+				<version>${embedded-redis.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.dropwizard.metrics</groupId>
