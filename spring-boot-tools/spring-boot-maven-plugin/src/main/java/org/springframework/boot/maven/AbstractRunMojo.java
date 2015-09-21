@@ -90,7 +90,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.1
 	 */
 	@Parameter(property = "run.jvmArguments")
-	private String jvmArguments;
+	protected String jvmArguments;
 
 	/**
 	 * Arguments that should be passed to the application. On command line use commas to
