@@ -33,6 +33,8 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -44,12 +46,14 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.joda.cfg.JacksonJodaDateFormat;
 import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 /**
  * Auto configuration for Jackson. The following auto-configuration will get applied:
@@ -125,6 +129,19 @@ public class JacksonAutoConfiguration {
 				}
 			}
 			return null;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnJava(JavaVersion.EIGHT)
+	@ConditionalOnClass(ParameterNamesModule.class)
+	static class ParameterNamesModuleConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(ParameterNamesModule.class)
+		public ParameterNamesModule parametersNameModule() {
+			return new ParameterNamesModule(JsonCreator.Mode.PROPERTIES);
 		}
 
 	}

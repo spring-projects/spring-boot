@@ -37,6 +37,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -50,8 +52,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -412,6 +416,28 @@ public class JacksonAutoConfigurationTests {
 				objectMapper.writeValueAsString(dateTime));
 	}
 
+	@Test
+	public void parameterNamesModuleIsAutoConfigured() {
+		assertParameterNamesModuleCreatorBinding(Mode.PROPERTIES,
+				JacksonAutoConfiguration.class);
+	}
+
+	@Test
+	public void customParameterNamesModuleCanBeConfigured() {
+		assertParameterNamesModuleCreatorBinding(Mode.DELEGATING,
+				ParameterNamesModuleConfig.class, JacksonAutoConfiguration.class);
+	}
+
+	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode,
+			Class<?>... configClasses) {
+		this.context.register(configClasses);
+		this.context.refresh();
+		Annotated annotated = mock(Annotated.class);
+		Mode mode = this.context.getBean(ObjectMapper.class).getDeserializationConfig()
+				.getAnnotationIntrospector().findCreatorBinding(annotated);
+		assertThat(mode, is(equalTo(expectedMode)));
+	}
+
 	public static class MyDateFormat extends SimpleDateFormat {
 
 		public MyDateFormat() {
@@ -465,6 +491,16 @@ public class JacksonAutoConfigurationTests {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.registerModule(jacksonModule());
 			return mapper;
+		}
+
+	}
+
+	@Configuration
+	protected static class ParameterNamesModuleConfig {
+
+		@Bean
+		public ParameterNamesModule parameterNamesModule() {
+			return new ParameterNamesModule(JsonCreator.Mode.DELEGATING);
 		}
 
 	}
