@@ -36,9 +36,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 
 import com.mongodb.Mongo;
@@ -61,12 +61,14 @@ import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
 import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
 import de.flapdoodle.embed.process.runtime.Network;
+import de.flapdoodle.embed.process.store.ArtifactStoreBuilder;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Embedded Mongo.
  *
  * @author Henryk Konsek
  * @author Andy Wilkinson
+ * @since 1.3.0
  */
 @Configuration
 @EnableConfigurationProperties({ MongoProperties.class, EmbeddedMongoProperties.class })
@@ -83,29 +85,8 @@ public class EmbeddedMongoAutoConfiguration {
 	@Autowired
 	private ApplicationContext context;
 
-	@Bean(initMethod = "start", destroyMethod = "stop")
-	@ConditionalOnMissingBean
-	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig,
-			IRuntimeConfig runtimeConfig) throws IOException {
-		return createEmbeddedMongoServer(mongodConfig, runtimeConfig);
-	}
-
-	@Bean(initMethod = "start", destroyMethod = "stop")
-	@ConditionalOnMissingBean
-	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig)
-			throws IOException {
-		return createEmbeddedMongoServer(mongodConfig, null);
-	}
-
-	private MongodExecutable createEmbeddedMongoServer(IMongodConfig mongodConfig,
-			IRuntimeConfig runtimeConfig) {
-		if (getPort() == 0) {
-			publishPortInfo(mongodConfig.net().getPort());
-		}
-		MongodStarter mongodStarter = runtimeConfig == null ? MongodStarter
-				.getDefaultInstance() : MongodStarter.getInstance(runtimeConfig);
-		return mongodStarter.prepare(mongodConfig);
-	}
+	@Autowired(required = false)
+	private IRuntimeConfig runtimeConfig;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -113,22 +94,37 @@ public class EmbeddedMongoAutoConfiguration {
 	public IRuntimeConfig embeddedMongoRuntimeConfig() {
 		Logger logger = LoggerFactory.getLogger(getClass().getPackage().getName()
 				+ ".EmbeddedMongo");
-
 		ProcessOutput processOutput = new ProcessOutput(
 				Processors.logTo(logger, Slf4jLevel.INFO),
 				Processors.logTo(logger, Slf4jLevel.ERROR),
 				Processors.named("[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
-
-		return new RuntimeConfigBuilder()
-				.defaultsWithLogger(Command.MongoD, logger)
-				.processOutput(processOutput)
-				.artifactStore(
-						new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
-								.download(
-										new DownloadConfigBuilder().defaultsForCommand(
-												Command.MongoD).progressListener(
-												new Slf4jProgressListener(logger))))
+		return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
+				.processOutput(processOutput).artifactStore(getArtifactStore(logger))
 				.build();
+	}
+
+	private ArtifactStoreBuilder getArtifactStore(Logger logger) {
+		return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD).download(
+				new DownloadConfigBuilder().defaultsForCommand(Command.MongoD)
+						.progressListener(new Slf4jProgressListener(logger)));
+	}
+
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	@ConditionalOnMissingBean
+	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig)
+			throws IOException {
+		if (getPort() == 0) {
+			publishPortInfo(mongodConfig.net().getPort());
+		}
+		MongodStarter mongodStarter = getMongodStarter(this.runtimeConfig);
+		return mongodStarter.prepare(mongodConfig);
+	}
+
+	private MongodStarter getMongodStarter(IRuntimeConfig runtimeConfig) {
+		if (runtimeConfig == null) {
+			return MongodStarter.getDefaultInstance();
+		}
+		return MongodStarter.getInstance(runtimeConfig);
 	}
 
 	@Bean
@@ -146,8 +142,10 @@ public class EmbeddedMongoAutoConfiguration {
 	}
 
 	private int getPort() {
-		return this.properties.getPort() == null ? MongoProperties.DEFAULT_PORT
-				: this.properties.getPort();
+		if (this.properties.getPort() == null) {
+			return MongoProperties.DEFAULT_PORT;
+		}
+		return this.properties.getPort();
 	}
 
 	private void publishPortInfo(int port) {
@@ -156,26 +154,24 @@ public class EmbeddedMongoAutoConfiguration {
 
 	private void setPortProperty(ApplicationContext currentContext, int port) {
 		if (currentContext instanceof ConfigurableApplicationContext) {
-			ConfigurableEnvironment environment = ((ConfigurableApplicationContext) currentContext)
-					.getEnvironment();
-			MutablePropertySources sources = environment.getPropertySources();
-			Map<String, Object> map;
-			if (!sources.contains("mongo.ports")) {
-				map = new HashMap<String, Object>();
-				MapPropertySource source = new MapPropertySource("mongo.ports", map);
-				sources.addFirst(source);
-			}
-			else {
-				@SuppressWarnings("unchecked")
-				Map<String, Object> value = (Map<String, Object>) sources.get(
-						"mongo.ports").getSource();
-				map = value;
-			}
-			map.put("local.mongo.port", port);
+			MutablePropertySources sources = ((ConfigurableApplicationContext) currentContext)
+					.getEnvironment().getPropertySources();
+			getMongoPorts(sources).put("local.mongo.port", port);
 		}
 		if (currentContext.getParent() != null) {
 			setPortProperty(currentContext.getParent(), port);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> getMongoPorts(MutablePropertySources sources) {
+		PropertySource<?> propertySource = sources.get("mongo.ports");
+		if (propertySource == null) {
+			propertySource = new MapPropertySource("mongo.ports",
+					new HashMap<String, Object>());
+			sources.addFirst(propertySource);
+		}
+		return (Map<String, Object>) propertySource.getSource();
 	}
 
 	/**
@@ -207,7 +203,8 @@ public class EmbeddedMongoAutoConfiguration {
 		private ToStringFriendlyFeatureAwareVersion(String version, Set<Feature> features) {
 			Assert.notNull(version, "version must not be null");
 			this.version = version;
-			this.features = features == null ? Collections.<Feature>emptySet() : features;
+			this.features = (features == null ? Collections.<Feature>emptySet()
+					: features);
 		}
 
 		@Override
@@ -242,18 +239,16 @@ public class EmbeddedMongoAutoConfiguration {
 			if (obj == null) {
 				return false;
 			}
-			if (getClass() != obj.getClass()) {
-				return false;
+			if (getClass() == obj.getClass()) {
+				ToStringFriendlyFeatureAwareVersion other = (ToStringFriendlyFeatureAwareVersion) obj;
+				boolean equals = true;
+				equals &= this.features.equals(other.features);
+				equals &= this.version.equals(other.version);
+				return equals;
 			}
-			ToStringFriendlyFeatureAwareVersion other = (ToStringFriendlyFeatureAwareVersion) obj;
-			if (!this.features.equals(other.features)) {
-				return false;
-			}
-			else if (!this.version.equals(other.version)) {
-				return false;
-			}
-			return true;
+			return super.equals(obj);
 		}
+
 	}
 
 }

@@ -144,5 +144,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 				throws UnknownHostException {
 			return new MongoClient("localhost", port);
 		}
+
 	}
+
 }
