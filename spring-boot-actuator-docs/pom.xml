@@ -38,6 +38,7 @@
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-templates</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -151,6 +152,16 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+        		<configuration>
+					<includes>
+						<include>**/*.html</include>
+						<include>**/*.png</include>
+					</includes>
+				</configuration>
+      		</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
