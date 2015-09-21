@@ -27,6 +27,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.context.web.OrderedHiddenHttpMethodFilter;
+import org.springframework.boot.context.web.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -145,8 +147,13 @@ public class HttpEncodingAutoConfigurationTests {
 	static class OrderedConfiguration {
 
 		@Bean
-		public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
-			return new HiddenHttpMethodFilter();
+		public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
+			return new OrderedHiddenHttpMethodFilter();
+		}
+
+		@Bean
+		public OrderedHttpPutFormContentFilter httpPutFormContentFilter() {
+			return new OrderedHttpPutFormContentFilter();
 		}
 
 	}
