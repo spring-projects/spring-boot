@@ -107,6 +107,21 @@ public class MetricFilterAutoConfigurationTests {
 	}
 
 	@Test
+	public void recordsHttpInteractionsWithRoot() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
+				.addFilter(filter).build();
+		mvc.perform(get("/")).andExpect(status().isOk());
+		verify(context.getBean(CounterService.class)).increment(
+				"status.200.root");
+		verify(context.getBean(GaugeService.class)).submit(
+				eq("response.root"), anyDouble());
+		context.close();
+	}
+
+	@Test
 	public void recordsKnown404HttpInteractionsAsSingleMetricWithPathAndTemplateVariable()
 			throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
@@ -230,6 +245,12 @@ public class MetricFilterAutoConfigurationTests {
 		@ResponseBody
 		public String testKnownPathWith404Response(@PathVariable String someVariable) {
 			return someVariable;
+		}
+
+		@RequestMapping("")
+		@ResponseBody
+		public String testRoot() {
+			return "OK";
 		}
 
 		@ResponseBody
