@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.redis;
+package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.Arrays;
 import java.util.List;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.redis;
+package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.boot.autoconfigure.redis.RedisProperties.Sentinel;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

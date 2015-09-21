@@ -15,7 +15,7 @@
  */
 
 /**
- * Auto-configuration for Redis.
+ * Auto-configuration for Spring Data Redis.
  */
-package org.springframework.boot.autoconfigure.redis;
+package org.springframework.boot.autoconfigure.data.redis;
 

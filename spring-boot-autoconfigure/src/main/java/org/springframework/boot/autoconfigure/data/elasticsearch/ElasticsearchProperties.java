@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch;
+package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import java.util.HashMap;
 import java.util.Map;

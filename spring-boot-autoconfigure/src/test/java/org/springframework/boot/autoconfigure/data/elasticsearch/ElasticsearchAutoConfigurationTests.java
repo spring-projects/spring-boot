@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch;
+package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.node.NodeClient;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.redis;
+package org.springframework.boot.autoconfigure.data.redis;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

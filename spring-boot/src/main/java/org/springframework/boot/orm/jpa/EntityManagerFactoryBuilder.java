@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.orm.jpa;
+package org.springframework.boot.orm.jpa;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
+import org.springframework.util.ClassUtils;
 
 /**
  * Convenient builder for JPA EntityManagerFactory instances. Collects common
@@ -33,63 +38,63 @@ import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
  * {@code @Bean} definition.
  *
  * @author Dave Syer
- * @since 1.1.0
- * @deprecated since 1.3.0 in favor of
- * {@link org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder}
+ * @author Phillip Webb
+ * @since 1.3.0
  */
-@Deprecated
 public class EntityManagerFactoryBuilder {
 
-	private final Delegate delegate;
+	private JpaVendorAdapter jpaVendorAdapter;
+
+	private PersistenceUnitManager persistenceUnitManager;
+
+	private Map<String, Object> jpaProperties;
+
+	private EntityManagerFactoryBeanCallback callback;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
 	 * EntityManagerFactory instances are created.
 	 * @param jpaVendorAdapter a vendor adapter
-	 * @param properties common configuration options, including generic map for JPA
-	 * vendor properties
+	 * @param jpaProperties JPA properties to be passed to the persistence provider.
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
 	 */
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
-			JpaProperties properties, PersistenceUnitManager persistenceUnitManager) {
-		this.delegate = new Delegate(jpaVendorAdapter, properties.getProperties(),
-				persistenceUnitManager);
+			Map<String, ?> jpaProperties, PersistenceUnitManager persistenceUnitManager) {
+		this.jpaVendorAdapter = jpaVendorAdapter;
+		this.persistenceUnitManager = persistenceUnitManager;
+		this.jpaProperties = new LinkedHashMap<String, Object>(jpaProperties);
 	}
 
 	public Builder dataSource(DataSource dataSource) {
-		return new Builder(this.delegate.dataSource(dataSource));
+		return new Builder(dataSource);
 	}
 
 	/**
 	 * An optional callback for new entity manager factory beans.
 	 * @param callback the entity manager factory bean callback
 	 */
-	public void setCallback(final EntityManagerFactoryBeanCallback callback) {
-		this.delegate
-				.setCallback(new org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback() {
-
-					@Override
-					public void execute(LocalContainerEntityManagerFactoryBean factory) {
-						callback.execute(factory);
-					}
-
-				});
+	public void setCallback(EntityManagerFactoryBeanCallback callback) {
+		this.callback = callback;
 	}
 
 	/**
 	 * A fluent builder for a LocalContainerEntityManagerFactoryBean.
-	 * @deprecated since 1.3.0 in favor of
-	 * {@link org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder}
 	 */
-	@Deprecated
 	public final class Builder {
 
-		private final org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder.Builder delegate;
+		private DataSource dataSource;
 
-		private Builder(
-				org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder.Builder delegate) {
-			this.delegate = delegate;
+		private String[] packagesToScan;
+
+		private String persistenceUnit;
+
+		private Map<String, Object> properties = new HashMap<String, Object>();
+
+		private boolean jta;
+
+		private Builder(DataSource dataSource) {
+			this.dataSource = dataSource;
 		}
 
 		/**
@@ -98,7 +103,7 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 */
 		public Builder packages(String... packagesToScan) {
-			this.delegate.packages(packagesToScan);
+			this.packagesToScan = packagesToScan;
 			return this;
 		}
 
@@ -108,7 +113,11 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 */
 		public Builder packages(Class<?>... basePackageClasses) {
-			this.delegate.packages(basePackageClasses);
+			Set<String> packages = new HashSet<String>();
+			for (Class<?> type : basePackageClasses) {
+				packages.add(ClassUtils.getPackageName(type));
+			}
+			this.packagesToScan = packages.toArray(new String[0]);
 			return this;
 		}
 
@@ -120,19 +129,18 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 */
 		public Builder persistenceUnit(String persistenceUnit) {
-			this.delegate.persistenceUnit(persistenceUnit);
+			this.persistenceUnit = persistenceUnit;
 			return this;
 		}
 
 		/**
 		 * Generic properties for standard JPA or vendor-specific configuration. These
-		 * properties override any values provided in the {@link JpaProperties} used to
-		 * create the builder.
+		 * properties override any values provided in the constructor.
 		 * @param properties the properties to use
 		 * @return the builder for fluent usage
 		 */
 		public Builder properties(Map<String, ?> properties) {
-			this.delegate.properties(properties);
+			this.properties.putAll(properties);
 			return this;
 		}
 
@@ -147,35 +155,48 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 */
 		public Builder jta(boolean jta) {
-			this.delegate.jta(jta);
+			this.jta = jta;
 			return this;
 		}
 
 		public LocalContainerEntityManagerFactoryBean build() {
-			return this.delegate.build();
+			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
+				entityManagerFactoryBean
+						.setPersistenceUnitManager(EntityManagerFactoryBuilder.this.persistenceUnitManager);
+			}
+			if (this.persistenceUnit != null) {
+				entityManagerFactoryBean.setPersistenceUnitName(this.persistenceUnit);
+			}
+			entityManagerFactoryBean
+					.setJpaVendorAdapter(EntityManagerFactoryBuilder.this.jpaVendorAdapter);
+
+			if (this.jta) {
+				entityManagerFactoryBean.setJtaDataSource(this.dataSource);
+			}
+			else {
+				entityManagerFactoryBean.setDataSource(this.dataSource);
+			}
+
+			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
+			entityManagerFactoryBean.getJpaPropertyMap().putAll(
+					EntityManagerFactoryBuilder.this.jpaProperties);
+			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
+			if (EntityManagerFactoryBuilder.this.callback != null) {
+				EntityManagerFactoryBuilder.this.callback
+						.execute(entityManagerFactoryBean);
+			}
+			return entityManagerFactoryBean;
 		}
 
 	}
 
 	/**
 	 * A callback for new entity manager factory beans created by a Builder.
-	 * @deprecated since 1.3.0 in favor of
-	 * {@link org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder}
 	 */
-	@Deprecated
 	public interface EntityManagerFactoryBeanCallback {
 
 		void execute(LocalContainerEntityManagerFactoryBean factory);
-
-	}
-
-	private static class Delegate extends
-			org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder {
-
-		Delegate(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
-				PersistenceUnitManager persistenceUnitManager) {
-			super(jpaVendorAdapter, jpaProperties, persistenceUnitManager);
-		}
 
 	}
 

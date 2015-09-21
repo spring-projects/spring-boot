@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.orm.jpa;
+package org.springframework.boot.orm.jpa;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -36,7 +38,7 @@ import static org.mockito.Mockito.mock;
 @Deprecated
 public class EntityManagerFactoryBuilderTests {
 
-	private JpaProperties properties = new JpaProperties();
+	private Map<String, Object> properties = new LinkedHashMap<String, Object>();
 
 	private DataSource dataSource1 = mock(DataSource.class);
 
@@ -50,7 +52,7 @@ public class EntityManagerFactoryBuilderTests {
 				.dataSource(this.dataSource1)
 				.properties(Collections.singletonMap("foo", "spam")).build();
 		assertFalse(result1.getJpaPropertyMap().isEmpty());
-		assertTrue(this.properties.getProperties().isEmpty());
+		assertTrue(this.properties.isEmpty());
 	}
 
 	@Test
