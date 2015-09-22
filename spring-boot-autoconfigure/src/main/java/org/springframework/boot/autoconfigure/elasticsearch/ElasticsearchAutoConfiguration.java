@@ -32,6 +32,7 @@ import org.elasticsearch.node.NodeBuilder;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,12 +51,13 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ Client.class, TransportClientFactoryBean.class,
-		NodeClientFactoryBean.class })
+@ConditionalOnClass({Client.class, TransportClientFactoryBean.class,
+		NodeClientFactoryBean.class})
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchAutoConfiguration implements DisposableBean {
 
 	private static final Map<String, String> DEFAULTS;
+
 	static {
 		Map<String, String> defaults = new LinkedHashMap<String, String>();
 		defaults.put("http.enabled", String.valueOf(false));
@@ -71,11 +73,11 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	private Releasable releasable;
 
 	@Bean
+	@ConditionalOnMissingBean
 	public Client elasticsearchClient() {
 		try {
 			return createClient();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -127,20 +129,17 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 				}
 				try {
 					this.releasable.close();
-				}
-				catch (NoSuchMethodError ex) {
+				} catch (NoSuchMethodError ex) {
 					// Earlier versions of Elasticsearch had a different method name
 					ReflectionUtils.invokeMethod(
 							ReflectionUtils.findMethod(Releasable.class, "release"),
 							this.releasable);
 				}
-			}
-			catch (final Exception ex) {
+			} catch (final Exception ex) {
 				if (logger.isErrorEnabled()) {
 					logger.error("Error closing Elasticsearch client: ", ex);
 				}
 			}
 		}
 	}
-
 }
