@@ -67,7 +67,7 @@ public class OpenTsdbMetricWriter implements MetricWriter {
 	 */
 	private MediaType mediaType = MediaType.APPLICATION_JSON;
 
-	private List<OpenTsdbData> buffer = new ArrayList<OpenTsdbData>(this.bufferSize);
+	private final List<OpenTsdbData> buffer = new ArrayList<OpenTsdbData>(this.bufferSize);
 
 	private OpenTsdbNamingStrategy namingStrategy = new DefaultOpenTsdbNamingStrategy();
 
@@ -105,9 +105,11 @@ public class OpenTsdbMetricWriter implements MetricWriter {
 		OpenTsdbData data = new OpenTsdbData(
 				this.namingStrategy.getName(value.getName()), value.getValue(), value
 						.getTimestamp().getTime());
-		this.buffer.add(data);
-		if (this.buffer.size() >= this.bufferSize) {
-			flush();
+		synchronized (this.buffer) {
+			this.buffer.add(data);
+			if (this.buffer.size() >= this.bufferSize) {
+				flush();
+			}
 		}
 	}
 
@@ -115,11 +117,12 @@ public class OpenTsdbMetricWriter implements MetricWriter {
 	 * Flush the buffer without waiting for it to fill any further.
 	 */
 	public void flush() {
-		if (this.buffer.isEmpty()) {
-			return;
-		}
-		List<OpenTsdbData> temp = new ArrayList<OpenTsdbData>();
+		List<OpenTsdbData> temp;
 		synchronized (this.buffer) {
+			if (this.buffer.isEmpty()) {
+				return;
+			}
+			temp = new ArrayList<OpenTsdbData>();
 			temp.addAll(this.buffer);
 			this.buffer.clear();
 		}
