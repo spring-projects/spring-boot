@@ -40,6 +40,7 @@ import static org.mockito.Mockito.verify;
 public class OpenTsdbMetricWriterTests {
 
 	private OpenTsdbMetricWriter writer;
+
 	private RestOperations restTemplate = Mockito.mock(RestOperations.class);
 
 	@Before
