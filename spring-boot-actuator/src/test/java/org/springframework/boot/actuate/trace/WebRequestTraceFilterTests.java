@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.trace;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -32,7 +33,6 @@ import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.util.ContentCachingRequestWrapper;
-
 
 import static org.junit.Assert.assertEquals;
 
@@ -51,7 +51,7 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	public void filterDumpsRequestResponse() throws IOException, ServletException {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET",  "/foo");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Accept", "application/json");
 
 		request.setContextPath("some.context.path");
@@ -80,6 +80,8 @@ public class WebRequestTraceFilterTests {
 		this.filter.setIncludePayload(true);
 		this.filter.setIncludePayloadResponse(true);
 		this.filter.setIncludeQueryString(true);
+		this.filter.setIncludePathTranslated(true);
+		this.filter.setIncludeAuthType(true);
 		this.filter.setIncludeUserPrincipal(true);
 		this.filter.setIncludeUserPrincipal(true);
 
@@ -111,6 +113,7 @@ public class WebRequestTraceFilterTests {
 		assertEquals(principal.getName(), ((Principal) trace.get("userPrincipal")).getName());
 		assertEquals("some.context.path", trace.get("contextPath"));
 		assertEquals("Hello, World!", trace.get(WebRequestTraceFilter.TRACE_RQ_KEY));
+		assertEquals("authType", trace.get(WebRequestTraceFilter.TRACE_RQ_AUTH_TYPE));
 		assertEquals("Goodbye, World!", trace.get(WebRequestTraceFilter.TRACE_RESP_KEY));
 		assertEquals("{Accept=application/json}", map.get("request").toString());
 

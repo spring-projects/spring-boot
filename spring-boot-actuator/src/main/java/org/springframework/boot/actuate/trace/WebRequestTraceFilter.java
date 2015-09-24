@@ -36,6 +36,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.actuate.autoconfigure.TraceWebFilterProperties;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
@@ -110,6 +111,24 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 	 */
 	public WebRequestTraceFilter(TraceRepository traceRepository) {
 		this.traceRepository = traceRepository;
+	}
+
+	public WebRequestTraceFilter(TraceRepository traceRepository, TraceWebFilterProperties traceWebFilterProperties) {
+		this(traceRepository);
+		setIncludeClientInfo(traceWebFilterProperties.isClientInfo());
+		setIncludePayload(traceWebFilterProperties.isPayload());
+		setIncludeQueryString(traceWebFilterProperties.isQueryString());
+		setMaxPayloadLength(traceWebFilterProperties.getMaxPayloadLength());
+		this.includeAuthType = traceWebFilterProperties.isAuthType();
+		this.includeContextPath = traceWebFilterProperties.isContextPath();
+		this.includeCookies = traceWebFilterProperties.isCookies();
+		this.includeParameters = traceWebFilterProperties.isParameters();
+		this.includePathInfo = traceWebFilterProperties.isPathInfo();
+		this.includePathTranslated = traceWebFilterProperties.isPathTranslated();
+		this.includePayloadResponse = traceWebFilterProperties.isPayloadResponse();
+		this.includeUserPrincipal = traceWebFilterProperties.isUserPrincipal();
+		this.includeUserPrincipal = traceWebFilterProperties.isUserPrincipal();
+
 	}
 
 	/**
@@ -271,7 +290,7 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 
 		HttpServletResponse responseToUse = response;
 
-		if (!isAsyncDispatch(request) && !(response instanceof ContentCachingResponseWrapper)) {
+		if (isIncludePayloadResponse() && !isAsyncDispatch(request) && !(response instanceof ContentCachingResponseWrapper)) {
 			responseToUse = new ContentCachingResponseWrapper(response);
 		}
 
