@@ -138,6 +138,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Andy Wilkinson
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Jeremy Rickard
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -172,6 +173,8 @@ public class SpringApplication {
 	private Class<?> mainApplicationClass;
 
 	private boolean showBanner = true;
+
+	private boolean showBannerInLog = false;
 
 	private boolean logStartupInfo = true;
 
@@ -477,24 +480,30 @@ public class SpringApplication {
 	 * @see #setShowBanner(boolean)
 	 */
 	protected void printBanner(Environment environment) {
+
+		Banner selectedBanner = selectBanner(environment);
+
+		if (this.showBannerInLog) {
+			selectedBanner.logBanner(environment, this.mainApplicationClass);
+		}
+		else {
+			selectedBanner.printBanner(environment, this.mainApplicationClass, System.out);
+		}
+	}
+
+	private Banner selectBanner(Environment environment) {
 		String location = environment.getProperty("banner.location", "banner.txt");
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
+
 		if (resource.exists()) {
-			new ResourceBanner(resource).printBanner(environment,
-					this.mainApplicationClass, System.out);
-			return;
+			return new ResourceBanner(resource);
 		}
 		if (this.banner != null) {
-			this.banner.printBanner(environment, this.mainApplicationClass, System.out);
-			return;
+			return this.banner;
 		}
-		printDefaultBanner();
-	}
-
-	private void printDefaultBanner() {
-		DEFAULT_BANNER.printBanner(null, this.mainApplicationClass, System.out);
+		return DEFAULT_BANNER;
 	}
 
 	/**
@@ -780,6 +789,15 @@ public class SpringApplication {
 	 */
 	public void setShowBanner(boolean showBanner) {
 		this.showBanner = showBanner;
+	}
+
+	/**
+	 * Sets if the Spring banner should be displayed in the logs. Defaults
+	 * to {@code false}. If true, display banner in log file instead of std out
+	 * @param showBannerInLog if the banner should be shown
+	 */
+	public void setShowBannerInLog(boolean showBannerInLog) {
+		this.showBannerInLog = showBannerInLog;
 	}
 
 	/**

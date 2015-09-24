@@ -18,6 +18,8 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiStyle;
@@ -27,6 +29,7 @@ import org.springframework.core.env.Environment;
  * Default Banner implementation which writes the 'Spring' banner.
  *
  * @author Phillip Webb
+ * @author Jeremy Rickard
  */
 class SpringBootBanner implements Banner {
 
@@ -41,6 +44,26 @@ class SpringBootBanner implements Banner {
 	private static final String SPRING_BOOT = " :: Spring Boot :: ";
 
 	private static final int STRAP_LINE_SIZE = 42;
+
+	private static final Log log = LogFactory.getLog(SpringBootBanner.class);
+
+	@Override
+	public void logBanner(Environment environment, Class<?> sourceClass) {
+		for (String line : BANNER) {
+			log.info(line);
+		}
+		String version = SpringBootVersion.getVersion();
+		version = (version == null ? "" : " (v" + version + ")");
+		String padding = "";
+		while (padding.length() < STRAP_LINE_SIZE
+				- (version.length() + SPRING_BOOT.length())) {
+			padding += " ";
+		}
+
+		log.info(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT,
+				AnsiColor.DEFAULT, padding, AnsiStyle.FAINT, version));
+		log.info("");
+	}
 
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass,

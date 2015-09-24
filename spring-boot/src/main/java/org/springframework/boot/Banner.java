@@ -25,6 +25,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Phillip Webb
  * @author Michael Stummvoll
+ * @author Jeremy Rickard
  * @since 1.2.0
  */
 public interface Banner {
@@ -36,5 +37,12 @@ public interface Banner {
 	 * @param out the output print stream
 	 */
 	void printBanner(Environment environment, Class<?> sourceClass, PrintStream out);
+
+	/**
+	 * Emit the banner to the log.
+	 * @param environment the spring environment
+	 * @param sourceClass the source class for the application
+	 */
+	void logBanner(Environment environment, Class<?> sourceClass);
 
 }

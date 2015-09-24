@@ -65,6 +65,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
@@ -72,6 +73,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.Matchers.startsWith;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -79,10 +81,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+
 
 /**
  * Tests for {@link SpringApplication}.
@@ -92,6 +96,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Jeremy Rickard
  */
 public class SpringApplicationTests {
 
@@ -190,6 +195,28 @@ public class SpringApplicationTests {
 				"--test.property=123456");
 		assertThat(this.output.toString(),
 				startsWith(String.format("Running a Test!%n%n123456")));
+	}
+
+	@Test
+	public void enableBannerInLogViaProperty() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		application.run("--spring.main.show_banner_in_log=true");
+		verify(application, atLeastOnce()).setShowBannerInLog(true);
+
+
+	}
+
+	@Test
+	public void verifyBannerNotInStdOut() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		application.run("--spring.main.show_banner_in_log=true",
+				"--banner.location=classpath:test-banner.txt");
+		System.err.println(this.output.toString());
+		assertThat(this.output.toString(),
+				containsString(String.format("main] org.springframework.boot.ResourceBanner  : Running a Test")));
+
 	}
 
 	@Test
@@ -657,6 +684,8 @@ public class SpringApplicationTests {
 
 		private boolean showBanner;
 
+		private boolean showBannerInLog;
+
 		TestSpringApplication(Object... sources) {
 			super(sources);
 		}
@@ -693,6 +722,12 @@ public class SpringApplicationTests {
 
 		public boolean getShowBanner() {
 			return this.showBanner;
+		}
+
+		@Override
+		public void setShowBannerInLog(boolean showBannerInLog) {
+			super.setShowBannerInLog(showBannerInLog);
+			this.showBannerInLog = showBannerInLog;
 		}
 
 	}
