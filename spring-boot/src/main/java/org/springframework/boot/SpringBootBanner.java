@@ -48,24 +48,6 @@ class SpringBootBanner implements Banner {
 	private static final Log log = LogFactory.getLog(SpringBootBanner.class);
 
 	@Override
-	public void logBanner(Environment environment, Class<?> sourceClass) {
-		for (String line : BANNER) {
-			log.info(line);
-		}
-		String version = SpringBootVersion.getVersion();
-		version = (version == null ? "" : " (v" + version + ")");
-		String padding = "";
-		while (padding.length() < STRAP_LINE_SIZE
-				- (version.length() + SPRING_BOOT.length())) {
-			padding += " ";
-		}
-
-		log.info(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT,
-				AnsiColor.DEFAULT, padding, AnsiStyle.FAINT, version));
-		log.info("");
-	}
-
-	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass,
 			PrintStream printStream) {
 		for (String line : BANNER) {

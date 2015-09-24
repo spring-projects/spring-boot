@@ -38,11 +38,26 @@ public interface Banner {
 	 */
 	void printBanner(Environment environment, Class<?> sourceClass, PrintStream out);
 
+
 	/**
-	 * Emit the banner to the log.
-	 * @param environment the spring environment
-	 * @param sourceClass the source class for the application
+	 * An enumeration of possible values for configuring the Banner.
 	 */
-	void logBanner(Environment environment, Class<?> sourceClass);
+	enum Mode {
+
+		/**
+		 * Disable printing of the banner.
+		 */
+		OFF,
+
+		/**
+		 * Print the banner to System.out.
+		 */
+		CONSOLE,
+
+		/**
+		 * Print the banner to the log file.
+		 */
+		LOG
+	}
 
 }

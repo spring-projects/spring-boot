@@ -223,7 +223,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void specificPort() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		int specificPort = SocketUtils.findAvailableTcpPort(40000);
+		int specificPort = SocketUtils.findAvailableTcpPort(41000);
 		factory.setPort(specificPort);
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());

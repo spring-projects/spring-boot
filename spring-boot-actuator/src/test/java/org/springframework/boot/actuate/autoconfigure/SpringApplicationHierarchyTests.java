@@ -56,14 +56,14 @@ public class SpringApplicationHierarchyTests {
 	}
 
 	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration" })
+			ElasticsearchRepositoriesAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 	}
 
 	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class,
 			EndpointMBeanExportAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class,
-			ElasticsearchRepositoriesAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration" })
+			ElasticsearchRepositoriesAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {
 	}
 

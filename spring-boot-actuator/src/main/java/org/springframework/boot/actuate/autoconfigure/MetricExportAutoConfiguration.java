@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.metrics.export.MetricExportProperties;
 import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.reader.CompositeMetricReader;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.statsd.StatsdMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,6 +46,7 @@ import org.springframework.util.CollectionUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for metrics export.
  *
  * @author Dave Syer
+ * @author Simon Buettner
  * @since 1.3.0
  */
 @Configuration
@@ -90,6 +92,16 @@ public class MetricExportAutoConfiguration {
 		}
 		exporters.setExporters(this.exporters);
 		return exporters;
+	}
+
+	@Bean
+	@ExportMetricWriter
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(prefix = "spring.metrics.export.statsd", name = "host")
+	public StatsdMetricWriter statsdMetricWriter() {
+		MetricExportProperties.Statsd statsdProperties = this.properties.getStatsd();
+		return new StatsdMetricWriter(statsdProperties.getPrefix(),
+				statsdProperties.getHost(), statsdProperties.getPort());
 	}
 
 	@Configuration

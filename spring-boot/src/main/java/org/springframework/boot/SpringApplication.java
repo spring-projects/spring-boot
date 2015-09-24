@@ -16,6 +16,8 @@
 
 package org.springframework.boot;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -172,9 +174,7 @@ public class SpringApplication {
 
 	private Class<?> mainApplicationClass;
 
-	private boolean showBanner = true;
-
-	private boolean showBannerInLog = false;
+	private Banner.Mode showBanner = Banner.Mode.CONSOLE;
 
 	private boolean logStartupInfo = true;
 
@@ -311,7 +311,7 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, args);
 		listeners.environmentPrepared(environment);
-		if (this.showBanner) {
+		if (this.showBanner != Banner.Mode.OFF) {
 			printBanner(environment);
 		}
 
@@ -477,14 +477,16 @@ public class SpringApplication {
 	 * banner.location=classpath:banner.txt, banner.charset=UTF-8. If the banner file does
 	 * not exist or cannot be printed, a simple default is created.
 	 * @param environment the environment
-	 * @see #setShowBanner(boolean)
+	 * @see #setShowBanner(org.springframework.boot.Banner.Mode)
 	 */
 	protected void printBanner(Environment environment) {
 
 		Banner selectedBanner = selectBanner(environment);
 
-		if (this.showBannerInLog) {
-			selectedBanner.logBanner(environment, this.mainApplicationClass);
+		if (this.showBanner == Banner.Mode.LOG) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			selectedBanner.printBanner(environment, this.mainApplicationClass, new PrintStream(baos));
+			this.log.info(baos.toString());
 		}
 		else {
 			selectedBanner.printBanner(environment, this.mainApplicationClass, System.out);
@@ -784,20 +786,11 @@ public class SpringApplication {
 
 	/**
 	 * Sets if the Spring banner should be displayed when the application runs. Defaults
-	 * to {@code true}.
-	 * @param showBanner if the banner should be shown
+	 * to {@code org.springframework.boot.Banner.Mode.LOG}.
+	 * @param bannerMode if the banner should be shown in log or console, or turned off.
 	 */
-	public void setShowBanner(boolean showBanner) {
-		this.showBanner = showBanner;
-	}
-
-	/**
-	 * Sets if the Spring banner should be displayed in the logs. Defaults
-	 * to {@code false}. If true, display banner in log file instead of std out
-	 * @param showBannerInLog if the banner should be shown
-	 */
-	public void setShowBannerInLog(boolean showBannerInLog) {
-		this.showBannerInLog = showBannerInLog;
+	public void setShowBanner(Banner.Mode bannerMode) {
+		this.showBanner = bannerMode;
 	}
 
 	/**

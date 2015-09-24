@@ -166,7 +166,7 @@ public class SpringApplicationTests {
 	public void disableBanner() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		application.setShowBanner(false);
+		application.setShowBanner(Banner.Mode.OFF);
 		application.run();
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
@@ -175,7 +175,7 @@ public class SpringApplicationTests {
 	public void disableBannerViaProperty() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		application.run("--spring.main.show_banner=false");
+		application.run("--spring.main.show_banner=OFF");
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
 
@@ -201,21 +201,20 @@ public class SpringApplicationTests {
 	public void enableBannerInLogViaProperty() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		application.run("--spring.main.show_banner_in_log=true");
-		verify(application, atLeastOnce()).setShowBannerInLog(true);
+		application.run("--spring.main.show_banner=LOG");
+		verify(application, atLeastOnce()).setShowBanner(Banner.Mode.LOG);
 
 
 	}
 
 	@Test
-	public void verifyBannerNotInStdOut() throws Exception {
+	public void verifyBannerOutputContainsLogInfo() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		application.run("--spring.main.show_banner_in_log=true",
+		application.run("--spring.main.show_banner=LOG",
 				"--banner.location=classpath:test-banner.txt");
-		System.err.println(this.output.toString());
-		assertThat(this.output.toString(),
-				containsString(String.format("main] org.springframework.boot.ResourceBanner  : Running a Test")));
+		verify(application, atLeastOnce()).setShowBanner(Banner.Mode.LOG);
+		assertThat(this.output.toString(), containsString("o.s.boot.SpringApplication"));
 
 	}
 
@@ -549,8 +548,8 @@ public class SpringApplicationTests {
 	public void commandLineArgsApplyToSpringApplication() throws Exception {
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		application.run("--spring.main.show_banner=false");
-		assertThat(application.getShowBanner(), is(false));
+		application.run("--spring.main.show_banner=OFF");
+		assertThat(application.getShowBanner(), is(Banner.Mode.OFF));
 	}
 
 	@Test
@@ -682,9 +681,7 @@ public class SpringApplicationTests {
 
 		private boolean useMockLoader;
 
-		private boolean showBanner;
-
-		private boolean showBannerInLog;
+		private Banner.Mode showBanner;
 
 		TestSpringApplication(Object... sources) {
 			super(sources);
@@ -715,21 +712,14 @@ public class SpringApplicationTests {
 		}
 
 		@Override
-		public void setShowBanner(boolean showBanner) {
-			super.setShowBanner(showBanner);
-			this.showBanner = showBanner;
+		public void setShowBanner(Banner.Mode bannerMode) {
+			super.setShowBanner(bannerMode);
+			this.showBanner = bannerMode;
 		}
 
-		public boolean getShowBanner() {
+		public Banner.Mode getShowBanner() {
 			return this.showBanner;
 		}
-
-		@Override
-		public void setShowBannerInLog(boolean showBannerInLog) {
-			super.setShowBannerInLog(showBannerInLog);
-			this.showBannerInLog = showBannerInLog;
-		}
-
 	}
 
 	@Configuration

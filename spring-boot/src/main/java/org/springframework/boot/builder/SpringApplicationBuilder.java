@@ -172,7 +172,7 @@ public class SpringApplicationBuilder {
 		web(false);
 
 		// Probably not interested in multiple banners
-		showBanner(false);
+		showBanner(Banner.Mode.OFF);
 
 		// Make sure sources get copied over
 		this.application.setSources(this.sources);
@@ -311,18 +311,8 @@ public class SpringApplicationBuilder {
 	 * @param showBanner the flag to set. Default true.
 	 * @return the current builder
 	 */
-	public SpringApplicationBuilder showBanner(boolean showBanner) {
+	public SpringApplicationBuilder showBanner(Banner.Mode showBanner) {
 		this.application.setShowBanner(showBanner);
-		return this;
-	}
-
-	/**
-	 * Flag to indicate if banner should be printed to stdout.
-	 * @param showBannerInLog the flag to set. Default false. If true, print to log instead of std out
-	 * @return the current builder
-	 */
-	public SpringApplicationBuilder setShowBannerInLog(boolean showBannerInLog) {
-		this.application.setShowBannerInLog(showBannerInLog);
 		return this;
 	}
 
