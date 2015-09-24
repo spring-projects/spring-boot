@@ -26,8 +26,11 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -39,9 +42,14 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
-public class DataSourceProperties implements BeanClassLoaderAware, InitializingBean {
+public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAware,
+		InitializingBean {
 
 	public static final String PREFIX = "spring.datasource";
+
+	private ClassLoader classLoader;
+
+	private Environment environment;
 
 	/**
 	 * Name of the datasource.
@@ -73,8 +81,6 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Login password of the database.
 	 */
 	private String password;
-
-	private ClassLoader classLoader;
 
 	/**
 	 * JNDI location of the datasource. Class, url, username & password are ignored when
@@ -127,6 +133,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection
 				.get(this.classLoader);
@@ -165,11 +176,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		}
 
 		if (!StringUtils.hasText(driverClassName)) {
-			throw new BeanCreationException(
-					"Cannot determine embedded database driver class for database type "
-							+ this.embeddedDatabaseConnection
-							+ ". If you want an embedded "
-							+ "database please put a supported one on the classpath.");
+			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
+					this.environment, "driver class");
 		}
 		return driverClassName;
 	}
@@ -184,11 +192,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		}
 		String url = this.embeddedDatabaseConnection.getUrl();
 		if (!StringUtils.hasText(url)) {
-			throw new BeanCreationException(
-					"Cannot determine embedded database url for database type "
-							+ this.embeddedDatabaseConnection
-							+ ". If you want an embedded "
-							+ "database please put a supported one on the classpath.");
+			throw new DataSourceBeanCreationException(this.embeddedDatabaseConnection,
+					this.environment, "url");
 		}
 		return url;
 	}
@@ -336,6 +341,40 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 		public void setProperties(Map<String, String> properties) {
 			this.properties = properties;
+		}
+
+	}
+
+	private static class DataSourceBeanCreationException extends BeanCreationException {
+
+		public DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
+				Environment environment, String property) {
+			super(getMessage(connection, environment, property));
+		}
+
+		private static String getMessage(EmbeddedDatabaseConnection connection,
+				Environment environment, String property) {
+			StringBuilder message = new StringBuilder();
+			message.append("Cannot determine embedded database " + property
+					+ " for database type " + connection + ". ");
+			message.append("If you want an embedded database please put a supported "
+					+ "one on the classpath. ");
+			message.append("If you have database settings to be loaded from a "
+					+ "particular profile you may need to active it");
+			if (environment != null) {
+				String[] profiles = environment.getActiveProfiles();
+				if (ObjectUtils.isEmpty(profiles)) {
+					message.append(" (no profiles are currently active)");
+				}
+				else {
+					message.append(" (the profiles \""
+							+ StringUtils.arrayToCommaDelimitedString(environment
+									.getActiveProfiles()) + "\" are currently active)");
+
+				}
+			}
+			message.append(".");
+			return message.toString();
 		}
 
 	}
