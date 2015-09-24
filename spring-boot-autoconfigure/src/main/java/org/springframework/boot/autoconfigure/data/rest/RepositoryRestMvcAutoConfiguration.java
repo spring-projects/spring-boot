@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,13 +41,15 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
  *
  * @author Rob Winch
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnMissingBean(RepositoryRestMvcConfiguration.class)
 @ConditionalOnClass(RepositoryRestMvcConfiguration.class)
-@AutoConfigureAfter(HttpMessageConvertersAutoConfiguration.class)
+@AutoConfigureAfter({ HttpMessageConvertersAutoConfiguration.class,
+		JacksonAutoConfiguration.class })
 @Import(SpringBootRepositoryRestMvcConfiguration.class)
 public class RepositoryRestMvcAutoConfiguration {
 

@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -82,6 +83,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
+				WebMvcAutoConfiguration.class,
 				ManagementWebSecurityAutoConfiguration.class,
 				JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -110,13 +112,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	public void testWebConfigurationWithExtraRole() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(EndpointAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				SecurityAutoConfiguration.class,
-				ManagementWebSecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(WebConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
 		assertTrue(user.getAuthorities().containsAll(
@@ -155,14 +151,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	public void testDisableBasicAuthOnApplicationPaths() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(HttpMessageConvertersAutoConfiguration.class,
-				JacksonAutoConfiguration.class, EndpointAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				SecurityAutoConfiguration.class,
-				ManagementWebSecurityAutoConfiguration.class,
-				FallbackWebSecurityAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(WebConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		// Just the management endpoints (one filter) and ignores now plus the backup
@@ -246,6 +235,18 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	private ResultMatcher springAuthenticateRealmHeader() {
 		return MockMvcResultMatchers.header().string("www-authenticate",
 				Matchers.containsString("realm=\"Spring\""));
+	}
+
+	@Configuration
+	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class,
+			JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class,
+			FallbackWebSecurityAutoConfiguration.class })
+	static class WebConfiguration {
+
 	}
 
 	@EnableGlobalAuthentication

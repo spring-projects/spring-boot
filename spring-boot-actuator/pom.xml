@@ -302,5 +302,10 @@
 			<artifactId>spring-data-elasticsearch</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-rest-webmvc</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
