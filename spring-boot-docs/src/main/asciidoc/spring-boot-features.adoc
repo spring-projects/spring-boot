@@ -124,7 +124,7 @@ For example:
 [source,java,indent=0]
 ----
 	new SpringApplicationBuilder()
-		.showBanner(false)
+		.showBanner(Banner.Mode.OFF)
 		.sources(Parent.class)
 		.child(Application.class)
 		.run(args);

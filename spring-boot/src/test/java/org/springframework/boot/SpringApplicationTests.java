@@ -82,6 +82,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -95,6 +96,7 @@ import static org.mockito.Mockito.verify;
  * @author Andy Wilkinson
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Jeremy Rickard
  */
 public class SpringApplicationTests {
 
@@ -164,7 +166,7 @@ public class SpringApplicationTests {
 	public void disableBanner() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		application.setShowBanner(false);
+		application.setShowBanner(Banner.Mode.OFF);
 		this.context = application.run();
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
@@ -173,7 +175,7 @@ public class SpringApplicationTests {
 	public void disableBannerViaProperty() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		this.context = application.run("--spring.main.show_banner=false");
+		this.context = application.run("--spring.main.show_banner=OFF");
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
 
@@ -211,6 +213,24 @@ public class SpringApplicationTests {
 		this.context = application.run("--spring.profiles.active=myprofiles");
 		assertThat(this.output.toString(),
 				containsString("The following profiles are active: myprofile"));
+	}
+
+	@Test
+	public void enableBannerInLogViaProperty() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		this.context = application.run("--spring.main.show_banner=LOG");
+		verify(application, atLeastOnce()).setShowBanner(Banner.Mode.LOG);
+	}
+
+	@Test
+	public void verifyBannerOutputContainsLogInfo() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		application.run("--spring.main.show_banner=LOG",
+				"--banner.location=classpath:test-banner.txt");
+		verify(application, atLeastOnce()).setShowBanner(Banner.Mode.LOG);
+		assertThat(this.output.toString(), containsString("o.s.boot.SpringApplication"));
 	}
 
 	@Test
@@ -545,8 +565,8 @@ public class SpringApplicationTests {
 		TestSpringApplication application = new TestSpringApplication(
 				ExampleConfig.class);
 		application.setWebEnvironment(false);
-		this.context = application.run("--spring.main.show_banner=false");
-		assertThat(application.getShowBanner(), is(false));
+		this.context = application.run("--spring.main.show_banner=OFF");
+		assertThat(application.getShowBanner(), is(Banner.Mode.OFF));
 	}
 
 	@Test
@@ -713,7 +733,7 @@ public class SpringApplicationTests {
 
 		private boolean useMockLoader;
 
-		private boolean showBanner;
+		private Banner.Mode showBanner;
 
 		TestSpringApplication(Object... sources) {
 			super(sources);
@@ -744,12 +764,12 @@ public class SpringApplicationTests {
 		}
 
 		@Override
-		public void setShowBanner(boolean showBanner) {
-			super.setShowBanner(showBanner);
-			this.showBanner = showBanner;
+		public void setShowBanner(Banner.Mode bannerMode) {
+			super.setShowBanner(bannerMode);
+			this.showBanner = bannerMode;
 		}
 
-		public boolean getShowBanner() {
+		public Banner.Mode getShowBanner() {
 			return this.showBanner;
 		}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -134,6 +136,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Andy Wilkinson
  * @author Christian Dupuis
  * @author Stephane Nicoll
+ * @author Jeremy Rickard
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -179,7 +182,7 @@ public class SpringApplication {
 
 	private Class<?> mainApplicationClass;
 
-	private boolean showBanner = true;
+	private Banner.Mode showBanner = Banner.Mode.CONSOLE;
 
 	private boolean logStartupInfo = true;
 
@@ -321,7 +324,7 @@ public class SpringApplication {
 			environment = convertToStandardEnvironment(environment);
 		}
 
-		if (this.showBanner) {
+		if (this.showBanner != Banner.Mode.OFF) {
 			printBanner(environment);
 		}
 
@@ -521,27 +524,37 @@ public class SpringApplication {
 	 * banner.location=classpath:banner.txt, banner.charset=UTF-8. If the banner file does
 	 * not exist or cannot be printed, a simple default is created.
 	 * @param environment the environment
-	 * @see #setShowBanner(boolean)
+	 * @see #setShowBanner(org.springframework.boot.Banner.Mode)
 	 */
 	protected void printBanner(Environment environment) {
+
+		Banner selectedBanner = selectBanner(environment);
+
+		if (this.showBanner == Banner.Mode.LOG) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			selectedBanner.printBanner(environment, this.mainApplicationClass,
+					new PrintStream(baos));
+			this.log.info(baos.toString());
+		}
+		else {
+			selectedBanner
+					.printBanner(environment, this.mainApplicationClass, System.out);
+		}
+	}
+
+	private Banner selectBanner(Environment environment) {
 		String location = environment.getProperty("banner.location", "banner.txt");
 		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
+
 		if (resource.exists()) {
-			new ResourceBanner(resource).printBanner(environment,
-					this.mainApplicationClass, System.out);
-			return;
+			return new ResourceBanner(resource);
 		}
 		if (this.banner != null) {
-			this.banner.printBanner(environment, this.mainApplicationClass, System.out);
-			return;
+			return this.banner;
 		}
-		printDefaultBanner();
-	}
-
-	private void printDefaultBanner() {
-		DEFAULT_BANNER.printBanner(null, this.mainApplicationClass, System.out);
+		return DEFAULT_BANNER;
 	}
 
 	/**
@@ -840,11 +853,11 @@ public class SpringApplication {
 
 	/**
 	 * Sets if the Spring banner should be displayed when the application runs. Defaults
-	 * to {@code true}.
-	 * @param showBanner if the banner should be shown
+	 * to {@code org.springframework.boot.Banner.Mode.CONSOLE}.
+	 * @param bannerMode if the banner should be shown in log or console, or turned off.
 	 */
-	public void setShowBanner(boolean showBanner) {
-		this.showBanner = showBanner;
+	public void setShowBanner(Banner.Mode bannerMode) {
+		this.showBanner = bannerMode;
 	}
 
 	/**

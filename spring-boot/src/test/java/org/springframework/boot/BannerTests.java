@@ -58,6 +58,14 @@ public class BannerTests {
 	}
 
 	@Test
+	public void testDefaultBannerInLog() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.out.toString(), containsString(":: Spring Boot ::"));
+	}
+
+	@Test
 	public void testCustomBanner() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
