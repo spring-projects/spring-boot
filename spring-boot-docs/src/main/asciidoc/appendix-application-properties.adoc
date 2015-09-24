@@ -472,12 +472,14 @@ content into your application; rather pick only the properties that you need.
 	liquibase.change-log=classpath:/db/changelog/db.changelog-master.yaml
 	liquibase.check-change-log-location=true # check the change log location exists
 	liquibase.contexts= # runtime contexts to use
+	liquibase.labels= # runtime labels to use
 	liquibase.default-schema= # default database schema to use
 	liquibase.drop-first=false
 	liquibase.enabled=true
 	liquibase.url= # specific JDBC url (if not set the default datasource is used)
 	liquibase.user= # user name for liquibase.url
 	liquibase.password= # password for liquibase.url
+	liquibase.parameters= # change log parameters
 
 	# JMX
 	spring.jmx.default-domain= # JMX domain name
@@ -788,6 +790,9 @@ content into your application; rather pick only the properties that you need.
 	spring.metrics.export.excludes= # list of patterns for metric names to exclude. Applied after the includes
 	spring.metrics.export.redis.prefix=spring.metrics # prefix for redis repository if active
 	spring.metrics.export.redis.key=keys.spring.metrics # key for redis repository export (if active)
+	spring.metrics.export.statsd.host= # host of the statsd server
+	spring.metrics.export.statsd.port=8125 # port of the statsd server
+	spring.metrics.export.statsd.prefix= # prefix for exported metrics
 	spring.metrics.export.triggers.*= # specific trigger properties per MetricWriter bean name
 
 	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])

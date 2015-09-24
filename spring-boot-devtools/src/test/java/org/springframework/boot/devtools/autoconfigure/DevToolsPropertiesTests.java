@@ -38,7 +38,8 @@ public class DevToolsPropertiesTests {
 				restart.getAllExclude(),
 				arrayContaining("META-INF/maven/**", "META-INF/resources/**",
 						"resources/**", "static/**", "public/**", "templates/**",
-						"**/*Test.class", "**/*Tests.class", "foo/**", "bar/**"));
+						"**/*Test.class", "**/*Tests.class", "git.properties", "foo/**",
+						"bar/**"));
 	}
 
 	@Test
