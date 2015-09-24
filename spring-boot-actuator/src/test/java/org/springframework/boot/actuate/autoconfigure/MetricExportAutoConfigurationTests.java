@@ -17,16 +17,21 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
 import org.springframework.boot.actuate.metrics.export.MetricExporters;
+import org.springframework.boot.actuate.metrics.statsd.StatsdMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,15 +41,21 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.SubscribableChannel;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link MetricExportAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Simon Buettner
  */
 public class MetricExportAutoConfigurationTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -100,16 +111,43 @@ public class MetricExportAutoConfigurationTests {
 		Mockito.verify(reader, Mockito.atLeastOnce()).findAll();
 	}
 
+	@Test
+	public void statsdMissingHost() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(WriterConfig.class, MetricEndpointConfiguration.class,
+				MetricExportAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(StatsdMetricWriter.class);
+	}
+
+	@Test
+	public void statsdWithHost() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.metrics.export.statsd.host=localhost");
+		this.context.register(WriterConfig.class, MetricEndpointConfiguration.class,
+				MetricExportAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(StatsdMetricWriter.class), notNullValue());
+	}
+
 	@Configuration
 	public static class MessageChannelConfiguration {
+
 		@Bean
 		public SubscribableChannel metricsChannel() {
 			return new FixedSubscriberChannel(new MessageHandler() {
+
 				@Override
 				public void handleMessage(Message<?> message) throws MessagingException {
 				}
+
 			});
 		}
+
 	}
 
 	@Configuration

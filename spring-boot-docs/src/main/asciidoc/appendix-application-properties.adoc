@@ -790,6 +790,9 @@ content into your application; rather pick only the properties that you need.
 	spring.metrics.export.excludes= # list of patterns for metric names to exclude. Applied after the includes
 	spring.metrics.export.redis.prefix=spring.metrics # prefix for redis repository if active
 	spring.metrics.export.redis.key=keys.spring.metrics # key for redis repository export (if active)
+	spring.metrics.export.statsd.host= # host of the statsd server
+	spring.metrics.export.statsd.port=8125 # port of the statsd server
+	spring.metrics.export.statsd.prefix= # prefix for exported metrics
 	spring.metrics.export.triggers.*= # specific trigger properties per MetricWriter bean name
 
 	# SENDGRID ({sc-spring-boot-autoconfigure}/sendgrid/SendGridAutoConfiguration.{sc-ext}[SendGridAutoConfiguration])
