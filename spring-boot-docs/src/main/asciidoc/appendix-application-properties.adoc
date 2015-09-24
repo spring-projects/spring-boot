@@ -472,12 +472,14 @@ content into your application; rather pick only the properties that you need.
 	liquibase.change-log=classpath:/db/changelog/db.changelog-master.yaml
 	liquibase.check-change-log-location=true # check the change log location exists
 	liquibase.contexts= # runtime contexts to use
+	liquibase.labels= # runtime labels to use
 	liquibase.default-schema= # default database schema to use
 	liquibase.drop-first=false
 	liquibase.enabled=true
 	liquibase.url= # specific JDBC url (if not set the default datasource is used)
 	liquibase.user= # user name for liquibase.url
 	liquibase.password= # password for liquibase.url
+	liquibase.parameters= # change log parameters
 
 	# JMX
 	spring.jmx.default-domain= # JMX domain name
