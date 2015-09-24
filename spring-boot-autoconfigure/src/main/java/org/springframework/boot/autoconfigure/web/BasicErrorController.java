@@ -25,11 +25,8 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -44,16 +41,13 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 @RequestMapping("${error.path:/error}")
-public class BasicErrorController implements ErrorController {
+public class BasicErrorController extends AbstractErrorController {
 
 	@Value("${error.path:/error}")
 	private String errorPath;
 
-	private final ErrorAttributes errorAttributes;
-
 	public BasicErrorController(ErrorAttributes errorAttributes) {
-		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
-		this.errorAttributes = errorAttributes;
+		super(errorAttributes);
 	}
 
 	@Override
@@ -72,39 +66,6 @@ public class BasicErrorController implements ErrorController {
 		Map<String, Object> body = getErrorAttributes(request);
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<Map<String, Object>>(body, status);
-	}
-
-	private boolean getTraceParameter(HttpServletRequest request) {
-		String parameter = request.getParameter("trace");
-		if (parameter == null) {
-			return false;
-		}
-		return !"false".equals(parameter.toLowerCase());
-	}
-
-	protected Map<String, Object> getErrorAttributes(HttpServletRequest request) {
-		return getErrorAttributes(request, getTraceParameter(request));
-	}
-
-	protected Map<String, Object> getErrorAttributes(HttpServletRequest request,
-			boolean includeStackTrace) {
-		RequestAttributes requestAttributes = new ServletRequestAttributes(request);
-		return this.errorAttributes.getErrorAttributes(requestAttributes,
-				includeStackTrace);
-	}
-
-	protected HttpStatus getStatus(HttpServletRequest request) {
-		Integer statusCode = (Integer) request
-				.getAttribute("javax.servlet.error.status_code");
-		if (statusCode == null) {
-			return HttpStatus.INTERNAL_SERVER_ERROR;
-		}
-		try {
-			return HttpStatus.valueOf(statusCode);
-		}
-		catch (Exception ex) {
-			return HttpStatus.INTERNAL_SERVER_ERROR;
-		}
 	}
 
 }
