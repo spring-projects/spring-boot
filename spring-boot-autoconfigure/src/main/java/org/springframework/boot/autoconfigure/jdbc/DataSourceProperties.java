@@ -347,7 +347,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 
 	private static class DataSourceBeanCreationException extends BeanCreationException {
 
-		public DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
+		DataSourceBeanCreationException(EmbeddedDatabaseConnection connection,
 				Environment environment, String property) {
 			super(getMessage(connection, environment, property));
 		}

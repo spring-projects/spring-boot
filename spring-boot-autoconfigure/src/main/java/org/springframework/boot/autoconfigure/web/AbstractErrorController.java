@@ -31,8 +31,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  *
  * @author Dave Syer
  * @author Phillip Webb
- * @see ErrorAttributes
  * @since 1.3.0
+ * @see ErrorAttributes
  */
 public abstract class AbstractErrorController implements ErrorController {
 

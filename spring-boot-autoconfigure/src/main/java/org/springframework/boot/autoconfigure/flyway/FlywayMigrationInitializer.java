@@ -37,7 +37,7 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 	private int order = 0;
 
 	/**
-	 * Create a new {@link FlywayMigrationInitializer}
+	 * Create a new {@link FlywayMigrationInitializer} instance.
 	 * @param flyway the flyway instance
 	 */
 	public FlywayMigrationInitializer(Flyway flyway) {
@@ -45,7 +45,7 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 	}
 
 	/**
-	 * Create a new {@link FlywayMigrationInitializer}
+	 * Create a new {@link FlywayMigrationInitializer} instance.
 	 * @param flyway the flyway instance
 	 * @param migrationStrategy the migration stragety or {@code null}
 	 */
