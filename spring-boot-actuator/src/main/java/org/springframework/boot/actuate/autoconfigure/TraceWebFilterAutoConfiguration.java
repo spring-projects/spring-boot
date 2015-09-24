@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -42,6 +43,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
+@EnableConfigurationProperties(TraceWebFilterProperties.class)
 public class TraceWebFilterAutoConfiguration {
 
 	@Autowired
