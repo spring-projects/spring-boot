@@ -18,15 +18,14 @@ package org.springframework.boot.actuate.trace;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 import java.security.Principal;
-
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -39,13 +38,14 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.autoconfigure.TraceWebFilterProperties;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.filter.AbstractRequestLoggingFilter;
+import org.springframework.web.context.request.async.WebAsyncUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
-
 
 /**
  * Servlet {@link Filter} that logs all requests to a {@link TraceRepository}.
@@ -53,11 +53,17 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
  * @author Dave Syer
  * @author Wallace Wadge
  */
-public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implements Ordered {
-
-	/** Holds request.getRemoteAddr(). */
+public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
+	/** Holds the request path info. */
+	public static final String TRACE_RQ_PATH_INFO = "pathInfo";
+	/** Holds the request path translated. */
+	public static final String TRACE_RQ_PATH_TRANSLATED = "pathTranslated";
+	/** Holds the request remote address. */
 	public static final String TRACE_RQ_REMOTE_ADDR = "requestRemoteAddr";
-
+	/** Holds the request context Path. */
+	public static final String TRACE_RQ_CONTEXT_PATH = "contextPath";
+	/** Holds the request user principal. */
+	public static final String TRACE_RQ_USER_PRINCIPAL = "userPrincipal";
 	/** Holds the request parameter map. */
 	public static final String TRACE_RQ_PARAMS = "requestParams";
 	/** Key used in trace to store the request auth type.  */
@@ -67,35 +73,45 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 	/** Key used in trace to store the request query string. */
 	public static final String TRACE_RQ_QUERYSTRING = "requestQueryString";
 	/** Key used in trace to store the request payload. */
-	public static final String TRACE_RQ_KEY = "requestPayload";
+	public static final String TRACE_RQ_PAYLOAD = "requestPayload";
 	/** Key used in trace to store the response payload. */
-	public static final String TRACE_RESP_KEY = "responsePayload";
+	public static final String TRACE_RESP_PAYLOAD = "responsePayload";
 	/** Holds session id. */
 	public static final String TRACE_RQ_SESSION_ID = "requestSessionId";
 	/** Holds request.getRemoteUser(). */
 	public static final String TRACE_RQ_REMOTE_USER = "requestRemoteUser";
-	/** A simple optimization flag. */
-	private static final String ONE_TIME_CHECK = "webRqFilter.beforeMessage.done";
+
+	private static final int DEFAULT_MAX_PAYLOAD_LENGTH = 50;
+
 
 	private final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
 
 	private boolean dumpRequests = false;
 
-	private boolean includePayloadResponse = false;
+	private boolean includeAuthType = false;
 
-	private boolean includeParameters = false;
+	private boolean includeClientInfo = false;
+
+	private boolean includeContextPath = false;
 
 	private boolean includeCookies = false;
 
-	private boolean includeAuthType = false;
+	private boolean includeParameters = false;
 
 	private boolean includePathInfo = false;
 
-	private boolean includeUserPrincipal = false;
-
 	private boolean includePathTranslated = false;
 
-	private boolean includeContextPath = false;
+	private boolean includePayload = false;
+
+	private boolean includePayloadResponse = false;
+
+	private boolean includeQueryString = false;
+
+	private boolean includeUserPrincipal = false;
+
+	private int maxPayloadLength = DEFAULT_MAX_PAYLOAD_LENGTH;
+
 
 	// Not LOWEST_PRECEDENCE, but near the end, so it has a good chance of catching all
 	// enriched headers, but users can add stuff after this if they want to
@@ -115,20 +131,94 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 
 	public WebRequestTraceFilter(TraceRepository traceRepository, TraceWebFilterProperties traceWebFilterProperties) {
 		this(traceRepository);
-		setIncludeClientInfo(traceWebFilterProperties.isClientInfo());
-		setIncludePayload(traceWebFilterProperties.isPayload());
-		setIncludeQueryString(traceWebFilterProperties.isQueryString());
-		setMaxPayloadLength(traceWebFilterProperties.getMaxPayloadLength());
 		this.includeAuthType = traceWebFilterProperties.isAuthType();
+		this.includeClientInfo = traceWebFilterProperties.isClientInfo();
 		this.includeContextPath = traceWebFilterProperties.isContextPath();
 		this.includeCookies = traceWebFilterProperties.isCookies();
 		this.includeParameters = traceWebFilterProperties.isParameters();
 		this.includePathInfo = traceWebFilterProperties.isPathInfo();
 		this.includePathTranslated = traceWebFilterProperties.isPathTranslated();
+		this.includePayload = traceWebFilterProperties.isPayload();
 		this.includePayloadResponse = traceWebFilterProperties.isPayloadResponse();
+		this.includeQueryString = traceWebFilterProperties.isQueryString();
 		this.includeUserPrincipal = traceWebFilterProperties.isUserPrincipal();
 		this.includeUserPrincipal = traceWebFilterProperties.isUserPrincipal();
+		this.maxPayloadLength = traceWebFilterProperties.getMaxPayloadLength();
+	}
 
+
+	/**
+	 * Set whether the query string should be included in the log message.
+	 * <p>Should be configured using an {@code &lt;init-param&gt;} for parameter name
+	 * includeQueryString" in the filter definition in {@code web.xml}.
+	 * @param includeQueryString set to true to add to trace
+	 */
+	public void setIncludeQueryString(boolean includeQueryString) {
+		this.includeQueryString = includeQueryString;
+	}
+
+	/**
+	 * Return whether the query string should be included in the log message.
+	 * @return true is query string is included
+	 */
+	protected boolean isIncludeQueryString() {
+		return this.includeQueryString;
+	}
+
+	/**
+	 * Set whether the client address and session id should be included in the
+	 * log message.
+	 * <p>Should be configured using an {@code &lt;init-param&gt;} for parameter name
+	 * "includeClientInfo" in the filter definition in {@code web.xml}.
+	 * @param includeClientInfo Set to true to include client/sessionId should be included
+	 */
+	public void setIncludeClientInfo(boolean includeClientInfo) {
+		this.includeClientInfo = includeClientInfo;
+	}
+
+	/**
+	 * Return whether the client address and session id should be included in the
+	 * log message.
+	 * @return true if client address/session id are included
+	 */
+	protected boolean isIncludeClientInfo() {
+		return this.includeClientInfo;
+	}
+
+	/**
+	 * Set whether the request payload (body) should be included in the log message.
+	 * <p>Should be configured using an {@code &lt;init-param&gt;} for parameter name
+	 * "includePayload" in the filter definition in {@code web.xml}.
+	 * @param includePayload set to true to include the request payload.
+	 */
+	public void setIncludePayload(boolean includePayload) {
+		this.includePayload = includePayload;
+	}
+
+	/**
+	 * Return whether the request payload (body) should be included in the log message.
+	 * @return true if request payload is included
+	 */
+	protected boolean isIncludePayload() {
+		return this.includePayload;
+	}
+
+	/**
+	 * Sets the maximum length of the payload body to be included in the log message.
+	 * Default is 50 characters.
+	 * @param maxPayloadLength Limit the number of bytes to capture for request/response
+	 */
+	public void setMaxPayloadLength(int maxPayloadLength) {
+		Assert.isTrue(maxPayloadLength >= 0, "'maxPayloadLength' should be larger than or equal to 0");
+		this.maxPayloadLength = maxPayloadLength;
+	}
+
+	/**
+	 * Return the maximum length of the payload body to be included in the log message.
+	 * @return payload length that will be captured
+	 */
+	protected int getMaxPayloadLength() {
+		return this.maxPayloadLength;
 	}
 
 	/**
@@ -283,51 +373,83 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 		this.order = order;
 	}
 
+	/**
+	 * The dispatcher type {@code javax.servlet.DispatcherType.ASYNC} introduced
+	 * in Servlet 3.0 means a filter can be invoked in more than one thread over
+	 * the course of a single request. This method returns {@code true} if the
+	 * filter is currently executing within an asynchronous dispatch.
+	 * @param request the current request
+	 * @return true if we are in an async dispatch
+	 * @since 3.2
+	 * @see WebAsyncManager#hasConcurrentResult()
+	 */
+	protected boolean isAsyncDispatch(HttpServletRequest request) {
+		return WebAsyncUtils.getAsyncManager(request).hasConcurrentResult();
+	}
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
 									HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
+		HttpServletRequest requestToUse = request;
 		HttpServletResponse responseToUse = response;
+
+		boolean isFirstRequest = !isAsyncDispatch(request);
+
+		if (isIncludePayload() && isFirstRequest && !(request instanceof ContentCachingRequestWrapper)) {
+			requestToUse = new ContentCachingRequestWrapper(request);
+		}
 
 		if (isIncludePayloadResponse() && !isAsyncDispatch(request) && !(response instanceof ContentCachingResponseWrapper)) {
 			responseToUse = new ContentCachingResponseWrapper(response);
 		}
 
+		Map<String, Object> trace = getTrace(requestToUse);
+		if (this.logger.isTraceEnabled()) {
+			this.logger.trace("Processing request " + requestToUse.getMethod() + " "
+					+ requestToUse.getRequestURI());
+			if (this.dumpRequests) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> headers = (Map<String, Object>) trace.get("headers");
+				this.logger.trace("Headers: " + headers);
+			}
+		}
+
 		try {
-			super.doFilterInternal(request, responseToUse, filterChain);
+			filterChain.doFilter(requestToUse, responseToUse);
 		}
 		finally {
-			// fetch the original trace again
-			Map<String, Object> trace = (Map<String, Object>) request.getAttribute(TRACE_RQ_KEY);
+			enhanceTraceRequest(trace, requestToUse);
 			enhanceTrace(trace, responseToUse);
-
-			if (isIncludePayloadResponse()) {
-				trace.put(TRACE_RESP_KEY, createResponse(responseToUse));
-			}
-
 			this.traceRepository.add(trace);
 		}
 	}
 
-	@Override
-	protected String createMessage(HttpServletRequest request, String prefix, String suffix) {
-
-		String result = "";
-		if (request.getAttribute(ONE_TIME_CHECK) == null) {
-			// a small check to prevent prematurely creating a request for nothing (before we're ready to consume)
-			request.setAttribute(ONE_TIME_CHECK, true);
+	protected void enhanceTraceRequest(Map<String, Object> trace, HttpServletRequest request) {
+		if (isIncludePayload() && request instanceof ContentCachingRequestWrapper) {
+			ContentCachingRequestWrapper wrapper = (ContentCachingRequestWrapper) request;
+			trace.put(TRACE_RQ_PAYLOAD, payloadBufferToString(wrapper.getCharacterEncoding(), wrapper.getContentAsByteArray()));
 		}
-		else {
+	}
 
-			if (isIncludePayload() && request instanceof ContentCachingRequestWrapper) {
-				ContentCachingRequestWrapper wrapper = (ContentCachingRequestWrapper) request;
-				result = payloadBufferToString(wrapper.getCharacterEncoding(), wrapper.getContentAsByteArray());
-
-				request.removeAttribute(ONE_TIME_CHECK);
-			}
+	protected void enhanceTrace(Map<String, Object> trace, HttpServletResponse response) {
+		Map<String, String> headers = new LinkedHashMap<String, String>();
+		for (String header : response.getHeaderNames()) {
+			String value = response.getHeader(header);
+			headers.put(header, value);
 		}
-		return result;
+		headers.put("status", "" + response.getStatus());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> allHeaders = (Map<String, Object>) trace.get("headers");
+		allHeaders.put("response", headers);
+
+
+		if (isIncludePayload() && response instanceof ContentCachingResponseWrapper) {
+			ContentCachingResponseWrapper wrapper = (ContentCachingResponseWrapper) response;
+			byte[] buf1 = wrapper.getContentAsByteArray();
+			trace.put(TRACE_RESP_PAYLOAD, payloadBufferToString(wrapper.getCharacterEncoding(), buf1));
+		}
 	}
 
 	private String payloadBufferToString(String characterEncoding, byte[] buf1) {
@@ -347,53 +469,9 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 		return payload;
 	}
 
-	protected String createResponse(HttpServletResponse response) {
-		String result = "";
-
-		if (isIncludePayload() && response instanceof ContentCachingResponseWrapper) {
-			ContentCachingResponseWrapper wrapper = (ContentCachingResponseWrapper) response;
-			byte[] buf1 = wrapper.getContentAsByteArray();
-			result = payloadBufferToString(wrapper.getCharacterEncoding(), buf1);
-		}
-		return result;
-	}
-
-	@Override
-	protected void beforeRequest(HttpServletRequest request, String payload) {
-		// content not read yet
-	}
-
-	@Override
-	protected void afterRequest(HttpServletRequest request, String payload) {
-		Map<String, Object> trace = getTrace(request, payload);
-
-		if (this.logger.isTraceEnabled()) {
-			this.logger.trace("Processing request " + request.getMethod() + " "
-					+ request.getRequestURI());
-			if (this.dumpRequests) {
-				@SuppressWarnings("unchecked")
-				Map<String, Object> headers = (Map<String, Object>) trace.get("headers");
-				this.logger.trace("Headers: " + headers);
-			}
-		}
-
-		request.setAttribute(TRACE_RQ_KEY, trace);
-	}
 
 
-	protected void enhanceTrace(Map<String, Object> trace,  HttpServletResponse response) {
-		Map<String, String> headers = new LinkedHashMap<String, String>();
-		for (String header : response.getHeaderNames()) {
-			String value = response.getHeader(header);
-			headers.put(header, value);
-		}
-		headers.put("status", "" + response.getStatus());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> allHeaders = (Map<String, Object>) trace.get("headers");
-		allHeaders.put("response", headers);
-	}
-
-	protected Map<String, Object> getTrace(HttpServletRequest request, String payload) {
+	protected Map<String, Object> getTrace(HttpServletRequest request) {
 
 		Map<String, Object> headers = new LinkedHashMap<String, Object>();
 		Enumeration<String> names = request.getHeaderNames();
@@ -421,36 +499,30 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 		if (isIncludePathInfo()) {
 			String pathInfo = request.getPathInfo();
 			if (pathInfo != null) {
-				trace.put("pathInfo", pathInfo);
+				trace.put(TRACE_RQ_PATH_INFO, pathInfo);
 			}
 		}
 
 		if (isIncludePathTranslated()) {
 			String pathTranslated = request.getPathTranslated();
 			if (pathTranslated != null) {
-				trace.put("pathTranslated", pathTranslated);
+				trace.put(TRACE_RQ_PATH_TRANSLATED, pathTranslated);
 			}
 		}
 		if (isIncludeContextPath()) {
 			String contextPath = request.getContextPath();
 			if (contextPath != null) {
-				trace.put("contextPath", contextPath);
+				trace.put(TRACE_RQ_CONTEXT_PATH, contextPath);
 			}
 		}
 
 		if (isIncludeUserPrincipal()) {
 			Principal principal = request.getUserPrincipal();
 			if (principal != null) {
-				trace.put("userPrincipal", principal);
+				trace.put(TRACE_RQ_USER_PRINCIPAL, principal);
 			}
 		}
 
-
-
-
-		if (isIncludePayload()) {
-			trace.put(TRACE_RQ_KEY, payload);
-		}
 
 		if (isIncludeParameters()) {
 			trace.put(TRACE_RQ_PARAMS, request.getParameterMap());
@@ -476,6 +548,12 @@ public class WebRequestTraceFilter extends AbstractRequestLoggingFilter implemen
 				trace.put(TRACE_RQ_AUTH_TYPE, authType);
 			}
 		}
+
+
+		if (isIncludeQueryString()) {
+			trace.put(TRACE_RQ_QUERYSTRING, request.getQueryString());
+		}
+
 
 
 		if (isIncludeClientInfo()) {

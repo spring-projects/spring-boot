@@ -27,12 +27,12 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,6 +59,8 @@ public class WebRequestTraceFilterTests {
 		request.setRemoteAddr("some.remote.addr");
 		request.setQueryString("some.query.string");
 		request.setParameter("param", "paramvalue");
+		Cookie cookie = new Cookie("testCookie", "testValue");
+		request.setCookies(cookie);
 		request.setAuthType("authType");
 		Principal principal = new Principal() {
 			@Override
@@ -112,10 +114,11 @@ public class WebRequestTraceFilterTests {
 		assertEquals("some.query.string", trace.get("requestQueryString"));
 		assertEquals(principal.getName(), ((Principal) trace.get("userPrincipal")).getName());
 		assertEquals("some.context.path", trace.get("contextPath"));
-		assertEquals("Hello, World!", trace.get(WebRequestTraceFilter.TRACE_RQ_KEY));
+		assertEquals("Hello, World!", trace.get(WebRequestTraceFilter.TRACE_RQ_PAYLOAD));
 		assertEquals("authType", trace.get(WebRequestTraceFilter.TRACE_RQ_AUTH_TYPE));
-		assertEquals("Goodbye, World!", trace.get(WebRequestTraceFilter.TRACE_RESP_KEY));
+		assertEquals("Goodbye, World!", trace.get(WebRequestTraceFilter.TRACE_RESP_PAYLOAD));
 		assertEquals("{Accept=application/json}", map.get("request").toString());
+		assertEquals(cookie, map.get(WebRequestTraceFilter.TRACE_RQ_COOKIES));
 
 	}
 
@@ -125,7 +128,7 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.setStatus(404);
 		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request, this.filter.createMessage(new ContentCachingRequestWrapper(request), null, null));
+		Map<String, Object> trace = this.filter.getTrace(request);
 		this.filter.enhanceTrace(trace, response);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) trace
@@ -142,7 +145,7 @@ public class WebRequestTraceFilterTests {
 		request.setAttribute("javax.servlet.error.exception", new IllegalStateException(
 				"Foo"));
 		response.addHeader("Content-Type", "application/json");
-		Map<String, Object> trace = this.filter.getTrace(request, this.filter.createMessage(new ContentCachingRequestWrapper(request), null, null));
+		Map<String, Object> trace = this.filter.getTrace(request);
 		this.filter.enhanceTrace(trace, response);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) trace.get("error");
