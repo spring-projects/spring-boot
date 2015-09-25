@@ -126,7 +126,7 @@ public class WebRequestTraceFilterTests {
 		assertEquals("authType", trace.get(WebRequestTraceFilter.TRACE_RQ_AUTH_TYPE));
 		assertEquals("Goodbye, World!", trace.get(WebRequestTraceFilter.TRACE_RESP_PAYLOAD));
 		assertEquals("{Accept=application/json}", map.get("request").toString());
-		assertEquals(cookie, ((Cookie[])trace.get(WebRequestTraceFilter.TRACE_RQ_COOKIES))[0]);
+		assertEquals(cookie, ((Cookie[]) trace.get(WebRequestTraceFilter.TRACE_RQ_COOKIES))[0]);
 
 	}
 
