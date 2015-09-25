@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.trace;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 
 import java.security.Principal;
@@ -59,6 +60,10 @@ public class WebRequestTraceFilterTests {
 		request.setRemoteAddr("some.remote.addr");
 		request.setQueryString("some.query.string");
 		request.setParameter("param", "paramvalue");
+		File tmp = File.createTempFile("spring-boot", "tmp");
+		String url = tmp.toURI().toURL().toString();
+		request.setPathInfo(url);
+		tmp.deleteOnExit();
 		Cookie cookie = new Cookie("testCookie", "testValue");
 		request.setCookies(cookie);
 		request.setAuthType("authType");
@@ -86,6 +91,7 @@ public class WebRequestTraceFilterTests {
 		this.filter.setIncludeAuthType(true);
 		this.filter.setIncludeUserPrincipal(true);
 		this.filter.setIncludeUserPrincipal(true);
+		this.filter.setMaxPayloadLength(100);
 
 
 		this.filter.doFilterInternal(request, response, new FilterChain() {
@@ -114,11 +120,13 @@ public class WebRequestTraceFilterTests {
 		assertEquals("some.query.string", trace.get("requestQueryString"));
 		assertEquals(principal.getName(), ((Principal) trace.get("userPrincipal")).getName());
 		assertEquals("some.context.path", trace.get("contextPath"));
+		assertEquals(url, trace.get(WebRequestTraceFilter.TRACE_RQ_PATH_INFO));
+
 		assertEquals("Hello, World!", trace.get(WebRequestTraceFilter.TRACE_RQ_PAYLOAD));
 		assertEquals("authType", trace.get(WebRequestTraceFilter.TRACE_RQ_AUTH_TYPE));
 		assertEquals("Goodbye, World!", trace.get(WebRequestTraceFilter.TRACE_RESP_PAYLOAD));
 		assertEquals("{Accept=application/json}", map.get("request").toString());
-		assertEquals(cookie, map.get(WebRequestTraceFilter.TRACE_RQ_COOKIES));
+		assertEquals(cookie, ((Cookie[])trace.get(WebRequestTraceFilter.TRACE_RQ_COOKIES))[0]);
 
 	}
 
