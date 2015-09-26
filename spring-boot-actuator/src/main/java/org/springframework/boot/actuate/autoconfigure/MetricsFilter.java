@@ -17,6 +17,11 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -51,6 +56,25 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private final CounterService counterService;
 
 	private final GaugeService gaugeService;
+
+	private static final Set<PatternReplacer> STATUS_REPLACERS;
+	static {
+		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
+		replacements.add(new PatternReplacer("[{}]", 0, "-"));
+		replacements.add(new PatternReplacer("**", Pattern.LITERAL, "-star-star-"));
+		replacements.add(new PatternReplacer("*", Pattern.LITERAL, "-star-"));
+		replacements.add(new PatternReplacer("/-", Pattern.LITERAL, "/"));
+		replacements.add(new PatternReplacer("-/", Pattern.LITERAL, "/"));
+		STATUS_REPLACERS = Collections.unmodifiableSet(replacements);
+	}
+
+	private static final Set<PatternReplacer> KEY_REPLACERS;
+	static {
+		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
+		replacements.add(new PatternReplacer("/", Pattern.LITERAL, "."));
+		replacements.add(new PatternReplacer("..", Pattern.LITERAL, "."));
+		KEY_REPLACERS = Collections.unmodifiableSet(replacements);
+	}
 
 	MetricsFilter(CounterService counterService, GaugeService gaugeService) {
 		this.counterService = counterService;
@@ -105,11 +129,10 @@ final class MetricsFilter extends OncePerRequestFilter {
 	}
 
 	private String fixSpecialCharacters(String value) {
-		String result = value.replaceAll("[{}]", "-");
-		result = result.replace("**", "-star-star-");
-		result = result.replace("*", "-star-");
-		result = result.replace("/-", "/");
-		result = result.replace("-/", "/");
+		String result = value;
+		for (PatternReplacer replacer : STATUS_REPLACERS) {
+			result = replacer.apply(result);
+		}
 		if (result.endsWith("-")) {
 			result = result.substring(0, result.length() - 1);
 		}
@@ -131,15 +154,17 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	private String getKey(String string) {
 		// graphite compatible metric names
-		String value = string.replace("/", ".");
-		value = value.replace("..", ".");
-		if (value.endsWith(".")) {
-			value = value + "root";
+		String key = string;
+		for (PatternReplacer replacer : KEY_REPLACERS) {
+			key = replacer.apply(key);
 		}
-		if (value.startsWith("_")) {
-			value = value.substring(1);
+		if (key.endsWith(".")) {
+			key = key + "root";
 		}
-		return value;
+		if (key.startsWith("_")) {
+			key = key.substring(1);
+		}
+		return key;
 	}
 
 	private void submitToGauge(String metricName, double value) {
@@ -158,6 +183,24 @@ final class MetricsFilter extends OncePerRequestFilter {
 		catch (Exception ex) {
 			logger.warn("Unable to submit counter metric '" + metricName + "'", ex);
 		}
+	}
+
+	private static class PatternReplacer {
+
+		private final Pattern pattern;
+
+		private final String replacement;
+
+		PatternReplacer(String regex, int flags, String replacement) {
+			this.pattern = Pattern.compile(regex, flags);
+			this.replacement = replacement;
+		}
+
+		public String apply(String input) {
+			return this.pattern.matcher(input).replaceAll(
+					Matcher.quoteReplacement(this.replacement));
+		}
+
 	}
 
 }
