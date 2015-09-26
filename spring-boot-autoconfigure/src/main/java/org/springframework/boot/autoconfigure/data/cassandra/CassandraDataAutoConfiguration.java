@@ -70,7 +70,7 @@ public class CassandraDataAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(Session.class)
 	public CassandraSessionFactoryBean session(CassandraConverter converter)
 			throws Exception {
 		CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
