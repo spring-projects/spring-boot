@@ -352,7 +352,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.repositories.enabled=true # if spring data repository support is enabled
 	spring.data.mongodb.field-naming-strategy= # fully qualified name of the FieldNamingStrategy to use
 
-	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProerties.{sc-ext}[EmbeddedMongoProperties])
+	# EMBEDDED MONGODB ({sc-spring-boot-autoconfigure}/mongo/embedded/EmbeddedMongoProperties.{sc-ext}[EmbeddedMongoProperties])
 	spring.mongodb.embedded.version=2.6.10 # version of Mongo to use
 	spring.mongodb.embedded.features=SYNC_DELAY # comma-separated list of features to enable
 
