@@ -17,12 +17,12 @@
 package sample.data.cassandra;
 
 import org.cassandraunit.spring.CassandraDataSet;
-import org.cassandraunit.spring.CassandraUnitTestExecutionListener;
 import org.cassandraunit.spring.EmbeddedCassandra;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.IntegrationTestPropertiesListener;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -35,9 +35,11 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link SampleCassandraApplication}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, listeners = CassandraUnitTestExecutionListener.class)
+@TestExecutionListeners(mergeMode = MergeMode.MERGE_WITH_DEFAULTS, listeners = {
+		IntegrationTestPropertiesListener.class,
+		OrderedCassandraTestExecutionListener.class })
 @SpringApplicationConfiguration(SampleCassandraApplication.class)
-@IntegrationTest
+@IntegrationTest("spring.data.cassandra.port=9142")
 @CassandraDataSet(keyspace = "mykeyspace", value = "setup.cql")
 @EmbeddedCassandra
 public class SampleCassandraApplicationTests {
