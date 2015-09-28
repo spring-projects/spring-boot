@@ -16,6 +16,19 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -39,21 +52,9 @@ import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.util.SocketUtils;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link TomcatEmbeddedServletContainerFactory} and
@@ -63,15 +64,16 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class TomcatEmbeddedServletContainerFactoryTests extends
-		AbstractEmbeddedServletContainerFactoryTests {
+public class TomcatEmbeddedServletContainerFactoryTests
+		extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {
 		return new TomcatEmbeddedServletContainerFactory(0);
 	}
 
-	// JMX MBean names clash if you get more than one Engine with the same name...
+	// JMX MBean names clash if you get more than one Engine with the same
+	// name...
 	@Test
 	public void tomcatEngineNames() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
@@ -258,6 +260,36 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	}
 
 	@Test
+	public void sslKeyStoreClasspathResource() throws Exception {
+		this.thrown.expect(EmbeddedServletContainerException.class);
+		this.thrown.expectMessage("Classpath resources are not supported");
+
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyStorePassword("secret");
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+		getTomcat(factory);
+	}
+
+	@Test
+	public void sslTrustStoreClasspathResource() throws Exception {
+		this.thrown.expect(EmbeddedServletContainerException.class);
+		this.thrown.expectMessage("Classpath resources are not supported");
+
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setTrustStore("classpath:test.jks");
+		ssl.setTrustStorePassword("secret");
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+		getTomcat(factory);
+	}
+
+	@Test
 	public void primaryConnectorPortClashThrowsIllegalStateException()
 			throws InterruptedException, IOException {
 		final int port = SocketUtils.findAvailableTcpPort(40000);
@@ -332,7 +364,8 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		return (Wrapper) context.findChild("jsp");
 	}
 
-	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
+	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory,
+			int expected) {
 		Tomcat tomcat = getTomcat(factory);
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		assertThat(context.getSessionTimeout(), equalTo(expected));

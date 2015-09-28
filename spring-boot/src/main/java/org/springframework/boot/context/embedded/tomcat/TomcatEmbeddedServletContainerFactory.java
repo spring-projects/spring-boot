@@ -89,8 +89,8 @@ import org.springframework.util.StringUtils;
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
  */
-public class TomcatEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+public class TomcatEmbeddedServletContainerFactory
+		extends AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
@@ -131,6 +131,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} that listens for
 	 * requests using the specified port.
+	 * 
 	 * @param port the port to listen on
 	 */
 	public TomcatEmbeddedServletContainerFactory(int port) {
@@ -140,6 +141,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} with the specified
 	 * context path and port.
+	 * 
 	 * @param contextPath root the context path
 	 * @param port the port to listen on
 	 */
@@ -151,8 +153,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		Tomcat tomcat = new Tomcat();
-		File baseDir = (this.baseDirectory != null ? this.baseDirectory
-				: createTempDir("tomcat"));
+		File baseDir = this.baseDirectory != null ? this.baseDirectory
+				: createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		Connector connector = new Connector(this.protocol);
 		tomcat.getService().addConnector(connector);
@@ -169,15 +171,16 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File docBase = getValidDocumentRoot();
-		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
+		docBase = docBase != null ? docBase : createTempDir("tomcat-docbase");
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
 		context.setDisplayName(getDisplayName());
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		context.setParentClassLoader(this.resourceLoader != null ? this.resourceLoader
-				.getClassLoader() : ClassUtils.getDefaultClassLoader());
+		context.setParentClassLoader(
+				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
+						: ClassUtils.getDefaultClassLoader());
 		SkipPatternJarScanner.apply(context, this.tldSkip);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
@@ -204,7 +207,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		defaultServlet.addInitParameter("debug", "0");
 		defaultServlet.addInitParameter("listings", "false");
 		defaultServlet.setLoadOnStartup(1);
-		// Otherwise the default location of a Spring DispatcherServlet cannot be set
+		// Otherwise the default location of a Spring DispatcherServlet cannot
+		// be set
 		defaultServlet.setOverridable(true);
 		context.addChild(defaultServlet);
 		context.addServletMapping("/", "default");
@@ -239,7 +243,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
-		int port = (getPort() >= 0 ? getPort() : 0);
+		int port = getPort() >= 0 ? getPort() : 0;
 		connector.setPort(port);
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
@@ -248,7 +252,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 			connector.setURIEncoding(getUriEncoding().name());
 		}
 
-		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
+		// If ApplicationContext is slow to start we want Tomcat not to bind to
+		// the socket
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
 
@@ -286,18 +291,19 @@ public class TomcatEmbeddedServletContainerFactory extends
 			Compression compression = getCompression();
 			protocol.setCompression("on");
 			protocol.setCompressionMinSize(compression.getMinResponseSize());
-			protocol.setCompressableMimeTypes(StringUtils
-					.arrayToCommaDelimitedString(compression.getMimeTypes()));
+			protocol.setCompressableMimeTypes(
+					StringUtils.arrayToCommaDelimitedString(compression.getMimeTypes()));
 			if (getCompression().getExcludedUserAgents() != null) {
-				protocol.setNoCompressionUserAgents(StringUtils
-						.arrayToCommaDelimitedString(getCompression()
-								.getExcludedUserAgents()));
+				protocol.setNoCompressionUserAgents(
+						StringUtils.arrayToCommaDelimitedString(
+								getCompression().getExcludedUserAgents()));
 			}
 		}
 	}
 
 	/**
 	 * Configure Tomcat's {@link AbstractHttp11JsseProtocol} for SSL.
+	 * 
 	 * @param protocol the protocol
 	 * @param ssl the ssl details
 	 */
@@ -325,12 +331,13 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private void configureSslKeyStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		try {
+			checkFileNotClasspathResource(ssl.getKeyStore(), "key store");
 			File file = ResourceUtils.getFile(ssl.getKeyStore());
 			protocol.setKeystoreFile(file.getAbsolutePath());
 		}
 		catch (FileNotFoundException ex) {
-			throw new EmbeddedServletContainerException("Could not find key store "
-					+ ssl.getKeyStore(), ex);
+			throw new EmbeddedServletContainerException(
+					"Could not find key store " + ssl.getKeyStore(), ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
 			protocol.setKeystoreType(ssl.getKeyStoreType());
@@ -343,12 +350,13 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private void configureSslTrustStore(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
 		if (ssl.getTrustStore() != null) {
 			try {
+				checkFileNotClasspathResource(ssl.getTrustStore(), "trust store");
 				File file = ResourceUtils.getFile(ssl.getTrustStore());
 				protocol.setTruststoreFile(file.getAbsolutePath());
 			}
 			catch (FileNotFoundException ex) {
-				throw new EmbeddedServletContainerException("Could not find trust store "
-						+ ssl.getTrustStore(), ex);
+				throw new EmbeddedServletContainerException(
+						"Could not find trust store " + ssl.getTrustStore(), ex);
 			}
 		}
 		protocol.setTruststorePass(ssl.getTrustStorePassword());
@@ -360,8 +368,16 @@ public class TomcatEmbeddedServletContainerFactory extends
 		}
 	}
 
+	private void checkFileNotClasspathResource(String file, String type) {
+		if (file.startsWith(ResourceUtils.CLASSPATH_URL_PREFIX)) {
+			throw new EmbeddedServletContainerException("Tomcat requires that the " + type
+					+ " be directly accessible on the file system. Classpath resources are not supported");
+		}
+	}
+
 	/**
 	 * Configure the Tomcat {@link Context}.
+	 * 
 	 * @param context the Tomcat context
 	 * @param initializers initializers to apply
 	 */
@@ -421,6 +437,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * Post process the Tomcat {@link Context} before it used with the Tomcat Server.
 	 * Subclasses can override this method to apply additional processing to the
 	 * {@link Context}.
+	 * 
 	 * @param context the Tomcat {@link Context}
 	 */
 	protected void postProcessContext(Context context) {
@@ -431,6 +448,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * Subclasses can override this method to return a different
 	 * {@link TomcatEmbeddedServletContainer} or apply additional processing to the Tomcat
 	 * server.
+	 * 
 	 * @param tomcat the Tomcat server.
 	 * @return a new {@link TomcatEmbeddedServletContainer} instance
 	 */
@@ -446,6 +464,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * Returns the absolute temp dir for given web server.
+	 * 
 	 * @param prefix webserver name
 	 * @return The temp dir for given web server.
 	 */
@@ -460,12 +479,14 @@ public class TomcatEmbeddedServletContainerFactory extends
 		catch (IOException ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to create Tomcat tempdir. java.io.tmpdir is set to "
-							+ System.getProperty("java.io.tmpdir"), ex);
+							+ System.getProperty("java.io.tmpdir"),
+					ex);
 		}
 	}
 
 	/**
 	 * Set the Tomcat base directory. If not specified a temporary directory will be used.
+	 * 
 	 * @param baseDirectory the tomcat base directory
 	 */
 	public void setBaseDirectory(File baseDirectory) {
@@ -475,6 +496,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * A comma-separated list of jars to ignore for TLD scanning. See Tomcat's
 	 * catalina.properties for typical values. Defaults to a list drawn from that source.
+	 * 
 	 * @param tldSkip the jars to skip when scanning for TLDs etc
 	 */
 	public void setTldSkip(String tldSkip) {
@@ -484,6 +506,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * The Tomcat protocol to use when create the {@link Connector}.
+	 * 
 	 * @param protocol the protocol
 	 * @see Connector#Connector(String)
 	 */
@@ -495,6 +518,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Set {@link Valve}s that should be applied to the Tomcat {@link Context}. Calling
 	 * this method will replace any existing listeners.
+	 * 
 	 * @param contextValves the valves to set
 	 */
 	public void setContextValves(Collection<? extends Valve> contextValves) {
@@ -505,6 +529,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Returns a mutable collection of the {@link Valve}s that will be applied to the
 	 * Tomcat {@link Context}.
+	 * 
 	 * @return the contextValves the valves that will be applied
 	 */
 	public Collection<Valve> getValves() {
@@ -513,6 +538,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * Add {@link Valve}s that should be applied to the Tomcat {@link Context}.
+	 * 
 	 * @param contextValves the valves to add
 	 */
 	public void addContextValves(Valve... contextValves) {
@@ -523,6 +549,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Set {@link LifecycleListener}s that should be applied to the Tomcat {@link Context}
 	 * . Calling this method will replace any existing listeners.
+	 * 
 	 * @param contextLifecycleListeners the listeners to set
 	 */
 	public void setContextLifecycleListeners(
@@ -536,6 +563,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Returns a mutable collection of the {@link LifecycleListener}s that will be applied
 	 * to the Tomcat {@link Context} .
+	 * 
 	 * @return the contextLifecycleListeners the listeners that will be applied
 	 */
 	public Collection<LifecycleListener> getContextLifecycleListeners() {
@@ -544,6 +572,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * Add {@link LifecycleListener}s that should be added to the Tomcat {@link Context}.
+	 * 
 	 * @param contextLifecycleListeners the listeners to add
 	 */
 	public void addContextLifecycleListeners(
@@ -556,6 +585,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Set {@link TomcatContextCustomizer}s that should be applied to the Tomcat
 	 * {@link Context} . Calling this method will replace any existing customizers.
+	 * 
 	 * @param tomcatContextCustomizers the customizers to set
 	 */
 	public void setTomcatContextCustomizers(
@@ -569,6 +599,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Returns a mutable collection of the {@link TomcatContextCustomizer}s that will be
 	 * applied to the Tomcat {@link Context} .
+	 * 
 	 * @return the listeners that will be applied
 	 */
 	public Collection<TomcatContextCustomizer> getTomcatContextCustomizers() {
@@ -578,9 +609,11 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Add {@link TomcatContextCustomizer}s that should be added to the Tomcat
 	 * {@link Context}.
+	 * 
 	 * @param tomcatContextCustomizers the customizers to add
 	 */
-	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
+	public void addContextCustomizers(
+			TomcatContextCustomizer... tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers,
 				"TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
@@ -589,6 +622,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Set {@link TomcatConnectorCustomizer}s that should be applied to the Tomcat
 	 * {@link Connector} . Calling this method will replace any existing customizers.
+	 * 
 	 * @param tomcatConnectorCustomizers the customizers to set
 	 */
 	public void setTomcatConnectorCustomizers(
@@ -602,6 +636,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Add {@link TomcatContextCustomizer}s that should be added to the Tomcat
 	 * {@link Connector}.
+	 * 
 	 * @param tomcatConnectorCustomizers the customizers to add
 	 */
 	public void addConnectorCustomizers(
@@ -614,6 +649,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Returns a mutable collection of the {@link TomcatConnectorCustomizer}s that will be
 	 * applied to the Tomcat {@link Context} .
+	 * 
 	 * @return the listeners that will be applied
 	 */
 	public Collection<TomcatConnectorCustomizer> getTomcatConnectorCustomizers() {
@@ -622,6 +658,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * Add {@link Connector}s in addition to the default connector, e.g. for SSL or AJP
+	 * 
 	 * @param connectors the connectors to add
 	 */
 	public void addAdditionalTomcatConnectors(Connector... connectors) {
@@ -632,6 +669,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Returns a mutable collection of the {@link Connector}s that will be added to the
 	 * Tomcat.
+	 * 
 	 * @return the additionalTomcatConnectors
 	 */
 	public List<Connector> getAdditionalTomcatConnectors() {
@@ -641,6 +679,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Set the character encoding to use for URL decoding. If not specified 'UTF-8' will
 	 * be used.
+	 * 
 	 * @param uriEncoding the uri encoding to set
 	 */
 	public void setUriEncoding(Charset uriEncoding) {
@@ -649,6 +688,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	/**
 	 * Returns the character encoding to use for URL decoding.
+	 * 
 	 * @return the URI encoding
 	 */
 	public Charset getUriEncoding() {
@@ -681,8 +721,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 				}
 				else if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage",
 						null)) {
-					nativePage = BeanUtils.instantiate(ClassUtils.forName(
-							"org.apache.catalina.deploy.ErrorPage", null));
+					nativePage = BeanUtils.instantiate(ClassUtils
+							.forName("org.apache.catalina.deploy.ErrorPage", null));
 				}
 			}
 			catch (ClassNotFoundException ex) {
