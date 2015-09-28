@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.bind.RelaxedNames;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -128,11 +129,25 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
 		}
 		Health health = getHealth(principal);
-		HttpStatus status = this.statusMapping.get(health.getStatus().getCode());
+		HttpStatus status = getStatus(health);
 		if (status != null) {
 			return new ResponseEntity<Health>(health, status);
 		}
 		return health;
+	}
+
+	private HttpStatus getStatus(Health health) {
+		String code = health.getStatus().getCode();
+		if (code != null) {
+			code = code.toLowerCase().replace("_", "-");
+			for (String candidate : RelaxedNames.forCamelCase(code)) {
+				HttpStatus status = this.statusMapping.get(candidate);
+				if (status != null) {
+					return status;
+				}
+			}
+		}
+		return null;
 	}
 
 	private Health getHealth(Principal principal) {
