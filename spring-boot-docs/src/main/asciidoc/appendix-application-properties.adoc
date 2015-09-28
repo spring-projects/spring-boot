@@ -136,6 +136,10 @@ content into your application; rather pick only the properties that you need.
     server.undertow.io-threads= # number of I/O threads to create for the worker
     server.undertow.worker-threads= # number of worker threads
 
+	# ERROR HANDLING ({sc-spring-boot-autoconfigure}/web/ErrorProperties.{sc-ext}[ErrorProperties])
+	error.path=/error # the error path
+	error.include-stacktrace=never # when to include a stacktrace attribute (never/alway/on-trace-param)
+
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.locale= # set fixed locale, e.g. en_UK
 	spring.mvc.date-format= # set fixed date format, e.g. dd/MM/yyyy
