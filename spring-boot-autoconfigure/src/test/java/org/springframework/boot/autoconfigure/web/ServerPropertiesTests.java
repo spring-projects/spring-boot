@@ -16,6 +16,17 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -40,17 +51,6 @@ import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServerProperties}.
@@ -261,12 +261,7 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void defaultTomcatRemoteIpValve() throws Exception {
-		Map<String, String> map = new HashMap<String, String>();
-		// Since 1.1.7 you need to specify at least the protocol and ip properties
-		map.put("server.tomcat.protocol_header", "x-forwarded-proto");
-		map.put("server.tomcat.remote_ip_header", "x-forwarded-for");
-		bindProperties(map);
-
+		// Since 1.3.0 no need to explicitly set header names
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
 
