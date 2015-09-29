@@ -20,7 +20,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
@@ -51,9 +50,8 @@ public class MeasuredAspect {
 
 	@Around("@annotation(sample.metrics.atsd.Measured) or @within(sample.metrics.atsd.Measured)")
 	public Object doProfiling(ProceedingJoinPoint pjp) throws Throwable {
-		MethodInvocationProceedingJoinPoint mjp = (MethodInvocationProceedingJoinPoint) pjp;
-		Class<?> clazz = mjp.getSourceLocation().getWithinType();
-		Method method = ((MethodSignature) mjp.getSignature()).getMethod();
+		Class<?> clazz = pjp.getSourceLocation().getWithinType();
+		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
 		String name = composeMetricName(method, clazz);
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
