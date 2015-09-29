@@ -201,16 +201,27 @@ public class RelaxedDataBinder extends DataBinder {
 		MutablePropertyValues rtn = new MutablePropertyValues();
 		for (PropertyValue value : propertyValues.getPropertyValues()) {
 			String name = value.getName();
-			for (String candidate : new RelaxedNames(this.namePrefix)) {
-				if (name.startsWith(candidate)) {
-					name = name.substring(candidate.length());
-					if (!(this.ignoreNestedProperties && name.contains("."))) {
-						rtn.add(name, value.getValue());
+			for (String prefix : new RelaxedNames(stripLastDot(this.namePrefix))) {
+				for (String separator : new String[] { ".", "_" }) {
+					String candidate = (StringUtils.hasLength(prefix) ? prefix
+							+ separator : prefix);
+					if (name.startsWith(candidate)) {
+						name = name.substring(candidate.length());
+						if (!(this.ignoreNestedProperties && name.contains("."))) {
+							rtn.add(name, value.getValue());
+						}
 					}
 				}
 			}
 		}
 		return rtn;
+	}
+
+	private String stripLastDot(String string) {
+		if (StringUtils.hasLength(string) && string.endsWith(".")) {
+			string = string.substring(0, string.length() - 1);
+		}
+		return string;
 	}
 
 	private PropertyValue modifyProperty(BeanWrapper target, PropertyValue propertyValue) {
