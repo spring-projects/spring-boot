@@ -35,6 +35,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.destination.DestinationResolver;
+import org.springframework.jms.support.destination.JndiDestinationResolver;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.util.StringUtils;
 
@@ -65,6 +67,14 @@ public class JndiConnectionFactoryAutoConfiguration {
 					ConnectionFactory.class);
 		}
 		return findJndiConnectionFactory();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(DestinationResolver.class)
+	public DestinationResolver destinationResolver() {
+		JndiDestinationResolver destinationResolver = new JndiDestinationResolver();
+		destinationResolver.setResourceRef(true);
+		return destinationResolver;
 	}
 
 	private ConnectionFactory findJndiConnectionFactory() {
