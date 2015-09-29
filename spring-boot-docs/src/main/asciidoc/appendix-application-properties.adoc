@@ -175,7 +175,7 @@ content into your application; rather pick only the properties that you need.
 	spring.h2.console.path=/h2-console # Path at which the console can be accessed
 
 	# SPRING HATEOAS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
-	spring.hateoas.apply-to-primary-object-mapper=true # if the primary mapper should also be configured
+	spring.hateoas.use-hal-as-default-json-media-type=true # if application/hal+json responses should be sent in response to requests for application/json
 
 	# HTTP encoding ({sc-spring-boot-autoconfigure}/web/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
 	spring.http.encoding.charset=UTF-8 # the encoding of HTTP requests/responses
