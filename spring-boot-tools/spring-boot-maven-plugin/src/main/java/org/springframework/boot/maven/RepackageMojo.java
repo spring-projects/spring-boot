@@ -104,6 +104,12 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	private String classifier;
 
 	/**
+	 * Name of the launcher class; overrides the one specified by layout.
+	 */
+	@Parameter
+	private String launcherClass;
+
+	/**
 	 * The name of the main class. If not specified the first compiled class found that
 	 * contains a 'main' method will be used.
 	 * @since 1.0
@@ -118,7 +124,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0
 	 */
 	@Parameter
-	private LayoutType layout;
+	private String layout;
 
 	/**
 	 * A list of the libraries that must be unpacked from fat jars in order to run.
@@ -185,10 +191,10 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			}
 		};
 		repackager.setMainClass(this.mainClass);
-		if (this.layout != null) {
-			getLog().info("Layout: " + this.layout);
-			repackager.setLayout(this.layout.layout());
-		}
+		repackager.setLauncherClass(this.launcherClass);
+
+		getLog().info("Layout: " + this.layout);
+		repackager.setLayout(Layouts.resolve(this.layout));
 
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				getFilters());

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.tools;
 
+import org.springframework.boot.loader.tools.layout.BaseLayout;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +36,49 @@ import java.util.Set;
 public final class Layouts {
 
 	private Layouts() {
+	}
+
+	static private Class<? extends Layout> defaultLayout = Layouts.Jar.class;
+
+	static private Map<String, Class<?>> map = new HashMap<String, Class<?>>() {{
+		for (Class<?> cls : Layouts.class.getClasses()) {
+			if (Layout.class.isAssignableFrom(cls)) {
+				put(toSimpleLayoutName(cls), (Class) cls);
+			}
+		}
+	}};
+
+	/**
+	 * Resolves and instantiates named layout.
+	 * If name is undefined, default layout is returned (JAR).
+	 * If given name refers to one of the layout aliases (JAR, ZIP, etc), it is returned.
+	 * Otherwise, assume layout name is an actual class name, and try to load it.
+	 * @param name
+	 * @return
+	 * @throws RuntimeException
+	 */
+	static public Layout resolve(String name) throws RuntimeException {
+		try {
+			if (name == null) { return defaultLayout.newInstance(); }
+
+			Class<?> cls = null;
+			if (cls == null) { cls = map.get(name); }
+			if (cls == null) { cls = Class.forName(name); }
+
+			return (Layout) cls.newInstance();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(String.format(
+					"Cannot resolve layout `%s`. " +
+					"Provide a fully qualified name of the class implementing Layout interface, " +
+					"or one of the following: %s",
+					name, map.keySet()
+			), e);
+		}
+	}
+
+	static private String toSimpleLayoutName(Class<?> cls) {
+		return cls.getSimpleName().toUpperCase();
 	}
 
 	/**
@@ -93,8 +138,11 @@ public final class Layouts {
 		public String getLauncherClassName() {
 			return "org.springframework.boot.loader.PropertiesLauncher";
 		}
-
 	}
+
+	public static class Zip extends Expanded {}
+
+	public static class Dir extends Expanded {}
 
 	/**
 	 * No layout.
@@ -112,6 +160,11 @@ public final class Layouts {
 		}
 
 	}
+
+	/**
+	 * This is what NONE should be.
+	 */
+	public static class Null extends BaseLayout {}
 
 	/**
 	 * Executable WAR layout.
