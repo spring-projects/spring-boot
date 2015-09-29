@@ -39,6 +39,7 @@ import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.util.SocketUtils;
 
@@ -312,6 +313,13 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 
 		});
 
+	}
+
+	@Test
+	public void basicSslClasspathKeyStore() throws Exception {
+		this.thrown.expect(EmbeddedServletContainerException.class);
+		this.thrown.expectMessage("Tomcat doesn't support classpath resources");
+		testBasicSslWithKeyStore("classpath:test.jks");
 	}
 
 	@Test
