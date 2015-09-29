@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import javax.servlet.Servlet;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
@@ -61,6 +62,7 @@ import io.undertow.Undertow;
 @Configuration
 @ConditionalOnWebApplication
 @Import(EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class)
+@ConditionalOnProperty(prefix = "spring.main", name = "web-environment",havingValue = "true",matchIfMissing = true)
 public class EmbeddedServletContainerAutoConfiguration {
 
 	/**
