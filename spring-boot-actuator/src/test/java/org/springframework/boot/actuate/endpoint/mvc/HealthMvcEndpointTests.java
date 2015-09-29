@@ -91,8 +91,8 @@ public class HealthMvcEndpointTests {
 		assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.getStatusCode());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings("unchecked")
 	public void customMapping() {
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().status("OK").build());
@@ -102,6 +102,20 @@ public class HealthMvcEndpointTests {
 		assertTrue(result instanceof ResponseEntity);
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
 		assertTrue(response.getBody().getStatus().equals(new Status("OK")));
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void customMappingWithRelaxedName() {
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().outOfService().build());
+		this.mvc.setStatusMapping(Collections.singletonMap("out-of-service",
+				HttpStatus.INTERNAL_SERVER_ERROR));
+		Object result = this.mvc.invoke(null);
+		assertTrue(result instanceof ResponseEntity);
+		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
+		assertTrue(response.getBody().getStatus().equals(Status.OUT_OF_SERVICE));
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
 	}
 

@@ -93,7 +93,6 @@ public class RestartServer {
 		}
 		updateTimeStamp(urls);
 		restart(urls, files);
-
 	}
 
 	private boolean updateFileSystem(URL url, String name, ClassLoaderFile classLoaderFile) {

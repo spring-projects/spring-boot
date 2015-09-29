@@ -43,23 +43,19 @@ public abstract class AbstractErrorController implements ErrorController {
 		this.errorAttributes = errorAttributes;
 	}
 
+	protected Map<String, Object> getErrorAttributes(HttpServletRequest request,
+			boolean includeStackTrace) {
+		RequestAttributes requestAttributes = new ServletRequestAttributes(request);
+		return this.errorAttributes.getErrorAttributes(requestAttributes,
+				includeStackTrace);
+	}
+
 	protected boolean getTraceParameter(HttpServletRequest request) {
 		String parameter = request.getParameter("trace");
 		if (parameter == null) {
 			return false;
 		}
 		return !"false".equals(parameter.toLowerCase());
-	}
-
-	protected Map<String, Object> getErrorAttributes(HttpServletRequest request) {
-		return getErrorAttributes(request, getTraceParameter(request));
-	}
-
-	protected Map<String, Object> getErrorAttributes(HttpServletRequest request,
-			boolean includeStackTrace) {
-		RequestAttributes requestAttributes = new ServletRequestAttributes(request);
-		return this.errorAttributes.getErrorAttributes(requestAttributes,
-				includeStackTrace);
 	}
 
 	protected HttpStatus getStatus(HttpServletRequest request) {
