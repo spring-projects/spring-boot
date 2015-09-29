@@ -65,8 +65,14 @@ public class CityController {
 	}
 
 	@ExceptionHandler(Exception.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public Object processException(Exception e) {
+		return Collections.singletonMap("error", e.toString());
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public Object processIllegalArgumentException(Exception e) {
 		return Collections.singletonMap("error", e.toString());
 	}
 
