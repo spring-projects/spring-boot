@@ -177,6 +177,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	public void cleanUp() {
 		super.cleanUp();
 		getLoggerContext().getStatusManager().clear();
+		getLoggerContext().stop();
 	}
 
 	@Override
