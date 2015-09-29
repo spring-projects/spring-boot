@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
+import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration;
@@ -51,7 +52,7 @@ public class WebSocketMessagingAutoConfiguration {
 	@Configuration
 	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class,
 			ObjectMapper.class })
-	@ConditionalOnClass(ObjectMapper.class)
+	@ConditionalOnClass({ ObjectMapper.class, AbstractMessageBrokerConfiguration.class })
 	static class WebSocketMessageConverterConfiguration extends
 			AbstractWebSocketMessageBrokerConfigurer {
 
