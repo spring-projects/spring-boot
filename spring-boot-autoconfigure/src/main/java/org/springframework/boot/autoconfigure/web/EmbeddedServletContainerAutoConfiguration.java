@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration.EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar;
@@ -59,6 +60,7 @@ import io.undertow.Undertow;
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
+@ConditionalOnProperty(prefix = "spring.main", name = "web-environment",havingValue = "true",matchIfMissing = true)
 @ConditionalOnWebApplication
 @Import(EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class)
 public class EmbeddedServletContainerAutoConfiguration {
