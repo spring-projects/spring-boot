@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.metrics.atsd;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default naming strategy implementation.
@@ -37,7 +37,7 @@ public class DefaultAtsdNamingStrategy implements AtsdNamingStrategy, Initializi
 	private Map<String, AtsdName> cache = new ConcurrentHashMap<String, AtsdName>();
 	private String entity = DEFAULT_ENTITY;
 	private String metricPrefix;
-	private Map<String, String> tags = Collections.emptyMap();
+	private Map<String, String> tags = new HashMap<String, String>();
 
 	public void setEntity(String entity) {
 		this.entity = entity;
@@ -49,6 +49,10 @@ public class DefaultAtsdNamingStrategy implements AtsdNamingStrategy, Initializi
 
 	public void setTags(Map<String, String> tags) {
 		this.tags = tags;
+	}
+
+	public Map<String, String> getTags() {
+		return this.tags;
 	}
 
 	@Override
