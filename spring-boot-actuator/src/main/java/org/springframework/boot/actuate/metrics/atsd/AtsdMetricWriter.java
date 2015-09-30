@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
@@ -37,7 +38,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * A {@link MetricWriter} for the ATSD database.
+ * A {@link MetricWriter} that exports metrics to ATSD database.
  *
  * @author Alexander Tokarev.
  */
@@ -63,6 +64,37 @@ public class AtsdMetricWriter implements MetricWriter, InitializingBean {
 	private String password;
 	private String basicAuthorizationHeader;
 
+	/**
+	 * Set the URL to connect to the ATSD server.
+	 * @param url the url
+	 */
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	/**
+	 *  Set the username for the account at the ATSD server.
+	 *  This field is required.
+	 * @param username the ATSD username.
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * Set the password for the account at the ATSD server.
+	 * This field is required.
+	 * @param password  the ATSD password
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 *  Set the size of the metrics buffer.
+	 *  The metric data are flushed to ATSD when buffer size is reached or when {@code flush()} method is called.
+	 * @param bufferSize  the size of the buffer
+	 */
 	public void setBufferSize(int bufferSize) {
 		this.bufferSize = bufferSize;
 	}
@@ -77,26 +109,6 @@ public class AtsdMetricWriter implements MetricWriter, InitializingBean {
 
 	public void setDataEncoder(AtsdDataEncoder dataEncoder) {
 		this.dataEncoder = dataEncoder;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getUrl() {
-		return this.url;
-	}
-
-	public AtsdDataEncoder getDataEncoder() {
-		return this.dataEncoder;
 	}
 
 	@Override
@@ -123,6 +135,11 @@ public class AtsdMetricWriter implements MetricWriter, InitializingBean {
 		}
 	}
 
+	/**
+	 * Flush the metrics buffer to the ATSD database.
+	 * If this bean is marked with {@link ExportMetricWriter } annotation this method is called periodically
+	 * by the default exporter. Period is configured via spring.metrics.export.delay-millis property.
+	 */
 	public void flush() {
 		AtsdData[] data;
 		synchronized (this.buffer) {
@@ -130,10 +147,10 @@ public class AtsdMetricWriter implements MetricWriter, InitializingBean {
 			this.buffer.clear();
 		}
 		if (data.length > 0) {
-			String encoded = getDataEncoder().encode(data);
+			String encoded = this.dataEncoder.encode(data);
 			HttpEntity<String> request = new HttpEntity<String>(encoded, createHeaders());
 			@SuppressWarnings("rawtypes")
-			ResponseEntity<Map> response = this.restTemplate.postForEntity(getUrl(), request, Map.class);
+			ResponseEntity<Map> response = this.restTemplate.postForEntity(this.url, request, Map.class);
 			if (!response.getStatusCode().is2xxSuccessful()) {
 				logger.warn("Cannot write metrics (discarded " + data.length + " values): " + response.getBody());
 			}

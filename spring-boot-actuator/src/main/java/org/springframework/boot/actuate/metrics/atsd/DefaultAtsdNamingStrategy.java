@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Default naming strategy implementation.
+ * Default ATSD naming strategy implementation.
  *
  * @author Alexander Tokarev.
  */
@@ -39,14 +39,28 @@ public class DefaultAtsdNamingStrategy implements AtsdNamingStrategy, Initializi
 	private String metricPrefix;
 	private Map<String, String> tags = new HashMap<String, String>();
 
+	/**
+	 * ATSD requires an entity name.
+	 * Entities are servers, hosts, frames, virtual machines, or sensors.
+	 * The default value is 'atsd-default'
+	 * @param entity the name of the entity.
+	 */
 	public void setEntity(String entity) {
 		this.entity = entity;
 	}
 
+	/**
+	 * Prefix to be prepended to the original metric name.
+	 * @param metricPrefix the prefix
+	 */
 	public void setMetricPrefix(String metricPrefix) {
 		this.metricPrefix = metricPrefix;
 	}
 
+	/**
+	 * Optional set of key - value pairs in time series identifier.
+	 * @param tags the tags map
+	 */
 	public void setTags(Map<String, String> tags) {
 		this.tags = tags;
 	}

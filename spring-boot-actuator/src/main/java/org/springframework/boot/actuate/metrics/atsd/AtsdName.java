@@ -20,7 +20,8 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * ATSD name.
+ * ATSD name. This name represents ATSD time series identifier.
+ *
  * @author Alexander Tokarev.
  */
 public class AtsdName {
