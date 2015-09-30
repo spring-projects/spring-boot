@@ -51,6 +51,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -121,6 +122,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	public void testBasicConfigLocation() throws Exception {
 		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		LoggerContext context = (LoggerContext) factory;
 		Logger root = context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
@@ -303,6 +305,19 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		finally {
 			System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");
 		}
+	}
+
+	@Test
+	public void cleanUpStopsContext() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+		LoggerContext context = (LoggerContext) factory;
+		Logger root = context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+		assertNotNull(root.getAppender("CONSOLE"));
+
+		this.loggingSystem.cleanUp();
+		assertNull(root.getAppender("CONSOLE"));
 	}
 
 	private String getLineWithText(File file, String outputSearch) throws Exception {

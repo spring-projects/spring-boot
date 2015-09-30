@@ -115,4 +115,10 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 		logger.setLevel(LEVELS.get(level));
 	}
 
+	@Override
+	public void cleanUp() {
+		super.cleanUp();
+		LogManager.shutdown();
+	}
+
 }

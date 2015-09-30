@@ -362,7 +362,7 @@ content into your application; rather pick only the properties that you need.
 
 	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
 	spring.data.mongodb.host= # the db host
-	spring.data.mongodb.port=27017 # the connection port (defaults to 27107)
+	spring.data.mongodb.port=27017 # the connection port (defaults to 27017)
 	spring.data.mongodb.uri=mongodb://localhost/test # connection URL
 	spring.data.mongodb.database=
 	spring.data.mongodb.authentication-database=

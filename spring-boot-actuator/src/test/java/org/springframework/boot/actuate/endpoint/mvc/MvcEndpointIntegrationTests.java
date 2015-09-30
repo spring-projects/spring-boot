@@ -44,6 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class MvcEndpointIntegrationTests {
 
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
 	private AnnotationConfigWebApplicationContext context;
 
 	@Test
@@ -77,7 +79,8 @@ public class MvcEndpointIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jackson.serialization.indent-output:true");
 		MockMvc mockMvc = createMockMvc();
-		mockMvc.perform(get("/beans")).andExpect(content().string(startsWith("{\n")));
+		mockMvc.perform(get("/beans")).andExpect(
+				content().string(startsWith("{" + LINE_SEPARATOR)));
 	}
 
 	private MockMvc createMockMvc() {

@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
+import ch.qos.logback.classic.BasicConfigurator;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -177,6 +178,8 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	public void cleanUp() {
 		super.cleanUp();
 		getLoggerContext().getStatusManager().clear();
+		getLoggerContext().stop();
+		BasicConfigurator.configure(getLoggerContext());
 	}
 
 	@Override

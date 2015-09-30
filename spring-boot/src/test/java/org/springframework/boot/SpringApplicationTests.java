@@ -162,7 +162,7 @@ public class SpringApplicationTests {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
 		application.setShowBanner(false);
-		application.run();
+		this.context = application.run();
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
 
@@ -170,7 +170,7 @@ public class SpringApplicationTests {
 	public void disableBannerViaProperty() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		application.run("--spring.main.show_banner=false");
+		this.context = application.run("--spring.main.show_banner=false");
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
 
@@ -178,7 +178,7 @@ public class SpringApplicationTests {
 	public void customBanner() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		application.run("--banner.location=classpath:test-banner.txt");
+		this.context = application.run("--banner.location=classpath:test-banner.txt");
 		assertThat(this.output.toString(), startsWith("Running a Test!"));
 	}
 
@@ -186,7 +186,8 @@ public class SpringApplicationTests {
 	public void customBannerWithProperties() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		application.run("--banner.location=classpath:test-banner-with-placeholder.txt",
+		this.context = application.run(
+				"--banner.location=classpath:test-banner-with-placeholder.txt",
 				"--test.property=123456");
 		assertThat(this.output.toString(),
 				startsWith(String.format("Running a Test!%n%n123456")));
@@ -308,7 +309,7 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run();
+		this.context = application.run();
 		verify(application.getLoader()).setEnvironment(environment);
 	}
 
@@ -351,7 +352,7 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run("--foo=bar");
+		this.context = application.run("--foo=bar");
 		assertTrue(hasPropertySource(environment, CommandLinePropertySource.class,
 				"commandLineArgs"));
 	}
@@ -365,7 +366,7 @@ public class SpringApplicationTests {
 				new MapPropertySource("commandLineArgs", Collections
 						.<String, Object>singletonMap("foo", "original")));
 		application.setEnvironment(environment);
-		application.run("--foo=bar", "--bar=foo");
+		this.context = application.run("--foo=bar", "--bar=foo");
 		assertTrue(hasPropertySource(environment, CompositePropertySource.class,
 				"commandLineArgs"));
 		assertEquals("foo", environment.getProperty("bar"));
@@ -379,7 +380,7 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run();
+		this.context = application.run();
 		assertEquals("bucket", environment.getProperty("foo"));
 	}
 
@@ -390,7 +391,7 @@ public class SpringApplicationTests {
 		application.setAdditionalProfiles("foo");
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run();
+		this.context = application.run();
 		assertTrue(environment.acceptsProfiles("foo"));
 	}
 
@@ -401,7 +402,7 @@ public class SpringApplicationTests {
 		application.setAdditionalProfiles("foo");
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run("--spring.profiles.active=bar,spam");
+		this.context = application.run("--spring.profiles.active=bar,spam");
 		// Command line should always come last
 		assertArrayEquals(new String[] { "foo", "bar", "spam" },
 				environment.getActiveProfiles());
@@ -414,7 +415,7 @@ public class SpringApplicationTests {
 		application.setAdditionalProfiles("other");
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run();
+		this.context = application.run();
 		// Active profile should win over default
 		assertEquals("fromotherpropertiesfile", environment.getProperty("my.property"));
 	}
@@ -425,7 +426,7 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run();
+		this.context = application.run();
 		assertEquals("bucket", environment.getProperty("foo"));
 	}
 
@@ -436,7 +437,7 @@ public class SpringApplicationTests {
 		application.setAddCommandLineProperties(false);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run("--foo=bar");
+		this.context = application.run("--foo=bar");
 		assertFalse(hasPropertySource(environment, PropertySource.class,
 				"commandLineArgs"));
 	}
@@ -457,7 +458,7 @@ public class SpringApplicationTests {
 		TestSpringApplication application = new TestSpringApplication(sources);
 		application.setWebEnvironment(false);
 		application.setUseMockLoader(true);
-		application.run();
+		this.context = application.run();
 		Set<Object> initialSources = application.getSources();
 		assertThat(initialSources.toArray(), equalTo(sources));
 	}
@@ -467,7 +468,7 @@ public class SpringApplicationTests {
 		Object[] sources = { "classpath:org/springframework/boot/sample-${sample.app.test.prop}.xml" };
 		TestSpringApplication application = new TestSpringApplication(sources);
 		application.setWebEnvironment(false);
-		application.run();
+		this.context = application.run();
 	}
 
 	@Test
@@ -487,18 +488,18 @@ public class SpringApplicationTests {
 	public void exit() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		ApplicationContext context = application.run();
-		assertNotNull(context);
-		assertEquals(0, SpringApplication.exit(context));
+		this.context = application.run();
+		assertNotNull(this.context);
+		assertEquals(0, SpringApplication.exit(this.context));
 	}
 
 	@Test
 	public void exitWithExplicitCode() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		ApplicationContext context = application.run();
-		assertNotNull(context);
-		assertEquals(2, SpringApplication.exit(context, new ExitCodeGenerator() {
+		this.context = application.run();
+		assertNotNull(this.context);
+		assertEquals(2, SpringApplication.exit(this.context, new ExitCodeGenerator() {
 			@Override
 			public int getExitCode() {
 				return 2;
@@ -522,7 +523,7 @@ public class SpringApplicationTests {
 	public void commandLineArgsApplyToSpringApplication() throws Exception {
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		application.run("--spring.main.show_banner=false");
+		this.context = application.run("--spring.main.show_banner=false");
 		assertThat(application.getShowBanner(), is(false));
 	}
 
@@ -583,7 +584,7 @@ public class SpringApplicationTests {
 	public void headless() throws Exception {
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		application.run();
+		this.context = application.run();
 		assertThat(System.getProperty("java.awt.headless"), equalTo("true"));
 	}
 
@@ -592,7 +593,7 @@ public class SpringApplicationTests {
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
 		application.setHeadless(false);
-		application.run();
+		this.context = application.run();
 		assertThat(System.getProperty("java.awt.headless"), equalTo("false"));
 	}
 
@@ -601,7 +602,7 @@ public class SpringApplicationTests {
 		System.setProperty("java.awt.headless", "false");
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		application.run();
+		this.context = application.run();
 		assertThat(System.getProperty("java.awt.headless"), equalTo("false"));
 	}
 

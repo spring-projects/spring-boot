@@ -139,6 +139,17 @@ public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertFalse(bridgeHandlerInstalled());
 	}
 
+	@Test
+	public void cleanUpStopsLogManager() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		assertTrue(org.apache.log4j.LogManager.getLoggerRepository().getRootLogger()
+				.getAllAppenders().hasMoreElements());
+		this.loggingSystem.cleanUp();
+		assertFalse(org.apache.log4j.LogManager.getLoggerRepository().getRootLogger()
+				.getAllAppenders().hasMoreElements());
+	}
+
 	private boolean bridgeHandlerInstalled() {
 		java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
 		Handler[] handlers = rootLogger.getHandlers();

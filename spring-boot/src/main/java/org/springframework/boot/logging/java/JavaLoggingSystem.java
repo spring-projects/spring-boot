@@ -113,4 +113,10 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		logger.setLevel(LEVELS.get(level));
 	}
 
+	@Override
+	public void cleanUp() {
+		super.cleanUp();
+		LogManager.getLogManager().reset();
+	}
+
 }
