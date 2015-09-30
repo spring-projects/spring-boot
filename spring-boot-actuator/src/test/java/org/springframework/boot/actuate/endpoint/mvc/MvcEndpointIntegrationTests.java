@@ -20,22 +20,30 @@ import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration tests for the Actuator's MVC endpoints.
@@ -73,6 +81,24 @@ public class MvcEndpointIntegrationTests {
 		assertIndentedJsonResponse(SpringDataRestConfiguration.class);
 	}
 
+	@Test
+	public void endpointsAreSecureByDefault() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(SecureConfiguration.class);
+		MockMvc mockMvc = createSecureMockMvc();
+		mockMvc.perform(get("/beans")).andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void endpointSecurityCanBeDisabled() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(SecureConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"management.security.enabled:false");
+		MockMvc mockMvc = createSecureMockMvc();
+		mockMvc.perform(get("/beans")).andDo(print()).andExpect(status().isOk());
+	}
+
 	private void assertIndentedJsonResponse(Class<?> configuration) throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(configuration);
@@ -84,9 +110,21 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	private MockMvc createMockMvc() {
+		return doCreateMockMvc();
+	}
+
+	private MockMvc createSecureMockMvc() {
+		return doCreateMockMvc(springSecurity());
+	}
+
+	private MockMvc doCreateMockMvc(MockMvcConfigurer... configurers) {
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		return MockMvcBuilders.webAppContextSetup(this.context).build();
+		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.context);
+		for (MockMvcConfigurer configurer : configurers) {
+			builder.apply(configurer);
+		}
+		return builder.build();
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
@@ -114,6 +152,13 @@ public class MvcEndpointIntegrationTests {
 			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class SpringDataRestConfiguration {
+
+	}
+
+	@Import(DefaultConfiguration.class)
+	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
+			ManagementWebSecurityAutoConfiguration.class })
+	static class SecureConfiguration {
 
 	}
 
