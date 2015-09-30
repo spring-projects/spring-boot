@@ -48,9 +48,9 @@ public class MustacheCompilerFactoryBean implements FactoryBean<Mustache.Compile
 
 	private Compiler compiler;
 
-    private String defaultValue;
+	private String defaultValue;
 
-    private Boolean emptyStringIsFalse;
+	private Boolean emptyStringIsFalse;
 
 	public void setDelims(String delims) {
 		this.delims = delims;
@@ -72,15 +72,15 @@ public class MustacheCompilerFactoryBean implements FactoryBean<Mustache.Compile
 		this.collector = collector;
 	}
 
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
 
-    public void setEmptyStringIsFalse(Boolean emptyStringIsFalse) {
-        this.emptyStringIsFalse = emptyStringIsFalse;
-    }
+	public void setEmptyStringIsFalse(Boolean emptyStringIsFalse) {
+		this.emptyStringIsFalse = emptyStringIsFalse;
+	}
 
-    @Override
+	@Override
 	public Mustache.Compiler getObject() throws Exception {
 		this.compiler = Mustache.compiler();
 		if (this.delims != null) {
@@ -98,12 +98,12 @@ public class MustacheCompilerFactoryBean implements FactoryBean<Mustache.Compile
 		if (this.collector != null) {
 			this.compiler = this.compiler.withCollector(this.collector);
 		}
-        if (this.defaultValue != null) {
-            this.compiler = this.compiler.defaultValue(defaultValue);
-        }
-        if (this.emptyStringIsFalse != null) {
-            this.compiler = this.compiler.emptyStringIsFalse(this.emptyStringIsFalse);
-        }
+		if (this.defaultValue != null) {
+		this.compiler = this.compiler.defaultValue(this.defaultValue);
+		}
+		if (this.emptyStringIsFalse != null) {
+		this.compiler = this.compiler.emptyStringIsFalse(this.emptyStringIsFalse);
+		}
 		return this.compiler;
 	}
 
