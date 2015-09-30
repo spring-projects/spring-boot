@@ -142,7 +142,8 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 		context.setInitialEntitySet(getInitialEntitySet(beanFactory));
 		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
-			context.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils.instantiate(strategyClass));
+			context.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils
+					.instantiate(strategyClass));
 		}
 		return context;
 	}
