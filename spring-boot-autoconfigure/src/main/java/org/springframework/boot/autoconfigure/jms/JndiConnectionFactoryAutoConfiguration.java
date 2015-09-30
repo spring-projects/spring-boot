@@ -74,6 +74,7 @@ public class JndiConnectionFactoryAutoConfiguration {
 	public DestinationResolver destinationResolver() {
 		JndiDestinationResolver destinationResolver = new JndiDestinationResolver();
 		destinationResolver.setResourceRef(true);
+		destinationResolver.setFallbackToDynamicDestination(true);
 		return destinationResolver;
 	}
 
