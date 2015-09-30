@@ -42,6 +42,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.async.WebAsyncManager;
 import org.springframework.web.context.request.async.WebAsyncUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -112,6 +113,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	private int maxPayloadLength = DEFAULT_MAX_PAYLOAD_LENGTH;
 
+	private int maxPayloadResponseLength = DEFAULT_MAX_PAYLOAD_LENGTH;
 
 	// Not LOWEST_PRECEDENCE, but near the end, so it has a good chance of catching all
 	// enriched headers, but users can add stuff after this if they want to
@@ -144,6 +146,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		this.includeUserPrincipal = traceWebFilterProperties.isUserPrincipal();
 		this.includeUserPrincipal = traceWebFilterProperties.isUserPrincipal();
 		this.maxPayloadLength = traceWebFilterProperties.getMaxPayloadLength();
+		this.maxPayloadResponseLength = traceWebFilterProperties.getMaxPayloadResponseLength();
 	}
 
 
@@ -219,6 +222,25 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	 */
 	protected int getMaxPayloadLength() {
 		return this.maxPayloadLength;
+	}
+
+
+	/**
+	 * Sets the maximum length of the payload response body to be included in the log message.
+	 * Default is 50 characters.
+	 * @param maxPayloadResponseLength Limit the number of bytes to capture for request/response
+	 */
+	public void setMaxPayloadResponseLength(int maxPayloadResponseLength) {
+		Assert.isTrue(maxPayloadResponseLength >= 0, "'maxPayloadResponseLength' should be larger than or equal to 0");
+		this.maxPayloadResponseLength = maxPayloadResponseLength;
+	}
+
+	/**
+	 * Return the maximum length of the payload response body to be included in the log message.
+	 * @return payload length that will be captured
+	 */
+	protected int getMaxPayloadResponseLength() {
+		return this.maxPayloadResponseLength;
 	}
 
 	/**
@@ -429,7 +451,7 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	protected void enhanceTraceRequest(Map<String, Object> trace, HttpServletRequest request) {
 		if (isIncludePayload() && request instanceof ContentCachingRequestWrapper) {
 			ContentCachingRequestWrapper wrapper = (ContentCachingRequestWrapper) request;
-			trace.put(TRACE_RQ_PAYLOAD, payloadBufferToString(wrapper.getCharacterEncoding(), wrapper.getContentAsByteArray()));
+			trace.put(TRACE_RQ_PAYLOAD, payloadBufferToString(wrapper.getCharacterEncoding(), wrapper.getContentAsByteArray(), this.getMaxPayloadLength()));
 		}
 	}
 
@@ -448,15 +470,15 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		if (isIncludePayload() && response instanceof ContentCachingResponseWrapper) {
 			ContentCachingResponseWrapper wrapper = (ContentCachingResponseWrapper) response;
 			byte[] buf1 = wrapper.getContentAsByteArray();
-			trace.put(TRACE_RESP_PAYLOAD, payloadBufferToString(wrapper.getCharacterEncoding(), buf1));
+			trace.put(TRACE_RESP_PAYLOAD, payloadBufferToString(wrapper.getCharacterEncoding(), buf1, this.getMaxPayloadResponseLength()));
 		}
 	}
 
-	private String payloadBufferToString(String characterEncoding, byte[] buf1) {
+	private String payloadBufferToString(String characterEncoding, byte[] buf1, int length) {
 		String payload = "";
 
 		if (buf1.length > 0) {
-			int length1 = Math.min(buf1.length, this.getMaxPayloadLength());
+			int length1 = Math.min(buf1.length, length);
 
 			try {
 				payload = new String(buf1, 0, length1, characterEncoding);

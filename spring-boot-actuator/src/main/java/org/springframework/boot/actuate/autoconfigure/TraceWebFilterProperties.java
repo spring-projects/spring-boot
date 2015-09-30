@@ -63,6 +63,9 @@ public class TraceWebFilterProperties {
 	/** Max payload size to log in trace. */
 	private int maxPayloadLength = 50;
 
+	/** Max payload response size to log in trace. */
+	private int maxPayloadResponseLength = 50;
+
 	public boolean isPayload() {
 		return this.payload;
 	}
@@ -149,6 +152,15 @@ public class TraceWebFilterProperties {
 
 	public void setMaxPayloadLength(int maxPayloadLength) {
 		this.maxPayloadLength = maxPayloadLength;
+	}
+
+
+	public int getMaxPayloadResponseLength() {
+		return this.maxPayloadResponseLength;
+	}
+
+	public void setMaxPayloadResponseLength(int maxPayloadResponseLength) {
+		this.maxPayloadResponseLength = maxPayloadResponseLength;
 	}
 
 	public boolean isPathTranslated() {

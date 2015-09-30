@@ -92,6 +92,7 @@ public class WebRequestTraceFilterTests {
 		this.filter.setIncludeUserPrincipal(true);
 		this.filter.setIncludeUserPrincipal(true);
 		this.filter.setMaxPayloadLength(100);
+		this.filter.setMaxPayloadResponseLength(100);
 
 
 		this.filter.doFilterInternal(request, response, new FilterChain() {
