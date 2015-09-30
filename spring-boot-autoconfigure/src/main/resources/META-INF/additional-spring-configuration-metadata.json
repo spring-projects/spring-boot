@@ -197,6 +197,17 @@
     ]
   },
   {
+    "name": "spring.data.mongodb.field-naming-strategy",
+    "providers": [
+      {
+        "name": "class-reference",
+        "parameters": {
+          "target": "org.springframework.data.mapping.model.FieldNamingStrategy"
+        }
+      }
+    ]
+  },
+  {
     "name": "spring.datasource.driver-class-name",
     "providers": [
       {

@@ -16,9 +16,10 @@
 
 package org.springframework.boot;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -33,21 +34,29 @@ import static org.junit.Assert.assertEquals;
  */
 public class OverrideSourcesTests {
 
+	private ConfigurableApplicationContext context;
+
+	@After
+	public void cleanUp() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void beanInjectedToMainConfiguration() {
-		ApplicationContext context = SpringApplication.run(
-				new Object[] { MainConfiguration.class },
+		this.context = SpringApplication.run(new Object[] { MainConfiguration.class },
 				new String[] { "--spring.main.web_environment=false" });
-		assertEquals("foo", context.getBean(Service.class).bean.name);
+		assertEquals("foo", this.context.getBean(Service.class).bean.name);
 	}
 
 	@Test
 	public void primaryBeanInjectedProvingSourcesNotOverridden() {
-		ApplicationContext context = SpringApplication
+		this.context = SpringApplication
 				.run(new Object[] { MainConfiguration.class, TestConfiguration.class },
 						new String[] { "--spring.main.web_environment=false",
 								"--spring.main.sources=org.springframework.boot.OverrideSourcesTests.MainConfiguration" });
-		assertEquals("bar", context.getBean(Service.class).bean.name);
+		assertEquals("bar", this.context.getBean(Service.class).bean.name);
 	}
 
 	@Configuration

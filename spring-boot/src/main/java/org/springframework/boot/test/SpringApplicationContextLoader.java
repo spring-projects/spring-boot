@@ -211,7 +211,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	@Override
 	public void processContextConfiguration(
 			ContextConfigurationAttributes configAttributes) {
-		if (!configAttributes.hasLocations() && !configAttributes.hasClasses()) {
+		super.processContextConfiguration(configAttributes);
+		if (!configAttributes.hasResources()) {
 			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(configAttributes
 					.getDeclaringClass());
 			configAttributes.setClasses(defaultConfigClasses);
@@ -239,8 +240,13 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	}
 
 	@Override
+	protected String[] getResourceSuffixes() {
+		return new String[] { "-context.xml", "Context.groovy" };
+	}
+
+	@Override
 	protected String getResourceSuffix() {
-		return "-context.xml";
+		throw new IllegalStateException();
 	}
 
 	/**

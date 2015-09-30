@@ -18,9 +18,11 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
@@ -35,6 +37,15 @@ import static org.junit.Assert.assertThat;
  */
 public class BannerTests {
 
+	private ConfigurableApplicationContext context;
+
+	@After
+	public void cleanUp() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Rule
 	public OutputCapture out = new OutputCapture();
 
@@ -42,7 +53,7 @@ public class BannerTests {
 	public void testDefaultBanner() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
-		application.run();
+		this.context = application.run();
 		assertThat(this.out.toString(), containsString(":: Spring Boot ::"));
 	}
 
@@ -51,7 +62,7 @@ public class BannerTests {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		application.setBanner(new DummyBanner());
-		application.run();
+		this.context = application.run();
 		assertThat(this.out.toString(), containsString("My Banner"));
 	}
 

@@ -65,9 +65,10 @@ public class DropwizardMetricServicesTests {
 	@Test
 	public void setGauge() {
 		this.writer.submit("foo", 2.1);
-		this.writer.submit("foo", 2.3);
 		@SuppressWarnings("unchecked")
 		Gauge<Double> gauge = (Gauge<Double>) this.registry.getMetrics().get("gauge.foo");
+		assertEquals(new Double(2.1), gauge.getValue());
+		this.writer.submit("foo", 2.3);
 		assertEquals(new Double(2.3), gauge.getValue());
 	}
 

@@ -63,6 +63,7 @@ content into your application; rather pick only the properties that you need.
 	logging.path=/var/log
 	logging.pattern.console= # appender pattern for output to the console (only supported with the default logback setup)
 	logging.pattern.file= # appender pattern for output to the file (only supported with the default logback setup)
+	logging.pattern.level= # appender pattern for the log level (default %5p, only supported with the default logback setup)
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.name=
@@ -175,7 +176,7 @@ content into your application; rather pick only the properties that you need.
 	spring.h2.console.path=/h2-console # Path at which the console can be accessed
 
 	# SPRING HATEOAS ({sc-spring-boot-autoconfigure}/hateoas/HateoasProperties.{sc-ext}[HateoasProperties])
-	spring.hateoas.apply-to-primary-object-mapper=true # if the primary mapper should also be configured
+	spring.hateoas.use-hal-as-default-json-media-type=true # if application/hal+json responses should be sent in response to requests for application/json
 
 	# HTTP encoding ({sc-spring-boot-autoconfigure}/web/HttpEncodingProperties.{sc-ext}[HttpEncodingProperties])
 	spring.http.encoding.charset=UTF-8 # the encoding of HTTP requests/responses
@@ -362,7 +363,7 @@ content into your application; rather pick only the properties that you need.
 
 	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
 	spring.data.mongodb.host= # the db host
-	spring.data.mongodb.port=27017 # the connection port (defaults to 27107)
+	spring.data.mongodb.port=27017 # the connection port (defaults to 27017)
 	spring.data.mongodb.uri=mongodb://localhost/test # connection URL
 	spring.data.mongodb.database=
 	spring.data.mongodb.authentication-database=

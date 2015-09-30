@@ -1085,6 +1085,18 @@ To help with the customization some other properties are transferred from the Sp
 |`LOG_PATH`
 |Used in default log configuration if defined.
 
+|`logging.pattern.console`
+|`CONSOLE_LOG_PATTERN`
+|The log pattern to use on the console (stdout). (Not supported with JDK logger.)
+
+|`logging.pattern.file`
+|`FILE_LOG_PATTERN`
+|The log pattern to use in a file (if LOG_FILE enabled). (Not supported with JDK logger.)
+
+|`logging.pattern.level`
+|`LOG_LEVEL_PATTERN`
+|The format to use to render the log level (default `%5p`). (The `logging.pattern.level` form is only supported by Logback.)
+
 |`PID`
 |`PID`
 |The current process ID (discovered if possible and when not already defined as an OS
@@ -1094,6 +1106,20 @@ To help with the customization some other properties are transferred from the Sp
 
 All the logging systems supported can consult System properties when parsing their
 configuration files.  See the default configurations in `spring-boot.jar` for examples.
+
+[TIP]
+====
+
+You can add MDC and other ad-hoc content to log lines by overriding
+only the `LOG_LEVEL_PATTERN` (or `logging.pattern.level` with
+Logback). For example, if you use `logging.pattern.level=user:%X{user}
+%5p` then the default log format will contain an MDC entry for "user"
+if it exists, e.g.
+
+----
+2015-09-30 12:30:04.031 user:juergen INFO 22174 --- [  nio-8080-exec-0] demo.Controller Handling authenticated request
+----
+====
 
 
 

@@ -36,6 +36,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.ehcache.EhCacheCache;
+import org.springframework.cache.guava.GuavaCache;
 import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -71,7 +73,7 @@ public class CacheStatisticsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(Ehcache.class)
+	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class })
 	static class EhCacheCacheStatisticsProviderConfiguration {
 
 		@Bean
@@ -103,7 +105,7 @@ public class CacheStatisticsAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(com.google.common.cache.Cache.class)
+	@ConditionalOnClass({ com.google.common.cache.Cache.class, GuavaCache.class })
 	static class GuavaCacheStatisticsConfiguration {
 
 		@Bean
