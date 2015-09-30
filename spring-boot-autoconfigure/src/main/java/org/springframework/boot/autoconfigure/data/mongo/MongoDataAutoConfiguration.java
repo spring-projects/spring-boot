@@ -140,10 +140,9 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 			throws ClassNotFoundException {
 		MongoMappingContext context = new MongoMappingContext();
 		context.setInitialEntitySet(getInitialEntitySet(beanFactory));
-		Class<? extends FieldNamingStrategy> strategyClass = this.properties
-				.getFieldNamingStrategy();
+		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
-			context.setFieldNamingStrategy(BeanUtils.instantiate(strategyClass));
+			context.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils.instantiate(strategyClass));
 		}
 		return context;
 	}
