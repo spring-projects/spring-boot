@@ -16,13 +16,13 @@
 
 package org.springframework.boot.actuate.metrics.atsd;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Default naming strategy implementation.
