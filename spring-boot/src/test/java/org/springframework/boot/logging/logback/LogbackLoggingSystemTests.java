@@ -16,6 +16,16 @@
 
 package org.springframework.boot.logging.logback;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.logging.Handler;
@@ -43,16 +53,6 @@ import org.springframework.util.StringUtils;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link LogbackLoggingSystem}.
@@ -235,6 +235,19 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		String output = this.output.toString().trim();
 		assertFalse("Wrong output pattern:\n" + output,
 				getLineWithText(output, "Hello world").contains("INFO"));
+	}
+
+	@Test
+	public void testLevelPatternProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.pattern.level", "X%clr(%p)X");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello world");
+		String output = this.output.toString().trim();
+		assertTrue("Wrong output pattern:\n" + output,
+				getLineWithText(output, "Hello world").contains("XINFOX"));
 	}
 
 	@Test
