@@ -41,7 +41,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,7 +95,7 @@ public class MvcEndpointIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.security.enabled:false");
 		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/beans")).andDo(print()).andExpect(status().isOk());
+		mockMvc.perform(get("/beans")).andExpect(status().isOk());
 	}
 
 	private void assertIndentedJsonResponse(Class<?> configuration) throws Exception {
