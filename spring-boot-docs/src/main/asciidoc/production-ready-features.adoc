@@ -454,8 +454,15 @@ generate a `git.properties` file. Simply add the following declaration to your P
 	</build>
 ----
 
-A similar https://github.com/ajoberstar/gradle-git[`gradle-git`] plugin is also available
-for Gradle users, although a little more work is required to generate the properties file.
+Gradle users can achieve the same result using the
+https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-git-properties`] plugin
+
+[source,groovy,indent=0]
+----
+	plugins {
+		id "com.gorylenko.gradle-git-properties" version "1.4.6"
+	}
+----
 
 
 

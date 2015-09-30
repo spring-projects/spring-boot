@@ -92,7 +92,7 @@ public class ApplicationPidFileWriterTests {
 	@Test
 	public void overridePidFileWithSpring() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createPreparedEvent("spring.pidfile",
+		SpringApplicationEvent event = createPreparedEvent("spring.pid.file",
 				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);
@@ -102,7 +102,7 @@ public class ApplicationPidFileWriterTests {
 	@Test
 	public void differentEventTypes() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pidfile",
+		SpringApplicationEvent event = createEnvironmentPreparedEvent("spring.pid.file",
 				file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
 		listener.onApplicationEvent(event);

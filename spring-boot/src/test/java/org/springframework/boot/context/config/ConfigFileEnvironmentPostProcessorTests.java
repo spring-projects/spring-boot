@@ -78,8 +78,13 @@ public class ConfigFileEnvironmentPostProcessorTests {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 
+	private ConfigurableApplicationContext context;
+
 	@After
 	public void cleanup() {
+		if (this.context != null) {
+			this.context.close();
+		}
 		System.clearProperty("the.property");
 		System.clearProperty("spring.config.location");
 		System.clearProperty("spring.main.showBanner");
@@ -600,13 +605,12 @@ public class ConfigFileEnvironmentPostProcessorTests {
 	public void activateProfileFromProfileSpecificProperties() throws Exception {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
-		ConfigurableApplicationContext context = application
-				.run("--spring.profiles.active=includeprofile");
-		assertThat(context.getEnvironment(), acceptsProfiles("includeprofile"));
-		assertThat(context.getEnvironment(), acceptsProfiles("specific"));
-		assertThat(context.getEnvironment(), acceptsProfiles("morespecific"));
-		assertThat(context.getEnvironment(), acceptsProfiles("yetmorespecific"));
-		assertThat(context.getEnvironment(), not(acceptsProfiles("missing")));
+		this.context = application.run("--spring.profiles.active=includeprofile");
+		assertThat(this.context.getEnvironment(), acceptsProfiles("includeprofile"));
+		assertThat(this.context.getEnvironment(), acceptsProfiles("specific"));
+		assertThat(this.context.getEnvironment(), acceptsProfiles("morespecific"));
+		assertThat(this.context.getEnvironment(), acceptsProfiles("yetmorespecific"));
+		assertThat(this.context.getEnvironment(), not(acceptsProfiles("missing")));
 	}
 
 	@Test
@@ -614,9 +618,9 @@ public class ConfigFileEnvironmentPostProcessorTests {
 		// gh-340
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
-		ConfigurableApplicationContext context = application
+		this.context = application
 				.run("--spring.profiles.active=activeprofilewithsubdoc");
-		String property = context.getEnvironment().getProperty("foobar");
+		String property = this.context.getEnvironment().getProperty("foobar");
 		assertThat(property, equalTo("baz"));
 	}
 

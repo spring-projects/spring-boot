@@ -212,7 +212,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	public void processContextConfiguration(
 			ContextConfigurationAttributes configAttributes) {
 		super.processContextConfiguration(configAttributes);
-		if (!configAttributes.hasLocations() && !configAttributes.hasClasses()) {
+		if (!configAttributes.hasResources()) {
 			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(configAttributes
 					.getDeclaringClass());
 			configAttributes.setClasses(defaultConfigClasses);
