@@ -58,7 +58,7 @@ set CMD_LINE_ARGS=%$
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%SPRING_HOME%\lib\*
+set CLASSPATH=%CLASSPATH%:%SPRING_HOME%\lib\*
 "%JAVA_EXE%" %JAVA_OPTS% -cp "%CLASSPATH%" org.springframework.boot.loader.JarLauncher %CMD_LINE_ARGS%
 
 :end
