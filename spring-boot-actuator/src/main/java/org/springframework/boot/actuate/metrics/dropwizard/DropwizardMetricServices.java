@@ -46,6 +46,8 @@ import com.codahale.metrics.Timer;
  * </ul>
  *
  * @author Dave Syer
+ * @author Jay Anderson
+ * @author Andy Wilkinson
  */
 public class DropwizardMetricServices implements CounterService, GaugeService {
 
@@ -103,15 +105,15 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 		}
 	}
 
-	private void setGaugeValue(final String name, final double value) {
+	private void setGaugeValue(String name, double value) {
 		// NOTE: Dropwizard provides no way to do this atomically
 		SimpleGauge gauge = this.gauges.get(name);
 		if (gauge == null) {
-			final SimpleGauge newGauge = new SimpleGauge(value);
+			SimpleGauge newGauge = new SimpleGauge(value);
 			gauge = this.gauges.putIfAbsent(name, newGauge);
 			if (gauge == null) {
-				gauge = newGauge;
-				this.registry.register(name, gauge);
+				this.registry.register(name, newGauge);
+				return;
 			}
 		}
 		gauge.setValue(value);
@@ -161,7 +163,7 @@ public class DropwizardMetricServices implements CounterService, GaugeService {
 			return this.value;
 		}
 
-		public void setValue(final double value) {
+		public void setValue(double value) {
 			this.value = value;
 		}
 	}
