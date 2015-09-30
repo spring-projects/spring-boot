@@ -1,6 +1,6 @@
 Spring Boot sample with ATSD export for metrics.
 
-.Table Settings
+Metric Writer Settings
 |===
 | Name | Required | Default Value| Description
 
