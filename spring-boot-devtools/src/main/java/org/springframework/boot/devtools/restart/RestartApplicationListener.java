@@ -53,7 +53,10 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		// users to disable restart using a System property.
 		String enabled = System.getProperty(ENABLED_PROPERTY);
 		if (enabled == null || Boolean.parseBoolean(enabled)) {
-			Restarter.initialize(event.getArgs());
+			String[] args = event.getArgs();
+			DefaultRestartInitializer initializer = new DefaultRestartInitializer();
+			boolean restartOnInitialize = !AgentReloader.isActive();
+			Restarter.initialize(args, false, initializer, restartOnInitialize);
 		}
 		else {
 			Restarter.disable();
