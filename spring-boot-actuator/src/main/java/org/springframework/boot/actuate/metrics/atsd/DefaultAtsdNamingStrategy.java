@@ -60,6 +60,7 @@ public class DefaultAtsdNamingStrategy implements AtsdNamingStrategy, Initializi
 	/**
 	 * Optional set of key - value pairs in time series identifier.
 	 * @param tags the tags map
+	 * @see <a href="https://axibase.com/products/axibase-time-series-database/data-model/">ATSD Data Model</a>
 	 */
 	public void setTags(Map<String, String> tags) {
 		this.tags = tags;

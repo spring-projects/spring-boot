@@ -23,6 +23,7 @@ import java.util.Map;
  * ATSD name. This name represents ATSD time series identifier.
  *
  * @author Alexander Tokarev.
+ * @see <a href="https://axibase.com/products/axibase-time-series-database/data-model/">ATSD Data Model</a>
  */
 public class AtsdName {
 	private String metric;

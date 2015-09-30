@@ -15,6 +15,6 @@
  */
 
 /**
- * Metrics integration with ATSD.
+ * Metrics integration with Axibase Time-Series Database (ATSD).
  */
 package org.springframework.boot.actuate.metrics.atsd;
