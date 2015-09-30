@@ -20,9 +20,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Locale;
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
-import java.util.logging.LogRecord;
 
 import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
@@ -37,7 +34,6 @@ import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -162,35 +158,6 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
 				equalTo(1));
-	}
-
-	@Test
-	public void cleanUpResetsLogManager() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
-		this.logger.getLogger().addHandler(new NoOpHandler());
-		assertThat(this.logger.getLogger().getHandlers().length, is(equalTo(1)));
-		LogManager.getLogManager().reset();
-		assertThat(this.logger.getLogger().getHandlers().length, is(equalTo(0)));
-	}
-
-	private static final class NoOpHandler extends Handler {
-
-		@Override
-		public void publish(LogRecord record) {
-
-		}
-
-		@Override
-		public void flush() {
-
-		}
-
-		@Override
-		public void close() throws SecurityException {
-
-		}
-
 	}
 
 }

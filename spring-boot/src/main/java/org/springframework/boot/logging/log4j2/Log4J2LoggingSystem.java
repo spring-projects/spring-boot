@@ -152,12 +152,6 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		loadConfiguration(location, logFile);
 	}
 
-	@Override
-	public void cleanUp() {
-		super.cleanUp();
-		getLoggerContext().stop();
-	}
-
 	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		if (logFile != null) {

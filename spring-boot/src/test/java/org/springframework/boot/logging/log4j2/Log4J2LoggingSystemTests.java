@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.FileConfigurationMonitor;
 import org.hamcrest.Matcher;
@@ -239,17 +238,6 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		}
 	}
 
-	@Test
-	public void cleanupStopsContext() throws Exception {
-		this.loggingSystem.beforeInitialize();
-		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, null, null);
-		LoggerContext context = (LoggerContext) LogManager.getContext(false);
-		assertFalse(context.isStopped());
-		this.loggingSystem.cleanUp();
-		assertTrue(context.isStopped());
-	}
-
 	private static class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 
 		private List<String> availableClasses = new ArrayList<String>();
@@ -259,7 +247,8 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		}
 
 		public Configuration getConfiguration() {
-			return ((LoggerContext) LogManager.getContext(false)).getConfiguration();
+			return ((org.apache.logging.log4j.core.LoggerContext) LogManager
+					.getContext(false)).getConfiguration();
 		}
 
 		@Override
