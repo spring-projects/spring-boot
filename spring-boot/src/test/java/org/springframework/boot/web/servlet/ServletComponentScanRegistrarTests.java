@@ -84,6 +84,18 @@ public class ServletComponentScanRegistrarTests {
 				.getPackage().getName()));
 	}
 
+	@Test
+	public void packagesFromMultipleAnnotationsAreMerged() {
+		this.context = new AnnotationConfigApplicationContext(BasePackages.class,
+				AdditionalPackages.class);
+		ServletComponentRegisteringPostProcessor postProcessor = this.context
+				.getBean(ServletComponentRegisteringPostProcessor.class);
+		assertThat(
+				postProcessor.getPackagesToScan(),
+				containsInAnyOrder("com.example.foo", "com.example.bar",
+						"com.example.baz"));
+	}
+
 	@Configuration
 	@ServletComponentScan({ "com.example.foo", "com.example.bar" })
 	static class ValuePackages {
@@ -93,6 +105,12 @@ public class ServletComponentScanRegistrarTests {
 	@Configuration
 	@ServletComponentScan(basePackages = { "com.example.foo", "com.example.bar" })
 	static class BasePackages {
+
+	}
+
+	@Configuration
+	@ServletComponentScan(basePackages = "com.example.baz")
+	static class AdditionalPackages {
 
 	}
 

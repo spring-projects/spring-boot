@@ -33,9 +33,9 @@
 					<artifactId>spring-boot-starter-tomcat</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-validator</artifactId>
-				</exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-validation</artifactId>
+		        </exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>

@@ -25,10 +25,13 @@ import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -37,6 +40,7 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link EndpointWebMvcAutoConfiguration} of the {@link HealthMvcEndpoint}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class HealthMvcEndpointAutoConfigurationTests {
 
@@ -53,12 +57,7 @@ public class HealthMvcEndpointAutoConfigurationTests {
 	public void testSecureByDefault() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				TestHealthIndicator.class);
+		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class).invoke(
 				null);
@@ -70,25 +69,33 @@ public class HealthMvcEndpointAutoConfigurationTests {
 	public void testNotSecured() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
-				TestHealthIndicator.class);
+		this.context.register(TestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.security.enabled=false");
 		this.context.refresh();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class).invoke(
 				null);
 		assertEquals(Status.UP, health.getStatus());
-		Health map = (Health) health.getDetails().get(
-				"healthMvcEndpointAutoConfigurationTests.Test");
+		Health map = (Health) health.getDetails().get("test");
 		assertEquals("bar", map.getDetails().get("foo"));
 	}
 
-	@Component
-	protected static class TestHealthIndicator extends AbstractHealthIndicator {
+	@Configuration
+	@ImportAutoConfiguration({ SecurityAutoConfiguration.class,
+			JacksonAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class,
+			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class })
+	static class TestConfiguration {
+
+		@Bean
+		public TestHealthIndicator testHealthIndicator() {
+			return new TestHealthIndicator();
+		}
+
+	}
+
+	static class TestHealthIndicator extends AbstractHealthIndicator {
 
 		@Override
 		protected void doHealthCheck(Builder builder) throws Exception {

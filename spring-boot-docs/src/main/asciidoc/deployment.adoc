@@ -439,6 +439,9 @@ the default behavior in a script or on the command line:
 |The location of the `java` executable is discovered by using the `PATH` by default, but
  you can set it explicitly if there is an executable file at `$JAVA_HOME/bin/java`.
 
+|`JAVA_OPTS`
+|Options that are passed to the JVM when it is launched.
+
 |`JARFILE`
 |The explicit location of the jar file, in case the script is being used to launch a jar
  that it is not actually embedded in.

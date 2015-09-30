@@ -17,7 +17,8 @@
 package org.springframework.boot.context.embedded.undertow;
 
 import java.lang.reflect.Field;
-import java.net.ServerSocket;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import org.xnio.channels.BoundChannel;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
@@ -152,25 +154,15 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		return "unknown";
 	}
 
-	@SuppressWarnings("rawtypes")
 	private List<Port> getPorts() {
 		List<Port> ports = new ArrayList<Port>();
 		try {
-			// Use reflection if possible to get the underlying XNIO channels
 			if (!this.autoStart) {
 				ports.add(new Port(-1, "unknown"));
 			}
 			else {
-				Field channelsField = ReflectionUtils.findField(Undertow.class,
-						"channels");
-				ReflectionUtils.makeAccessible(channelsField);
-				List channels = (List) ReflectionUtils.getField(channelsField,
-						this.undertow);
-				for (Object channel : channels) {
-					Port port = getPortFromChannel(channel);
-					if (port != null) {
-						ports.add(port);
-					}
+				for (BoundChannel channel : extractChannels()) {
+					ports.add(getPortFromChannel(channel));
 				}
 			}
 		}
@@ -180,34 +172,22 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		return ports;
 	}
 
-	private Port getPortFromChannel(Object channel) {
-		Object tcpServer = channel;
-		String protocol = "http";
-		Field sslContext = ReflectionUtils.findField(channel.getClass(), "sslContext");
-		if (sslContext != null) {
-			tcpServer = getTcpServer(channel);
-			protocol = "https";
-		}
-		ServerSocket socket = getSocket(tcpServer);
-		if (socket != null) {
-			return new Port(socket.getLocalPort(), protocol);
+	@SuppressWarnings("unchecked")
+	private List<BoundChannel> extractChannels() {
+		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
+		ReflectionUtils.makeAccessible(channelsField);
+		return (List<BoundChannel>) ReflectionUtils
+				.getField(channelsField, this.undertow);
+	}
+
+	private Port getPortFromChannel(BoundChannel channel) {
+		String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null ? "https"
+				: "http";
+		SocketAddress socketAddress = channel.getLocalAddress();
+		if (socketAddress instanceof InetSocketAddress) {
+			return new Port(((InetSocketAddress) socketAddress).getPort(), protocol);
 		}
 		return null;
-	}
-
-	private Object getTcpServer(Object channel) {
-		Field field = ReflectionUtils.findField(channel.getClass(), "tcpServer");
-		ReflectionUtils.makeAccessible(field);
-		return ReflectionUtils.getField(field, channel);
-	}
-
-	private ServerSocket getSocket(Object tcpServer) {
-		Field socketField = ReflectionUtils.findField(tcpServer.getClass(), "socket");
-		if (socketField == null) {
-			return null;
-		}
-		ReflectionUtils.makeAccessible(socketField);
-		return (ServerSocket) ReflectionUtils.getField(socketField, tcpServer);
 	}
 
 	@Override

@@ -49,7 +49,7 @@ import com.hazelcast.core.HazelcastInstance;
 public class HazelcastAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnMissingBean({ HazelcastInstance.class, Config.class })
+	@ConditionalOnMissingBean(Config.class)
 	@Conditional(ConfigAvailableCondition.class)
 	static class HazelcastConfigFileConfiguration {
 
@@ -57,7 +57,6 @@ public class HazelcastAutoConfiguration {
 		private HazelcastProperties hazelcastProperties;
 
 		@Bean
-		@ConditionalOnMissingBean
 		public HazelcastInstance hazelcastInstance() throws IOException {
 			Resource config = this.hazelcastProperties.resolveConfigLocation();
 			if (config != null) {
@@ -69,7 +68,6 @@ public class HazelcastAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnMissingBean(HazelcastInstance.class)
 	@ConditionalOnSingleCandidate(Config.class)
 	static class HazelcastConfigConfiguration {
 

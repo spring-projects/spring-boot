@@ -34,6 +34,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -161,6 +162,18 @@ public class FlywayAutoConfigurationTests {
 		this.context.getBean(MockFlywayMigrationStrategy.class).assertCalled();
 	}
 
+	@Test
+	public void customFlywayMigrationInitializer() throws Exception {
+		registerAndRefresh(CustomFlywayMigrationInitializer.class,
+				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		assertNotNull(this.context.getBean(Flyway.class));
+		FlywayMigrationInitializer initializer = this.context
+				.getBean(FlywayMigrationInitializer.class);
+		assertThat(initializer.getOrder(), equalTo(Ordered.HIGHEST_PRECEDENCE));
+
+	}
+
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
 		this.context.register(annotatedClasses);
 		this.context.refresh();
@@ -177,6 +190,18 @@ public class FlywayAutoConfigurationTests {
 					.username("sa").build();
 		}
 
+	}
+
+	@Configuration
+	protected static class CustomFlywayMigrationInitializer {
+
+		@Bean
+		public FlywayMigrationInitializer flywayMigrationInitializer(Flyway flyway) {
+			FlywayMigrationInitializer initializer = new FlywayMigrationInitializer(
+					flyway);
+			initializer.setOrder(Ordered.HIGHEST_PRECEDENCE);
+			return initializer;
+		}
 	}
 
 	@Component

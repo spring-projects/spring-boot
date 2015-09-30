@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Import;
  * {@code spring.factories}.
  *
  * @author Phillip Webb
+ * @since 1.3.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

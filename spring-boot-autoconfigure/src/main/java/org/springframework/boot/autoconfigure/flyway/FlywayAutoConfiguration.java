@@ -21,7 +21,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -120,6 +119,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
+		@ConditionalOnMissingBean
 		public FlywayMigrationInitializer flywayInitializer(Flyway flyway) {
 			return new FlywayMigrationInitializer(flyway, this.migrationStrategy);
 
@@ -139,34 +139,6 @@ public class FlywayAutoConfiguration {
 
 		public FlywayJpaDependencyConfiguration() {
 			super("flywayInitializer", "flyway");
-		}
-
-	}
-
-	/**
-	 * {@link InitializingBean} used to trigger {@link Flyway} migration via the
-	 * {@link FlywayMigrationStrategy}.
-	 */
-	private static class FlywayMigrationInitializer implements InitializingBean {
-
-		private final Flyway flyway;
-
-		private final FlywayMigrationStrategy migrationStrategy;
-
-		FlywayMigrationInitializer(Flyway flyway,
-				FlywayMigrationStrategy migrationStrategy) {
-			this.flyway = flyway;
-			this.migrationStrategy = migrationStrategy;
-		}
-
-		@Override
-		public void afterPropertiesSet() throws Exception {
-			if (this.migrationStrategy != null) {
-				this.migrationStrategy.migrate(this.flyway);
-			}
-			else {
-				this.flyway.migrate();
-			}
 		}
 
 	}

@@ -16,12 +16,24 @@
 
 package org.springframework.boot.devtools;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.boot.Banner;
 import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.config.AnsiOutputApplicationListener;
+import org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor;
 import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration;
 import org.springframework.boot.devtools.restart.RestartInitializer;
+import org.springframework.boot.devtools.restart.RestartScopeInitializer;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.boot.env.EnvironmentPostProcessingApplicationListener;
+import org.springframework.boot.logging.ClasspathLoggingApplicationListener;
+import org.springframework.boot.logging.LoggingApplicationListener;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;
 
 /**
@@ -46,9 +58,27 @@ public final class RemoteSpringApplication {
 				RemoteClientConfiguration.class);
 		application.setWebEnvironment(false);
 		application.setBanner(getBanner());
-		application.addListeners(new RemoteUrlPropertyExtractor());
+		application.setInitializers(getInitializers());
+		application.setListeners(getListeners());
 		application.run(args);
 		waitIndefinitely();
+	}
+
+	private Collection<ApplicationContextInitializer<?>> getInitializers() {
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		initializers.add(new RestartScopeInitializer());
+		return initializers;
+	}
+
+	private Collection<ApplicationListener<?>> getListeners() {
+		List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>();
+		listeners.add(new AnsiOutputApplicationListener());
+		listeners.add(new ConfigFileEnvironmentPostProcessor());
+		listeners.add(new EnvironmentPostProcessingApplicationListener());
+		listeners.add(new ClasspathLoggingApplicationListener());
+		listeners.add(new LoggingApplicationListener());
+		listeners.add(new RemoteUrlPropertyExtractor());
+		return listeners;
 	}
 
 	private Banner getBanner() {

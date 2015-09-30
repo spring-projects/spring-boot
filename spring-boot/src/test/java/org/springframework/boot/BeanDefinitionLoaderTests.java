@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.sampleconfig.MyComponent;
@@ -38,6 +39,11 @@ public class BeanDefinitionLoaderTests {
 	@Before
 	public void setup() {
 		this.registry = new StaticApplicationContext();
+	}
+
+	@After
+	public void cleanUp() {
+		this.registry.close();
 	}
 
 	@Test

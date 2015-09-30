@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration;
@@ -32,16 +33,18 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfi
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
+ * Minimal configuration required to run the Actuator with hypermedia.
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration
-@Import({ ServerPropertiesAutoConfiguration.class,
+@ImportAutoConfiguration({ ServerPropertiesAutoConfiguration.class,
 		ManagementServerPropertiesAutoConfiguration.class,
 		EmbeddedServletContainerAutoConfiguration.class,
 		DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,

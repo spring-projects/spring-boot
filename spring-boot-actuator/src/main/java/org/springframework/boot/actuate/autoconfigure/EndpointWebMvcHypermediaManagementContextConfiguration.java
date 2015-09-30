@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -61,6 +62,7 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.TypeUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -219,7 +221,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	public static class MvcEndpointAdvice implements ResponseBodyAdvice<Object> {
 
 		@Autowired
-		private HttpMessageConverters converters;
+		private List<RequestMappingHandlerAdapter> handlerAdapters;
 
 		private Map<MediaType, HttpMessageConverter<?>> converterCache = new ConcurrentHashMap<MediaType, HttpMessageConverter<?>>();
 
@@ -275,11 +277,14 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 			if (this.converterCache.containsKey(mediaType)) {
 				return (HttpMessageConverter<Object>) this.converterCache.get(mediaType);
 			}
-			for (HttpMessageConverter<?> converter : this.converters) {
-				if (selectedConverterType.isAssignableFrom(converter.getClass())
-						&& converter.canWrite(EndpointResource.class, mediaType)) {
-					this.converterCache.put(mediaType, converter);
-					return (HttpMessageConverter<Object>) converter;
+			for (RequestMappingHandlerAdapter handlerAdapter : this.handlerAdapters) {
+				for (HttpMessageConverter<?> converter : handlerAdapter
+						.getMessageConverters()) {
+					if (selectedConverterType.isAssignableFrom(converter.getClass())
+							&& converter.canWrite(EndpointResource.class, mediaType)) {
+						this.converterCache.put(mediaType, converter);
+						return (HttpMessageConverter<Object>) converter;
+					}
 				}
 			}
 			return null;

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.data.rest;
 
 import java.net.URI;
 import java.util.Date;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Test;
@@ -25,8 +26,10 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,8 +45,11 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RepositoryRestMvcAutoConfiguration}.
@@ -100,6 +106,15 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		assertThatDateIsFormattedCorrectly("objectMapper");
 	}
 
+	@Test
+	public void primaryObjectMapperIsAvailable() {
+		load(TestConfiguration.class);
+		Map<String, ObjectMapper> objectMappers = this.context
+				.getBeansOfType(ObjectMapper.class);
+		assertThat(objectMappers.size(), is(greaterThan(1)));
+		this.context.getBean(ObjectMapper.class);
+	}
+
 	public void assertThatDateIsFormattedCorrectly(String beanName)
 			throws JsonProcessingException {
 		ObjectMapper objectMapper = this.context.getBean(beanName, ObjectMapper.class);
@@ -111,14 +126,20 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
 		applicationContext.setServletContext(new MockServletContext());
-		applicationContext.register(config, EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				RepositoryRestMvcAutoConfiguration.class);
+		applicationContext.register(config, BaseConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
 		this.context = applicationContext;
+	}
+
+	@Configuration
+	@Import(EmbeddedDataSourceConfiguration.class)
+	@ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class,
+			JpaRepositoriesAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class,
+			RepositoryRestMvcAutoConfiguration.class, JacksonAutoConfiguration.class })
+	protected static class BaseConfiguration {
+
 	}
 
 	@Configuration

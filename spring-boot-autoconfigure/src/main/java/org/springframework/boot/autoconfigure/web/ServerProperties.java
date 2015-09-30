@@ -484,9 +484,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
-		 * Configured as a RemoteIpValve only if remoteIpHeader is also set.
+		 * Configures a RemoteIpValve only if remoteIpHeader is also set.
 		 */
-		private String protocolHeader;
+		private String protocolHeader = "x-forwarded-proto";
 
 		/**
 		 * Value of the protocol header that indicates that the incoming request uses SSL.
@@ -499,8 +499,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		private String portHeader = "x-forwarded-port";
 
 		/**
-		 * Name of the http header from which the remote ip is extracted. Configured as a
-		 * RemoteIpValve only if remoteIpHeader is also set.
+		 * Name of the http header from which the remote ip is extracted. Configures a
+		 * RemoteIpValve only if protocolHeader is also set.
 		 */
 		private String remoteIpHeader = "x-forwarded-for";
 

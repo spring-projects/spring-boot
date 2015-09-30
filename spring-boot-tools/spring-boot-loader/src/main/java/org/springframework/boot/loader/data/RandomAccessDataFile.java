@@ -243,6 +243,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			this.files = new ConcurrentLinkedQueue<RandomAccessFile>();
 		}
 
+		@SuppressWarnings("resource")
 		public RandomAccessFile acquire() throws IOException {
 			try {
 				this.available.acquire();

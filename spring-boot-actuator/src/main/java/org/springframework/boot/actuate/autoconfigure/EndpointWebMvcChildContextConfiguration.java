@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.hateoas.HypermediaHttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -53,6 +54,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.hateoas.LinkDiscoverer;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -69,6 +72,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @see EndpointWebMvcAutoConfiguration
  */
 @Configuration
@@ -190,6 +194,14 @@ public class EndpointWebMvcChildContextConfiguration {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			return parent.getBean("springSecurityFilterChain", Filter.class);
 		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({ LinkDiscoverer.class })
+	@Import(HypermediaHttpMessageConverterConfiguration.class)
+	@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
+	static class HypermediaConfiguration {
 
 	}
 

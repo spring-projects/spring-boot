@@ -1142,26 +1142,26 @@ curl localhost:4242/api/query?start=1h-ago&m=max:counter.status.200.root
 
 [[production-ready-metric-writers-export-to-statsd]]
 ==== Example: Export to Statsd
-If you provide a `@Bean` of type `StatsdMetricWriter` and mark it `@ExportMetricWriter` the metrics are exported to a
-statsd server:
+To export metrics to Statsd add a `spring.metrics.export.statsd.host` value to your
+`application.properties` file. Connections will be opened to port `8125` unless a
+`spring.metrics.export.statsd.port` override is provided. You can use
+`spring.metrics.export.statsd.prefix` if you want a custom prefix.
+
+Alternatively, you can provide a `@Bean` of type `StatsdMetricWriter` and mark it
+`@ExportMetricWriter`:
 
 [source,java,indent=0]
 ----
 @Value("${spring.application.name:application}.${random.value:0000}")
 private String prefix = "metrics";
 
-@Value("${statsd.host:localhost}")
-private String host = "localhost";
-
-@Value("${statsd.port:8125}")
-private int port;
-
 @Bean
 @ExportMetricWriter
 MetricWriter metricWriter() {
-	return new StatsdMetricWriter(prefix, host, port);
+	return new StatsdMetricWriter(prefix, "localhost", "8125");
 }
 ----
+
 
 
 [[production-ready-metric-writers-export-to-jmx]]

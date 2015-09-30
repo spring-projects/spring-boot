@@ -192,7 +192,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 */
 	private void applyCglibFilters(ObjectMapper mapper) {
 		mapper.setAnnotationIntrospector(new CglibAnnotationIntrospector());
-		mapper.setFilters(new SimpleFilterProvider().addFilter(CGLIB_FILTER_ID,
+		mapper.setFilterProvider(new SimpleFilterProvider().addFilter(CGLIB_FILTER_ID,
 				new CglibBeanPropertyFilter()));
 	}
 
