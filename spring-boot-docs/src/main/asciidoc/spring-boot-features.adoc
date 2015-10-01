@@ -2574,7 +2574,7 @@ server using the URL `mongodb://localhost/test`:
 	}
 ----
 
-You can set `spring.data.mongodb.uri` property to change the `url` and configure
+You can set `spring.data.mongodb.uri` property to change the URL and configure
 additional settings such as the _replica set_:
 
 [source,properties,indent=0]
@@ -2990,7 +2990,7 @@ a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a
 `CacheManager`.
 
 If for some reason you need a different `HazelcastInstance` for caching, you can
-request Spring Boot to create a separate one that will only used by the
+request Spring Boot to create a separate one that will be only used by the
 `CacheManager`:
 
 [source,properties,indent=0]

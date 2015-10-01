@@ -622,7 +622,7 @@ you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
 
 If the class is not on the classpath, you can use the `excludeName` attribute of
 the annotation and specify the fully qualified name instead. Finally, you can also
-control the list of auto-configuration classes to excludes via the
+control the list of auto-configuration classes to exclude via the
 `spring.autoconfigure.exclude` property.
 
 TIP: You can define exclusions both at the annotation level and using the property.
