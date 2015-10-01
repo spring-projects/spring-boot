@@ -21,7 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -33,6 +35,8 @@ import static org.junit.Assert.assertSame;
  * @author Alexander Tokarev.
  */
 public class DefaultAtsdNamingStrategyTests {
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 	private DefaultAtsdNamingStrategy namingStrategy;
 
 	@Before
@@ -75,38 +79,50 @@ public class DefaultAtsdNamingStrategyTests {
 		assertSame(nameTestTwo, this.namingStrategy.getName("test2"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetEmptyEntity() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Entity is required");
 		this.namingStrategy.setEntity("");
 		this.namingStrategy.afterPropertiesSet();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetNullEntity() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Entity is required");
 		this.namingStrategy.setEntity(null);
 		this.namingStrategy.afterPropertiesSet();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetEmptyTagName() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Empty tag key");
 		this.namingStrategy.setTags(Collections.singletonMap("", "test"));
 		this.namingStrategy.afterPropertiesSet();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetEmptyTagValue() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Empty tag value");
 		this.namingStrategy.setTags(Collections.singletonMap("test", ""));
 		this.namingStrategy.afterPropertiesSet();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetNullTagName() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Empty tag key");
 		this.namingStrategy.setTags(Collections.singletonMap((String) null, "test"));
 		this.namingStrategy.afterPropertiesSet();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetNullTagValue() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Empty tag value");
 		this.namingStrategy.setTags(Collections.singletonMap("test", (String) null));
 		this.namingStrategy.afterPropertiesSet();
 	}

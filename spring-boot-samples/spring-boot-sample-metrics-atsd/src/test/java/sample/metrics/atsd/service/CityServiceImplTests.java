@@ -1,7 +1,9 @@
 package sample.metrics.atsd.service;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import sample.metrics.atsd.domain.City;
@@ -14,6 +16,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class CityServiceImplTests {
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 	private CityServiceImpl cityService;
 	private CounterService counterService;
 	private CityRepository cityRepository;
@@ -31,14 +35,15 @@ public class CityServiceImplTests {
 	public void testGetCity() throws Exception {
 		City city = new City();
 		when(cityRepository.findById(2L)).thenReturn(city);
-		when(cityRepository.findById(3L)).thenThrow(new EmptyResultDataAccessException(1));
 		assertSame(city, cityService.getCity(2L));
-		try {
-			cityService.getCity(3L);
-			fail("An exception must be thrown");
-		} catch (IllegalArgumentException e) {
-			// expected
-		}
+	}
+
+	@Test
+	public void testGetCityNotFound() throws Exception {
+		when(cityRepository.findById(3L)).thenThrow(new EmptyResultDataAccessException(1));
+		thrown.expect(IllegalArgumentException.class);
+		thrown.expectMessage("City not found for id=3");
+		cityService.getCity(3L);
 	}
 
 	@Test

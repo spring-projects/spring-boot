@@ -19,7 +19,9 @@ package org.springframework.boot.actuate.metrics.atsd;
 import java.util.Date;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,6 +39,8 @@ import org.springframework.web.client.RestTemplate;
  * @author Alexander Tokarev.
  */
 public class AtsdMetricWriterTests {
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 	private AtsdMetricWriter atsdMetricWriter;
 	private MockRestServiceServer mockServer;
 
@@ -89,26 +93,34 @@ public class AtsdMetricWriterTests {
 		this.mockServer.verify();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetInvalidBufferSize() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Buffer size must be greater than 0");
 		this.atsdMetricWriter.setBufferSize(0);
 		this.atsdMetricWriter.afterPropertiesSet();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetEmptyUsername() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Username is required");
 		this.atsdMetricWriter.setUsername("");
 		this.atsdMetricWriter.afterPropertiesSet();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetEmptyPassword() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Password is required");
 		this.atsdMetricWriter.setPassword("");
 		this.atsdMetricWriter.afterPropertiesSet();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testAfterPropertiesSetEmptyUrl() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Url is required");
 		this.atsdMetricWriter.setUrl(null);
 		this.atsdMetricWriter.afterPropertiesSet();
 	}
