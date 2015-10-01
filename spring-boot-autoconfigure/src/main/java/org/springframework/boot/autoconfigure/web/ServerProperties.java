@@ -96,6 +96,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer,
 	 */
 	private String displayName = "application";
 
+	@NestedConfigurationProperty
+	private ErrorProperties error = new ErrorProperties();
+
 	/**
 	 * Path of the main dispatcher servlet.
 	 */
@@ -326,6 +329,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer,
 	@Deprecated
 	public void setSessionTimeout(Integer sessionTimeout) {
 		this.session.setTimeout(sessionTimeout);
+	}
+
+	public ErrorProperties getError() {
+		return this.error;
 	}
 
 	public Session getSession() {

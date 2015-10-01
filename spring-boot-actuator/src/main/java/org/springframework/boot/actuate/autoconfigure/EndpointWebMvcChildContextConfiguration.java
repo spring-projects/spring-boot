@@ -31,7 +31,6 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration.ManagementWebSecurityConfigurerAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.ManagementErrorEndpoint;
@@ -83,9 +82,6 @@ public class EndpointWebMvcChildContextConfiguration {
 	private static Log logger = LogFactory
 			.getLog(EndpointWebMvcChildContextConfiguration.class);
 
-	@Value("${error.path:/error}")
-	private String errorPath = "/error";
-
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 	public DispatcherServlet dispatcherServlet() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
@@ -123,8 +119,9 @@ public class EndpointWebMvcChildContextConfiguration {
 	 * disabled. So we expose the same feature but only for machine endpoints.
 	 */
 	@Bean
-	public ManagementErrorEndpoint errorEndpoint(final ErrorAttributes errorAttributes) {
-		return new ManagementErrorEndpoint(this.errorPath, errorAttributes);
+	public ManagementErrorEndpoint errorEndpoint(ServerProperties serverProperties,
+			final ErrorAttributes errorAttributes) {
+		return new ManagementErrorEndpoint(serverProperties.getError().getPath(), errorAttributes);
 	}
 
 	/**
@@ -208,9 +205,6 @@ public class EndpointWebMvcChildContextConfiguration {
 	static class ServerCustomization implements EmbeddedServletContainerCustomizer,
 			Ordered {
 
-		@Value("${error.path:/error}")
-		private String errorPath = "/error";
-
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
@@ -242,7 +236,7 @@ public class EndpointWebMvcChildContextConfiguration {
 			// and add the management-specific bits
 			container.setPort(this.managementServerProperties.getPort());
 			container.setAddress(this.managementServerProperties.getAddress());
-			container.addErrorPages(new ErrorPage(this.errorPath));
+			container.addErrorPages(new ErrorPage(this.server.getError().getPath()));
 		}
 
 	}

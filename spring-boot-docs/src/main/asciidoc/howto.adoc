@@ -1744,7 +1744,7 @@ in the '`Production-ready features`' section.
 Spring Boot installs a '`whitelabel`' error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
 see a sensible response with the right error code). To switch it off you can set
-`error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
+`server.error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
 will want to add your own error page replacing the whitelabel one. Exactly how you do this
 depends on the templating technology that you are using. For example, if you are using
 Thymeleaf you would add an `error.html` template and if you are using FreeMarker you would

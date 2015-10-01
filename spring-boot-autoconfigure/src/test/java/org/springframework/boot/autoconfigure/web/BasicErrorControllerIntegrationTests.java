@@ -95,7 +95,7 @@ public class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClientTracePramamStacktrace() throws Exception {
-		load("--error.include-stacktrace=on-trace-param");
+		load("--server.error.include-stacktrace=on-trace-param");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
 				createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
@@ -106,7 +106,7 @@ public class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClientNoStacktrace() throws Exception {
-		load("--error.include-stacktrace=never");
+		load("--server.error.include-stacktrace=never");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
 				createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
@@ -118,7 +118,7 @@ public class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClientAlwaysStacktrace() throws Exception {
-		load("--error.include-stacktrace=always");
+		load("--server.error.include-stacktrace=always");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
 				createUrl("?trace=false"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
