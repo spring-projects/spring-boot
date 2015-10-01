@@ -165,6 +165,15 @@ public class SpringApplication {
 
 	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
 
+	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
+	static {
+		Set<String> names = new HashSet<String>();
+		names.add(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
+		names.add(StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME);
+		names.add(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME);
+		SERVLET_ENVIRONMENT_SOURCE_NAMES = Collections.unmodifiableSet(names);
+	}
+
 	private final Log log = LogFactory.getLog(getClass());
 
 	private final Set<Object> sources = new LinkedHashSet<Object>();
@@ -308,6 +317,10 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, args);
 		listeners.environmentPrepared(environment);
+		if (environment instanceof StandardServletEnvironment && !this.webEnvironment) {
+			environment = convertToStandardEnvironment(environment);
+		}
+
 		if (this.showBanner) {
 			printBanner(environment);
 		}
@@ -419,6 +432,29 @@ public class SpringApplication {
 	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
+	}
+
+	private ConfigurableEnvironment convertToStandardEnvironment(
+			ConfigurableEnvironment environment) {
+		StandardEnvironment result = new StandardEnvironment();
+		removeAllPropertySources(result.getPropertySources());
+		result.setActiveProfiles(environment.getActiveProfiles());
+		for (PropertySource<?> propertySource : environment.getPropertySources()) {
+			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
+				result.getPropertySources().addLast(propertySource);
+			}
+		}
+		return result;
+	}
+
+	private void removeAllPropertySources(MutablePropertySources propertySources) {
+		Set<String> names = new HashSet<String>();
+		for (PropertySource<?> propertySource : propertySources) {
+			names.add(propertySource.getName());
+		}
+		for (String name : names) {
+			propertySources.remove(name);
+		}
 	}
 
 	/**

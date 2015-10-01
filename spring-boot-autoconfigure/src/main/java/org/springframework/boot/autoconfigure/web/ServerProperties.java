@@ -91,20 +91,21 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 */
 	private String displayName = "application";
 
-	private Session session = new Session();
-
-	@NestedConfigurationProperty
-	private Ssl ssl;
-
 	/**
 	 * Path of the main dispatcher servlet.
 	 */
 	@NotNull
 	private String servletPath = "/";
 
-	private final Tomcat tomcat = new Tomcat();
+	/**
+	 * ServletContext parameters.
+	 */
+	private final Map<String, String> contextParameters = new HashMap<String, String>();
 
-	private final Undertow undertow = new Undertow();
+	private Session session = new Session();
+
+	@NestedConfigurationProperty
+	private Ssl ssl;
 
 	@NestedConfigurationProperty
 	private Compression compression = new Compression();
@@ -112,146 +113,13 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	@NestedConfigurationProperty
 	private JspServlet jspServlet;
 
-	/**
-	 * ServletContext parameters.
-	 */
-	private final Map<String, String> contextParameters = new HashMap<String, String>();
+	private final Tomcat tomcat = new Tomcat();
+
+	private final Undertow undertow = new Undertow();
 
 	@Override
 	public int getOrder() {
 		return 0;
-	}
-
-	public Tomcat getTomcat() {
-		return this.tomcat;
-	}
-
-	public Undertow getUndertow() {
-		return this.undertow;
-	}
-
-	public Compression getCompression() {
-		return this.compression;
-	}
-
-	public String getContextPath() {
-		return this.contextPath;
-	}
-
-	public void setContextPath(String contextPath) {
-		this.contextPath = cleanContextPath(contextPath);
-	}
-
-	private String cleanContextPath(String contextPath) {
-		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
-			return contextPath.substring(0, contextPath.length() - 1);
-		}
-		return contextPath;
-	}
-
-	public String getDisplayName() {
-		return this.displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	public String getServletPath() {
-		return this.servletPath;
-	}
-
-	public String getServletMapping() {
-		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
-			return "/";
-		}
-		if (this.servletPath.contains("*")) {
-			return this.servletPath;
-		}
-		if (this.servletPath.endsWith("/")) {
-			return this.servletPath + "*";
-		}
-		return this.servletPath + "/*";
-	}
-
-	public String getServletPrefix() {
-		String result = this.servletPath;
-		if (result.contains("*")) {
-			result = result.substring(0, result.indexOf("*"));
-		}
-		if (result.endsWith("/")) {
-			result = result.substring(0, result.length() - 1);
-		}
-		return result;
-	}
-
-	public void setServletPath(String servletPath) {
-		this.servletPath = servletPath;
-	}
-
-	public Integer getPort() {
-		return this.port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-
-	public InetAddress getAddress() {
-		return this.address;
-	}
-
-	public void setAddress(InetAddress address) {
-		this.address = address;
-	}
-
-	/**
-	 * Get the session timeout.
-	 * @return the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "server.session.timeout")
-	public Integer getSessionTimeout() {
-		return this.session.getTimeout();
-	}
-
-	/**
-	 * Set the session timeout.
-	 * @param sessionTimeout the session timeout
-	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
-	 */
-	@Deprecated
-	public void setSessionTimeout(Integer sessionTimeout) {
-		this.session.setTimeout(sessionTimeout);
-	}
-
-	public Session getSession() {
-		return this.session;
-	}
-
-	public Ssl getSsl() {
-		return this.ssl;
-	}
-
-	public void setSsl(Ssl ssl) {
-		this.ssl = ssl;
-	}
-
-	public JspServlet getJspServlet() {
-		return this.jspServlet;
-	}
-
-	public void setJspServlet(JspServlet jspServlet) {
-		this.jspServlet = jspServlet;
-	}
-
-	public Map<String, String> getContextParameters() {
-		return this.contextParameters;
-	}
-
-	public void setLoader(String value) {
-		// no op to support Tomcat running as a traditional container (not embedded)
 	}
 
 	@Override
@@ -294,6 +162,38 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 				getContextParameters()));
 	}
 
+	public String getServletMapping() {
+		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
+			return "/";
+		}
+		if (this.servletPath.contains("*")) {
+			return this.servletPath;
+		}
+		if (this.servletPath.endsWith("/")) {
+			return this.servletPath + "*";
+		}
+		return this.servletPath + "/*";
+	}
+
+	public String getPath(String path) {
+		String prefix = getServletPrefix();
+		if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
+		return prefix + path;
+	}
+
+	public String getServletPrefix() {
+		String result = this.servletPath;
+		if (result.contains("*")) {
+			result = result.substring(0, result.indexOf("*"));
+		}
+		if (result.endsWith("/")) {
+			result = result.substring(0, result.length() - 1);
+		}
+		return result;
+	}
+
 	public String[] getPathsArray(Collection<String> paths) {
 		String[] result = new String[paths.size()];
 		int i = 0;
@@ -312,12 +212,116 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		return result;
 	}
 
-	public String getPath(String path) {
-		String prefix = getServletPrefix();
-		if (!path.startsWith("/")) {
-			path = "/" + path;
+	public void setLoader(String value) {
+		// no op to support Tomcat running as a traditional container (not embedded)
+	}
+
+	public Integer getPort() {
+		return this.port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public InetAddress getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(InetAddress address) {
+		this.address = address;
+	}
+
+	public String getContextPath() {
+		return this.contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = cleanContextPath(contextPath);
+	}
+
+	private String cleanContextPath(String contextPath) {
+		if (StringUtils.hasText(contextPath) && contextPath.endsWith("/")) {
+			return contextPath.substring(0, contextPath.length() - 1);
 		}
-		return prefix + path;
+		return contextPath;
+	}
+
+	public String getDisplayName() {
+		return this.displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getServletPath() {
+		return this.servletPath;
+	}
+
+	public void setServletPath(String servletPath) {
+		this.servletPath = servletPath;
+	}
+
+	public Map<String, String> getContextParameters() {
+		return this.contextParameters;
+	}
+
+	/**
+	 * Get the session timeout.
+	 * @return the session timeout
+	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
+	 */
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "server.session.timeout")
+	public Integer getSessionTimeout() {
+		return this.session.getTimeout();
+	}
+
+	/**
+	 * Set the session timeout.
+	 * @param sessionTimeout the session timeout
+	 * @deprecated since 1.3.0 in favor of {@code session.timeout}.
+	 */
+	@Deprecated
+	public void setSessionTimeout(Integer sessionTimeout) {
+		this.session.setTimeout(sessionTimeout);
+	}
+
+	public Session getSession() {
+		return this.session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
+	public Compression getCompression() {
+		return this.compression;
+	}
+
+	public JspServlet getJspServlet() {
+		return this.jspServlet;
+	}
+
+	public void setJspServlet(JspServlet jspServlet) {
+		this.jspServlet = jspServlet;
+	}
+
+	public Tomcat getTomcat() {
+		return this.tomcat;
+	}
+
+	public Undertow getUndertow() {
+		return this.undertow;
 	}
 
 	public static class Session {

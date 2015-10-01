@@ -257,9 +257,10 @@ public class ManagementWebSecurityAutoConfiguration {
 				}
 				AuthenticationEntryPoint entryPoint = entryPoint();
 				http.exceptionHandling().authenticationEntryPoint(entryPoint);
+				// Match all the requests for actuator endpoints ...
 				http.requestMatcher(matcher);
-				configureAuthorizeRequests(new EndpointPathRequestMatcher(false),
-						http.authorizeRequests());
+				// ... but permitAll() for the non-sensitive ones
+				configurePermittedRequests(http.authorizeRequests());
 				http.httpBasic().authenticationEntryPoint(entryPoint);
 				// No cookies for management endpoints by default
 				http.csrf().disable();
@@ -280,7 +281,9 @@ public class ManagementWebSecurityAutoConfiguration {
 						this.server.getPath(path) + "/**");
 				return matcher;
 			}
-			return new EndpointPathRequestMatcher();
+			// Match everything, including the sensitive and non-sensitive paths
+			return new EndpointPathRequestMatcher(
+					EndpointPaths.get(this.endpointHandlerMapping));
 		}
 
 		private AuthenticationEntryPoint entryPoint() {
@@ -289,25 +292,24 @@ public class ManagementWebSecurityAutoConfiguration {
 			return entryPoint;
 		}
 
-		private void configureAuthorizeRequests(
-				RequestMatcher permitAllMatcher,
+		private void configurePermittedRequests(
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
-			requests.requestMatchers(permitAllMatcher).permitAll();
+			// Permit access to the non-sensitive endpoints
+			requests.requestMatchers(
+					new EndpointPathRequestMatcher(EndpointPaths.get(
+							this.endpointHandlerMapping, false))).permitAll();
+			// Restrict the rest to the configured role
 			requests.anyRequest().hasRole(this.management.getSecurity().getRole());
 		}
 
 		private final class EndpointPathRequestMatcher implements RequestMatcher {
 
-			private boolean sensitive;
-
 			private RequestMatcher delegate;
 
-			EndpointPathRequestMatcher() {
-				this(true);
-			}
+			private String[] paths;
 
-			EndpointPathRequestMatcher(boolean sensitive) {
-				this.sensitive = sensitive;
+			EndpointPathRequestMatcher(String[] paths) {
+				this.paths = paths;
 			}
 
 			@Override
@@ -323,33 +325,41 @@ public class ManagementWebSecurityAutoConfiguration {
 			private RequestMatcher createDelegate() {
 				ServerProperties server = ManagementWebSecurityConfigurerAdapter.this.server;
 				List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
-				for (String path : getPaths()) {
+				for (String path : this.paths) {
 					matchers.add(new AntPathRequestMatcher(server.getPath(path)));
 				}
 				return (matchers.isEmpty() ? AnyRequestMatcher.INSTANCE
 						: new OrRequestMatcher(matchers));
 			}
 
-			private String[] getPaths() {
-				EndpointHandlerMapping endpointHandlerMapping = ManagementWebSecurityConfigurerAdapter.this.endpointHandlerMapping;
-				if (this.sensitive) {
-					return EndpointPaths.get(endpointHandlerMapping);
-				}
-				return EndpointPaths.get(endpointHandlerMapping, false);
-			}
-
 		}
 
 	}
 
+	/**
+	 * Helper class for extracting lists of paths from the EndpointHandlerMapping.
+	 */
 	private static class EndpointPaths {
 
+		/**
+		 * Get all the paths (sensitive and unsensitive).
+		 *
+		 * @param endpointHandlerMapping the mapping
+		 * @return all paths
+		 */
 		public static String[] get(EndpointHandlerMapping endpointHandlerMapping) {
 			String[] insecure = get(endpointHandlerMapping, false);
 			String[] secure = get(endpointHandlerMapping, true);
 			return StringUtils.mergeStringArrays(insecure, secure);
 		}
 
+		/**
+		 * Get all the paths that are either sensitive or unsensitive.
+		 *
+		 * @param endpointHandlerMapping the mapping
+		 * @param secure flag to say if we want the secure ones
+		 * @return the relevant paths
+		 */
 		public static String[] get(EndpointHandlerMapping endpointHandlerMapping,
 				boolean secure) {
 			if (endpointHandlerMapping == null) {
@@ -362,14 +372,14 @@ public class ManagementWebSecurityAutoConfiguration {
 					String path = endpointHandlerMapping.getPath(endpoint.getPath());
 					paths.add(path);
 					if (!path.equals("")) {
-						// Ensure that nested paths are secured
-						paths.add(path + "/**");
-						// Add Spring MVC-generated additional paths
-						paths.add(path + ".*");
+						if (secure) {
+							// Ensure that nested paths are secured
+							paths.add(path + "/**");
+							// Add Spring MVC-generated additional paths
+							paths.add(path + ".*");
+						}
 					}
-					else {
-						paths.add("/");
-					}
+					paths.add(path + "/");
 				}
 			}
 			return paths.toArray(new String[paths.size()]);

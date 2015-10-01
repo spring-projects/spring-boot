@@ -43,7 +43,7 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources()));
 		Boolean match = properties.getChain().getEnabled();
 		return new ConditionOutcome(match, "Resource chain is "
-				+ (match ? "enabled" : "disabled" + ")"));
+				+ (match ? "enabled" : "disabled"));
 	}
 
 }

@@ -39,6 +39,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -64,6 +65,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -614,6 +616,29 @@ public class SpringApplicationTests {
 		ApplicationArguments args = this.context.getBean(ApplicationArguments.class);
 		assertThat(args.getNonOptionArgs(), equalTo(Arrays.asList("spring", "boot")));
 		assertThat(args.containsOption("debug"), equalTo(true));
+	}
+
+	@Test
+	public void webEnvironmentSwitchedOffInListener() throws Exception {
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
+		application
+				.addListeners(new ApplicationListener<ApplicationEnvironmentPreparedEvent>() {
+
+					@Override
+					public void onApplicationEvent(
+							ApplicationEnvironmentPreparedEvent event) {
+						assertTrue(event.getEnvironment() instanceof StandardServletEnvironment);
+						EnvironmentTestUtils.addEnvironment(event.getEnvironment(),
+								"foo=bar");
+						event.getSpringApplication().setWebEnvironment(false);
+					}
+
+				});
+		this.context = application.run();
+		assertFalse(this.context.getEnvironment() instanceof StandardServletEnvironment);
+		assertEquals("bar", this.context.getEnvironment().getProperty("foo"));
+		assertEquals("test", this.context.getEnvironment().getPropertySources()
+				.iterator().next().getName());
 	}
 
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
