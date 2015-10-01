@@ -148,7 +148,7 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 			else if (isStoppedOrFailed(previousExecution) && job.isRestartable()) {
 				// Retry a failed or stopped execution
 				parameters = previousExecution.getJobParameters();
-				// Non-identifying additional parameters can be added to a retry
+				// Non-identifying additional parameters can be removed to a retry
 				removeNonIdentifying(additionals);
 			}
 			else if (incrementer != null) {
