@@ -47,6 +47,7 @@ import org.springframework.boot.context.embedded.InitParameterConfiguringServlet
 import org.springframework.boot.context.embedded.JspServlet;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -102,6 +103,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	 */
 	private final Map<String, String> contextParameters = new HashMap<String, String>();
 
+	/**
+	 * If X-Forwarded-* headers should be applied to the HttpRequest.
+	 */
+	private boolean useForwardHeaders;
+
 	private Session session = new Session();
 
 	@NestedConfigurationProperty
@@ -114,6 +120,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	private JspServlet jspServlet;
 
 	private final Tomcat tomcat = new Tomcat();
+
+	private final Jetty jetty = new Jetty();
 
 	private final Undertow undertow = new Undertow();
 
@@ -150,11 +158,16 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			container.setCompression(getCompression());
 		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
-			getTomcat()
-					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
+			getTomcat().customizeTomcat(this,
+					(TomcatEmbeddedServletContainerFactory) container);
 		}
+		if (container instanceof JettyEmbeddedServletContainerFactory) {
+			getJetty().customizeJetty(this,
+					(JettyEmbeddedServletContainerFactory) container);
+		}
+
 		if (container instanceof UndertowEmbeddedServletContainerFactory) {
-			getUndertow().customizeUndertow(
+			getUndertow().customizeUndertow(this,
 					(UndertowEmbeddedServletContainerFactory) container);
 		}
 		container.addInitializers(new SessionConfiguringInitializer(this.session));
@@ -267,6 +280,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		return this.contextParameters;
 	}
 
+	public boolean isUseForwardHeaders() {
+		return this.useForwardHeaders;
+	}
+
+	public void setUseForwardHeaders(boolean useForwardHeaders) {
+		this.useForwardHeaders = useForwardHeaders;
+	}
+
 	/**
 	 * Get the session timeout.
 	 * @return the session timeout
@@ -318,6 +339,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	public Tomcat getTomcat() {
 		return this.tomcat;
+	}
+
+	private Jetty getJetty() {
+		return this.jetty;
 	}
 
 	public Undertow getUndertow() {
@@ -488,9 +513,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
-		 * Configures a RemoteIpValve only if remoteIpHeader is also set.
 		 */
-		private String protocolHeader = "x-forwarded-proto";
+		private String protocolHeader;
 
 		/**
 		 * Value of the protocol header that indicates that the incoming request uses SSL.
@@ -500,13 +524,12 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		/**
 		 * Name of the HTTP header used to override the original port value.
 		 */
-		private String portHeader = "x-forwarded-port";
+		private String portHeader = "X-Forwarded-Port";
 
 		/**
-		 * Name of the http header from which the remote ip is extracted. Configures a
-		 * RemoteIpValve only if protocolHeader is also set.
+		 * Name of the http header from which the remote ip is extracted..
 		 */
-		private String remoteIpHeader = "x-forwarded-for";
+		private String remoteIpHeader;
 
 		/**
 		 * Tomcat base directory. If not specified a temporary directory will be used.
@@ -659,12 +682,13 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			this.uriEncoding = uriEncoding;
 		}
 
-		void customizeTomcat(TomcatEmbeddedServletContainerFactory factory) {
+		void customizeTomcat(ServerProperties serverProperties,
+				TomcatEmbeddedServletContainerFactory factory) {
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
 			}
 			customizeBackgroundProcessorDelay(factory);
-			customizeHeaders(factory);
+			customizeRemoteIpValve(serverProperties, factory);
 			if (this.maxThreads > 0) {
 				customizeMaxThreads(factory);
 			}
@@ -691,14 +715,20 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			});
 		}
 
-		private void customizeHeaders(TomcatEmbeddedServletContainerFactory factory) {
-			String remoteIpHeader = getRemoteIpHeader();
+		private void customizeRemoteIpValve(ServerProperties properties,
+				TomcatEmbeddedServletContainerFactory factory) {
 			String protocolHeader = getProtocolHeader();
-			if (StringUtils.hasText(remoteIpHeader)
-					&& StringUtils.hasText(protocolHeader)) {
+			String remoteIpHeader = getRemoteIpHeader();
+			// For back compatibility the valve is also enabled if protocol-header is set
+			if (StringUtils.hasText(protocolHeader)
+					|| StringUtils.hasText(remoteIpHeader)
+					|| properties.isUseForwardHeaders()) {
 				RemoteIpValve valve = new RemoteIpValve();
-				valve.setRemoteIpHeader(remoteIpHeader);
-				valve.setProtocolHeader(protocolHeader);
+				valve.setProtocolHeader(StringUtils.hasLength(protocolHeader) ? protocolHeader
+						: "X-Forwarded-Proto");
+				if (StringUtils.hasLength(remoteIpHeader)) {
+					valve.setRemoteIpHeader(remoteIpHeader);
+				}
 				// The internal proxies default to a white list of "safe" internal IP
 				// addresses
 				valve.setInternalProxies(getInternalProxies());
@@ -818,6 +848,15 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			public void setSuffix(String suffix) {
 				this.suffix = suffix;
 			}
+		}
+
+	}
+
+	private static class Jetty {
+
+		void customizeJetty(ServerProperties serverProperties,
+				JettyEmbeddedServletContainerFactory factory) {
+			factory.setUseForwardHeaders(serverProperties.isUseForwardHeaders());
 		}
 
 	}
@@ -958,7 +997,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			getAccesslog().setDir(accessLogDir);
 		}
 
-		void customizeUndertow(UndertowEmbeddedServletContainerFactory factory) {
+		void customizeUndertow(ServerProperties serverProperties,
+				UndertowEmbeddedServletContainerFactory factory) {
 			factory.setBufferSize(this.bufferSize);
 			factory.setBuffersPerRegion(this.buffersPerRegion);
 			factory.setIoThreads(this.ioThreads);
@@ -967,6 +1007,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			factory.setAccessLogDirectory(this.accesslog.dir);
 			factory.setAccessLogPattern(this.accesslog.pattern);
 			factory.setAccessLogEnabled(this.accesslog.enabled);
+			factory.setUseForwardHeaders(serverProperties.isUseForwardHeaders());
 		}
 
 		public static class Accesslog {

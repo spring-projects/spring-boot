@@ -39,7 +39,9 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -50,6 +52,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -252,27 +255,38 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.remote_ip_header", "");
 		map.put("server.tomcat.protocol_header", "");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-
 		assertEquals(0, container.getValves().size());
 	}
 
 	@Test
 	public void defaultTomcatRemoteIpValve() throws Exception {
-		// Since 1.3.0 no need to explicitly set header names
+		Map<String, String> map = new HashMap<String, String>();
+		// Since 1.1.7 you need to specify at least the protocol
+		map.put("server.tomcat.protocol_header", "X-Forwarded-Proto");
+		map.put("server.tomcat.remote_ip_header", "X-Forwarded-For");
+		bindProperties(map);
+		testRemoteIpValveConfigured();
+	}
+
+	@Test
+	public void setUseForwardHeadersTomcat() throws Exception {
+		// Since 1.3.0 no need to explicitly set header names if use-forward-header=true
+		this.properties.setUseForwardHeaders(true);
+		testRemoteIpValveConfigured();
+	}
+
+	private void testRemoteIpValveConfigured() {
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-
 		assertEquals(1, container.getValves().size());
 		Valve valve = container.getValves().iterator().next();
 		assertThat(valve, instanceOf(RemoteIpValve.class));
 		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
-		assertEquals("x-forwarded-proto", remoteIpValve.getProtocolHeader());
+		assertEquals("X-Forwarded-Proto", remoteIpValve.getProtocolHeader());
 		assertEquals("https", remoteIpValve.getProtocolHeaderHttpsValue());
-		assertEquals("x-forwarded-for", remoteIpValve.getRemoteIpHeader());
-
+		assertEquals("X-Forwarded-For", remoteIpValve.getRemoteIpHeader());
 		String expectedInternalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
 				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
 				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
@@ -280,7 +294,6 @@ public class ServerPropertiesTests {
 				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
 				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
 				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
-
 		assertEquals(expectedInternalProxies, remoteIpValve.getInternalProxies());
 	}
 
@@ -306,6 +319,22 @@ public class ServerPropertiesTests {
 		assertEquals("x-my-remote-ip-header", remoteIpValve.getRemoteIpHeader());
 		assertEquals("x-my-forward-port", remoteIpValve.getPortHeader());
 		assertEquals("192.168.0.1", remoteIpValve.getInternalProxies());
+	}
+
+	@Test
+	public void setUseForwardHeadersUndertow() throws Exception {
+		this.properties.setUseForwardHeaders(true);
+		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void setUseForwardHeadersJetty() throws Exception {
+		this.properties.setUseForwardHeaders(true);
+		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(true);
 	}
 
 	private void bindProperties(Map<String, String> map) {
