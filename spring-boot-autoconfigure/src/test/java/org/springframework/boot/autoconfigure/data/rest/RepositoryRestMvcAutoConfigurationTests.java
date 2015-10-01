@@ -90,8 +90,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	@Test
 	public void testWithCustomSettings() throws Exception {
-		load(TestConfiguration.class,
-				"spring.data.rest.default-page-size:42",
+		load(TestConfiguration.class, "spring.data.rest.default-page-size:42",
 				"spring.data.rest.max-page-size:78",
 				"spring.data.rest.page-param-name:_page",
 				"spring.data.rest.limit-param-name:_limit",
@@ -106,13 +105,18 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		assertEquals("Custom default page size not set", 42, bean.getDefaultPageSize());
 		assertEquals("Custom max page size not set", 78, bean.getMaxPageSize());
 		assertEquals("Custom page param name not set", "_page", bean.getPageParamName());
-		assertEquals("Custom limit param name not set", "_limit", bean.getLimitParamName());
+		assertEquals("Custom limit param name not set", "_limit",
+				bean.getLimitParamName());
 		assertEquals("Custom sort param name not set", "_sort", bean.getSortParamName());
 		assertEquals("Custom default media type not set",
-				MediaType.parseMediaType("application/my-json"), bean.getDefaultMediaType());
-		assertEquals("Custom return body on create flag not set", false, bean.returnBodyOnCreate(null));
-		assertEquals("Custom return body on update flag not set", false, bean.returnBodyOnUpdate(null));
-		assertEquals("Custom enable enum translation flag not set", true, bean.isEnableEnumTranslation());
+				MediaType.parseMediaType("application/my-json"),
+				bean.getDefaultMediaType());
+		assertEquals("Custom return body on create flag not set", false,
+				bean.returnBodyOnCreate(null));
+		assertEquals("Custom return body on update flag not set", false,
+				bean.returnBodyOnUpdate(null));
+		assertEquals("Custom enable enum translation flag not set", true,
+				bean.isEnableEnumTranslation());
 	}
 
 	@Test

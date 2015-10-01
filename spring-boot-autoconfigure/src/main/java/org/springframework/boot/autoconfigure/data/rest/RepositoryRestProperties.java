@@ -50,12 +50,14 @@ public class RepositoryRestProperties {
 	private String pageParamName;
 
 	/**
-	 * Name of the URL query string parameter that indicates how many results to return at once.
+	 * Name of the URL query string parameter that indicates how many results to return at
+	 * once.
 	 */
 	private String limitParamName;
 
 	/**
-	 * Name of the URL query string parameter that indicates what direction to sort results.
+	 * Name of the URL query string parameter that indicates what direction to sort
+	 * results.
 	 */
 	private String sortParamName;
 
@@ -75,43 +77,10 @@ public class RepositoryRestProperties {
 	private Boolean returnBodyOnUpdate;
 
 	/**
-	 * Enable enum value translation via the Spring Data REST default resource bundle. Will use
-	 * the fully qualified enum name as key.
+	 * Enable enum value translation via the Spring Data REST default resource bundle.
+	 * Will use the fully qualified enum name as key.
 	 */
 	private Boolean enableEnumTranslation;
-
-	public void applyTo(RepositoryRestConfiguration configuration) {
-		if (this.basePath != null) {
-			configuration.setBasePath(this.basePath);
-		}
-		if (this.defaultPageSize != null) {
-			configuration.setDefaultPageSize(this.defaultPageSize);
-		}
-		if (this.maxPageSize != null) {
-			configuration.setMaxPageSize(this.maxPageSize);
-		}
-		if (this.pageParamName != null) {
-			configuration.setPageParamName(this.pageParamName);
-		}
-		if (this.limitParamName != null) {
-			configuration.setLimitParamName(this.limitParamName);
-		}
-		if (this.sortParamName != null) {
-			configuration.setSortParamName(this.sortParamName);
-		}
-		if (this.defaultMediaType != null) {
-			configuration.setDefaultMediaType(this.defaultMediaType);
-		}
-		if (this.returnBodyOnCreate != null) {
-			configuration.setReturnBodyOnCreate(this.returnBodyOnCreate);
-		}
-		if (this.returnBodyOnUpdate != null) {
-			configuration.setReturnBodyOnUpdate(this.returnBodyOnUpdate);
-		}
-		if (this.enableEnumTranslation != null) {
-			configuration.setEnableEnumTranslation(this.enableEnumTranslation);
-		}
-	}
 
 	public String getBasePath() {
 		return this.basePath;
@@ -191,6 +160,39 @@ public class RepositoryRestProperties {
 
 	public void setEnableEnumTranslation(Boolean enableEnumTranslation) {
 		this.enableEnumTranslation = enableEnumTranslation;
+	}
+
+	public void applyTo(RepositoryRestConfiguration configuration) {
+		if (this.basePath != null) {
+			configuration.setBasePath(this.basePath);
+		}
+		if (this.defaultPageSize != null) {
+			configuration.setDefaultPageSize(this.defaultPageSize);
+		}
+		if (this.maxPageSize != null) {
+			configuration.setMaxPageSize(this.maxPageSize);
+		}
+		if (this.pageParamName != null) {
+			configuration.setPageParamName(this.pageParamName);
+		}
+		if (this.limitParamName != null) {
+			configuration.setLimitParamName(this.limitParamName);
+		}
+		if (this.sortParamName != null) {
+			configuration.setSortParamName(this.sortParamName);
+		}
+		if (this.defaultMediaType != null) {
+			configuration.setDefaultMediaType(this.defaultMediaType);
+		}
+		if (this.returnBodyOnCreate != null) {
+			configuration.setReturnBodyOnCreate(this.returnBodyOnCreate);
+		}
+		if (this.returnBodyOnUpdate != null) {
+			configuration.setReturnBodyOnUpdate(this.returnBodyOnUpdate);
+		}
+		if (this.enableEnumTranslation != null) {
+			configuration.setEnableEnumTranslation(this.enableEnumTranslation);
+		}
 	}
 
 }
