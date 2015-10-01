@@ -872,11 +872,15 @@ a very fast feedback loop for code changes. By default, any entry on the classpa
 points to a folder will be monitored for changes.
 
 NOTE: You can also start your application via the supported build plugins (i.e. Maven and
-Gradle) as long as forking is enabled since DevTools need an isolated application classloader
-to operate properly.
+Gradle) as long as forking is enabled since DevTools need an isolated application
+classloader to operate properly.
 
 TIP: Automatic restart works very well when used with LiveReload.
 <<using-boot-devtools-livereload,See below>> for details.
+
+NOTE: If you use JRebel automatic restarts will be disabled in favor of dynamic class
+reloading. Other devtools features (such as LiveReload and property overrides) can still
+be used.
 
 .Restart vs Reload
 ****
