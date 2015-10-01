@@ -16,12 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import static org.hamcrest.Matchers.startsWith;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
@@ -47,6 +41,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * Integration tests for the Actuator's MVC endpoints.
  *
@@ -61,6 +61,7 @@ public class MvcEndpointIntegrationTests {
 	@After
 	public void close() {
 		TestSecurityContextHolder.clearContext();
+		this.context.close();
 	}
 
 	@Test
@@ -131,7 +132,8 @@ public class MvcEndpointIntegrationTests {
 	@Test
 	public void sensitiveEndpointsAreSecureWithNonAdminRoleWithCustomContextPath()
 			throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_USER"));
+		TestSecurityContextHolder.getContext().setAuthentication(
+				new TestingAuthenticationToken("user", "N/A", "ROLE_USER"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -143,7 +145,8 @@ public class MvcEndpointIntegrationTests {
 	@Test
 	public void sensitiveEndpointsAreSecureWithAdminRoleWithCustomContextPath()
 			throws Exception {
-		TestSecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ADMIN"));
+		TestSecurityContextHolder.getContext().setAuthentication(
+				new TestingAuthenticationToken("user", "N/A", "ROLE_ADMIN"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -179,8 +182,8 @@ public class MvcEndpointIntegrationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.jackson.serialization.indent-output:true");
 		MockMvc mockMvc = createMockMvc();
-		mockMvc.perform(get("/beans"))
-				.andExpect(content().string(startsWith("{" + LINE_SEPARATOR)));
+		mockMvc.perform(get("/beans")).andExpect(
+				content().string(startsWith("{" + LINE_SEPARATOR)));
 	}
 
 	private MockMvc createMockMvc() {
@@ -202,8 +205,8 @@ public class MvcEndpointIntegrationTests {
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class DefaultConfiguration {
@@ -221,8 +224,8 @@ public class MvcEndpointIntegrationTests {
 
 	@ImportAutoConfiguration({ HypermediaAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, EndpointAutoConfiguration.class,
-			EndpointWebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class })
 	static class SpringDataRestConfiguration {
