@@ -472,8 +472,16 @@ content into your application; rather pick only the properties that you need.
 	spring.data.elasticsearch.properties.*= # Additional properties used to configure the client
 	spring.data.elasticsearch.repositories.enabled=true # if spring data repository support is enabled
 
-	# DATA REST ({spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[RepositoryRestConfiguration])
-	spring.data.rest.base-path= # base path against which the exporter should calculate its links
+	# DATA REST ({sc-spring-boot-autoconfigure}/data/rest/RepositoryRestProperties.{sc-ext}[RepositoryRestProperties])
+	spring.data.rest.base-path= # base path to be used by Spring Data REST to expose repository resources
+    spring.data.rest.default-page-size= # default size of pages
+    spring.data.rest.enable-enum-translation= # enable enum value translation via the Spring Data REST default resource bundle
+    spring.data.rest.limit-param-name= # name of the URL query string parameter that indicates how many results to return at once
+    spring.data.rest.max-page-size= # maximum size of pages
+    spring.data.rest.page-param-name= # name of the URL query string parameter that indicates what page to return
+    spring.data.rest.return-body-on-create= # return a response body after creating an entity
+    spring.data.rest.return-body-on-update= # return a response body after updating an entity
+    spring.data.rest.sort-param-name= # name of the URL query string parameter that indicates what direction to sort results
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
 	flyway.*= # Any public property available on the auto-configured `Flyway` object

@@ -37,6 +37,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.BaseUri;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -85,6 +86,33 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		BaseUri baseUri = this.context.getBean(BaseUri.class);
 		assertEquals("Custom basePath has not been applied to BaseUri bean", expectedUri,
 				baseUri.getUri());
+	}
+
+	@Test
+	public void testWithCustomSettings() throws Exception {
+		load(TestConfiguration.class,
+				"spring.data.rest.default-page-size:42",
+				"spring.data.rest.max-page-size:78",
+				"spring.data.rest.page-param-name:_page",
+				"spring.data.rest.limit-param-name:_limit",
+				"spring.data.rest.sort-param-name:_sort",
+				"spring.data.rest.default-media-type:application/my-json",
+				"spring.data.rest.return-body-on-create:false",
+				"spring.data.rest.return-body-on-update:false",
+				"spring.data.rest.enable-enum-translation:true");
+		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
+		RepositoryRestConfiguration bean = this.context
+				.getBean(RepositoryRestConfiguration.class);
+		assertEquals("Custom default page size not set", 42, bean.getDefaultPageSize());
+		assertEquals("Custom max page size not set", 78, bean.getMaxPageSize());
+		assertEquals("Custom page param name not set", "_page", bean.getPageParamName());
+		assertEquals("Custom limit param name not set", "_limit", bean.getLimitParamName());
+		assertEquals("Custom sort param name not set", "_sort", bean.getSortParamName());
+		assertEquals("Custom default media type not set",
+				MediaType.parseMediaType("application/my-json"), bean.getDefaultMediaType());
+		assertEquals("Custom return body on create flag not set", false, bean.returnBodyOnCreate(null));
+		assertEquals("Custom return body on update flag not set", false, bean.returnBodyOnUpdate(null));
+		assertEquals("Custom enable enum translation flag not set", true, bean.isEnableEnumTranslation());
 	}
 
 	@Test
