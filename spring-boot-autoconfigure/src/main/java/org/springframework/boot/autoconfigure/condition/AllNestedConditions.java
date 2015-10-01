@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Condition;
  * to create composite conditions, for example:
  *
  * <pre class="code">
- * static class OnJndiOrProperty extends AllNestedConditions {
+ * static class OnJndiAndProperty extends AllNestedConditions {
  *
  *    &#064;ConditionalOnJndi()
  *    static class OnJndi {

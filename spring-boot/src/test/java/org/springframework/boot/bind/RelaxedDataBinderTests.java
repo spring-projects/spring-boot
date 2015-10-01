@@ -355,7 +355,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
-	public void testBindNestedMapOfStringWithUnderscoreAndupperCase() throws Exception {
+	public void testBindNestedMapOfStringWithUnderscoreAndUpperCase() throws Exception {
 		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
 		bind(target, "NESTED_FOO: bar\n" + "NESTED_VALUE_FOO: 123");
 		assertEquals("bar", target.getNested().get("FOO"));
