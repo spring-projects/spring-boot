@@ -61,6 +61,12 @@
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
+    "name": "logging.pattern.level",
+    "type": "java.lang.String",
+    "description": "Appender pattern for log level (default %5p). Only supported with the default logback setup.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
     "name": "logging.path",
     "type": "java.lang.String",
     "description": "Location of the log file.",
