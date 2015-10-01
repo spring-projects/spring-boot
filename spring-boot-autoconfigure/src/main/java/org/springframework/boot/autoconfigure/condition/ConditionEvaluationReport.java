@@ -88,7 +88,7 @@ public final class ConditionEvaluationReport {
 	}
 
 	/**
-	 * Records the name of the classes that have been excluded from condition evaluation.
+	 * Records the names of the classes that have been excluded from condition evaluation.
 	 * @param exclusions the names of the excluded classes
 	 */
 	public void recordExclusions(Collection<String> exclusions) {
@@ -134,7 +134,7 @@ public final class ConditionEvaluationReport {
 	}
 
 	/**
-	 * Returns the name of the classes that have been excluded from condition evaluation.
+	 * Returns the names of the classes that have been excluded from condition evaluation.
 	 * @return the names of the excluded classes
 	 */
 	public List<String> getExclusions() {
@@ -142,7 +142,7 @@ public final class ConditionEvaluationReport {
 	}
 
 	/**
-	 * Returns the name of the classes that were evaluated but were not conditional.
+	 * Returns the names of the classes that were evaluated but were not conditional.
 	 * @return the names of the unconditional classes
 	 */
 	public Set<String> getUnconditionalClasses() {
