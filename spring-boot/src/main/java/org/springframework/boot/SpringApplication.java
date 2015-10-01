@@ -161,6 +161,8 @@ public class SpringApplication {
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
+	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
+
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
 	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
@@ -317,7 +319,7 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, args);
 		listeners.environmentPrepared(environment);
-		if (environment instanceof StandardServletEnvironment && !this.webEnvironment) {
+		if (isWebEnvironment(environment) && !this.webEnvironment) {
 			environment = convertToStandardEnvironment(environment);
 		}
 
@@ -432,6 +434,17 @@ public class SpringApplication {
 	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
+	}
+
+	private boolean isWebEnvironment(ConfigurableEnvironment environment) {
+		try {
+			Class<?> webEnvironmentClass = ClassUtils.forName(
+					CONFIGURABLE_WEB_ENVIRONMENT_CLASS, getClassLoader());
+			return (webEnvironmentClass.isInstance(environment));
+		}
+		catch (Throwable ex) {
+			return false;
+		}
 	}
 
 	private ConfigurableEnvironment convertToStandardEnvironment(
