@@ -123,11 +123,6 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 	 */
 	private Charset sqlScriptEncoding;
 
-	/**
-	 * Use system ClassLoader to load JDBC drivers.
-	 */
-	private boolean useSystemClassLoader = false;
-
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
 	private Xa xa = new Xa();
@@ -166,7 +161,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 
 	public String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
-			Assert.state(ClassUtils.isPresent(this.driverClassName, (this.useSystemClassLoader) ? ClassLoader.getSystemClassLoader() : null),
+			Assert.state(ClassUtils.isPresent(this.driverClassName, null),
 					"Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
