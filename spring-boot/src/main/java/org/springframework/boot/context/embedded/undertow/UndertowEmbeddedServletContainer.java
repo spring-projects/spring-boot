@@ -71,6 +71,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	private final String contextPath;
 
+	private final boolean useForwardHeaders;
+
 	private final boolean autoStart;
 
 	private final Compression compression;
@@ -81,9 +83,16 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
 			String contextPath, int port, boolean autoStart, Compression compression) {
+		this(builder, manager, contextPath, port, false, autoStart, compression);
+	}
+
+	public UndertowEmbeddedServletContainer(Builder builder, DeploymentManager manager,
+			String contextPath, int port, boolean useForwardHeaders, boolean autoStart,
+			Compression compression) {
 		this.builder = builder;
 		this.manager = manager;
 		this.contextPath = contextPath;
+		this.useForwardHeaders = useForwardHeaders;
 		this.autoStart = autoStart;
 		this.compression = compression;
 	}
@@ -105,7 +114,11 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	private Undertow createUndertowServer() {
 		try {
 			HttpHandler httpHandler = this.manager.start();
-			this.builder.setHandler(getContextHandler(httpHandler));
+			httpHandler = getContextHandler(httpHandler);
+			if (this.useForwardHeaders) {
+				httpHandler = Handlers.proxyPeerAddress(httpHandler);
+			}
+			this.builder.setHandler(httpHandler);
 			return this.builder.build();
 		}
 		catch (ServletException ex) {
