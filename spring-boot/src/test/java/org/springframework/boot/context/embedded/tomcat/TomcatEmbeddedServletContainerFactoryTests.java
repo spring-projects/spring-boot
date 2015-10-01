@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,22 +16,40 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.LifecycleState;
+import org.apache.catalina.Service;
 import org.apache.catalina.Valve;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
@@ -41,16 +59,17 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests for {@link TomcatEmbeddedServletContainerFactory} and
  * {@link TomcatEmbeddedServletContainer}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class TomcatEmbeddedServletContainerFactoryTests extends
 		AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {
-		return new TomcatEmbeddedServletContainerFactory();
+		return new TomcatEmbeddedServletContainerFactory(0);
 	}
 
 	// JMX MBean names clash if you get more than one Engine with the same name...
@@ -58,12 +77,16 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	public void tomcatEngineNames() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory.getEmbeddedServletContainer();
-		factory.setPort(8081);
+		factory.setPort(SocketUtils.findAvailableTcpPort(40000));
 		TomcatEmbeddedServletContainer container2 = (TomcatEmbeddedServletContainer) factory
 				.getEmbeddedServletContainer();
-		assertEquals("Tomcat", ((TomcatEmbeddedServletContainer) this.container)
-				.getTomcat().getEngine().getName());
-		assertEquals("Tomcat-1", container2.getTomcat().getEngine().getName());
+
+		// Make sure that the names are different
+		String firstContainerName = ((TomcatEmbeddedServletContainer) this.container)
+				.getTomcat().getEngine().getName();
+		String secondContainerName = container2.getTomcat().getEngine().getName();
+		assertFalse("Tomcat engines must have different names",
+				firstContainerName.equals(secondContainerName));
 		container2.stop();
 	}
 
@@ -116,17 +139,49 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	}
 
 	@Test
+	public void tomcatAdditionalConnectors() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		Connector[] listeners = new Connector[4];
+		for (int i = 0; i < listeners.length; i++) {
+			Connector connector = mock(Connector.class);
+			given(connector.getState()).willReturn(LifecycleState.STOPPED);
+			listeners[i] = connector;
+		}
+		factory.addAdditionalTomcatConnectors(listeners);
+		this.container = factory.getEmbeddedServletContainer();
+		Map<Service, Connector[]> connectors = ((TomcatEmbeddedServletContainer) this.container)
+				.getServiceConnectors();
+		assertThat(connectors.values().iterator().next().length,
+				equalTo(listeners.length + 1));
+	}
+
+	@Test
+	public void addNullAdditionalConnectorThrows() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Connectors must not be null");
+		factory.addAdditionalTomcatConnectors((Connector[]) null);
+	}
+
+	@Test
 	public void sessionTimeout() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionTimeout(10);
-		assertTimeout(factory, 10);
+		assertTimeout(factory, 1);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionTimeout(1, TimeUnit.MINUTES);
-		assertTimeout(factory, 60);
+		assertTimeout(factory, 1);
+	}
+
+	@Test
+	public void noSessionTimeout() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionTimeout(0);
+		assertTimeout(factory, -1);
 	}
 
 	@Test
@@ -170,11 +225,142 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null);
 	}
 
-	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
+	@Test
+	public void uriEncoding() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setUriEncoding(Charset.forName("US-ASCII"));
+		Tomcat tomcat = getTomcat(factory);
+		assertEquals("US-ASCII", tomcat.getConnector().getURIEncoding());
+	}
+
+	@Test
+	public void defaultUriEncoding() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		Tomcat tomcat = getTomcat(factory);
+		assertEquals("UTF-8", tomcat.getConnector().getURIEncoding());
+	}
+
+	@Test
+	public void sslCiphersConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
+
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		Tomcat tomcat = getTomcat(factory);
+		Connector connector = tomcat.getConnector();
+
+		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
+				.getProtocolHandler();
+		assertThat(jsseProtocol.getCiphers(), equalTo("ALPHA,BRAVO,CHARLIE"));
+	}
+
+	@Test
+	public void primaryConnectorPortClashThrowsIllegalStateException()
+			throws InterruptedException, IOException {
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				TomcatEmbeddedServletContainerFactory factory = getFactory();
+				factory.setPort(port);
+
+				try {
+					TomcatEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
+					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (IllegalStateException ex) {
+					// Ignore
+				}
+			}
+
+		});
+
+	}
+
+	@Test
+	public void additionalConnectorPortClashThrowsIllegalStateException()
+			throws InterruptedException, IOException {
+		final int port = SocketUtils.findAvailableTcpPort(40000);
+
+		doWithBlockedPort(port, new Runnable() {
+
+			@Override
+			public void run() {
+				TomcatEmbeddedServletContainerFactory factory = getFactory();
+				Connector connector = new Connector(
+						"org.apache.coyote.http11.Http11NioProtocol");
+				connector.setPort(port);
+				factory.addAdditionalTomcatConnectors(connector);
+
+				try {
+					TomcatEmbeddedServletContainerFactoryTests.this.container = factory
+							.getEmbeddedServletContainer();
+					TomcatEmbeddedServletContainerFactoryTests.this.container.start();
+					fail();
+				}
+				catch (IllegalStateException ex) {
+					// Ignore
+				}
+			}
+
+		});
+
+	}
+
+	@Test
+	public void basicSslClasspathKeyStore() throws Exception {
+		this.thrown.expect(EmbeddedServletContainerException.class);
+		this.thrown.expectMessage("Tomcat doesn't support classpath resources");
+		testBasicSslWithKeyStore("classpath:test.jks");
+	}
+
+	@Test
+	public void jspServletInitParameters() {
+		Map<String, String> initParameters = new HashMap<String, String>();
+		initParameters.put("a", "alpha");
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.getJspServlet().setInitParameters(initParameters);
 		this.container = factory.getEmbeddedServletContainer();
-		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Wrapper jspServlet = getJspServlet();
+		assertThat(jspServlet.findInitParameter("a"), is(equalTo("alpha")));
+	}
+
+	@Override
+	protected Wrapper getJspServlet() {
+		Container context = ((TomcatEmbeddedServletContainer) this.container).getTomcat()
+				.getHost().findChildren()[0];
+		return (Wrapper) context.findChild("jsp");
+	}
+
+	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
+		Tomcat tomcat = getTomcat(factory);
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		assertThat(context.getSessionTimeout(), equalTo(expected));
+	}
+
+	private Tomcat getTomcat(TomcatEmbeddedServletContainerFactory factory) {
+		this.container = factory.getEmbeddedServletContainer();
+		return ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+	}
+
+	private void doWithBlockedPort(final int port, Runnable action) throws IOException {
+		ServerSocket serverSocket = new ServerSocket();
+		serverSocket.bind(new InetSocketAddress(port));
+
+		try {
+			action.run();
+		}
+		finally {
+			serverSocket.close();
+		}
 	}
 
 }

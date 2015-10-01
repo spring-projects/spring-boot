@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link Endpoint} to expose thread info.
- * 
+ *
  * @author Dave Syer
  */
-@ConfigurationProperties(name = "endpoints.dump", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.dump", ignoreUnknownFields = false)
 public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {
 
 	/**

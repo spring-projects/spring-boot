@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Adapter to expose {@link ShutdownEndpoint} as an {@link MvcEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class ShutdownMvcEndpoint extends EndpointMvcAdapter {

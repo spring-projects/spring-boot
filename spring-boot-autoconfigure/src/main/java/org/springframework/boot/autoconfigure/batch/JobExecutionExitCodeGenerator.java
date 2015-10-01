@@ -25,7 +25,7 @@ import org.springframework.context.ApplicationListener;
 
 /**
  * {@link ExitCodeGenerator} for {@link JobExecutionEvent}s.
- * 
+ *
  * @author Dave Syer
  */
 public class JobExecutionExitCodeGenerator implements

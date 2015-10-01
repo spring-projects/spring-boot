@@ -5,11 +5,19 @@
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-samples</artifactId>
-		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-web-static</artifactId>
 	<packaging>war</packaging>
+	<name>Spring Boot Web Static Sample</name>
+	<description>Spring Boot Web Static Sample</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
+		<java.version>1.7</java.version>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
@@ -24,7 +32,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

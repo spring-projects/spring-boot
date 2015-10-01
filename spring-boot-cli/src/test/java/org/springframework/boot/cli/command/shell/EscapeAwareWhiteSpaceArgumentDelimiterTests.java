@@ -16,16 +16,16 @@
 
 package org.springframework.boot.cli.command.shell;
 
-import jline.console.completer.ArgumentCompleter.ArgumentList;
-
 import org.junit.Test;
+
+import jline.console.completer.ArgumentCompleter.ArgumentList;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link EscapeAwareWhiteSpaceArgumentDelimiter}.
- * 
+ *
  * @author Phillip Webb
  */
 public class EscapeAwareWhiteSpaceArgumentDelimiterTests {

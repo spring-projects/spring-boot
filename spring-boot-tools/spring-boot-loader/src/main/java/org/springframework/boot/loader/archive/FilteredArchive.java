@@ -29,7 +29,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * Decorator to apply an {@link Archive.EntryFilter} to an existing {@link Archive}.
- * 
+ *
  * @author Dave Syer
  */
 public class FilteredArchive extends Archive {

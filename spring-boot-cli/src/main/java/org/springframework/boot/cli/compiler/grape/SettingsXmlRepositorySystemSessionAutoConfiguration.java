@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,50 +16,31 @@
 
 package org.springframework.boot.cli.compiler.grape;
 
-import java.io.File;
-
-import org.apache.maven.settings.Mirror;
-import org.apache.maven.settings.Proxy;
-import org.apache.maven.settings.Server;
-import org.apache.maven.settings.Settings;
-import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
-import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
-import org.apache.maven.settings.building.SettingsBuildingException;
-import org.apache.maven.settings.building.SettingsBuildingRequest;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.repository.Authentication;
-import org.eclipse.aether.repository.AuthenticationSelector;
 import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.repository.MirrorSelector;
-import org.eclipse.aether.repository.ProxySelector;
-import org.eclipse.aether.util.repository.AuthenticationBuilder;
-import org.eclipse.aether.util.repository.ConservativeAuthenticationSelector;
-import org.eclipse.aether.util.repository.DefaultAuthenticationSelector;
-import org.eclipse.aether.util.repository.DefaultMirrorSelector;
-import org.eclipse.aether.util.repository.DefaultProxySelector;
+import org.springframework.boot.cli.compiler.MavenSettings;
+import org.springframework.boot.cli.compiler.MavenSettingsReader;
 
 /**
  * Auto-configuration for a RepositorySystemSession that uses Maven's settings.xml to
- * determine the configuration settings
- * 
+ * determine the configuration settings.
+ *
  * @author Andy Wilkinson
  */
 public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		RepositorySystemSessionAutoConfiguration {
 
-	private static final String HOME_DIR = System.getProperty("user.home");
-
 	@Override
 	public void apply(DefaultRepositorySystemSession session,
 			RepositorySystem repositorySystem) {
 
-		Settings settings = loadSettings();
+		MavenSettings settings = new MavenSettingsReader().readSettings();
 
-		session.setOffline(settings.isOffline());
-		session.setMirrorSelector(createMirrorSelector(settings));
-		session.setAuthenticationSelector(createAuthenticationSelector(settings));
-		session.setProxySelector(createProxySelector(settings));
+		session.setOffline(settings.getOffline());
+		session.setMirrorSelector(settings.getMirrorSelector());
+		session.setAuthenticationSelector(settings.getAuthenticationSelector());
+		session.setProxySelector(settings.getProxySelector());
 
 		String localRepository = settings.getLocalRepository();
 		if (localRepository != null) {
@@ -68,50 +49,4 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		}
 	}
 
-	private Settings loadSettings() {
-		File settingsFile = new File(HOME_DIR, ".m2/settings.xml");
-		SettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
-		request.setUserSettingsFile(settingsFile);
-		try {
-			return new DefaultSettingsBuilderFactory().newInstance().build(request)
-					.getEffectiveSettings();
-		}
-		catch (SettingsBuildingException ex) {
-			throw new IllegalStateException("Failed to build settings from "
-					+ settingsFile, ex);
-		}
-	}
-
-	private MirrorSelector createMirrorSelector(Settings settings) {
-		DefaultMirrorSelector selector = new DefaultMirrorSelector();
-		for (Mirror mirror : settings.getMirrors()) {
-			selector.add(mirror.getId(), mirror.getUrl(), mirror.getLayout(), false,
-					mirror.getMirrorOf(), mirror.getMirrorOfLayouts());
-		}
-		return selector;
-	}
-
-	private AuthenticationSelector createAuthenticationSelector(Settings settings) {
-		DefaultAuthenticationSelector selector = new DefaultAuthenticationSelector();
-		for (Server server : settings.getServers()) {
-			AuthenticationBuilder auth = new AuthenticationBuilder();
-			auth.addUsername(server.getUsername()).addPassword(server.getPassword());
-			auth.addPrivateKey(server.getPrivateKey(), server.getPassphrase());
-			selector.add(server.getId(), auth.build());
-		}
-		return new ConservativeAuthenticationSelector(selector);
-	}
-
-	private ProxySelector createProxySelector(Settings settings) {
-		DefaultProxySelector selector = new DefaultProxySelector();
-		for (Proxy proxy : settings.getProxies()) {
-			Authentication authentication = new AuthenticationBuilder()
-					.addUsername(proxy.getUsername()).addPassword(proxy.getPassword())
-					.build();
-			selector.add(new org.eclipse.aether.repository.Proxy(proxy.getProtocol(),
-					proxy.getHost(), proxy.getPort(), authentication), proxy
-					.getNonProxyHosts());
-		}
-		return selector;
-	}
 }

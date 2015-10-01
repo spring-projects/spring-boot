@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AuditAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class AuditAutoConfigurationTests {

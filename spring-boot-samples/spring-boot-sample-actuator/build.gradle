@@ -1,14 +1,18 @@
 buildscript {
 	ext {
-		springBootVersion = '1.0.0.BUILD-SNAPSHOT'
+		springBootVersion = '1.3.0.BUILD-SNAPSHOT'
 	}
-    repositories {
-    	mavenLocal()
-        maven { url "http://repo.spring.io/libs-snapshot" }
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
+	repositories {
+		// NOTE: You should declare only repositories that you need here
+		mavenLocal()
+		mavenCentral()
+		maven { url "http://repo.spring.io/release" }
+		maven { url "http://repo.spring.io/milestone" }
+		maven { url "http://repo.spring.io/snapshot" }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
 }
 
 apply plugin: 'java'
@@ -17,25 +21,33 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 jar {
-    baseName = 'spring-boot-sample-actuator'
-    version =  '1.0.0'
+	baseName = 'spring-boot-sample-actuator'
+	version =  '0.0.0'
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url "http://repo.spring.io/libs-snapshot" }
+	// NOTE: You should declare only repositories that you need here
+	mavenLocal()
+	mavenCentral()
+	maven { url "http://repo.spring.io/release" }
+	maven { url "http://repo.spring.io/milestone" }
+	maven { url "http://repo.spring.io/snapshot" }
 }
 
 dependencies {
 	configurations {
 		insecure.exclude module: 'spring-boot-starter-security'
 	}
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    compile("org.springframework.boot:spring-boot-starter-security")
-    testCompile("junit:junit")
-    insecure configurations.runtime
+
+	compile("org.springframework.boot:spring-boot-starter-actuator")
+	compile("org.springframework.boot:spring-boot-starter-jdbc")
+	compile("org.springframework.boot:spring-boot-starter-security")
+	compile("org.springframework.boot:spring-boot-starter-web")
+	compile("com.h2database:h2")
+
+	testCompile("org.springframework.boot:spring-boot-starter-test")
+
+	insecure configurations.runtime
 }
 
 // Slightly odd requirement (package a jar file as an insecure app, exlcuding Spring Security)
@@ -45,5 +57,5 @@ springBoot {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.6'
+	gradleVersion = '1.6'
 }

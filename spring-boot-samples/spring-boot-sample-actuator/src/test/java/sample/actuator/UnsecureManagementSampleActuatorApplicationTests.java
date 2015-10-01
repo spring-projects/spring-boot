@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,20 @@
 
 package sample.actuator;
 
-import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -41,40 +38,25 @@ import static org.junit.Assert.assertTrue;
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
  * classpath).
- * 
+ *
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(SampleActuatorApplication.class)
+@WebAppConfiguration
+@IntegrationTest({ "server.port:0", "management.security.enabled:false" })
+@DirtiesContext
+@ActiveProfiles("unsecure-management")
 public class UnsecureManagementSampleActuatorApplicationTests {
 
-	private static ConfigurableApplicationContext context;
-
-	@BeforeClass
-	public static void start() throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication.run(
-										SampleActuatorApplication.class,
-										"--management.security.enabled=false");
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void testHomeIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -92,23 +74,12 @@ public class UnsecureManagementSampleActuatorApplicationTests {
 			// ignore;
 		}
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/metrics", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.root"));
-	}
-
-	private RestTemplate getRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
+		assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.unmapped"));
 	}
 
 }

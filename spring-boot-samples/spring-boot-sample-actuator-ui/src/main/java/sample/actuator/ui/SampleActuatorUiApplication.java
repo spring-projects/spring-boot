@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,15 +45,15 @@ public class SampleActuatorUiApplication {
 		throw new RuntimeException("Expected exception in controller");
 	}
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleActuatorUiApplication.class, args);
-	}
-
 	@Bean
 	public SecurityProperties securityProperties() {
 		SecurityProperties security = new SecurityProperties();
 		security.getBasic().setPath(""); // empty so home page is unsecured
 		return security;
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleActuatorUiApplication.class, args);
 	}
 
 }

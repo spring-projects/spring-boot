@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -43,12 +44,17 @@ import org.springframework.util.Assert;
  * {@link #setServletNames name} or via a {@link #setServletRegistrationBeans
  * ServletRegistrationBean}s. When no URL pattern or servlets are specified the filter
  * will be associated to '/*'. The filter name will be deduced if not specified.
- * 
+ *
  * @author Phillip Webb
  * @see ServletContextInitializer
  * @see ServletContext#addFilter(String, Filter)
  */
 public class FilterRegistrationBean extends RegistrationBean {
+
+	/**
+	 * Filters that wrap the servlet request should be ordered less than or equal to this.
+	 */
+	public static final int REQUEST_WRAPPER_FILTER_MAX_ORDER = 0;
 
 	private static Log logger = LogFactory.getLog(FilterRegistrationBean.class);
 
@@ -91,13 +97,12 @@ public class FilterRegistrationBean extends RegistrationBean {
 		Assert.notNull(servletRegistrationBeans,
 				"ServletRegistrationBeans must not be null");
 		this.filter = filter;
-		for (ServletRegistrationBean servletRegistrationBean : servletRegistrationBeans) {
-			this.servletRegistrationBeans.add(servletRegistrationBean);
-		}
+		Collections.addAll(this.servletRegistrationBeans, servletRegistrationBeans);
 	}
 
 	/**
 	 * Returns the filter being registered.
+	 * @return the filter
 	 */
 	protected Filter getFilter() {
 		return this.filter;
@@ -105,6 +110,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Set the filter to be registered.
+	 * @param filter the filter
 	 */
 	public void setFilter(Filter filter) {
 		Assert.notNull(filter, "Filter must not be null");
@@ -143,9 +149,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 			ServletRegistrationBean... servletRegistrationBeans) {
 		Assert.notNull(servletRegistrationBeans,
 				"ServletRegistrationBeans must not be null");
-		for (ServletRegistrationBean servletRegistrationBean : servletRegistrationBeans) {
-			this.servletRegistrationBeans.add(servletRegistrationBean);
-		}
+		Collections.addAll(this.servletRegistrationBeans, servletRegistrationBeans);
 	}
 
 	/**
@@ -205,15 +209,34 @@ public class FilterRegistrationBean extends RegistrationBean {
 	 */
 	public void addUrlPatterns(String... urlPatterns) {
 		Assert.notNull(urlPatterns, "UrlPatterns must not be null");
-		for (String urlPattern : urlPatterns) {
-			this.urlPatterns.add(urlPattern);
-		}
+		Collections.addAll(this.urlPatterns, urlPatterns);
+	}
+
+	/**
+	 * Convenience method to {@link #setDispatcherTypes(EnumSet) set dispatcher types}
+	 * using the specified elements.
+	 * @param first the first dispatcher type
+	 * @param rest additional dispatcher types
+	 */
+	public void setDispatcherTypes(DispatcherType first, DispatcherType... rest) {
+		this.dispatcherTypes = EnumSet.of(first, rest);
+	}
+
+	/**
+	 * Sets the dispatcher types that should be used with the registration. If not
+	 * specified the types will be deduced based on the value of
+	 * {@link #isAsyncSupported()}.
+	 * @param dispatcherTypes the dispatcher types
+	 */
+	public void setDispatcherTypes(EnumSet<DispatcherType> dispatcherTypes) {
+		this.dispatcherTypes = dispatcherTypes;
 	}
 
 	/**
 	 * Set if the filter mappings should be matched after any declared filter mappings of
 	 * the ServletContext. Defaults to {@code false} indicating the filters are supposed
 	 * to be matched before any declared filter mappings of the ServletContext.
+	 * @param matchAfter if filter mappings are matched after
 	 */
 	public void setMatchAfter(boolean matchAfter) {
 		this.matchAfter = matchAfter;
@@ -222,6 +245,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 	/**
 	 * Return if filter mappings should be matched after any declared Filter mappings of
 	 * the ServletContext.
+	 * @return if filter mappings are matched after
 	 */
 	public boolean isMatchAfter() {
 		return this.matchAfter;
@@ -230,12 +254,24 @@ public class FilterRegistrationBean extends RegistrationBean {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		Assert.notNull(this.filter, "Filter must not be null");
-		configure(servletContext.addFilter(getOrDeduceName(this.filter), this.filter));
+		String name = getOrDeduceName(this.filter);
+		if (!isEnabled()) {
+			logger.info("Filter " + name + " was not registered (disabled)");
+			return;
+		}
+		FilterRegistration.Dynamic added = servletContext.addFilter(name, this.filter);
+		if (added == null) {
+			logger.info("Filter " + name + " was not registered "
+					+ "(possibly already registered?)");
+			return;
+		}
+		configure(added);
 	}
 
 	/**
 	 * Configure registration settings. Subclasses can override this method to perform
 	 * additional configuration if required.
+	 * @param registration the registration
 	 */
 	protected void configure(FilterRegistration.Dynamic registration) {
 		super.configure(registration);

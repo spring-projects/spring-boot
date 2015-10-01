@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<antlib>
+
+	<taskdef name="findmainclass" classname="org.springframework.boot.ant.FindMainClass" />
+
+	<!-- unadvertised taskdef to help pull antlib resources from within the antlib.xml file -->
+	<taskdef name="spring-boot-antlib-share-antlib-loader" classname="org.springframework.boot.ant.ShareAntlibLoader" />
+
+	<macrodef name="exejar" description="Create a spring-boot executable jar">
+		<attribute name="destfile" />
+		<attribute name="classes" />
+		<attribute name="start-class" default="" />
+
+		<element name="resources" optional="true"
+			description="includes resource collections specifying additional Java resources" />
+
+		<element name="lib" optional="true"
+			description="includes resource collections containing (jar) dependencies" />
+
+		<sequential>
+			<local name="start-class" />
+
+			<findmainclass
+				xmlns="antlib:org.springframework.boot.ant"
+				property="start-class"
+				mainclass="@{start-class}"
+				classesroot="@{classes}" />
+
+			<echo>Using start class ${start-class}</echo>
+
+			<spring-boot-antlib-share-antlib-loader
+				xmlns="antlib:org.springframework.boot.ant"
+				refid="spring.boot.antlib.loader" />
+
+			<local name="spring-boot.version" />
+
+			<loadproperties prefix="spring-boot">
+				<javaresource
+					name="META-INF/maven/org.springframework.boot/spring-boot-antlib/pom.properties"
+					loaderref="spring.boot.antlib.loader" />
+				<filterchain>
+					<linecontainsregexp>
+						<regexp pattern="^version=" />
+					</linecontainsregexp>
+				</filterchain>
+			</loadproperties>
+
+			<local name="destdir" />
+			<dirname file="@{destfile}" property="destdir" />
+
+			<echo>Using destination directory ${destdir}</echo>
+			<mkdir dir="${destdir}/dependency" />
+
+			<echo>Extracting spring-boot-loader to ${destdir}/dependency</echo>
+			<copy todir="${destdir}/dependency">
+				<javaresource name="META-INF/loader/spring-boot-loader.jar"
+					loaderref="spring.boot.antlib.loader" />
+				<flattenmapper />
+			</copy>
+
+			<echo>Embedding spring-boot-loader v${spring-boot.version}...</echo>
+			<jar destfile="@{destfile}" compress="false">
+				<fileset dir="@{classes}" />
+				<resources />
+				<mappedresources>
+					<lib />
+					<globmapper from="*" to="lib/*" />
+				</mappedresources>
+				<zipfileset src="${destdir}/dependency/spring-boot-loader.jar" />
+				<manifest>
+					<attribute name="Main-Class"
+						value="org.springframework.boot.loader.JarLauncher" />
+					<attribute name="Start-Class" value="${start-class}" />
+				</manifest>
+			</jar>
+		</sequential>
+	</macrodef>
+</antlib>

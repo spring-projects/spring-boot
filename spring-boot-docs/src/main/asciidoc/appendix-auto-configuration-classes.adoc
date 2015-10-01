@@ -1,0 +1,24 @@
+[appendix]
+[[auto-configuration-classes]]
+== Auto-configuration classes
+Here is a list of all auto configuration classes provided by Spring Boot with links to
+documentation and source code. Remember to also look at the autoconfig report in your
+application for more details of which features are switched on.
+(start the app with `--debug` or `-Ddebug`, or in an Actuator application use the
+`autoconfig` endpoint).
+
+
+
+[[auto-configuration-classes-from-autoconfigure-module]]
+=== From the "`spring-boot-autoconfigure`" module
+The following auto-configuration classes are from the `spring-boot-autoconfigure` module:
+
+include::../../../target/generated-resources/auto-configuration-classes-spring-boot-autoconfigure.adoc[]
+
+
+
+[[auto-configuration-classes-from-actuator]]
+=== From the "`spring-boot-actuator`" module
+The following auto-configuration classes are from the `spring-boot-actuator` module:
+
+include::../../../target/generated-resources/auto-configuration-classes-spring-boot-actuator.adoc[]

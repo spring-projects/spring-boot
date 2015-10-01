@@ -1,0 +1,58 @@
+= Spring Boot Reference Guide
+Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson; Marcel Overdijk; Christian Dupuis; Sébastien Deleuze
+:doctype: book
+:toc:
+:toclevels: 4
+:source-highlighter: prettify
+:numbered:
+:icons: font
+:hide-uri-scheme:
+:spring-boot-repo: snapshot
+:github-tag: master
+:spring-boot-docs-version: current
+:spring-boot-docs: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/reference
+:spring-boot-docs-current: http://docs.spring.io/spring-boot/docs/current/reference
+:github-repo: spring-projects/spring-boot
+:github-raw: http://raw.github.com/{github-repo}/{github-tag}
+:github-code: http://github.com/{github-repo}/tree/{github-tag}
+:github-wiki: http://github.com/{github-repo}/wiki
+:github-master-code: http://github.com/{github-repo}/tree/master
+:sc-ext: java
+:sc-spring-boot: {github-code}/spring-boot/src/main/java/org/springframework/boot
+:sc-spring-boot-autoconfigure: {github-code}/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
+:sc-spring-boot-actuator: {github-code}/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
+:sc-spring-boot-cli: {github-code}/spring-boot-cli/src/main/java/org/springframework/boot/cli
+:sc-spring-boot-devtools: {github-code}/spring-boot-devtools/src/main/java/org/springframework/boot/devtools
+:dc-ext: html
+:dc-root: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/api
+:dc-spring-boot: {dc-root}/org/springframework/boot
+:dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
+:dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
+:dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
+:dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
+:spring-boot-maven-plugin-site: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin
+:spring-reference: http://docs.spring.io/spring/docs/{spring-docs-version}/spring-framework-reference/htmlsingle
+:spring-security-reference: http://docs.spring.io/spring-security/site/docs/{spring-security-docs-version}/reference/htmlsingle
+:spring-javadoc: http://docs.spring.io/spring/docs/{spring-docs-version}/javadoc-api/org/springframework
+:spring-amqp-javadoc: http://docs.spring.io/spring-amqp/docs/current/api/org/springframework/amqp
+:spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
+:spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
+:spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
+:spring-data-rest-javadoc: http://docs.spring.io/spring-data/rest/docs/current/api/org/springframework/data/rest
+:gradle-userguide: http://www.gradle.org/docs/current/userguide
+:propdeps-plugin: https://github.com/spring-projects/gradle-plugins/tree/master/propdeps-plugin
+:ant-manual: http://ant.apache.org/manual
+// ======================================================================================
+
+include::documentation-overview.adoc[]
+include::getting-started.adoc[]
+include::using-spring-boot.adoc[]
+include::spring-boot-features.adoc[]
+include::production-ready-features.adoc[]
+include::deployment.adoc[]
+include::spring-boot-cli.adoc[]
+include::build-tool-plugins.adoc[]
+include::howto.adoc[]
+include::appendix.adoc[]
+
+// ======================================================================================

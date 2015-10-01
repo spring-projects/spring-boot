@@ -1,0 +1,9 @@
+@IMPORT url("manual.css");
+
+body.firstpage {
+	background: url("../images/background.png") no-repeat center top;
+}
+
+div.part h1 {
+    border-top: none;
+}

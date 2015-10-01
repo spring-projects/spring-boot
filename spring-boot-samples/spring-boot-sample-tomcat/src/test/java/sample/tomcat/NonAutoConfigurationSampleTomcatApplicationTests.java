@@ -16,15 +16,9 @@
 
 package sample.tomcat;
 
-import java.io.IOException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
@@ -32,16 +26,19 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
+import sample.tomcat.NonAutoConfigurationSampleTomcatApplicationTests.NonAutoConfigurationSampleTomcatApplication;
 import sample.tomcat.service.HelloWorldService;
 import sample.tomcat.web.SampleController;
 
@@ -49,12 +46,18 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(NonAutoConfigurationSampleTomcatApplication.class)
+@WebAppConfiguration
+@IntegrationTest("server.port=0")
+@DirtiesContext
 public class NonAutoConfigurationSampleTomcatApplicationTests {
 
-	private static ConfigurableApplicationContext context;
+	@Value("${local.server.port}")
+	private int port;
 
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
@@ -71,44 +74,12 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 
 	}
 
-	@BeforeClass
-	public static void start() throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication
-										.run(NonAutoConfigurationSampleTomcatApplication.class);
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
-
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
-	}
-
-	private RestTemplate getRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
 	}
 
 }

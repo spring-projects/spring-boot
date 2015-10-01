@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,22 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-
-import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
 
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
  * '{@literal java -jar}'.
- * 
+ *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class Repackager {
 
@@ -38,6 +41,8 @@ public class Repackager {
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
 
 	private static final String BOOT_VERSION_ATTRIBUTE = "Spring-Boot-Version";
+
+	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
 	private String mainClass;
 
@@ -85,9 +90,9 @@ public class Repackager {
 	}
 
 	/**
-	 * Repackage the source file so that it can be run using '{@literal java -jar}'
+	 * Repackage the source file so that it can be run using '{@literal java -jar}'.
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(Libraries libraries) throws IOException {
 		repackage(this.source, libraries);
@@ -95,17 +100,34 @@ public class Repackager {
 
 	/**
 	 * Repackage to the given destination so that it can be launched using '
-	 * {@literal java -jar}'
+	 * {@literal java -jar}'.
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
-	 * @throws IOException
+	 * @throws IOException if the file cannot be repackaged
 	 */
 	public void repackage(File destination, Libraries libraries) throws IOException {
+		repackage(destination, libraries, null);
+	}
+
+	/**
+	 * Repackage to the given destination so that it can be launched using '
+	 * {@literal java -jar}'.
+	 * @param destination the destination file (may be the same as the source)
+	 * @param libraries the libraries required to run the archive
+	 * @param launchScript an optional launch script prepended to the front of the jar
+	 * @throws IOException if the file cannot be repackaged
+	 * @since 1.3.0
+	 */
+	public void repackage(File destination, Libraries libraries, LaunchScript launchScript)
+			throws IOException {
 		if (destination == null || destination.isDirectory()) {
 			throw new IllegalArgumentException("Invalid destination");
 		}
 		if (libraries == null) {
 			throw new IllegalArgumentException("Libraries must not be null");
+		}
+		if (alreadyRepackaged()) {
+			return;
 		}
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
@@ -119,7 +141,7 @@ public class Repackager {
 		try {
 			JarFile jarFileSource = new JarFile(workingSource);
 			try {
-				repackage(jarFileSource, destination, libraries);
+				repackage(jarFileSource, destination, libraries, launchScript);
 			}
 			finally {
 				jarFileSource.close();
@@ -132,24 +154,44 @@ public class Repackager {
 		}
 	}
 
-	private void repackage(JarFile sourceJar, File destination, Libraries libraries)
-			throws IOException {
-		final JarWriter writer = new JarWriter(destination);
+	private boolean alreadyRepackaged() throws IOException {
+		JarFile jarFile = new JarFile(this.source);
 		try {
-			writer.writeManifest(buildManifest(sourceJar));
-			writer.writeEntries(sourceJar);
-			libraries.doWithLibraries(new LibraryCallback() {
+			Manifest manifest = jarFile.getManifest();
+			return (manifest != null && manifest.getMainAttributes().getValue(
+					BOOT_VERSION_ATTRIBUTE) != null);
+		}
+		finally {
+			jarFile.close();
+		}
+	}
 
+	private void repackage(JarFile sourceJar, File destination, Libraries libraries,
+			LaunchScript launchScript) throws IOException {
+		JarWriter writer = new JarWriter(destination, launchScript);
+		try {
+			final List<Library> unpackLibraries = new ArrayList<Library>();
+			final List<Library> standardLibraries = new ArrayList<Library>();
+			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
-				public void library(File file, LibraryScope scope) throws IOException {
-					String destination = Repackager.this.layout.getLibraryDestination(
-							file.getName(), scope);
-					if (destination != null) {
-						writer.writeNestedLibrary(destination, file);
+				public void library(Library library) throws IOException {
+					File file = library.getFile();
+					if (isZip(file)) {
+						if (library.isUnpackRequired()) {
+							unpackLibraries.add(library);
+						}
+						else {
+							standardLibraries.add(library);
+						}
 					}
 				}
 			});
-			if (!(this.layout instanceof Layouts.None)) {
+			writer.writeManifest(buildManifest(sourceJar));
+			Set<String> seen = new HashSet<String>();
+			writeNestedLibraries(unpackLibraries, seen, writer);
+			writer.writeEntries(sourceJar);
+			writeNestedLibraries(standardLibraries, seen, writer);
+			if (this.layout.isExecutable()) {
 				writer.writeLoaderClasses();
 			}
 		}
@@ -161,6 +203,45 @@ public class Repackager {
 				// Ignore
 			}
 		}
+	}
+
+	private void writeNestedLibraries(List<Library> libraries, Set<String> alreadySeen,
+			JarWriter writer) throws IOException {
+		for (Library library : libraries) {
+			String destination = Repackager.this.layout.getLibraryDestination(
+					library.getName(), library.getScope());
+			if (destination != null) {
+				if (!alreadySeen.add(destination + library.getName())) {
+					throw new IllegalStateException("Duplicate library "
+							+ library.getName());
+				}
+				writer.writeNestedLibrary(destination, library);
+			}
+		}
+	}
+
+	private boolean isZip(File file) {
+		try {
+			FileInputStream fileInputStream = new FileInputStream(file);
+			try {
+				return isZip(fileInputStream);
+			}
+			finally {
+				fileInputStream.close();
+			}
+		}
+		catch (IOException ex) {
+			return false;
+		}
+	}
+
+	private boolean isZip(InputStream inputStream) throws IOException {
+		for (int i = 0; i < ZIP_FILE_HEADER.length; i++) {
+			if (inputStream.read() != ZIP_FILE_HEADER[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private Manifest buildManifest(JarFile source) throws IOException {
@@ -189,18 +270,14 @@ public class Repackager {
 		else if (startClass != null) {
 			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE, startClass);
 		}
-
 		String bootVersion = getClass().getPackage().getImplementationVersion();
 		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
-
 		return manifest;
 	}
 
 	protected String findMainMethod(JarFile source) throws IOException {
-		MainClassesCallback callback = new MainClassesCallback();
-		MainClassFinder.doWithMainClasses(source, this.layout.getClassesLocation(),
-				callback);
-		return callback.getMainClass();
+		return MainClassFinder.findSingleMainClass(source,
+				this.layout.getClassesLocation());
 	}
 
 	private void renameFile(File file, File dest) {
@@ -216,24 +293,4 @@ public class Repackager {
 		}
 	}
 
-	private static class MainClassesCallback implements ClassNameCallback<Object> {
-
-		private final List<String> classNames = new ArrayList<String>();
-
-		@Override
-		public Object doWith(String className) {
-			this.classNames.add(className);
-			return null;
-		}
-
-		public String getMainClass() {
-			if (this.classNames.size() > 1) {
-				throw new IllegalStateException(
-						"Unable to find a single main class from the following candidates "
-								+ this.classNames);
-			}
-			return this.classNames.isEmpty() ? null : this.classNames.get(0);
-		}
-
-	}
 }

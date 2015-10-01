@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,8 @@ import org.yaml.snakeyaml.error.YAMLException;
 /**
  * Validate some YAML by binding it to an object of a specified type and then optionally
  * running a {@link Validator} over it.
- * 
+ *
+ * @param <T> the configuration type
  * @author Luke Taylor
  * @author Dave Syer
  */
@@ -79,7 +80,8 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 	}
 
 	/**
-	 * @param messageSource the messageSource to set
+	 * Set the message source.
+	 * @param messageSource the message source
 	 */
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
@@ -87,28 +89,32 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 	}
 
 	/**
-	 * @param propertyAliases the propertyAliases to set
+	 * Set the property aliases.
+	 * @param propertyAliases the property aliases
 	 */
 	public void setPropertyAliases(Map<Class<?>, Map<String, String>> propertyAliases) {
 		this.propertyAliases = new HashMap<Class<?>, Map<String, String>>(propertyAliases);
 	}
 
 	/**
-	 * @param yaml the yaml to set
+	 * Set the YAML.
+	 * @param yaml the YAML
 	 */
 	public void setYaml(String yaml) {
 		this.yaml = yaml;
 	}
 
 	/**
-	 * @param resource the resource to set
+	 * Set the resource.
+	 * @param resource the resource
 	 */
 	public void setResource(Resource resource) {
 		this.resource = resource;
 	}
 
 	/**
-	 * @param validator the validator to set
+	 * Set the validator.
+	 * @param validator the validator
 	 */
 	public void setValidator(Validator validator) {
 		this.validator = validator;
@@ -121,16 +127,13 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 	@Override
 	@SuppressWarnings("unchecked")
 	public void afterPropertiesSet() throws Exception {
-
 		if (this.yaml == null) {
 			Assert.state(this.resource != null, "Resource should not be null");
 			this.yaml = StreamUtils.copyToString(this.resource.getInputStream(),
 					Charset.defaultCharset());
 		}
-
 		Assert.state(this.yaml != null, "Yaml document should not be null: "
 				+ "either set it directly or set the resource to load it from");
-
 		try {
 			if (this.logger.isTraceEnabled()) {
 				this.logger.trace("Yaml document is\n" + this.yaml);
@@ -155,7 +158,6 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 		BindingResult errors = new BeanPropertyBindingResult(this.configuration,
 				"configuration");
 		this.validator.validate(this.configuration, errors);
-
 		if (errors.hasErrors()) {
 			this.logger.error("YAML configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {

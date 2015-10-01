@@ -44,7 +44,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link EnableConfigurationProperties}.
- * 
+ *
  * @author Dave Syer
  */
 public class EnableConfigurationPropertiesTests {
@@ -157,7 +157,7 @@ public class EnableConfigurationPropertiesTests {
 	public void testExceptionOnValidation() {
 		this.context.register(ExceptionIfInvalidTestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
-		this.expected.expectCause(Matchers.<Throwable> instanceOf(BindException.class));
+		this.expected.expectCause(Matchers.<Throwable>instanceOf(BindException.class));
 		this.context.refresh();
 	}
 
@@ -278,6 +278,16 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testBindingDirectlyToFileWithTwoExplicitSpringProfiles() {
+		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
+		this.context.getEnvironment().setActiveProfiles("super", "other");
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
+		assertEquals("spam", this.context.getBean(ResourceBindingProperties.class).name);
+	}
+
+	@Test
 	public void testBindingWithTwoBeans() {
 		this.context.register(MoreConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
@@ -357,8 +367,16 @@ public class EnableConfigurationPropertiesTests {
 		assertEquals("value3", bean.mymap.get("key3"));
 		// this should not fail!!!
 		// mymap looks to contain - {key1=, key3=value3}
-		System.err.println(bean.mymap);
 		assertEquals("value12", bean.mymap.get("key1.key2"));
+	}
+
+	@Test
+	public void testAnnotatedBean() {
+		EnvironmentTestUtils.addEnvironment(this.context, "external.name:bar",
+				"spam.name:foo");
+		this.context.register(TestConfigurationWithAnnotatedBean.class);
+		this.context.refresh();
+		assertEquals("foo", this.context.getBean(External.class).getName());
 	}
 
 	/**
@@ -370,6 +388,18 @@ public class EnableConfigurationPropertiesTests {
 				.getPropertySources();
 		sources.remove("systemProperties");
 		sources.remove("systemEnvironment");
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class TestConfigurationWithAnnotatedBean {
+
+		@Bean
+		@ConfigurationProperties(prefix = "spam")
+		public External testProperties() {
+			return new External();
+		}
+
 	}
 
 	@Configuration
@@ -455,7 +485,7 @@ public class EnableConfigurationPropertiesTests {
 	public static class SystemExampleConfig {
 	}
 
-	@ConfigurationProperties(name = "external")
+	@ConfigurationProperties(prefix = "external")
 	public static class External {
 
 		private String name;
@@ -469,7 +499,7 @@ public class EnableConfigurationPropertiesTests {
 		}
 	}
 
-	@ConfigurationProperties(name = "another")
+	@ConfigurationProperties(prefix = "another")
 	public static class Another {
 
 		private String name;
@@ -483,7 +513,7 @@ public class EnableConfigurationPropertiesTests {
 		}
 	}
 
-	@ConfigurationProperties(name = "spring_test_external")
+	@ConfigurationProperties(prefix = "spring_test_external")
 	public static class SystemEnvVar {
 
 		public String getVal() {
@@ -593,7 +623,7 @@ public class EnableConfigurationPropertiesTests {
 	protected static class StrictTestProperties extends TestProperties {
 	}
 
-	@ConfigurationProperties(name = "spring.foo")
+	@ConfigurationProperties(prefix = "spring.foo")
 	protected static class EmbeddedTestProperties extends TestProperties {
 	}
 
@@ -644,7 +674,7 @@ public class EnableConfigurationPropertiesTests {
 		// No getter - you should be able to bind to a write-only bean
 	}
 
-	@ConfigurationProperties(path = "${binding.location:classpath:name.yml}")
+	@ConfigurationProperties(locations = "${binding.location:classpath:name.yml}")
 	protected static class ResourceBindingProperties {
 
 		private String name;
@@ -657,7 +687,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(path = "${binding.location:classpath:map.yml}")
+	@ConfigurationProperties(locations = "${binding.location:classpath:map.yml}")
 	protected static class ResourceBindingPropertiesWithMap {
 
 		private Map<String, String> mymap;

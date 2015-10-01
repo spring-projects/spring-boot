@@ -1,0 +1,4 @@
+<hazelcast>
+	<map name="books"/>
+	<map name="players"/>
+</hazelcast>

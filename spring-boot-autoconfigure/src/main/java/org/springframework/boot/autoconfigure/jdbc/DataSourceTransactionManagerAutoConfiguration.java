@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -36,8 +35,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
  * {@link DataSourceTransactionManager}.
- * 
+ *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
@@ -52,13 +52,13 @@ public class DataSourceTransactionManagerAutoConfiguration implements Ordered {
 	private DataSource dataSource;
 
 	@Bean
-	@ConditionalOnMissingBean(name = "transactionManager")
+	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	@ConditionalOnBean(DataSource.class)
-	public PlatformTransactionManager transactionManager() {
+	public DataSourceTransactionManager transactionManager() {
 		return new DataSourceTransactionManager(this.dataSource);
 	}
 
-	@ConditionalOnMissingClass(AbstractTransactionManagementConfiguration.class)
+	@ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
 	@Configuration
 	@EnableTransactionManagement
 	protected static class TransactionManagementConfiguration {

@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 		<relativePath>../../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-starter-parent</artifactId>
 	<packaging>pom</packaging>
+	<name>Spring Boot Starter Parent</name>
+	<description>Spring Boot Starter Parent</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<java.version>1.6</java.version>
+		<resource.delimiter>@</resource.delimiter> <!-- delimiter that doesn't clash with Spring ${} placeholders -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring-boot.version>1.0.0.BUILD-SNAPSHOT</spring-boot.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -23,158 +31,19 @@
 				<artifactId>spring-core</artifactId>
 				<version>${spring.version}</version>
 				<exclusions>
-					<!-- Starters use SLF4J -->
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-actuator</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-amqp</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-aop</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-actuator</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-batch</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-data-jpa</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-data-mongodb</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-data-rest</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-integration</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-jdbc</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-jetty</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-logging</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-log4j</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-mobile</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-redis</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-security</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-shell-remote</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-test</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-thymeleaf</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-tomcat</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-web</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-websocket</artifactId>
-				<version>${spring-boot.version}</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<dependencies>
-		<!-- Generally Useful Test Dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 	<build>
 		<!-- Turn on filtering by default for application properties -->
 		<resources>
 			<resource>
-				<directory>src/main/resources</directory>
+				<directory>${basedir}/src/main/resources</directory>
 				<filtering>true</filtering>
 				<includes>
 					<include>**/application.yml</include>
@@ -182,7 +51,7 @@
 				</includes>
 			</resource>
 			<resource>
-				<directory>src/main/resources</directory>
+				<directory>${basedir}/src/main/resources</directory>
 				<excludes>
 					<exclude>**/application.yml</exclude>
 					<exclude>**/application.properties</exclude>
@@ -193,26 +62,20 @@
 			<plugins>
 				<!-- Apply more sensible defaults for user projects -->
 				<plugin>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.1</version>
-					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-					</configuration>
-				</plugin>
-				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<configuration>
 						<archive>
 							<manifest>
 								<mainClass>${start-class}</mainClass>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							</manifest>
 						</archive>
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.15</version>
 					<configuration>
 						<includes>
 							<include>**/*Tests.java</include>
@@ -224,12 +87,14 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
 					<configuration>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 						<archive>
 							<manifest>
 								<mainClass>${start-class}</mainClass>
+								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							</manifest>
 						</archive>
 					</configuration>
@@ -242,9 +107,19 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<delimiters>
+							<delimiter>${resource.delimiter}</delimiter>
+						</delimiters>
+					</configuration>
+				</plugin>
+				<plugin>
 					<groupId>pl.project13.maven</groupId>
 					<artifactId>git-commit-id-plugin</artifactId>
-					<version>2.1.7</version>
+					<version>2.1.11</version>
 					<executions>
 						<execution>
 							<goals>
@@ -256,7 +131,7 @@
 						<verbose>true</verbose>
 						<dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
 						<generateGitPropertiesFile>true</generateGitPropertiesFile>
-						<generateGitPropertiesFilename>src/main/resources/git.properties</generateGitPropertiesFilename>
+						<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
 					</configuration>
 				</plugin>
 				<!-- Support our own plugin -->
@@ -279,7 +154,6 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
-					<version>2.1</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
@@ -309,22 +183,17 @@
 							</goals>
 							<configuration>
 								<transformers>
-									<transformer
-										implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 										<resource>META-INF/spring.handlers</resource>
 									</transformer>
-									<transformer
-										implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
+									<transformer implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
 										<resource>META-INF/spring.factories</resource>
 									</transformer>
-									<transformer
-										implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 										<resource>META-INF/spring.schemas</resource>
 									</transformer>
-									<transformer
-										implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-									<transformer
-										implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+									<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 										<mainClass>${start-class}</mainClass>
 									</transformer>
 								</transformers>
@@ -335,15 +204,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<repositories>
-		<!-- TODO: remove this once all milestone dependencies are removed -->
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>http://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 </project>

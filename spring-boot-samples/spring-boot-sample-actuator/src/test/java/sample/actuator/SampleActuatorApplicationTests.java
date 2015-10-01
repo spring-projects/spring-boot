@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,37 +16,27 @@
 
 package sample.actuator;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.security.crypto.codec.Base64;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,39 +45,27 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for service demo application.
- * 
+ *
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(SampleActuatorApplication.class)
+@WebAppConfiguration
+@IntegrationTest("server.port=0")
+@DirtiesContext
 public class SampleActuatorApplicationTests {
 
-	private static ConfigurableApplicationContext context;
+	@Autowired
+	private SecurityProperties security;
 
-	@BeforeClass
-	public static void start() throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication
-										.run(SampleActuatorApplication.class);
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void testHomeIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -97,10 +75,27 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
+	public void testMetricsIsSecure() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/metrics", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port
+				+ "/metrics/", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port
+				+ "/metrics/foo", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port
+				+ "/metrics.json", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+	}
+
+	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:8080", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -111,8 +106,8 @@ public class SampleActuatorApplicationTests {
 	public void testMetrics() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:8080/metrics", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -122,8 +117,8 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testEnv() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:8080/env", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/env", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -132,16 +127,37 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/health", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"status\":\"UP\""));
+		assertFalse("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"hello\":\"1\""));
+	}
+
+	@Test
+	public void testSecureHealth() throws Exception {
+		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/health", String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"hello\":1"));
+	}
+
+	@Test
+	public void testInfo() throws Exception {
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/info", String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertTrue("Wrong body: " + entity.getBody(),
+				entity.getBody().contains("\"artifact\":\"spring-boot-sample-actuator\""));
 	}
 
 	@Test
 	public void testErrorPage() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080/foo", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/foo", String.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		String body = entity.getBody();
 		assertNotNull(body);
@@ -153,8 +169,9 @@ public class SampleActuatorApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = getRestTemplate("user", getPassword()).exchange(
-				"http://localhost:8080/foo", HttpMethod.GET, request, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
+				.exchange("http://localhost:" + this.port + "/foo", HttpMethod.GET,
+						request, String.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		String body = entity.getBody();
 		assertNotNull("Body was null", body);
@@ -164,10 +181,11 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	public void testTrace() throws Exception {
-		getRestTemplate().getForEntity("http://localhost:8080/health", String.class);
+		new TestRestTemplate().getForEntity("http://localhost:" + this.port + "/health",
+				String.class);
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = getRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080/trace", List.class);
+		ResponseEntity<List> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/trace", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> list = entity.getBody();
@@ -181,9 +199,9 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testErrorPageDirectAccess() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/error", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/error", Map.class);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("None", body.get("error"));
@@ -193,8 +211,8 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testBeans() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = getRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080/beans", List.class);
+		ResponseEntity<List> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/beans", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals(1, entity.getBody().size());
 		@SuppressWarnings("unchecked")
@@ -203,46 +221,20 @@ public class SampleActuatorApplicationTests {
 				((String) body.get("context")).startsWith("application"));
 	}
 
+	@Test
+	public void testConfigProps() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/configprops", Map.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertTrue("Wrong body: " + body,
+				body.containsKey("spring.datasource.CONFIGURATION_PROPERTIES"));
+	}
+
 	private String getPassword() {
-		return context.getBean(SecurityProperties.class).getUser().getPassword();
-	}
-
-	private RestTemplate getRestTemplate() {
-		return getRestTemplate(null, null);
-	}
-
-	private RestTemplate getRestTemplate(final String username, final String password) {
-
-		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-
-		if (username != null) {
-
-			interceptors.add(new ClientHttpRequestInterceptor() {
-
-				@Override
-				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-						ClientHttpRequestExecution execution) throws IOException {
-					request.getHeaders().add(
-							"Authorization",
-							"Basic "
-									+ new String(Base64
-											.encode((username + ":" + password)
-													.getBytes())));
-					return execution.execute(request, body);
-				}
-			});
-		}
-
-		RestTemplate restTemplate = new RestTemplate(
-				new InterceptingClientHttpRequestFactory(
-						new SimpleClientHttpRequestFactory(), interceptors));
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
+		return this.security.getUser().getPassword();
 	}
 
 }

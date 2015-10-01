@@ -18,17 +18,17 @@ package org.springframework.boot.liquibase;
 
 import java.util.Set;
 
-import liquibase.logging.Logger;
-
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+
+import liquibase.logging.Logger;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for SpringPackageScanClassResolver.
- * 
+ *
  * @author Phillip Webb
  */
 public class SpringPackageScanClassResolverTests {

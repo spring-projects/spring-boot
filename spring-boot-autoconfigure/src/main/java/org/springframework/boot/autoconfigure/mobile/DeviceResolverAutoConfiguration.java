@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mobile;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -36,7 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
  * {@link DeviceResolver}.
- * 
+ *
  * @author Roy Clarkson
  */
 @Configuration
@@ -47,8 +48,10 @@ public class DeviceResolverAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication
-	protected static class DeviceResolverAutoConfigurationAdapter extends
-			WebMvcConfigurerAdapter {
+	protected static class DeviceResolverMvcConfiguration extends WebMvcConfigurerAdapter {
+
+		@Autowired
+		private DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor;
 
 		@Bean
 		@ConditionalOnMissingBean(DeviceResolverHandlerInterceptor.class)
@@ -63,7 +66,7 @@ public class DeviceResolverAutoConfiguration {
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(deviceResolverHandlerInterceptor());
+			registry.addInterceptor(this.deviceResolverHandlerInterceptor);
 		}
 
 		@Override

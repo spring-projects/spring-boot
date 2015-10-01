@@ -1,0 +1,30 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}")
+	}
+}
+
+apply plugin: 'spring-boot'
+
+group = 'nojar'
+version = '0.0.0'
+
+jar {
+	enabled = false
+}
+
+bootRepackage {
+	enabled = false
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	compile 'org.springframework.boot:spring-boot-starter'
+}

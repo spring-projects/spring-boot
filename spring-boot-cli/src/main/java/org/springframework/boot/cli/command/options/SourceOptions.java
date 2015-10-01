@@ -20,14 +20,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import joptsimple.OptionSet;
-
 import org.springframework.boot.cli.util.ResourceUtils;
 import org.springframework.util.Assert;
 
+import joptsimple.OptionSet;
+
 /**
  * Extract source file options (anything following '--' in an {@link OptionSet}).
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Greg Turnquist

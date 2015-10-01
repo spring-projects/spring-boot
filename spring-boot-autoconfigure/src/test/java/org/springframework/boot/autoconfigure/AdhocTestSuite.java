@@ -20,16 +20,18 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.springframework.boot.SimpleMainTests;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfigurationTests;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfigurationTests;
+import org.springframework.boot.autoconfigure.web.BasicErrorControllerDirectMockMvcTests;
 
 /**
  * A test suite for probing weird ordering problems in the tests.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(Suite.class)
-@SuiteClasses({ SimpleMainTests.class, JettyEmbeddedServletContainerFactoryTests.class })
+@SuiteClasses({ BasicErrorControllerDirectMockMvcTests.class,
+		JmxAutoConfigurationTests.class, IntegrationAutoConfigurationTests.class })
 @Ignore
 public class AdhocTestSuite {
 

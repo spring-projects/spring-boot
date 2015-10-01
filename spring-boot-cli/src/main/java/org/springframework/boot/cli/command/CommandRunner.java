@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
  * Main class used to run {@link Command}s.
- * 
+ *
+ * @author Phillip Webb
  * @see #addCommand(Command)
  * @see CommandRunner#runAndHandleErrors(String[])
- * @author Phillip Webb
  */
 public class CommandRunner implements Iterable<Command> {
 
@@ -46,6 +47,8 @@ public class CommandRunner implements Iterable<Command> {
 
 	private Class<?>[] optionCommandClasses = {};
 
+	private Class<?>[] hiddenCommandClasses = {};
+
 	/**
 	 * Create a new {@link CommandRunner} instance.
 	 * @param name the name of the runner or {@code null}
@@ -57,6 +60,7 @@ public class CommandRunner implements Iterable<Command> {
 	/**
 	 * Return the name of the runner or an empty string. Non-empty names will include a
 	 * trailing space character so that they can be used as a prefix.
+	 * @return the name of the runner
 	 */
 	public String getName() {
 		return this.name;
@@ -95,14 +99,32 @@ public class CommandRunner implements Iterable<Command> {
 	}
 
 	/**
+	 * Set the command classes which should be hidden (i.e. executed but not displayed in
+	 * the available commands list).
+	 * @param commandClasses the classes of hidden commands
+	 */
+	public void setHiddenCommands(Class<?>... commandClasses) {
+		Assert.notNull(commandClasses, "CommandClasses must not be null");
+		this.hiddenCommandClasses = commandClasses;
+	}
+
+	/**
 	 * Returns if the specified command is an option command.
 	 * @param command the command to test
 	 * @return {@code true} if the command is an option command
 	 * @see #setOptionCommands(Class...)
 	 */
 	public boolean isOptionCommand(Command command) {
-		for (Class<?> optionCommandClass : this.optionCommandClasses) {
-			if (optionCommandClass.isInstance(command)) {
+		return isCommandInstanceOf(command, this.optionCommandClasses);
+	}
+
+	private boolean isHiddenCommand(Command command) {
+		return isCommandInstanceOf(command, this.hiddenCommandClasses);
+	}
+
+	private boolean isCommandInstanceOf(Command command, Class<?>[] commandClasses) {
+		for (Class<?> commandClass : commandClasses) {
+			if (commandClass.isInstance(command)) {
 				return true;
 			}
 		}
@@ -146,7 +168,11 @@ public class CommandRunner implements Iterable<Command> {
 			System.setProperty("debug", "true");
 		}
 		try {
-			run(argsWithoutDebugFlags);
+			ExitStatus result = run(argsWithoutDebugFlags);
+			// The caller will hang up if it gets a non-zero status
+			if (result != null && result.isHangup()) {
+				return (result.getCode() > 0 ? result.getCode() : 0);
+			}
 			return 0;
 		}
 		catch (NoArgumentsException ex) {
@@ -175,9 +201,10 @@ public class CommandRunner implements Iterable<Command> {
 	/**
 	 * Parse the arguments and run a suitable command.
 	 * @param args the arguments
-	 * @throws Exception
+	 * @return the outcome of the command
+	 * @throws Exception if the command fails
 	 */
-	protected void run(String... args) throws Exception {
+	protected ExitStatus run(String... args) throws Exception {
 		if (args.length == 0) {
 			throw new NoArgumentsException();
 		}
@@ -189,7 +216,7 @@ public class CommandRunner implements Iterable<Command> {
 		}
 		beforeRun(command);
 		try {
-			command.run(commandArguments);
+			return command.run(commandArguments);
 		}
 		finally {
 			afterRun(command);
@@ -249,7 +276,7 @@ public class CommandRunner implements Iterable<Command> {
 		Log.info("");
 		Log.info("Available commands are:");
 		for (Command command : this.commands) {
-			if (!isOptionCommand(command)) {
+			if (!isOptionCommand(command) && !isHiddenCommand(command)) {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
 				Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),

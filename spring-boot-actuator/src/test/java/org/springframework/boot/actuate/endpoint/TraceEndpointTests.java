@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link TraceEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
@@ -53,7 +53,7 @@ public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 		@Bean
 		public TraceEndpoint endpoint() {
 			TraceRepository repository = new InMemoryTraceRepository();
-			repository.add(Collections.<String, Object> singletonMap("a", "b"));
+			repository.add(Collections.<String, Object>singletonMap("a", "b"));
 			return new TraceEndpoint(repository);
 		}
 	}

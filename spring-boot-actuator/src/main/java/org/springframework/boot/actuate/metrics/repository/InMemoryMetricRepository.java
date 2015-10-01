@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentNavigableMap;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository;
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
 import org.springframework.boot.actuate.metrics.writer.Delta;
@@ -31,11 +30,10 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
 /**
  * {@link MetricRepository} and {@link MultiMetricRepository} implementation that stores
  * metrics in memory.
- * 
+ *
  * @author Dave Syer
  */
-public class InMemoryMetricRepository implements MetricRepository, MultiMetricRepository,
-		PrefixMetricReader {
+public class InMemoryMetricRepository implements MetricRepository, MultiMetricRepository {
 
 	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
 
@@ -71,10 +69,32 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 	}
 
 	@Override
-	public void save(String group, Collection<Metric<?>> values) {
+	public void set(String group, Collection<Metric<?>> values) {
+		String prefix = group;
+		if (!prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
 		for (Metric<?> metric : values) {
+			if (!metric.getName().startsWith(prefix)) {
+				metric = new Metric<Number>(prefix + metric.getName(), metric.getValue(),
+						metric.getTimestamp());
+			}
 			set(metric);
 		}
+		this.groups.add(group);
+	}
+
+	@Override
+	public void increment(String group, Delta<?> delta) {
+		String prefix = group;
+		if (!prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
+		if (!delta.getName().startsWith(prefix)) {
+			delta = new Delta<Number>(prefix + delta.getName(), delta.getValue(),
+					delta.getTimestamp());
+		}
+		increment(delta);
 		this.groups.add(group);
 	}
 
@@ -86,6 +106,11 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 	@Override
 	public long count() {
 		return this.metrics.count();
+	}
+
+	@Override
+	public long countGroups() {
+		return this.groups.size();
 	}
 
 	@Override

@@ -27,7 +27,7 @@ import org.junit.runners.model.Statement;
 
 /**
  * Capture output from System.out and System.err.
- * 
+ *
  * @author Phillip Webb
  */
 public class OutputCapture implements TestRule {
@@ -90,7 +90,7 @@ public class OutputCapture implements TestRule {
 
 		private final OutputStream copy;
 
-		public CaptureOutputStream(PrintStream original, OutputStream copy) {
+		CaptureOutputStream(PrintStream original, OutputStream copy) {
 			this.original = original;
 			this.copy = copy;
 		}

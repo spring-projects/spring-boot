@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,32 +23,31 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for externalized configuration. Add this to a class definition if you want
- * to bind and validate some external Properties (e.g. from a .properties file).
- * 
+ * Annotation for externalized configuration. Add this to a class definition or a
+ * {@code @Bean} method in a {@code @Configuration} class if you want to bind and validate
+ * some external Properties (e.g. from a .properties file).
+ *
  * @author Dave Syer
  * @see ConfigurationPropertiesBindingPostProcessor
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConfigurationProperties {
 
 	/**
-	 * The (optional) name of the object to be bound. Properties to bind can have a name
-	 * prefix to select the properties that are valid to this object. Synonym for
-	 * {@link #name()}.
+	 * The name prefix of the properties that are valid to bind to this object. Synonym
+	 * for {@link #prefix()}.
 	 * @return the name prefix of the properties to bind
 	 */
 	String value() default "";
 
 	/**
-	 * The (optional) name of the object to be bound. Properties to bind can have a name
-	 * prefix to select the properties that are valid to this object. Synonym for
-	 * {@link #value()}.
+	 * The name prefix of the properties that are valid to bind to this object. Synonym
+	 * for {@link #value()}.
 	 * @return the name prefix of the properties to bind
 	 */
-	String name() default "";
+	String prefix() default "";
 
 	/**
 	 * Flag to indicate that when binding to this object invalid fields should be ignored.
@@ -73,17 +72,28 @@ public @interface ConfigurationProperties {
 	boolean ignoreUnknownFields() default true;
 
 	/**
-	 * Flag to indicate that validation errors can be swallowed. If set they will be
-	 * logged, but not propagate to the caller.
+	 * Flag to indicate that an exception should be raised if a Validator is
+	 * available and validation fails. If it is set to false, validation errors will be swallowed.
+	 * They will be logged, but not propagated to the caller.
 	 * @return the flag value (default true)
 	 */
 	boolean exceptionIfInvalid() default true;
 
 	/**
-	 * Optionally provide an explicit resource path to bind to instead of using the
-	 * default environment.
+	 * Optionally provide explicit resource locations to bind to. By default the
+	 * configuration at these specified locations will be merged with the default
+	 * configuration.
 	 * @return the path (or paths) of resources to bind to
+	 * @see #merge()
 	 */
-	String[] path() default {};
+	String[] locations() default {};
+
+	/**
+	 * Flag to indicate that configuration loaded from the specified locations should be
+	 * merged with the default configuration.
+	 * @return the flag value (default true)
+	 * @see #locations()
+	 */
+	boolean merge() default true;
 
 }

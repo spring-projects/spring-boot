@@ -69,7 +69,7 @@ if [ -z "${SPRING_HOME}" ]; then
     done
     SAVED="`pwd`"
     cd "`dirname \"$PRG\"`/../" >&-
-    SPRING_HOME="`pwd -P`"
+    export SPRING_HOME="`pwd -P`"
     cd "$SAVED" >&-
 fi
 

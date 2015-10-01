@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
- * Configures the {@link LocalContainerEntityManagerFactoryBean} to to scan for entity
+ * Configures the {@link LocalContainerEntityManagerFactoryBean} to scan for entity
  * classes in the classpath. This annotation provides an alternative to manually setting
  * {@link LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)} and is
  * particularly useful if you want to configure entity scanning in a type-safe way, or if
@@ -40,7 +40,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * {@link #value()} may be specified to define specific packages to scan. If specific
  * packages are not defined scanning will occur from the package of the class with this
  * annotation.
- * 
+ *
  * @author Phillip Webb
  */
 @Target(ElementType.TYPE)
@@ -53,16 +53,17 @@ public @interface EntityScan {
 	 * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation
 	 * declarations e.g.: {@code @EntityScan("org.my.pkg")} instead of
 	 * {@code @EntityScan(basePackages="org.my.pkg")}.
+	 * @return the base packages to scan
 	 */
 	String[] value() default {};
 
 	/**
-	 * Base packages to scan for annotated entities.
-	 * <p>
-	 * {@link #value()} is an alias for (and mutually exclusive with) this attribute.
+	 * Base packages to scan for annotated entities. {@link #value()} is an alias for (and
+	 * mutually exclusive with) this attribute.
 	 * <p>
 	 * Use {@link #basePackageClasses()} for a type-safe alternative to String-based
 	 * package names.
+	 * @return the base packages to scan
 	 */
 	String[] basePackages() default {};
 
@@ -72,6 +73,7 @@ public @interface EntityScan {
 	 * <p>
 	 * Consider creating a special no-op marker class or interface in each package that
 	 * serves no purpose other than being referenced by this attribute.
+	 * @return classes form the base packages to scan
 	 */
 	Class<?>[] basePackageClasses() default {};
 

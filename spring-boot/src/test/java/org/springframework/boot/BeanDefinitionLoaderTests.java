@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.sampleconfig.MyComponent;
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link BeanDefinitionLoader}.
- * 
+ *
  * @author Phillip Webb
  */
 public class BeanDefinitionLoaderTests {
@@ -38,6 +39,11 @@ public class BeanDefinitionLoaderTests {
 	@Before
 	public void setup() {
 		this.registry = new StaticApplicationContext();
+	}
+
+	@After
+	public void cleanUp() {
+		this.registry.close();
 	}
 
 	@Test
@@ -62,6 +68,17 @@ public class BeanDefinitionLoaderTests {
 	@Test
 	public void loadGroovyResource() throws Exception {
 		ClassPathResource resource = new ClassPathResource("sample-beans.groovy",
+				getClass());
+		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
+		int loaded = loader.load();
+		assertThat(loaded, equalTo(1));
+		assertTrue(this.registry.containsBean("myGroovyComponent"));
+
+	}
+
+	@Test
+	public void loadGroovyResourceWithNamespace() throws Exception {
+		ClassPathResource resource = new ClassPathResource("sample-namespace.groovy",
 				getClass());
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
 		int loaded = loader.load();

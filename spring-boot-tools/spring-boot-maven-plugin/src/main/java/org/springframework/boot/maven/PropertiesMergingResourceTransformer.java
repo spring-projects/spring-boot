@@ -30,7 +30,7 @@ import org.apache.maven.plugins.shade.resource.ResourceTransformer;
  * Extension for the <a href="http://maven.apache.org/plugins/maven-shade-plugin/">Maven
  * shade plugin</a> to allow properties files (e.g. {@literal META-INF/spring.factories})
  * to be merged without losing any information.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertiesMergingResourceTransformer implements ResourceTransformer {
@@ -41,7 +41,8 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 	private final Properties data = new Properties();
 
 	/**
-	 * @return the data the properties being merged
+	 * Return the data the properties being merged.
+	 * @return the data
 	 */
 	public Properties getData() {
 		return this.data;

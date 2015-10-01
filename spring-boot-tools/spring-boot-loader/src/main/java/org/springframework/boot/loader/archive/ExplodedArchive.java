@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Archive} implementation backed by an exploded archive directory.
- * 
+ *
  * @author Phillip Webb
  */
 public class ExplodedArchive extends Archive {
@@ -56,28 +56,40 @@ public class ExplodedArchive extends Archive {
 
 	private Manifest manifest;
 
-	private boolean recursive = true;
+	private boolean filtered = false;
 
+	/**
+	 * Create a new {@link ExplodedArchive} instance.
+	 * @param root the root folder
+	 */
 	public ExplodedArchive(File root) {
 		this(root, true);
 	}
 
+	/**
+	 * Create a new {@link ExplodedArchive} instance.
+	 * @param root the root folder
+	 * @param recursive if recursive searching should be used to locate the manifest.
+	 * Defaults to {@code true}, folders with a large tree might want to set this to {code
+	 * false}.
+	 */
 	public ExplodedArchive(File root, boolean recursive) {
 		if (!root.exists() || !root.isDirectory()) {
 			throw new IllegalArgumentException("Invalid source folder " + root);
 		}
 		this.root = root;
-		this.recursive = recursive;
-		buildEntries(root);
+		buildEntries(root, recursive);
 		this.entries = Collections.unmodifiableMap(this.entries);
 	}
 
 	private ExplodedArchive(File root, Map<AsciiBytes, Entry> entries) {
 		this.root = root;
+		// The entries are pre-filtered
+		this.filtered = true;
 		this.entries = Collections.unmodifiableMap(entries);
 	}
 
-	private void buildEntries(File file) {
+	private void buildEntries(File file, boolean recursive) {
 		if (!file.equals(this.root)) {
 			String name = file.toURI().getPath()
 					.substring(this.root.toURI().getPath().length());
@@ -85,10 +97,15 @@ public class ExplodedArchive extends Archive {
 			this.entries.put(entry.getName(), entry);
 		}
 		if (file.isDirectory()) {
-			for (File child : file.listFiles()) {
+			File[] files = file.listFiles();
+			if (files == null) {
+				return;
+			}
+			for (File child : files) {
 				if (!SKIPPED_NAMES.contains(child.getName())) {
-					if (file.equals(this.root) || this.recursive) {
-						buildEntries(child);
+					if (file.equals(this.root) || recursive
+							|| file.getName().equals("META-INF")) {
+						buildEntries(child, recursive);
 					}
 				}
 			}
@@ -97,7 +114,8 @@ public class ExplodedArchive extends Archive {
 
 	@Override
 	public URL getUrl() throws MalformedURLException {
-		FilteredURLStreamHandler handler = new FilteredURLStreamHandler();
+		FilteredURLStreamHandler handler = this.filtered ? new FilteredURLStreamHandler()
+				: null;
 		return new URL("file", "", -1, this.root.toURI().getPath(), handler);
 	}
 
@@ -156,7 +174,7 @@ public class ExplodedArchive extends Archive {
 
 		private final File file;
 
-		public FileEntry(AsciiBytes name, File file) {
+		FileEntry(AsciiBytes name, File file) {
 			this.name = name;
 			this.file = file;
 		}
@@ -181,9 +199,6 @@ public class ExplodedArchive extends Archive {
 	 */
 	private class FilteredURLStreamHandler extends URLStreamHandler {
 
-		public FilteredURLStreamHandler() {
-		}
-
 		@Override
 		protected URLConnection openConnection(URL url) throws IOException {
 			String name = url.getPath().substring(
@@ -202,7 +217,7 @@ public class ExplodedArchive extends Archive {
 
 		private final String name;
 
-		public FileNotFoundURLConnection(URL url, String name) {
+		FileNotFoundURLConnection(URL url, String name) {
 			super(url);
 			this.name = name;
 		}

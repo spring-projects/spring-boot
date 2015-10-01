@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link EndpointHandlerMapping}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -133,9 +133,24 @@ public class EndpointHandlerMappingTests {
 				nullValue());
 	}
 
+	@Test
+	public void duplicatePath() throws Exception {
+		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("/a"));
+		TestActionEndpoint other = new TestActionEndpoint(new TestEndpoint("/a"));
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(Arrays.asList(
+				endpoint, other));
+		mapping.setDisabled(true);
+		mapping.setApplicationContext(this.context);
+		mapping.afterPropertiesSet();
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
+				nullValue());
+		assertThat(mapping.getHandler(new MockHttpServletRequest("POST", "/a")),
+				nullValue());
+	}
+
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
 
-		public TestEndpoint(String path) {
+		TestEndpoint(String path) {
 			super(path);
 		}
 
@@ -148,7 +163,7 @@ public class EndpointHandlerMappingTests {
 
 	private static class TestMvcEndpoint extends EndpointMvcAdapter {
 
-		public TestMvcEndpoint(TestEndpoint delegate) {
+		TestMvcEndpoint(TestEndpoint delegate) {
 			super(delegate);
 		}
 
@@ -156,7 +171,7 @@ public class EndpointHandlerMappingTests {
 
 	private static class TestActionEndpoint extends EndpointMvcAdapter {
 
-		public TestActionEndpoint(TestEndpoint delegate) {
+		TestActionEndpoint(TestEndpoint delegate) {
 			super(delegate);
 		}
 

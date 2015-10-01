@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,12 @@ import org.springframework.context.annotation.Configuration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Tests for {@link ConfigurationPropertiesReportEndpoint} when used with a parent
+ * context.
+ *
+ * @author Dave Syer
+ */
 public class ConfigurationPropertiesReportEndpointParentTests {
 
 	private AnnotationConfigApplicationContext context;
@@ -61,6 +67,23 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 		// System.err.println(result);
 	}
 
+	@Test
+	public void testInvokeWithFactory() throws Exception {
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.register(Parent.class);
+		parent.refresh();
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		this.context.register(Factory.class);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint endpoint = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+		Map<String, Object> result = endpoint.invoke();
+		assertTrue(result.containsKey("parent"));
+		assertEquals(3, result.size()); // the endpoint, the test props and the parent
+		// System.err.println(result);
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Parent {
@@ -80,13 +103,33 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 		}
 
 		@Bean
-		public TestProperties testProperties() {
+		public TestProperties someProperties() {
 			return new TestProperties();
 		}
 
 	}
 
-	@ConfigurationProperties(name = "test")
+	@Configuration
+	@EnableConfigurationProperties
+	public static class Factory {
+
+		@Bean
+		public ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint();
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "other")
+		public OtherProperties otherProperties() {
+			return new OtherProperties();
+		}
+
+	}
+
+	public static class OtherProperties {
+	}
+
+	@ConfigurationProperties(prefix = "test")
 	public static class TestProperties {
 
 		private String myTestProperty = "654321";

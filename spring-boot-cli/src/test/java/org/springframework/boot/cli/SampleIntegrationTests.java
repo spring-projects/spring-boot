@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,18 @@ package org.springframework.boot.cli;
 import java.io.File;
 import java.net.URI;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests to exercise the samples.
- * 
+ *
  * @author Dave Syer
  * @author Greg Turnquist
  * @author Roy Clarkson
@@ -44,6 +45,14 @@ public class SampleIntegrationTests {
 	public void appSample() throws Exception {
 		String output = this.cli.run("app.groovy");
 		URI scriptUri = new File("samples/app.groovy").toURI();
+		assertTrue("Wrong output: " + output,
+				output.contains("Hello World! From " + scriptUri));
+	}
+
+	@Test
+	public void retrySample() throws Exception {
+		String output = this.cli.run("retry.groovy");
+		URI scriptUri = new File("samples/retry.groovy").toURI();
 		assertTrue("Wrong output: " + output,
 				output.contains("Hello World! From " + scriptUri));
 	}
@@ -66,6 +75,15 @@ public class SampleIntegrationTests {
 		String output = this.cli.run("job.groovy", "foo=bar");
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
+	}
+
+	@Test
+	public void oauth2Sample() throws Exception {
+		String output = this.cli.run("oauth2.groovy");
+		assertTrue("Wrong output: " + output,
+				output.contains("security.oauth2.client.clientId"));
+		assertTrue("Wrong output: " + output,
+				output.contains("security.oauth2.client.secret ="));
 	}
 
 	@Test
@@ -99,7 +117,7 @@ public class SampleIntegrationTests {
 		this.cli.run("ui.groovy", "--classpath=.:src/test/resources");
 		String result = this.cli.getHttpOutput();
 		assertTrue("Wrong output: " + result, result.contains("Hello World"));
-		result = this.cli.getHttpOutput("http://localhost:8080/css/bootstrap.min.css");
+		result = this.cli.getHttpOutput("/css/bootstrap.min.css");
 		assertTrue("Wrong output: " + result, result.contains("container"));
 	}
 
@@ -134,12 +152,10 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	@Ignore("Intermittent failure on CI. See #323")
 	public void jmsSample() throws Exception {
 		String output = this.cli.run("jms.groovy");
 		assertTrue("Wrong output: " + output,
-				output.contains("Received Greetings from Spring Boot via ActiveMQ"));
-		FileUtils.deleteDirectory(new File("activemq-data"));// cleanup ActiveMQ cruft
+				output.contains("Received Greetings from Spring Boot via HornetQ"));
 	}
 
 	@Test
@@ -154,6 +170,12 @@ public class SampleIntegrationTests {
 	public void deviceSample() throws Exception {
 		this.cli.run("device.groovy");
 		assertEquals("Hello Normal Device!", this.cli.getHttpOutput());
+	}
+
+	@Test
+	public void caching() throws Exception {
+		this.cli.run("caching.groovy");
+		assertThat(this.cli.getOutput(), containsString("Hello World"));
 	}
 
 }

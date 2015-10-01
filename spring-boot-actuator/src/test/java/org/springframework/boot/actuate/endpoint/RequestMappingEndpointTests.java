@@ -23,6 +23,12 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
@@ -32,6 +38,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link RequestMappingEndpoint}.
+ *
  * @author Dave Syer
  */
 public class RequestMappingEndpointTests {
@@ -45,7 +53,7 @@ public class RequestMappingEndpointTests {
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.initApplicationContext();
 		this.endpoint.setHandlerMappings(Collections
-				.<AbstractUrlHandlerMapping> singletonList(mapping));
+				.<AbstractUrlHandlerMapping>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
 		assertEquals(1, result.size());
 		@SuppressWarnings("unchecked")
@@ -67,6 +75,18 @@ public class RequestMappingEndpointTests {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
 		assertEquals("mapping", map.get("bean"));
+	}
+
+	@Test
+	public void beanUrlMappingsProxy() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				MappingConfiguration.class);
+		this.endpoint.setApplicationContext(context);
+		Map<String, Object> result = this.endpoint.invoke();
+		assertEquals(1, result.size());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) result.get("/foo");
+		assertEquals("scopedTarget.mapping", map.get("bean"));
 	}
 
 	@Test
@@ -94,7 +114,7 @@ public class RequestMappingEndpointTests {
 		mapping.setApplicationContext(new StaticApplicationContext());
 		mapping.afterPropertiesSet();
 		this.endpoint.setMethodMappings(Collections
-				.<AbstractHandlerMethodMapping<?>> singletonList(mapping));
+				.<AbstractHandlerMethodMapping<?>>singletonList(mapping));
 		Map<String, Object> result = this.endpoint.invoke();
 		assertEquals(1, result.size());
 		assertTrue(result.keySet().iterator().next().contains("/dump"));
@@ -104,4 +124,15 @@ public class RequestMappingEndpointTests {
 		assertTrue(handler.containsKey("method"));
 	}
 
+	@Configuration
+	protected static class MappingConfiguration {
+		@Bean
+		@Lazy
+		@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+		public AbstractUrlHandlerMapping mapping() {
+			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+			mapping.setUrlMap(Collections.singletonMap("/foo", new Object()));
+			return mapping;
+		}
+	}
 }

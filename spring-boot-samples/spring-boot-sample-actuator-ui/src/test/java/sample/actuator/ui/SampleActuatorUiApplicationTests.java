@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,69 +16,50 @@
 
 package sample.actuator.ui;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(SampleActuatorUiApplication.class)
+@IntegrationTest("server.port=0")
+@WebAppConfiguration
+@DirtiesContext
 public class SampleActuatorUiApplicationTests {
 
-	private static ConfigurableApplicationContext context;
-
-	@BeforeClass
-	public static void start() throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication
-										.run(SampleActuatorUiApplication.class);
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void testHome() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = getRestTemplate().exchange(
-				"http://localhost:8080", HttpMethod.GET, new HttpEntity<Void>(headers),
-				String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
+				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
+						headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
 				.getBody().contains("<title>Hello"));
@@ -86,8 +67,8 @@ public class SampleActuatorUiApplicationTests {
 
 	@Test
 	public void testCss() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
 	}
@@ -95,8 +76,8 @@ public class SampleActuatorUiApplicationTests {
 	@Test
 	public void testMetrics() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/metrics", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
@@ -104,8 +85,8 @@ public class SampleActuatorUiApplicationTests {
 	public void testError() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = getRestTemplate().exchange(
-				"http://localhost:8080/error", HttpMethod.GET,
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
+				"http://localhost:" + this.port + "/error", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
@@ -116,17 +97,6 @@ public class SampleActuatorUiApplicationTests {
 				"Wrong body:\n" + entity.getBody(),
 				entity.getBody().contains(
 						"Please contact the operator with the above information"));
-	}
-
-	private RestTemplate getRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
 	}
 
 }

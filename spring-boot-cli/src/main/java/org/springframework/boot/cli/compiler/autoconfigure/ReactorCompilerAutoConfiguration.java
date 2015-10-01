@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,30 +24,36 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for the Reactor.
- * 
+ *
  * @author Dave Syer
  */
 public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableReactor");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableReactor")
+				|| AstUtils.hasAtLeastOneFieldOrMethod(classNode, "EventBus");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("reactor.core.Reactor")
-				.add("reactor-spring", false).add("reactor-core");
+		dependencies.ifAnyMissingClasses("reactor.bus.EventBus")
+				.add("reactor-spring-context", false).add("reactor-spring-core", false)
+				.add("reactor-bus").add("reactor-stream");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("reactor.core.Reactor", "reactor.event.Event",
-				"reactor.function.Consumer", "reactor.function.Functions",
-				"reactor.event.selector.Selectors", "reactor.spring.annotation.Selector",
-				"reactor.spring.annotation.ReplyTo",
-				"reactor.spring.context.config.EnableReactor").addStarImports(
-				"reactor.event.Selectors");
+		imports.addImports("reactor.bus.Bus", "reactor.bus.Event",
+				"reactor.bus.EventBus", "reactor.fn.Function", "reactor.fn.Functions",
+				"reactor.fn.Predicate", "reactor.fn.Predicates", "reactor.fn.Supplier",
+				"reactor.fn.Suppliers", "reactor.spring.context.annotation.Consumer",
+				"reactor.spring.context.annotation.ReplyTo",
+				"reactor.spring.context.annotation.Selector",
+				"reactor.spring.context.annotation.SelectorType",
+				"reactor.spring.context.config.EnableReactor")
+				.addStarImports("reactor.bus.selector.Selectors")
+				.addImport("ReactorEnvironment", "reactor.Environment");
 	}
 
 }

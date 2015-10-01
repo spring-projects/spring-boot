@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link PropertiesMergingResourceTransformer}.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertiesMergingResourceTransformerTests {

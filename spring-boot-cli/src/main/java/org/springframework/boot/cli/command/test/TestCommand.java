@@ -16,17 +16,18 @@
 
 package org.springframework.boot.cli.command.test;
 
-import joptsimple.OptionSet;
-
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.CompilerOptionHandler;
 import org.springframework.boot.cli.command.options.OptionSetGroovyCompilerConfiguration;
 import org.springframework.boot.cli.command.options.SourceOptions;
+import org.springframework.boot.cli.command.status.ExitStatus;
+
+import joptsimple.OptionSet;
 
 /**
  * {@link Command} to run a groovy test script or scripts.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  */
@@ -46,13 +47,14 @@ public class TestCommand extends OptionParsingCommand {
 		private TestRunner runner;
 
 		@Override
-		protected void run(OptionSet options) throws Exception {
+		protected ExitStatus run(OptionSet options) throws Exception {
 			SourceOptions sourceOptions = new SourceOptions(options);
 			TestRunnerConfiguration configuration = new TestRunnerConfigurationAdapter(
 					options, this);
 			this.runner = new TestRunner(configuration, sourceOptions.getSourcesArray(),
 					sourceOptions.getArgsArray());
 			this.runner.compileAndRunTests();
+			return ExitStatus.OK.hangup();
 		}
 
 		/**
@@ -62,10 +64,12 @@ public class TestCommand extends OptionParsingCommand {
 		private class TestRunnerConfigurationAdapter extends
 				OptionSetGroovyCompilerConfiguration implements TestRunnerConfiguration {
 
-			public TestRunnerConfigurationAdapter(OptionSet options,
+			TestRunnerConfigurationAdapter(OptionSet options,
 					CompilerOptionHandler optionHandler) {
 				super(options, optionHandler);
 			}
 		}
+
 	}
+
 }

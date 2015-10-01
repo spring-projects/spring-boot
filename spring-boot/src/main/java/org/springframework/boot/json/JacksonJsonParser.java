@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Thin wrapper to adapt Jackson 2 {@link ObjectMapper} to {@link JsonParser}.
- * 
+ *
  * @author Dave Syer
  * @see JsonParserFactory
  */

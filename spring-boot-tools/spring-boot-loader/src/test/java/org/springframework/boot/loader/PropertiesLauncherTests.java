@@ -32,11 +32,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link PropertiesLauncher}.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertiesLauncherTests {
@@ -71,7 +72,7 @@ public class PropertiesLauncherTests {
 	public void testUserSpecifiedMain() throws Exception {
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertEquals("demo.Application", launcher.getMainClass());
-		assertEquals(null, System.getProperty("loader.main"));
+		assertNull(System.getProperty("loader.main"));
 	}
 
 	@Test
@@ -112,6 +113,17 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
+	public void testUserSpecifiedJarPathWithDot() throws Exception {
+		System.setProperty("loader.path", "./jars/app.jar");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("[jars/app.jar]", ReflectionTestUtils.getField(launcher, "paths")
+				.toString());
+		launcher.launch(new String[0]);
+		waitFor("Hello World");
+	}
+
+	@Test
 	public void testUserSpecifiedClassLoader() throws Exception {
 		System.setProperty("loader.path", "jars/app.jar");
 		System.setProperty("loader.classLoader", URLClassLoader.class.getName());
@@ -123,11 +135,21 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
+	public void testUserSpecifiedClassPathOrder() throws Exception {
+		System.setProperty("loader.path", "more-jars/app.jar,jars/app.jar");
+		System.setProperty("loader.classLoader", URLClassLoader.class.getName());
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("[more-jars/app.jar, jars/app.jar]",
+				ReflectionTestUtils.getField(launcher, "paths").toString());
+		launcher.launch(new String[0]);
+		waitFor("Hello Other World");
+	}
+
+	@Test
 	public void testCustomClassLoaderCreation() throws Exception {
 		System.setProperty("loader.classLoader", TestLoader.class.getName());
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		ClassLoader loader = launcher
-				.createClassLoader(Collections.<Archive> emptyList());
+		ClassLoader loader = launcher.createClassLoader(Collections.<Archive>emptyList());
 		assertNotNull(loader);
 		assertEquals(TestLoader.class.getName(), loader.getClass().getName());
 	}

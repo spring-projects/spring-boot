@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,22 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.event.SmartApplicationListener;
-import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
 
 /**
  * A {@link SmartApplicationListener} that reacts to {@link ApplicationStartedEvent start
  * events} by logging the classpath of the thread context class loader (TCCL) at
  * {@code DEBUG} level and to {@link ApplicationFailedEvent error events} by logging the
  * TCCL's classpath at {@code INFO} level.
- * 
+ *
  * @author Andy Wilkinson
  */
 public final class ClasspathLoggingApplicationListener implements
-		SmartApplicationListener {
+		GenericApplicationListener {
 
-	private static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 12;
+	private static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 1;
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -64,7 +65,11 @@ public final class ClasspathLoggingApplicationListener implements
 	}
 
 	@Override
-	public boolean supportsEventType(Class<? extends ApplicationEvent> type) {
+	public boolean supportsEventType(ResolvableType resolvableType) {
+		Class<?> type = resolvableType.getRawClass();
+		if (type == null) {
+			return false;
+		}
 		return ApplicationStartedEvent.class.isAssignableFrom(type)
 				|| ApplicationFailedEvent.class.isAssignableFrom(type);
 	}

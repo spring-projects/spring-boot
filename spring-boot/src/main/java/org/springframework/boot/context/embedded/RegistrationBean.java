@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,26 +22,32 @@ import java.util.Map;
 import javax.servlet.Registration;
 
 import org.springframework.core.Conventions;
+import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
 /**
  * Base class for Servlet 3.0+ based registration beans.
- * 
+ *
  * @author Phillip Webb
  * @see ServletRegistrationBean
  * @see FilterRegistrationBean
  * @see ServletListenerRegistrationBean
  */
-public abstract class RegistrationBean implements ServletContextInitializer {
+public abstract class RegistrationBean implements ServletContextInitializer, Ordered {
 
 	private String name;
 
+	private int order = Ordered.LOWEST_PRECEDENCE;
+
 	private boolean asyncSupported = true;
+
+	private boolean enabled = true;
 
 	private Map<String, String> initParameters = new LinkedHashMap<String, String>();
 
 	/**
 	 * Set the name of this registration. If not specified the bean name will be used.
+	 * @param name the name of the registration
 	 */
 	public void setName(String name) {
 		Assert.hasLength(name, "Name must not be empty");
@@ -51,6 +57,7 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 	/**
 	 * Sets if asynchronous operations are support for this registration. If not specified
 	 * defaults to {@code true}.
+	 * @param asyncSupported if async is supported
 	 */
 	public void setAsyncSupported(boolean asyncSupported) {
 		this.asyncSupported = asyncSupported;
@@ -58,14 +65,32 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 
 	/**
 	 * Returns if asynchronous operations are support for this registration.
+	 * @return if async is supported
 	 */
 	public boolean isAsyncSupported() {
 		return this.asyncSupported;
 	}
 
 	/**
+	 * Flag to indicate that the registration is enabled.
+	 * @param enabled the enabled to set
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	/**
+	 * Return if the registration is enabled.
+	 * @return if enabled (default {@code true})
+	 */
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	/**
 	 * Set init-parameters for this registration. Calling this method will replace any
 	 * existing init-parameters.
+	 * @param initParameters the init parameters
 	 * @see #getInitParameters
 	 * @see #addInitParameter
 	 */
@@ -76,6 +101,7 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 
 	/**
 	 * Returns a mutable Map of the registration init-parameters.
+	 * @return the init parameters
 	 */
 	public Map<String, String> getInitParameters() {
 		return this.initParameters;
@@ -95,6 +121,7 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 	 * Deduces the name for this registration. Will return user specified name or fallback
 	 * to convention based naming.
 	 * @param value the object used for convention based names
+	 * @return the deduced name
 	 */
 	protected final String getOrDeduceName(Object value) {
 		return (this.name != null ? this.name : Conventions.getVariableName(value));
@@ -102,6 +129,7 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 
 	/**
 	 * Configure registration base settings.
+	 * @param registration the registration
 	 */
 	protected void configure(Registration.Dynamic registration) {
 		Assert.state(registration != null,
@@ -111,6 +139,23 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 		if (this.initParameters.size() > 0) {
 			registration.setInitParameters(this.initParameters);
 		}
+	}
+
+	/**
+	 * Set the order of the registration bean.
+	 * @param order the order
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	/**
+	 * Get the order of the registration bean.
+	 * @return the order
+	 */
+	@Override
+	public int getOrder() {
+		return this.order;
 	}
 
 }

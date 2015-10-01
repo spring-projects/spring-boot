@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,35 +22,32 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
-import org.springframework.boot.groovy.EnableJmsMessaging;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring JMS.
- * 
+ *
  * @author Greg Turnquist
+ * @author Stephane Nicoll
  */
 public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		// Slightly weird detection algorithm because there is no @Enable annotation for
-		// Spring JMS
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJmsMessaging");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJms")
+				|| AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJmsMessaging");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("spring-jms", "geronimo-jms_1.1_spec");
-
+		dependencies.add("spring-jms", "jms-api");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("javax.jms", "org.springframework.jms.core",
+		imports.addStarImports("javax.jms", "org.springframework.jms.annotation",
+				"org.springframework.jms.config", "org.springframework.jms.core",
 				"org.springframework.jms.listener",
-				"org.springframework.jms.listener.adapter").addImports(
-				EnableJmsMessaging.class.getCanonicalName());
+				"org.springframework.jms.listener.adapter");
 	}
-
 }

@@ -34,4 +34,5 @@ public class SampleController {
 	public String helloWorld() {
 		return this.helloWorldService.getHelloMessage();
 	}
+
 }

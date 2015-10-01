@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,21 @@ package org.springframework.boot.context.event;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * {@link SpringApplicationRunListener} to publish {@link SpringApplicationEvent}s.
- * 
+ *
  * @author Phillip Webb
  */
-public class EventPublishingRunListener implements SpringApplicationRunListener {
+public class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
 
 	private final ApplicationEventMulticaster multicaster;
 
@@ -46,6 +48,11 @@ public class EventPublishingRunListener implements SpringApplicationRunListener 
 		for (ApplicationListener<?> listener : application.getListeners()) {
 			this.multicaster.addApplicationListener(listener);
 		}
+	}
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 
 	@Override
@@ -77,15 +84,27 @@ public class EventPublishingRunListener implements SpringApplicationRunListener 
 
 	@Override
 	public void contextLoaded(ConfigurableApplicationContext context) {
+		for (ApplicationListener<?> listener : this.application.getListeners()) {
+			if (listener instanceof ApplicationContextAware) {
+				((ApplicationContextAware) listener).setApplicationContext(context);
+			}
+			context.addApplicationListener(listener);
+		}
 		publishEvent(new ApplicationPreparedEvent(this.application, this.args, context));
 	}
 
 	@Override
 	public void finished(ConfigurableApplicationContext context, Throwable exception) {
+		publishEvent(getFinishedEvent(context, exception));
+	}
+
+	private SpringApplicationEvent getFinishedEvent(
+			ConfigurableApplicationContext context, Throwable exception) {
 		if (exception != null) {
-			publishEvent(new ApplicationFailedEvent(this.application, this.args, context,
-					exception));
+			return new ApplicationFailedEvent(this.application, this.args, context,
+					exception);
 		}
+		return new ApplicationReadyEvent(this.application, this.args, context);
 	}
 
 	private void publishEvent(SpringApplicationEvent event) {

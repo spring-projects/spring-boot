@@ -5,10 +5,16 @@
 		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-samples</artifactId>
-		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-data-redis</artifactId>
-	<packaging>jar</packaging>
+	<name>Spring Boot Data Redis Sample</name>
+	<description>Spring Boot Data Redis Sample</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
@@ -27,7 +33,7 @@
 		<profile>
 			<id>production</id>
 			<dependencies>
-				<!-- This sample is a test for the autoconfig when commons-pool is *absent*. 
+				<!-- This sample is a test for the autoconfig when commons-pool is *absent*.
 					In production it would be useful to enable pooling by using this dependency. -->
 				<dependency>
 					<groupId>commons-pool</groupId>

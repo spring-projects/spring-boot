@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,23 +28,28 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that configures the
- * {@link ConfigurableEmbeddedServletContainer} from a {@link ServerProperties}
- * bean.
- * 
+ * {@link ConfigurableEmbeddedServletContainer} from a {@link ServerProperties} bean.
+ *
  * @author Dave Syer
  */
 @Configuration
 @EnableConfigurationProperties
 @ConditionalOnWebApplication
 public class ServerPropertiesAutoConfiguration implements ApplicationContextAware,
-		EmbeddedServletContainerCustomizer {
+		EmbeddedServletContainerCustomizer, Ordered {
 
 	private ApplicationContext applicationContext;
+
+	@Override
+	public int getOrder() {
+		return 0;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)

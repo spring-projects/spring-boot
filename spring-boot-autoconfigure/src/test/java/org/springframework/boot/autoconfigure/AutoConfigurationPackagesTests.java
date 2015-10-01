@@ -17,21 +17,28 @@
 package org.springframework.boot.autoconfigure;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages.Registrar;
+import org.springframework.boot.autoconfigure.packagestest.one.FirstConfiguration;
+import org.springframework.boot.autoconfigure.packagestest.two.SecondConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AutoConfigurationPackages}.
- * 
+ *
  * @author Phillip Webb
+ * @author Oliver Gierke
  */
 @SuppressWarnings("resource")
 public class AutoConfigurationPackagesTests {
@@ -57,13 +64,33 @@ public class AutoConfigurationPackagesTests {
 		AutoConfigurationPackages.get(context.getBeanFactory());
 	}
 
+	@Test
+	public void detectsMultipleAutoConfigurationPackages() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				FirstConfiguration.class, SecondConfiguration.class);
+		List<String> packages = AutoConfigurationPackages.get(context.getBeanFactory());
+		Package package1 = FirstConfiguration.class.getPackage();
+		Package package2 = SecondConfiguration.class.getPackage();
+		assertThat(packages, hasItems(package1.getName(), package2.getName()));
+		assertThat(packages, hasSize(2));
+	}
+
 	@Configuration
 	@Import(AutoConfigurationPackages.Registrar.class)
 	static class ConfigWithRegistrar {
+
 	}
 
 	@Configuration
 	static class EmptyConfig {
+
+	}
+
+	/**
+	 * Test helper to allow {@link Registrar} to be referenced from other packages.
+	 */
+	public static class TestRegistrar extends Registrar {
+
 	}
 
 }

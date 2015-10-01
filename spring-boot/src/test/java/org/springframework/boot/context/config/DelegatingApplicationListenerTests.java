@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.config.DelegatingApplicationListener;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationListener;
@@ -36,7 +35,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DelegatingApplicationListener}.
- * 
+ *
  * @author Dave Syer
  */
 public class DelegatingApplicationListenerTests {

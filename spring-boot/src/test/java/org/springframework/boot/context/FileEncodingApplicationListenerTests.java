@@ -26,7 +26,7 @@ import org.springframework.core.env.StandardEnvironment;
 
 /**
  * Tests for {@link FileEncodingApplicationListener}.
- * 
+ *
  * @author Dave Syer
  */
 public class FileEncodingApplicationListenerTests {

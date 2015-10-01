@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,125 +16,64 @@
 
 package sample.actuator;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.HttpRequest;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.security.crypto.codec.Base64;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for switching off management endpoints.
- * 
+ *
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(SampleActuatorApplication.class)
+@WebAppConfiguration
+@IntegrationTest({ "server.port=0", "management.port=-1" })
+@DirtiesContext
 public class NoManagementSampleActuatorApplicationTests {
 
-	private static ConfigurableApplicationContext context;
+	@Autowired
+	private SecurityProperties security;
 
-	private static int managementPort = 0;
-
-	@BeforeClass
-	public static void start() throws Exception {
-		final String[] args = new String[] { "--management.port=" + managementPort };
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication.run(
-										SampleActuatorApplication.class, args);
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
+	@Value("${local.server.port}")
+	private int port = 0;
 
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:8080", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("Hello Phil", body.get("message"));
 	}
 
-	@Test(expected = ResourceAccessException.class)
+	@Test
 	public void testMetricsNotAvailable() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:" + managementPort + "/metrics", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
 	}
 
 	private String getPassword() {
-		return context.getBean(SecurityProperties.class).getUser().getPassword();
-	}
-
-	private RestTemplate getRestTemplate(final String username, final String password) {
-
-		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-
-		if (username != null) {
-
-			interceptors.add(new ClientHttpRequestInterceptor() {
-
-				@Override
-				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-						ClientHttpRequestExecution execution) throws IOException {
-					request.getHeaders().add(
-							"Authorization",
-							"Basic "
-									+ new String(Base64
-											.encode((username + ":" + password)
-													.getBytes())));
-					return execution.execute(request, body);
-				}
-			});
-		}
-
-		RestTemplate restTemplate = new RestTemplate(
-				new InterceptingClientHttpRequestFactory(
-						new SimpleClientHttpRequestFactory(), interceptors));
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
+		return this.security.getUser().getPassword();
 	}
 
 }

@@ -24,12 +24,15 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
  * Utilities for dealing with bytes from ZIP files.
- * 
+ *
  * @author Phillip Webb
  */
-class Bytes {
+final class Bytes {
 
 	private static final byte[] EMPTY_BYTES = new byte[] {};
+
+	private Bytes() {
+	}
 
 	public static byte[] get(RandomAccessData data) throws IOException {
 		InputStream inputStream = data.getInputStream(ResourceAccess.ONCE);
@@ -76,4 +79,5 @@ class Bytes {
 		}
 		return value;
 	}
+
 }

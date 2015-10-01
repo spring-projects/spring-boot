@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
@@ -29,11 +32,12 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link Condition} that checks for the presence or absence of specific classes.
- * 
+ *
  * @author Phillip Webb
  * @see ConditionalOnClass
  * @see ConditionalOnMissingClass
  */
+@Order(Ordered.HIGHEST_PRECEDENCE)
 class OnClassCondition extends SpringBootCondition {
 
 	@Override
@@ -98,14 +102,12 @@ class OnClassCondition extends SpringBootCondition {
 	private void addAll(List<String> list, List<Object> itemsToAdd) {
 		if (itemsToAdd != null) {
 			for (Object item : itemsToAdd) {
-				for (String arrayItem : (String[]) item) {
-					list.add(arrayItem.toString());
-				}
+				Collections.addAll(list, (String[]) item);
 			}
 		}
 	}
 
-	private static enum MatchType {
+	private enum MatchType {
 
 		PRESENT {
 			@Override
@@ -123,6 +125,6 @@ class OnClassCondition extends SpringBootCondition {
 
 		public abstract boolean matches(String className, ConditionContext context);
 
-	};
+	}
 
 }

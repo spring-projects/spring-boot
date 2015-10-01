@@ -23,7 +23,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResource;
@@ -31,13 +33,20 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 
 /**
- * Used to match resources for inclusion in a CLI application's jar file
- * 
+ * Used to match resources for inclusion in a CLI application's jar file.
+ *
  * @author Andy Wilkinson
  */
 class ResourceMatcher {
+
+	private static final String[] DEFAULT_INCLUDES = { "public/**", "resources/**",
+			"static/**", "templates/**", "META-INF/**", "*" };
+
+	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**",
+			"target/**", "**/*.jar", "**/*.groovy" };
 
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
@@ -46,8 +55,8 @@ class ResourceMatcher {
 	private final List<String> excludes;
 
 	ResourceMatcher(List<String> includes, List<String> excludes) {
-		this.includes = includes;
-		this.excludes = excludes;
+		this.includes = getOptions(includes, DEFAULT_INCLUDES);
+		this.excludes = getOptions(excludes, DEFAULT_EXCLUDES);
 	}
 
 	public List<MatchedResource> find(List<File> roots) throws IOException {
@@ -93,6 +102,33 @@ class ResourceMatcher {
 		return false;
 	}
 
+	private List<String> getOptions(List<String> values, String[] defaults) {
+		Set<String> result = new LinkedHashSet<String>();
+		Set<String> minus = new LinkedHashSet<String>();
+		boolean deltasFound = false;
+		for (String value : values) {
+			if (value.startsWith("+")) {
+				deltasFound = true;
+				value = value.substring(1);
+				result.add(value);
+			}
+			else if (value.startsWith("-")) {
+				deltasFound = true;
+				value = value.substring(1);
+				minus.add(value);
+			}
+			else if (value.trim().length() > 0) {
+				result.add(value);
+			}
+		}
+		for (String value : defaults) {
+			if (!minus.contains(value) || !deltasFound) {
+				result.add(value);
+			}
+		}
+		return new ArrayList<String>(result);
+	}
+
 	/**
 	 * {@link ResourceLoader} to get load resource from a folder.
 	 */
@@ -100,7 +136,7 @@ class ResourceMatcher {
 
 		private final File rootFolder;
 
-		public FolderResourceLoader(File root) throws MalformedURLException {
+		FolderResourceLoader(File root) throws MalformedURLException {
 			super(new FolderClassLoader(root));
 			this.rootFolder = root;
 		}
@@ -117,7 +153,7 @@ class ResourceMatcher {
 	 */
 	private static class FolderClassLoader extends URLClassLoader {
 
-		public FolderClassLoader(File rootFolder) throws MalformedURLException {
+		FolderClassLoader(File rootFolder) throws MalformedURLException {
 			super(new URL[] { rootFolder.toURI().toURL() });
 		}
 
@@ -147,12 +183,12 @@ class ResourceMatcher {
 		private MatchedResource(File file) {
 			this.name = file.getName();
 			this.file = file;
-			this.root = false;
+			this.root = this.name.endsWith(".jar");
 		}
 
 		private MatchedResource(File rootFolder, File file) {
-			this.name = file.getAbsolutePath().substring(
-					rootFolder.getAbsolutePath().length() + 1);
+			this.name = StringUtils.cleanPath(file.getAbsolutePath().substring(
+					rootFolder.getAbsolutePath().length() + 1));
 			this.file = file;
 			this.root = false;
 		}

@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
 /**
  * A value object representing a trace event: at a particular time with a simple (map)
  * information. Can be used for analyzing contextual information such as HTTP headers.
- * 
+ *
  * @author Dave Syer
  */
 public final class Trace {

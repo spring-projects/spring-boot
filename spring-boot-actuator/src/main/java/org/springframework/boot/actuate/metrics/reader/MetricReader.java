@@ -20,7 +20,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * A simple reader interface used to interrogate {@link Metric}s.
- * 
+ *
  * @author Dave Syer
  */
 public interface MetricReader {

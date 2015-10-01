@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot;
-
-import groovy.lang.Closure;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -43,18 +41,18 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import groovy.lang.Closure;
+
 /**
  * Loads bean definitions from underlying sources, including XML and JavaConfig. Acts as a
  * simple facade over {@link AnnotatedBeanDefinitionReader},
  * {@link XmlBeanDefinitionReader} and {@link ClassPathBeanDefinitionScanner}. See
  * {@link SpringApplication} for the types of sources that are supported.
- * 
+ *
  * @author Phillip Webb
  * @see #setBeanNameGenerator(BeanNameGenerator)
  */
 class BeanDefinitionLoader {
-
-	private static final ResourceLoader DEFAULT_RESOURCE_LOADER = new PathMatchingResourcePatternResolver();
 
 	private final Object[] sources;
 
@@ -74,14 +72,14 @@ class BeanDefinitionLoader {
 	 * @param registry the bean definition registry that will contain the loaded beans
 	 * @param sources the bean sources
 	 */
-	public BeanDefinitionLoader(BeanDefinitionRegistry registry, Object... sources) {
+	BeanDefinitionLoader(BeanDefinitionRegistry registry, Object... sources) {
 		Assert.notNull(registry, "Registry must not be null");
 		Assert.notEmpty(sources, "Sources must not be empty");
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
 		this.xmlReader = new XmlBeanDefinitionReader(registry);
 		if (isGroovyPresent()) {
-			this.groovyReader = new GroovyBeanDefinitionReader(this.xmlReader);
+			this.groovyReader = new GroovyBeanDefinitionReader(registry);
 		}
 		this.scanner = new ClassPathBeanDefinitionScanner(registry);
 		this.scanner.addExcludeFilter(new ClassExcludeFilter(sources));
@@ -109,7 +107,7 @@ class BeanDefinitionLoader {
 
 	/**
 	 * Set the environment to be used by the underlying readers and scanner.
-	 * @param environment
+	 * @param environment the environment
 	 */
 	public void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
@@ -228,8 +226,8 @@ class BeanDefinitionLoader {
 	}
 
 	private Resource[] findResources(String source) {
-		ResourceLoader loader = this.resourceLoader != null ? this.resourceLoader
-				: DEFAULT_RESOURCE_LOADER;
+		ResourceLoader loader = (this.resourceLoader != null ? this.resourceLoader
+				: new PathMatchingResourcePatternResolver());
 		try {
 			if (loader instanceof ResourcePatternResolver) {
 				return ((ResourcePatternResolver) loader).getResources(source);
@@ -273,7 +271,7 @@ class BeanDefinitionLoader {
 		}
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
-		if (type.isAnonymousClass() || type.getName().matches(".*\\$_.*closure.*")
+		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass()
 				|| type.getConstructors() == null || type.getConstructors().length == 0) {
 			return false;
 		}
@@ -288,7 +286,7 @@ class BeanDefinitionLoader {
 
 		private final Set<String> classNames = new HashSet<String>();
 
-		public ClassExcludeFilter(Object... sources) {
+		ClassExcludeFilter(Object... sources) {
 			super(false, false);
 			for (Object source : sources) {
 				if (source instanceof Class<?>) {
@@ -301,10 +299,16 @@ class BeanDefinitionLoader {
 		protected boolean matchClassName(String className) {
 			return this.classNames.contains(className);
 		}
+
 	}
 
+	/**
+	 * Source for Bean definitions defined in Groovy.
+	 */
 	protected interface GroovyBeanDefinitionSource {
+
 		Closure<?> getBeans();
+
 	}
 
 }

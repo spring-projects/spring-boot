@@ -1,0 +1,35 @@
+/* 
+   code highlight CSS resemblign the Eclipse IDE default color schema
+   @author Costin Leau
+*/
+
+.hl-keyword {
+  color: #7F0055;
+  font-weight: bold; 
+}
+
+.hl-comment {
+  color: #3F5F5F;
+  font-style: italic;
+}
+
+.hl-multiline-comment {
+  color: #3F5FBF;
+  font-style: italic;
+}
+
+.hl-tag {
+  color: #3F7F7F;
+}
+
+.hl-attribute {
+  color: #7F007F;
+}
+
+.hl-value {
+  color: #2A00FF;
+}
+
+.hl-string {
+  color: #2A00FF;
+}

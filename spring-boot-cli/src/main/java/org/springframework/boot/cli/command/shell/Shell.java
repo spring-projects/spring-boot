@@ -26,29 +26,26 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import jline.console.ConsoleReader;
-import jline.console.completer.CandidateListCompletionHandler;
-
 import org.fusesource.jansi.AnsiRenderer.Code;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandFactory;
 import org.springframework.boot.cli.command.CommandRunner;
 import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
+import org.springframework.boot.loader.tools.SignalUtils;
 import org.springframework.util.StringUtils;
 
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
+import jline.console.ConsoleReader;
+import jline.console.completer.CandidateListCompletionHandler;
 
 /**
  * A shell for Spring Boot. Drops the user into an event loop (REPL) where command line
  * completion and history are available without relying on OS shell features.
- * 
+ *
  * @author Jon Brisbin
  * @author Dave Syer
  * @author Phillip Webb
  */
-@SuppressWarnings("restriction")
 public class Shell {
 
 	private static final Set<Class<?>> NON_FORKED_COMMANDS;
@@ -57,8 +54,6 @@ public class Shell {
 		nonForked.add(VersionCommand.class);
 		NON_FORKED_COMMANDS = Collections.unmodifiableSet(nonForked);
 	}
-
-	private static final Signal SIG_INT = new Signal("INT");
 
 	private final ShellCommandRunner commandRunner;
 
@@ -70,9 +65,9 @@ public class Shell {
 
 	/**
 	 * Create a new {@link Shell} instance.
-	 * @throws IOException
+	 * @throws IOException in case of I/O errors
 	 */
-	public Shell() throws IOException {
+	Shell() throws IOException {
 		attachSignalHandler();
 		this.consoleReader = new ConsoleReader();
 		this.commandRunner = createCommandRunner();
@@ -123,9 +118,9 @@ public class Shell {
 	}
 
 	private void attachSignalHandler() {
-		Signal.handle(SIG_INT, new SignalHandler() {
+		SignalUtils.attachSignalHandler(new Runnable() {
 			@Override
-			public void handle(sun.misc.Signal signal) {
+			public void run() {
 				handleSigInt();
 			}
 		});
@@ -179,7 +174,7 @@ public class Shell {
 	}
 
 	/**
-	 * Final handle an interrup signal (CTRL-C)
+	 * Final handle an interrup signal (CTRL-C).
 	 */
 	protected void handleSigInt() {
 		if (this.commandRunner.handleSigInt()) {
@@ -199,7 +194,7 @@ public class Shell {
 
 		private final Map<String, String> aliases = new HashMap<String, String>();
 
-		public ShellCommandRunner() {
+		ShellCommandRunner() {
 			super(null);
 		}
 

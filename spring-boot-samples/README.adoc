@@ -1,0 +1,87 @@
+ The following java samples are provided:
+
+* link:spring-boot-sample-simple[spring-boot-sample-simple]
+  -- A simple command line application
+* link:spring-boot-sample-tomcat[spring-boot-sample-tomcat]
+  --  Embedded Tomcat
+* link:spring-boot-sample-jetty[spring-boot-sample-jetty]
+  -- Embedded Jetty
+* link:spring-boot-sample-activemq[spring-boot-sample-activemq]
+  -- Simple JMS consumer and producer using Apache ActiveMQ
+* link:spring-boot-sample-actuator[spring-boot-sample-actuator]
+  -- Simple REST service with production features
+* link:spring-boot-sample-actuator-ui[spring-boot-sample-actuator-ui]
+  -- A web UI example with production features
+* link:spring-boot-sample-actuator-noweb[spring-boot-sample-actuator-noweb]
+  -- A production features sample with no web application
+* link:spring-boot-sample-actuator-log4j[spring-boot-sample-actuator-log4j]
+  -- A production features sample using log4j for logging (instead of logback)
+* link:spring-boot-sample-cache[spring-boot-sample-cache]
+  -- A web sample that uses Spring's cache abstraction
+* link:spring-boot-sample-web-ui[spring-boot-sample-web-ui]
+  -- A thymeleaf web application
+* link:spring-boot-sample-web-static[spring-boot-sample-web-static]
+  -- A web application serving static files
+* link:spring-boot-sample-web-freemarker[spring-boot-sample-web-freemarker]
+  -- A web application using Freemarker templates
+* link:spring-boot-sample-web-velocity[spring-boot-sample-web-velocity]
+  -- A web application using Velocity templates
+* link:spring-boot-sample-web-groovy-templates[spring-boot-sample-web-groovy-templates]
+  -- A web application using native Groovy templates
+* link:spring-boot-sample-web-jsp[spring-boot-sample-web-jsp]
+  -- A web application using JSP templates
+* link:spring-boot-sample-web-tomcat-jsp[spring-boot-sample-tomcat-jsp]
+  -- A web application using JSP templates with Tomcat 8
+* link:spring-boot-sample-tomcat-multi-connectors[spring-boot-sample-tomcat-multi-connectors]
+  -- A web application using multiple connectors in tomcat, showing how to customize the Tomcat server
+* link:spring-boot-sample-web-secure[spring-boot-sample-web-secure]
+  -- A web application with typical Security configuration enabling a login form
+* link:spring-boot-sample-web-method-security[spring-boot-sample-web-method-security]
+  -- A web application with Security configuration enabling global method security
+* link:spring-boot-sample-secure[spring-boot-sample-secure]
+  -- example showing Spring Security in a non-web application
+* link:spring-boot-sample-servlet[spring-boot-sample-servlet]
+  -- example showing a "raw" `Servlet` returning plaintext content
+* link:spring-boot-sample-ws[spring-boot-sample-ws]
+  -- A simple contract-first SOAP web service with Spring Web Services
+* link:spring-boot-sample-websocket-jetty[spring-boot-sample-websocket-jetty]
+  -- A web application with Websocket support on Jetty server
+* link:spring-boot-sample-websocket-tomcat[spring-boot-sample-websocket-tomcat]
+  -- A web application with Websocket support on Tomcat server
+* link:spring-boot-sample-websocket-undertow[spring-boot-sample-websocket-undertow]
+  -- A web application with Websocket support on Undertow server
+* link:spring-boot-sample-flyway[spring-boot-sample-flyway]
+  -- Example showing database migrations with Flyway
+* link:spring-boot-sample-liquibase[spring-boot-sample-liquibase]
+  -- Example showing database migrations with Liquibase
+* link:spring-boot-sample-amqp[spring-boot-sample-amqp]
+  -- Example showing message-oriented application using RabbitMQ
+* link:spring-boot-sample-hornetq[spring-boot-sample-hornetq]
+  -- Example showing message-oriented application using HornetQ
+* link:spring-boot-sample-batch[spring-boot-sample-batch]
+  -- Define and run a Batch job in a few lines of code
+* link:spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
+  -- Spring Data JPA + Hibernate + HSQLDB
+* link:spring-boot-sample-data-mongodb[spring-boot-sample-data-mongodb]
+  -- Spring Data Mongo repositories
+* link:spring-boot-sample-data-solr[spring-boot-sample-data-solr]
+  -- Spring Data Solr repositories
+* link:spring-boot-sample-data-redis[spring-boot-sample-data-redis]
+  -- Simple usage of Spring Data Redis
+* link:spring-boot-sample-data-rest[spring-boot-sample-data-rest]
+  -- Crud repositories exposed as REST endpoints
+* link:spring-boot-sample-integration[spring-boot-sample-integration]
+  -- A spring integration application
+* link:spring-boot-sample-profile[spring-boot-sample-profile]
+  -- example showing Spring's `@profile` support
+* link:spring-boot-sample-property-validation[spring-boot-sample-property-validation]
+  -- example showing the usage of `@ConfigurationProperties` with a Spring `Validator`
+* link:spring-boot-sample-parent-context[spring-boot-sample-parent-context]
+  -- example showing an `ApplicationContext` with a parent
+* link:spring-boot-sample-aop[spring-boot-sample-aop]
+  -- shows explicit usage of Spring AOP
+* link:spring-boot-sample-traditional[spring-boot-sample-traditional]
+  -- shows more traditional WAR packaging  (but also executable using `java -jar`)
+* link:spring-boot-sample-xml[spring-boot-sample-xml]
+  -- Example show how Spring Boot can be mixed with traditional XML configuration (we
+  generally recommend using Java `@Configuration` whenever possible)

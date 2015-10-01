@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link WhitespaceThrowableProxyConverter}.
- * 
+ *
  * @author Phillip Webb
  * @author Chanwit Kaewkasi
  */

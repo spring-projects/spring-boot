@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,30 +24,31 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import reactor.core.Environment;
-import reactor.core.Reactor;
+import reactor.Environment;
+import reactor.bus.EventBus;
 import reactor.spring.context.config.EnableReactor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass(EnableReactor.class)
-@ConditionalOnMissingBean(Reactor.class)
+@ConditionalOnClass({ EnableReactor.class, Environment.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ReactorAutoConfiguration {
 
 	@Bean
-	public Reactor rootReactor(Environment environment) {
-		return environment.getRootReactor();
+	@ConditionalOnMissingBean(EventBus.class)
+	public EventBus eventBus(Environment environment) {
+		return EventBus.create(environment);
 	}
 
 	@Configuration
 	@ConditionalOnMissingBean(Environment.class)
 	@EnableReactor
 	protected static class ReactorConfiguration {
+
 	}
 
 }

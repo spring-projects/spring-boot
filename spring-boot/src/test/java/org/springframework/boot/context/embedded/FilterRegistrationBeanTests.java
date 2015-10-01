@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,10 +18,12 @@ package org.springframework.boot.context.embedded;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
@@ -36,11 +38,12 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link FilterRegistrationBean}.
- * 
+ *
  * @author Phillip Webb
  */
 public class FilterRegistrationBeanTests {
@@ -120,6 +123,15 @@ public class FilterRegistrationBeanTests {
 		bean.setFilter(this.filter);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter("mockFilter", this.filter);
+	}
+
+	@Test
+	public void disable() throws Exception {
+		FilterRegistrationBean bean = new FilterRegistrationBean();
+		bean.setFilter(this.filter);
+		bean.setEnabled(false);
+		bean.onStartup(this.servletContext);
+		verify(this.servletContext, times(0)).addFilter("mockFilter", this.filter);
 	}
 
 	@Test
@@ -210,6 +222,25 @@ public class FilterRegistrationBeanTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletNames must not be null");
 		bean.addServletNames((String[]) null);
+	}
+
+	@Test
+	public void withSpecificDispatcherTypes() throws Exception {
+		FilterRegistrationBean bean = new FilterRegistrationBean(this.filter);
+		bean.setDispatcherTypes(DispatcherType.INCLUDE, DispatcherType.FORWARD);
+		bean.onStartup(this.servletContext);
+		verify(this.registration).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.INCLUDE, DispatcherType.FORWARD), false, "/*");
+	}
+
+	@Test
+	public void withSpecificDispatcherTypesEnumSet() throws Exception {
+		FilterRegistrationBean bean = new FilterRegistrationBean(this.filter);
+		EnumSet<DispatcherType> types = EnumSet.of(DispatcherType.INCLUDE,
+				DispatcherType.FORWARD);
+		bean.setDispatcherTypes(types);
+		bean.onStartup(this.servletContext);
+		verify(this.registration).addMappingForUrlPatterns(types, false, "/*");
 	}
 
 	private ServletRegistrationBean mockServletRegistation(String name) {

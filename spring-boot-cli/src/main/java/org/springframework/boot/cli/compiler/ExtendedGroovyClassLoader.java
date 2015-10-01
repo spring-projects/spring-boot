@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -38,11 +36,14 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.SourceUnit;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
+
+import groovy.lang.GroovyClassLoader;
 
 /**
  * Extension of the {@link GroovyClassLoader} with support for obtaining '.class' files as
  * resources.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -175,7 +176,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 		private final URLClassLoader groovyOnlyClassLoader;
 
-		public DefaultScopeParentClassLoader(ClassLoader parent) {
+		DefaultScopeParentClassLoader(ClassLoader parent) {
 			super(parent);
 			this.groovyOnlyClassLoader = new URLClassLoader(getGroovyJars(parent), null);
 		}
@@ -222,6 +223,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		}
 
 		private boolean isGroovyJar(String entry) {
+			entry = StringUtils.cleanPath(entry);
 			for (String jarPrefix : GROOVY_JARS_PREFIXES) {
 				if (entry.contains("/" + jarPrefix + "-")) {
 					return true;

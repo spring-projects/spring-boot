@@ -32,11 +32,11 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests for {@link CityRepository}.
- * 
+ *
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+@SpringApplicationConfiguration(SampleDataJpaApplication.class)
 public class CityRepositoryIntegrationTests {
 
 	@Autowired

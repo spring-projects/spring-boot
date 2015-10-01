@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,20 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.ClassUtils;
 
 /**
  * Connection details for {@link EmbeddedDatabaseType embedded databases}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see #get(ClassLoader)
@@ -56,8 +64,7 @@ public enum EmbeddedDatabaseConnection {
 
 	private final String url;
 
-	private EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass,
-			String url) {
+	EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass, String url) {
 		this.type = type;
 		this.driverClass = driverClass;
 		this.url = url;
@@ -65,6 +72,7 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * Returns the driver class name.
+	 * @return the driver class name
 	 */
 	public String getDriverClassName() {
 		return this.driverClass;
@@ -72,6 +80,7 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * Returns the {@link EmbeddedDatabaseType} for the connection.
+	 * @return the database type
 	 */
 	public EmbeddedDatabaseType getType() {
 		return this.type;
@@ -79,6 +88,7 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * Returns the URL for the connection.
+	 * @return the connection URL
 	 */
 	public String getUrl() {
 		return this.url;
@@ -92,7 +102,7 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * Convenience method to determine if a given driver class name represents an embedded
 	 * database type.
-	 * 
+	 *
 	 * @param driverClass the driver class
 	 * @return true if the driver class is one of the embedded types
 	 */
@@ -101,6 +111,23 @@ public enum EmbeddedDatabaseConnection {
 				&& (driverClass.equals(HSQL.driverClass)
 						|| driverClass.equals(H2.driverClass) || driverClass
 							.equals(DERBY.driverClass));
+	}
+
+	/**
+	 * Convenience method to determine if a given data source represents an embedded
+	 * database type.
+	 *
+	 * @param dataSource the data source to interrogate
+	 * @return true if the data sourceis one of the embedded types
+	 */
+	public static boolean isEmbedded(DataSource dataSource) {
+		try {
+			return new JdbcTemplate(dataSource).execute(new IsEmbedded());
+		}
+		catch (DataAccessException ex) {
+			// Could not connect, which means it's not embedded
+			return false;
+		}
 	}
 
 	/**
@@ -122,4 +149,27 @@ public enum EmbeddedDatabaseConnection {
 		return NONE;
 	}
 
+	/**
+	 * {@link ConnectionCallback} to determine if a connection is embedded.
+	 */
+	private static class IsEmbedded implements ConnectionCallback<Boolean> {
+
+		@Override
+		public Boolean doInConnection(Connection connection) throws SQLException,
+				DataAccessException {
+			String productName = connection.getMetaData().getDatabaseProductName();
+			if (productName == null) {
+				return false;
+			}
+			productName = productName.toUpperCase();
+			EmbeddedDatabaseConnection[] candidates = EmbeddedDatabaseConnection.values();
+			for (EmbeddedDatabaseConnection candidate : candidates) {
+				if (candidate != NONE && productName.contains(candidate.name())) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+	}
 }

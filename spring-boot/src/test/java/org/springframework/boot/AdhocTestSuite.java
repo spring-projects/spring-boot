@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -24,13 +25,13 @@ import org.springframework.boot.test.SpringApplicationConfigurationJmxTests;
 
 /**
  * A test suite for probing weird ordering problems in the tests.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(Suite.class)
 @SuiteClasses({ SpringApplicationConfigurationJmxTests.class,
 		SpringApplicationConfigurationDefaultConfigurationTests.class })
-// @Ignore
+@Ignore
 public class AdhocTestSuite {
 
 }

@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link TraceRepositoryAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class TraceRepositoryAutoConfigurationTests {

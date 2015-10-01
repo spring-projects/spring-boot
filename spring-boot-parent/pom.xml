@@ -1,33 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<version>1.3.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-parent</artifactId>
 	<packaging>pom</packaging>
+	<name>Spring Boot Parent</name>
+	<description>Spring Boot Parent</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
-		<aether.version>0.9.0.M4</aether.version>
+		<main.basedir>..</main.basedir>
+		<disable.checks>false</disable.checks>
 		<java.version>1.6</java.version>
+		<aether.version>1.0.2.v20150114</aether.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
+		<spring-restdocs.version>1.0.0.RC1</spring-restdocs.version>
 	</properties>
-	<prerequisites>
-		<maven>3.0.0</maven>
-	</prerequisites>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
 		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
 	</scm>
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/spring-projects/spring-boot/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Bamboo</system>
+		<url>https://build.spring.io/browse/BOOT-PUB</url>
+	</ciManagement>
 	<dependencyManagement>
 		<dependencies>
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
 				will generally not need -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>18.0</version>
+			</dependency>
+			<dependency>
+				<groupId>io.spring.gradle</groupId>
+				<artifactId>dependency-management-plugin</artifactId>
+				<version>0.5.2.RELEASE</version>
+			</dependency>
 			<dependency>
 				<groupId>jline</groupId>
 				<artifactId>jline</artifactId>
@@ -51,7 +77,7 @@
 			<dependency>
 				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-archiver</artifactId>
-				<version>2.5</version>
+				<version>2.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
@@ -84,6 +110,11 @@
 				<version>${maven.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.maven.shared</groupId>
+				<artifactId>maven-common-artifact-filters</artifactId>
+				<version>1.4</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.2</version>
@@ -96,12 +127,17 @@
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-archiver</artifactId>
-				<version>2.4.4</version>
+				<version>2.8.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-component-api</artifactId>
+				<version>1.0-alpha-33</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-utils</artifactId>
-				<version>3.0.17</version>
+				<version>3.0.20</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.aether</groupId>
@@ -159,6 +195,16 @@
 				<version>${gradle.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>1.12.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.restdocs</groupId>
+				<artifactId>spring-restdocs-mockmvc</artifactId>
+				<version>${spring-restdocs.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.zeroturnaround</groupId>
 				<artifactId>zt-zip</artifactId>
 				<version>1.7</version>
@@ -194,31 +240,35 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>spring-ext</id>
-			<url>http://repo.spring.io/ext-release-local/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 	<build>
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>2.16</version>
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>6.10.1</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-invoker-plugin</artifactId>
-					<version>1.8</version>
+					<version>1.9</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.3.1</version>
+					<version>1.4</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.18</version>
 					<executions>
 						<execution>
 							<goals>
@@ -229,8 +279,9 @@
 					</executions>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
-					<version>3.2</version>
+					<version>3.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -238,9 +289,29 @@
 					<version>1.7</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>animal-sniffer-maven-plugin</artifactId>
+					<version>1.14</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.cargo</groupId>
+					<artifactId>cargo-maven2-plugin</artifactId>
+					<version>1.4.15</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.gmavenplus</groupId>
+					<artifactId>gmavenplus-plugin</artifactId>
+					<version>1.2</version>
+				</plugin>
+				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>2.2</version>
+					<version>2.4</version>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
@@ -289,6 +360,88 @@
 										<ignore />
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-plugin-plugin
+										</artifactId>
+										<versionRange>
+											[3.2,)
+										</versionRange>
+										<goals>
+											<goal>descriptor</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											build-helper-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.9.1,)
+										</versionRange>
+										<goals>
+											<goal>
+												reserve-network-port
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-checkstyle-plugin
+										</artifactId>
+										<versionRange>
+											[2.16,)
+										</versionRange>
+										<goals>
+											<goal>
+												check
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+              					<pluginExecution>
+                					<pluginExecutionFilter>
+                  						<groupId>
+                  							org.apache.maven.plugins
+                  						</groupId>
+                  						<artifactId>
+                  							maven-invoker-plugin
+                  						</artifactId>
+                  						<versionRange>
+                  							[1.0.0,)
+                  						</versionRange>
+                  						<goals>
+                    						<goal>
+                    							install
+                    						</goal>
+                  						</goals>
+                					</pluginExecutionFilter>
+                					<action>
+                  						<ignore />
+                					</action>
+              					</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -297,6 +450,55 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>checkstyle-prepare</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${main.basedir}/spring-boot-parent/src/checkstyle</directory>
+									<includes>
+										<include>checkstyle-import-control.xml</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>checkstyle-validation</id>
+						<phase>validate</phase>
+						<configuration>
+							<skip>${disable.checks}</skip>
+							<configLocation>src/checkstyle/checkstyle.xml</configLocation>
+							<suppressionsLocation>src/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+							<headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
+							<propertyExpansion>checkstyle.build.directory=${project.build.directory}</propertyExpansion>
+							<encoding>UTF-8</encoding>
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>true</failsOnError>
+							<includeTestSourceDirectory>true</includeTestSourceDirectory>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>${java.version}</source>
@@ -304,6 +506,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<configuration>
 					<useProjectReferences>false</useProjectReferences>
@@ -320,6 +523,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
 				<executions>
 					<execution>
@@ -330,14 +534,28 @@
 						<configuration>
 							<rules>
 								<requireJavaVersion>
-									<version>(1.7,1.8)</version>
+									<version>[1.8,)</version>
 								</requireJavaVersion>
+								<requireProperty>
+									<property>main.basedir</property>
+								</requireProperty>
+								<requireProperty>
+									<property>project.organization.name</property>
+								</requireProperty>
+								<requireProperty>
+									<property>project.name</property>
+								</requireProperty>
+								<requireProperty>
+									<property>project.description</property>
+								</requireProperty>
 							</rules>
+							<fail>true</fail>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
@@ -349,6 +567,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>
@@ -361,14 +580,53 @@
 						<java.security.egd>file:/dev/./urandom</java.security.egd>
 						<java.awt.headless>true</java.awt.headless>
 					</systemPropertyVariables>
-					<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+					<argLine>-Xmx1024m</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>animal-sniffer-maven-plugin</artifactId>
+				<configuration>
+					<skip>${disable.checks}</skip>
+					<signature>
+						<groupId>org.codehaus.mojo.signature</groupId>
+						<artifactId>java16</artifactId>
+						<version>1.0</version>
+					</signature>
+					<annotations>
+						<annotation>org.springframework.lang.UsesJava8</annotation>
+						<annotation>org.springframework.lang.UsesJava7</annotation>
+						<annotation>org.springframework.boot.lang.UsesUnsafeJava</annotation>
+					</annotations>
+				</configuration>
+				<executions>
+					<execution>
+						<id>enforce-java-6</id>
+						<phase>test</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -379,6 +637,16 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<repositories>
+				<repository>
+					<id>spring-ext</id>
+					<url>http://repo.spring.io/ext-release-local/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
 				<repository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
@@ -416,11 +684,155 @@
 			</pluginRepositories>
 		</profile>
 		<profile>
+			<id>fast</id>
+			<activation>
+				<property>
+					<name>fast</name>
+				</property>
+			</activation>
+			<properties>
+				<disable.checks>true</disable.checks>
+			</properties>
+			<repositories>
+				<repository>
+					<id>spring-ext</id>
+					<url>http://repo.spring.io/ext-release-local/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://repo.spring.io/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://repo.spring.io/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://repo.spring.io/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://repo.spring.io/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+		</profile>
+		<profile>
+			<id>eclipse.profile</id>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<!-- Up the compiler version so the correct execution environment is
+							used -->
+						<!-- The profile is only active in eclipse so we still target 1.6 on
+							the command line -->
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>1.8</source>
+							<target>1.8</target>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+			<repositories>
+				<repository>
+					<id>spring-ext</id>
+					<url>http://repo.spring.io/ext-release-local/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://repo.spring.io/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://repo.spring.io/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://repo.spring.io/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://repo.spring.io/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+		</profile>
+		<profile>
+			<id>prepare</id>
+			<repositories>
+				<repository>
+					<id>spring-ext</id>
+					<url>http://repo.spring.io/ext-release-local/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+		</profile>
+		<profile>
 			<id>full</id>
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.10.1</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
@@ -428,17 +840,6 @@
 									<goal>jar</goal>
 								</goals>
 								<inherited>true</inherited>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<artifactId>maven-source-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
 							</execution>
 						</executions>
 					</plugin>
@@ -457,70 +858,13 @@
 		</profile>
 		<profile>
 			<id>snapshot</id>
-			<repositories>
-				<repository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
-			</repositories>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</pluginRepository>
-				<pluginRepository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
 		</profile>
 		<profile>
 			<id>milestone</id>
-			<activation>
-			</activation>
-			<repositories>
-				<repository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
-			</repositories>
-			<pluginRepositories>
-				<pluginRepository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://repo.spring.io/snapshot</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</pluginRepository>
-			</pluginRepositories>
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-enforcer-plugin</artifactId>
 						<executions>
 							<execution>
@@ -530,6 +874,9 @@
 								</goals>
 								<configuration>
 									<rules>
+										<requireJavaVersion>
+											<version>(1.8,1.9)</version>
+										</requireJavaVersion>
 										<requireReleaseDeps />
 										<requireReleaseVersion />
 									</rules>
@@ -546,15 +893,19 @@
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-enforcer-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>enforce-milestone-rules</id>
+								<id>enforce-release-rules</id>
 								<goals>
 									<goal>enforce</goal>
 								</goals>
 								<configuration>
 									<rules>
+										<requireJavaVersion>
+											<version>(1.8,1.9)</version>
+										</requireJavaVersion>
 										<requireReleaseDeps />
 										<requireReleaseVersion />
 									</rules>

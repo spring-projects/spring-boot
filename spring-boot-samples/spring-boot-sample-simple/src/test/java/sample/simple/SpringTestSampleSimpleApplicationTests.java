@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +18,31 @@ package sample.simple;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationContextLoader;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleSimpleApplication}.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SampleSimpleApplication.class, loader = SpringApplicationContextLoader.class)
+@SpringApplicationConfiguration(SampleSimpleApplication.class)
 public class SpringTestSampleSimpleApplicationTests {
+
+	@Autowired
+	ApplicationContext ctx;
 
 	@Test
 	public void testContextLoads() throws Exception {
+		assertNotNull(this.ctx);
+		assertTrue(this.ctx.containsBean("helloWorldService"));
+		assertTrue(this.ctx.containsBean("sampleSimpleApplication"));
 	}
 
 }

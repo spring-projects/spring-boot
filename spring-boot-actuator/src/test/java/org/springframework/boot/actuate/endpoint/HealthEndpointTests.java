@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,14 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Map;
+
 import org.junit.Test;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,10 +33,11 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HealthEndpoint}.
- * 
+ *
  * @author Phillip Webb
+ * @author Christian Dupuis
  */
-public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint<String>> {
+public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 
 	public HealthEndpointTests() {
 		super(Config.class, HealthEndpoint.class, "health", false, "endpoints.health");
@@ -38,7 +45,8 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint<St
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke(), equalTo("fine"));
+		// As FINE isn't configured in the order we get UNKNOWN
+		assertThat(getEndpointBean().invoke().getStatus(), equalTo(Status.UNKNOWN));
 	}
 
 	@Configuration
@@ -46,14 +54,25 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint<St
 	public static class Config {
 
 		@Bean
-		public HealthEndpoint<String> endpoint() {
-			return new HealthEndpoint<String>(new HealthIndicator<String>() {
-				@Override
-				public String health() {
-					return "fine";
-				}
-			});
+		public HealthEndpoint endpoint(HealthAggregator healthAggregator,
+				Map<String, HealthIndicator> healthIndicators) {
+			return new HealthEndpoint(healthAggregator, healthIndicators);
 		}
 
+		@Bean
+		public HealthIndicator statusHealthIndicator() {
+			return new HealthIndicator() {
+
+				@Override
+				public Health health() {
+					return new Health.Builder().status("FINE").build();
+				}
+			};
+		}
+
+		@Bean
+		public HealthAggregator healthAggregator() {
+			return new OrderedHealthAggregator();
+		}
 	}
 }

@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link YamlConfigurationFactory}
- * 
+ *
  * @author Dave Syer
  */
 public class YamlConfigurationFactoryTests {

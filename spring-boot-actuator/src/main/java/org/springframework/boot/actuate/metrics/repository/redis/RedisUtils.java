@@ -25,10 +25,13 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * General Utils for working with Redis.
- * 
+ *
  * @author Luke Taylor
  */
-class RedisUtils {
+final class RedisUtils {
+
+	private RedisUtils() {
+	}
 
 	static <K, V> RedisTemplate<K, V> createRedisTemplate(
 			RedisConnectionFactory connectionFactory, Class<V> valueClass) {

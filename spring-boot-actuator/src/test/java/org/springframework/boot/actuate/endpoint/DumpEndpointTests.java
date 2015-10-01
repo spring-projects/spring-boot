@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DumpEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class DumpEndpointTests extends AbstractEndpointTests<DumpEndpoint> {

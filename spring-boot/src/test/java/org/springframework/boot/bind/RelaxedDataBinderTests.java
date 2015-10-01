@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.bind;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,14 +52,20 @@ import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RelaxedDataBinder}.
- * 
+ *
  * @author Dave Syer
+ * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 public class RelaxedDataBinderTests {
 
@@ -75,9 +82,23 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindChars() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "bar: foo");
+		assertEquals("foo", new String(target.getBar()));
+	}
+
+	@Test
 	public void testBindStringWithPrefix() throws Exception {
 		VanillaTarget target = new VanillaTarget();
 		bind(target, "test.foo: bar", "test");
+		assertEquals("bar", target.getFoo());
+	}
+
+	@Test
+	public void testBindStringWithPrefixDotSuffix() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "some.test.foo: bar", "some.test.");
 		assertEquals("bar", target.getFoo());
 	}
 
@@ -86,6 +107,20 @@ public class RelaxedDataBinderTests {
 		VanillaTarget target = new VanillaTarget();
 		bind(target, "TEST_FOO: bar", "test");
 		assertEquals("bar", target.getFoo());
+	}
+
+	@Test
+	public void testBindToCamelCaseFromEnvironmentStyleWithPrefix() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "TEST_FOO_BAZ: bar", "test");
+		assertEquals("bar", target.getFooBaz());
+	}
+
+	@Test
+	public void testBindToCamelCaseFromEnvironmentStyle() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "test.FOO_BAZ: bar", "test");
+		assertEquals("bar", target.getFooBaz());
 	}
 
 	@Test
@@ -178,7 +213,7 @@ public class RelaxedDataBinderTests {
 		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n"
 				+ "bar: spam");
 		assertEquals(123, target.getValue());
-		assertEquals(null, target.getFoo());
+		assertNull(target.getFoo());
 		assertEquals(0, result.getErrorCount());
 	}
 
@@ -187,6 +222,22 @@ public class RelaxedDataBinderTests {
 		TargetWithNestedObject target = new TargetWithNestedObject();
 		bind(target, "nested.foo: bar\n" + "nested.value: 123");
 		assertEquals(123, target.getNested().getValue());
+	}
+
+	@Test
+	public void testBindRelaxedNestedValue() throws Exception {
+		TargetWithNestedObject target = new TargetWithNestedObject();
+		bind(target, "nested_foo_Baz: bar\n" + "nested_value: 123");
+		assertEquals("bar", target.getNested().getFooBaz());
+		assertEquals(123, target.getNested().getValue());
+	}
+
+	@Test
+	public void testBindRelaxedNestedCamelValue() throws Exception {
+		TargetWithNestedObject target = new TargetWithNestedObject();
+		bind(target, "another_nested_foo_Baz: bar\n" + "another-nested_value: 123");
+		assertEquals("bar", target.getAnotherNested().getFooBaz());
+		assertEquals(123, target.getAnotherNested().getValue());
 	}
 
 	@Test
@@ -201,6 +252,20 @@ public class RelaxedDataBinderTests {
 		TargetWithNestedList target = new TargetWithNestedList();
 		bind(target, "nested[0]: bar\nnested[1]: foo");
 		assertEquals("[bar, foo]", target.getNested().toString());
+	}
+
+	@Test
+	public void testBindNestedListOfBean() throws Exception {
+		TargetWithNestedListOfBean target = new TargetWithNestedListOfBean();
+		bind(target, "nested[0].foo: bar\nnested[1].foo: foo");
+		assertEquals("bar", target.getNested().get(0).getFoo());
+	}
+
+	@Test
+	public void testBindNestedListOfBeanWithList() throws Exception {
+		TargetWithNestedListOfBeanWithList target = new TargetWithNestedListOfBeanWithList();
+		bind(target, "nested[0].nested[0].foo: bar\nnested[1].nested[0].foo: foo");
+		assertEquals("bar", target.getNested().get(0).getNested().get(0).getFoo());
 	}
 
 	@Test
@@ -236,6 +301,14 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindDoubleNestedReadOnlyListIndexed() throws Exception {
+		TargetWithReadOnlyDoubleNestedList target = new TargetWithReadOnlyDoubleNestedList();
+		this.conversionService = new DefaultConversionService();
+		bind(target, "bean.nested[0]:bar\nbean.nested[1]:foo");
+		assertEquals("[bar, foo]", target.getBean().getNested().toString());
+	}
+
+	@Test
 	public void testBindNestedReadOnlyCollectionIndexed() throws Exception {
 		TargetWithReadOnlyNestedCollection target = new TargetWithReadOnlyNestedCollection();
 		this.conversionService = new DefaultConversionService();
@@ -251,6 +324,21 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedMapPropsWithUnderscores() throws Exception {
+		TargetWithNestedMap target = new TargetWithNestedMap();
+		bind(target, "nested_foo: bar\n" + "nested_value: 123");
+		assertEquals("123", target.getNested().get("value"));
+		assertEquals("bar", target.getNested().get("foo"));
+	}
+
+	@Test
+	public void testBindNestedUntypedMap() throws Exception {
+		TargetWithNestedUntypedMap target = new TargetWithNestedUntypedMap();
+		bind(target, "nested.foo: bar\n" + "nested.value: 123");
+		assertEquals("123", target.getNested().get("value"));
+	}
+
+	@Test
 	public void testBindNestedMapOfString() throws Exception {
 		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
 		bind(target, "nested.foo: bar\n" + "nested.value.foo: 123");
@@ -259,10 +347,75 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedMapOfStringWithUnderscore() throws Exception {
+		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
+		bind(target, "nested_foo: bar\n" + "nested_value_foo: 123");
+		assertEquals("bar", target.getNested().get("foo"));
+		assertEquals("123", target.getNested().get("value_foo"));
+	}
+
+	@Test
+	public void testBindNestedMapOfStringWithUnderscoreAndUpperCase() throws Exception {
+		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
+		bind(target, "NESTED_FOO: bar\n" + "NESTED_VALUE_FOO: 123");
+		assertEquals("bar", target.getNested().get("FOO"));
+		assertEquals("123", target.getNested().get("VALUE_FOO"));
+	}
+
+	@Test
+	public void testBindNestedMapOfStringReferenced() throws Exception {
+		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
+		bind(target, "nested.foo: bar\n" + "nested[value.foo]: 123");
+		assertEquals("bar", target.getNested().get("foo"));
+		assertEquals("123", target.getNested().get("value.foo"));
+	}
+
+	@Test
+	public void testBindNestedMapOfEnum() throws Exception {
+		this.conversionService = new DefaultConversionService();
+		TargetWithNestedMapOfEnum target = new TargetWithNestedMapOfEnum();
+		bind(target, "nested.this: bar\n" + "nested.ThAt: 123");
+		assertEquals("bar", target.getNested().get(Bingo.THIS));
+		assertEquals("123", target.getNested().get(Bingo.THAT));
+	}
+
+	@Test
+	public void testBindNestedMapOfEnumRelaxedNames() throws Exception {
+		this.conversionService = new DefaultConversionService();
+		TargetWithNestedMapOfEnum target = new TargetWithNestedMapOfEnum();
+		bind(target, "nested.the-other: bar\n" + "nested.that_other: 123");
+		assertEquals("bar", target.getNested().get(Bingo.THE_OTHER));
+		assertEquals("123", target.getNested().get(Bingo.THAT_OTHER));
+	}
+
+	@Test
 	public void testBindNestedMapBracketReferenced() throws Exception {
 		TargetWithNestedMap target = new TargetWithNestedMap();
 		bind(target, "nested[foo]: bar\n" + "nested[value]: 123");
 		assertEquals("123", target.getNested().get("value"));
+	}
+
+	@Test
+	public void testBindNestedMapBracketReferencedAndPeriods() throws Exception {
+		TargetWithNestedMap target = new TargetWithNestedMap();
+		bind(target, "nested[foo]: bar\n" + "nested[foo.value]: 123");
+		assertEquals("123", target.getNested().get("foo.value"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testBindDoubleNestedMapWithDotInKeys() throws Exception {
+		TargetWithNestedMap target = new TargetWithNestedMap();
+		bind(target, "nested.foo: bar.key\n" + "nested[bar.key].spam: bucket\n"
+				+ "nested[bar.key].value: 123\nnested[bar.key].foo: crap");
+		assertEquals(2, target.getNested().size());
+		Map<String, Object> nestedMap = (Map<String, Object>) target.getNested().get(
+				"bar.key");
+		assertNotNull("nested map should be registered with 'bar.key'", nestedMap);
+		assertEquals(3, nestedMap.size());
+		assertEquals("123", nestedMap.get("value"));
+		assertEquals("bar.key", target.getNested().get("foo"));
+		assertFalse(target.getNested().containsValue(target.getNested()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -370,6 +523,48 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindMapWithClashInProperties() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "vanilla.spam: bar\n"
+				+ "vanilla.spam.value: 123", "vanilla");
+		assertEquals(0, result.getErrorCount());
+		assertEquals(2, target.size());
+		assertEquals("bar", target.get("spam"));
+		assertEquals("123", target.get("spam.value"));
+	}
+
+	@Test
+	public void testBindMapWithDeepClashInProperties() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "vanilla.spam.foo: bar\n"
+				+ "vanilla.spam.foo.value: 123", "vanilla");
+		assertEquals(0, result.getErrorCount());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) target.get("spam");
+		assertEquals("123", map.get("foo.value"));
+	}
+
+	@Test
+	public void testBindMapWithDifferentDeepClashInProperties() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "vanilla.spam.bar: bar\n"
+				+ "vanilla.spam.bar.value: 123", "vanilla");
+		assertEquals(0, result.getErrorCount());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) target.get("spam");
+		assertEquals("123", map.get("bar.value"));
+	}
+
+	@Test
+	public void testBindShallowMap() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "vanilla.spam: bar\n" + "vanilla.value: 123",
+				"vanilla");
+		assertEquals(0, result.getErrorCount());
+		assertEquals("123", target.get("value"));
+	}
+
+	@Test
 	public void testBindMapNestedMap() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
 		BindingResult result = bind(target, "spam: bar\n" + "vanilla.foo.value: 123",
@@ -396,18 +591,81 @@ public class RelaxedDataBinderTests {
 		assertEquals("efg", c1.get("d1"));
 	}
 
-	private BindingResult bind(Object target, String values) throws Exception {
-		return bind(target, values, null);
+	@Test
+	public void testBindCaseInsensitiveEnumsWithoutConverter() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		doTestBindCaseInsensitiveEnums(target);
 	}
 
-	private BindingResult bind(DataBinder binder, Object target, String values)
-			throws Exception {
-		Properties properties = PropertiesLoaderUtils
-				.loadProperties(new ByteArrayResource(values.getBytes()));
-		binder.bind(new MutablePropertyValues(properties));
-		binder.validate();
+	@Test
+	public void testBindCaseInsensitiveEnumsWithConverter() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		this.conversionService = new DefaultConversionService();
+		doTestBindCaseInsensitiveEnums(target);
+	}
 
-		return binder.getBindingResult();
+	@Test
+	public void testBindWithoutAlias() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		MutablePropertyValues properties = new MutablePropertyValues();
+		properties.add("flub", "a");
+		properties.add("foo", "b");
+		new RelaxedDataBinder(target).bind(properties);
+		assertThat(target.getFooBaz(), nullValue());
+		assertThat(target.getFoo(), equalTo("b"));
+	}
+
+	@Test
+	public void testBindWithAlias() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		MutablePropertyValues properties = new MutablePropertyValues();
+		properties.add("flub", "a");
+		properties.add("foo", "b");
+		new RelaxedDataBinder(target).withAlias("flub", "fooBaz").bind(properties);
+		assertThat(target.getFooBaz(), equalTo("a"));
+		assertThat(target.getFoo(), equalTo("b"));
+	}
+
+	@Test
+	public void testMixed() throws Exception {
+		// gh-3385
+		VanillaTarget target = new VanillaTarget();
+		RelaxedDataBinder binder = getBinder(target, "test");
+		MutablePropertyValues values = new MutablePropertyValues();
+		values.add("test.FOO_BAZ", "boo");
+		values.add("test.foo-baz", "bar");
+		binder.bind(values);
+		assertEquals("boo", target.getFooBaz());
+	}
+
+	private void doTestBindCaseInsensitiveEnums(VanillaTarget target) throws Exception {
+		BindingResult result = bind(target, "bingo: THIS");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingo(), equalTo(Bingo.THIS));
+
+		result = bind(target, "bingo: oR");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingo(), equalTo(Bingo.or));
+
+		result = bind(target, "bingo: that");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingo(), equalTo(Bingo.THAT));
+
+		result = bind(target, "bingo: the-other");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingo(), equalTo(Bingo.THE_OTHER));
+
+		result = bind(target, "bingo: the_other");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingo(), equalTo(Bingo.THE_OTHER));
+
+		result = bind(target, "bingo: The_Other");
+		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(target.getBingo(), equalTo(Bingo.THE_OTHER));
+	}
+
+	private BindingResult bind(Object target, String values) throws Exception {
+		return bind(target, values, null);
 	}
 
 	private BindingResult bind(Object target, String values, String namePrefix)
@@ -425,9 +683,19 @@ public class RelaxedDataBinderTests {
 		return binder;
 	}
 
+	private BindingResult bind(DataBinder binder, Object target, String values)
+			throws Exception {
+		Properties properties = PropertiesLoaderUtils
+				.loadProperties(new ByteArrayResource(values.getBytes()));
+		binder.bind(new MutablePropertyValues(properties));
+		binder.validate();
+
+		return binder.getBindingResult();
+	}
+
 	@Documented
 	@Target({ ElementType.FIELD })
-	@Retention(RUNTIME)
+	@Retention(RetentionPolicy.RUNTIME)
 	@Constraint(validatedBy = RequiredKeysValidator.class)
 	public @interface RequiredKeys {
 
@@ -479,9 +747,11 @@ public class RelaxedDataBinderTests {
 		public void setInfo(Map<String, Object> nested) {
 			this.info = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMap {
+
 		private Map<String, Object> nested;
 
 		public Map<String, Object> getNested() {
@@ -491,9 +761,26 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, Object> nested) {
 			this.nested = nested;
 		}
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static class TargetWithNestedUntypedMap {
+
+		private Map nested;
+
+		public Map getNested() {
+			return this.nested;
+		}
+
+		public void setNested(Map nested) {
+			this.nested = nested;
+		}
+
 	}
 
 	public static class TargetWithNestedMapOfString {
+
 		private Map<String, String> nested;
 
 		public Map<String, String> getNested() {
@@ -503,9 +790,24 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, String> nested) {
 			this.nested = nested;
 		}
+
+	}
+
+	public static class TargetWithNestedMapOfEnum {
+
+		private Map<Bingo, Object> nested;
+
+		public Map<Bingo, Object> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(Map<Bingo, Object> nested) {
+			this.nested = nested;
+		}
 	}
 
 	public static class TargetWithNestedMapOfListOfString {
+
 		private Map<String, List<String>> nested;
 
 		public Map<String, List<String>> getNested() {
@@ -515,9 +817,11 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, List<String>> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMapOfListOfBean {
+
 		private Map<String, List<VanillaTarget>> nested;
 
 		public Map<String, List<VanillaTarget>> getNested() {
@@ -527,9 +831,11 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, List<VanillaTarget>> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMapOfBean {
+
 		private Map<String, VanillaTarget> nested;
 
 		public Map<String, VanillaTarget> getNested() {
@@ -539,9 +845,11 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, VanillaTarget> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedList {
+
 		private List<String> nested;
 
 		public List<String> getNested() {
@@ -551,25 +859,69 @@ public class RelaxedDataBinderTests {
 		public void setNested(List<String> nested) {
 			this.nested = nested;
 		}
+
+	}
+
+	public static class TargetWithNestedListOfBean {
+
+		private List<VanillaTarget> nested;
+
+		public List<VanillaTarget> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(List<VanillaTarget> nested) {
+			this.nested = nested;
+		}
+
+	}
+
+	public static class TargetWithNestedListOfBeanWithList {
+
+		private List<TargetWithNestedListOfBean> nested;
+
+		public List<TargetWithNestedListOfBean> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(List<TargetWithNestedListOfBean> nested) {
+			this.nested = nested;
+		}
+
 	}
 
 	public static class TargetWithReadOnlyNestedList {
+
 		private final List<String> nested = new ArrayList<String>();
 
 		public List<String> getNested() {
 			return this.nested;
 		}
+
+	}
+
+	public static class TargetWithReadOnlyDoubleNestedList {
+
+		TargetWithReadOnlyNestedList bean = new TargetWithReadOnlyNestedList();
+
+		public TargetWithReadOnlyNestedList getBean() {
+			return this.bean;
+		}
+
 	}
 
 	public static class TargetWithReadOnlyNestedCollection {
+
 		private final Collection<String> nested = new ArrayList<String>();
 
 		public Collection<String> getNested() {
 			return this.nested;
 		}
+
 	}
 
 	public static class TargetWithNestedSet {
+
 		private Set<String> nested = new LinkedHashSet<String>();
 
 		public Set<String> getNested() {
@@ -579,10 +931,14 @@ public class RelaxedDataBinderTests {
 		public void setNested(Set<String> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedObject {
+
 		private VanillaTarget nested;
+
+		private VanillaTarget anotherNested;
 
 		public VanillaTarget getNested() {
 			return this.nested;
@@ -591,17 +947,38 @@ public class RelaxedDataBinderTests {
 		public void setNested(VanillaTarget nested) {
 			this.nested = nested;
 		}
+
+		public VanillaTarget getAnotherNested() {
+			return this.anotherNested;
+		}
+
+		public void setAnotherNested(VanillaTarget anotherNested) {
+			this.anotherNested = anotherNested;
+		}
+
 	}
 
 	public static class VanillaTarget {
 
 		private String foo;
 
+		private char[] bar;
+
 		private int value;
 
 		private String foo_bar;
 
 		private String fooBaz;
+
+		private Bingo bingo;
+
+		public char[] getBar() {
+			return this.bar;
+		}
+
+		public void setBar(char[] bar) {
+			this.bar = bar;
+		}
 
 		public int getValue() {
 			return this.value;
@@ -634,6 +1011,19 @@ public class RelaxedDataBinderTests {
 		public void setFooBaz(String fooBaz) {
 			this.fooBaz = fooBaz;
 		}
+
+		public Bingo getBingo() {
+			return this.bingo;
+		}
+
+		public void setBingo(Bingo bingo) {
+			this.bingo = bingo;
+		}
+
+	}
+
+	enum Bingo {
+		THIS, or, THAT, THE_OTHER, THAT_OTHER
 	}
 
 	public static class ValidatedTarget {

@@ -16,12 +16,18 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -29,20 +35,34 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Class for storing auto-configuration packages for reference later (e.g. by JPA entity
  * scanner).
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Oliver Gierke
  */
 public abstract class AutoConfigurationPackages {
+
+	private static Log logger = LogFactory.getLog(AutoConfigurationPackages.class);
 
 	private static final String BEAN = AutoConfigurationPackages.class.getName();
 
 	/**
-	 * Return the auto-configuration base packages for the given bean factory
+	 * Determine if the auto-configuration base packages for the given bean factory are
+	 * available.
+	 * @param beanFactory the source bean factory
+	 * @return true if there are auto-config packages available
+	 */
+	public static boolean has(BeanFactory beanFactory) {
+		return beanFactory.containsBean(BEAN) && !get(beanFactory).isEmpty();
+	}
+
+	/**
+	 * Return the auto-configuration base packages for the given bean factory.
 	 * @param beanFactory the source bean factory
 	 * @return a list of auto-configuration packages
 	 * @throws IllegalStateException if auto-configuration is not enabled
@@ -51,8 +71,7 @@ public abstract class AutoConfigurationPackages {
 		// Currently we only store a single base package, but we return a list to
 		// allow this to change in the future if needed
 		try {
-			return Collections.singletonList(beanFactory.getBean(BEAN, BasePackage.class)
-					.toString());
+			return beanFactory.getBean(BEAN, BasePackages.class).get();
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			throw new IllegalStateException(
@@ -60,13 +79,43 @@ public abstract class AutoConfigurationPackages {
 		}
 	}
 
-	static void set(BeanDefinitionRegistry registry, String packageName) {
-		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-		beanDefinition.setBeanClass(BasePackage.class);
-		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-				packageName);
-		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(BEAN, beanDefinition);
+	/**
+	 * Programmatically registers the auto-configuration package names. Subsequent
+	 * invocations will add the given package names to those that have already been
+	 * registered. You can use this method to manually define the base packages that will
+	 * be used for a given {@link BeanDefinitionRegistry}. Generally it's recommended that
+	 * you don't call this method directly, but instead rely on the default convention
+	 * where the package name is set from your {@code @EnableAutoConfiguration}
+	 * configuration class or classes.
+	 * @param registry the bean definition registry
+	 * @param packageNames the package names to set
+	 */
+	public static void register(BeanDefinitionRegistry registry, String... packageNames) {
+		if (registry.containsBeanDefinition(BEAN)) {
+			BeanDefinition beanDefinition = registry.getBeanDefinition(BEAN);
+			ConstructorArgumentValues constructorArguments = beanDefinition
+					.getConstructorArgumentValues();
+			constructorArguments.addIndexedArgumentValue(0,
+					addBasePackages(constructorArguments, packageNames));
+		}
+		else {
+			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+			beanDefinition.setBeanClass(BasePackages.class);
+			beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0,
+					packageNames);
+			beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			registry.registerBeanDefinition(BEAN, beanDefinition);
+		}
+	}
+
+	private static String[] addBasePackages(
+			ConstructorArgumentValues constructorArguments, String[] packageNames) {
+		String[] existing = (String[]) constructorArguments.getIndexedArgumentValue(0,
+				String[].class).getValue();
+		Set<String> merged = new LinkedHashSet<String>();
+		merged.addAll(Arrays.asList(existing));
+		merged.addAll(Arrays.asList(packageNames));
+		return merged.toArray(new String[merged.size()]);
 	}
 
 	/**
@@ -77,28 +126,54 @@ public abstract class AutoConfigurationPackages {
 	static class Registrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+		public void registerBeanDefinitions(AnnotationMetadata metadata,
 				BeanDefinitionRegistry registry) {
-			set(registry,
-					ClassUtils.getPackageName(importingClassMetadata.getClassName()));
+			register(registry, ClassUtils.getPackageName(metadata.getClassName()));
 		}
 
 	}
 
 	/**
-	 * Holder for the base package.
+	 * Holder for the base package (name may be null to indicate no scanning).
 	 */
-	final static class BasePackage {
+	static final class BasePackages {
 
-		private final String name;
+		private final List<String> packages;
 
-		public BasePackage(String name) {
-			this.name = name;
+		private boolean loggedBasePackageInfo;
+
+		BasePackages(String... names) {
+			List<String> packages = new ArrayList<String>();
+			for (String name : names) {
+				if (StringUtils.hasText(name)) {
+					packages.add(name);
+				}
+			}
+			this.packages = packages;
 		}
 
-		@Override
-		public String toString() {
-			return this.name;
+		public List<String> get() {
+			if (!this.loggedBasePackageInfo) {
+				if (this.packages.isEmpty()) {
+					if (logger.isWarnEnabled()) {
+						logger.warn("@EnableAutoConfiguration was declared on a class "
+								+ "in the default package. Automatic @Repository and "
+								+ "@Entity scanning is not enabled.");
+					}
+				}
+				else {
+					if (logger.isDebugEnabled()) {
+						String packageNames = StringUtils
+								.collectionToCommaDelimitedString(this.packages);
+						logger.debug("@EnableAutoConfiguration was declared on a class "
+								+ "in the package '" + packageNames
+								+ "'. Automatic @Repository and @Entity scanning is "
+								+ "enabled.");
+					}
+				}
+				this.loggedBasePackageInfo = true;
+			}
+			return this.packages;
 		}
 
 	}

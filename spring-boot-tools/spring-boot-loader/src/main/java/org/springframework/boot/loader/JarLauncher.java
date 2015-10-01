@@ -24,12 +24,19 @@ import org.springframework.boot.loader.util.AsciiBytes;
 /**
  * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are
  * included inside a {@code /lib} directory.
- * 
+ *
  * @author Phillip Webb
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
 	private static final AsciiBytes LIB = new AsciiBytes("lib/");
+
+	public JarLauncher() {
+	}
+
+	protected JarLauncher(Archive archive) {
+		super(archive);
+	}
 
 	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
@@ -44,4 +51,5 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	public static void main(String[] args) {
 		new JarLauncher().launch(args);
 	}
+
 }

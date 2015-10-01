@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link InfoEndpoint}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

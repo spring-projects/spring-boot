@@ -1,117 +1,71 @@
+/*
+ * Copyright 2012-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package sample.servlet;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.HttpRequest;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.security.crypto.codec.Base64;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(SampleServletApplication.class)
+@WebAppConfiguration
+@IntegrationTest("server.port:0")
+@DirtiesContext
 public class SampleServletApplicationTests {
 
-	private static ConfigurableApplicationContext context;
+	@Value("${local.server.port}")
+	private int port;
 
-	@BeforeClass
-	public static void start() throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication
-										.run(SampleServletApplication.class);
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
+	@Autowired
+	private SecurityProperties security;
 
 	@Test
 	public void testHomeIsSecure() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:8080", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}
 
 	private String getPassword() {
-		return context.getBean(SecurityProperties.class).getUser().getPassword();
-	}
-
-	private RestTemplate getRestTemplate() {
-		return getRestTemplate(null, null);
-	}
-
-	private RestTemplate getRestTemplate(final String username, final String password) {
-
-		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-
-		if (username != null) {
-
-			interceptors.add(new ClientHttpRequestInterceptor() {
-
-				@Override
-				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-						ClientHttpRequestExecution execution) throws IOException {
-					request.getHeaders().add(
-							"Authorization",
-							"Basic "
-									+ new String(Base64
-											.encode((username + ":" + password)
-													.getBytes())));
-					return execution.execute(request, body);
-				}
-			});
-		}
-
-		RestTemplate restTemplate = new RestTemplate(
-				new InterceptingClientHttpRequestFactory(
-						new SimpleClientHttpRequestFactory(), interceptors));
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
+		return this.security.getUser().getPassword();
 	}
 }

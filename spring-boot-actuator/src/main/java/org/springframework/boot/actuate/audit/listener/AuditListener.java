@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,15 @@ package org.springframework.boot.actuate.audit.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.context.ApplicationListener;
 
 /**
- * {@link ApplicationListener} that listens for {@link AuditEvent}s and stores them in a
- * {@link AuditEventRepository}.
- * 
+ * {@link ApplicationListener} that listens for {@link AuditApplicationEvent}s and stores
+ * them in a {@link AuditEventRepository}.
+ *
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class AuditListener implements ApplicationListener<AuditApplicationEvent> {
 
@@ -40,7 +40,9 @@ public class AuditListener implements ApplicationListener<AuditApplicationEvent>
 
 	@Override
 	public void onApplicationEvent(AuditApplicationEvent event) {
-		logger.info(event.getAuditEvent());
+		if (logger.isDebugEnabled()) {
+			logger.debug(event.getAuditEvent());
+		}
 		this.auditEventRepository.add(event.getAuditEvent());
 	}
 

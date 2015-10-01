@@ -29,12 +29,16 @@ import java.util.zip.ZipEntry;
 
 /**
  * Creates a simple test jar.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class TestJarCreator {
 
 	public static void createTestJar(File file) throws Exception {
+		createTestJar(file, false);
+	}
+
+	public static void createTestJar(File file, boolean unpackNested) throws Exception {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream);
 		try {
@@ -43,11 +47,16 @@ public abstract class TestJarCreator {
 			writeEntry(jarOutputStream, "2.dat", 2);
 			writeDirEntry(jarOutputStream, "d/");
 			writeEntry(jarOutputStream, "d/9.dat", 9);
+			writeDirEntry(jarOutputStream, "special/");
+			writeEntry(jarOutputStream, "special/\u00EB.dat", '\u00EB');
 
 			JarEntry nestedEntry = new JarEntry("nested.jar");
 			byte[] nestedJarData = getNestedJarData();
 			nestedEntry.setSize(nestedJarData.length);
 			nestedEntry.setCompressedSize(nestedJarData.length);
+			if (unpackNested) {
+				nestedEntry.setComment("UNPACK:0000000000000000000000000000000000000000");
+			}
 			CRC32 crc32 = new CRC32();
 			crc32.update(nestedJarData);
 			nestedEntry.setCrc(crc32.getValue());
@@ -68,6 +77,7 @@ public abstract class TestJarCreator {
 		writeManifest(jarOutputStream, "j2");
 		writeEntry(jarOutputStream, "3.dat", 3);
 		writeEntry(jarOutputStream, "4.dat", 4);
+		writeEntry(jarOutputStream, "\u00E4.dat", '\u00E4');
 		jarOutputStream.close();
 		return byteArrayOutputStream.toByteArray();
 	}

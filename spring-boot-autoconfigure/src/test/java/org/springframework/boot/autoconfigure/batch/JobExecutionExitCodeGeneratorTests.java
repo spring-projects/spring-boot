@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link JobExecutionExitCodeGenerator}.
- * 
+ *
  * @author Dave Syer
  */
 public class JobExecutionExitCodeGeneratorTests {
