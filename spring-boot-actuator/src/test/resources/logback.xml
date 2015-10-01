@@ -4,5 +4,5 @@
 	<root level="INFO">
 		<appender-ref ref="CONSOLE" />
 	</root>
-	<logger name="org.springframework.security" level="DEBUG"/>
+	<!-- logger name="org.springframework.security" level="DEBUG"/-->
 </configuration>
