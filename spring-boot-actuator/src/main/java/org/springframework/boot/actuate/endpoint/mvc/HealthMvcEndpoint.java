@@ -58,6 +58,8 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	private Health cached;
 
+	private String path;
+
 	public HealthMvcEndpoint(HealthEndpoint delegate) {
 		this(delegate, true);
 	}
@@ -125,8 +127,9 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	public Object invoke(Principal principal) {
 		if (!this.delegate.isEnabled()) {
 			// Shouldn't happen because the request mapping should not be registered
-			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
-					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Map<String, String>>(
+					Collections.singletonMap("message", "This endpoint is disabled"),
+					HttpStatus.NOT_FOUND);
 		}
 		Health health = getHealth(principal);
 		HttpStatus status = getStatus(health);
@@ -174,8 +177,8 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	}
 
 	private boolean isSecure(Principal principal) {
-		return (principal != null && !principal.getClass().getName()
-				.contains("Anonymous"));
+		return (principal != null
+				&& !principal.getClass().getName().contains("Anonymous"));
 	}
 
 	private boolean isUnrestricted() {
@@ -185,7 +188,17 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	@Override
 	public String getPath() {
-		return "/" + this.delegate.getId();
+		return this.path != null ? this.path : "/" + this.delegate.getId();
+	}
+
+	public void setPath(String path) {
+		if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
+		while (path.endsWith("/")) {
+			path = path.substring(0, path.length() - 1);
+		}
+		this.path = path;
 	}
 
 	@Override

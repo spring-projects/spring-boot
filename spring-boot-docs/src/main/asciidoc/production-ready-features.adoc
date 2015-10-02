@@ -166,8 +166,6 @@ For example, the following will disable _all_ endpoints except for `info`:
 	endpoints.info.enabled=true
 ----
 
-
-
 [[production-ready-endpoint-hypermedia]]
 === Hypermedia for actuator MVC endpoints
 If http://projects.spring.io/spring-hateoas[Spring HATEOAS] is on the classpath (e.g.
@@ -502,7 +500,7 @@ you should carefully consider which endpoints you enable. See
 
 
 [[production-ready-customizing-management-server-context-path]]
-=== Customizing the management server context path
+=== Customizing the management endpoint paths
 Sometimes it is useful to group all management endpoints under a single path. For example,
 your application might already use `/info` for another purpose. You can use the
 `management.context-path` property to set a prefix for your management endpoint:
@@ -515,6 +513,23 @@ your application might already use `/info` for another purpose. You can use the
 The `application.properties` example above will change the endpoint from `/{id}` to
 `/manage/{id}` (e.g. `/manage/info`).
 
+You can also change the "id" of an endpoint (using
+`endpoints.{name}.id`) which then changes the default resource path
+for the MVC endpoint. Legal endpoint ids are composed only of
+alphanumeric characters (because they can be exposed in a number of
+places, including JMX object names, where special characters are
+forbidden). The MVC path can be changed separately by configuring
+`endpoints.{name}.path`, and there is no validation on those values
+(so you can use anything that is legel in a URL path). For example, to
+change the location of the `/health` endpoint to `/ping/me` you can
+set `endpoints.health.path=/ping/me`.
+
+TIP: If you provide a custom `MvcEndpoint` remember to include a
+settable `path` property, and default it to `/{id}` if you want your
+code to behave like the standard MVC endpoints. (Take a look at the
+`HealthMvcEndpoint` to see how you might do that.) If your custom
+endpoint is an `Endpoint` (not an `MvcEndpoint`) then Spring Boot will
+take care of the path for you.
 
 
 [[production-ready-customizing-management-server-port]]
