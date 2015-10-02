@@ -38,6 +38,7 @@ import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Session.Cookie;
+import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.embedded.Compression;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -55,7 +56,9 @@ import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServle
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
@@ -70,7 +73,8 @@ import org.springframework.util.StringUtils;
  * @author Marcos Barbero
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
-public class ServerProperties implements EmbeddedServletContainerCustomizer, Ordered {
+public class ServerProperties implements EmbeddedServletContainerCustomizer,
+		EnvironmentAware, Ordered {
 
 	/**
 	 * Server HTTP port.
@@ -106,7 +110,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 	/**
 	 * If X-Forwarded-* headers should be applied to the HttpRequest.
 	 */
-	private boolean useForwardHeaders;
+	private Boolean useForwardHeaders;
 
 	private Session session = new Session();
 
@@ -125,9 +129,16 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 	private final Undertow undertow = new Undertow();
 
+	private Environment environment;
+
 	@Override
 	public int getOrder() {
 		return 0;
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	@Override
@@ -280,12 +291,20 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 		return this.contextParameters;
 	}
 
-	public boolean isUseForwardHeaders() {
+	public Boolean isUseForwardHeaders() {
 		return this.useForwardHeaders;
 	}
 
-	public void setUseForwardHeaders(boolean useForwardHeaders) {
+	public void setUseForwardHeaders(Boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	protected final boolean getOrDeduceUseForwardHeaders() {
+		if (this.useForwardHeaders != null) {
+			return this.useForwardHeaders;
+		}
+		CloudPlatform platform = CloudPlatform.getActive(this.environment);
+		return (platform == null ? false : platform.isUsingForwardHeaders());
 	}
 
 	/**
@@ -722,7 +741,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			// For back compatibility the valve is also enabled if protocol-header is set
 			if (StringUtils.hasText(protocolHeader)
 					|| StringUtils.hasText(remoteIpHeader)
-					|| properties.isUseForwardHeaders()) {
+					|| properties.getOrDeduceUseForwardHeaders()) {
 				RemoteIpValve valve = new RemoteIpValve();
 				valve.setProtocolHeader(StringUtils.hasLength(protocolHeader) ? protocolHeader
 						: "X-Forwarded-Proto");
@@ -856,7 +875,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 
 		void customizeJetty(ServerProperties serverProperties,
 				JettyEmbeddedServletContainerFactory factory) {
-			factory.setUseForwardHeaders(serverProperties.isUseForwardHeaders());
+			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 		}
 
 	}
@@ -1007,7 +1026,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			factory.setAccessLogDirectory(this.accesslog.dir);
 			factory.setAccessLogPattern(this.accesslog.pattern);
 			factory.setAccessLogEnabled(this.accesslog.enabled);
-			factory.setUseForwardHeaders(serverProperties.isUseForwardHeaders());
+			factory.setUseForwardHeaders(serverProperties.getOrDeduceUseForwardHeaders());
 		}
 
 		public static class Accesslog {

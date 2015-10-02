@@ -42,6 +42,7 @@ import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -61,6 +62,7 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public class ServerPropertiesTests {
 
@@ -242,10 +244,8 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.display-name", "MyBootApp");
 		bindProperties(map);
-
 		TomcatEmbeddedServletContainerFactory container = new TomcatEmbeddedServletContainerFactory();
 		this.properties.customize(container);
-
 		assertEquals("MyBootApp", container.getDisplayName());
 	}
 
@@ -274,6 +274,12 @@ public class ServerPropertiesTests {
 	public void setUseForwardHeadersTomcat() throws Exception {
 		// Since 1.3.0 no need to explicitly set header names if use-forward-header=true
 		this.properties.setUseForwardHeaders(true);
+		testRemoteIpValveConfigured();
+	}
+
+	@Test
+	public void deduceUseForwardHeadersTomcat() throws Exception {
+		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
 		testRemoteIpValveConfigured();
 	}
 
@@ -322,6 +328,13 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void defaultUseForwardHeadersUndertow() throws Exception {
+		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(false);
+	}
+
+	@Test
 	public void setUseForwardHeadersUndertow() throws Exception {
 		this.properties.setUseForwardHeaders(true);
 		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
@@ -330,8 +343,31 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
+	public void deduceUseForwardHeadersUndertow() throws Exception {
+		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
+		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void defaultUseForwardHeadersJetty() throws Exception {
+		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(false);
+	}
+
+	@Test
 	public void setUseForwardHeadersJetty() throws Exception {
 		this.properties.setUseForwardHeaders(true);
+		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
+		this.properties.customize(container);
+		verify(container).setUseForwardHeaders(true);
+	}
+
+	@Test
+	public void deduceUseForwardHeadersJetty() throws Exception {
+		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
 		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);

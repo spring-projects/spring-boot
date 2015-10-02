@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cloudfoundry;
+package org.springframework.boot.cloud.cloudfoundry;
 
 import org.junit.Test;
+import org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -25,14 +26,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
- * Tests for {@link VcapEnvironmentPostProcessor}.
+ * Tests for {@link CloudFoundryVcapEnvironmentPostProcessor}.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class VcapEnvironmentPostProcessorTests {
+public class CloudFoundryVcapEnvironmentPostProcessorTests {
 
-	private final VcapEnvironmentPostProcessor initializer = new VcapEnvironmentPostProcessor();
+	private final CloudFoundryVcapEnvironmentPostProcessor initializer = new CloudFoundryVcapEnvironmentPostProcessor();
 
 	private final ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 
