@@ -1064,6 +1064,9 @@ property is read and passed to the server for authentication.
 TIP: It's always advisable to use `https://` as the connection protocol so that traffic is
 encrypted and passwords cannot be intercepted.
 
+TIP: If you need to use a proxy to access the remote application, configure the
+`spring.devtools.remote.proxy.host` and `spring.devtools.remote.proxy.port` properties.
+
 
 
 [[using-boot-devtools-remote-update]]

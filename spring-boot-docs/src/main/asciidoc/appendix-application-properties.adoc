@@ -674,6 +674,8 @@ content into your application; rather pick only the properties that you need.
     spring.devtools.remote.context-path=/.~~spring-boot!~ # context path used to handle the remote connection
     spring.devtools.remote.debug.enabled=true # enable remote debug support
     spring.devtools.remote.debug.local-port=8000 # local remote debug server port
+    spring.devtools.remote.proxy.host= # the host of the proxy to use to connect to the remote application
+    spring.devtools.remote.proxy.port= # the port of the proxy to use to connect to the remote application
     spring.devtools.remote.restart.enabled=true # enable remote restart
     spring.devtools.remote.secret= # a shared secret required to establish a connection
     spring.devtools.remote.secret-header-name=X-AUTH-TOKEN # HTTP header used to transfer the shared secret

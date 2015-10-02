@@ -50,6 +50,8 @@ public class RemoteDevToolsProperties {
 
 	private Debug debug = new Debug();
 
+	private Proxy proxy = new Proxy();
+
 	public String getContextPath() {
 		return this.contextPath;
 	}
@@ -80,6 +82,10 @@ public class RemoteDevToolsProperties {
 
 	public Debug getDebug() {
 		return this.debug;
+	}
+
+	public Proxy getProxy() {
+		return this.proxy;
 	}
 
 	public static class Restart {
@@ -127,6 +133,36 @@ public class RemoteDevToolsProperties {
 
 		public void setLocalPort(int localPort) {
 			this.localPort = localPort;
+		}
+
+	}
+
+	public static class Proxy {
+
+		/**
+		 * The host of the proxy to use to connect to the remote application.
+		 */
+		private String host;
+
+		/**
+		 * The port of the proxy to use to connect to the remote application.
+		 */
+		private Integer port;
+
+		public String getHost() {
+			return this.host;
+		}
+
+		public void setHost(String host) {
+			this.host = host;
+		}
+
+		public Integer getPort() {
+			return this.port;
+		}
+
+		public void setPort(Integer port) {
+			this.port = port;
 		}
 
 	}
