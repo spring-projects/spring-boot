@@ -187,7 +187,7 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.allow-session-override=false
 	spring.velocity.cache=true
 	spring.velocity.check-template-location=true
-	spring.velocity.charset=UTF-8
+	spring.velocity.charset=UTF-8 # charset for input and output encoding
 	spring.velocity.content-type=text/html
 	spring.velocity.date-tool-attribute=
 	spring.velocity.expose-request-attributes=false

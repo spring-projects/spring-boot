@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,6 +107,13 @@ public class VelocityAutoConfigurationTests {
 		String result = response.getContentAsString();
 		assertThat(result, containsString("home"));
 		assertThat(response.getContentType(), equalTo("application/json;charset=UTF-8"));
+	}
+
+	@Test
+	public void customCharset() throws Exception {
+		registerAndRefreshContext("spring.velocity.charset:ISO-8859-1");
+		assertThat(this.context.getBean(VelocityConfigurer.class).getVelocityEngine()
+				.getProperty("input.encoding"), equalTo((Object) "ISO-8859-1"));
 	}
 
 	@Test
