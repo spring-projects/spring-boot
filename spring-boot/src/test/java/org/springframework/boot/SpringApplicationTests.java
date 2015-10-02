@@ -673,6 +673,11 @@ public class SpringApplicationTests {
 			return this.applicationContext;
 		}
 
+		@Override
+		public void close() {
+			this.applicationContext.close();
+		}
+
 	}
 
 	private static class TestSpringApplication extends SpringApplication {

@@ -329,14 +329,6 @@ public class SpringApplication {
 
 		// Create, load, refresh and run the ApplicationContext
 		context = createApplicationContext();
-		if (this.registerShutdownHook) {
-			try {
-				context.registerShutdownHook();
-			}
-			catch (AccessControlException ex) {
-				// Not allowed in some environments.
-			}
-		}
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
@@ -358,6 +350,14 @@ public class SpringApplication {
 
 		// Refresh the context
 		refresh(context);
+		if (this.registerShutdownHook) {
+			try {
+				context.registerShutdownHook();
+			}
+			catch (AccessControlException ex) {
+				// Not allowed in some environments.
+			}
+		}
 		afterRefresh(context, applicationArguments);
 		listeners.finished(context, null);
 		return context;
