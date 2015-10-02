@@ -88,6 +88,7 @@ public class VelocityAutoConfiguration {
 			factory.setResourceLoaderPath(this.properties.getResourceLoaderPath());
 			factory.setPreferFileSystemAccess(this.properties.isPreferFileSystemAccess());
 			Properties velocityProperties = new Properties();
+			velocityProperties.setProperty("input.encoding", this.properties.getCharsetName());
 			velocityProperties.putAll(this.properties.getProperties());
 			factory.setVelocityProperties(velocityProperties);
 		}

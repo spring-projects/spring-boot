@@ -114,6 +114,13 @@ public class VelocityAutoConfigurationTests {
 	}
 
 	@Test
+	public void customCharset() throws Exception {
+		registerAndRefreshContext("spring.velocity.charset:ISO-8859-1");
+		assertThat(this.context.getBean(VelocityConfigurer.class).getVelocityEngine()
+				.getProperty("input.encoding"), equalTo((Object) "ISO-8859-1"));
+	}
+
+	@Test
 	public void customPrefix() throws Exception {
 		registerAndRefreshContext("spring.velocity.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
