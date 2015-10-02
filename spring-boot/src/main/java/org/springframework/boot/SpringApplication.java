@@ -64,6 +64,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
@@ -335,6 +336,7 @@ public class SpringApplication {
 		listeners.contextPrepared(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
+			logStartupProfileInfo(context);
 		}
 
 		// Add boot specific singleton beans
@@ -624,6 +626,24 @@ public class SpringApplication {
 		if (isRoot) {
 			new StartupInfoLogger(this.mainApplicationClass)
 					.logStarting(getApplicationLog());
+		}
+	}
+
+	/**
+	 * Called to log active profile information.
+	 * @param context the application context
+	 */
+	protected void logStartupProfileInfo(ConfigurableApplicationContext context) {
+		Log log = getApplicationLog();
+		if (log.isInfoEnabled()) {
+			String[] activeProfiles = context.getEnvironment().getActiveProfiles();
+			if (ObjectUtils.isEmpty(activeProfiles)) {
+				log.info("No profiles are active");
+			}
+			else {
+				log.info("The following profiles are active: "
+						+ StringUtils.arrayToCommaDelimitedString(activeProfiles));
+			}
 		}
 	}
 

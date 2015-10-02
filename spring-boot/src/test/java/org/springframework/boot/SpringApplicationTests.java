@@ -67,6 +67,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
@@ -193,6 +194,23 @@ public class SpringApplicationTests {
 				"--test.property=123456");
 		assertThat(this.output.toString(),
 				startsWith(String.format("Running a Test!%n%n123456")));
+	}
+
+	@Test
+	public void logsNoActiveProfiles() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.output.toString(), containsString("No profiles are active"));
+	}
+
+	@Test
+	public void logsActiveProfiles() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		this.context = application.run("--spring.profiles.active=myprofiles");
+		assertThat(this.output.toString(),
+				containsString("The following profiles are active: myprofile"));
 	}
 
 	@Test
