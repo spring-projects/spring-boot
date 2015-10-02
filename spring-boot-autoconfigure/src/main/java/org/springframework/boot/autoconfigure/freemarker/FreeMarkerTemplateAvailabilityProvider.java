@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.freemarker;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
@@ -35,11 +36,13 @@ public class FreeMarkerTemplateAvailabilityProvider implements
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("freemarker.template.Configuration", classLoader)) {
-			String loaderPath = environment.getProperty("spring.freemarker.path",
+			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					"spring.freemarker.");
+			String loaderPath = resolver.getProperty("template-loader-path",
 					FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH);
-			String prefix = environment.getProperty("spring.freemarker.prefix",
+			String prefix = resolver.getProperty("prefix",
 					FreeMarkerProperties.DEFAULT_PREFIX);
-			String suffix = environment.getProperty("spring.freemarker.suffix",
+			String suffix = resolver.getProperty("suffix",
 					FreeMarkerProperties.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(loaderPath + prefix + view + suffix)
 					.exists();
