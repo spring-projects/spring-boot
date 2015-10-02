@@ -63,6 +63,10 @@ public class HealthMvcEndpointTests {
 			"user", "password",
 			AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
 
+	private UsernamePasswordAuthenticationToken admin = new UsernamePasswordAuthenticationToken(
+			"user", "password",
+			AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"));
+
 	@Before
 	public void init() {
 		this.endpoint = mock(HealthEndpoint.class);
@@ -94,10 +98,10 @@ public class HealthMvcEndpointTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void customMapping() {
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().status("OK").build());
-		this.mvc.setStatusMapping(Collections.singletonMap("OK",
-				HttpStatus.INTERNAL_SERVER_ERROR));
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().status("OK").build());
+		this.mvc.setStatusMapping(
+				Collections.singletonMap("OK", HttpStatus.INTERNAL_SERVER_ERROR));
 		Object result = this.mvc.invoke(null);
 		assertTrue(result instanceof ResponseEntity);
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
@@ -108,8 +112,8 @@ public class HealthMvcEndpointTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void customMappingWithRelaxedName() {
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().outOfService().build());
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().outOfService().build());
 		this.mvc.setStatusMapping(Collections.singletonMap("out-of-service",
 				HttpStatus.INTERNAL_SERVER_ERROR));
 		Object result = this.mvc.invoke(null);
@@ -120,23 +124,33 @@ public class HealthMvcEndpointTests {
 	}
 
 	@Test
-	public void secure() {
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().up().withDetail("foo", "bar").build());
+	public void secureEvenWhenNotSensitive() {
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		given(this.endpoint.isSensitive()).willReturn(false);
-		Object result = this.mvc.invoke(this.user);
+		Object result = this.mvc.invoke(this.admin);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
 		assertEquals("bar", ((Health) result).getDetails().get("foo"));
 	}
 
 	@Test
+	public void secureNonAdmin() {
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.user);
+		assertTrue(result instanceof Health);
+		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertNull(((Health) result).getDetails().get("foo"));
+	}
+
+	@Test
 	public void healthIsCached() {
 		given(this.endpoint.getTimeToLive()).willReturn(10000L);
 		given(this.endpoint.isSensitive()).willReturn(true);
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().up().withDetail("foo", "bar").build());
-		Object result = this.mvc.invoke(this.user);
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.admin);
 		assertTrue(result instanceof Health);
 		Health health = (Health) result;
 		assertTrue(health.getStatus() == Status.UP);
@@ -156,8 +170,8 @@ public class HealthMvcEndpointTests {
 	public void unsecureAnonymousAccessUnrestricted() {
 		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
 		this.mvc.setEnvironment(this.environment);
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().up().withDetail("foo", "bar").build());
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -167,8 +181,8 @@ public class HealthMvcEndpointTests {
 	@Test
 	public void unsensitiveAnonymousAccessRestricted() {
 		this.environment.getPropertySources().addLast(NON_SENSITIVE);
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().up().withDetail("foo", "bar").build());
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -180,8 +194,8 @@ public class HealthMvcEndpointTests {
 		this.mvc = new HealthMvcEndpoint(this.endpoint, false);
 		this.mvc.setEnvironment(this.environment);
 		this.environment.getPropertySources().addLast(NON_SENSITIVE);
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().up().withDetail("foo", "bar").build());
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -191,8 +205,8 @@ public class HealthMvcEndpointTests {
 	@Test
 	public void noCachingWhenTimeToLiveIsZero() {
 		given(this.endpoint.getTimeToLive()).willReturn(0L);
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().up().withDetail("foo", "bar").build());
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -207,8 +221,8 @@ public class HealthMvcEndpointTests {
 	public void newValueIsReturnedOnceTtlExpires() throws InterruptedException {
 		given(this.endpoint.getTimeToLive()).willReturn(50L);
 		given(this.endpoint.isSensitive()).willReturn(false);
-		given(this.endpoint.invoke()).willReturn(
-				new Health.Builder().up().withDetail("foo", "bar").build());
+		given(this.endpoint.invoke())
+				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);

@@ -31,7 +31,10 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -53,6 +56,8 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
 
 	private RelaxedPropertyResolver propertyResolver;
+
+	private RelaxedPropertyResolver roleResolver;
 
 	private long lastAccess = 0;
 
@@ -80,6 +85,8 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	public void setEnvironment(Environment environment) {
 		this.propertyResolver = new RelaxedPropertyResolver(environment,
 				"endpoints.health.");
+		this.roleResolver = new RelaxedPropertyResolver(environment,
+				"management.security.");
 	}
 
 	/**
@@ -177,8 +184,22 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	}
 
 	private boolean isSecure(Principal principal) {
-		return (principal != null
-				&& !principal.getClass().getName().contains("Anonymous"));
+		if (principal == null || principal.getClass().getName().contains("Anonymous")) {
+			return false;
+		}
+		if (!ClassUtils.isPresent("org.springframework.security.core.Authentication",
+				null) || !(principal instanceof Authentication)) {
+			return false;
+		}
+		String role = this.roleResolver.getProperty("role", "ROLE_ADMIN");
+		Authentication authentication = (Authentication) principal;
+		for (GrantedAuthority authority : authentication.getAuthorities()) {
+			String name = authority.getAuthority();
+			if (role.equals(name) || ("ROLE_" + role).equals(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean isUnrestricted() {
