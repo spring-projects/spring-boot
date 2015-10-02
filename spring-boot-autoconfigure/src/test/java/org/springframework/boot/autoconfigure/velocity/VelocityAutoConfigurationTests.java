@@ -27,9 +27,10 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.boot.web.servlet.view.velocity.EmbeddedVelocityViewResolver;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -61,6 +62,9 @@ import static org.junit.Assert.assertThat;
  */
 public class VelocityAutoConfigurationTests {
 
+	@Rule
+	public OutputCapture output = new OutputCapture();
+
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
 	@Before
@@ -82,10 +86,11 @@ public class VelocityAutoConfigurationTests {
 		assertThat(this.context.getBean(VelocityConfigurer.class), notNullValue());
 	}
 
-	@Test(expected = BeanCreationException.class)
+	@Test
 	public void nonExistentTemplateLocation() {
 		registerAndRefreshContext("spring.velocity.resourceLoaderPath:"
 				+ "classpath:/does-not-exist/");
+		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test

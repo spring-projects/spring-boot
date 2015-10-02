@@ -22,6 +22,8 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +44,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.velocity.VelocityEngineFactory;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.view.velocity.VelocityConfig;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
@@ -60,6 +61,8 @@ import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 @EnableConfigurationProperties(VelocityProperties.class)
 public class VelocityAutoConfiguration {
 
+	private static final Log logger = LogFactory.getLog(VelocityAutoConfiguration.class);
+
 	@Autowired
 	private ApplicationContext applicationContext;
 
@@ -71,11 +74,12 @@ public class VelocityAutoConfiguration {
 		if (this.properties.isCheckTemplateLocation()) {
 			TemplateLocation location = new TemplateLocation(
 					this.properties.getResourceLoaderPath());
-			Assert.state(location.exists(this.applicationContext),
-					"Cannot find template location: " + location
-							+ " (please add some templates, check your Velocity "
-							+ "configuration, or set spring.velocity."
-							+ "checkTemplateLocation=false)");
+			if (!location.exists(this.applicationContext)) {
+				logger.warn("Cannot find template location: " + location
+						+ " (please add some templates, check your Velocity "
+						+ "configuration, or set spring.velocity."
+						+ "checkTemplateLocation=false)");
+			}
 		}
 	}
 
