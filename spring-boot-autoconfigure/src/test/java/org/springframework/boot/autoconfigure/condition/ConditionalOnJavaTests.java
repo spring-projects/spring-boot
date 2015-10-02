@@ -16,6 +16,15 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.function.Function;
+
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
@@ -23,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.Range;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.ReflectionUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -85,6 +95,41 @@ public class ConditionalOnJavaTests {
 				+ "older than 1.6 found 1.7"));
 	}
 
+	@Test
+	public void java8IsDetected() throws Exception {
+		assertThat(getJavaVersion(), is("1.8"));
+	}
+
+	@Test
+	public void java7IsDetected() throws Exception {
+		assertThat(getJavaVersion(Function.class), is("1.7"));
+	}
+
+	@Test
+	public void java6IsDetected() throws Exception {
+		assertThat(getJavaVersion(Function.class, Files.class), is("1.6"));
+	}
+
+	@Test
+	public void java6IsTheFallback() throws Exception {
+		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class),
+				is("1.6"));
+	}
+
+	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
+		URL[] urls = ((URLClassLoader) getClass().getClassLoader()).getURLs();
+		URLClassLoader classLoader = new ClassHidingClassLoader(urls, hiddenClasses);
+
+		Class<?> javaVersionClass = classLoader
+				.loadClass(ConditionalOnJava.JavaVersion.class.getName());
+
+		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass,
+				"getJavaVersion");
+		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);
+		classLoader.close();
+		return javaVersion.toString();
+	}
+
 	private void testBounds(Range range, JavaVersion runningVersion, JavaVersion version,
 			boolean expected) {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion,
@@ -101,6 +146,34 @@ public class ConditionalOnJavaTests {
 		int expectedNumber = expected ? 1 : 0;
 		Matcher<Iterable<String>> matcher = iterableWithSize(expectedNumber);
 		assertThat(this.context.getBeansOfType(String.class).values(), is(matcher));
+	}
+
+	private final class ClassHidingClassLoader extends URLClassLoader {
+
+		private final List<Class<?>> hiddenClasses;
+
+		private ClassHidingClassLoader(URL[] urls, Class<?>... hiddenClasses) {
+			super(urls, null);
+			this.hiddenClasses = Arrays.asList(hiddenClasses);
+		}
+
+		@Override
+		public Class<?> loadClass(String name) throws ClassNotFoundException {
+			if (isHidden(name)) {
+				throw new ClassNotFoundException();
+			}
+			return super.loadClass(name);
+		}
+
+		private boolean isHidden(String name) {
+			for (Class<?> hiddenClass : this.hiddenClasses) {
+				if (hiddenClass.getName().equals(name)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 	}
 
 	@Configuration

@@ -22,8 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.flywaydb.core.internal.util.ClassUtils;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.core.JdkVersion;
 import org.springframework.util.Assert;
 
 /**
@@ -32,6 +32,7 @@ import org.springframework.util.Assert;
  *
  * @author Oliver Gierke
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
@@ -78,32 +79,35 @@ public @interface ConditionalOnJava {
 	enum JavaVersion {
 
 		/**
-		 * Java 1.6.
+		 * Java 1.9.
 		 */
-		SIX(JdkVersion.JAVA_16, "1.6"),
-
-		/**
-		 * Java 1.7.
-		 */
-		SEVEN(JdkVersion.JAVA_17, "1.7"),
+		NINE(9, "1.9", "java.security.cert.URICertStoreParameters"),
 
 		/**
 		 * Java 1.8.
 		 */
-		EIGHT(JdkVersion.JAVA_18, "1.8"),
+		EIGHT(8, "1.8", "java.util.function.Function"),
 
 		/**
-		 * Java 1.9.
+		 * Java 1.7.
 		 */
-		NINE(JdkVersion.JAVA_19, "1.9");
+		SEVEN(7, "1.7", "java.nio.file.Files"),
+
+		/**
+		 * Java 1.6.
+		 */
+		SIX(6, "1.6", "java.util.ServiceLoader");
 
 		private final int value;
 
 		private final String name;
 
-		JavaVersion(int value, String name) {
+		private final boolean available;
+
+		JavaVersion(int value, String name, String className) {
 			this.value = value;
 			this.name = name;
+			this.available = ClassUtils.isPresent(className, getClass().getClassLoader());
 		}
 
 		/**
@@ -134,9 +138,8 @@ public @interface ConditionalOnJava {
 		 * @return the {@link JavaVersion}
 		 */
 		public static JavaVersion getJavaVersion() {
-			int version = JdkVersion.getMajorJavaVersion();
 			for (JavaVersion candidate : JavaVersion.values()) {
-				if (candidate.value == version) {
+				if (candidate.available) {
 					return candidate;
 				}
 			}
