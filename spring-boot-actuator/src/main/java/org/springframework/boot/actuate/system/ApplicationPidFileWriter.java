@@ -180,13 +180,6 @@ public class ApplicationPidFileWriter implements
 	}
 
 	/**
-	 * Reset the created flag for testing purposes.
-	 */
-	static void reset() {
-		created.set(false);
-	}
-
-	/**
 	 * Provides access to a property value.
 	 */
 	private interface Property {

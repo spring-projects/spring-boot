@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.system;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +35,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.env.MockPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.isEmptyString;
@@ -67,7 +69,11 @@ public class ApplicationPidFileWriterTests {
 	public void resetListener() {
 		System.clearProperty("PIDFILE");
 		System.clearProperty("PID_FAIL_ON_WRITE_ERROR");
-		ApplicationPidFileWriter.reset();
+
+		// Reset the created flag.
+		AtomicBoolean created = (AtomicBoolean) ReflectionTestUtils.getField(
+				ApplicationPidFileWriter.class, "created");
+		created.set(false);
 	}
 
 	@Test
