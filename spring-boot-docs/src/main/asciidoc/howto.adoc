@@ -491,6 +491,59 @@ sample project for an example.
 
 
 
+[[howto-use-behind-a-proxy-server]]
+[[howto-use-tomcat-behind-a-proxy-server]]
+=== Use behind a front-end proxy server
+Your application might need to send `302` redirects or render content with absolute links
+back to itself. When running behind a proxy, the caller wants a link to the proxy, and not
+to the physical address of the machine hosting your app. Typically such situations are
+handled via a contract with the proxy, which will add headers to tell the back end how to
+construct links to itself.
+
+If the proxy adds conventional `X-Forwarded-For` and `X-Forwarded-Proto` headers (most do
+this out of the box) the absolute links should be rendered correctly as long as
+`server.use-forward-headers` is set to `true` in your `application.properties`.
+
+NOTE: If your application is running in Cloud Foundry or Heroku the
+`server.use-forward-headers` property will default to `true` if not specified. In all
+other instances it defaults to `false`.
+
+
+
+[[howto-customize-tomcat-behind-a-proxy-server]]
+==== Customize Tomcat's proxy configuration
+If you are using Tomcat you can additionally configure the names of the headers used to
+carry "`forwarded`" information:
+
+[indent=0]
+----
+	server.tomcat.remote-ip-header=x-your-remote-ip-header
+	server.tomcat.protocol-header=x-your-protocol-header
+----
+
+Tomcat is also configured with a default regular expression that matches internal
+proxies that are to be trusted. By default, IP addresses in `10/8`, `192.168/16`,
+`169.254/16` and `127/8` are trusted. You can customize the valve's configuration by
+adding an entry to `application.properties`, e.g.
+
+[indent=0]
+----
+	server.tomcat.internal-proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
+----
+
+NOTE: The double backslashes are only required when you're using a properties file for
+configuration. If you are using YAML, single backslashes are sufficient and a value
+that's equivalent to the one shown above would be `192\.168\.\d{1,3}\.\d{1,3}`.
+
+NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but don't do
+this in production).
+
+You can take complete control of the configuration of Tomcat's `RemoteIpValve` by
+switching the automatic one off (i.e. set `server.use-forward-headers=false`) and adding
+a new  valve instance in a `TomcatEmbeddedServletContainerFactory` bean.
+
+
+
 [[howto-configure-tomcat]]
 === Configure Tomcat
 Generally you can follow the advice from
@@ -541,66 +594,6 @@ HTTPS connector:
 		}
 	}
 ----
-
-
-
-[[howto-use-tomcat-behind-a-proxy-server]]
-=== Use Tomcat behind a front-end proxy server
-Your app might need to send 302 redirects, or render UI templates with
-absolute links to itself, or hypermedia links back to itself in the
-case of a RESTful service. If the app is behind a proxy, the caller
-wants a link to the proxy not to the physical address of the app, so
-something has to be done in the backend. Typically this is handled via
-a contract with the proxy, which will add headers to tell the back end
-how to construct links to itself. If the proxy adds conventional
-headers (most do this out of the box) the absolute links should be
-rendered correctly by default using the Tomcat server.
-
-Spring Boot using Tomcat automatically adds a `RemoteIpValve`. This
-transparently takes the standard `x-forwarded-for` and
-`x-forwarded-proto` headers and uses them to change local URLs created
-in the `HttpServletRequest`. You can configure the header names in
-Spring Boot and the valve is switched on unless one or both of these
-properties is empty. These values are the defaults and are the
-conventional values used by most proxies, so you don't need to set
-them unless you need different values:
-
-[indent=0]
-----
-	server.tomcat.remote-ip-header=x-forwarded-for
-	server.tomcat.protocol-header=x-forwarded-proto
-----
-
-If your proxy uses different headers you can customize the valve's configuration by adding
-some entries to `application.properties`, e.g.
-
-[indent=0]
-----
-	server.tomcat.remote-ip-header=x-your-remote-ip-header
-	server.tomcat.protocol-header=x-your-protocol-header
-----
-
-The valve is also configured with a default regular expression that matches internal
-proxies that are to be trusted. By default, IP addresses in 10/8, 192.168/16, 169.254/16
-and 127/8 are trusted. You can customize the valve's configuration by adding an entry
-to `application.properties`, e.g.
-
-[indent=0]
-----
-	server.tomcat.internal_proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
-----
-
-NOTE: The double backslashes are only required when you're using a properties file for
-configuration. If you are using YAML, single backslashes are sufficient and a value
-that's equivalent to the one shown above would be `192\.168\.\d{1,3}\.\d{1,3}`.
-
-NOTE: You can trust all proxies by setting the `internal_proxies` to empty (but don't do
-this in production).
-
-You can take complete control of the configuration of the
-`RemoteIpValve` by switching the automatic one off (i.e. set one of
-the headers to empty) and adding a new valve instance in a
-`TomcatEmbeddedServletContainerFactory` bean.
 
 
 
