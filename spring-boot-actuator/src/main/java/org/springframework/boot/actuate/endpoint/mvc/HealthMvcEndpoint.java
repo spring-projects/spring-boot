@@ -17,11 +17,9 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -47,9 +45,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Phillip Webb
  * @since 1.1.0
  */
-public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
-
-	private final HealthEndpoint delegate;
+public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint>
+		implements EnvironmentAware {
 
 	private final boolean secure;
 
@@ -63,15 +60,12 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	private Health cached;
 
-	private String path;
-
 	public HealthMvcEndpoint(HealthEndpoint delegate) {
 		this(delegate, true);
 	}
 
 	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure) {
-		Assert.notNull(delegate, "Delegate must not be null");
-		this.delegate = delegate;
+		super(delegate);
 		this.secure = secure;
 		setupDefaultStatusMapping();
 	}
@@ -132,10 +126,9 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	@RequestMapping
 	@ResponseBody
 	public Object invoke(Principal principal) {
-		if (!this.delegate.isEnabled()) {
+		if (!getDelegate().isEnabled()) {
 			// Shouldn't happen because the request mapping should not be registered
-			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
-					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
+			return getDisabledResponse();
 		}
 		Health health = getHealth(principal);
 		HttpStatus status = getStatus(health);
@@ -163,7 +156,7 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		long accessTime = System.currentTimeMillis();
 		if (isCacheStale(accessTime)) {
 			this.lastAccess = accessTime;
-			this.cached = this.delegate.invoke();
+			this.cached = getDelegate().invoke();
 		}
 		if (exposeHealthDetails(principal)) {
 			return this.cached;
@@ -175,7 +168,7 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		if (this.cached == null) {
 			return true;
 		}
-		return (accessTime - this.lastAccess) >= this.delegate.getTimeToLive();
+		return (accessTime - this.lastAccess) >= getDelegate().getTimeToLive();
 	}
 
 	private boolean exposeHealthDetails(Principal principal) {
@@ -207,32 +200,6 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	private boolean isUnrestricted() {
 		Boolean sensitive = this.propertyResolver.getProperty("sensitive", Boolean.class);
 		return !this.secure && !Boolean.TRUE.equals(sensitive);
-	}
-
-	@Override
-	public String getPath() {
-		return (this.path != null ? this.path : "/" + this.delegate.getId());
-	}
-
-	public void setPath(String path) {
-		while (path.endsWith("/")) {
-			path = path.substring(0, path.length() - 1);
-		}
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
-		this.path = path;
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return this.delegate.isSensitive();
-	}
-
-	@Override
-	@SuppressWarnings("rawtypes")
-	public Class<? extends Endpoint> getEndpointType() {
-		return this.delegate.getClass();
 	}
 
 }
