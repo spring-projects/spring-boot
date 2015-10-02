@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.velocity;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
@@ -34,12 +36,13 @@ public class VelocityTemplateAvailabilityProvider implements TemplateAvailabilit
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.apache.velocity.app.VelocityEngine", classLoader)) {
-			String loaderPath = environment.getProperty(
-					"spring.velocity.resourceLoaderPath",
+			PropertyResolver resolver = new RelaxedPropertyResolver(environment,
+					"spring.velocity.");
+			String loaderPath = resolver.getProperty("resource-loader-path",
 					VelocityProperties.DEFAULT_RESOURCE_LOADER_PATH);
-			String prefix = environment.getProperty("spring.velocity.prefix",
+			String prefix = resolver.getProperty("prefix",
 					VelocityProperties.DEFAULT_PREFIX);
-			String suffix = environment.getProperty("spring.velocity.suffix",
+			String suffix = resolver.getProperty("suffix",
 					VelocityProperties.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(loaderPath + prefix + view + suffix)
 					.exists();
