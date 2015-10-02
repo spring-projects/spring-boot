@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -34,6 +36,7 @@ import org.springframework.core.env.PropertySource;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostProcessor {
 
 	private static final Map<String, Object> PROPERTIES;
@@ -56,7 +59,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		if (isLocalApplication(environment)) {
 			PropertySource<?> propertySource = new MapPropertySource("refresh",
 					PROPERTIES);
-			environment.getPropertySources().addFirst(propertySource);
+			environment.getPropertySources().addLast(propertySource);
 		}
 	}
 
