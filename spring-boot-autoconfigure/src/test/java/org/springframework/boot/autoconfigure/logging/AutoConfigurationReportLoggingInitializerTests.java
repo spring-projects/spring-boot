@@ -107,7 +107,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 	@After
 	public void cleanup() {
-		System.clearProperty(LogFactory.FACTORY_PROPERTIES);
+		System.clearProperty(LogFactory.FACTORY_PROPERTY);
 		LogFactory.releaseAll();
 	}
 
