@@ -22,9 +22,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.flywaydb.core.internal.util.ClassUtils;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link Conditional} that matches based on the JVM version the application is running
