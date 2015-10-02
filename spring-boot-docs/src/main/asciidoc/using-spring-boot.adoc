@@ -554,7 +554,7 @@ source is a `@Configuration` class. Usually the class that defines the `main` me
 is also a good candidate as the primary `@Configuration`.
 
 TIP: Many Spring configuration examples have been published on the Internet that use XML
-configuration. Always try to use the equivalent Java-base configuration if possible.
+configuration. Always try to use the equivalent Java-based configuration if possible.
 Searching for `+enable*+` annotations can be a good starting point.
 
 
