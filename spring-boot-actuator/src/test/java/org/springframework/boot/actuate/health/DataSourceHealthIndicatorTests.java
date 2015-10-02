@@ -20,12 +20,12 @@ import java.sql.Connection;
 
 import javax.sql.DataSource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicator.Product;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -48,13 +48,21 @@ public class DataSourceHealthIndicatorTests {
 
 	private final DataSourceHealthIndicator indicator = new DataSourceHealthIndicator();
 
-	private DriverManagerDataSource dataSource;
+	private SingleConnectionDataSource dataSource;
 
 	@Before
 	public void init() {
 		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
-		this.dataSource = new SingleConnectionDataSource(db.getUrl(), "sa", "", false);
+		this.dataSource = new SingleConnectionDataSource(db.getUrl() + ";shutdown=true",
+				"sa", "", false);
 		this.dataSource.setDriverClassName(db.getDriverClassName());
+	}
+
+	@After
+	public void close() {
+		if (this.dataSource != null) {
+			this.dataSource.destroy();
+		}
 	}
 
 	@Test
@@ -91,8 +99,8 @@ public class DataSourceHealthIndicatorTests {
 	public void connectionClosed() throws Exception {
 		DataSource dataSource = mock(DataSource.class);
 		Connection connection = mock(Connection.class);
-		given(connection.getMetaData()).willReturn(
-				this.dataSource.getConnection().getMetaData());
+		given(connection.getMetaData())
+				.willReturn(this.dataSource.getConnection().getMetaData());
 		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
