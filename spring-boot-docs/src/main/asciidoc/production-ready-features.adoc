@@ -513,23 +513,21 @@ your application might already use `/info` for another purpose. You can use the
 The `application.properties` example above will change the endpoint from `/{id}` to
 `/manage/{id}` (e.g. `/manage/info`).
 
-You can also change the "id" of an endpoint (using
-`endpoints.{name}.id`) which then changes the default resource path
-for the MVC endpoint. Legal endpoint ids are composed only of
-alphanumeric characters (because they can be exposed in a number of
-places, including JMX object names, where special characters are
-forbidden). The MVC path can be changed separately by configuring
-`endpoints.{name}.path`, and there is no validation on those values
-(so you can use anything that is legel in a URL path). For example, to
-change the location of the `/health` endpoint to `/ping/me` you can
-set `endpoints.health.path=/ping/me`.
+You can also change the "`id`" of an endpoint (using `endpoints.{name}.id`) which then
+changes the default resource path for the MVC endpoint. Legal endpoint ids are composed
+only of alphanumeric characters (because they can be exposed in a number of places,
+including JMX object names, where special characters are forbidden). The MVC path can be
+changed separately by configuring `endpoints.{name}.path`, and there is no validation on
+those values (so you can use anything that is legel in a URL path). For example, to change
+the location of the `/health` endpoint to `/ping/me` you can set
+`endpoints.health.path=/ping/me`.
 
-TIP: If you provide a custom `MvcEndpoint` remember to include a
-settable `path` property, and default it to `/{id}` if you want your
-code to behave like the standard MVC endpoints. (Take a look at the
-`HealthMvcEndpoint` to see how you might do that.) If your custom
-endpoint is an `Endpoint` (not an `MvcEndpoint`) then Spring Boot will
-take care of the path for you.
+TIP: If you provide a custom `MvcEndpoint` remember to include a settable `path` property,
+and default it to `/{id}` if you want your code to behave like the standard MVC endpoints.
+(Take a look at the `HealthMvcEndpoint` to see how you might do that.) If your custom
+endpoint is an `Endpoint` (not an `MvcEndpoint`) then Spring Boot will take care of the
+path for you.
+
 
 
 [[production-ready-customizing-management-server-port]]
@@ -1073,10 +1071,11 @@ values for specific `MetricWriters` can be set as
 `spring.metrics.export.triggers.<name>.*` where `<name>` is a bean name (or pattern for
 matching bean names).
 
-WARNING: The automatic export of metrics is disabled if you switch off the
-default `MetricRepository` (e.g. by using Dropwizard metrics). You can get back the
-same functionality be declaring a bean of your own of type `MetricReader` and 
-declaring it to be `@ExportMetricReader`.
+WARNING: The automatic export of metrics is disabled if you switch off the default
+`MetricRepository` (e.g. by using Dropwizard metrics). You can get back the same
+functionality be declaring a bean of your own of type `MetricReader` and  declaring it to
+be `@ExportMetricReader`.
+
 
 
 [[production-ready-metric-writers-export-to-redis]]

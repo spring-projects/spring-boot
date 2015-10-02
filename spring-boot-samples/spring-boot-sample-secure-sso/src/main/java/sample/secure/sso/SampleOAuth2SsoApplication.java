@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample.secure.sso;
 
 import org.springframework.boot.SpringApplication;
@@ -23,7 +24,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth
  * After you launch the app it should prompt you for login with github. As long as it runs
  * on port 8080 on localhost it should work. Use an incognito window for testing
  * (otherwise you might find you are already authenticated).
- * 
+ *
  * @author Dave Syer
  */
 @SpringBootApplication

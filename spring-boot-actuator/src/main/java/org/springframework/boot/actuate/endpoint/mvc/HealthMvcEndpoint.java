@@ -134,9 +134,8 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	public Object invoke(Principal principal) {
 		if (!this.delegate.isEnabled()) {
 			// Shouldn't happen because the request mapping should not be registered
-			return new ResponseEntity<Map<String, String>>(
-					Collections.singletonMap("message", "This endpoint is disabled"),
-					HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
+					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
 		}
 		Health health = getHealth(principal);
 		HttpStatus status = getStatus(health);
@@ -187,19 +186,22 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 		if (principal == null || principal.getClass().getName().contains("Anonymous")) {
 			return false;
 		}
-		if (!ClassUtils.isPresent("org.springframework.security.core.Authentication",
-				null) || !(principal instanceof Authentication)) {
-			return false;
-		}
-		String role = this.roleResolver.getProperty("role", "ROLE_ADMIN");
-		Authentication authentication = (Authentication) principal;
-		for (GrantedAuthority authority : authentication.getAuthorities()) {
-			String name = authority.getAuthority();
-			if (role.equals(name) || ("ROLE_" + role).equals(name)) {
-				return true;
+		if (isSpringSecurityAuthentication(principal)) {
+			Authentication authentication = (Authentication) principal;
+			String role = this.roleResolver.getProperty("role", "ROLE_ADMIN");
+			for (GrantedAuthority authority : authentication.getAuthorities()) {
+				String name = authority.getAuthority();
+				if (role.equals(name) || ("ROLE_" + role).equals(name)) {
+					return true;
+				}
 			}
 		}
 		return false;
+	}
+
+	private boolean isSpringSecurityAuthentication(Principal principal) {
+		return ClassUtils.isPresent("org.springframework.security.core.Authentication",
+				null) && (principal instanceof Authentication);
 	}
 
 	private boolean isUnrestricted() {
@@ -209,15 +211,15 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 
 	@Override
 	public String getPath() {
-		return this.path != null ? this.path : "/" + this.delegate.getId();
+		return (this.path != null ? this.path : "/" + this.delegate.getId());
 	}
 
 	public void setPath(String path) {
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
 		while (path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);
+		}
+		if (!path.startsWith("/")) {
+			path = "/" + path;
 		}
 		this.path = path;
 	}

@@ -121,7 +121,8 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Bean
 	public ManagementErrorEndpoint errorEndpoint(ServerProperties serverProperties,
 			final ErrorAttributes errorAttributes) {
-		return new ManagementErrorEndpoint(serverProperties.getError().getPath(), errorAttributes);
+		return new ManagementErrorEndpoint(serverProperties.getError().getPath(),
+				errorAttributes);
 	}
 
 	/**

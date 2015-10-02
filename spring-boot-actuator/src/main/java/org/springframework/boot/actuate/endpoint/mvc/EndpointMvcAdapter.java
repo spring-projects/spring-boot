@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class EndpointMvcAdapter implements MvcEndpoint {
 
 	private final Endpoint<?> delegate;
+
 	private String path;
 
 	/**
@@ -59,15 +60,15 @@ public class EndpointMvcAdapter implements MvcEndpoint {
 
 	@Override
 	public String getPath() {
-		return this.path != null ? this.path : "/" + this.delegate.getId();
+		return (this.path != null ? this.path : "/" + this.delegate.getId());
 	}
 
 	public void setPath(String path) {
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
 		while (path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);
+		}
+		if (!path.startsWith("/")) {
+			path = "/" + path;
 		}
 		this.path = path;
 	}
