@@ -94,7 +94,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void testErrorForMachineClientTracePramamStacktrace() throws Exception {
+	public void testErrorForMachineClientTraceParamStacktrace() throws Exception {
 		load("--server.error.include-stacktrace=on-trace-param");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
 				createUrl("?trace=true"), Map.class);
