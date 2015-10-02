@@ -99,10 +99,10 @@ public class MustacheCompilerFactoryBean implements FactoryBean<Mustache.Compile
 			this.compiler = this.compiler.withCollector(this.collector);
 		}
 		if (this.defaultValue != null) {
-		this.compiler = this.compiler.defaultValue(this.defaultValue);
+			this.compiler = this.compiler.defaultValue(this.defaultValue);
 		}
 		if (this.emptyStringIsFalse != null) {
-		this.compiler = this.compiler.emptyStringIsFalse(this.emptyStringIsFalse);
+			this.compiler = this.compiler.emptyStringIsFalse(this.emptyStringIsFalse);
 		}
 		return this.compiler;
 	}
