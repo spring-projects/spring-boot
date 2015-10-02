@@ -183,6 +183,13 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		assertThat(getJspServlet().getInitParameters(), is(equalTo(initParameters)));
 	}
 
+	@Test
+	public void useForwardHeaders() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		assertForwardHeaderIsUsed(factory);
+	}
+
 	@Override
 	@SuppressWarnings("serial")
 	// Workaround for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646

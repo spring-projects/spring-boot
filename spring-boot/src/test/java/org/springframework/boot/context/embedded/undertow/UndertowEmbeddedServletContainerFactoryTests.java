@@ -149,6 +149,13 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 		assertEquals("/", contextPath.get());
 	}
 
+	@Test
+	public void useForwardHeaders() throws Exception {
+		UndertowEmbeddedServletContainerFactory factory = getFactory();
+		factory.setUseForwardHeaders(true);
+		assertForwardHeaderIsUsed(factory);
+	}
+
 	@Override
 	protected Object getJspServlet() {
 		return null; // Undertow does not support JSPs
