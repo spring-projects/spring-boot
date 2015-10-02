@@ -317,6 +317,16 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
+	 * Flag to indicate if banner should be printed to stdout.
+	 * @param showBannerInLog the flag to set. Default false. If true, print to log instead of std out
+	 * @return the current builder
+	 */
+	public SpringApplicationBuilder setShowBannerInLog(boolean showBannerInLog) {
+		this.application.setShowBannerInLog(showBannerInLog);
+		return this;
+	}
+
+	/**
 	 * Sets if the application is headless and should not instantiate AWT. Defaults to
 	 * {@code true} to prevent java icons appearing.
 	 * @param headless if the application is headless

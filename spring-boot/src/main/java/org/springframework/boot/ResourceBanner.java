@@ -54,23 +54,39 @@ public class ResourceBanner implements Banner {
 	}
 
 	@Override
+	public void logBanner(Environment environment, Class<?> sourceClass) {
+		try {
+			String banner = generateBanner(environment, sourceClass);
+			log.info(banner);
+		}
+		catch (Exception ex) {
+			log.warn("Banner not printable: " + this.resource + " (" + ex.getClass()
+					+ ": '" + ex.getMessage() + "')", ex);
+		}
+	}
+
+	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 		try {
-			String banner = StreamUtils.copyToString(
-					this.resource.getInputStream(),
-					environment.getProperty("banner.charset", Charset.class,
-							Charset.forName("UTF-8")));
-
-			for (PropertyResolver resolver : getPropertyResolvers(environment,
-					sourceClass)) {
-				banner = resolver.resolvePlaceholders(banner);
-			}
+			String banner = generateBanner(environment, sourceClass);
 			out.println(banner);
 		}
 		catch (Exception ex) {
 			log.warn("Banner not printable: " + this.resource + " (" + ex.getClass()
 					+ ": '" + ex.getMessage() + "')", ex);
 		}
+	}
+
+	private String generateBanner(Environment environment, Class<?> sourceClass) throws Exception {
+		String banner = StreamUtils.copyToString(
+				this.resource.getInputStream(),
+				environment.getProperty("banner.charset", Charset.class,
+						Charset.forName("UTF-8")));
+		for (PropertyResolver resolver : getPropertyResolvers(environment,
+				sourceClass)) {
+			banner = resolver.resolvePlaceholders(banner);
+		}
+		return banner;
 	}
 
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment,
