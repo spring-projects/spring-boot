@@ -190,7 +190,7 @@ public class ApplicationPidFileWriter implements
 	/**
 	 * Provides access to a property value.
 	 */
-	private static interface Property {
+	private interface Property {
 
 		String getValue(SpringApplicationEvent event);
 
