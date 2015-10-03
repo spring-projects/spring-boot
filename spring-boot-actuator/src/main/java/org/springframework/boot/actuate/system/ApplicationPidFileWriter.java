@@ -116,9 +116,10 @@ public class ApplicationPidFileWriter implements
 	/**
 	 * Sets the type of application event that will trigger writing of the PID file.
 	 * Defaults to {@link ApplicationPreparedEvent}. NOTE: If you use the
-	 * {@link ApplicationPreparedEvent} to trigger the write, you will not be able to
+	 * {@link org.springframework.boot.context.event.ApplicationStartedEvent}
+	 * to trigger the write, you will not be able to
 	 * specify the PID filename in the Spring {@link Environment}.
-	 * @param triggerEventType the event trigger type
+	 * @param triggerEventType the trigger event type
 	 */
 	public void setTriggerEventType(
 			Class<? extends SpringApplicationEvent> triggerEventType) {
@@ -189,7 +190,7 @@ public class ApplicationPidFileWriter implements
 	/**
 	 * Provides access to a property value.
 	 */
-	private interface Property {
+	private static interface Property {
 
 		String getValue(SpringApplicationEvent event);
 
