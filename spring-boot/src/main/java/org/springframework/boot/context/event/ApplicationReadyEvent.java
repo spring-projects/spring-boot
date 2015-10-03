@@ -38,7 +38,7 @@ public class ApplicationReadyEvent extends SpringApplicationEvent {
 	 * Create a new {@link ApplicationReadyEvent} instance.
 	 * @param application the current application
 	 * @param args the arguments the application is running with
-	 * @param context the context that was being created (maybe null)
+	 * @param context the context that was being created
 	 */
 	public ApplicationReadyEvent(SpringApplication application, String[] args,
 			ConfigurableApplicationContext context) {
