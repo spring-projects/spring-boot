@@ -161,7 +161,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 
 	public String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
-			Assert.state(ClassUtils.isPresent(this.driverClassName, null),
+			Assert.state(driverClassIsLoadable(),
 					"Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
@@ -180,6 +180,20 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 					this.environment, "driver class");
 		}
 		return driverClassName;
+	}
+
+	private boolean driverClassIsLoadable() {
+		try {
+			ClassUtils.forName(this.driverClassName, null);
+			return true;
+		}
+		catch (UnsupportedClassVersionError ucve) {
+			// driver library has been compiled with a later JDK, propagate error
+			throw ucve;
+		}
+		catch (Throwable t) {
+			return false;
+		}
 	}
 
 	public void setDriverClassName(String driverClassName) {
