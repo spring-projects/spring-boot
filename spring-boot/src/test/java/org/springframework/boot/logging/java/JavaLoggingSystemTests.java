@@ -19,6 +19,7 @@ package org.springframework.boot.logging.java;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Locale;
 
 import org.apache.commons.logging.impl.Jdk14Logger;
@@ -140,6 +141,29 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("INFO: Hello"));
+	}
+
+	@Test
+	public void testSystemFileConfigLocation() throws Exception {
+		File systemFile = this.temp.newFile("logging-systemfile.properties");
+
+		PrintStream out = null;
+		try {
+			out = new PrintStream(systemFile);
+			out.println("handlers = java.util.logging.ConsoleHandler");
+			out.println(".level = INFO");
+		}
+		finally {
+			closeStream(out);
+		}
+
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null,
+				this.temp.getRoot() + "/logging-systemfile.properties",
+				null);
+		this.logger.info("Hello java world");
+		String output = this.output.toString().trim();
+		assertTrue("Wrong output:\n" + output, output.contains("Hello java world"));
 	}
 
 	@Test(expected = IllegalStateException.class)

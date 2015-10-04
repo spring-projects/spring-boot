@@ -17,6 +17,7 @@
 package org.springframework.boot.logging;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
@@ -98,6 +99,12 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 			ClassPathResource resource = new ClassPathResource(location, this.classLoader);
 			if (resource.exists()) {
 				return "classpath:" + location;
+			}
+			else {
+				FileSystemResource fileSystemResource = new FileSystemResource(location);
+				if (fileSystemResource.exists()) {
+					return location;
+				}
 			}
 		}
 		return null;

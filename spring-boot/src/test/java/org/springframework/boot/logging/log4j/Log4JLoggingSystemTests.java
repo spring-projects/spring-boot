@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.log4j;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
@@ -99,6 +100,35 @@ public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertTrue("Wrong output:\n" + output, output.contains(tmpDir() + "/spring.log"));
 		assertFalse(new File(tmpDir() + "/tmp.log").exists());
+	}
+
+	@Test
+	public void testSystemFileConfigLocation() throws Exception {
+		File systemFile = this.temp.newFile("log4j-systemfile.properties");
+
+		PrintStream out = null;
+		try {
+			out = new PrintStream(systemFile);
+			out.println("log4j.reset=true");
+			out.println("log4j.rootCategory=INFO, CONSOLE");
+			out.println("PID=????");
+			out.println("LOG_PATTERN=${LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] "
+					+ "service%X{context} - ${PID} %5p [%t] --- %c{1}: %m%n");
+			out.println("log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender");
+			out.println("log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout");
+			out.println("log4j.appender.CONSOLE.layout.ConversionPattern=${LOG_PATTERN}");
+		}
+		finally {
+			closeStream(out);
+		}
+
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null,
+				this.temp.getRoot() + "/log4j-systemfile.properties",
+				null);
+		this.logger.info("Hello log4j world");
+		String output = this.output.toString().trim();
+		assertTrue("Wrong output:\n" + output, output.contains("Hello log4j world"));
 	}
 
 	@Test(expected = IllegalStateException.class)
