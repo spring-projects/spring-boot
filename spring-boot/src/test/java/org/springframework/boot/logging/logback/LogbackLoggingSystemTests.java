@@ -238,6 +238,19 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	public void testLevelPatternProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.pattern.level", "X%clr(%p)X");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(
+				environment);
+		this.loggingSystem.initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello world");
+		String output = this.output.toString().trim();
+		assertTrue("Wrong output pattern:\n" + output,
+				getLineWithText(output, "Hello world").contains("XINFOX"));
+	}
+
+	@Test
 	public void testFilePatternProperty() throws Exception {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.pattern.file", "%logger %msg");

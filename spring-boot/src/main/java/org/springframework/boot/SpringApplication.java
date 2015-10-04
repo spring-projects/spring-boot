@@ -64,6 +64,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
@@ -161,9 +162,20 @@ public class SpringApplication {
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
+	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
+
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
 	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
+
+	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
+	static {
+		Set<String> names = new HashSet<String>();
+		names.add(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
+		names.add(StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME);
+		names.add(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME);
+		SERVLET_ENVIRONMENT_SOURCE_NAMES = Collections.unmodifiableSet(names);
+	}
 
 	private final Log log = LogFactory.getLog(getClass());
 
@@ -308,26 +320,23 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, args);
 		listeners.environmentPrepared(environment);
+		if (isWebEnvironment(environment) && !this.webEnvironment) {
+			environment = convertToStandardEnvironment(environment);
+		}
+
 		if (this.showBanner) {
 			printBanner(environment);
 		}
 
 		// Create, load, refresh and run the ApplicationContext
 		context = createApplicationContext();
-		if (this.registerShutdownHook) {
-			try {
-				context.registerShutdownHook();
-			}
-			catch (AccessControlException ex) {
-				// Not allowed in some environments.
-			}
-		}
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
 		listeners.contextPrepared(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
+			logStartupProfileInfo(context);
 		}
 
 		// Add boot specific singleton beans
@@ -343,6 +352,14 @@ public class SpringApplication {
 
 		// Refresh the context
 		refresh(context);
+		if (this.registerShutdownHook) {
+			try {
+				context.registerShutdownHook();
+			}
+			catch (AccessControlException ex) {
+				// Not allowed in some environments.
+			}
+		}
 		afterRefresh(context, applicationArguments);
 		listeners.finished(context, null);
 		return context;
@@ -419,6 +436,40 @@ public class SpringApplication {
 	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
+	}
+
+	private boolean isWebEnvironment(ConfigurableEnvironment environment) {
+		try {
+			Class<?> webEnvironmentClass = ClassUtils.forName(
+					CONFIGURABLE_WEB_ENVIRONMENT_CLASS, getClassLoader());
+			return (webEnvironmentClass.isInstance(environment));
+		}
+		catch (Throwable ex) {
+			return false;
+		}
+	}
+
+	private ConfigurableEnvironment convertToStandardEnvironment(
+			ConfigurableEnvironment environment) {
+		StandardEnvironment result = new StandardEnvironment();
+		removeAllPropertySources(result.getPropertySources());
+		result.setActiveProfiles(environment.getActiveProfiles());
+		for (PropertySource<?> propertySource : environment.getPropertySources()) {
+			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
+				result.getPropertySources().addLast(propertySource);
+			}
+		}
+		return result;
+	}
+
+	private void removeAllPropertySources(MutablePropertySources propertySources) {
+		Set<String> names = new HashSet<String>();
+		for (PropertySource<?> propertySource : propertySources) {
+			names.add(propertySource.getName());
+		}
+		for (String name : names) {
+			propertySources.remove(name);
+		}
 	}
 
 	/**
@@ -575,6 +626,24 @@ public class SpringApplication {
 		if (isRoot) {
 			new StartupInfoLogger(this.mainApplicationClass)
 					.logStarting(getApplicationLog());
+		}
+	}
+
+	/**
+	 * Called to log active profile information.
+	 * @param context the application context
+	 */
+	protected void logStartupProfileInfo(ConfigurableApplicationContext context) {
+		Log log = getApplicationLog();
+		if (log.isInfoEnabled()) {
+			String[] activeProfiles = context.getEnvironment().getActiveProfiles();
+			if (ObjectUtils.isEmpty(activeProfiles)) {
+				log.info("No profiles are active");
+			}
+			else {
+				log.info("The following profiles are active: "
+						+ StringUtils.arrayToCommaDelimitedString(activeProfiles));
+			}
 		}
 	}
 

@@ -310,5 +310,16 @@ public class SpringApplicationBuilderTests {
 		public boolean getRegisteredShutdownHook() {
 			return this.registeredShutdownHook;
 		}
+
+		@Override
+		public void close() {
+			super.close();
+			this.applicationContext.close();
+		}
+
+		@Override
+		public ApplicationContext getParent() {
+			return this.applicationContext.getParent();
+		}
 	}
 }

@@ -22,6 +22,8 @@ import java.security.ProtectionDomain;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -36,7 +38,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
@@ -61,6 +62,9 @@ import groovy.text.markup.MarkupTemplateEngine;
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
 public class GroovyTemplateAutoConfiguration {
 
+	private static final Log logger = LogFactory
+			.getLog(GroovyTemplateAutoConfiguration.class);
+
 	@Configuration
 	@ConditionalOnClass(GroovyMarkupConfigurer.class)
 	public static class GroovyMarkupConfiguration {
@@ -79,11 +83,12 @@ public class GroovyTemplateAutoConfiguration {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(
 						this.properties.getResourceLoaderPath());
-				Assert.state(location.exists(this.applicationContext),
-						"Cannot find template location: " + location
-								+ " (please add some templates, check your Groovy "
-								+ "configuration, or set spring.groovy.template."
-								+ "check-template-location=false)");
+				if (!location.exists(this.applicationContext)) {
+					logger.warn("Cannot find template location: " + location
+							+ " (please add some templates, check your Groovy "
+							+ "configuration, or set spring.groovy.template."
+							+ "check-template-location=false)");
+				}
 			}
 		}
 

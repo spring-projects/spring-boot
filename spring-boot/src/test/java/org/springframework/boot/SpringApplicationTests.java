@@ -39,6 +39,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -64,7 +65,9 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.support.StandardServletEnvironment;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
@@ -191,6 +194,23 @@ public class SpringApplicationTests {
 				"--test.property=123456");
 		assertThat(this.output.toString(),
 				startsWith(String.format("Running a Test!%n%n123456")));
+	}
+
+	@Test
+	public void logsNoActiveProfiles() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		this.context = application.run();
+		assertThat(this.output.toString(), containsString("No profiles are active"));
+	}
+
+	@Test
+	public void logsActiveProfiles() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		this.context = application.run("--spring.profiles.active=myprofiles");
+		assertThat(this.output.toString(),
+				containsString("The following profiles are active: myprofile"));
 	}
 
 	@Test
@@ -616,6 +636,29 @@ public class SpringApplicationTests {
 		assertThat(args.containsOption("debug"), equalTo(true));
 	}
 
+	@Test
+	public void webEnvironmentSwitchedOffInListener() throws Exception {
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
+		application
+				.addListeners(new ApplicationListener<ApplicationEnvironmentPreparedEvent>() {
+
+					@Override
+					public void onApplicationEvent(
+							ApplicationEnvironmentPreparedEvent event) {
+						assertTrue(event.getEnvironment() instanceof StandardServletEnvironment);
+						EnvironmentTestUtils.addEnvironment(event.getEnvironment(),
+								"foo=bar");
+						event.getSpringApplication().setWebEnvironment(false);
+					}
+
+				});
+		this.context = application.run();
+		assertFalse(this.context.getEnvironment() instanceof StandardServletEnvironment);
+		assertEquals("bar", this.context.getEnvironment().getProperty("foo"));
+		assertEquals("test", this.context.getEnvironment().getPropertySources()
+				.iterator().next().getName());
+	}
+
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
 			Class<?> propertySourceClass, String name) {
 		for (PropertySource<?> source : environment.getPropertySources()) {
@@ -646,6 +689,11 @@ public class SpringApplicationTests {
 
 		public ConfigurableApplicationContext getApplicationContext() {
 			return this.applicationContext;
+		}
+
+		@Override
+		public void close() {
+			this.applicationContext.close();
 		}
 
 	}

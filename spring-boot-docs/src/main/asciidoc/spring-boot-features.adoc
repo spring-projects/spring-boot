@@ -1085,6 +1085,18 @@ To help with the customization some other properties are transferred from the Sp
 |`LOG_PATH`
 |Used in default log configuration if defined.
 
+|`logging.pattern.console`
+|`CONSOLE_LOG_PATTERN`
+|The log pattern to use on the console (stdout). (Not supported with JDK logger.)
+
+|`logging.pattern.file`
+|`FILE_LOG_PATTERN`
+|The log pattern to use in a file (if LOG_FILE enabled). (Not supported with JDK logger.)
+
+|`logging.pattern.level`
+|`LOG_LEVEL_PATTERN`
+|The format to use to render the log level (default `%5p`). (The `logging.pattern.level` form is only supported by Logback.)
+
 |`PID`
 |`PID`
 |The current process ID (discovered if possible and when not already defined as an OS
@@ -1094,6 +1106,20 @@ To help with the customization some other properties are transferred from the Sp
 
 All the logging systems supported can consult System properties when parsing their
 configuration files.  See the default configurations in `spring-boot.jar` for examples.
+
+[TIP]
+====
+
+You can add MDC and other ad-hoc content to log lines by overriding
+only the `LOG_LEVEL_PATTERN` (or `logging.pattern.level` with
+Logback). For example, if you use `logging.pattern.level=user:%X{user}
+%5p` then the default log format will contain an MDC entry for "user"
+if it exists, e.g.
+
+----
+2015-09-30 12:30:04.031 user:juergen INFO 22174 --- [  nio-8080-exec-0] demo.Controller Handling authenticated request
+----
+====
 
 
 
@@ -1581,7 +1607,7 @@ you can see how to set things up. There is also a
 in the Jersey 1.x sample that the spring-boot maven plugin has been configured to unpack
 some Jersey jars so they can be scanned by the JAX-RS implementation (because the sample
 asks for them to be scanned in its `Filter` registration). You may need to do the same if
-any of your JAX-RS resources are packages as nested jars.
+any of your JAX-RS resources are packaged as nested jars.
 
 
 
@@ -2548,7 +2574,7 @@ server using the URL `mongodb://localhost/test`:
 	}
 ----
 
-You can set `spring.data.mongodb.uri` property to change the `url` and configure
+You can set `spring.data.mongodb.uri` property to change the URL and configure
 additional settings such as the _replica set_:
 
 [source,properties,indent=0]
@@ -2964,7 +2990,7 @@ a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a
 `CacheManager`.
 
 If for some reason you need a different `HazelcastInstance` for caching, you can
-request Spring Boot to create a separate one that will only used by the
+request Spring Boot to create a separate one that will be only used by the
 `CacheManager`:
 
 [source,properties,indent=0]
@@ -3372,7 +3398,7 @@ property with a different value for each instance of your application.
 
 === Using a Bitronix transaction manager
 Bitronix is another popular open source JTA transaction manager implementation. You can
-use the `spring-boot-starter-jta-bitronix` starter POM to add the appropriate Birtronix
+use the `spring-boot-starter-jta-bitronix` starter POM to add the appropriate Bitronix
 dependencies to your project. As with Atomikos, Spring Boot will automatically configure
 Bitronix and post-process your beans to ensure that startup and shutdown ordering is
 correct.

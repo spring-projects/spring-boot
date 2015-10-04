@@ -30,7 +30,9 @@ import java.util.Set;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.AbstractConnector;
+import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
@@ -97,6 +99,8 @@ public class JettyEmbeddedServletContainerFactory extends
 
 	private List<Configuration> configurations = new ArrayList<Configuration>();
 
+	private boolean useForwardHeaders;
+
 	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<JettyServerCustomizer>();
 
 	private ResourceLoader resourceLoader;
@@ -152,6 +156,9 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
 			customizer.customize(server);
+		}
+		if (this.useForwardHeaders) {
+			new ForwardHeadersCustomizer().customize(server);
 		}
 		return getJettyEmbeddedServletContainer(server);
 	}
@@ -450,6 +457,15 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	/**
+	 * Set if x-forward-* headers should be processed.
+	 * @param useForwardHeaders if x-forward headers should be used
+	 * @since 1.3.0
+	 */
+	public void setUseForwardHeaders(boolean useForwardHeaders) {
+		this.useForwardHeaders = useForwardHeaders;
+	}
+
+	/**
 	 * Sets {@link JettyServerCustomizer}s that will be applied to the {@link Server}
 	 * before it is started. Calling this method will replace any existing configurations.
 	 * @param customizers the Jetty customizers to apply
@@ -664,6 +680,28 @@ public class JettyEmbeddedServletContainerFactory extends
 			catch (Exception ex) {
 				throw new RuntimeException("Failed to configure Jetty 9.3 gzip handler",
 						ex);
+			}
+		}
+
+	}
+
+	/**
+	 * {@link JettyServerCustomizer} to add {@link ForwardedRequestCustomizer}. Only
+	 * supported with Jetty 9 (hence the inner class)
+	 */
+	private static class ForwardHeadersCustomizer implements JettyServerCustomizer {
+
+		@Override
+		public void customize(Server server) {
+			ForwardedRequestCustomizer customizer = new ForwardedRequestCustomizer();
+			for (Connector connector : server.getConnectors()) {
+				for (ConnectionFactory connectionFactory : connector
+						.getConnectionFactories()) {
+					if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
+						((HttpConfiguration.ConnectionFactory) connectionFactory)
+								.getHttpConfiguration().addCustomizer(customizer);
+					}
+				}
 			}
 		}
 

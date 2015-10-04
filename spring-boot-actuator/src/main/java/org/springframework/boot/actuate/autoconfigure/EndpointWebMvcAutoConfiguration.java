@@ -174,7 +174,9 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			// and this is the signature of that happening
 			if (ex instanceof EmbeddedServletContainerException
 					|| ex.getCause() instanceof EmbeddedServletContainerException) {
-				logger.warn("Could not start embedded container (management endpoints are still available through JMX)");
+				logger.warn("Could not start embedded management container (management endpoints "
+						+ "are still available through JMX)");
+				logger.debug("Embedded management container startup failed", ex);
 			}
 			else {
 				throw ex;

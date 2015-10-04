@@ -184,7 +184,9 @@ public class AutoConfigurationReportLoggingInitializer implements
 
 	private void addLogMessage(StringBuilder message, String source,
 			ConditionAndOutcomes conditionAndOutcomes) {
-		message.append("\n   " + source + "\n");
+		message.append("\n   " + source);
+		message.append(conditionAndOutcomes.isFullMatch() ? " matched\n"
+				: " did not match\n");
 		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
 			message.append("      - ");
 			if (StringUtils.hasLength(conditionAndOutcome.getOutcome().getMessage())) {

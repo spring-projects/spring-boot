@@ -638,8 +638,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		return "http://localhost:" + port + resourcePath;
 	}
 
-	protected String getResponse(String url) throws IOException, URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url);
+	protected String getResponse(String url, String... headers) throws IOException,
+			URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -649,9 +650,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	protected String getResponse(String url,
-			HttpComponentsClientHttpRequestFactory requestFactory) throws IOException,
-			URISyntaxException {
-		ClientHttpResponse response = getClientResponse(url, requestFactory);
+			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
+			throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url, requestFactory, headers);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
@@ -660,8 +661,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 	}
 
-	protected ClientHttpResponse getClientResponse(String url) throws IOException,
-			URISyntaxException {
+	protected ClientHttpResponse getClientResponse(String url, String... headers)
+			throws IOException, URISyntaxException {
 		return getClientResponse(url, new HttpComponentsClientHttpRequestFactory() {
 
 			@Override
@@ -669,17 +670,30 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				return AbstractEmbeddedServletContainerFactoryTests.this.httpClientContext;
 			}
 
-		});
+		}, headers);
 	}
 
 	protected ClientHttpResponse getClientResponse(String url,
-			HttpComponentsClientHttpRequestFactory requestFactory) throws IOException,
-			URISyntaxException {
+			HttpComponentsClientHttpRequestFactory requestFactory, String... headers)
+			throws IOException, URISyntaxException {
 		ClientHttpRequest request = requestFactory.createRequest(new URI(url),
 				HttpMethod.GET);
 		request.getHeaders().add("Cookie", "JSESSIONID=" + "123");
+		for (String header : headers) {
+			String[] parts = header.split(":");
+			request.getHeaders().add(parts[0], parts[1]);
+		}
 		ClientHttpResponse response = request.execute();
 		return response;
+	}
+
+	protected void assertForwardHeaderIsUsed(EmbeddedServletContainerFactory factory)
+			throws IOException, URISyntaxException {
+		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
+				new ExampleServlet(true), "/hello"));
+		this.container.start();
+		assertThat(getResponse(getLocalUrl("/hello"), "X-Forwarded-For:140.211.11.130"),
+				containsString("remoteaddr=140.211.11.130"));
 	}
 
 	protected abstract AbstractEmbeddedServletContainerFactory getFactory();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,8 @@ public class FreeMarkerTemplateAvailabilityProviderTests {
 
 	@Test
 	public void availabilityOfTemplateWithCustomLoaderPath() {
-		this.environment.setProperty("spring.freemarker.path",
+		this.environment.setProperty("spring.freemarker.template-loader-path",
 				"classpath:/custom-templates/");
-
 		assertTrue(this.provider.isTemplateAvailable("custom", this.environment,
 				getClass().getClassLoader(), this.resourceLoader));
 	}
@@ -62,7 +61,6 @@ public class FreeMarkerTemplateAvailabilityProviderTests {
 	@Test
 	public void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.freemarker.prefix", "prefix/");
-
 		assertTrue(this.provider.isTemplateAvailable("prefixed", this.environment,
 				getClass().getClassLoader(), this.resourceLoader));
 	}
@@ -70,7 +68,6 @@ public class FreeMarkerTemplateAvailabilityProviderTests {
 	@Test
 	public void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.freemarker.suffix", ".freemarker");
-
 		assertTrue(this.provider.isTemplateAvailable("suffixed", this.environment,
 				getClass().getClassLoader(), this.resourceLoader));
 	}

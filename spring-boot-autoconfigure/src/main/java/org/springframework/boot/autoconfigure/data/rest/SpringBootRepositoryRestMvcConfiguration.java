@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.rest;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -33,11 +33,15 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 @Configuration
 class SpringBootRepositoryRestMvcConfiguration extends RepositoryRestMvcConfiguration {
 
+	@Autowired
+	private RepositoryRestProperties properties;
+
 	@Bean
-	@ConfigurationProperties(prefix = "spring.data.rest")
 	@Override
 	public RepositoryRestConfiguration config() {
-		return super.config();
+		RepositoryRestConfiguration config = super.config();
+		this.properties.applyTo(config);
+		return config;
 	}
 
 }

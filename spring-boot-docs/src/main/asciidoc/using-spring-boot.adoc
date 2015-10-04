@@ -554,7 +554,7 @@ source is a `@Configuration` class. Usually the class that defines the `main` me
 is also a good candidate as the primary `@Configuration`.
 
 TIP: Many Spring configuration examples have been published on the Internet that use XML
-configuration. Always try to use the equivalent Java-base configuration if possible.
+configuration. Always try to use the equivalent Java-based configuration if possible.
 Searching for `+enable*+` annotations can be a good starting point.
 
 
@@ -622,7 +622,7 @@ you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
 
 If the class is not on the classpath, you can use the `excludeName` attribute of
 the annotation and specify the fully qualified name instead. Finally, you can also
-control the list of auto-configuration classes to excludes via the
+control the list of auto-configuration classes to exclude via the
 `spring.autoconfigure.exclude` property.
 
 TIP: You can define exclusions both at the annotation level and using the property.
@@ -872,11 +872,15 @@ a very fast feedback loop for code changes. By default, any entry on the classpa
 points to a folder will be monitored for changes.
 
 NOTE: You can also start your application via the supported build plugins (i.e. Maven and
-Gradle) as long as forking is enabled since DevTools need an isolated application classloader
-to operate properly.
+Gradle) as long as forking is enabled since DevTools need an isolated application
+classloader to operate properly.
 
 TIP: Automatic restart works very well when used with LiveReload.
 <<using-boot-devtools-livereload,See below>> for details.
+
+NOTE: If you use JRebel automatic restarts will be disabled in favor of dynamic class
+reloading. Other devtools features (such as LiveReload and property overrides) can still
+be used.
 
 .Restart vs Reload
 ****
@@ -1059,6 +1063,9 @@ property is read and passed to the server for authentication.
 
 TIP: It's always advisable to use `https://` as the connection protocol so that traffic is
 encrypted and passwords cannot be intercepted.
+
+TIP: If you need to use a proxy to access the remote application, configure the
+`spring.devtools.remote.proxy.host` and `spring.devtools.remote.proxy.port` properties.
 
 
 
