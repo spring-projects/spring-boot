@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.sql.DataSource;
 
@@ -27,14 +28,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -47,6 +52,7 @@ import static org.junit.Assert.assertThat;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class FlywayAutoConfigurationTests {
 
@@ -171,7 +177,13 @@ public class FlywayAutoConfigurationTests {
 		FlywayMigrationInitializer initializer = this.context
 				.getBean(FlywayMigrationInitializer.class);
 		assertThat(initializer.getOrder(), equalTo(Ordered.HIGHEST_PRECEDENCE));
+	}
 
+	@Test
+	public void customFlywayWithJpa() throws Exception {
+		registerAndRefresh(CustomFlywayWithJpaConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
@@ -202,6 +214,25 @@ public class FlywayAutoConfigurationTests {
 			initializer.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return initializer;
 		}
+	}
+
+	@Configuration
+	protected static class CustomFlywayWithJpaConfiguration {
+
+		@Autowired
+		private DataSource dataSource;
+
+		@Bean
+		public Flyway flyway() {
+			return new Flyway();
+		}
+
+		@Bean
+		public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
+			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
+					Collections.emptyMap(), null).dataSource(this.dataSource).build();
+		}
+
 	}
 
 	@Component

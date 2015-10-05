@@ -35,7 +35,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -60,7 +59,6 @@ public class FlywayAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties(FlywayProperties.class)
-	@Import(FlywayJpaDependencyConfiguration.class)
 	public static class FlywayConfiguration {
 
 		@Autowired
@@ -122,6 +120,21 @@ public class FlywayAutoConfiguration {
 		@ConditionalOnMissingBean
 		public FlywayMigrationInitializer flywayInitializer(Flyway flyway) {
 			return new FlywayMigrationInitializer(flyway, this.migrationStrategy);
+		}
+
+		/**
+		 * Additional configuration to ensure that {@link EntityManagerFactory} beans
+		 * depend-on the {@code flywayInitializer} bean.
+		 */
+		@Configuration
+		@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
+		@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
+		protected class FlywayInitializerJpaDependencyConfiguration extends
+				EntityManagerFactoryDependsOnPostProcessor {
+
+			public FlywayInitializerJpaDependencyConfiguration() {
+				super("flywayInitializer");
+			}
 
 		}
 
@@ -129,7 +142,7 @@ public class FlywayAutoConfiguration {
 
 	/**
 	 * Additional configuration to ensure that {@link EntityManagerFactory} beans
-	 * depend-on the flyway bean.
+	 * depend-on the {@code flyway} bean.
 	 */
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
@@ -138,7 +151,7 @@ public class FlywayAutoConfiguration {
 			EntityManagerFactoryDependsOnPostProcessor {
 
 		public FlywayJpaDependencyConfiguration() {
-			super("flywayInitializer", "flyway");
+			super("flyway");
 		}
 
 	}
