@@ -367,6 +367,8 @@ Spring Boot application as an `init.d` service simply create a symlink:
 
 TIP: It is advisable to create a specific user account to run you application. Ensure
 that you have set the owner of the jar file using `chown` before installing your service.
+As a security best practice login should be disabled for the user account. This can be
+achieved by specifying a shell such as `/sbin/nologin` for the user account.
 
 Once installed, you can start and stop the service in the usual way. You can also flag the
 application to start automatically using your standard operating system tools. For example,
@@ -426,6 +428,11 @@ the default behavior in a script or on the command line:
 
 |`LOG_FOLDER`
 |The name of the folder to put log files in (`/var/log` by default).
+
+|`SU_OPTS`
+|Additional options for the `su` command when starting the Spring Boot app 
+ (`-s /bin/sh` by default). On BSD you should change this value to `-m` if you want to 
+ support `/sbin/nologin` as the default user shell.
 
 |`APP_NAME`
 |The name of the app. If the jar is run from a symlink the script guesses the app name,

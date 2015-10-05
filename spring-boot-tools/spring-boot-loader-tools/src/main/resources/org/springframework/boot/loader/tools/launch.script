@@ -51,6 +51,7 @@ configfile=$(basename "${jarfile%.*}.conf")
 
 # Setup defaults
 [[ -z "$MODE" ]] && MODE="{{mode:auto}}" # modes are "auto", "service" or "run"
+[[ -z "$SU_OPTS" ]] && SU_OPTS="-s /bin/sh" # specify shell to support /sbin/nologin
 
 # Create an identity for log/pid files
 if [[ -z "$identity" ]]; then
@@ -124,7 +125,7 @@ start() {
     chown "$run_user" "$PID_FOLDER"
     chown "$run_user" "$pid_file"
     chown "$run_user" "$log_file"
-    su -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
+    su $SU_OPTS -c "$command &> \"$log_file\" & echo \$!" $run_user > "$pid_file"
     pid=$(cat "$pid_file")
   else
     checkPermissions || return $?
