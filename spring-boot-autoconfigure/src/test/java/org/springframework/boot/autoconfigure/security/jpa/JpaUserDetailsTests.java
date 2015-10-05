@@ -29,7 +29,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
@@ -43,7 +42,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(JpaUserDetailsTests.Main.class)
 @DirtiesContext
-@TestPropertySource(properties = "spring.datasource.url:jdbc:hsqldb:mem:testdb;shutdown=true")
 public class JpaUserDetailsTests {
 
 	@Test

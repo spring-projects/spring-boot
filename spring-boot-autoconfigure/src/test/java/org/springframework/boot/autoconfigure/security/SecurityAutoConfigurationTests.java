@@ -297,7 +297,7 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.url:jdbc:hsqldb:mem:testsecdb;shutdown=true");
+				"spring.datasource.url:jdbc:hsqldb:mem:testsecdb");
 		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
