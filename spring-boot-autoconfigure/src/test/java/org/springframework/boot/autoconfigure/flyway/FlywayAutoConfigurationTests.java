@@ -230,7 +230,8 @@ public class FlywayAutoConfigurationTests {
 		@Bean
 		public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
 			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
-					Collections.emptyMap(), null).dataSource(this.dataSource).build();
+					Collections.<String, Object>emptyMap(), null).dataSource(
+					this.dataSource).build();
 		}
 
 	}
