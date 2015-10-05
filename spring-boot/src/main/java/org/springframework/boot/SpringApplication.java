@@ -64,6 +64,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
@@ -160,6 +161,8 @@ public class SpringApplication {
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
+
+	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
 
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
@@ -317,7 +320,7 @@ public class SpringApplication {
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, args);
 		listeners.environmentPrepared(environment);
-		if (environment instanceof StandardServletEnvironment && !this.webEnvironment) {
+		if (isWebEnvironment(environment) && !this.webEnvironment) {
 			environment = convertToStandardEnvironment(environment);
 		}
 
@@ -327,20 +330,13 @@ public class SpringApplication {
 
 		// Create, load, refresh and run the ApplicationContext
 		context = createApplicationContext();
-		if (this.registerShutdownHook) {
-			try {
-				context.registerShutdownHook();
-			}
-			catch (AccessControlException ex) {
-				// Not allowed in some environments.
-			}
-		}
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
 		listeners.contextPrepared(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
+			logStartupProfileInfo(context);
 		}
 
 		// Add boot specific singleton beans
@@ -356,6 +352,14 @@ public class SpringApplication {
 
 		// Refresh the context
 		refresh(context);
+		if (this.registerShutdownHook) {
+			try {
+				context.registerShutdownHook();
+			}
+			catch (AccessControlException ex) {
+				// Not allowed in some environments.
+			}
+		}
 		afterRefresh(context, applicationArguments);
 		listeners.finished(context, null);
 		return context;
@@ -432,6 +436,17 @@ public class SpringApplication {
 	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
+	}
+
+	private boolean isWebEnvironment(ConfigurableEnvironment environment) {
+		try {
+			Class<?> webEnvironmentClass = ClassUtils.forName(
+					CONFIGURABLE_WEB_ENVIRONMENT_CLASS, getClassLoader());
+			return (webEnvironmentClass.isInstance(environment));
+		}
+		catch (Throwable ex) {
+			return false;
+		}
 	}
 
 	private ConfigurableEnvironment convertToStandardEnvironment(
@@ -611,6 +626,24 @@ public class SpringApplication {
 		if (isRoot) {
 			new StartupInfoLogger(this.mainApplicationClass)
 					.logStarting(getApplicationLog());
+		}
+	}
+
+	/**
+	 * Called to log active profile information.
+	 * @param context the application context
+	 */
+	protected void logStartupProfileInfo(ConfigurableApplicationContext context) {
+		Log log = getApplicationLog();
+		if (log.isInfoEnabled()) {
+			String[] activeProfiles = context.getEnvironment().getActiveProfiles();
+			if (ObjectUtils.isEmpty(activeProfiles)) {
+				log.info("No profiles are active");
+			}
+			else {
+				log.info("The following profiles are active: "
+						+ StringUtils.arrayToCommaDelimitedString(activeProfiles));
+			}
 		}
 	}
 

@@ -107,7 +107,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 	@After
 	public void cleanup() {
-		System.clearProperty(LogFactory.FACTORY_PROPERTIES);
+		System.clearProperty(LogFactory.FACTORY_PROPERTY);
 		LogFactory.releaseAll();
 	}
 
@@ -204,6 +204,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 	}
 
 	public static class MockLogFactory extends LogFactoryImpl {
+
 		@Override
 		public Log getInstance(String name) throws LogConfigurationException {
 			if (AutoConfigurationReportLoggingInitializer.class.getName().equals(name)) {
@@ -211,6 +212,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			}
 			return new NoOpLog();
 		}
+
 	}
 
 	@Configuration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,9 +76,6 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 		Ordered {
 
 	@Autowired
-	private ErrorProperties errorProperties;
-
-	@Autowired
 	private ServerProperties properties;
 
 	@Override
@@ -95,17 +92,17 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
 	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes) {
-		return new BasicErrorController(errorAttributes, this.errorProperties);
+		return new BasicErrorController(errorAttributes, this.properties.getError());
 	}
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer container) {
 		container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
-				+ this.errorProperties.getPath()));
+				+ this.properties.getError().getPath()));
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "error.whitelabel", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "server.error.whitelabel", name = "enabled", matchIfMissing = true)
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {
 

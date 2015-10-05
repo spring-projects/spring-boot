@@ -24,9 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -52,6 +53,9 @@ import static org.junit.Assert.assertThat;
  */
 public class FreeMarkerAutoConfigurationTests {
 
+	@Rule
+	public OutputCapture output = new OutputCapture();
+
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
 	@Before
@@ -73,10 +77,11 @@ public class FreeMarkerAutoConfigurationTests {
 		assertThat(this.context.getBean(FreeMarkerConfigurer.class), notNullValue());
 	}
 
-	@Test(expected = BeanCreationException.class)
-	public void nonExistentTemplateLocation() {
+	@Test
+	public void nonExistentTemplateLocation() throws Exception {
 		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
 				+ "classpath:/does-not-exist/,classpath:/also-does-not-exist");
+		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test

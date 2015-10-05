@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.remote.client;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy.Type;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +39,7 @@ import org.springframework.boot.devtools.autoconfigure.DevToolsProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties.Restart;
 import org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer;
 import org.springframework.boot.devtools.autoconfigure.RemoteDevToolsProperties;
+import org.springframework.boot.devtools.autoconfigure.RemoteDevToolsProperties.Proxy;
 import org.springframework.boot.devtools.autoconfigure.TriggerFileFilter;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
@@ -91,8 +94,13 @@ public class RemoteClientConfiguration {
 	public ClientHttpRequestFactory clientHttpRequestFactory() {
 		List<ClientHttpRequestInterceptor> interceptors = Arrays
 				.asList(getSecurityInterceptor());
-		return new InterceptingClientHttpRequestFactory(
-				new SimpleClientHttpRequestFactory(), interceptors);
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		Proxy proxy = this.properties.getRemote().getProxy();
+		if (proxy.getHost() != null && proxy.getPort() != null) {
+			requestFactory.setProxy(new java.net.Proxy(Type.HTTP, new InetSocketAddress(
+					proxy.getHost(), proxy.getPort())));
+		}
+		return new InterceptingClientHttpRequestFactory(requestFactory, interceptors);
 	}
 
 	private ClientHttpRequestInterceptor getSecurityInterceptor() {

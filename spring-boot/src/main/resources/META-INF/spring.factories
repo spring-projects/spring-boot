@@ -28,5 +28,5 @@ org.springframework.boot.logging.LoggingApplicationListener
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
-org.springframework.boot.cloudfoundry.VcapEnvironmentPostProcessor,\
+org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor,\
 org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor

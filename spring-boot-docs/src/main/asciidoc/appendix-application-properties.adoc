@@ -83,6 +83,7 @@ content into your application; rather pick only the properties that you need.
 	server.jsp-servlet.registered=true # Whether or not the JSP servlet is registered
 	server.servlet-path= # the servlet path, defaults to '/'
 	server.display-name= # the display name of the application
+	server.use-forward-headers= # if X-Forwarded-* headers should be used (default is off unless running in a known cloud)
 	server.session.persistent=false # true if session should be saved across restarts
 	server.session.timeout= # session timeout in seconds
 	server.session.tracking-modes= # tracking modes (one or more of "cookie" ,"url", "ssl")
@@ -138,8 +139,9 @@ content into your application; rather pick only the properties that you need.
     server.undertow.worker-threads= # number of worker threads
 
 	# ERROR HANDLING ({sc-spring-boot-autoconfigure}/web/ErrorProperties.{sc-ext}[ErrorProperties])
-	error.path=/error # the error path
-	error.include-stacktrace=never # when to include a stacktrace attribute (never/alway/on-trace-param)
+	server.error.path=/error # the error path
+	server.error.include-stacktrace=never # when to include a stacktrace attribute (never/alway/on-trace-param)
+	server.error.whitelabel.enabled=true # enable the default error page displayed in browsers in case of a server error
 
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/WebMvcProperties.{sc-ext}[WebMvcProperties])
 	spring.mvc.locale= # set fixed locale, e.g. en_UK
@@ -248,7 +250,7 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.allow-session-override=false
 	spring.velocity.cache=true
 	spring.velocity.check-template-location=true
-	spring.velocity.charset=UTF-8
+	spring.velocity.charset=UTF-8 # charset for input and output encoding
 	spring.velocity.content-type=text/html
 	spring.velocity.date-tool-attribute=
 	spring.velocity.enabled=true # enable MVC view resolution
@@ -673,6 +675,8 @@ content into your application; rather pick only the properties that you need.
     spring.devtools.remote.context-path=/.~~spring-boot!~ # context path used to handle the remote connection
     spring.devtools.remote.debug.enabled=true # enable remote debug support
     spring.devtools.remote.debug.local-port=8000 # local remote debug server port
+    spring.devtools.remote.proxy.host= # the host of the proxy to use to connect to the remote application
+    spring.devtools.remote.proxy.port= # the port of the proxy to use to connect to the remote application
     spring.devtools.remote.restart.enabled=true # enable remote restart
     spring.devtools.remote.secret= # a shared secret required to establish a connection
     spring.devtools.remote.secret-header-name=X-AUTH-TOKEN # HTTP header used to transfer the shared secret

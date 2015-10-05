@@ -35,6 +35,7 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -331,6 +332,13 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		this.container = factory.getEmbeddedServletContainer();
 		Wrapper jspServlet = getJspServlet();
 		assertThat(jspServlet.findInitParameter("a"), is(equalTo("alpha")));
+	}
+
+	@Test
+	public void useForwardHeaders() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.addContextValves(new RemoteIpValve());
+		assertForwardHeaderIsUsed(factory);
 	}
 
 	@Override

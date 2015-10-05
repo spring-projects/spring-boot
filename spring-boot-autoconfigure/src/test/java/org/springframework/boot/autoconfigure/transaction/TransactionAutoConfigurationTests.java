@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,6 +86,8 @@ public class TransactionAutoConfigurationTests {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
 		applicationContext.register(TransactionAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(applicationContext,
+				"spring.datasource.initialize:false");
 		applicationContext.refresh();
 		this.context = applicationContext;
 	}

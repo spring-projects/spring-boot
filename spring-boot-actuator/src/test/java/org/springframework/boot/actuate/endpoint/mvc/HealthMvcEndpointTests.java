@@ -63,6 +63,10 @@ public class HealthMvcEndpointTests {
 			"user", "password",
 			AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
 
+	private UsernamePasswordAuthenticationToken admin = new UsernamePasswordAuthenticationToken(
+			"user", "password",
+			AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"));
+
 	@Before
 	public void init() {
 		this.endpoint = mock(HealthEndpoint.class);
@@ -120,14 +124,24 @@ public class HealthMvcEndpointTests {
 	}
 
 	@Test
-	public void secure() {
+	public void secureEvenWhenNotSensitive() {
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
 		given(this.endpoint.isSensitive()).willReturn(false);
-		Object result = this.mvc.invoke(this.user);
+		Object result = this.mvc.invoke(this.admin);
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
 		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+	}
+
+	@Test
+	public void secureNonAdmin() {
+		given(this.endpoint.invoke()).willReturn(
+				new Health.Builder().up().withDetail("foo", "bar").build());
+		Object result = this.mvc.invoke(this.user);
+		assertTrue(result instanceof Health);
+		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertNull(((Health) result).getDetails().get("foo"));
 	}
 
 	@Test
@@ -136,7 +150,7 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.isSensitive()).willReturn(true);
 		given(this.endpoint.invoke()).willReturn(
 				new Health.Builder().up().withDetail("foo", "bar").build());
-		Object result = this.mvc.invoke(this.user);
+		Object result = this.mvc.invoke(this.admin);
 		assertTrue(result instanceof Health);
 		Health health = (Health) result;
 		assertTrue(health.getStatus() == Status.UP);

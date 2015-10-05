@@ -23,6 +23,8 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -39,7 +41,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
@@ -57,6 +58,9 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(FreeMarkerProperties.class)
 public class FreeMarkerAutoConfiguration {
+
+	private static final Log logger = LogFactory
+			.getLog(FreeMarkerAutoConfiguration.class);
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -77,10 +81,12 @@ public class FreeMarkerAutoConfiguration {
 					break;
 				}
 			}
-			Assert.notNull(templatePathLocation, "Cannot find template location(s): "
-					+ locations + " (please add some templates, "
-					+ "check your FreeMarker configuration, or set "
-					+ "spring.freemarker.checkTemplateLocation=false)");
+			if (templatePathLocation == null) {
+				logger.warn("Cannot find template location(s): " + locations
+						+ " (please add some templates, "
+						+ "check your FreeMarker configuration, or set "
+						+ "spring.freemarker.checkTemplateLocation=false)");
+			}
 		}
 	}
 

@@ -21,10 +21,11 @@ import java.util.Collections;
 import java.util.Locale;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -54,6 +55,9 @@ import static org.junit.Assert.assertTrue;
  * @author Stephane Nicoll
  */
 public class ThymeleafAutoConfigurationTests {
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
@@ -116,13 +120,14 @@ public class ThymeleafAutoConfigurationTests {
 		assertArrayEquals(new String[] { "foo", "bar" }, views.getViewNames());
 	}
 
-	@Test(expected = BeanCreationException.class)
+	@Test
 	public void templateLocationDoesNotExist() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
+		this.output.expect(containsString("Cannot find template location"));
 	}
 
 	@Test
