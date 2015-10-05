@@ -19,12 +19,14 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -70,6 +72,13 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	public ExpectedException expected = ExpectedException.none();
 
 	protected AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	@Before
+	public void setup() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt()
+						+ ";shutdown=true");
+	}
 
 	@After
 	public void close() {
