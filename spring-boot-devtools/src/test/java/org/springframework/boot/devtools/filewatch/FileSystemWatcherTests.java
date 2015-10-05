@@ -113,8 +113,8 @@ public class FileSystemWatcherTests {
 		File folder = new File("does/not/exist");
 		assertThat(folder.exists(), is(false));
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown
-				.expectMessage("Folder 'does/not/exist' must exist and must be a directory");
+		this.thrown.expectMessage("Folder '" + folder
+				+ "' must exist and must be a directory");
 		this.watcher.addSourceFolder(folder);
 	}
 
