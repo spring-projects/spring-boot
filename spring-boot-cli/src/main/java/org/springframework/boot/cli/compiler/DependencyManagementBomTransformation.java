@@ -170,6 +170,7 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 				DefaultModelBuildingRequest request = new DefaultModelBuildingRequest();
 				request.setModelResolver(new GrapeModelResolver());
 				request.setModelSource(new UrlModelSource(uri.toURL()));
+				request.setSystemProperties(System.getProperties());
 				Model model = modelBuilder.build(request).getEffectiveModel();
 				this.resolutionContext
 						.addDependencyManagement(new MavenModelDependencyManagement(model));
