@@ -17,11 +17,13 @@
 package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
+import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -229,9 +231,11 @@ public class FlywayAutoConfigurationTests {
 
 		@Bean
 		public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
+			Map<String, Object> properties = new HashMap<String, Object>();
+			properties.put("configured", "manually");
+			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
 			return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(),
-					Collections.<String, Object>emptyMap(), null).dataSource(
-					this.dataSource).build();
+					properties, null).dataSource(this.dataSource).build();
 		}
 
 	}
