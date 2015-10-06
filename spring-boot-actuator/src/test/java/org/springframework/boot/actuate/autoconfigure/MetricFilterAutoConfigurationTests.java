@@ -252,6 +252,8 @@ public class MetricFilterAutoConfigurationTests {
 				.andReturn();
 		latch.countDown();
 		try {
+			// Work around SPR-13079 which has not been fixed in 4.1.x
+			result.getAsyncResult();
 			mvc.perform(asyncDispatch(result));
 			fail();
 		}
