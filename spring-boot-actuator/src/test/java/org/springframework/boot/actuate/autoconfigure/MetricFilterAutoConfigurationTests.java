@@ -228,6 +228,8 @@ public class MetricFilterAutoConfigurationTests {
 				.andExpect(request().attribute(attributeName, is(notNullValue())))
 				.andReturn();
 		latch.countDown();
+		// Work around SPR-13079 which has not been fixed in 4.1.x
+		result.getAsyncResult();
 		mvc.perform(asyncDispatch(result)).andExpect(status().isCreated())
 				.andExpect(request().attribute(attributeName, is(nullValue())));
 		verify(context.getBean(CounterService.class)).increment("status.201.create");
