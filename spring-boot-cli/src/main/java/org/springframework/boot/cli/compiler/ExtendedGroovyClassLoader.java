@@ -242,9 +242,10 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 			catch (ClassNotFoundException e) {
 				// Fall back to system class loader
 				ClassLoader fallback = ClassLoader.getSystemClassLoader();
-				if(fallback != null) {
+				if (fallback != null) {
 					return fallback.loadClass(name);
-				} else {
+				}
+				else {
 					throw new ClassNotFoundException(name);
 				}
 			}
