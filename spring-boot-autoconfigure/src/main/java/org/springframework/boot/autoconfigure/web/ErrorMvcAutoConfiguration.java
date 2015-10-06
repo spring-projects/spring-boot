@@ -58,7 +58,7 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.util.HtmlUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} to render errors via a MVC error
+ * {@link EnableAutoConfiguration Auto-configuration} to render errors via an MVC error
  * controller.
  *
  * @author Dave Syer
@@ -72,16 +72,9 @@ import org.springframework.web.util.HtmlUtils;
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(ErrorProperties.class)
 @Configuration
-public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustomizer,
-		Ordered {
-
+public class ErrorMvcAutoConfiguration {
 	@Autowired
 	private ServerProperties properties;
-
-	@Override
-	public int getOrder() {
-		return 0;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
@@ -95,10 +88,9 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 		return new BasicErrorController(errorAttributes, this.properties.getError());
 	}
 
-	@Override
-	public void customize(ConfigurableEmbeddedServletContainer container) {
-		container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
-				+ this.properties.getError().getPath()));
+	@Bean
+	public ErrorPageCustomizer errorPageCustomizer() {
+		return new ErrorPageCustomizer(this.properties);
 	}
 
 	@Configuration
@@ -220,6 +212,32 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 			catch (Exception ex) {
 				return null;
 			}
+		}
+
+	}
+
+	/**
+	 * {@link EmbeddedServletContainerCustomizer} that configures the container's error
+	 * pages.
+	 */
+	private static class ErrorPageCustomizer implements
+			EmbeddedServletContainerCustomizer, Ordered {
+
+		private final ServerProperties properties;
+
+		protected ErrorPageCustomizer(ServerProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainer container) {
+			container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
+					+ this.properties.getError().getPath()));
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
 		}
 
 	}
