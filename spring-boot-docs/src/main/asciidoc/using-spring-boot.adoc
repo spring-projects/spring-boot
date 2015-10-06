@@ -563,7 +563,7 @@ Searching for `+enable*+` annotations can be a good starting point.
 === Importing additional configuration classes
 You don't need to put all your `@Configuration` into a single class. The `@Import`
 annotation can be used to import additional configuration classes. Alternatively, you
-can use `@ComponentScan` to automatically pickup all Spring components, including
+can use `@ComponentScan` to automatically pick up all Spring components, including
 `@Configuration` classes.
 
 
@@ -598,7 +598,7 @@ configuration to replace specific parts of the auto-configuration. For example, 
 you add your own `DataSource` bean, the default embedded database support will back away.
 
 If you need to find out what auto-configuration is currently being applied, and why,
-starting your application with the `--debug` switch. This will log an auto-configuration
+start your application with the `--debug` switch. This will log an auto-configuration
 report to the console.
 
 

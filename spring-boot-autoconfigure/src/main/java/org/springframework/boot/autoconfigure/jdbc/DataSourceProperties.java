@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
+ * @author Benedikt Ritter
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = DataSourceProperties.PREFIX)
@@ -161,8 +162,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 
 	public String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
-			Assert.state(ClassUtils.isPresent(this.driverClassName, null),
-					"Cannot load driver class: " + this.driverClassName);
+			Assert.state(driverClassIsLoadable(), "Cannot load driver class: "
+					+ this.driverClassName);
 			return this.driverClassName;
 		}
 		String driverClassName = null;
@@ -180,6 +181,20 @@ public class DataSourceProperties implements BeanClassLoaderAware, EnvironmentAw
 					this.environment, "driver class");
 		}
 		return driverClassName;
+	}
+
+	private boolean driverClassIsLoadable() {
+		try {
+			ClassUtils.forName(this.driverClassName, null);
+			return true;
+		}
+		catch (UnsupportedClassVersionError ex) {
+			// Driver library has been compiled with a later JDK, propagate error
+			throw ex;
+		}
+		catch (Throwable ex) {
+			return false;
+		}
 	}
 
 	public void setDriverClassName(String driverClassName) {

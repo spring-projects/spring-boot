@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,19 +37,12 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurableEmbeddedServletContainer} from a {@link ServerProperties} bean.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
 @EnableConfigurationProperties
 @ConditionalOnWebApplication
-public class ServerPropertiesAutoConfiguration implements ApplicationContextAware,
-		EmbeddedServletContainerCustomizer, Ordered {
-
-	private ApplicationContext applicationContext;
-
-	@Override
-	public int getOrder() {
-		return 0;
-	}
+public class ServerPropertiesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
@@ -57,22 +50,44 @@ public class ServerPropertiesAutoConfiguration implements ApplicationContextAwar
 		return new ServerProperties();
 	}
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
+	@Bean
+	public DuplicateServerPropertiesDetector duplicateServerPropertiesDetector() {
+		return new DuplicateServerPropertiesDetector();
 	}
 
-	@Override
-	public void customize(ConfigurableEmbeddedServletContainer container) {
-		// ServerProperties handles customization, this just checks we only have
-		// a single bean
-		String[] serverPropertiesBeans = this.applicationContext
-				.getBeanNamesForType(ServerProperties.class);
-		Assert.state(
-				serverPropertiesBeans.length == 1,
-				"Multiple ServerProperties beans registered "
-						+ StringUtils.arrayToCommaDelimitedString(serverPropertiesBeans));
+	/**
+	 * {@link EmbeddedServletContainerCustomizer} that ensures there is exactly one
+	 * {@link ServerProperties} bean in the application context.
+	 */
+	private static class DuplicateServerPropertiesDetector implements
+			EmbeddedServletContainerCustomizer, Ordered, ApplicationContextAware {
+
+		private ApplicationContext applicationContext;
+
+		@Override
+		public int getOrder() {
+			return 0;
+		}
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext)
+				throws BeansException {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainer container) {
+			// ServerProperties handles customization, this just checks we only have
+			// a single bean
+			String[] serverPropertiesBeans = this.applicationContext
+					.getBeanNamesForType(ServerProperties.class);
+			Assert.state(
+					serverPropertiesBeans.length == 1,
+					"Multiple ServerProperties beans registered "
+							+ StringUtils
+									.arrayToCommaDelimitedString(serverPropertiesBeans));
+		}
+
 	}
 
 }
