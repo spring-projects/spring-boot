@@ -16,14 +16,15 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Tests for {@link ConditionalOnResource}.
@@ -37,6 +38,15 @@ public class ConditionalOnResourceTests {
 	@Test
 	public void testResourceExists() {
 		this.context.register(BasicConfiguration.class);
+		this.context.refresh();
+		assertTrue(this.context.containsBean("foo"));
+		assertEquals("foo", this.context.getBean("foo"));
+	}
+
+	@Test
+	public void testResourceExistsWithPlaceholder() {
+		EnvironmentTestUtils.addEnvironment(this.context, "schema=schema.sql");
+		this.context.register(PlaceholderConfiguration.class);
 		this.context.refresh();
 		assertTrue(this.context.containsBean("foo"));
 		assertEquals("foo", this.context.getBean("foo"));
@@ -61,6 +71,15 @@ public class ConditionalOnResourceTests {
 	@Configuration
 	@ConditionalOnResource(resources = "schema.sql")
 	protected static class BasicConfiguration {
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+	}
+
+	@Configuration
+	@ConditionalOnResource(resources = "${schema}")
+	protected static class PlaceholderConfiguration {
 		@Bean
 		public String foo() {
 			return "foo";
