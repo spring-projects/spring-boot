@@ -130,7 +130,7 @@ public class LiveReloadServerTests {
 	private void awaitClosedException() throws InterruptedException {
 		long startTime = System.currentTimeMillis();
 		while (this.server.getClosedExceptions().isEmpty()
-				&& System.currentTimeMillis() - startTime > 10000) {
+				&& System.currentTimeMillis() - startTime < 10000) {
 			Thread.sleep(100);
 		}
 	}
