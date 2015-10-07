@@ -131,8 +131,8 @@ public class OAuth2AutoConfigurationTests {
 		ClientDetails clientDetails = clientDetailsService.loadClientByClientId(config
 				.getClientId());
 		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService), equalTo(true));
-		assertThat(AopUtils.getTargetClass(clientDetailsService),
-				is(equalTo(InMemoryClientDetailsService.class)));
+		assertThat(AopUtils.getTargetClass(clientDetailsService).getName(),
+				is(equalTo(InMemoryClientDetailsService.class.getName())));
 		assertThat(handler instanceof ApprovalStoreUserApprovalHandler, equalTo(true));
 		assertThat(clientDetails, equalTo(config));
 		verifyAuthentication(config);
