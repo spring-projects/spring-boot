@@ -48,6 +48,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link LiveReloadServer}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class LiveReloadServerTests {
 
@@ -122,7 +123,16 @@ public class LiveReloadServerTests {
 		finally {
 			client.stop();
 		}
+		awaitClosedException();
 		assertThat(this.server.getClosedExceptions().size(), greaterThan(0));
+	}
+
+	private void awaitClosedException() throws InterruptedException {
+		long startTime = System.currentTimeMillis();
+		while (this.server.getClosedExceptions().isEmpty()
+				&& System.currentTimeMillis() - startTime > 10000) {
+			Thread.sleep(100);
+		}
 	}
 
 	@Test
@@ -221,7 +231,9 @@ public class LiveReloadServerTests {
 	 */
 	private static class MonitoredLiveReloadServer extends LiveReloadServer {
 
-		private List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
+		private final List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
+
+		private final Object monitor = new Object();
 
 		MonitoredLiveReloadServer(int port) {
 			super(port);
@@ -234,7 +246,9 @@ public class LiveReloadServerTests {
 		}
 
 		public List<ConnectionClosedException> getClosedExceptions() {
-			return this.closedExceptions;
+			synchronized (this.monitor) {
+				return new ArrayList<ConnectionClosedException>(this.closedExceptions);
+			}
 		}
 
 		private class MonitoredConnection extends Connection {
@@ -250,7 +264,9 @@ public class LiveReloadServerTests {
 					super.run();
 				}
 				catch (ConnectionClosedException ex) {
-					MonitoredLiveReloadServer.this.closedExceptions.add(ex);
+					synchronized (MonitoredLiveReloadServer.this.monitor) {
+						MonitoredLiveReloadServer.this.closedExceptions.add(ex);
+					}
 					throw ex;
 				}
 			}
