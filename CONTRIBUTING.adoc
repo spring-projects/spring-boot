@@ -12,8 +12,9 @@ broader community monitor the http://stackoverflow.com/tags/spring-boot[`spring-
 tag.
 
 If you are reporting a bug, please help to speed up problem diagnosis by providing as much
-information as possible. Ideally, that would include a small sample project that
-reproduces the problem.
+information as possible. Ideally, that would include a small
+https://github.com/spring-projects/spring-boot-issues[sample project] that reproduces the
+problem.
 
 
 
@@ -43,15 +44,15 @@ added after the original pull request but before a merge.
   for.
 * Add the ASF license header comment to all new `.java` files (copy from existing files
   in the project)
-* Add yourself as an `@author` to the .java files that you modify substantially (more
+* Add yourself as an `@author` to the `.java` files that you modify substantially (more
   than cosmetic changes).
-* Add some Javadocs and, if you change the namespace, some XSD doc elements.
+* Add some Javadocs.
 * A few unit tests would help a lot as well -- someone has to do it.
 * If no-one else is using your branch, please rebase it against the current master (or
   other target branch in the main project).
 * When writing a commit message please follow http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions],
   if you are fixing an existing issue please add `Fixes gh-XXXX` at the end of the commit
-  message (where XXXX is the issue number).
+  message (where `XXXX` is the issue number).
 
 
 
@@ -66,7 +67,7 @@ should also work without issue.
 
 === Building from source
 To build the source you will need to install
-http://maven.apache.org/run-maven/index.html[Apache Maven] v3.0.6 or above and JDK 1.8.
+http://maven.apache.org/run-maven/index.html[Apache Maven] v3.2.3 or above and JDK 1.8.
 
 
 
@@ -135,20 +136,46 @@ to Maven by setting a `MAVEN_OPTS` environment variable with the value
 
 
 
-=== Importing into eclipse with m2eclipse
-We recommend the http://eclipse.org/m2e/[m2eclipe] eclipse plugin when working with
-eclipse. If you don't already have m2eclipse installed it is available from the "eclipse
-marketplace".
+=== Importing into eclipse
+You can import the Spring Boot code into any Eclipse Mars based distribution. The easiest
+way to setup a new environment is to use the Eclipse Installer with the provided
+`.setup` file.
+
+
+==== Using the Eclipse Installer
+Spring Boot includes a `.setup` files which can be used with the Eclipse Installer to
+provision a new environment. To use the installer:
+
+* Download and run the latest Eclipse Installer from
+  http://www.eclipse.org/downloads/[eclipse.org/downloads/].
+* Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
+  install and click "`next`".
+* For the "`Project`" click on "`+`" to add a new setup file. Select "`Github Projects`"
+  and browser for `<checkout>/eclipse/spring-boot-project.setup` from your locally cloned
+  copy of the source code. Click "`OK`" to add the setup file to the list.
+* Double-click on "`Spring Boot`" from the project list to add it to the list that will
+  be provisioned then click "`Next`".
+* Click show all variables and make sure that "`Checkout Location`" points to the locally
+  cloned source code that you selected earlier. You might also want to pick a different
+  install location here.
+* Click "`Finish`" to install the software.
+
+Once complete you should find that a local workspace has been provisioned complete with
+all required Eclipse plugins. Projects will be grouped into working-sets to make the code
+easier to navigate.
+
+
+
+==== Manual installation with m2eclipse
+If you prefer to install Eclipse yourself we recommend that you use the
+http://eclipse.org/m2e/[m2eclipe] eclipse plugin. If you don't already have m2eclipse
+installed it is available from the "eclipse marketplace".
 
 Spring Boot includes project specific source formatting settings, in order to have these
 work with m2eclipse, we provide an additional eclipse plugin that you can install:
 
-* Download `org.eclipse.m2e.maveneclipse.site.zip` from
-  https://github.com/philwebb/m2eclipse-maveneclipse/releases.
-* Select `Install new software` from the `help` menu
-* Click `Add...` to add a new repository
-* Click the `Archive...` button
-* Select the `org.eclipse.m2e.maveneclipse.site.zip` that you previously downloaded
+* Select "`Help`" -> "`Install New Software`".
+* Add `https://dl.bintray.com/philwebb/m2eclipse-maveneclipse` as a site.
 * Install "Maven Integration for the maven-eclipse-plugin"
 
 NOTE: This plugin is optional. Projects can be imported without the plugin, your code
@@ -160,7 +187,7 @@ need to import the root `spring-boot` pom and the `spring-boot-samples` pom sepa
 
 
 
-=== Importing into eclipse without m2eclipse
+==== Importing into eclipse without m2eclipse
 If you prefer not to use m2eclipse you can generate eclipse project metadata using the
 following command:
 
