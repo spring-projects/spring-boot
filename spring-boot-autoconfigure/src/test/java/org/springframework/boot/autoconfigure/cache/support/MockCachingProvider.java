@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 public class MockCachingProvider implements CachingProvider {
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("rawtypes")
 	public CacheManager getCacheManager(URI uri, ClassLoader classLoader,
 			Properties properties) {
 		CacheManager cacheManager = mock(CacheManager.class);

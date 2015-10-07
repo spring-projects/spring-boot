@@ -140,6 +140,7 @@ public class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void testErrorForAnnotatedNoReasonException() throws Exception {
 		load();
 		ResponseEntity<Map> entity = new TestRestTemplate()
