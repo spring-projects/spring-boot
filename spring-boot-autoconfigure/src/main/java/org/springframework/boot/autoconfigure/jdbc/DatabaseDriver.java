@@ -87,7 +87,12 @@ enum DatabaseDriver {
 	 * SQL Server.
 	 */
 	SQLSERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver",
-			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource");
+			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource"),
+
+	/**
+	 * DB2 AS400 Server.
+	 */
+	AS400("com.ibm.as400.access.AS400JDBCDriver", "com.ibm.as400.access.AS400JDBCXADataSource");
 
 	private final String driverClassName;
 
