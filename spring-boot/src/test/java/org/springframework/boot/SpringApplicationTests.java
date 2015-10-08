@@ -163,19 +163,37 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void disableBanner() throws Exception {
+	public void disableBannerWithMode() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		application.setShowBanner(Banner.Mode.OFF);
+		application.setBannerMode(Banner.Mode.OFF);
+		this.context = application.run();
+		verify(application, never()).printBanner((Environment) anyObject());
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void disableBannerWithBoolean() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		application.setShowBanner(false);
 		this.context = application.run();
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
 
 	@Test
-	public void disableBannerViaProperty() throws Exception {
+	public void disableBannerViaShowBannerProperty() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		this.context = application.run("--spring.main.show_banner=OFF");
+		this.context = application.run("--spring.main.show_banner=false");
+		verify(application, never()).printBanner((Environment) anyObject());
+	}
+
+	@Test
+	public void disableBannerViaBannerModeProperty() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		this.context = application.run("--spring.main.banner-mode=off");
 		verify(application, never()).printBanner((Environment) anyObject());
 	}
 
@@ -219,17 +237,8 @@ public class SpringApplicationTests {
 	public void enableBannerInLogViaProperty() throws Exception {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
-		this.context = application.run("--spring.main.show_banner=LOG");
-		verify(application, atLeastOnce()).setShowBanner(Banner.Mode.LOG);
-	}
-
-	@Test
-	public void verifyBannerOutputContainsLogInfo() throws Exception {
-		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
-		application.setWebEnvironment(false);
-		application.run("--spring.main.show_banner=LOG",
-				"--banner.location=classpath:test-banner.txt");
-		verify(application, atLeastOnce()).setShowBanner(Banner.Mode.LOG);
+		this.context = application.run("--spring.main.banner-mode=log");
+		verify(application, atLeastOnce()).setBannerMode(Banner.Mode.LOG);
 		assertThat(this.output.toString(), containsString("o.s.boot.SpringApplication"));
 	}
 
@@ -565,8 +574,8 @@ public class SpringApplicationTests {
 		TestSpringApplication application = new TestSpringApplication(
 				ExampleConfig.class);
 		application.setWebEnvironment(false);
-		this.context = application.run("--spring.main.show_banner=OFF");
-		assertThat(application.getShowBanner(), is(Banner.Mode.OFF));
+		this.context = application.run("--spring.main.banner-mode=OFF");
+		assertThat(application.getBannerMode(), is(Banner.Mode.OFF));
 	}
 
 	@Test
@@ -733,7 +742,7 @@ public class SpringApplicationTests {
 
 		private boolean useMockLoader;
 
-		private Banner.Mode showBanner;
+		private Banner.Mode bannerMode;
 
 		TestSpringApplication(Object... sources) {
 			super(sources);
@@ -764,13 +773,13 @@ public class SpringApplicationTests {
 		}
 
 		@Override
-		public void setShowBanner(Banner.Mode bannerMode) {
-			super.setShowBanner(bannerMode);
-			this.showBanner = bannerMode;
+		public void setBannerMode(Banner.Mode bannerMode) {
+			super.setBannerMode(bannerMode);
+			this.bannerMode = bannerMode;
 		}
 
-		public Banner.Mode getShowBanner() {
-			return this.showBanner;
+		public Banner.Mode getBannerMode() {
+			return this.bannerMode;
 		}
 
 	}

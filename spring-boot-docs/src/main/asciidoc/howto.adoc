@@ -123,7 +123,7 @@ might have.
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.web_environment=false
-	spring.main.show_banner=OFF
+	spring.main.banner_mode=off
 ----
 
 and then the Spring Boot banner will not be printed on startup, and the application will
@@ -139,7 +139,7 @@ consider this application
 [source,java,indent=0]
 ----
 	new SpringApplicationBuilder()
-		.showBanner(Banner.Mode.OFF)
+		.bannerMode(Banner.Mode.OFF)
 		.sources(demo.MyApp.class)
 		.run(args);
 ----
@@ -149,7 +149,7 @@ used with the following configuration:
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
-	spring.main.show-banner=CONSOLE
+	spring.main.banner_mode=console
 ----
 
 The actual application will _now_ show the banner (as overridden by configuration) and use
