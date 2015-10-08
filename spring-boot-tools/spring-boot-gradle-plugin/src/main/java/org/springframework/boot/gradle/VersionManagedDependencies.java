@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ public class VersionManagedDependencies {
 	private ManagedDependencies managedDependencies;
 
 	public VersionManagedDependencies(Project project) {
-		this.versionManagementConfiguration = project.getConfigurations().getByName(
-				CONFIGURATION);
+		this.versionManagementConfiguration = project.getConfigurations()
+				.getByName(CONFIGURATION);
 	}
 
 	public ManagedDependencies getManagedDependencies() {
@@ -60,15 +60,15 @@ public class VersionManagedDependencies {
 	}
 
 	private Collection<Dependencies> getVersionManagedDependencies() {
-		if (versionManagedDependencies == null) {
-			Set<File> files = versionManagementConfiguration.resolve();
+		if (this.versionManagedDependencies == null) {
+			Set<File> files = this.versionManagementConfiguration.resolve();
 			List<Dependencies> dependencies = new ArrayList<Dependencies>(files.size());
 			for (File file : files) {
 				dependencies.add(getPropertiesFileManagedDependencies(file));
 			}
 			this.versionManagedDependencies = dependencies;
 		}
-		return versionManagedDependencies;
+		return this.versionManagedDependencies;
 	}
 
 	private Dependencies getPropertiesFileManagedDependencies(File file) {
