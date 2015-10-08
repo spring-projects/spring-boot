@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.util.List;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +40,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -99,6 +105,19 @@ public class ResourceServerTokenServicesConfigurationTests {
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
 		assertNotNull(services);
+	}
+
+	@Test
+	public void userInfoWithAuthorities() {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"security.oauth2.resource.userInfoUri:http://example.com");
+		this.context = new SpringApplicationBuilder(AuthoritiesConfiguration.class)
+				.environment(this.environment).web(false).run();
+		UserInfoTokenServices services = this.context
+				.getBean(UserInfoTokenServices.class);
+		assertNotNull(services);
+		assertEquals(this.context.getBean(AuthoritiesExtractor.class),
+				ReflectionTestUtils.getField(services, "authoritiesExtractor"));
 	}
 
 	@Test
@@ -170,6 +189,23 @@ public class ResourceServerTokenServicesConfigurationTests {
 	@EnableConfigurationProperties(OAuth2ClientProperties.class)
 	protected static class ResourceConfiguration {
 
+	}
+
+	@Configuration
+	protected static class AuthoritiesConfiguration extends ResourceConfiguration {
+
+		@Bean
+		AuthoritiesExtractor authoritiesExtractor() {
+			return new AuthoritiesExtractor() {
+
+				@Override
+				public List<GrantedAuthority> extractAuthorities(
+						Map<String, Object> map) {
+					return AuthorityUtils
+							.commaSeparatedStringToAuthorityList("ROLE_ADMIN");
+				}
+			};
+		}
 	}
 
 	@Import({ OAuth2RestOperationsConfiguration.class })
