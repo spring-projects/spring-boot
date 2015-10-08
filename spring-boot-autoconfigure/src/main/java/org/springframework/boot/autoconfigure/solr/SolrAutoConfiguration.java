@@ -16,11 +16,13 @@
 
 package org.springframework.boot.autoconfigure.solr;
 
+import java.io.IOException;
+
 import javax.annotation.PreDestroy;
 
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.CloudSolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -37,34 +39,44 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ HttpSolrServer.class, CloudSolrServer.class })
+@ConditionalOnClass({ HttpSolrClient.class, CloudSolrClient.class })
 @EnableConfigurationProperties(SolrProperties.class)
 public class SolrAutoConfiguration {
 
 	@Autowired
 	private SolrProperties properties;
 
-	private SolrServer solrServer;
+	private SolrClient solrClient;
 
 	@PreDestroy
 	public void close() {
-		if (this.solrServer != null) {
-			this.solrServer.shutdown();
+		if (this.solrClient != null) {
+			try {
+				this.solrClient.close();
+			}
+			catch (IOException e) {
+				throw new UnableToShutDownSolrClientException(e);
+			}
 		}
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SolrServer solrServer() {
-		this.solrServer = createSolrServer();
-		return this.solrServer;
+	public SolrClient solrClient() {
+		this.solrClient = createSolrClient();
+		return this.solrClient;
 	}
 
-	private SolrServer createSolrServer() {
+	private SolrClient createSolrClient() {
 		if (StringUtils.hasText(this.properties.getZkHost())) {
-			return new CloudSolrServer(this.properties.getZkHost());
+			return new CloudSolrClient(this.properties.getZkHost());
 		}
-		return new HttpSolrServer(this.properties.getHost());
+		return new HttpSolrClient(this.properties.getHost());
 	}
 
+	public class UnableToShutDownSolrClientException extends RuntimeException {
+		public UnableToShutDownSolrClientException(Exception e) {
+			super(e);
+		}
+	}
 }

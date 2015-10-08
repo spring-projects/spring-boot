@@ -123,13 +123,14 @@
 		<simple-json.version>1.1.1</simple-json.version>
 		<slf4j.version>1.7.12</slf4j.version>
 		<snakeyaml.version>1.16</snakeyaml.version>
-		<solr.version>4.10.4</solr.version>
+		<solr.version>5.3.0</solr.version>
 		<spock.version>1.0-groovy-2.4</spock.version>
 		<spring.version>4.2.2.BUILD-SNAPSHOT</spring.version>
 		<spring-amqp.version>1.5.1.RELEASE</spring-amqp.version>
 		<spring-cloud-connectors.version>1.2.0.RELEASE</spring-cloud-connectors.version>
 		<spring-batch.version>3.0.5.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Gosling-RELEASE</spring-data-releasetrain.version>
+		<spring.data.solr.version>2.0.0.BUILD-SNAPSHOT</spring.data.solr.version>
 		<spring-hateoas.version>0.19.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.2.0.RELEASE</spring-integration.version>
 		<spring-loaded.version>1.2.4.RELEASE</spring-loaded.version>
@@ -1718,6 +1719,11 @@
 				<version>${spring-data-releasetrain.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-solr</artifactId>
+				<version>${spring.data.solr.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.hateoas</groupId>

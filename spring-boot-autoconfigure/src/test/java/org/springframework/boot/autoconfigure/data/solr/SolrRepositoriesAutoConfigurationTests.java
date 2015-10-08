@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.solr;
 
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -56,15 +56,15 @@ public class SolrRepositoriesAutoConfigurationTests {
 		initContext(TestConfiguration.class);
 
 		assertThat(this.context.getBean(CityRepository.class), notNullValue());
-		assertThat(this.context.getBean(SolrServer.class),
-				instanceOf(HttpSolrServer.class));
+		assertThat(this.context.getBean(SolrClient.class),
+				instanceOf(HttpSolrClient.class));
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() {
 		initContext(EmptyConfiguration.class);
-		assertThat(this.context.getBean(SolrServer.class),
-				instanceOf(HttpSolrServer.class));
+		assertThat(this.context.getBean(SolrClient.class),
+				instanceOf(HttpSolrClient.class));
 	}
 
 	@Test

@@ -2714,7 +2714,7 @@ convenient way.
 
 [[boot-features-connecting-to-solr]]
 ==== Connecting to Solr
-You can inject an auto-configured `SolrServer` instance as you would any other Spring
+You can inject an auto-configured `SolrClient` instance as you would any other Spring
 bean. By default the instance will attempt to connect to a server using
 `http://localhost:8983/solr`:
 
@@ -2723,10 +2723,10 @@ bean. By default the instance will attempt to connect to a server using
 	@Component
 	public class MyBean {
 
-		private SolrServer solr;
+		private SolrClient solr;
 
 		@Autowired
-		public MyBean(SolrServer solr) {
+		public MyBean(SolrClient solr) {
 			this.solr = solr;
 		}
 
@@ -2735,7 +2735,7 @@ bean. By default the instance will attempt to connect to a server using
 	}
 ----
 
-If you add a `@Bean` of your own of type `SolrServer` it will replace the default.
+If you add a `@Bean` of your own of type `SolrClient` it will replace the default.
 
 
 

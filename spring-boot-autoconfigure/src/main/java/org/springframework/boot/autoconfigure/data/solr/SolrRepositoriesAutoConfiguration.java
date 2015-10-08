@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.solr;
 
-import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,7 +33,7 @@ import org.springframework.data.solr.repository.support.SolrRepositoryFactoryBea
  * {@link org.springframework.data.solr.repository.support.SolrRepositoryFactoryBean}
  * found in context, and both
  * {@link org.springframework.data.solr.repository.SolrRepository} and
- * {@link org.apache.solr.client.solrj.SolrServer} can be found on classpath.
+ * {@link org.apache.solr.client.solrj.SolrClient} can be found on classpath.
  * </p>
  * If active auto configuration does the same as
  * {@link org.springframework.data.solr.repository.config.EnableSolrRepositories} would
@@ -44,7 +44,7 @@ import org.springframework.data.solr.repository.support.SolrRepositoryFactoryBea
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ SolrServer.class, SolrRepository.class })
+@ConditionalOnClass({ SolrClient.class, SolrRepository.class })
 @ConditionalOnMissingBean({ SolrRepositoryFactoryBean.class,
 		SolrRepositoryConfigExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.solr.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
