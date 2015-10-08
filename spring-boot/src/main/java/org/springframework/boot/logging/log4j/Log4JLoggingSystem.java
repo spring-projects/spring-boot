@@ -116,4 +116,18 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 		logger.setLevel(LEVELS.get(level));
 	}
 
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
+	private static final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			LogManager.shutdown();
+		}
+
+	}
+
 }

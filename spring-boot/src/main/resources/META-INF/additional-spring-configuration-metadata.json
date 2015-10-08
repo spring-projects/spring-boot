@@ -73,6 +73,12 @@
     "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
   },
   {
+    "name": "logging.register-shutdown-hook",
+    "type": "java.lang.Boolean",
+    "description": "Register a shutdown hook for the logging system when it is initialized.",
+    "sourceType": "org.springframework.boot.logging.LoggingApplicationListener"
+  },
+  {
     "name": "spring.mandatory-file-encoding",
     "sourceType": "org.springframework.boot.context.FileEncodingApplicationListener",
     "type": "java.nio.charset.Charset",

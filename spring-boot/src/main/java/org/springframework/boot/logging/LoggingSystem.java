@@ -93,6 +93,17 @@ public abstract class LoggingSystem {
 	}
 
 	/**
+	 * Returns a {@link Runnable} that can handle shutdown of this logging system when the
+	 * JVM exits. The default implementation returns {@code null}, indicating that no
+	 * shutdown is required.
+	 *
+	 * @return the shutdown handler, or {@code null}
+	 */
+	public Runnable getShutdownHandler() {
+		return null;
+	}
+
+	/**
 	 * Sets the logging level for a given logger.
 	 * @param loggerName the name of the logger to set
 	 * @param level the log level

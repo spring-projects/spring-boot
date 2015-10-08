@@ -197,6 +197,11 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		getLoggerContext().updateLoggers();
 	}
 
+	@Override
+	public Runnable getShutdownHandler() {
+		return new ShutdownHandler();
+	}
+
 	private LoggerConfig getRootLoggerConfig() {
 		return getLoggerContext().getConfiguration().getLoggerConfig("");
 	}
@@ -209,4 +214,12 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		return (LoggerContext) LogManager.getContext(false);
 	}
 
+	private final class ShutdownHandler implements Runnable {
+
+		@Override
+		public void run() {
+			getLoggerContext().stop();
+		}
+
+	}
 }

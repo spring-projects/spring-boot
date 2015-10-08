@@ -65,6 +65,7 @@ content into your application; rather pick only the properties that you need.
 	logging.pattern.console= # appender pattern for output to the console (only supported with the default logback setup)
 	logging.pattern.file= # appender pattern for output to the file (only supported with the default logback setup)
 	logging.pattern.level= # appender pattern for the log level (default %5p, only supported with the default logback setup)
+	logging.register-shutdown-hook=false # register a shutdown hook for the logging system when it is initialized
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.name=
