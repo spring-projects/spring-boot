@@ -110,11 +110,20 @@
     "description": "Config file locations."
   },
   {
+    "name": "spring.main.banner-mode",
+    "type": "org.springframework.boot.Banner$Mode",
+    "sourceType": "org.springframework.boot.SpringApplication",
+    "description": "Mode used to display the banner when the application runs.",
+    "defaultValue": "console",
+  },
+  {
     "name": "spring.main.show-banner",
     "type": "java.lang.Boolean",
     "sourceType": "org.springframework.boot.SpringApplication",
     "description": "Display the banner when the application runs.",
-    "defaultValue": true
+    "defaultValue": true,
+    "deprecated": true,
+    "deprecation": {"replacement": "spring.main.banner-mode"}
   },
   {
     "name": "spring.main.sources",
