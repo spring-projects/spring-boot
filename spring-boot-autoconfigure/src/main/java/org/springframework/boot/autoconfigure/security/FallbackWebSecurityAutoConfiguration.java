@@ -18,11 +18,10 @@ package org.springframework.boot.autoconfigure.security;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
@@ -37,10 +36,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  */
 @ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "false")
 @ConditionalOnBean(WebSecurityConfigurerAdapter.class)
-@ConditionalOnClass(EnableWebSecurity.class)
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
 @ConditionalOnWebApplication
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
-@EnableWebSecurity
+@Import(WebSecurityAnnotationDrivenConfiguration.class)
 public class FallbackWebSecurityAutoConfiguration {
 }

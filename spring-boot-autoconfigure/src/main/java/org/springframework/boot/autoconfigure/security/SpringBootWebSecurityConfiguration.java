@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
@@ -75,13 +76,14 @@ import org.springframework.util.StringUtils;
  * </ul>
  *
  * @author Dave Syer
+ * @author Eddú Meléndez
  */
 @Configuration
 @EnableConfigurationProperties
 @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
 @ConditionalOnWebApplication
-@EnableWebSecurity
+@Import(WebSecurityAnnotationDrivenConfiguration.class)
 public class SpringBootWebSecurityConfiguration {
 
 	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
