@@ -59,7 +59,8 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 			for (int nameIndex = 0; nameIndex < this.names.length; nameIndex++) {
 				if (match[nameIndex]) {
 					if (charIndex < this.names[nameIndex].length()) {
-						if (this.names[nameIndex].charAt(charIndex) == propertNameChars[charIndex]) {
+						if (this.names[nameIndex]
+								.charAt(charIndex) == propertNameChars[charIndex]) {
 							match[nameIndex] = true;
 							noneMatched = false;
 						}

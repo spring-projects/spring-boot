@@ -55,8 +55,8 @@ import org.springframework.util.MultiValueMap;
  * @author Dave Syer
  * @author Phillip Webb
  */
-class ServletContextInitializerBeans extends
-		AbstractCollection<ServletContextInitializer> {
+class ServletContextInitializerBeans
+		extends AbstractCollection<ServletContextInitializer> {
 
 	static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
 
@@ -127,7 +127,8 @@ class ServletContextInitializerBeans extends
 		}
 	}
 
-	private String getResourceDescription(String beanName, ListableBeanFactory beanFactory) {
+	private String getResourceDescription(String beanName,
+			ListableBeanFactory beanFactory) {
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 			return registry.getBeanDefinition(beanName).getResourceDescription();
@@ -142,7 +143,8 @@ class ServletContextInitializerBeans extends
 				new ServletRegistrationBeanAdapter(multipartConfig));
 		addAsRegistrationBean(beanFactory, Filter.class,
 				new FilterRegistrationBeanAdapter());
-		for (Class<?> listenerType : ServletListenerRegistrationBean.getSupportedTypes()) {
+		for (Class<?> listenerType : ServletListenerRegistrationBean
+				.getSupportedTypes()) {
 			addAsRegistrationBean(beanFactory, EventListener.class,
 					(Class<EventListener>) listenerType,
 					new ServletListenerRegistrationBeanAdapter());
@@ -155,8 +157,8 @@ class ServletContextInitializerBeans extends
 		return (beans.isEmpty() ? null : beans.get(0).getValue());
 	}
 
-	private <T> void addAsRegistrationBean(ListableBeanFactory beanFactory,
-			Class<T> type, RegistrationBeanAdapter<T> adapter) {
+	private <T> void addAsRegistrationBean(ListableBeanFactory beanFactory, Class<T> type,
+			RegistrationBeanAdapter<T> adapter) {
 		addAsRegistrationBean(beanFactory, type, type, adapter);
 	}
 
@@ -175,10 +177,10 @@ class ServletContextInitializerBeans extends
 				this.initializers.add(type, registration);
 
 				if (this.log.isDebugEnabled()) {
-					this.log.debug("Created " + type.getSimpleName()
-							+ " initializer for bean '" + beanName + "'; order=" + order
-							+ ", resource="
-							+ getResourceDescription(beanName, beanFactory));
+					this.log.debug(
+							"Created " + type.getSimpleName() + " initializer for bean '"
+									+ beanName + "'; order=" + order + ", resource="
+									+ getResourceDescription(beanName, beanFactory));
 				}
 			}
 		}
@@ -237,8 +239,8 @@ class ServletContextInitializerBeans extends
 	/**
 	 * {@link RegistrationBeanAdapter} for {@link Servlet} beans.
 	 */
-	private static class ServletRegistrationBeanAdapter implements
-			RegistrationBeanAdapter<Servlet> {
+	private static class ServletRegistrationBeanAdapter
+			implements RegistrationBeanAdapter<Servlet> {
 
 		private final MultipartConfigElement multipartConfig;
 
@@ -263,8 +265,8 @@ class ServletContextInitializerBeans extends
 	/**
 	 * {@link RegistrationBeanAdapter} for {@link Filter} beans.
 	 */
-	private static class FilterRegistrationBeanAdapter implements
-			RegistrationBeanAdapter<Filter> {
+	private static class FilterRegistrationBeanAdapter
+			implements RegistrationBeanAdapter<Filter> {
 
 		@Override
 		public RegistrationBean createRegistrationBean(String name, Filter source,
@@ -277,8 +279,8 @@ class ServletContextInitializerBeans extends
 	/**
 	 * {@link RegistrationBeanAdapter} for certain {@link EventListener} beans.
 	 */
-	private static class ServletListenerRegistrationBeanAdapter implements
-			RegistrationBeanAdapter<EventListener> {
+	private static class ServletListenerRegistrationBeanAdapter
+			implements RegistrationBeanAdapter<EventListener> {
 
 		@Override
 		public RegistrationBean createRegistrationBean(String name, EventListener source,

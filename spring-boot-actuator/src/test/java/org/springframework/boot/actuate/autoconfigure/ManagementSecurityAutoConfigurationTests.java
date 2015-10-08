@@ -94,7 +94,8 @@ public class ManagementSecurityAutoConfigurationTests {
 		assertThat(filterChainProxy.getFilters("/beans"), hasSize(greaterThan(0)));
 		assertThat(filterChainProxy.getFilters("/beans/"), hasSize(greaterThan(0)));
 		assertThat(filterChainProxy.getFilters("/beans.foo"), hasSize(greaterThan(0)));
-		assertThat(filterChainProxy.getFilters("/beans/foo/bar"), hasSize(greaterThan(0)));
+		assertThat(filterChainProxy.getFilters("/beans/foo/bar"),
+				hasSize(greaterThan(0)));
 	}
 
 	@Test
@@ -116,9 +117,8 @@ public class ManagementSecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
-		assertTrue(user.getAuthorities().containsAll(
-				AuthorityUtils
-						.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN")));
+		assertTrue(user.getAuthorities().containsAll(AuthorityUtils
+				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN")));
 	}
 
 	private UserDetails getUser() {
@@ -126,8 +126,8 @@ public class ManagementSecurityAutoConfigurationTests {
 				.getBean(AuthenticationManager.class);
 		DaoAuthenticationProvider provider = (DaoAuthenticationProvider) parent
 				.getProviders().get(0);
-		UserDetailsService service = (UserDetailsService) ReflectionTestUtils.getField(
-				provider, "userDetailsService");
+		UserDetailsService service = (UserDetailsService) ReflectionTestUtils
+				.getField(provider, "userDetailsService");
 		UserDetails user = service.loadUserByUsername("user");
 		return user;
 	}
@@ -144,8 +144,8 @@ public class ManagementSecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application and management endpoints now
-		assertEquals(2, this.context.getBean(FilterChainProxy.class).getFilterChains()
-				.size());
+		assertEquals(2,
+				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
 	}
 
 	@Test
@@ -163,8 +163,8 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context.refresh();
 		// Just the management endpoints (one filter) and ignores now plus the backup
 		// filter on app endpoints
-		assertEquals(6, this.context.getBean(FilterChainProxy.class).getFilterChains()
-				.size());
+		assertEquals(6,
+				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
 	}
 
 	@Test
@@ -200,8 +200,7 @@ public class ManagementSecurityAutoConfigurationTests {
 	public void realmSameForManagement() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(AuthenticationConfig.class,
-				SecurityAutoConfiguration.class,
+		this.context.register(AuthenticationConfig.class, SecurityAutoConfiguration.class,
 				ManagementSecurityAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,

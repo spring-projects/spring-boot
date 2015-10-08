@@ -69,10 +69,10 @@ public class HolidayEndpoint {
 	public void handleHolidayRequest(@RequestPayload Element holidayRequest)
 			throws Exception {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date startDate = dateFormat.parse(this.startDateExpression.evaluateFirst(
-				holidayRequest).getText());
-		Date endDate = dateFormat.parse(this.endDateExpression.evaluateFirst(
-				holidayRequest).getText());
+		Date startDate = dateFormat
+				.parse(this.startDateExpression.evaluateFirst(holidayRequest).getText());
+		Date endDate = dateFormat
+				.parse(this.endDateExpression.evaluateFirst(holidayRequest).getText());
 		String name = this.nameExpression.evaluateFirst(holidayRequest);
 
 		this.humanResourceService.bookHoliday(startDate, endDate, name);

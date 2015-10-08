@@ -87,8 +87,8 @@ public abstract class AbstractHttpClientMockTests {
 		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 		mockHttpEntity(response, request.content, request.contentType);
 		mockStatus(response, 200);
-		String header = (request.fileName != null ? contentDispositionValue(request.fileName)
-				: null);
+		String header = (request.fileName != null
+				? contentDispositionValue(request.fileName) : null);
 		mockHttpHeader(response, "Content-Disposition", header);
 		given(this.http.execute(argThat(getForNonMetadata()))).willReturn(response);
 	}
@@ -117,8 +117,8 @@ public abstract class AbstractHttpClientMockTests {
 		try {
 			HttpEntity entity = mock(HttpEntity.class);
 			given(entity.getContent()).willReturn(new ByteArrayInputStream(content));
-			Header contentTypeHeader = contentType != null ? new BasicHeader(
-					"Content-Type", contentType) : null;
+			Header contentTypeHeader = contentType != null
+					? new BasicHeader("Content-Type", contentType) : null;
 			given(entity.getContentType()).willReturn(contentTypeHeader);
 			given(response.getEntity()).willReturn(entity);
 			return entity;

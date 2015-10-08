@@ -71,8 +71,8 @@ public class RelaxedDataBinder extends DataBinder {
 	 * @param namePrefix An optional prefix to be used when reading properties
 	 */
 	public RelaxedDataBinder(Object target, String namePrefix) {
-		super(wrapTarget(target), (StringUtils.hasLength(namePrefix) ? namePrefix
-				: DEFAULT_OBJECT_NAME));
+		super(wrapTarget(target),
+				(StringUtils.hasLength(namePrefix) ? namePrefix : DEFAULT_OBJECT_NAME));
 		this.namePrefix = (StringUtils.hasLength(namePrefix) ? namePrefix + "." : null);
 	}
 
@@ -111,8 +111,8 @@ public class RelaxedDataBinder extends DataBinder {
 	public void initBeanPropertyAccess() {
 		super.initBeanPropertyAccess();
 		// Hook in the RelaxedConversionService
-		getInternalBindingResult().initConversion(
-				new RelaxedConversionService(getConversionService()));
+		getInternalBindingResult()
+				.initConversion(new RelaxedConversionService(getConversionService()));
 	}
 
 	@Override
@@ -138,7 +138,8 @@ public class RelaxedDataBinder extends DataBinder {
 			propertyValues = addMapPrefix(propertyValues);
 		}
 		BeanWrapper wrapper = new BeanWrapperImpl(target);
-		wrapper.setConversionService(new RelaxedConversionService(getConversionService()));
+		wrapper.setConversionService(
+				new RelaxedConversionService(getConversionService()));
 		wrapper.setAutoGrowNestedPaths(true);
 		List<PropertyValue> sortedValues = new ArrayList<PropertyValue>();
 		Set<String> modifiedNames = new HashSet<String>();
@@ -203,8 +204,8 @@ public class RelaxedDataBinder extends DataBinder {
 			String name = value.getName();
 			for (String prefix : new RelaxedNames(stripLastDot(this.namePrefix))) {
 				for (String separator : new String[] { ".", "_" }) {
-					String candidate = (StringUtils.hasLength(prefix) ? prefix
-							+ separator : prefix);
+					String candidate = (StringUtils.hasLength(prefix) ? prefix + separator
+							: prefix);
 					if (name.startsWith(candidate)) {
 						name = name.substring(candidate.length());
 						if (!(this.ignoreNestedProperties && name.contains("."))) {
@@ -224,7 +225,8 @@ public class RelaxedDataBinder extends DataBinder {
 		return string;
 	}
 
-	private PropertyValue modifyProperty(BeanWrapper target, PropertyValue propertyValue) {
+	private PropertyValue modifyProperty(BeanWrapper target,
+			PropertyValue propertyValue) {
 		String name = propertyValue.getName();
 		String normalizedName = normalizePath(target, name);
 		if (!normalizedName.equals(name)) {
@@ -300,8 +302,8 @@ public class RelaxedDataBinder extends DataBinder {
 
 	@SuppressWarnings("rawtypes")
 	private boolean isBlanked(BeanWrapper wrapper, String propertyName, String key) {
-		Object value = (wrapper.isReadableProperty(propertyName) ? wrapper
-				.getPropertyValue(propertyName) : null);
+		Object value = (wrapper.isReadableProperty(propertyName)
+				? wrapper.getPropertyValue(propertyName) : null);
 		if (value instanceof Map) {
 			if (((Map) value).get(key) == BLANK) {
 				return true;
@@ -310,7 +312,8 @@ public class RelaxedDataBinder extends DataBinder {
 		return false;
 	}
 
-	private void extendCollectionIfNecessary(BeanWrapper wrapper, BeanPath path, int index) {
+	private void extendCollectionIfNecessary(BeanWrapper wrapper, BeanPath path,
+			int index) {
 		String name = path.prefix(index);
 		TypeDescriptor elementDescriptor = wrapper.getPropertyTypeDescriptor(name)
 				.getElementTypeDescriptor();

@@ -45,7 +45,8 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 	 * @param reader a reader as the source of metrics
 	 * @param writer the writer to send the metrics to
 	 */
-	public PrefixMetricGroupExporter(PrefixMetricReader reader, PrefixMetricWriter writer) {
+	public PrefixMetricGroupExporter(PrefixMetricReader reader,
+			PrefixMetricWriter writer) {
 		this(reader, writer, "");
 	}
 
@@ -56,8 +57,8 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 	 * @param writer the writer to send the metrics to
 	 * @param prefix the prefix for metrics to export
 	 */
-	public PrefixMetricGroupExporter(PrefixMetricReader reader,
-			PrefixMetricWriter writer, String prefix) {
+	public PrefixMetricGroupExporter(PrefixMetricReader reader, PrefixMetricWriter writer,
+			String prefix) {
 		super(prefix);
 		this.reader = reader;
 		this.writer = writer;

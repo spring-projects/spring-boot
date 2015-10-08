@@ -44,7 +44,8 @@ public class GzipFilterAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(prefix = "spring.http.gzip", name = "enabled", matchIfMissing = true)
 	public FilterRegistrationBean gzipFilter() {
-		FilterRegistrationBean registration = new FilterRegistrationBean(new GzipFilter());
+		FilterRegistrationBean registration = new FilterRegistrationBean(
+				new GzipFilter());
 		registration.addUrlPatterns("/*");
 		registration.setInitParameters(this.properties.getAsInitParameters());
 

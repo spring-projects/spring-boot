@@ -70,8 +70,8 @@ import org.springframework.web.util.HtmlUtils;
 // available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
 @Configuration
-public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustomizer,
-		Ordered {
+public class ErrorMvcAutoConfiguration
+		implements EmbeddedServletContainerCustomizer, Ordered {
 
 	@Value("${error.path:/error}")
 	private String errorPath = "/error";
@@ -98,8 +98,8 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer container) {
-		container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
-				+ this.errorPath));
+		container.addErrorPages(
+				new ErrorPage(this.properties.getServletPrefix() + this.errorPath));
 	}
 
 	@Configuration

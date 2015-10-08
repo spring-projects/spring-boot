@@ -29,8 +29,8 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-public class JettyWebSocketContainerCustomizer extends
-		WebSocketContainerCustomizer<JettyEmbeddedServletContainerFactory> {
+public class JettyWebSocketContainerCustomizer
+		extends WebSocketContainerCustomizer<JettyEmbeddedServletContainerFactory> {
 
 	@Override
 	protected void doCustomize(JettyEmbeddedServletContainerFactory container) {

@@ -63,7 +63,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 			logger.debug("Initialization disabled (not running DDL scripts)");
 			return;
 		}
-		if (this.applicationContext.getBeanNamesForType(DataSource.class, false, false).length > 0) {
+		if (this.applicationContext.getBeanNamesForType(DataSource.class, false,
+				false).length > 0) {
 			this.dataSource = this.applicationContext.getBean(DataSource.class);
 		}
 		if (this.dataSource == null) {
@@ -78,8 +79,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		if (!scripts.isEmpty()) {
 			runScripts(scripts);
 			try {
-				this.applicationContext.publishEvent(new DataSourceInitializedEvent(
-						this.dataSource));
+				this.applicationContext
+						.publishEvent(new DataSourceInitializedEvent(this.dataSource));
 				// The listener might not be registered yet, so don't rely on it.
 				if (!this.initialized) {
 					runDataScripts();
@@ -132,8 +133,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 				}
 			}
 			catch (IOException ex) {
-				throw new IllegalStateException("Unable to load resource from "
-						+ location, ex);
+				throw new IllegalStateException(
+						"Unable to load resource from " + location, ex);
 			}
 		}
 		return resources;

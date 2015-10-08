@@ -73,8 +73,8 @@ public class MetricRepositoryAutoConfigurationTests {
 		assertNotNull(gaugeService);
 		assertNotNull(context.getBean(DefaultCounterService.class));
 		gaugeService.submit("foo", 2.7);
-		assertEquals(2.7, context.getBean(MetricReader.class).findOne("gauge.foo")
-				.getValue());
+		assertEquals(2.7,
+				context.getBean(MetricReader.class).findOne("gauge.foo").getValue());
 		context.close();
 	}
 
@@ -111,7 +111,8 @@ public class MetricRepositoryAutoConfigurationTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class, MetricRepositoryAutoConfiguration.class);
 		assertThat(context.getBeansOfType(DefaultGaugeService.class).size(), equalTo(0));
-		assertThat(context.getBeansOfType(DefaultCounterService.class).size(), equalTo(0));
+		assertThat(context.getBeansOfType(DefaultCounterService.class).size(),
+				equalTo(0));
 		context.close();
 	}
 

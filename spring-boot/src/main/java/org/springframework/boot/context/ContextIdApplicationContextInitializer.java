@@ -92,8 +92,8 @@ public class ContextIdApplicationContextInitializer implements
 		String name = environment.resolvePlaceholders(this.name);
 		String index = environment.resolvePlaceholders(INDEX_PATTERN);
 
-		String profiles = StringUtils.arrayToCommaDelimitedString(environment
-				.getActiveProfiles());
+		String profiles = StringUtils
+				.arrayToCommaDelimitedString(environment.getActiveProfiles());
 		if (StringUtils.hasText(profiles)) {
 			name = name + ":" + profiles;
 		}

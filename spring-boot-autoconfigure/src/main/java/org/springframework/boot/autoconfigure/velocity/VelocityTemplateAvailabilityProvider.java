@@ -30,7 +30,8 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public class VelocityTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
+public class VelocityTemplateAvailabilityProvider
+		implements TemplateAvailabilityProvider {
 
 	@Override
 	public boolean isTemplateAvailable(String view, Environment environment,

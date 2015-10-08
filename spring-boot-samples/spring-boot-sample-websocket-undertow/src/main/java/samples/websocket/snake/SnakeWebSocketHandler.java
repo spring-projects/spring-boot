@@ -106,7 +106,7 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status)
 			throws Exception {
 		SnakeTimer.removeSnake(this.snake);
-		SnakeTimer.broadcast(String.format("{'type': 'leave', 'id': %d}",
-				Integer.valueOf(this.id)));
+		SnakeTimer.broadcast(
+				String.format("{'type': 'leave', 'id': %d}", Integer.valueOf(this.id)));
 	}
 }

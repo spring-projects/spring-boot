@@ -74,26 +74,25 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 	public void propertyInterpolation() throws SettingsBuildingException {
 		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils
 				.newSession();
-		given(
-				this.repositorySystem.newLocalRepositoryManager(eq(session),
-						any(LocalRepository.class))).willAnswer(
-				new Answer<LocalRepositoryManager>() {
+		given(this.repositorySystem.newLocalRepositoryManager(eq(session),
+				any(LocalRepository.class)))
+						.willAnswer(new Answer<LocalRepositoryManager>() {
 
-					@Override
-					public LocalRepositoryManager answer(InvocationOnMock invocation)
-							throws Throwable {
-						LocalRepository localRepository = invocation.getArgumentAt(1,
-								LocalRepository.class);
-						return new SimpleLocalRepositoryManagerFactory().newInstance(
-								session, localRepository);
-					}
-				});
+							@Override
+							public LocalRepositoryManager answer(
+									InvocationOnMock invocation) throws Throwable {
+								LocalRepository localRepository = invocation
+										.getArgumentAt(1, LocalRepository.class);
+								return new SimpleLocalRepositoryManagerFactory()
+										.newInstance(session, localRepository);
+							}
+						});
 
 		System.setProperty("foo", "bar");
 		try {
 			new SettingsXmlRepositorySystemSessionAutoConfiguration(
-					"src/test/resources/maven-settings/property-interpolation").apply(
-					session, this.repositorySystem);
+					"src/test/resources/maven-settings/property-interpolation")
+							.apply(session, this.repositorySystem);
 		}
 		finally {
 			System.clearProperty("foo");
@@ -109,8 +108,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		new SettingsXmlRepositorySystemSessionAutoConfiguration(userHome).apply(session,
 				this.repositorySystem);
 
-		RemoteRepository repository = new RemoteRepository.Builder("my-server",
-				"default", "http://maven.example.com").build();
+		RemoteRepository repository = new RemoteRepository.Builder("my-server", "default",
+				"http://maven.example.com").build();
 
 		assertMirrorSelectorConfiguration(session, repository);
 		assertProxySelectorConfiguration(session, repository);
@@ -121,8 +120,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 			RemoteRepository repository) {
 		Proxy proxy = session.getProxySelector().getProxy(repository);
 		repository = new RemoteRepository.Builder(repository).setProxy(proxy).build();
-		AuthenticationContext authenticationContext = AuthenticationContext.forProxy(
-				session, repository);
+		AuthenticationContext authenticationContext = AuthenticationContext
+				.forProxy(session, repository);
 		assertEquals("proxy.example.com", proxy.getHost());
 		assertEquals("proxyuser",
 				authenticationContext.get(AuthenticationContext.USERNAME));
@@ -130,10 +129,11 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 				authenticationContext.get(AuthenticationContext.PASSWORD));
 	}
 
-	private void assertMirrorSelectorConfiguration(
-			DefaultRepositorySystemSession session, RemoteRepository repository) {
+	private void assertMirrorSelectorConfiguration(DefaultRepositorySystemSession session,
+			RemoteRepository repository) {
 		RemoteRepository mirror = session.getMirrorSelector().getMirror(repository);
-		assertNotNull("No mirror configured for repository " + repository.getId(), mirror);
+		assertNotNull("No mirror configured for repository " + repository.getId(),
+				mirror);
 		assertEquals("maven.example.com", mirror.getHost());
 	}
 
@@ -142,8 +142,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		Authentication authentication = session.getAuthenticationSelector()
 				.getAuthentication(repository);
 
-		repository = new RemoteRepository.Builder(repository).setAuthentication(
-				authentication).build();
+		repository = new RemoteRepository.Builder(repository)
+				.setAuthentication(authentication).build();
 
 		AuthenticationContext authenticationContext = AuthenticationContext
 				.forRepository(session, repository);

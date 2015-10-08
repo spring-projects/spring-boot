@@ -95,8 +95,8 @@ public abstract class AnnotatedNodeASTTransformation implements ASTTransformatio
 	private void visitAnnotatedNode(AnnotatedNode annotatedNode) {
 		if (annotatedNode != null) {
 			for (AnnotationNode annotationNode : annotatedNode.getAnnotations()) {
-				if (this.interestingAnnotationNames.contains(annotationNode
-						.getClassNode().getName())) {
+				if (this.interestingAnnotationNames
+						.contains(annotationNode.getClassNode().getName())) {
 					this.annotationNodes.add(annotationNode);
 				}
 			}

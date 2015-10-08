@@ -64,8 +64,8 @@ public abstract class FileUtils {
 	 */
 	public static String sha1Hash(File file) throws IOException {
 		try {
-			DigestInputStream inputStream = new DigestInputStream(new FileInputStream(
-					file), MessageDigest.getInstance("SHA-1"));
+			DigestInputStream inputStream = new DigestInputStream(
+					new FileInputStream(file), MessageDigest.getInstance("SHA-1"));
 			try {
 				byte[] buffer = new byte[4098];
 				while (inputStream.read(buffer) != -1) {

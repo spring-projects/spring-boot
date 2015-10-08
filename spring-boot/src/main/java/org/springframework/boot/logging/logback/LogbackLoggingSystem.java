@@ -52,6 +52,7 @@ import ch.qos.logback.core.spi.FilterReply;
 public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
+
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
 		levels.put(LogLevel.TRACE, Level.TRACE);
@@ -80,8 +81,8 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	protected String[] getStandardConfigLocations() {
-		return new String[] { "logback-test.groovy", "logback-test.xml",
-				"logback.groovy", "logback.xml" };
+		return new String[] { "logback-test.groovy", "logback-test.xml", "logback.groovy",
+				"logback.xml" };
 	}
 
 	@Override
@@ -118,8 +119,8 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			new ContextInitializer(context).configureByResource(url);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize Logback logging from "
-					+ location, ex);
+			throw new IllegalStateException(
+					"Could not initialize Logback logging from " + location, ex);
 		}
 	}
 
@@ -155,20 +156,21 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	private ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
-		return factory.getLogger(StringUtils.isEmpty(name) ? Logger.ROOT_LOGGER_NAME
-				: name);
+		return factory
+				.getLogger(StringUtils.isEmpty(name) ? Logger.ROOT_LOGGER_NAME : name);
 
 	}
 
 	private LoggerContext getLoggerContext() {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
-		Assert.isInstanceOf(LoggerContext.class, factory, String.format(
-				"LoggerFactory is not a Logback LoggerContext but Logback is on "
-						+ "the classpath. Either remove Logback or the competing "
-						+ "implementation (%s loaded from %s). If you are using "
-						+ "Weblogic you will need to add 'org.slf4j' to "
-						+ "prefer-application-packages in WEB-INF/weblogic.xml",
-				factory.getClass(), getLocation(factory)));
+		Assert.isInstanceOf(LoggerContext.class, factory,
+				String.format(
+						"LoggerFactory is not a Logback LoggerContext but Logback is on "
+								+ "the classpath. Either remove Logback or the competing "
+								+ "implementation (%s loaded from %s). If you are using "
+								+ "Weblogic you will need to add 'org.slf4j' to "
+								+ "prefer-application-packages in WEB-INF/weblogic.xml",
+						factory.getClass(), getLocation(factory)));
 		return (LoggerContext) factory;
 	}
 

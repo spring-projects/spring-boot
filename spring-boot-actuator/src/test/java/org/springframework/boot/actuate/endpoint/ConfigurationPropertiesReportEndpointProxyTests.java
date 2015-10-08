@@ -66,8 +66,8 @@ public class ConfigurationPropertiesReportEndpointProxyTests {
 	public void testWithProxyClass() throws Exception {
 		this.context.register(Config.class, SqlExecutor.class);
 		this.context.refresh();
-		Map<String, Object> report = this.context.getBean(
-				ConfigurationPropertiesReportEndpoint.class).invoke();
+		Map<String, Object> report = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class).invoke();
 		assertThat(report.toString(), containsString("prefix=executor.sql"));
 	}
 

@@ -92,9 +92,8 @@ public abstract class AbstractViewResolverProperties {
 	}
 
 	public String getContentType() {
-		return this.contentType
-				+ (this.contentType.contains(";charset=") ? "" : ";charset="
-						+ this.charset);
+		return this.contentType + (this.contentType.contains(";charset=") ? ""
+				: ";charset=" + this.charset);
 	}
 
 	public void setContentType(String contentType) {

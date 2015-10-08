@@ -61,8 +61,8 @@ public class MongoAutoConfigurationTests {
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(300, this.context.getBean(Mongo.class).getMongoOptions()
-				.getSocketTimeout());
+		assertEquals(300,
+				this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -74,8 +74,8 @@ public class MongoAutoConfigurationTests {
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(300, this.context.getBean(Mongo.class).getMongoOptions()
-				.getSocketTimeout());
+		assertEquals(300,
+				this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout());
 	}
 
 	@Configuration

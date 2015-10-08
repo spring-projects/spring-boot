@@ -63,8 +63,8 @@ public class RedisAutoConfigurationTests {
 		this.context.register(RedisAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
-				.getHostName());
+		assertEquals("foo",
+				this.context.getBean(JedisConnectionFactory.class).getHostName());
 		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getDatabase());
 	}
 
@@ -76,10 +76,10 @@ public class RedisAutoConfigurationTests {
 		this.context.register(RedisAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals("foo", this.context.getBean(JedisConnectionFactory.class)
-				.getHostName());
-		assertEquals(1, this.context.getBean(JedisConnectionFactory.class)
-				.getPoolConfig().getMaxIdle());
+		assertEquals("foo",
+				this.context.getBean(JedisConnectionFactory.class).getHostName());
+		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getPoolConfig()
+				.getMaxIdle());
 	}
 
 	@Test
@@ -90,8 +90,7 @@ public class RedisAutoConfigurationTests {
 			this.context = new AnnotationConfigApplicationContext();
 			EnvironmentTestUtils.addEnvironment(this.context,
 					"spring.redis.sentinel.master:mymaster");
-			EnvironmentTestUtils.addEnvironment(
-					this.context,
+			EnvironmentTestUtils.addEnvironment(this.context,
 					"spring.redis.sentinel.nodes:"
 							+ StringUtils.collectionToCommaDelimitedString(sentinels));
 			this.context.register(RedisAutoConfiguration.class,

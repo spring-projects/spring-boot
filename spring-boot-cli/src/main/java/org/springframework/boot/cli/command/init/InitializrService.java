@@ -104,7 +104,8 @@ class InitializrService {
 	 * @throws IOException if the service's metadata cannot be loaded
 	 */
 	public InitializrServiceMetadata loadMetadata(String serviceUrl) throws IOException {
-		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(serviceUrl);
+		CloseableHttpResponse httpResponse = executeInitializrMetadataRetrieval(
+				serviceUrl);
 		validateResponse(httpResponse, serviceUrl);
 		return parseJsonMetadata(httpResponse.getEntity());
 	}
@@ -120,8 +121,10 @@ class InitializrService {
 	 */
 	public Object loadServiceCapabilities(String serviceUrl) throws IOException {
 		HttpGet request = new HttpGet(serviceUrl);
-		request.setHeader(new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
-		CloseableHttpResponse httpResponse = execute(request, serviceUrl, "retrieve help");
+		request.setHeader(
+				new BasicHeader(HttpHeaders.ACCEPT, ACCEPT_SERVICE_CAPABILITIES));
+		CloseableHttpResponse httpResponse = execute(request, serviceUrl,
+				"retrieve help");
 		validateResponse(httpResponse, serviceUrl);
 		HttpEntity httpEntity = httpResponse.getEntity();
 		ContentType contentType = ContentType.getOrDefault(httpEntity);
@@ -137,15 +140,15 @@ class InitializrService {
 			return new InitializrServiceMetadata(getContentAsJson(httpEntity));
 		}
 		catch (JSONException ex) {
-			throw new ReportableException("Invalid content received from server ("
-					+ ex.getMessage() + ")", ex);
+			throw new ReportableException(
+					"Invalid content received from server (" + ex.getMessage() + ")", ex);
 		}
 	}
 
 	private void validateResponse(CloseableHttpResponse httpResponse, String serviceUrl) {
 		if (httpResponse.getEntity() == null) {
-			throw new ReportableException("No content received from server '"
-					+ serviceUrl + "'");
+			throw new ReportableException(
+					"No content received from server '" + serviceUrl + "'");
 		}
 		if (httpResponse.getStatusLine().getStatusCode() != 200) {
 			throw createException(serviceUrl, httpResponse);
@@ -157,8 +160,8 @@ class InitializrService {
 		ProjectGenerationResponse response = new ProjectGenerationResponse(
 				ContentType.getOrDefault(httpEntity));
 		response.setContent(FileCopyUtils.copyToByteArray(httpEntity.getContent()));
-		String fileName = extractFileName(httpResponse
-				.getFirstHeader("Content-Disposition"));
+		String fileName = extractFileName(
+				httpResponse.getFirstHeader("Content-Disposition"));
 		if (fileName != null) {
 			response.setFileName(fileName);
 		}

@@ -82,8 +82,8 @@ import org.springframework.util.StringUtils;
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
  */
-public class TomcatEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+public class TomcatEmbeddedServletContainerFactory
+		extends AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
@@ -163,8 +163,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		context.setParentClassLoader(this.resourceLoader != null ? this.resourceLoader
-				.getClassLoader() : ClassUtils.getDefaultClassLoader());
+		context.setParentClassLoader(
+				this.resourceLoader != null ? this.resourceLoader.getClassLoader()
+						: ClassUtils.getDefaultClassLoader());
 		SkipPatternJarScanner.apply(context, this.tldSkip);
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
@@ -173,9 +174,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
-		if (isRegisterJspServlet()
-				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
-						.getClassLoader())) {
+		if (isRegisterJspServlet() && ClassUtils.isPresent(getJspServletClassName(),
+				getClass().getClassLoader())) {
 			addJspServlet(context);
 			addJasperInitializer(context);
 			context.addLifecycleListener(new StoreMergedWebXmlListener());
@@ -289,8 +289,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 			protocol.setKeystoreFile(file.getAbsolutePath());
 		}
 		catch (FileNotFoundException ex) {
-			throw new EmbeddedServletContainerException("Could not find key store "
-					+ ssl.getKeyStore(), ex);
+			throw new EmbeddedServletContainerException(
+					"Could not find key store " + ssl.getKeyStore(), ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
 			protocol.setKeystoreType(ssl.getKeyStoreType());
@@ -307,8 +307,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 				protocol.setTruststoreFile(file.getAbsolutePath());
 			}
 			catch (FileNotFoundException ex) {
-				throw new EmbeddedServletContainerException("Could not find trust store "
-						+ ssl.getTrustStore(), ex);
+				throw new EmbeddedServletContainerException(
+						"Could not find trust store " + ssl.getTrustStore(), ex);
 			}
 		}
 		protocol.setTruststorePass(ssl.getTrustStorePassword());
@@ -389,7 +389,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		catch (IOException ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to create Tomcat tempdir. java.io.tmpdir is set to "
-							+ System.getProperty("java.io.tmpdir"), ex);
+							+ System.getProperty("java.io.tmpdir"),
+					ex);
 		}
 	}
 
@@ -514,7 +515,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * {@link Context}.
 	 * @param tomcatContextCustomizers the customizers to add
 	 */
-	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
+	public void addContextCustomizers(
+			TomcatContextCustomizer... tomcatContextCustomizers) {
 		Assert.notNull(tomcatContextCustomizers,
 				"TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
@@ -615,8 +617,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 				}
 				else if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage",
 						null)) {
-					nativePage = BeanUtils.instantiate(ClassUtils.forName(
-							"org.apache.catalina.deploy.ErrorPage", null));
+					nativePage = BeanUtils.instantiate(ClassUtils
+							.forName("org.apache.catalina.deploy.ErrorPage", null));
 				}
 			}
 			catch (ClassNotFoundException ex) {

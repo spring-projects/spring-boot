@@ -87,15 +87,15 @@ public class MustacheWebIntegrationTests {
 
 	@Test
 	public void testHomePage() throws Exception {
-		String body = new TestRestTemplate().getForObject(
-				"http://localhost:" + this.port, String.class);
+		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port,
+				String.class);
 		assertTrue(body.contains("Hello World"));
 	}
 
 	@Test
 	public void testPartialPage() throws Exception {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
-				+ "/partial", String.class);
+		String body = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port + "/partial", String.class);
 		assertTrue(body.contains("Hello World"));
 	}
 
@@ -135,9 +135,9 @@ public class MustacheWebIntegrationTests {
 			MustacheViewResolver resolver = new MustacheViewResolver();
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");
-			resolver.setCompiler(Mustache.compiler().withLoader(
-					new MustacheResourceTemplateLoader("classpath:/mustache-templates/",
-							".html")));
+			resolver.setCompiler(
+					Mustache.compiler().withLoader(new MustacheResourceTemplateLoader(
+							"classpath:/mustache-templates/", ".html")));
 			return resolver;
 		}
 

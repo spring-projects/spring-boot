@@ -78,8 +78,8 @@ import org.springframework.util.StringUtils;
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
  */
-public class JettyEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+public class JettyEmbeddedServletContainerFactory
+		extends AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private List<Configuration> configurations = new ArrayList<Configuration>();
 
@@ -125,8 +125,8 @@ public class JettyEmbeddedServletContainerFactory extends
 		if (getSsl() != null && getSsl().isEnabled()) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			configureSsl(sslContextFactory, getSsl());
-			AbstractConnector connector = getSslServerConnectorFactory().getConnector(
-					server, sslContextFactory, port);
+			AbstractConnector connector = getSslServerConnectorFactory()
+					.getConnector(server, sslContextFactory, port);
 			server.setConnectors(new Connector[] { connector });
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
@@ -136,7 +136,8 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	private SslServerConnectorFactory getSslServerConnectorFactory() {
-		if (ClassUtils.isPresent("org.eclipse.jetty.server.ssl.SslSocketConnector", null)) {
+		if (ClassUtils.isPresent("org.eclipse.jetty.server.ssl.SslSocketConnector",
+				null)) {
 			return new Jetty8SslServerConnectorFactory();
 		}
 		return new Jetty9SslServerConnectorFactory();
@@ -184,8 +185,8 @@ public class JettyEmbeddedServletContainerFactory extends
 			factory.setKeyStoreResource(Resource.newResource(url));
 		}
 		catch (IOException ex) {
-			throw new EmbeddedServletContainerException("Could not find key store '"
-					+ ssl.getKeyStore() + "'", ex);
+			throw new EmbeddedServletContainerException(
+					"Could not find key store '" + ssl.getKeyStore() + "'", ex);
 		}
 		if (ssl.getKeyStoreType() != null) {
 			factory.setKeyStoreType(ssl.getKeyStoreType());
@@ -235,9 +236,8 @@ public class JettyEmbeddedServletContainerFactory extends
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
-		if (isRegisterJspServlet()
-				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
-						.getClassLoader())) {
+		if (isRegisterJspServlet() && ClassUtils.isPresent(getJspServletClassName(),
+				getClass().getClassLoader())) {
 			addJspServlet(context);
 		}
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
@@ -260,12 +260,13 @@ public class JettyEmbeddedServletContainerFactory extends
 		if (root != null) {
 			try {
 				if (!root.isDirectory()) {
-					Resource resource = JarResource.newJarResource(Resource
-							.newResource(root));
+					Resource resource = JarResource
+							.newJarResource(Resource.newResource(root));
 					handler.setBaseResource(resource);
 				}
 				else {
-					handler.setBaseResource(Resource.newResource(root.getCanonicalFile()));
+					handler.setBaseResource(
+							Resource.newResource(root.getCanonicalFile()));
 				}
 			}
 			catch (Exception ex) {
@@ -316,8 +317,8 @@ public class JettyEmbeddedServletContainerFactory extends
 	protected Configuration[] getWebAppContextConfigurations(WebAppContext webAppContext,
 			ServletContextInitializer... initializers) {
 		List<Configuration> configurations = new ArrayList<Configuration>();
-		configurations.add(getServletContextInitializerConfiguration(webAppContext,
-				initializers));
+		configurations.add(
+				getServletContextInitializerConfiguration(webAppContext, initializers));
 		configurations.addAll(getConfigurations());
 		configurations.add(getErrorPageConfiguration());
 		configurations.add(getMimeTypeConfiguration());
@@ -385,7 +386,8 @@ public class JettyEmbeddedServletContainerFactory extends
 	 * @param server the Jetty server.
 	 * @return a new {@link JettyEmbeddedServletContainer} instance
 	 */
-	protected JettyEmbeddedServletContainer getJettyEmbeddedServletContainer(Server server) {
+	protected JettyEmbeddedServletContainer getJettyEmbeddedServletContainer(
+			Server server) {
 		return new JettyEmbeddedServletContainer(server, getPort() >= 0);
 	}
 
@@ -482,16 +484,16 @@ public class JettyEmbeddedServletContainerFactory extends
 	 */
 	private static interface SslServerConnectorFactory {
 
-		AbstractConnector getConnector(Server server,
-				SslContextFactory sslContextFactory, int port);
+		AbstractConnector getConnector(Server server, SslContextFactory sslContextFactory,
+				int port);
 
 	}
 
 	/**
 	 * {@link SslServerConnectorFactory} for Jetty 9.
 	 */
-	private static class Jetty9SslServerConnectorFactory implements
-			SslServerConnectorFactory {
+	private static class Jetty9SslServerConnectorFactory
+			implements SslServerConnectorFactory {
 
 		@Override
 		public ServerConnector getConnector(Server server,
@@ -511,8 +513,8 @@ public class JettyEmbeddedServletContainerFactory extends
 	/**
 	 * {@link SslServerConnectorFactory} for Jetty 8.
 	 */
-	private static class Jetty8SslServerConnectorFactory implements
-			SslServerConnectorFactory {
+	private static class Jetty8SslServerConnectorFactory
+			implements SslServerConnectorFactory {
 
 		@Override
 		public AbstractConnector getConnector(Server server,
@@ -521,10 +523,10 @@ public class JettyEmbeddedServletContainerFactory extends
 				Class<?> connectorClass = Class
 						.forName("org.eclipse.jetty.server.ssl.SslSocketConnector");
 				AbstractConnector connector = (AbstractConnector) connectorClass
-						.getConstructor(SslContextFactory.class).newInstance(
-								sslContextFactory);
-				connector.getClass().getMethod("setPort", int.class)
-						.invoke(connector, port);
+						.getConstructor(SslContextFactory.class)
+						.newInstance(sslContextFactory);
+				connector.getClass().getMethod("setPort", int.class).invoke(connector,
+						port);
 				return connector;
 			}
 			catch (Exception ex) {

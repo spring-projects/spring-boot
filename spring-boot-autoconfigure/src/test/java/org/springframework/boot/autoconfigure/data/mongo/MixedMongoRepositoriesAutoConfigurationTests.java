@@ -101,7 +101,8 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	public void testJpaRepositoryConfigurationWithMongoOverlapDisabled() throws Exception {
+	public void testJpaRepositoryConfigurationWithMongoOverlapDisabled()
+			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.initialize:false",

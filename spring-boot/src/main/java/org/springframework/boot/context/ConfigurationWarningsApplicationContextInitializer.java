@@ -42,16 +42,16 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 1.2.0
  */
-public class ConfigurationWarningsApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class ConfigurationWarningsApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	private static Log logger = LogFactory
 			.getLog(ConfigurationWarningsApplicationContextInitializer.class);
 
 	@Override
 	public void initialize(ConfigurableApplicationContext context) {
-		context.addBeanFactoryPostProcessor(new ConfigurationWarningsPostProcessor(
-				getChecks()));
+		context.addBeanFactoryPostProcessor(
+				new ConfigurationWarningsPostProcessor(getChecks()));
 	}
 
 	/**
@@ -65,8 +65,8 @@ public class ConfigurationWarningsApplicationContextInitializer implements
 	/**
 	 * {@link BeanDefinitionRegistryPostProcessor} to report warnings.
 	 */
-	protected final static class ConfigurationWarningsPostProcessor implements
-			PriorityOrdered, BeanDefinitionRegistryPostProcessor {
+	protected final static class ConfigurationWarningsPostProcessor
+			implements PriorityOrdered, BeanDefinitionRegistryPostProcessor {
 
 		private Check[] checks;
 
@@ -132,7 +132,8 @@ public class ConfigurationWarningsApplicationContextInitializer implements
 			return null;
 		}
 
-		private boolean isComponentScanningDefaultPackage(BeanDefinitionRegistry registry) {
+		private boolean isComponentScanningDefaultPackage(
+				BeanDefinitionRegistry registry) {
 			String[] names = registry.getBeanDefinitionNames();
 			for (String name : names) {
 				BeanDefinition definition = registry.getBeanDefinition(name);

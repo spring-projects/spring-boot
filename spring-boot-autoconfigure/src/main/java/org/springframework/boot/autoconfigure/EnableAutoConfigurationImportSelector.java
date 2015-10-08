@@ -42,8 +42,8 @@ import org.springframework.util.Assert;
  * @see EnableAutoConfiguration
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
-		BeanClassLoaderAware, ResourceLoaderAware {
+class EnableAutoConfigurationImportSelector
+		implements DeferredImportSelector, BeanClassLoaderAware, ResourceLoaderAware {
 
 	private ClassLoader beanClassLoader;
 
@@ -52,18 +52,19 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
 		try {
-			AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-					.getAnnotationAttributes(EnableAutoConfiguration.class.getName(),
-							true));
+			AnnotationAttributes attributes = AnnotationAttributes
+					.fromMap(metadata.getAnnotationAttributes(
+							EnableAutoConfiguration.class.getName(), true));
 
-			Assert.notNull(attributes, "No auto-configuration attributes found. Is "
-					+ metadata.getClassName()
-					+ " annotated with @EnableAutoConfiguration?");
+			Assert.notNull(attributes,
+					"No auto-configuration attributes found. Is "
+							+ metadata.getClassName()
+							+ " annotated with @EnableAutoConfiguration?");
 
 			// Find all possible auto configuration classes, filtering duplicates
-			List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
-					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
-							this.beanClassLoader)));
+			List<String> factories = new ArrayList<String>(
+					new LinkedHashSet<String>(SpringFactoriesLoader.loadFactoryNames(
+							EnableAutoConfiguration.class, this.beanClassLoader)));
 
 			// Remove those specifically disabled
 			factories.removeAll(Arrays.asList(attributes.getStringArray("exclude")));

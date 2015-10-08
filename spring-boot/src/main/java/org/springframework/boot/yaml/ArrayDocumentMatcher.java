@@ -47,8 +47,8 @@ public class ArrayDocumentMatcher implements DocumentMatcher {
 		if (!properties.containsKey(this.key)) {
 			return MatchStatus.ABSTAIN;
 		}
-		Set<String> values = StringUtils.commaDelimitedListToSet(properties
-				.getProperty(this.key));
+		Set<String> values = StringUtils
+				.commaDelimitedListToSet(properties.getProperty(this.key));
 		for (String pattern : this.patterns) {
 			for (String value : values) {
 				if (value.matches(pattern)) {

@@ -53,8 +53,8 @@ public class ChatService {
 		return message;
 	}
 
-	public static class JacksonEncoderDecoder implements Encoder<Message, String>,
-			Decoder<String, Message> {
+	public static class JacksonEncoderDecoder
+			implements Encoder<Message, String>, Decoder<String, Message> {
 
 		private final ObjectMapper mapper = new ObjectMapper();
 

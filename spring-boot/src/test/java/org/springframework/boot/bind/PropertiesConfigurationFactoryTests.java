@@ -93,15 +93,15 @@ public class PropertiesConfigurationFactoryTests {
 
 	@Test(expected = BindException.class)
 	public void testMissingPropertyCausesValidationError() throws Exception {
-		this.validator = new SpringValidatorAdapter(Validation
-				.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(
+				Validation.buildDefaultValidatorFactory().getValidator());
 		createFoo("bar: blah");
 	}
 
 	@Test
 	public void testValidationErrorCanBeSuppressed() throws Exception {
-		this.validator = new SpringValidatorAdapter(Validation
-				.buildDefaultValidatorFactory().getValidator());
+		this.validator = new SpringValidatorAdapter(
+				Validation.buildDefaultValidatorFactory().getValidator());
 		setupFactory();
 		this.factory.setExceptionIfInvalid(false);
 		bindFoo("bar: blah");

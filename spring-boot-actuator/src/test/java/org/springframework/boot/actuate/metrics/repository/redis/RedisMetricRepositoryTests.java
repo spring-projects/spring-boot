@@ -42,7 +42,8 @@ public class RedisMetricRepositoryTests {
 	@Before
 	public void init() {
 		this.prefix = "spring.test." + System.currentTimeMillis();
-		this.repository = new RedisMetricRepository(this.redis.getResource(), this.prefix);
+		this.repository = new RedisMetricRepository(this.redis.getResource(),
+				this.prefix);
 	}
 
 	@After
@@ -51,8 +52,8 @@ public class RedisMetricRepositoryTests {
 				.get(this.prefix + ".foo"));
 		this.repository.reset("foo");
 		this.repository.reset("bar");
-		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
-				this.prefix + ".foo"));
+		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue()
+				.get(this.prefix + ".foo"));
 	}
 
 	@Test

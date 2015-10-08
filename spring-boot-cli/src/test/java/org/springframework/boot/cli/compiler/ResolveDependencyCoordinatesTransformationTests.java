@@ -63,7 +63,8 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 	private final AnnotationNode grabAnnotation = createGrabAnnotation();
 
-	private final ArtifactCoordinatesResolver coordinatesResolver = mock(ArtifactCoordinatesResolver.class);
+	private final ArtifactCoordinatesResolver coordinatesResolver = mock(
+			ArtifactCoordinatesResolver.class);
 
 	private final DependencyResolutionContext resolutionContext = new DependencyResolutionContext(
 			this.coordinatesResolver);
@@ -73,8 +74,8 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 	@Before
 	public void setupExpectations() {
-		given(this.coordinatesResolver.getGroupId("spring-core")).willReturn(
-				"org.springframework");
+		given(this.coordinatesResolver.getGroupId("spring-core"))
+				.willReturn("org.springframework");
 		given(this.coordinatesResolver.getVersion("spring-core")).willReturn("4.0.0.RC1");
 	}
 
@@ -229,8 +230,8 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 			return null;
 		}
 		else {
-			throw new IllegalStateException("Member '" + memberName
-					+ "' is not a ConstantExpression");
+			throw new IllegalStateException(
+					"Member '" + memberName + "' is not a ConstantExpression");
 		}
 	}
 

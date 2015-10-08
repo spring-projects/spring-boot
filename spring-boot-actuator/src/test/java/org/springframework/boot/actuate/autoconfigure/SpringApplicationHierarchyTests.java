@@ -46,8 +46,8 @@ public class SpringApplicationHierarchyTests {
 
 	@Test
 	public void testChild() {
-		this.context = new SpringApplicationBuilder(Parent.class).child(Child.class).run(
-				"--server.port=0");
+		this.context = new SpringApplicationBuilder(Parent.class).child(Child.class)
+				.run("--server.port=0");
 	}
 
 	@EnableAutoConfiguration

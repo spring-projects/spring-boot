@@ -43,6 +43,7 @@ import org.springframework.util.StringUtils;
 public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
+
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
 		levels.put(LogLevel.TRACE, Level.FINEST);
@@ -84,8 +85,8 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	protected void loadConfiguration(String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		try {
-			String configuration = FileCopyUtils.copyToString(new InputStreamReader(
-					ResourceUtils.getURL(location).openStream()));
+			String configuration = FileCopyUtils.copyToString(
+					new InputStreamReader(ResourceUtils.getURL(location).openStream()));
 			if (logFile != null) {
 				configuration = configuration.replace("${LOG_FILE}",
 						StringUtils.cleanPath(logFile.toString()));
@@ -94,8 +95,8 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 					new ByteArrayInputStream(configuration.getBytes()));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize Java logging from "
-					+ location, ex);
+			throw new IllegalStateException(
+					"Could not initialize Java logging from " + location, ex);
 		}
 	}
 

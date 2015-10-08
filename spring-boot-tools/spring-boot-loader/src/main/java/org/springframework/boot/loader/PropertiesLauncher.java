@@ -170,16 +170,17 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	protected File getHomeDirectory() {
-		return new File(SystemPropertyUtils.resolvePlaceholders(System.getProperty(HOME,
-				"${user.dir}")));
+		return new File(SystemPropertyUtils
+				.resolvePlaceholders(System.getProperty(HOME, "${user.dir}")));
 	}
 
 	private void initializeProperties(File home) throws Exception, IOException {
 		String config = "classpath:"
-				+ SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils
-						.getProperty(CONFIG_NAME, "application")) + ".properties";
-		config = SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils.getProperty(
-				CONFIG_LOCATION, config));
+				+ SystemPropertyUtils.resolvePlaceholders(
+						SystemPropertyUtils.getProperty(CONFIG_NAME, "application"))
+				+ ".properties";
+		config = SystemPropertyUtils.resolvePlaceholders(
+				SystemPropertyUtils.getProperty(CONFIG_LOCATION, config));
 		InputStream resource = getResource(config);
 
 		if (resource != null) {
@@ -198,8 +199,9 @@ public class PropertiesLauncher extends Launcher {
 					this.properties.put(key, value);
 				}
 			}
-			if (SystemPropertyUtils.resolvePlaceholders(
-					"${" + SET_SYSTEM_PROPERTIES + ":false}").equals("true")) {
+			if (SystemPropertyUtils
+					.resolvePlaceholders("${" + SET_SYSTEM_PROPERTIES + ":false}")
+					.equals("true")) {
 				this.logger.info("Adding resolved properties to System properties");
 				for (Object key : Collections.list(this.properties.propertyNames())) {
 					String value = this.properties.getProperty((String) key);
@@ -278,8 +280,8 @@ public class PropertiesLauncher extends Launcher {
 		// Try a URL connection content-length header...
 		URLConnection connection = url.openConnection();
 		try {
-			connection.setUseCaches(connection.getClass().getSimpleName()
-					.startsWith("JNLP"));
+			connection.setUseCaches(
+					connection.getClass().getSimpleName().startsWith("JNLP"));
 			if (connection instanceof HttpURLConnection) {
 				HttpURLConnection httpConnection = (HttpURLConnection) connection;
 				httpConnection.setRequestMethod("HEAD");
@@ -306,7 +308,8 @@ public class PropertiesLauncher extends Launcher {
 			path = this.properties.getProperty(PATH);
 		}
 		if (path != null) {
-			this.paths = parsePathsProperty(SystemPropertyUtils.resolvePlaceholders(path));
+			this.paths = parsePathsProperty(
+					SystemPropertyUtils.resolvePlaceholders(path));
 		}
 		this.logger.info("Nested archive paths: " + this.paths);
 	}
@@ -344,8 +347,8 @@ public class PropertiesLauncher extends Launcher {
 	protected String getMainClass() throws Exception {
 		String mainClass = getProperty(MAIN, "Start-Class");
 		if (mainClass == null) {
-			throw new IllegalStateException("No '" + MAIN
-					+ "' or 'Start-Class' specified");
+			throw new IllegalStateException(
+					"No '" + MAIN + "' or 'Start-Class' specified");
 		}
 		return mainClass;
 	}
@@ -365,8 +368,8 @@ public class PropertiesLauncher extends Launcher {
 	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent,
 			String loaderClassName) throws Exception {
 
-		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class.forName(
-				loaderClassName, true, parent);
+		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class
+				.forName(loaderClassName, true, parent);
 
 		try {
 			return loaderClass.getConstructor(ClassLoader.class).newInstance(parent);
@@ -404,8 +407,8 @@ public class PropertiesLauncher extends Launcher {
 		}
 
 		if (this.properties.containsKey(propertyKey)) {
-			String value = SystemPropertyUtils.resolvePlaceholders(this.properties
-					.getProperty(propertyKey));
+			String value = SystemPropertyUtils
+					.resolvePlaceholders(this.properties.getProperty(propertyKey));
 			this.logger.fine("Property '" + propertyKey + "' from properties: " + value);
 			return value;
 		}
@@ -429,8 +432,8 @@ public class PropertiesLauncher extends Launcher {
 		if (manifest != null) {
 			String value = manifest.getMainAttributes().getValue(manifestKey);
 			if (value != null) {
-				this.logger.fine("Property '" + manifestKey + "' from archive manifest: "
-						+ value);
+				this.logger.fine(
+						"Property '" + manifestKey + "' from archive manifest: " + value);
 				return value;
 			}
 		}
@@ -468,14 +471,14 @@ public class PropertiesLauncher extends Launcher {
 		}
 		Archive archive = getArchive(file);
 		if (archive != null) {
-			this.logger.info("Adding classpath entries from archive " + archive.getUrl()
-					+ root);
+			this.logger.info(
+					"Adding classpath entries from archive " + archive.getUrl() + root);
 			lib.add(archive);
 		}
 		Archive nested = getNestedArchive(root);
 		if (nested != null) {
-			this.logger.info("Adding classpath entries from nested " + nested.getUrl()
-					+ root);
+			this.logger.info(
+					"Adding classpath entries from nested " + nested.getUrl() + root);
 			lib.add(nested);
 		}
 		return lib;
@@ -509,8 +512,8 @@ public class PropertiesLauncher extends Launcher {
 		return new FilteredArchive(this.parent, filter);
 	}
 
-	private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
-			URISyntaxException {
+	private void addParentClassLoaderEntries(List<Archive> lib)
+			throws IOException, URISyntaxException {
 		ClassLoader parentClassLoader = getClass().getClassLoader();
 		List<Archive> urls = new ArrayList<Archive>();
 		for (URL url : getURLs(parentClassLoader)) {
@@ -521,8 +524,8 @@ public class PropertiesLauncher extends Launcher {
 				String name = url.getFile();
 				File dir = new File(name.substring(0, name.length() - 1));
 				if (dir.exists()) {
-					urls.add(new ExplodedArchive(new File(name.substring(0,
-							name.length() - 1)), false));
+					urls.add(new ExplodedArchive(
+							new File(name.substring(0, name.length() - 1)), false));
 				}
 			}
 			else {

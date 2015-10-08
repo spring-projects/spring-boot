@@ -74,8 +74,8 @@ public class SpringBootWebSecurityConfigurationTests {
 
 	@Test
 	public void testDefaultIgnores() {
-		assertTrue(SpringBootWebSecurityConfiguration
-				.getIgnored(new SecurityProperties()).contains("/css/**"));
+		assertTrue(SpringBootWebSecurityConfiguration.getIgnored(new SecurityProperties())
+				.contains("/css/**"));
 	}
 
 	@Test
@@ -83,8 +83,8 @@ public class SpringBootWebSecurityConfigurationTests {
 		this.context = SpringApplication.run(TestWebConfiguration.class,
 				"--server.port=0");
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		assertNotNull(this.context.getBean(AuthenticationManager.class).authenticate(
-				new UsernamePasswordAuthenticationToken("dave", "secret")));
+		assertNotNull(this.context.getBean(AuthenticationManager.class)
+				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
 	}
 
 	@Test
@@ -98,9 +98,8 @@ public class SpringBootWebSecurityConfigurationTests {
 				.build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/"))
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-				.andExpect(
-						MockMvcResultMatchers.header().string("www-authenticate",
-								Matchers.containsString("realm=\"Spring\"")));
+				.andExpect(MockMvcResultMatchers.header().string("www-authenticate",
+						Matchers.containsString("realm=\"Spring\"")));
 	}
 
 	@Test
@@ -113,8 +112,8 @@ public class SpringBootWebSecurityConfigurationTests {
 				.addFilters(
 						this.context.getBean("springSecurityFilterChain", Filter.class))
 				.build();
-		mockMvc.perform(MockMvcRequestBuilders.get("/")).andExpect(
-				MockMvcResultMatchers.status().isNotFound());
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
 
 	@Test
@@ -129,9 +128,8 @@ public class SpringBootWebSecurityConfigurationTests {
 				.build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/"))
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-				.andExpect(
-						MockMvcResultMatchers.header().string("www-authenticate",
-								Matchers.containsString("realm=\"Spring\"")));
+				.andExpect(MockMvcResultMatchers.header().string("www-authenticate",
+						Matchers.containsString("realm=\"Spring\"")));
 	}
 
 	@Test
@@ -146,9 +144,8 @@ public class SpringBootWebSecurityConfigurationTests {
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/").header("authorization", "Basic xxx"))
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
-				.andExpect(
-						MockMvcResultMatchers.header().string("www-authenticate",
-								Matchers.containsString("realm=\"Spring\"")));
+				.andExpect(MockMvcResultMatchers.header().string("www-authenticate",
+						Matchers.containsString("realm=\"Spring\"")));
 	}
 
 	@Test
@@ -156,15 +153,15 @@ public class SpringBootWebSecurityConfigurationTests {
 		this.context = SpringApplication.run(TestInjectWebConfiguration.class,
 				"--server.port=0");
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		assertNotNull(this.context.getBean(AuthenticationManager.class).authenticate(
-				new UsernamePasswordAuthenticationToken("dave", "secret")));
+		assertNotNull(this.context.getBean(AuthenticationManager.class)
+				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
 	}
 
 	@Configuration
 	@Import(TestWebConfiguration.class)
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	protected static class TestInjectWebConfiguration extends
-			WebSecurityConfigurerAdapter {
+	protected static class TestInjectWebConfiguration
+			extends WebSecurityConfigurerAdapter {
 
 		// It's a bad idea to inject an AuthenticationManager into a
 		// WebSecurityConfigurerAdapter because it can cascade early instantiation,
@@ -213,8 +210,8 @@ public class SpringBootWebSecurityConfigurationTests {
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected static @interface MinimalWebConfiguration {
 
 	}

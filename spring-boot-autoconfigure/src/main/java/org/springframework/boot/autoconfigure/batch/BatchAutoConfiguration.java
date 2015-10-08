@@ -109,7 +109,8 @@ public class BatchAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public JobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
-			ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
+			ListableJobLocator jobRegistry, JobRepository jobRepository)
+					throws Exception {
 		SimpleJobOperator factory = new SimpleJobOperator();
 		factory.setJobExplorer(jobExplorer);
 		factory.setJobLauncher(jobLauncher);

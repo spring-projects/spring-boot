@@ -97,9 +97,10 @@ public class RedisServer implements TestRule {
 
 				@Override
 				public void evaluate() throws Throwable {
-					Assume.assumeTrue("Skipping test due to "
-							+ RedisServer.this.resourceDescription
-							+ " not being available", false);
+					Assume.assumeTrue(
+							"Skipping test due to " + RedisServer.this.resourceDescription
+									+ " not being available",
+							false);
 				}
 			};
 		}

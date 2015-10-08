@@ -127,7 +127,8 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 		JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
 		factory.setDataSource(this.dataSource);
 		if (this.entityManagerFactory != null) {
-			logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
+			logger.warn(
+					"JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
 			factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
 		}
 		factory.setTransactionManager(getTransactionManager());

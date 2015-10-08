@@ -121,7 +121,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	}
 
 	private void processEnumerablePropertySource(EnumerablePropertySource<?> source,
-			PropertySourcesPropertyResolver resolver, PropertyNamePatternsMatcher includes) {
+			PropertySourcesPropertyResolver resolver,
+			PropertyNamePatternsMatcher includes) {
 		if (source.getPropertyNames().length > 0) {
 			for (String propertyName : source.getPropertyNames()) {
 				if (PropertySourcesPropertyValues.PATTERN_MATCHED_PROPERTY_SOURCES

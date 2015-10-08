@@ -42,8 +42,8 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  * @see BeanDefinition#setDependsOn(String[])
  */
-public class EntityManagerFactoryDependsOnPostProcessor implements
-		BeanFactoryPostProcessor {
+public class EntityManagerFactoryDependsOnPostProcessor
+		implements BeanFactoryPostProcessor {
 
 	private final String dependsOn;
 
@@ -55,8 +55,8 @@ public class EntityManagerFactoryDependsOnPostProcessor implements
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		for (String beanName : getEntityManagerFactoryBeanNames(beanFactory)) {
 			BeanDefinition definition = getBeanDefinition(beanName, beanFactory);
-			definition.setDependsOn(StringUtils.addStringToArray(
-					definition.getDependsOn(), this.dependsOn));
+			definition.setDependsOn(StringUtils
+					.addStringToArray(definition.getDependsOn(), this.dependsOn));
 		}
 	}
 
@@ -80,9 +80,8 @@ public class EntityManagerFactoryDependsOnPostProcessor implements
 		Set<String> names = new HashSet<String>();
 		names.addAll(Arrays.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 				beanFactory, EntityManagerFactory.class, true, false)));
-		for (String factoryBeanName : BeanFactoryUtils
-				.beanNamesForTypeIncludingAncestors(beanFactory,
-						AbstractEntityManagerFactoryBean.class, true, false)) {
+		for (String factoryBeanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+				beanFactory, AbstractEntityManagerFactoryBean.class, true, false)) {
 			names.add(BeanFactoryUtils.transformedBeanName(factoryBeanName));
 		}
 		return names;

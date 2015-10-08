@@ -93,7 +93,8 @@ public class RepositoryRestMvcAutoConfigurationTests {
 
 	@Test
 	public void propertiesStillAppliedWithCustomBootConfig() {
-		load(TestConfigurationWithRestMvcBootConfig.class, "spring.data.rest.baseUri:foo");
+		load(TestConfigurationWithRestMvcBootConfig.class,
+				"spring.data.rest.baseUri:foo");
 		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);

@@ -109,8 +109,8 @@ public class JtaAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(0, this.context.getBeansOfType(JtaTransactionManager.class).size());
 		assertEquals(0, this.context.getBeansOfType(XADataSourceWrapper.class).size());
-		assertEquals(0, this.context.getBeansOfType(XAConnectionFactoryWrapper.class)
-				.size());
+		assertEquals(0,
+				this.context.getBeansOfType(XAConnectionFactoryWrapper.class).size());
 	}
 
 	@Test

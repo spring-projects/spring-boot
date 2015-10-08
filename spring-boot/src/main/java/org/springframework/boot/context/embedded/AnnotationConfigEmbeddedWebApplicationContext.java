@@ -47,8 +47,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @see EmbeddedWebApplicationContext
  * @see AnnotationConfigWebApplicationContext
  */
-public class AnnotationConfigEmbeddedWebApplicationContext extends
-		EmbeddedWebApplicationContext {
+public class AnnotationConfigEmbeddedWebApplicationContext
+		extends EmbeddedWebApplicationContext {
 
 	private final AnnotatedBeanDefinitionReader reader;
 

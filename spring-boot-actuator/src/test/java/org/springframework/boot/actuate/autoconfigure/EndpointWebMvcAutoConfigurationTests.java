@@ -160,10 +160,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 				DifferentPortConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		ServletContext servletContext = mock(ServletContext.class);
-		given(servletContext.getInitParameterNames()).willReturn(
-				new Vector<String>().elements());
-		given(servletContext.getAttributeNames()).willReturn(
-				new Vector<String>().elements());
+		given(servletContext.getInitParameterNames())
+				.willReturn(new Vector<String>().elements());
+		given(servletContext.getAttributeNames())
+				.willReturn(new Vector<String>().elements());
 		this.applicationContext.setServletContext(servletContext);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().management, null);
@@ -205,8 +205,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void specificPortsViaProperties() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext, "server.port:"
-				+ ports.get().server, "management.port:" + ports.get().management);
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"server.port:" + ports.get().server,
+				"management.port:" + ports.get().management);
 		this.applicationContext.register(RootConfig.class, EndpointConfig.class,
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
@@ -245,8 +246,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 		new ServerPortInfoApplicationContextInitializer()
 				.initialize(this.applicationContext);
 		this.applicationContext.refresh();
-		Integer localServerPort = this.applicationContext.getEnvironment().getProperty(
-				"local.server.port", Integer.class);
+		Integer localServerPort = this.applicationContext.getEnvironment()
+				.getProperty("local.server.port", Integer.class);
 		Integer localManagementPort = this.applicationContext.getEnvironment()
 				.getProperty("local.management.port", Integer.class);
 		assertThat(localServerPort, notNullValue());
@@ -264,8 +265,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		Integer localServerPort = this.applicationContext.getEnvironment().getProperty(
-				"local.server.port", Integer.class);
+		Integer localServerPort = this.applicationContext.getEnvironment()
+				.getProperty("local.server.port", Integer.class);
 		Integer localManagementPort = this.applicationContext.getEnvironment()
 				.getProperty("local.management.port", Integer.class);
 		assertThat(localServerPort, notNullValue());
@@ -345,8 +346,9 @@ public class EndpointWebMvcAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				"endpoints.shutdown.enabled:true");
 		this.applicationContext.refresh();
-		assertThat(this.applicationContext.getBeansOfType(ShutdownMvcEndpoint.class)
-				.size(), is(equalTo(1)));
+		assertThat(
+				this.applicationContext.getBeansOfType(ShutdownMvcEndpoint.class).size(),
+				is(equalTo(1)));
 	}
 
 	private void endpointDisabled(String name, Class<? extends MvcEndpoint> type) {
@@ -378,8 +380,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	public void assertContent(String url, int port, Object expected) throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(
-				"http://localhost:" + port + url), HttpMethod.GET);
+		ClientHttpRequest request = clientHttpRequestFactory
+				.createRequest(new URI("http://localhost:" + port + url), HttpMethod.GET);
 		try {
 			ClientHttpResponse response = request.execute();
 			try {
@@ -404,8 +406,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	public boolean hasHeader(String url, int port, String header) throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(
-				"http://localhost:" + port + url), HttpMethod.GET);
+		ClientHttpRequest request = clientHttpRequestFactory
+				.createRequest(new URI("http://localhost:" + port + url), HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		return response.getHeaders().containsKey(header);
 	}
@@ -421,8 +423,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Configuration
 	@Import({ PropertyPlaceholderAutoConfiguration.class,
 			EmbeddedServletContainerAutoConfiguration.class,
-			EndpointAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
+			EndpointAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			ManagementServerPropertiesAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class })
@@ -582,8 +583,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	}
 
-	private static class GrabManagementPort implements
-			ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+	private static class GrabManagementPort
+			implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
 
 		private ApplicationContext rootContext;
 

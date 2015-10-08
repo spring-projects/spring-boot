@@ -136,7 +136,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		return sources;
 	}
 
-	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
+	private void setActiveProfiles(ConfigurableEnvironment environment,
+			String[] profiles) {
 		EnvironmentTestUtils.addEnvironment(environment, "spring.profiles.active="
 				+ StringUtils.arrayToCommaDelimitedString(profiles));
 	}
@@ -146,8 +147,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
-		properties.putAll(extractEnvironmentProperties(config
-				.getPropertySourceProperties()));
+		properties.putAll(
+				extractEnvironmentProperties(config.getPropertySourceProperties()));
 		if (!isIntegrationTest(config.getTestClass())) {
 			properties.putAll(getDefaultEnvironmentProperties());
 		}
@@ -170,8 +171,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			return asMap(properties);
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("Unexpected could not load properties from '"
-					+ content + "'", ex);
+			throw new IllegalStateException(
+					"Unexpected could not load properties from '" + content + "'", ex);
 		}
 	}
 
@@ -198,8 +199,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	private List<ApplicationContextInitializer<?>> getInitializers(
 			MergedContextConfiguration mergedConfig, SpringApplication application) {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
-		initializers.add(new PropertySourceLocationsInitializer(mergedConfig
-				.getPropertySourceLocations()));
+		initializers.add(new PropertySourceLocationsInitializer(
+				mergedConfig.getPropertySourceLocations()));
 		initializers.add(new ServerPortInfoApplicationContextInitializer());
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
@@ -213,8 +214,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	public void processContextConfiguration(
 			ContextConfigurationAttributes configAttributes) {
 		if (!configAttributes.hasLocations() && !configAttributes.hasClasses()) {
-			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(configAttributes
-					.getDeclaringClass());
+			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(
+					configAttributes.getDeclaringClass());
 			configAttributes.setClasses(defaultConfigClasses);
 		}
 	}
@@ -267,22 +268,23 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			MockServletContext servletContext = new MockServletContext(
 					webConfiguration.getResourceBasePath(),
 					new FileSystemResourceLoader());
-			initializers.add(0, new ServletContextApplicationContextInitializer(
-					servletContext));
+			initializers.add(0,
+					new ServletContextApplicationContextInitializer(servletContext));
 		}
 
 	}
 
 	private static boolean isIntegrationTest(Class<?> testClass) {
-		return ((AnnotationUtils.findAnnotation(testClass, IntegrationTest.class) != null) || (AnnotationUtils
-				.findAnnotation(testClass, WebIntegrationTest.class) != null));
+		return ((AnnotationUtils.findAnnotation(testClass, IntegrationTest.class) != null)
+				|| (AnnotationUtils.findAnnotation(testClass,
+						WebIntegrationTest.class) != null));
 	}
 
 	/**
 	 * {@link ApplicationContextInitializer} to setup test property source locations.
 	 */
-	private static class PropertySourceLocationsInitializer implements
-			ApplicationContextInitializer<ConfigurableApplicationContext> {
+	private static class PropertySourceLocationsInitializer
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		private final String[] propertySourceLocations;
 

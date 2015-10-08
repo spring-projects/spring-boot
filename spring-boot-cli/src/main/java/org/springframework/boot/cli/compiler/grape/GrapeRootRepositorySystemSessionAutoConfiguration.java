@@ -31,8 +31,8 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.2.5
  */
-public class GrapeRootRepositorySystemSessionAutoConfiguration implements
-		RepositorySystemSessionAutoConfiguration {
+public class GrapeRootRepositorySystemSessionAutoConfiguration
+		implements RepositorySystemSessionAutoConfiguration {
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,

@@ -89,8 +89,8 @@ import org.springframework.validation.BindException;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class ConfigFileApplicationListener implements
-		ApplicationListener<ApplicationEvent>, Ordered {
+public class ConfigFileApplicationListener
+		implements ApplicationListener<ApplicationEvent>, Ordered {
 
 	private static Log logger = LogFactory.getLog(ConfigFileApplicationListener.class);
 
@@ -124,7 +124,8 @@ public class ConfigFileApplicationListener implements
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
+			onApplicationEnvironmentPreparedEvent(
+					(ApplicationEnvironmentPreparedEvent) event);
 		}
 		if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
@@ -204,8 +205,8 @@ public class ConfigFileApplicationListener implements
 	 * @param context the context to configure
 	 */
 	protected void addPostProcessors(ConfigurableApplicationContext context) {
-		context.addBeanFactoryPostProcessor(new PropertySourceOrderingPostProcessor(
-				context));
+		context.addBeanFactoryPostProcessor(
+				new PropertySourceOrderingPostProcessor(context));
 	}
 
 	public void setOrder(int order) {
@@ -245,12 +246,13 @@ public class ConfigFileApplicationListener implements
 	 * {@link BeanFactoryPostProcessor} to re-order our property sources below any
 	 * {@code @PropertySource} items added by the {@link ConfigurationClassPostProcessor}.
 	 */
-	private class PropertySourceOrderingPostProcessor implements
-			BeanFactoryPostProcessor, Ordered {
+	private class PropertySourceOrderingPostProcessor
+			implements BeanFactoryPostProcessor, Ordered {
 
 		private ConfigurableApplicationContext context;
 
-		public PropertySourceOrderingPostProcessor(ConfigurableApplicationContext context) {
+		public PropertySourceOrderingPostProcessor(
+				ConfigurableApplicationContext context) {
 			this.context = context;
 		}
 
@@ -266,8 +268,8 @@ public class ConfigFileApplicationListener implements
 		}
 
 		private void reorderSources(ConfigurableEnvironment environment) {
-			ConfigurationPropertySources.finishAndRelocate(environment
-					.getPropertySources());
+			ConfigurationPropertySources
+					.finishAndRelocate(environment.getPropertySources());
 			PropertySource<?> defaultProperties = environment.getPropertySources()
 					.remove(DEFAULT_PROPERTIES);
 			if (defaultProperties != null) {
@@ -294,7 +296,8 @@ public class ConfigFileApplicationListener implements
 
 		private final List<Object> debug = ConfigFileApplicationListener.this.debug;
 
-		public Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
+		public Loader(ConfigurableEnvironment environment,
+				ResourceLoader resourceLoader) {
 			this.environment = environment;
 			this.resourceLoader = resourceLoader == null ? new DefaultResourceLoader()
 					: resourceLoader;
@@ -307,15 +310,15 @@ public class ConfigFileApplicationListener implements
 			if (this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
 				// Any pre-existing active profiles set via property sources (e.g. System
 				// properties) take precedence over those added in config files.
-				maybeActivateProfiles(this.environment
-						.getProperty(ACTIVE_PROFILES_PROPERTY));
+				maybeActivateProfiles(
+						this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
 			}
 			else {
 				// Pre-existing active profiles set via Environment.setActiveProfiles()
 				// are additional profiles and config files are allowed to add more if
 				// they want to, so don't call addActiveProfiles() here.
-				List<String> list = new ArrayList<String>(Arrays.asList(this.environment
-						.getActiveProfiles()));
+				List<String> list = new ArrayList<String>(
+						Arrays.asList(this.environment.getActiveProfiles()));
 				// Reverse them so the order is the same as from getProfilesForValue()
 				// (last one wins when properties are eventually resolved)
 				Collections.reverse(list);
@@ -382,10 +385,10 @@ public class ConfigFileApplicationListener implements
 				propertySource = this.propertiesLoader.load(resource, group, name,
 						profile);
 				if (propertySource != null) {
-					maybeActivateProfiles(propertySource
-							.getProperty(ACTIVE_PROFILES_PROPERTY));
-					addIncludeProfiles(propertySource
-							.getProperty(INCLUDE_PROFILES_PROPERTY));
+					maybeActivateProfiles(
+							propertySource.getProperty(ACTIVE_PROFILES_PROPERTY));
+					addIncludeProfiles(
+							propertySource.getProperty(INCLUDE_PROFILES_PROPERTY));
 				}
 			}
 			StringBuilder msg = new StringBuilder();
@@ -464,9 +467,9 @@ public class ConfigFileApplicationListener implements
 					locations.add(path);
 				}
 			}
-			locations.addAll(asResolvedSet(
-					ConfigFileApplicationListener.this.searchLocations,
-					DEFAULT_SEARCH_LOCATIONS));
+			locations.addAll(
+					asResolvedSet(ConfigFileApplicationListener.this.searchLocations,
+							DEFAULT_SEARCH_LOCATIONS));
 			return locations;
 		}
 
@@ -479,9 +482,9 @@ public class ConfigFileApplicationListener implements
 		}
 
 		private Set<String> asResolvedSet(String value, String fallback) {
-			List<String> list = Arrays.asList(StringUtils
-					.commaDelimitedListToStringArray(value != null ? this.environment
-							.resolvePlaceholders(value) : fallback));
+			List<String> list = Arrays
+					.asList(StringUtils.commaDelimitedListToStringArray(value != null
+							? this.environment.resolvePlaceholders(value) : fallback));
 			Collections.reverse(list);
 			return new LinkedHashSet<String>(list);
 		}
@@ -492,8 +495,8 @@ public class ConfigFileApplicationListener implements
 				reorderedSources.add(item);
 			}
 			// Maybe we should add before the DEFAULT_PROPERTIES if it exists?
-			this.environment.getPropertySources().addLast(
-					new ConfigurationPropertySources(reorderedSources));
+			this.environment.getPropertySources()
+					.addLast(new ConfigurationPropertySources(reorderedSources));
 		}
 
 	}
@@ -502,8 +505,8 @@ public class ConfigFileApplicationListener implements
 	 * Holds the configuration {@link PropertySource}s as they are loaded can relocate
 	 * them once configuration classes have been processed.
 	 */
-	static class ConfigurationPropertySources extends
-			EnumerablePropertySource<Collection<PropertySource<?>>> {
+	static class ConfigurationPropertySources
+			extends EnumerablePropertySource<Collection<PropertySource<?>>> {
 
 		private static final String NAME = "applicationConfigurationProperties";
 
@@ -517,8 +520,8 @@ public class ConfigFileApplicationListener implements
 			List<String> names = new ArrayList<String>();
 			for (PropertySource<?> source : sources) {
 				if (source instanceof EnumerablePropertySource) {
-					names.addAll(Arrays.asList(((EnumerablePropertySource<?>) source)
-							.getPropertyNames()));
+					names.addAll(Arrays.asList(
+							((EnumerablePropertySource<?>) source).getPropertyNames()));
 				}
 			}
 			this.names = names.toArray(new String[names.size()]);

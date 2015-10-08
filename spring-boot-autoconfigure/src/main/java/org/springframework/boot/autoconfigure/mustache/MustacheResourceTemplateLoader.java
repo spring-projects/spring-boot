@@ -38,8 +38,8 @@ import com.samskivert.mustache.Mustache.TemplateLoader;
  * @see Mustache
  * @see Resource
  */
-public class MustacheResourceTemplateLoader implements TemplateLoader,
-		ResourceLoaderAware {
+public class MustacheResourceTemplateLoader
+		implements TemplateLoader, ResourceLoaderAware {
 
 	private String prefix = "";
 
@@ -75,8 +75,9 @@ public class MustacheResourceTemplateLoader implements TemplateLoader,
 
 	@Override
 	public Reader getTemplate(String name) throws Exception {
-		return new InputStreamReader(this.resourceLoader.getResource(
-				this.prefix + name + this.suffix).getInputStream(), this.charSet);
+		return new InputStreamReader(this.resourceLoader
+				.getResource(this.prefix + name + this.suffix).getInputStream(),
+				this.charSet);
 	}
 
 }

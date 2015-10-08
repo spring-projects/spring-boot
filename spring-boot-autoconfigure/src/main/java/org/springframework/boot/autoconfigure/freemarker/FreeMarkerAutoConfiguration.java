@@ -77,10 +77,11 @@ public class FreeMarkerAutoConfiguration {
 					break;
 				}
 			}
-			Assert.notNull(templatePathLocation, "Cannot find template location(s): "
-					+ locations + " (please add some templates, "
-					+ "check your FreeMarker configuration, or set "
-					+ "spring.freemarker.checkTemplateLocation=false)");
+			Assert.notNull(templatePathLocation,
+					"Cannot find template location(s): " + locations
+							+ " (please add some templates, "
+							+ "check your FreeMarker configuration, or set "
+							+ "spring.freemarker.checkTemplateLocation=false)");
 		}
 	}
 

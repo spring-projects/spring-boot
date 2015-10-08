@@ -55,8 +55,8 @@ import org.springframework.boot.cli.util.Log;
  *
  * @author Andy Wilkinson
  */
-public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
-		RepositorySystemSessionAutoConfiguration {
+public class SettingsXmlRepositorySystemSessionAutoConfiguration
+		implements RepositorySystemSessionAutoConfiguration {
 
 	private final String homeDir;
 
@@ -75,14 +75,15 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		Settings settings = loadSettings();
 		SettingsDecryptionResult decryptionResult = decryptSettings(settings);
 		if (!decryptionResult.getProblems().isEmpty()) {
-			Log.error("Maven settings decryption failed. Some Maven repositories may be inaccessible");
+			Log.error(
+					"Maven settings decryption failed. Some Maven repositories may be inaccessible");
 			// Continue - the encrypted credentials may not be used
 		}
 
 		session.setOffline(settings.isOffline());
 		session.setMirrorSelector(createMirrorSelector(settings));
-		session.setAuthenticationSelector(createAuthenticationSelector(decryptionResult
-				.getServers()));
+		session.setAuthenticationSelector(
+				createAuthenticationSelector(decryptionResult.getServers()));
 		session.setProxySelector(createProxySelector(decryptionResult.getProxies()));
 
 		String localRepository = settings.getLocalRepository();
@@ -102,8 +103,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 					.getEffectiveSettings();
 		}
 		catch (SettingsBuildingException ex) {
-			throw new IllegalStateException("Failed to build settings from "
-					+ settingsFile, ex);
+			throw new IllegalStateException(
+					"Failed to build settings from " + settingsFile, ex);
 		}
 	}
 
@@ -128,8 +129,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 			field.set(target, value);
 		}
 		catch (Exception e) {
-			throw new IllegalStateException("Failed to set field '" + fieldName
-					+ "' on '" + target + "'", e);
+			throw new IllegalStateException(
+					"Failed to set field '" + fieldName + "' on '" + target + "'", e);
 		}
 	}
 
@@ -159,9 +160,10 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 			Authentication authentication = new AuthenticationBuilder()
 					.addUsername(proxy.getUsername()).addPassword(proxy.getPassword())
 					.build();
-			selector.add(new org.eclipse.aether.repository.Proxy(proxy.getProtocol(),
-					proxy.getHost(), proxy.getPort(), authentication), proxy
-					.getNonProxyHosts());
+			selector.add(
+					new org.eclipse.aether.repository.Proxy(proxy.getProtocol(),
+							proxy.getHost(), proxy.getPort(), authentication),
+					proxy.getNonProxyHosts());
 		}
 		return selector;
 	}

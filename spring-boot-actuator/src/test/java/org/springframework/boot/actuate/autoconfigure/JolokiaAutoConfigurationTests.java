@@ -64,7 +64,8 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertEquals(1,
+				this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
 	}
 
 	@Test
@@ -79,7 +80,8 @@ public class JolokiaAutoConfigurationTests {
 
 	@Test
 	public void endpointEnabledAsOverride() throws Exception {
-		assertEndpointEnabled("endpoints.enabled:false", "endpoints.jolokia.enabled:true");
+		assertEndpointEnabled("endpoints.enabled:false",
+				"endpoints.jolokia.enabled:true");
 	}
 
 	private void assertEndpointDisabled(String... pairs) {
@@ -91,7 +93,8 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertEquals(0,
+				this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
 	}
 
 	private void assertEndpointEnabled(String... pairs) {
@@ -103,7 +106,8 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
+		assertEquals(1,
+				this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
 	}
 
 	@Configuration

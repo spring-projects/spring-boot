@@ -70,7 +70,8 @@ public class RedisHealthIndicatorTests {
 		info.put("redis_version", "2.8.9");
 
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		RedisConnectionFactory redisConnectionFactory = mock(RedisConnectionFactory.class);
+		RedisConnectionFactory redisConnectionFactory = mock(
+				RedisConnectionFactory.class);
 		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
 		given(redisConnection.info()).willReturn(info);
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
@@ -87,10 +88,11 @@ public class RedisHealthIndicatorTests {
 	@Test
 	public void redisIsDown() throws Exception {
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		RedisConnectionFactory redisConnectionFactory = mock(RedisConnectionFactory.class);
+		RedisConnectionFactory redisConnectionFactory = mock(
+				RedisConnectionFactory.class);
 		given(redisConnectionFactory.getConnection()).willReturn(redisConnection);
-		given(redisConnection.info()).willThrow(
-				new RedisConnectionFailureException("Connection failed"));
+		given(redisConnection.info())
+				.willThrow(new RedisConnectionFailureException("Connection failed"));
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
 				redisConnectionFactory);
 

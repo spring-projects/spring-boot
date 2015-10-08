@@ -52,8 +52,8 @@ public class PackagedSpringApplicationLauncher {
 				return loadClasses(classLoader, sources.split(","));
 			}
 		}
-		throw new IllegalStateException("Cannot locate " + SOURCE_ENTRY
-				+ " in MANIFEST.MF");
+		throw new IllegalStateException(
+				"Cannot locate " + SOURCE_ENTRY + " in MANIFEST.MF");
 	}
 
 	private boolean isCliPackaged(Manifest manifest) {

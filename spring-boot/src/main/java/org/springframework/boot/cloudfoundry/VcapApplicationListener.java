@@ -87,8 +87,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  */
-public class VcapApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+public class VcapApplicationListener
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	private static final Log logger = LogFactory.getLog(VcapApplicationListener.class);
 
@@ -144,8 +144,8 @@ public class VcapApplicationListener implements
 	private Properties getPropertiesFromApplication(Environment environment) {
 		Properties properties = new Properties();
 		try {
-			Map<String, Object> map = this.parser.parseMap(environment.getProperty(
-					VCAP_APPLICATION, "{}"));
+			Map<String, Object> map = this.parser
+					.parseMap(environment.getProperty(VCAP_APPLICATION, "{}"));
 			extractPropertiesFromApplication(properties, map);
 		}
 		catch (Exception ex) {
@@ -157,8 +157,8 @@ public class VcapApplicationListener implements
 	private Properties getPropertiesFromServices(Environment environment) {
 		Properties properties = new Properties();
 		try {
-			Map<String, Object> map = this.parser.parseMap(environment.getProperty(
-					VCAP_SERVICES, "{}"));
+			Map<String, Object> map = this.parser
+					.parseMap(environment.getProperty(VCAP_SERVICES, "{}"));
 			extractPropertiesFromServices(properties, map);
 		}
 		catch (Exception ex) {

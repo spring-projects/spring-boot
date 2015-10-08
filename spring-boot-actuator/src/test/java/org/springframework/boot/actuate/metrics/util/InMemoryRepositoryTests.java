@@ -74,7 +74,8 @@ public class InMemoryRepositoryTests {
 		this.repository.set("foo.bar", "one");
 		this.repository.set("foo.min", "two");
 		this.repository.set("foo.max", "three");
-		assertEquals(3, ((Collection<?>) this.repository.findAllWithPrefix("foo")).size());
+		assertEquals(3,
+				((Collection<?>) this.repository.findAllWithPrefix("foo")).size());
 	}
 
 	@Test

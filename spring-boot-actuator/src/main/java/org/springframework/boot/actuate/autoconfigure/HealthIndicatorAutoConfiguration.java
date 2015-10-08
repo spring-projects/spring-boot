@@ -158,15 +158,16 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "mongoHealthIndicator")
 		public HealthIndicator mongoHealthIndicator() {
 			if (this.mongoTemplates.size() == 1) {
-				return new MongoHealthIndicator(this.mongoTemplates.values().iterator()
-						.next());
+				return new MongoHealthIndicator(
+						this.mongoTemplates.values().iterator().next());
 			}
 
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
-			for (Map.Entry<String, MongoTemplate> entry : this.mongoTemplates.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new MongoHealthIndicator(
-						entry.getValue()));
+			for (Map.Entry<String, MongoTemplate> entry : this.mongoTemplates
+					.entrySet()) {
+				composite.addHealthIndicator(entry.getKey(),
+						new MongoHealthIndicator(entry.getValue()));
 			}
 			return composite;
 		}
@@ -187,16 +188,16 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "redisHealthIndicator")
 		public HealthIndicator redisHealthIndicator() {
 			if (this.redisConnectionFactories.size() == 1) {
-				return new RedisHealthIndicator(this.redisConnectionFactories.values()
-						.iterator().next());
+				return new RedisHealthIndicator(
+						this.redisConnectionFactories.values().iterator().next());
 			}
 
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, RedisConnectionFactory> entry : this.redisConnectionFactories
 					.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new RedisHealthIndicator(
-						entry.getValue()));
+				composite.addHealthIndicator(entry.getKey(),
+						new RedisHealthIndicator(entry.getValue()));
 			}
 			return composite;
 		}
@@ -217,16 +218,16 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "rabbitHealthIndicator")
 		public HealthIndicator rabbitHealthIndicator() {
 			if (this.rabbitTemplates.size() == 1) {
-				return new RabbitHealthIndicator(this.rabbitTemplates.values().iterator()
-						.next());
+				return new RabbitHealthIndicator(
+						this.rabbitTemplates.values().iterator().next());
 			}
 
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, RabbitTemplate> entry : this.rabbitTemplates
 					.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new RabbitHealthIndicator(
-						entry.getValue()));
+				composite.addHealthIndicator(entry.getKey(),
+						new RabbitHealthIndicator(entry.getValue()));
 			}
 			return composite;
 		}
@@ -247,15 +248,15 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "solrHealthIndicator")
 		public HealthIndicator solrHealthIndicator() {
 			if (this.solrServers.size() == 1) {
-				return new SolrHealthIndicator(this.solrServers.entrySet().iterator()
-						.next().getValue());
+				return new SolrHealthIndicator(
+						this.solrServers.entrySet().iterator().next().getValue());
 			}
 
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, SolrServer> entry : this.solrServers.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new SolrHealthIndicator(
-						entry.getValue()));
+				composite.addHealthIndicator(entry.getKey(),
+						new SolrHealthIndicator(entry.getValue()));
 			}
 			return composite;
 		}

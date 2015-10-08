@@ -69,8 +69,8 @@ public class ExplodedArchiveTests {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
-			File destination = new File(this.rootFolder.getAbsolutePath()
-					+ File.separator + entry.getName());
+			File destination = new File(
+					this.rootFolder.getAbsolutePath() + File.separator + entry.getName());
 			destination.getParentFile().mkdirs();
 			if (entry.isDirectory()) {
 				destination.mkdir();
@@ -115,8 +115,8 @@ public class ExplodedArchiveTests {
 	public void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString(), equalTo("jar:" + this.rootFolder.toURI()
-				+ "nested.jar!/"));
+		assertThat(nested.getUrl().toString(),
+				equalTo("jar:" + this.rootFolder.toURI() + "nested.jar!/"));
 	}
 
 	@Test
@@ -125,8 +125,8 @@ public class ExplodedArchiveTests {
 		Archive nested = this.archive.getNestedArchive(entry);
 		Map<String, Entry> nestedEntries = getEntriesMap(nested);
 		assertThat(nestedEntries.size(), equalTo(1));
-		assertThat(nested.getUrl().toString(), equalTo("file:"
-				+ this.rootFolder.toURI().getPath() + "d/"));
+		assertThat(nested.getUrl().toString(),
+				equalTo("file:" + this.rootFolder.toURI().getPath() + "d/"));
 	}
 
 	@Test
@@ -159,7 +159,8 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getNonRecursiveManifest() throws Exception {
-		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"));
+		ExplodedArchive archive = new ExplodedArchive(
+				new File("src/test/resources/root"));
 		assertNotNull(archive.getManifest());
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size(), equalTo(4));
@@ -167,8 +168,8 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getNonRecursiveManifestEvenIfNonRecursive() throws Exception {
-		ExplodedArchive archive = new ExplodedArchive(
-				new File("src/test/resources/root"), false);
+		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"),
+				false);
 		assertNotNull(archive.getManifest());
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size(), equalTo(3));
@@ -176,7 +177,8 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getResourceAsStream() throws Exception {
-		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"));
+		ExplodedArchive archive = new ExplodedArchive(
+				new File("src/test/resources/root"));
 		assertNotNull(archive.getManifest());
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
 		assertNotNull(loader.getResourceAsStream("META-INF/spring/application.xml"));
@@ -185,8 +187,8 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getResourceAsStreamNonRecursive() throws Exception {
-		ExplodedArchive archive = new ExplodedArchive(
-				new File("src/test/resources/root"), false);
+		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"),
+				false);
 		assertNotNull(archive.getManifest());
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
 		assertNotNull(loader.getResourceAsStream("META-INF/spring/application.xml"));

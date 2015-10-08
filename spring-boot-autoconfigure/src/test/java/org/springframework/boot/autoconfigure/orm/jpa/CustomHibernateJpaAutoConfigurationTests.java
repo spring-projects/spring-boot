@@ -62,8 +62,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		this.context.refresh();
 		JpaProperties bean = this.context.getBean(JpaProperties.class);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		String actual = bean.getHibernateProperties(dataSource).get(
-				"hibernate.hbm2ddl.auto");
+		String actual = bean.getHibernateProperties(dataSource)
+				.get("hibernate.hbm2ddl.auto");
 		// Default is generic and safe
 		assertThat(actual, nullValue());
 	}
@@ -79,8 +79,8 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		this.context.refresh();
 		JpaProperties bean = this.context.getBean(JpaProperties.class);
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		String actual = bean.getHibernateProperties(dataSource).get(
-				"hibernate.hbm2ddl.auto");
+		String actual = bean.getHibernateProperties(dataSource)
+				.get("hibernate.hbm2ddl.auto");
 		assertThat(actual, equalTo("create-drop"));
 	}
 

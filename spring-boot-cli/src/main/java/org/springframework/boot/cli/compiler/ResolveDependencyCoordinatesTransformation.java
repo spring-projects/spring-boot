@@ -38,14 +38,14 @@ import groovy.lang.Grab;
  * @author Phillip Webb
  */
 @Order(ResolveDependencyCoordinatesTransformation.ORDER)
-public class ResolveDependencyCoordinatesTransformation extends
-		AnnotatedNodeASTTransformation {
+public class ResolveDependencyCoordinatesTransformation
+		extends AnnotatedNodeASTTransformation {
 
 	public static final int ORDER = GrabMetadataTransformation.ORDER + 300;
 
 	private static final Set<String> GRAB_ANNOTATION_NAMES = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList(Grab.class.getName(),
-					Grab.class.getSimpleName())));
+			.unmodifiableSet(new HashSet<String>(
+					Arrays.asList(Grab.class.getName(), Grab.class.getSimpleName())));
 
 	private final DependencyResolutionContext resolutionContext;
 

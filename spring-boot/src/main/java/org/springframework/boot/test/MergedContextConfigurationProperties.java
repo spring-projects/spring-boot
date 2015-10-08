@@ -33,13 +33,14 @@ class MergedContextConfigurationProperties {
 
 	private final MergedContextConfiguration configuration;
 
-	public MergedContextConfigurationProperties(MergedContextConfiguration configuration) {
+	public MergedContextConfigurationProperties(
+			MergedContextConfiguration configuration) {
 		this.configuration = configuration;
 	}
 
 	public void add(String[] properties, String... additional) {
-		Set<String> merged = new LinkedHashSet<String>((Arrays.asList(this.configuration
-				.getPropertySourceProperties())));
+		Set<String> merged = new LinkedHashSet<String>(
+				(Arrays.asList(this.configuration.getPropertySourceProperties())));
 		merged.addAll(Arrays.asList(properties));
 		merged.addAll(Arrays.asList(additional));
 		addIntegrationTestProperty(merged);

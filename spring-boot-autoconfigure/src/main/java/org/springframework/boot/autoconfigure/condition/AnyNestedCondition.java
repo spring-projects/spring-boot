@@ -61,8 +61,8 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  */
 @Order(Ordered.LOWEST_PRECEDENCE - 20)
-public abstract class AnyNestedCondition extends SpringBootCondition implements
-		ConfigurationCondition {
+public abstract class AnyNestedCondition extends SpringBootCondition
+		implements ConfigurationCondition {
 
 	private final ConfigurationPhase configurationPhase;
 
@@ -79,8 +79,8 @@ public abstract class AnyNestedCondition extends SpringBootCondition implements
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		MemberConditions memberConditions = new MemberConditions(context, getClass()
-				.getName());
+		MemberConditions memberConditions = new MemberConditions(context,
+				getClass().getName());
 		List<ConditionOutcome> outcomes = memberConditions.getMatchOutcomes();
 		List<ConditionOutcome> match = new ArrayList<ConditionOutcome>();
 		List<ConditionOutcome> nonMatch = new ArrayList<ConditionOutcome>();

@@ -84,8 +84,8 @@ import io.undertow.servlet.util.ImmediateInstanceFactory;
  * @since 1.2.0
  * @see UndertowEmbeddedServletContainer
  */
-public class UndertowEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+public class UndertowEmbeddedServletContainerFactory
+		extends AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
@@ -283,8 +283,9 @@ public class UndertowEmbeddedServletContainerFactory extends
 			// Get key manager to provide client credentials.
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory
 					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			char[] keyPassword = ssl.getKeyPassword() != null ? ssl.getKeyPassword()
-					.toCharArray() : ssl.getKeyStorePassword().toCharArray();
+			char[] keyPassword = ssl.getKeyPassword() != null
+					? ssl.getKeyPassword().toCharArray()
+					: ssl.getKeyStorePassword().toCharArray();
 			keyManagerFactory.init(keyStore, keyPassword);
 			return keyManagerFactory.getKeyManagers();
 		}
@@ -306,8 +307,8 @@ public class UndertowEmbeddedServletContainerFactory extends
 			}
 			KeyStore trustedKeyStore = KeyStore.getInstance(trustStoreType);
 			URL url = ResourceUtils.getURL(trustStore);
-			trustedKeyStore.load(url.openStream(), ssl.getTrustStorePassword()
-					.toCharArray());
+			trustedKeyStore.load(url.openStream(),
+					ssl.getTrustStorePassword().toCharArray());
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
 					.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			trustManagerFactory.init(trustedKeyStore);

@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
 public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
+
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
 		levels.put(LogLevel.TRACE, Level.TRACE);
@@ -88,8 +89,8 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 			Log4jConfigurer.initLogging(location);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize Log4J logging from "
-					+ location, ex);
+			throw new IllegalStateException(
+					"Could not initialize Log4J logging from " + location, ex);
 		}
 	}
 
@@ -100,8 +101,8 @@ public class Log4JLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void setLogLevel(String loggerName, LogLevel level) {
-		Logger logger = (StringUtils.hasLength(loggerName) ? LogManager
-				.getLogger(loggerName) : LogManager.getRootLogger());
+		Logger logger = (StringUtils.hasLength(loggerName)
+				? LogManager.getLogger(loggerName) : LogManager.getRootLogger());
 		logger.setLevel(LEVELS.get(level));
 	}
 

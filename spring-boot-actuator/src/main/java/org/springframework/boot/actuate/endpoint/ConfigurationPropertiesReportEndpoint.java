@@ -71,8 +71,8 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.configprops", ignoreUnknownFields = false)
-public class ConfigurationPropertiesReportEndpoint extends
-		AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
+public class ConfigurationPropertiesReportEndpoint
+		extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
 
 	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
@@ -128,7 +128,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private Map<String, Object> extract(ApplicationContext context, ObjectMapper mapper) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(context);
+		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(
+				context);
 		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
 				beanFactoryMetaData);
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
@@ -179,8 +180,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		}
 		try {
 			@SuppressWarnings("unchecked")
-			Map<String, Object> result = new HashMap<String, Object>(mapper.convertValue(
-					this.metadata.extractMap(bean, prefix), Map.class));
+			Map<String, Object> result = new HashMap<String, Object>(mapper
+					.convertValue(this.metadata.extractMap(bean, prefix), Map.class));
 			return result;
 		}
 		catch (Exception ex) {
@@ -230,8 +231,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
 				ConfigurationProperties.class);
 		if (beanFactoryMetaData != null) {
-			ConfigurationProperties override = beanFactoryMetaData.findFactoryAnnotation(
-					beanName, ConfigurationProperties.class);
+			ConfigurationProperties override = beanFactoryMetaData
+					.findFactoryAnnotation(beanName, ConfigurationProperties.class);
 			if (override != null) {
 				// The @Bean-level @ConfigurationProperties overrides the one at type
 				// level when binding. Arguably we should render them both, but this one
@@ -267,8 +268,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 * properties.
 	 */
 	@SuppressWarnings("serial")
-	private static class CglibAnnotationIntrospector extends
-			JacksonAnnotationIntrospector {
+	private static class CglibAnnotationIntrospector
+			extends JacksonAnnotationIntrospector {
 
 		@Override
 		public Object findFilterId(Annotated a) {
@@ -330,9 +331,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 			// that its a nested class used solely for binding to config props, so it
 			// should be kosher. This filter is not used if there is JSON metadata for
 			// the property, so it's mainly for user-defined beans.
-			return (setter != null)
-					|| ClassUtils.getPackageName(parentType).equals(
-							ClassUtils.getPackageName(type));
+			return (setter != null) || ClassUtils.getPackageName(parentType)
+					.equals(ClassUtils.getPackageName(type));
 		}
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc,
@@ -387,9 +387,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		private Set<String> findKeys(String prefix) {
 			HashSet<String> keys = new HashSet<String>();
 			for (String key : getKeys()) {
-				if (key.length() > prefix.length()
-						&& key.startsWith(prefix)
-						&& ".".equals(key.substring(prefix.length(), prefix.length() + 1))) {
+				if (key.length() > prefix.length() && key.startsWith(prefix) && "."
+						.equals(key.substring(prefix.length(), prefix.length() + 1))) {
 					keys.add(key.substring(prefix.length() + 1));
 				}
 			}
@@ -416,8 +415,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		}
 
 		@SuppressWarnings("unchecked")
-		private void addKeys(ObjectMapper mapper, Resource resource) throws IOException,
-				JsonParseException, JsonMappingException {
+		private void addKeys(ObjectMapper mapper, Resource resource)
+				throws IOException, JsonParseException, JsonMappingException {
 			InputStream inputStream = resource.getInputStream();
 			Map<String, Object> map = mapper.readValue(inputStream, Map.class);
 			Collection<Map<String, Object>> metadata = (Collection<Map<String, Object>>) map
@@ -448,8 +447,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		@SuppressWarnings("unchecked")
 		private void addProperty(Object bean, String key, Map<String, Object> map) {
 			String prefix = (key.contains(".") ? StringUtils.split(key, ".")[0] : key);
-			String suffix = (key.length() > prefix.length() ? key.substring(prefix
-					.length() + 1) : null);
+			String suffix = (key.length() > prefix.length()
+					? key.substring(prefix.length() + 1) : null);
 			String property = prefix;
 			if (bean instanceof Map) {
 				Map<String, Object> value = (Map<String, Object>) bean;

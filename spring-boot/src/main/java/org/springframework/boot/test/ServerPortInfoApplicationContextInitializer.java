@@ -43,13 +43,13 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class ServerPortInfoApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class ServerPortInfoApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext
-				.addApplicationListener(new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
+		applicationContext.addApplicationListener(
+				new ApplicationListener<EmbeddedServletContainerInitializedEvent>() {
 					@Override
 					public void onApplicationEvent(
 							EmbeddedServletContainerInitializedEvent event) {
@@ -61,8 +61,8 @@ public class ServerPortInfoApplicationContextInitializer implements
 
 	protected void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
 		String propertyName = getPropertyName(event.getApplicationContext());
-		setPortProperty(event.getApplicationContext(), propertyName, event
-				.getEmbeddedServletContainer().getPort());
+		setPortProperty(event.getApplicationContext(), propertyName,
+				event.getEmbeddedServletContainer().getPort());
 	}
 
 	protected String getPropertyName(EmbeddedWebApplicationContext context) {
@@ -73,7 +73,8 @@ public class ServerPortInfoApplicationContextInitializer implements
 		return "local." + name + ".port";
 	}
 
-	private void setPortProperty(ApplicationContext context, String propertyName, int port) {
+	private void setPortProperty(ApplicationContext context, String propertyName,
+			int port) {
 		if (context instanceof ConfigurableApplicationContext) {
 			EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) context,
 					propertyName + ":" + port);

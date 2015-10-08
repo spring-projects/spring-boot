@@ -121,7 +121,8 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  *
  * <p>
  * <ul>
- * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}</li>
+ * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}
+ * </li>
  *
  * <li>{@link Resource} - An XML resource to be loaded by {@link XmlBeanDefinitionReader},
  * or a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
@@ -228,7 +229,8 @@ public class SpringApplication {
 			this.sources.addAll(Arrays.asList(sources));
 		}
 		this.webEnvironment = deduceWebEnvironment();
-		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		setInitializers((Collection) getSpringFactoriesInstances(
+				ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
@@ -268,10 +270,8 @@ public class SpringApplication {
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 
-		System.setProperty(
-				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
-				System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
-						Boolean.toString(this.headless)));
+		System.setProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, System.getProperty(
+				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, Boolean.toString(this.headless)));
 
 		Collection<SpringApplicationRunListener> runListeners = getRunListeners(args);
 		for (SpringApplicationRunListener runListener : runListeners) {
@@ -326,8 +326,8 @@ public class SpringApplication {
 
 			stopWatch.stop();
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(
-						getApplicationLog(), stopWatch);
+				new StartupInfoLogger(this.mainApplicationClass)
+						.logStarted(getApplicationLog(), stopWatch);
 			}
 			return context;
 		}
@@ -379,8 +379,8 @@ public class SpringApplication {
 				instances.add(instance);
 			}
 			catch (Throwable ex) {
-				throw new IllegalArgumentException("Cannot instantiate " + type + " : "
-						+ name, ex);
+				throw new IllegalArgumentException(
+						"Cannot instantiate " + type + " : " + name, ex);
 			}
 		}
 
@@ -410,7 +410,8 @@ public class SpringApplication {
 	 * @see #configureProfiles(ConfigurableEnvironment, String[])
 	 * @see #configurePropertySources(ConfigurableEnvironment, String[])
 	 */
-	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
+	protected void configureEnvironment(ConfigurableEnvironment environment,
+			String[] args) {
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
 	}
@@ -426,16 +427,16 @@ public class SpringApplication {
 			String[] args) {
 		MutablePropertySources sources = environment.getPropertySources();
 		if (this.defaultProperties != null && !this.defaultProperties.isEmpty()) {
-			sources.addLast(new MapPropertySource("defaultProperties",
-					this.defaultProperties));
+			sources.addLast(
+					new MapPropertySource("defaultProperties", this.defaultProperties));
 		}
 		if (this.addCommandLineProperties && args.length > 0) {
 			String name = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
 			if (sources.contains(name)) {
 				PropertySource<?> source = sources.get(name);
 				CompositePropertySource composite = new CompositePropertySource(name);
-				composite.addPropertySource(new SimpleCommandLinePropertySource(name
-						+ "-" + args.hashCode(), args));
+				composite.addPropertySource(new SimpleCommandLinePropertySource(
+						name + "-" + args.hashCode(), args));
 				composite.addPropertySource(source);
 				sources.replace(name, composite);
 			}
@@ -511,14 +512,14 @@ public class SpringApplication {
 		Class<?> contextClass = this.applicationContextClass;
 		if (contextClass == null) {
 			try {
-				contextClass = Class
-						.forName(this.webEnvironment ? DEFAULT_WEB_CONTEXT_CLASS
-								: DEFAULT_CONTEXT_CLASS);
+				contextClass = Class.forName(this.webEnvironment
+						? DEFAULT_WEB_CONTEXT_CLASS : DEFAULT_CONTEXT_CLASS);
 			}
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
 						"Unable create a default ApplicationContext, "
-								+ "please specify an ApplicationContextClass", ex);
+								+ "please specify an ApplicationContextClass",
+						ex);
 			}
 		}
 		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
@@ -547,8 +548,8 @@ public class SpringApplication {
 						.setResourceLoader(this.resourceLoader);
 			}
 			if (context instanceof DefaultResourceLoader) {
-				((DefaultResourceLoader) context).setClassLoader(this.resourceLoader
-						.getClassLoader());
+				((DefaultResourceLoader) context)
+						.setClassLoader(this.resourceLoader.getClassLoader());
 			}
 		}
 	}
@@ -599,8 +600,8 @@ public class SpringApplication {
 	 */
 	protected void load(ApplicationContext context, Object[] sources) {
 		if (this.log.isDebugEnabled()) {
-			this.log.debug("Loading source "
-					+ StringUtils.arrayToCommaDelimitedString(sources));
+			this.log.debug(
+					"Loading source " + StringUtils.arrayToCommaDelimitedString(sources));
 		}
 		BeanDefinitionLoader loader = createBeanDefinitionLoader(
 				getBeanDefinitionRegistry(context), sources);
@@ -665,15 +666,16 @@ public class SpringApplication {
 	}
 
 	private void runCommandLineRunners(ApplicationContext context, String... args) {
-		List<CommandLineRunner> runners = new ArrayList<CommandLineRunner>(context
-				.getBeansOfType(CommandLineRunner.class).values());
+		List<CommandLineRunner> runners = new ArrayList<CommandLineRunner>(
+				context.getBeansOfType(CommandLineRunner.class).values());
 		AnnotationAwareOrderComparator.sort(runners);
 		for (CommandLineRunner runner : runners) {
 			try {
 				runner.run(args);
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException("Failed to execute CommandLineRunner", ex);
+				throw new IllegalStateException("Failed to execute CommandLineRunner",
+						ex);
 			}
 		}
 	}
@@ -1001,8 +1003,8 @@ public class SpringApplication {
 			try {
 				List<ExitCodeGenerator> generators = new ArrayList<ExitCodeGenerator>();
 				generators.addAll(Arrays.asList(exitCodeGenerators));
-				generators.addAll(context.getBeansOfType(ExitCodeGenerator.class)
-						.values());
+				generators
+						.addAll(context.getBeansOfType(ExitCodeGenerator.class).values());
 				exitCode = getExitCode(generators);
 			}
 			finally {

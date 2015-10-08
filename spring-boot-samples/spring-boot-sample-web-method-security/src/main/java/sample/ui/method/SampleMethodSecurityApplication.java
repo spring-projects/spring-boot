@@ -75,8 +75,8 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	@Configuration
-	protected static class AuthenticationSecurity extends
-			GlobalAuthenticationConfigurerAdapter {
+	protected static class AuthenticationSecurity
+			extends GlobalAuthenticationConfigurerAdapter {
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {

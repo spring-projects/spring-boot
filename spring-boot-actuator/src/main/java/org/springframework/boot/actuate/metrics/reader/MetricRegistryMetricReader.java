@@ -240,8 +240,8 @@ public class MetricRegistryMetricReader implements MetricReader, MetricRegistryL
 			result = new HashSet<String>();
 		}
 		if (result.isEmpty()) {
-			for (PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors(metric
-					.getClass())) {
+			for (PropertyDescriptor descriptor : BeanUtils
+					.getPropertyDescriptors(metric.getClass())) {
 				if (ClassUtils.isAssignable(Number.class, descriptor.getPropertyType())) {
 					result.add(descriptor.getName());
 				}

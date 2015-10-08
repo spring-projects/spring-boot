@@ -110,8 +110,8 @@ public class RedisAutoConfiguration {
 					sentinels.add(new RedisNode(parts[0], Integer.valueOf(parts[1])));
 				}
 				catch (RuntimeException ex) {
-					throw new IllegalStateException("Invalid redis sentinel "
-							+ "property '" + node + "'", ex);
+					throw new IllegalStateException(
+							"Invalid redis sentinel " + "property '" + node + "'", ex);
 				}
 			}
 			return sentinels;
@@ -124,8 +124,8 @@ public class RedisAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnMissingClass(name = "org.apache.commons.pool2.impl.GenericObjectPool")
-	protected static class RedisConnectionConfiguration extends
-			AbstractRedisConfiguration {
+	protected static class RedisConnectionConfiguration
+			extends AbstractRedisConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -141,8 +141,8 @@ public class RedisAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(GenericObjectPool.class)
-	protected static class RedisPooledConnectionConfiguration extends
-			AbstractRedisConfiguration {
+	protected static class RedisPooledConnectionConfiguration
+			extends AbstractRedisConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -180,7 +180,7 @@ public class RedisAutoConfiguration {
 		@ConditionalOnMissingBean(name = "redisTemplate")
 		public RedisOperations<Object, Object> redisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
-				throws UnknownHostException {
+						throws UnknownHostException {
 			RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();
 			template.setConnectionFactory(redisConnectionFactory);
 			return template;
@@ -190,7 +190,7 @@ public class RedisAutoConfiguration {
 		@ConditionalOnMissingBean(StringRedisTemplate.class)
 		public StringRedisTemplate stringRedisTemplate(
 				RedisConnectionFactory redisConnectionFactory)
-				throws UnknownHostException {
+						throws UnknownHostException {
 			StringRedisTemplate template = new StringRedisTemplate();
 			template.setConnectionFactory(redisConnectionFactory);
 			return template;

@@ -65,7 +65,8 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
-	@ComponentScan(basePackageClasses = { SampleController.class, HelloWorldService.class })
+	@ComponentScan(basePackageClasses = { SampleController.class,
+			HelloWorldService.class })
 	public static class NonAutoConfigurationSampleTomcatApplication {
 
 		public static void main(String[] args) throws Exception {
@@ -76,8 +77,8 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}

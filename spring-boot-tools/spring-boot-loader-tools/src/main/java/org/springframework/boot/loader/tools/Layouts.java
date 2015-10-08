@@ -116,6 +116,7 @@ public class Layouts {
 	public static class War implements Layout {
 
 		private static final Map<LibraryScope, String> SCOPE_DESTINATIONS;
+
 		static {
 			Map<LibraryScope, String> map = new HashMap<LibraryScope, String>();
 			map.put(LibraryScope.COMPILE, "WEB-INF/lib/");

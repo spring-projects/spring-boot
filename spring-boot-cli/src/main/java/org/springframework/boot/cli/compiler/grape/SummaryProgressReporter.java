@@ -48,7 +48,8 @@ final class SummaryProgressReporter implements ProgressReporter {
 
 	private boolean finished;
 
-	public SummaryProgressReporter(DefaultRepositorySystemSession session, PrintStream out) {
+	public SummaryProgressReporter(DefaultRepositorySystemSession session,
+			PrintStream out) {
 		this.out = out;
 
 		session.setTransferListener(new AbstractTransferListener() {
@@ -74,13 +75,15 @@ final class SummaryProgressReporter implements ProgressReporter {
 	}
 
 	private void reportProgress() {
-		if (!this.finished && System.currentTimeMillis() - this.startTime > INITIAL_DELAY) {
+		if (!this.finished
+				&& System.currentTimeMillis() - this.startTime > INITIAL_DELAY) {
 			if (!this.started) {
 				this.started = true;
 				this.out.print("Resolving dependencies..");
 				this.lastProgressTime = System.currentTimeMillis();
 			}
-			else if (System.currentTimeMillis() - this.lastProgressTime > PROGRESS_DELAY) {
+			else if (System.currentTimeMillis()
+					- this.lastProgressTime > PROGRESS_DELAY) {
 				this.out.print(".");
 				this.lastProgressTime = System.currentTimeMillis();
 			}

@@ -186,7 +186,8 @@ public class HornetQAutoConfigurationTests {
 	@Test
 	public void embeddedServiceWithCustomJmsConfiguration() {
 		// Ignored with custom config
-		load(CustomJmsConfiguration.class, "spring.hornetq.embedded.queues=Queue1,Queue2");
+		load(CustomJmsConfiguration.class,
+				"spring.hornetq.embedded.queues=Queue1,Queue2");
 		DestinationChecker checker = new DestinationChecker(this.context);
 		checker.checkQueue("custom", true); // See CustomJmsConfiguration
 
@@ -285,7 +286,8 @@ public class HornetQAutoConfigurationTests {
 
 	private TransportConfiguration assertInVmConnectionFactory(
 			HornetQConnectionFactory connectionFactory) {
-		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
+		TransportConfiguration transportConfig = getSingleTransportConfiguration(
+				connectionFactory);
 		assertEquals(InVMConnectorFactory.class.getName(),
 				transportConfig.getFactoryClassName());
 		return transportConfig;
@@ -293,7 +295,8 @@ public class HornetQAutoConfigurationTests {
 
 	private TransportConfiguration assertNettyConnectionFactory(
 			HornetQConnectionFactory connectionFactory, String host, int port) {
-		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
+		TransportConfiguration transportConfig = getSingleTransportConfiguration(
+				connectionFactory);
 		assertEquals(NettyConnectorFactory.class.getName(),
 				transportConfig.getFactoryClassName());
 		assertEquals(host, transportConfig.getParams().get("host"));
@@ -393,8 +396,8 @@ public class HornetQAutoConfigurationTests {
 		@Bean
 		public JMSConfiguration myJmsConfiguration() {
 			JMSConfiguration config = new JMSConfigurationImpl();
-			config.getQueueConfigurations().add(
-					new JMSQueueConfigurationImpl("custom", null, false));
+			config.getQueueConfigurations()
+					.add(new JMSQueueConfigurationImpl("custom", null, false));
 			return config;
 		}
 	}
@@ -409,7 +412,8 @@ public class HornetQAutoConfigurationTests {
 		public HornetQConfigurationCustomizer myHornetQCustomize() {
 			return new HornetQConfigurationCustomizer() {
 				@Override
-				public void customize(org.hornetq.core.config.Configuration configuration) {
+				public void customize(
+						org.hornetq.core.config.Configuration configuration) {
 					configuration.setClusterPassword("Foobar");
 					configuration.setName("customFooBar");
 				}

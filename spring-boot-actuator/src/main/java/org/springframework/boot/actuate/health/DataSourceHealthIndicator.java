@@ -48,14 +48,15 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 1.1.0
  */
-public class DataSourceHealthIndicator extends AbstractHealthIndicator implements
-		InitializingBean {
+public class DataSourceHealthIndicator extends AbstractHealthIndicator
+		implements InitializingBean {
 
 	private static final Map<String, String> PRODUCT_SPECIFIC_QUERIES;
+
 	static {
 		Map<String, String> queries = new HashMap<String, String>();
-		queries.put("HSQL Database Engine", "SELECT COUNT(*) FROM "
-				+ "INFORMATION_SCHEMA.SYSTEM_USERS");
+		queries.put("HSQL Database Engine",
+				"SELECT COUNT(*) FROM " + "INFORMATION_SCHEMA.SYSTEM_USERS");
 		queries.put("Oracle", "SELECT 'Hello' from DUAL");
 		queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
 		PRODUCT_SPECIFIC_QUERIES = Collections.unmodifiableMap(queries);
@@ -133,8 +134,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	private String getProduct() {
 		return this.jdbcTemplate.execute(new ConnectionCallback<String>() {
 			@Override
-			public String doInConnection(Connection connection) throws SQLException,
-					DataAccessException {
+			public String doInConnection(Connection connection)
+					throws SQLException, DataAccessException {
 				return connection.getMetaData().getDatabaseProductName();
 			}
 		});

@@ -115,8 +115,8 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 		@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
 		@ConditionalOnMissingBean(name = "thymeleafViewResolver")
 		@ConditionalOnBean(InternalResourceViewResolver.class)
-		protected static class InternalResourceViewResolverDelegateConfiguration extends
-				AbstractDelegateConfiguration {
+		protected static class InternalResourceViewResolverDelegateConfiguration
+				extends AbstractDelegateConfiguration {
 
 			@Autowired
 			private InternalResourceViewResolver viewResolver;

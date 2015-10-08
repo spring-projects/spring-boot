@@ -36,8 +36,8 @@ public class PropertiesFileDependenciesTests {
 
 	@Before
 	public void setup() throws Exception {
-		this.dependencies = new PropertiesFileDependencies(getClass()
-				.getResourceAsStream("external.properties"));
+		this.dependencies = new PropertiesFileDependencies(
+				getClass().getResourceAsStream("external.properties"));
 	}
 
 	@Test

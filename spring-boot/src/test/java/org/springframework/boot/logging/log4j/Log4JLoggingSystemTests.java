@@ -48,8 +48,8 @@ public class Log4JLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private final Log4JLoggingSystem loggingSystem = new Log4JLoggingSystem(getClass()
-			.getClassLoader());
+	private final Log4JLoggingSystem loggingSystem = new Log4JLoggingSystem(
+			getClass().getClassLoader());
 
 	private Log4JLogger logger;
 

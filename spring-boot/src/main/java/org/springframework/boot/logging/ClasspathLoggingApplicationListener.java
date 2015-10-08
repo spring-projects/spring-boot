@@ -35,8 +35,8 @@ import org.springframework.core.Ordered;
  *
  * @author Andy Wilkinson
  */
-public final class ClasspathLoggingApplicationListener implements
-		SmartApplicationListener {
+public final class ClasspathLoggingApplicationListener
+		implements SmartApplicationListener {
 
 	private static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 12;
 
@@ -52,8 +52,8 @@ public final class ClasspathLoggingApplicationListener implements
 		}
 		else if (event instanceof ApplicationFailedEvent) {
 			if (this.logger.isInfoEnabled()) {
-				this.logger.info("Application failed to start with classpath: "
-						+ getClasspath());
+				this.logger.info(
+						"Application failed to start with classpath: " + getClasspath());
 			}
 		}
 	}

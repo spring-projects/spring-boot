@@ -30,8 +30,8 @@ public class DefaultPropertyNamePatternsMatcherTests {
 
 	@Test
 	public void namesShorter() {
-		assertFalse(new DefaultPropertyNamePatternsMatcher("aaaa", "bbbb")
-				.matches("zzzzz"));
+		assertFalse(
+				new DefaultPropertyNamePatternsMatcher("aaaa", "bbbb").matches("zzzzz"));
 
 	}
 

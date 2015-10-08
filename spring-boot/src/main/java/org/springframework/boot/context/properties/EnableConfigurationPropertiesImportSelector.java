@@ -48,18 +48,19 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 	public String[] selectImports(AnnotationMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				EnableConfigurationProperties.class.getName(), false);
-		Object[] type = attributes == null ? null : (Object[]) attributes
-				.getFirst("value");
+		Object[] type = attributes == null ? null
+				: (Object[]) attributes.getFirst("value");
 		if (type == null || type.length == 0) {
-			return new String[] { ConfigurationPropertiesBindingPostProcessorRegistrar.class
-					.getName() };
+			return new String[] {
+					ConfigurationPropertiesBindingPostProcessorRegistrar.class
+							.getName() };
 		}
 		return new String[] { ConfigurationPropertiesBeanRegistrar.class.getName(),
 				ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName() };
 	}
 
-	public static class ConfigurationPropertiesBeanRegistrar implements
-			ImportBeanDefinitionRegistrar {
+	public static class ConfigurationPropertiesBeanRegistrar
+			implements ImportBeanDefinitionRegistrar {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata metadata,
@@ -70,8 +71,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			List<Class<?>> types = collectClasses(attributes.get("value"));
 			for (Class<?> type : types) {
 				String prefix = extractPrefix(type);
-				String name = (StringUtils.hasText(prefix) ? prefix
-						+ ".CONFIGURATION_PROPERTIES" : type.getName());
+				String name = (StringUtils.hasText(prefix)
+						? prefix + ".CONFIGURATION_PROPERTIES" : type.getName());
 				if (!registry.containsBeanDefinition(name)) {
 					registerBeanDefinition(registry, type, name);
 				}
@@ -114,11 +115,13 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			}
 		}
 
-		private void registerPropertiesHolder(BeanDefinitionRegistry registry, String name) {
+		private void registerPropertiesHolder(BeanDefinitionRegistry registry,
+				String name) {
 			BeanDefinitionBuilder builder = BeanDefinitionBuilder
 					.genericBeanDefinition(ConfigurationPropertiesHolder.class);
 			builder.addConstructorArgReference(name);
-			registry.registerBeanDefinition(name + ".HOLDER", builder.getBeanDefinition());
+			registry.registerBeanDefinition(name + ".HOLDER",
+					builder.getBeanDefinition());
 		}
 
 	}

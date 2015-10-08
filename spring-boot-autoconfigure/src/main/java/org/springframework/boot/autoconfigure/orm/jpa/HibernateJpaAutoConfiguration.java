@@ -128,8 +128,9 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	}
 
 	private boolean runningOnWebSphere() {
-		return ClassUtils.isPresent("com.ibm.websphere.jtaextensions."
-				+ "ExtendedJTATransaction", getClass().getClassLoader());
+		return ClassUtils.isPresent(
+				"com.ibm.websphere.jtaextensions." + "ExtendedJTATransaction",
+				getClass().getClassLoader());
 	}
 
 	private void configureWebSphereTransactionPlatform(
@@ -144,8 +145,8 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	private void configureSpringJtaPlatform(Map<String, Object> vendorProperties,
 			JtaTransactionManager jtaTransactionManager) {
 		try {
-			vendorProperties.put(JTA_PLATFORM, new SpringJtaPlatform(
-					jtaTransactionManager));
+			vendorProperties.put(JTA_PLATFORM,
+					new SpringJtaPlatform(jtaTransactionManager));
 		}
 		catch (LinkageError ex) {
 			// NoClassDefFoundError can happen if Hibernate 4.2 is used and some

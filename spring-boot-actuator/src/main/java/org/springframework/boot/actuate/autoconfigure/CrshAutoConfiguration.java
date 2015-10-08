@@ -104,11 +104,11 @@ import org.springframework.util.StringUtils;
  * infrastructure add beans of type {@link CrshShellProperties} to the application
  * context.
  * <p>
- * Additional shell commands can be implemented using the guide and documentation at <a
- * href="http://www.crashub.org">crashub.org</a>. By default Boot will search for commands
- * using the following classpath scanning pattern <code>classpath*:/commands/**</code>. To
- * add different locations or override the default use
- * <code>shell.command_path_patterns</code> in your application configuration.
+ * Additional shell commands can be implemented using the guide and documentation at
+ * <a href="http://www.crashub.org">crashub.org</a>. By default Boot will search for
+ * commands using the following classpath scanning pattern
+ * <code>classpath*:/commands/**</code>. To add different locations or override the
+ * default use <code>shell.command_path_patterns</code> in your application configuration.
  *
  * @author Christian Dupuis
  * @see ShellProperties
@@ -180,8 +180,8 @@ public class CrshAutoConfiguration {
 			// ConfigurationProperties.
 			SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
 			if (this.management != null) {
-				authenticationProperties.setRoles(new String[] { this.management
-						.getSecurity().getRole() });
+				authenticationProperties.setRoles(
+						new String[] { this.management.getSecurity().getRole() });
 			}
 			return authenticationProperties;
 		}
@@ -240,8 +240,8 @@ public class CrshAutoConfiguration {
 							pathPattern, this.resourceLoader, filterPatterns)));
 				}
 				catch (IOException ex) {
-					throw new IllegalStateException("Failed to mount file system for '"
-							+ pathPattern + "'", ex);
+					throw new IllegalStateException(
+							"Failed to mount file system for '" + pathPattern + "'", ex);
 				}
 			}
 			return fileSystem;
@@ -273,9 +273,9 @@ public class CrshAutoConfiguration {
 	private static class AuthenticationManagerAdapter extends
 			CRaSHPlugin<AuthenticationPlugin> implements AuthenticationPlugin<String> {
 
-		private static final PropertyDescriptor<String> ROLES = PropertyDescriptor
-				.create("auth.spring.roles", "ADMIN",
-						"Comma separated list of roles required to access the shell");
+		private static final PropertyDescriptor<String> ROLES = PropertyDescriptor.create(
+				"auth.spring.roles", "ADMIN",
+				"Comma separated list of roles required to access the shell");
 
 		@Autowired
 		private AuthenticationManager authenticationManager;
@@ -347,8 +347,8 @@ public class CrshAutoConfiguration {
 	 * {@link ServiceLoaderDiscovery} to expose {@link CRaSHPlugin} Beans from Spring and
 	 * deal with filtering disabled plugins.
 	 */
-	private static class BeanFactoryFilteringPluginDiscovery extends
-			ServiceLoaderDiscovery {
+	private static class BeanFactoryFilteringPluginDiscovery
+			extends ServiceLoaderDiscovery {
 
 		private final ListableBeanFactory beanFactory;
 
@@ -356,7 +356,7 @@ public class CrshAutoConfiguration {
 
 		public BeanFactoryFilteringPluginDiscovery(ClassLoader classLoader,
 				ListableBeanFactory beanFactory, String[] disabledPlugins)
-				throws NullPointerException {
+						throws NullPointerException {
 			super(classLoader);
 			this.beanFactory = beanFactory;
 			this.disabledPlugins = disabledPlugins;
@@ -373,8 +373,8 @@ public class CrshAutoConfiguration {
 				}
 			}
 
-			Collection<CRaSHPlugin> pluginBeans = this.beanFactory.getBeansOfType(
-					CRaSHPlugin.class).values();
+			Collection<CRaSHPlugin> pluginBeans = this.beanFactory
+					.getBeansOfType(CRaSHPlugin.class).values();
 			for (CRaSHPlugin<?> pluginBean : pluginBeans) {
 				if (isEnabled(pluginBean)) {
 					plugins.add(pluginBean);
@@ -405,8 +405,8 @@ public class CrshAutoConfiguration {
 		private boolean isEnabled(Class<?> pluginClass) {
 			for (String disabledPlugin : this.disabledPlugins) {
 				if (ClassUtils.getShortName(pluginClass).equalsIgnoreCase(disabledPlugin)
-						|| ClassUtils.getQualifiedName(pluginClass).equalsIgnoreCase(
-								disabledPlugin)) {
+						|| ClassUtils.getQualifiedName(pluginClass)
+								.equalsIgnoreCase(disabledPlugin)) {
 					return false;
 				}
 			}
@@ -507,7 +507,8 @@ public class CrshAutoConfiguration {
 			Resource[] resources = this.resourceLoader.getResources(getName());
 			List<ResourceHandle> files = new ArrayList<ResourceHandle>();
 			for (Resource resource : resources) {
-				if (!resource.getURL().getPath().endsWith("/") && !shouldFilter(resource)) {
+				if (!resource.getURL().getPath().endsWith("/")
+						&& !shouldFilter(resource)) {
 					files.add(new FileHandle(resource.getFilename(), resource));
 				}
 			}

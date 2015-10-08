@@ -162,7 +162,8 @@ public class MetricRepositoryAutoConfiguration {
 		}
 
 		@Bean
-		public DropwizardMetricWriter dropwizardMetricWriter(MetricRegistry metricRegistry) {
+		public DropwizardMetricWriter dropwizardMetricWriter(
+				MetricRegistry metricRegistry) {
 			return new DropwizardMetricWriter(metricRegistry);
 		}
 

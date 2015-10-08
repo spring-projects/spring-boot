@@ -186,8 +186,8 @@ class BeanDefinitionLoader {
 
 	private int load(CharSequence source) {
 
-		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(
-				source.toString());
+		String resolvedSource = this.xmlReader.getEnvironment()
+				.resolvePlaceholders(source.toString());
 
 		// Attempt as a Class
 		try {
@@ -250,11 +250,12 @@ class BeanDefinitionLoader {
 			// Attempt to find a class in this package
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
 					getClass().getClassLoader());
-			Resource[] resources = resolver.getResources(ClassUtils
-					.convertClassNameToResourcePath(source.toString()) + "/*.class");
+			Resource[] resources = resolver.getResources(
+					ClassUtils.convertClassNameToResourcePath(source.toString())
+							+ "/*.class");
 			for (Resource resource : resources) {
-				String className = StringUtils.stripFilenameExtension(resource
-						.getFilename());
+				String className = StringUtils
+						.stripFilenameExtension(resource.getFilename());
 				load(Class.forName(source.toString() + "." + className));
 				break;
 			}
@@ -284,7 +285,8 @@ class BeanDefinitionLoader {
 	 * Simple {@link TypeFilter} used to ensure that specified {@link Class} sources are
 	 * not accidentally re-added during scanning.
 	 */
-	private static class ClassExcludeFilter extends AbstractTypeHierarchyTraversingFilter {
+	private static class ClassExcludeFilter
+			extends AbstractTypeHierarchyTraversingFilter {
 
 		private final Set<String> classNames = new HashSet<String>();
 

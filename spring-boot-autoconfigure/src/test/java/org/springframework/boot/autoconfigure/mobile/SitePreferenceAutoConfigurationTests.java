@@ -92,8 +92,8 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context
-				.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+		assertNotNull(
+				this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
 	}
 
 	@Test
@@ -103,8 +103,8 @@ public class SitePreferenceAutoConfigurationTests {
 				"spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context
-				.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+		assertNotNull(
+				this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -128,11 +128,11 @@ public class SitePreferenceAutoConfigurationTests {
 		context.refresh();
 		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context
 				.getBean("requestMappingHandlerMapping");
-		Field interceptorsField = ReflectionUtils.findField(
-				RequestMappingHandlerMapping.class, "interceptors");
+		Field interceptorsField = ReflectionUtils
+				.findField(RequestMappingHandlerMapping.class, "interceptors");
 		interceptorsField.setAccessible(true);
-		List<Object> interceptors = (List<Object>) ReflectionUtils.getField(
-				interceptorsField, mapping);
+		List<Object> interceptors = (List<Object>) ReflectionUtils
+				.getField(interceptorsField, mapping);
 		context.close();
 		for (Object o : interceptors) {
 			if (o instanceof SitePreferenceHandlerInterceptor) {

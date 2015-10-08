@@ -50,6 +50,7 @@ import static org.junit.Assert.assertThat;
 public class RandomAccessDataFileTests {
 
 	private static final byte[] BYTES;
+
 	static {
 		BYTES = new byte[256];
 		for (int i = 0; i < BYTES.length; i++) {
@@ -212,7 +213,8 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void subsectionZeroLength() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(0, 0);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read(), equalTo(-1));
+		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read(),
+				equalTo(-1));
 	}
 
 	@Test

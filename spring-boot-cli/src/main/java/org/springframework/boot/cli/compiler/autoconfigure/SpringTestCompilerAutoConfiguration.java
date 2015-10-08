@@ -47,14 +47,14 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("org.springframework.http.HttpHeaders").add(
-				"spring-boot-starter-web");
+		dependencies.ifAnyMissingClasses("org.springframework.http.HttpHeaders")
+				.add("spring-boot-starter-web");
 	}
 
 	@Override
-	public void apply(GroovyClassLoader loader,
-			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
-			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
+	public void apply(GroovyClassLoader loader, GroovyCompilerConfiguration configuration,
+			GeneratorContext generatorContext, SourceUnit source, ClassNode classNode)
+					throws CompilationFailedException {
 		if (!AstUtils.hasAtLeastOneAnnotation(classNode, "RunWith")) {
 			AnnotationNode runwith = new AnnotationNode(ClassHelper.make("RunWith"));
 			runwith.addMember("value",
@@ -67,7 +67,7 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 		imports.addStarImports("org.junit.runner", "org.springframework.boot.test",
 				"org.springframework.http", "org.springframework.test.context.junit4",
-				"org.springframework.test.annotation").addImports(
-				"org.springframework.test.context.web.WebAppConfiguration");
+				"org.springframework.test.annotation")
+				.addImports("org.springframework.test.context.web.WebAppConfiguration");
 	}
 }

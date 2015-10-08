@@ -162,8 +162,8 @@ public class RelaxedDataBinderTests {
 		BindingResult result = bind(target, "info[foo]: bar");
 		assertEquals(2, result.getErrorCount());
 		for (FieldError error : result.getFieldErrors()) {
-			System.err.println(new StaticMessageSource().getMessage(error,
-					Locale.getDefault()));
+			System.err.println(
+					new StaticMessageSource().getMessage(error, Locale.getDefault()));
 		}
 	}
 
@@ -173,8 +173,8 @@ public class RelaxedDataBinderTests {
 		RelaxedDataBinder binder = getBinder(target, null);
 		binder.setAllowedFields("foo");
 		binder.setIgnoreUnknownFields(false);
-		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n"
-				+ "bar: spam");
+		BindingResult result = bind(binder, target,
+				"foo: bar\n" + "value: 123\n" + "bar: spam");
 		assertEquals(0, target.getValue());
 		assertEquals("bar", target.getFoo());
 		assertEquals(0, result.getErrorCount());
@@ -187,8 +187,8 @@ public class RelaxedDataBinderTests {
 		// Disallowed fields are not unknown...
 		binder.setDisallowedFields("foo", "bar");
 		binder.setIgnoreUnknownFields(false);
-		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n"
-				+ "bar: spam");
+		BindingResult result = bind(binder, target,
+				"foo: bar\n" + "value: 123\n" + "bar: spam");
 		assertEquals(123, target.getValue());
 		assertNull(target.getFoo());
 		assertEquals(0, result.getErrorCount());
@@ -392,8 +392,8 @@ public class RelaxedDataBinderTests {
 		RelaxedDataBinder binder = getBinder(target, null);
 		binder.setIgnoreUnknownFields(false);
 		binder.setIgnoreNestedProperties(true);
-		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n"
-				+ "nested.bar: spam");
+		BindingResult result = bind(binder, target,
+				"foo: bar\n" + "value: 123\n" + "nested.bar: spam");
 		assertEquals(123, target.getValue());
 		assertEquals("bar", target.getFoo());
 		assertEquals(0, result.getErrorCount());
@@ -405,8 +405,8 @@ public class RelaxedDataBinderTests {
 		RelaxedDataBinder binder = getBinder(target, "foo");
 		binder.setIgnoreUnknownFields(false);
 		binder.setIgnoreNestedProperties(true);
-		BindingResult result = bind(binder, target, "foo.foo: bar\n" + "foo.value: 123\n"
-				+ "foo.nested.bar: spam");
+		BindingResult result = bind(binder, target,
+				"foo.foo: bar\n" + "foo.value: 123\n" + "foo.nested.bar: spam");
 		assertEquals(123, target.getValue());
 		assertEquals("bar", target.getFoo());
 		assertEquals(0, result.getErrorCount());
@@ -424,8 +424,8 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindMapWithClashInProperties() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
-		BindingResult result = bind(target, "vanilla.spam: bar\n"
-				+ "vanilla.spam.value: 123", "vanilla");
+		BindingResult result = bind(target,
+				"vanilla.spam: bar\n" + "vanilla.spam.value: 123", "vanilla");
 		assertEquals(0, result.getErrorCount());
 		assertEquals(2, target.size());
 		assertEquals("bar", target.get("spam"));
@@ -435,8 +435,8 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindMapWithDeepClashInProperties() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
-		BindingResult result = bind(target, "vanilla.spam.foo: bar\n"
-				+ "vanilla.spam.foo.value: 123", "vanilla");
+		BindingResult result = bind(target,
+				"vanilla.spam.foo: bar\n" + "vanilla.spam.foo.value: 123", "vanilla");
 		assertEquals(0, result.getErrorCount());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) target.get("spam");
@@ -446,8 +446,8 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindMapWithDifferentDeepClashInProperties() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
-		BindingResult result = bind(target, "vanilla.spam.bar: bar\n"
-				+ "vanilla.spam.bar.value: 123", "vanilla");
+		BindingResult result = bind(target,
+				"vanilla.spam.bar: bar\n" + "vanilla.spam.bar.value: 123", "vanilla");
 		assertEquals(0, result.getErrorCount());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) target.get("spam");
@@ -608,8 +608,8 @@ public class RelaxedDataBinderTests {
 
 	}
 
-	public static class RequiredKeysValidator implements
-			ConstraintValidator<RequiredKeys, Map<String, Object>> {
+	public static class RequiredKeysValidator
+			implements ConstraintValidator<RequiredKeys, Map<String, Object>> {
 
 		private String[] fields;
 

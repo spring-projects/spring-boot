@@ -124,7 +124,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
 			RandomAccessData data, List<JarEntryData> entries, JarEntryFilter... filters)
-			throws IOException {
+					throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
@@ -167,7 +167,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		for (JarEntryData entry : entries) {
 			AsciiBytes name = entry.getName();
 			for (JarEntryFilter filter : filters) {
-				name = (filter == null || name == null ? name : filter.apply(name, entry));
+				name = (filter == null || name == null ? name
+						: filter.apply(name, entry));
 			}
 			if (name != null) {
 				JarEntryData filteredCopy = entry.createFilteredCopy(this, name);
@@ -291,8 +292,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
 		// happening that often.
 		try {
-			JarInputStream inputStream = new JarInputStream(getData().getInputStream(
-					ResourceAccess.ONCE));
+			JarInputStream inputStream = new JarInputStream(
+					getData().getInputStream(ResourceAccess.ONCE));
 			try {
 				java.util.jar.JarEntry entry = inputStream.getNextJarEntry();
 				while (entry != null) {
@@ -343,8 +344,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 			return sourceEntry.nestedJar;
 		}
 		catch (IOException ex) {
-			throw new IOException("Unable to open nested jar file '"
-					+ sourceEntry.getName() + "'", ex);
+			throw new IOException(
+					"Unable to open nested jar file '" + sourceEntry.getName() + "'", ex);
 		}
 	}
 
@@ -367,9 +368,10 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 				return null;
 			}
 		};
-		return new JarFile(this.rootFile, this.pathFromRoot + "!/"
-				+ sourceEntry.getName().substring(0, sourceName.length() - 1), this.data,
-				this.entries, filter);
+		return new JarFile(this.rootFile,
+				this.pathFromRoot + "!/"
+						+ sourceEntry.getName().substring(0, sourceName.length() - 1),
+				this.data, this.entries, filter);
 	}
 
 	private JarFile createJarFileFromFileEntry(JarEntryData sourceEntry)
@@ -380,8 +382,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 					+ "jar files must be stored without compression. Please check the "
 					+ "mechanism used to create your executable jar file");
 		}
-		return new JarFile(this.rootFile, this.pathFromRoot + "!/"
-				+ sourceEntry.getName(), sourceEntry.getData());
+		return new JarFile(this.rootFile,
+				this.pathFromRoot + "!/" + sourceEntry.getName(), sourceEntry.getData());
 	}
 
 	/**

@@ -99,8 +99,8 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testNoDatabase() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestCustomConfiguration.class,
-				BatchAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(TestCustomConfiguration.class, BatchAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		JobExplorer explorer = this.context.getBean(JobExplorer.class);
@@ -128,8 +128,8 @@ public class BatchAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
-		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
-				"job", new JobParameters()));
+		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution("job",
+				new JobParameters()));
 	}
 
 	@Test
@@ -159,8 +159,8 @@ public class BatchAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
-		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
-				"discreteLocalJob", new JobParameters()));
+		assertNotNull(this.context.getBean(JobRepository.class)
+				.getLastJobExecution("discreteLocalJob", new JobParameters()));
 	}
 
 	@Test

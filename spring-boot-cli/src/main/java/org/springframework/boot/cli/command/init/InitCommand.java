@@ -46,8 +46,9 @@ public class InitCommand extends OptionParsingCommand {
 	}
 
 	public InitCommand(InitOptionHandler handler) {
-		super("init", "Initialize a new project using Spring "
-				+ "Initialzr (start.spring.io)", handler);
+		super("init",
+				"Initialize a new project using Spring " + "Initialzr (start.spring.io)",
+				handler);
 	}
 
 	@Override
@@ -106,8 +107,8 @@ public class InitCommand extends OptionParsingCommand {
 		@Override
 		protected void options() {
 			this.target = option(Arrays.asList("target"), "URL of the service to use")
-					.withRequiredArg().defaultsTo(
-							ProjectGenerationRequest.DEFAULT_SERVICE_URL);
+					.withRequiredArg()
+					.defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
 			this.listCapabilities = option(Arrays.asList("list", "l"),
 					"List the capabilities of the service. Use it to discover the "
 							+ "dependencies and the types that are available");
@@ -118,9 +119,8 @@ public class InitCommand extends OptionParsingCommand {
 		private void projectGenerationOptions() {
 			this.bootVersion = option(Arrays.asList("boot-version", "b"),
 					"Spring Boot version to use (for example '1.2.0.RELEASE')")
-					.withRequiredArg();
-			this.dependencies = option(
-					Arrays.asList("dependencies", "d"),
+							.withRequiredArg();
+			this.dependencies = option(Arrays.asList("dependencies", "d"),
 					"Comma separated list of dependencies to include in the "
 							+ "generated project").withRequiredArg();
 			this.javaVersion = option(Arrays.asList("java-version", "j"),
@@ -129,14 +129,12 @@ public class InitCommand extends OptionParsingCommand {
 					"Packaging type to use (for example 'jar')").withRequiredArg();
 			this.build = option("build",
 					"The build system to use (for example 'maven' or 'gradle')")
-					.withRequiredArg().defaultsTo("maven");
-			this.format = option(
-					"format",
+							.withRequiredArg().defaultsTo("maven");
+			this.format = option("format",
 					"The format of the generated content (for example 'build' for a build file, "
 							+ "'project' for a project archive)").withRequiredArg()
-					.defaultsTo("project");
-			this.type = option(
-					Arrays.asList("type", "t"),
+									.defaultsTo("project");
+			this.type = option(Arrays.asList("type", "t"),
 					"The project type to use. Not normally needed if you use --build "
 							+ "and/or --format. Check the capabilities of the service "
 							+ "(--list) for more details").withRequiredArg();
@@ -171,7 +169,8 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		private void generateReport(OptionSet options) throws IOException {
-			Log.info(this.serviceCapabilitiesReport.generate(options.valueOf(this.target)));
+			Log.info(this.serviceCapabilitiesReport
+					.generate(options.valueOf(this.target)));
 		}
 
 		protected void generateProject(OptionSet options) throws IOException {

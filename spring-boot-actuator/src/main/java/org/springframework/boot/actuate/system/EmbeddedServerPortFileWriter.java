@@ -39,8 +39,8 @@ import org.springframework.util.StringUtils;
  *
  * @since 1.2.0
  */
-public class EmbeddedServerPortFileWriter implements
-		ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+public class EmbeddedServerPortFileWriter
+		implements ApplicationListener<EmbeddedServletContainerInitializedEvent> {
 
 	private static final String DEFAULT_FILE_NAME = "application.port";
 

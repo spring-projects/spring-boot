@@ -79,8 +79,8 @@ public class EndpointWebMvcChildContextConfiguration {
 	private List<EndpointHandlerMappingCustomizer> mappingCustomizers;
 
 	@Configuration
-	protected static class ServerCustomization implements
-			EmbeddedServletContainerCustomizer, Ordered {
+	protected static class ServerCustomization
+			implements EmbeddedServletContainerCustomizer, Ordered {
 
 		@Value("${error.path:/error}")
 		private String errorPath = "/error";
@@ -198,8 +198,8 @@ public class EndpointWebMvcChildContextConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
-	protected static class SecureEndpointHandlerMappingConfiguration extends
-			EndpointHandlerMappingConfiguration {
+	protected static class SecureEndpointHandlerMappingConfiguration
+			extends EndpointHandlerMappingConfiguration {
 
 		@Override
 		protected void postProcessMapping(ListableBeanFactory beanFactory,

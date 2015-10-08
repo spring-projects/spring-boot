@@ -100,7 +100,8 @@ class BitronixJtaConfiguration {
 	}
 
 	@Bean
-	public JtaTransactionManager transactionManager(TransactionManager transactionManager) {
+	public JtaTransactionManager transactionManager(
+			TransactionManager transactionManager) {
 		return new JtaTransactionManager(transactionManager);
 	}
 

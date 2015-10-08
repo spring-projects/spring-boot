@@ -64,30 +64,30 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testHomeIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
-		assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
-				.containsKey("Set-Cookie"));
+		assertFalse("Wrong headers: " + entity.getHeaders(),
+				entity.getHeaders().containsKey("Set-Cookie"));
 	}
 
 	@Test
 	public void testMetricsIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/metrics", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-		entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port
-				+ "/metrics/", Map.class);
+		entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/metrics/", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-		entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port
-				+ "/metrics/foo", Map.class);
+		entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/metrics/foo", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-		entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port
-				+ "/metrics.json", Map.class);
+		entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/metrics.json", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
@@ -127,8 +127,8 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/health", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body: " + entity.getBody(),
 				entity.getBody().contains("\"status\":\"UP\""));
@@ -147,11 +147,11 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	public void testInfo() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/info", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/info", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
-				entity.getBody().contains("\"artifact\":\"spring-boot-sample-actuator\""));
+		assertTrue("Wrong body: " + entity.getBody(), entity.getBody()
+				.contains("\"artifact\":\"spring-boot-sample-actuator\""));
 	}
 
 	@Test
@@ -199,8 +199,8 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testErrorPageDirectAccess() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/error", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/error", Map.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -225,7 +225,8 @@ public class SampleActuatorApplicationTests {
 	public void testConfigProps() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + this.port + "/configprops", Map.class);
+				.getForEntity("http://localhost:" + this.port + "/configprops",
+						Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

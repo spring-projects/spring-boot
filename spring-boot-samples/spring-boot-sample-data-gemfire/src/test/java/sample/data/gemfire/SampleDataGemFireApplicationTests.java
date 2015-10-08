@@ -95,8 +95,8 @@ public class SampleDataGemFireApplicationTests {
 		this.gemstoneService.save(createGemstone("Ruby"));
 
 		assertEquals(2, this.gemstoneService.count());
-		assertTrue(asList(this.gemstoneService.list()).containsAll(
-				getGemstones("Diamond", "Ruby")));
+		assertTrue(asList(this.gemstoneService.list())
+				.containsAll(getGemstones("Diamond", "Ruby")));
 
 		try {
 			this.gemstoneService.save(createGemstone("Coal"));
@@ -105,15 +105,15 @@ public class SampleDataGemFireApplicationTests {
 		}
 
 		assertEquals(2, this.gemstoneService.count());
-		assertTrue(asList(this.gemstoneService.list()).containsAll(
-				getGemstones("Diamond", "Ruby")));
+		assertTrue(asList(this.gemstoneService.list())
+				.containsAll(getGemstones("Diamond", "Ruby")));
 
 		this.gemstoneService.save(createGemstone("Pearl"));
 		this.gemstoneService.save(createGemstone("Sapphire"));
 
 		assertEquals(4, this.gemstoneService.count());
-		assertTrue(asList(this.gemstoneService.list()).containsAll(
-				getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
+		assertTrue(asList(this.gemstoneService.list())
+				.containsAll(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
 
 		try {
 			this.gemstoneService.save(createGemstone("Quartz"));
@@ -122,8 +122,8 @@ public class SampleDataGemFireApplicationTests {
 		}
 
 		assertEquals(4, this.gemstoneService.count());
-		assertTrue(asList(this.gemstoneService.list()).containsAll(
-				getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
+		assertTrue(asList(this.gemstoneService.list())
+				.containsAll(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
 		assertEquals(createGemstone("Diamond"), this.gemstoneService.get("Diamond"));
 		assertEquals(createGemstone("Pearl"), this.gemstoneService.get("Pearl"));
 	}

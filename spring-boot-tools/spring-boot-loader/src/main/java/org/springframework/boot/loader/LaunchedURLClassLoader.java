@@ -212,7 +212,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 								// manifest
 								if (jarFile.getJarEntryData(path) != null
 										&& jarFile.getManifest() != null) {
-									definePackage(packageName, jarFile.getManifest(), url);
+									definePackage(packageName, jarFile.getManifest(),
+											url);
 									return null;
 								}
 

@@ -84,8 +84,8 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 	}
 
 	private Resource resolveFromLocale(String viewName, String locale) {
-		Resource resource = getApplicationContext().getResource(
-				getPrefix() + viewName + locale + getSuffix());
+		Resource resource = getApplicationContext()
+				.getResource(getPrefix() + viewName + locale + getSuffix());
 		if (resource == null || !resource.exists()) {
 			if (locale.isEmpty()) {
 				return null;

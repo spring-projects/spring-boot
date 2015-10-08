@@ -30,9 +30,11 @@ class ExpressionTree extends ReflectionWrapper {
 
 	private final Class<?> literalTreeType = findClass("com.sun.source.tree.LiteralTree");
 
-	private final Method literalValueMethod = findMethod(this.literalTreeType, "getValue");
+	private final Method literalValueMethod = findMethod(this.literalTreeType,
+			"getValue");
 
-	private final Class<?> newArrayTreeType = findClass("com.sun.source.tree.NewArrayTree");
+	private final Class<?> newArrayTreeType = findClass(
+			"com.sun.source.tree.NewArrayTree");
 
 	private final Method arrayValueMethod = findMethod(this.newArrayTreeType,
 			"getInitializers");

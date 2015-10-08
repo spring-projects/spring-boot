@@ -28,8 +28,8 @@ import static org.junit.Assert.assertNull;
  *
  * @author Stephane Nicoll
  */
-public class CommonsDbcpDataSourcePoolMetadataTests extends
-		AbstractDataSourcePoolMetadataTests<CommonsDbcpDataSourcePoolMetadata> {
+public class CommonsDbcpDataSourcePoolMetadataTests
+		extends AbstractDataSourcePoolMetadataTests<CommonsDbcpDataSourcePoolMetadata> {
 
 	private CommonsDbcpDataSourcePoolMetadata dataSourceMetadata;
 

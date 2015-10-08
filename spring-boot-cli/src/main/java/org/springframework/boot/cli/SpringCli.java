@@ -56,8 +56,8 @@ public class SpringCli {
 	}
 
 	private static void addServiceLoaderCommands(CommandRunner runner) {
-		ServiceLoader<CommandFactory> factories = ServiceLoader.load(
-				CommandFactory.class, runner.getClass().getClassLoader());
+		ServiceLoader<CommandFactory> factories = ServiceLoader.load(CommandFactory.class,
+				runner.getClass().getClassLoader());
 		for (CommandFactory factory : factories) {
 			runner.addCommands(factory.getCommands());
 		}

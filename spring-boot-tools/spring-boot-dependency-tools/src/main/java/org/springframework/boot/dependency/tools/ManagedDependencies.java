@@ -105,8 +105,8 @@ public abstract class ManagedDependencies implements Dependencies {
 	 */
 	public static ManagedDependencies get(
 			Collection<Dependencies> versionManagedDependencies) {
-		return new ManagedDependencies(new ManagedDependenciesDelegate(
-				versionManagedDependencies)) {
+		return new ManagedDependencies(
+				new ManagedDependenciesDelegate(versionManagedDependencies)) {
 		};
 	}
 

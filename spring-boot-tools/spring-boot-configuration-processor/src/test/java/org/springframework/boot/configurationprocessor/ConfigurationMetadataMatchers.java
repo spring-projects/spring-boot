@@ -119,12 +119,12 @@ public class ConfigurationMetadataMatchers {
 			ConfigurationMetadata metadata = (ConfigurationMetadata) item;
 			ItemMetadata property = getFirstPropertyWithName(metadata, this.name);
 			if (property == null) {
-				description.appendText("missing "
-						+ this.itemType.toString().toLowerCase() + " " + this.name);
+				description.appendText("missing " + this.itemType.toString().toLowerCase()
+						+ " " + this.name);
 			}
 			else {
-				description.appendText(
-						"was " + this.itemType.toString().toLowerCase() + " ")
+				description
+						.appendText("was " + this.itemType.toString().toLowerCase() + " ")
 						.appendValue(property);
 			}
 		}
@@ -151,12 +151,14 @@ public class ConfigurationMetadataMatchers {
 
 		public ContainsItemMatcher ofType(Class<?> dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType.getName(),
-					this.sourceType, this.description, this.defaultValue, this.deprecated);
+					this.sourceType, this.description, this.defaultValue,
+					this.deprecated);
 		}
 
 		public ContainsItemMatcher ofType(String dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType,
-					this.sourceType, this.description, this.defaultValue, this.deprecated);
+					this.sourceType, this.description, this.defaultValue,
+					this.deprecated);
 		}
 
 		public ContainsItemMatcher fromSource(Class<?> sourceType) {

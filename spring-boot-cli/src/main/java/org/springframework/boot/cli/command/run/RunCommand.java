@@ -97,8 +97,8 @@ public class RunCommand extends OptionParsingCommand {
 
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
-			repositoryConfiguration.add(0, new RepositoryConfiguration("local", new File(
-					"repository").toURI(), true));
+			repositoryConfiguration.add(0, new RepositoryConfiguration("local",
+					new File("repository").toURI(), true));
 
 			SpringApplicationRunnerConfiguration configuration = new SpringApplicationRunnerConfigurationAdapter(
 					options, this, repositoryConfiguration);
@@ -114,9 +114,9 @@ public class RunCommand extends OptionParsingCommand {
 		 * Simple adapter class to present the {@link OptionSet} as a
 		 * {@link SpringApplicationRunnerConfiguration}.
 		 */
-		private class SpringApplicationRunnerConfigurationAdapter extends
-				OptionSetGroovyCompilerConfiguration implements
-				SpringApplicationRunnerConfiguration {
+		private class SpringApplicationRunnerConfigurationAdapter
+				extends OptionSetGroovyCompilerConfiguration
+				implements SpringApplicationRunnerConfiguration {
 
 			public SpringApplicationRunnerConfigurationAdapter(OptionSet options,
 					CompilerOptionHandler optionHandler,

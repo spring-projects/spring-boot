@@ -44,8 +44,8 @@ class OnPropertyCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
-		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(ConditionalOnProperty.class.getName()));
+		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
+				metadata.getAnnotationAttributes(ConditionalOnProperty.class.getName()));
 
 		String prefix = annotationAttributes.getString("prefix").trim();
 		if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {

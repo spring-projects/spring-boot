@@ -94,8 +94,8 @@ public class ManagementSecurityAutoConfiguration {
 	}
 
 	@Configuration
-	protected static class ManagementSecurityPropertiesConfiguration implements
-			SecurityPrerequisite {
+	protected static class ManagementSecurityPropertiesConfiguration
+			implements SecurityPrerequisite {
 
 		@Autowired(required = false)
 		private SecurityProperties security;
@@ -115,8 +115,8 @@ public class ManagementSecurityAutoConfiguration {
 
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER + 1)
-	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
-			WebSecurityConfigurer<WebSecurity> {
+	private static class IgnoredPathsWebSecurityConfigurerAdapter
+			implements WebSecurityConfigurer<WebSecurity> {
 
 		@Autowired(required = false)
 		private ErrorController errorController;
@@ -145,8 +145,8 @@ public class ManagementSecurityAutoConfiguration {
 			List<String> ignored = SpringBootWebSecurityConfiguration
 					.getIgnored(this.security);
 			if (!this.management.getSecurity().isEnabled()) {
-				ignored.addAll(Arrays
-						.asList(getEndpointPaths(this.endpointHandlerMapping)));
+				ignored.addAll(
+						Arrays.asList(getEndpointPaths(this.endpointHandlerMapping)));
 			}
 			if (ignored.contains("none")) {
 				ignored.remove("none");
@@ -185,12 +185,13 @@ public class ManagementSecurityAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String managementEnabled = context.getEnvironment().getProperty(
-					"management.security.enabled", "true");
-			String basicEnabled = context.getEnvironment().getProperty(
-					"security.basic.enabled", "true");
-			return new ConditionOutcome("true".equalsIgnoreCase(managementEnabled)
-					&& !"true".equalsIgnoreCase(basicEnabled),
+			String managementEnabled = context.getEnvironment()
+					.getProperty("management.security.enabled", "true");
+			String basicEnabled = context.getEnvironment()
+					.getProperty("security.basic.enabled", "true");
+			return new ConditionOutcome(
+					"true".equalsIgnoreCase(managementEnabled)
+							&& !"true".equalsIgnoreCase(basicEnabled),
 					"Management security enabled and basic disabled");
 		}
 
@@ -200,8 +201,8 @@ public class ManagementSecurityAutoConfiguration {
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
-	protected static class ManagementWebSecurityConfigurerAdapter extends
-			WebSecurityConfigurerAdapter {
+	protected static class ManagementWebSecurityConfigurerAdapter
+			extends WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private SecurityProperties security;
@@ -233,8 +234,8 @@ public class ManagementSecurityAutoConfiguration {
 				http.exceptionHandling().authenticationEntryPoint(entryPoint);
 				paths = this.server.getPathsArray(paths);
 				http.requestMatchers().antMatchers(paths);
-				String[] endpointPaths = this.server.getPathsArray(getEndpointPaths(
-						this.endpointHandlerMapping, false));
+				String[] endpointPaths = this.server.getPathsArray(
+						getEndpointPaths(this.endpointHandlerMapping, false));
 				configureAuthorizeRequests(endpointPaths, http.authorizeRequests());
 				http.httpBasic().authenticationEntryPoint(entryPoint);
 				// No cookies for management endpoints by default
@@ -252,8 +253,7 @@ public class ManagementSecurityAutoConfiguration {
 			return entryPoint;
 		}
 
-		private void configureAuthorizeRequests(
-				String[] endpointPaths,
+		private void configureAuthorizeRequests(String[] endpointPaths,
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry requests) {
 			requests.antMatchers(endpointPaths).permitAll();
 			requests.anyRequest().hasRole(this.management.getSecurity().getRole());
@@ -261,7 +261,8 @@ public class ManagementSecurityAutoConfiguration {
 
 	}
 
-	private static String[] getEndpointPaths(EndpointHandlerMapping endpointHandlerMapping) {
+	private static String[] getEndpointPaths(
+			EndpointHandlerMapping endpointHandlerMapping) {
 		return StringUtils.mergeStringArrays(
 				getEndpointPaths(endpointHandlerMapping, false),
 				getEndpointPaths(endpointHandlerMapping, true));

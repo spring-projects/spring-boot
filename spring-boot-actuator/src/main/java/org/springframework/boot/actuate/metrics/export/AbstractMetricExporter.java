@@ -43,8 +43,8 @@ public abstract class AbstractMetricExporter implements Exporter {
 	private final String prefix;
 
 	public AbstractMetricExporter(String prefix) {
-		this.prefix = !StringUtils.hasText(prefix) ? "" : (prefix.endsWith(".") ? prefix
-				: prefix + ".");
+		this.prefix = !StringUtils.hasText(prefix) ? ""
+				: (prefix.endsWith(".") ? prefix : prefix + ".");
 	}
 
 	/**
@@ -76,7 +76,8 @@ public abstract class AbstractMetricExporter implements Exporter {
 					Metric<?> value = new Metric<Number>(this.prefix + metric.getName(),
 							metric.getValue(), metric.getTimestamp());
 					Date timestamp = metric.getTimestamp();
-					if (!this.ignoreTimestamps && this.earliestTimestamp.after(timestamp)) {
+					if (!this.ignoreTimestamps
+							&& this.earliestTimestamp.after(timestamp)) {
 						continue;
 					}
 					values.add(value);

@@ -39,7 +39,8 @@ public class AuthorizationAuditListenerTests {
 
 	private final AuthorizationAuditListener listener = new AuthorizationAuditListener();
 
-	private final ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
+	private final ApplicationEventPublisher publisher = mock(
+			ApplicationEventPublisher.class);
 
 	@Before
 	public void init() {
@@ -48,8 +49,8 @@ public class AuthorizationAuditListenerTests {
 
 	@Test
 	public void testAuthenticationSuccess() {
-		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this, Arrays
-				.<ConfigAttribute>asList(new SecurityConfig("USER")),
+		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this,
+				Arrays.<ConfigAttribute>asList(new SecurityConfig("USER")),
 				new UsernamePasswordAuthenticationToken("user", "password"),
 				new AccessDeniedException("Bad user")));
 		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());

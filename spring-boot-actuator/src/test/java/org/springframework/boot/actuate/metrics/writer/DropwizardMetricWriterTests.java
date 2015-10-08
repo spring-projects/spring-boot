@@ -30,7 +30,7 @@ import static org.junit.Assert.assertFalse;
 
 /**
  * Tests for {@link DropwizardMetricWriter}.
- * 
+ *
  * @author Dave Syer
  */
 public class DropwizardMetricWriterTests {

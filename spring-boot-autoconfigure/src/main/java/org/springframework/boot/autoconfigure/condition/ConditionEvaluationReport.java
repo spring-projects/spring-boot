@@ -84,7 +84,8 @@ public class ConditionEvaluationReport {
 	 */
 	public Map<String, ConditionAndOutcomes> getConditionAndOutcomesBySource() {
 		if (!this.addedAncestorOutcomes) {
-			for (Map.Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
+			for (Map.Entry<String, ConditionAndOutcomes> entry : this.outcomes
+					.entrySet()) {
 				if (!entry.getValue().isFullMatch()) {
 					addNoMatchOutcomeToAncestors(entry.getKey());
 				}
@@ -98,8 +99,8 @@ public class ConditionEvaluationReport {
 		String prefix = source + "$";
 		for (Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
 			if (entry.getKey().startsWith(prefix)) {
-				ConditionOutcome outcome = new ConditionOutcome(false, "Ancestor '"
-						+ source + "' did not match");
+				ConditionOutcome outcome = new ConditionOutcome(false,
+						"Ancestor '" + source + "' did not match");
 				entry.getValue().add(ANCESTOR_CONDITION, outcome);
 			}
 		}
@@ -206,8 +207,8 @@ public class ConditionEvaluationReport {
 			}
 			ConditionAndOutcome other = (ConditionAndOutcome) obj;
 			return (ObjectUtils.nullSafeEquals(this.condition.getClass(),
-					other.condition.getClass()) && ObjectUtils.nullSafeEquals(
-					this.outcome, other.outcome));
+					other.condition.getClass())
+					&& ObjectUtils.nullSafeEquals(this.outcome, other.outcome));
 		}
 
 		@Override

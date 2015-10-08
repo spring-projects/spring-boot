@@ -59,8 +59,9 @@ public class ProjectGenerationRequestTests {
 		String customServerUrl = "http://foo:8080/initializr";
 		this.request.setServiceUrl(customServerUrl);
 		this.request.getDependencies().add("security");
-		assertEquals(new URI(customServerUrl
-				+ "/starter.zip?dependencies=security&type=test-type"),
+		assertEquals(
+				new URI(customServerUrl
+						+ "/starter.zip?dependencies=security&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 
@@ -107,8 +108,9 @@ public class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = new InitializrServiceMetadata(projectType);
 		this.request.setType("custom");
 		this.request.getDependencies().add("data-rest");
-		assertEquals(new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
-				+ "/foo?dependencies=data-rest&type=custom"),
+		assertEquals(
+				new URI(ProjectGenerationRequest.DEFAULT_SERVICE_URL
+						+ "/foo?dependencies=data-rest&type=custom"),
 				this.request.generateUrl(metadata));
 	}
 
@@ -193,8 +195,8 @@ public class ProjectGenerationRequestTests {
 
 	private static InitializrServiceMetadata readMetadata(String version) {
 		try {
-			Resource resource = new ClassPathResource("metadata/service-metadata-"
-					+ version + ".json");
+			Resource resource = new ClassPathResource(
+					"metadata/service-metadata-" + version + ".json");
 			String content = StreamUtils.copyToString(resource.getInputStream(),
 					Charset.forName("UTF-8"));
 			JSONObject json = new JSONObject(content);

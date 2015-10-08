@@ -89,8 +89,8 @@ public abstract class CompilerAutoConfiguration {
 	 * @param classNode the class
 	 * @throws CompilationFailedException if the configuration cannot be applied
 	 */
-	public void apply(GroovyClassLoader loader,
-			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
-			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
+	public void apply(GroovyClassLoader loader, GroovyCompilerConfiguration configuration,
+			GeneratorContext generatorContext, SourceUnit source, ClassNode classNode)
+					throws CompilationFailedException {
 	}
 }

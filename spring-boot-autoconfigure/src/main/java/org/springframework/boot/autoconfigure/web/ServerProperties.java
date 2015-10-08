@@ -445,7 +445,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 			factory.addContextCustomizers(new TomcatContextCustomizer() {
 				@Override
 				public void customize(Context context) {
-					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
+					context.setBackgroundProcessorDelay(
+							Tomcat.this.backgroundProcessorDelay);
 				}
 			});
 
@@ -498,8 +499,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer, Ord
 					if (handler instanceof AbstractHttp11Protocol) {
 						@SuppressWarnings("rawtypes")
 						AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
-						protocol.setCompression(coerceCompression(Tomcat.this.compression));
-						protocol.setCompressableMimeTypes(Tomcat.this.compressableMimeTypes);
+						protocol.setCompression(
+								coerceCompression(Tomcat.this.compression));
+						protocol.setCompressableMimeTypes(
+								Tomcat.this.compressableMimeTypes);
 					}
 				}
 

@@ -29,8 +29,8 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public class FreeMarkerTemplateAvailabilityProvider implements
-		TemplateAvailabilityProvider {
+public class FreeMarkerTemplateAvailabilityProvider
+		implements TemplateAvailabilityProvider {
 
 	@Override
 	public boolean isTemplateAvailable(String view, Environment environment,

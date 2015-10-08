@@ -124,8 +124,9 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	public Object invoke(Principal principal) {
 		if (!this.delegate.isEnabled()) {
 			// Shouldn't happen because the request mapping should not be registered
-			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
-					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Map<String, String>>(
+					Collections.singletonMap("message", "This endpoint is disabled"),
+					HttpStatus.NOT_FOUND);
 		}
 		Health health = getHealth(principal);
 		HttpStatus status = this.statusMapping.get(health.getStatus().getCode());
@@ -159,8 +160,8 @@ public class HealthMvcEndpoint implements MvcEndpoint, EnvironmentAware {
 	}
 
 	private boolean isSecure(Principal principal) {
-		return (principal != null && !principal.getClass().getName()
-				.contains("Anonymous"));
+		return (principal != null
+				&& !principal.getClass().getName().contains("Anonymous"));
 	}
 
 	private boolean isUnrestricted() {

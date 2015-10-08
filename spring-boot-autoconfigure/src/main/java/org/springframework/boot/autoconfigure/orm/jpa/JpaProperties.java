@@ -171,7 +171,8 @@ public class JpaProperties {
 			Map<String, String> result = new HashMap<String, String>(existing);
 			if (!isAlreadyProvided(existing, "ejb.naming_strategy")
 					&& this.namingStrategy != null) {
-				result.put("hibernate.ejb.naming_strategy", this.namingStrategy.getName());
+				result.put("hibernate.ejb.naming_strategy",
+						this.namingStrategy.getName());
 			}
 			else if (this.namingStrategy == null) {
 				result.put("hibernate.ejb.naming_strategy", DEFAULT_NAMING_STRATEGY);

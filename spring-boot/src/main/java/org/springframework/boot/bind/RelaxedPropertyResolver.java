@@ -144,8 +144,8 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, this.resolver,
 				"SubProperties not available.");
 		ConfigurableEnvironment env = (ConfigurableEnvironment) this.resolver;
-		return PropertySourceUtils.getSubProperties(env.getPropertySources(),
-				this.prefix, keyPrefix);
+		return PropertySourceUtils.getSubProperties(env.getPropertySources(), this.prefix,
+				keyPrefix);
 	}
 
 }

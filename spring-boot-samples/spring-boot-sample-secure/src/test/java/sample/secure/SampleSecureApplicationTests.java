@@ -59,8 +59,8 @@ public class SampleSecureApplicationTests {
 	public void init() {
 		AuthenticationManager authenticationManager = this.context
 				.getBean(AuthenticationManager.class);
-		this.authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken("user", "password"));
+		this.authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken("user", "password"));
 	}
 
 	@After

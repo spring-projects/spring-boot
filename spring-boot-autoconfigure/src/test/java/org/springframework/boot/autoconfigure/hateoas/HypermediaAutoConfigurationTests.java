@@ -91,8 +91,8 @@ public class HypermediaAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig().isEnabled(
-				SerializationFeature.INDENT_OUTPUT));
+		assertTrue(objectMapper.getSerializationConfig()
+				.isEnabled(SerializationFeature.INDENT_OUTPUT));
 	}
 
 	@Configuration

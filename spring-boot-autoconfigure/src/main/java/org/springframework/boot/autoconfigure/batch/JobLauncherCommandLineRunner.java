@@ -61,8 +61,8 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  */
 @Component
-public class JobLauncherCommandLineRunner implements CommandLineRunner,
-		ApplicationEventPublisherAware {
+public class JobLauncherCommandLineRunner
+		implements CommandLineRunner, ApplicationEventPublisherAware {
 
 	private static Log logger = LogFactory.getLog(JobLauncherCommandLineRunner.class);
 
@@ -80,7 +80,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 
 	private ApplicationEventPublisher publisher;
 
-	public JobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer) {
+	public JobLauncherCommandLineRunner(JobLauncher jobLauncher,
+			JobExplorer jobExplorer) {
 		this.jobLauncher = jobLauncher;
 		this.jobExplorer = jobExplorer;
 	}
@@ -122,7 +123,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 		executeRegisteredJobs(jobParameters);
 	}
 
-	private JobParameters getNextJobParameters(Job job, JobParameters additionalParameters) {
+	private JobParameters getNextJobParameters(Job job,
+			JobParameters additionalParameters) {
 		String name = job.getName();
 		JobParameters parameters = new JobParameters();
 		List<JobInstance> lastInstances = this.jobExplorer.getJobInstances(name, 0, 1);
@@ -164,7 +166,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 	}
 
 	private void removeNonIdentifying(Map<String, JobParameter> parameters) {
-		HashMap<String, JobParameter> copy = new HashMap<String, JobParameter>(parameters);
+		HashMap<String, JobParameter> copy = new HashMap<String, JobParameter>(
+				parameters);
 		for (Map.Entry<String, JobParameter> parameter : copy.entrySet()) {
 			if (!parameter.getValue().isIdentifying()) {
 				parameters.remove(parameter.getKey());

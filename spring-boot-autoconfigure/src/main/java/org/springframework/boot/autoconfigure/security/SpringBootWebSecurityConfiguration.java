@@ -148,8 +148,8 @@ public class SpringBootWebSecurityConfiguration {
 
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER)
-	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
-			WebSecurityConfigurer<WebSecurity> {
+	private static class IgnoredPathsWebSecurityConfigurerAdapter
+			implements WebSecurityConfigurer<WebSecurity> {
 
 		@Autowired(required = false)
 		private ErrorController errorController;
@@ -212,8 +212,8 @@ public class SpringBootWebSecurityConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "false")
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	protected static class ApplicationNoWebSecurityConfigurerAdapter extends
-			WebSecurityConfigurerAdapter {
+	protected static class ApplicationNoWebSecurityConfigurerAdapter
+			extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.requestMatcher(new RequestMatcher() {
@@ -228,8 +228,8 @@ public class SpringBootWebSecurityConfiguration {
 	@Configuration
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	protected static class ApplicationWebSecurityConfigurerAdapter extends
-			WebSecurityConfigurerAdapter {
+	protected static class ApplicationWebSecurityConfigurerAdapter
+			extends WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private SecurityProperties security;

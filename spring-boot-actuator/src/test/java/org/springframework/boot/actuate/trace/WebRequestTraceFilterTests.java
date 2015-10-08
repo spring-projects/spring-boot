@@ -56,8 +56,8 @@ public class WebRequestTraceFilterTests {
 		this.filter.enhanceTrace(trace, response);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
-		assertEquals("{Content-Type=application/json, status=200}", map.get("response")
-				.toString());
+		assertEquals("{Content-Type=application/json, status=200}",
+				map.get("response").toString());
 	}
 
 	@Test
@@ -80,8 +80,8 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.setStatus(500);
-		request.setAttribute("javax.servlet.error.exception", new IllegalStateException(
-				"Foo"));
+		request.setAttribute("javax.servlet.error.exception",
+				new IllegalStateException("Foo"));
 		response.addHeader("Content-Type", "application/json");
 		Map<String, Object> trace = this.filter.getTrace(request);
 		this.filter.enhanceTrace(trace, response);

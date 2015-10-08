@@ -82,8 +82,8 @@ public abstract class AbstractFieldValuesProcessorTests {
 				equalToObject(new Object[] { "FOO", "BAR" }));
 		assertThat(values.get("stringArrayNone"), nullValue());
 		assertThat(values.get("stringEmptyArray"), equalToObject(new Object[0]));
-		assertThat(values.get("stringArrayConst"), equalToObject(new Object[] { "OK",
-				"KO" }));
+		assertThat(values.get("stringArrayConst"),
+				equalToObject(new Object[] { "OK", "KO" }));
 		assertThat(values.get("stringArrayConstElements"),
 				equalToObject(new Object[] { "c" }));
 		assertThat(values.get("integerArray"), equalToObject(new Object[] { 42, 24 }));
@@ -94,7 +94,8 @@ public abstract class AbstractFieldValuesProcessorTests {
 		return equalTo(object);
 	}
 
-	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.ConfigurationProperties" })
+	@SupportedAnnotationTypes({
+			"org.springframework.boot.configurationsample.ConfigurationProperties" })
 	@SupportedSourceVersion(SourceVersion.RELEASE_6)
 	private class TestProcessor extends AbstractProcessor {
 
@@ -114,8 +115,8 @@ public abstract class AbstractFieldValuesProcessorTests {
 				for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
 					if (element instanceof TypeElement) {
 						try {
-							this.values.putAll(this.processor
-									.getFieldValues((TypeElement) element));
+							this.values.putAll(
+									this.processor.getFieldValues((TypeElement) element));
 						}
 						catch (Exception ex) {
 							throw new IllegalStateException(ex);

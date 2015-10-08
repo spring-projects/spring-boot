@@ -74,8 +74,8 @@ public class DependencyCustomizer {
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {
-		String version = this.dependencyResolutionContext
-				.getArtifactCoordinatesResolver().getVersion(artifactId);
+		String version = this.dependencyResolutionContext.getArtifactCoordinatesResolver()
+				.getVersion(artifactId);
 		if (version == null) {
 			version = defaultVersion;
 		}
@@ -224,11 +224,11 @@ public class DependencyCustomizer {
 		if (canAdd()) {
 			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
 					.getArtifactCoordinatesResolver();
-			this.classNode.addAnnotation(createGrabAnnotation(
-					artifactCoordinatesResolver.getGroupId(module),
-					artifactCoordinatesResolver.getArtifactId(module),
-					artifactCoordinatesResolver.getVersion(module), classifier, type,
-					transitive));
+			this.classNode.addAnnotation(
+					createGrabAnnotation(artifactCoordinatesResolver.getGroupId(module),
+							artifactCoordinatesResolver.getArtifactId(module),
+							artifactCoordinatesResolver.getVersion(module), classifier,
+							type, transitive));
 		}
 		return this;
 	}

@@ -62,8 +62,8 @@ class HornetQConnectionFactoryFactory {
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create "
-					+ "HornetQConnectionFactory", ex);
+			throw new IllegalStateException(
+					"Unable to create " + "HornetQConnectionFactory", ex);
 		}
 	}
 
@@ -105,12 +105,12 @@ class HornetQConnectionFactoryFactory {
 			Class<T> factoryClass) throws Exception {
 		try {
 			TransportConfiguration transportConfiguration = new TransportConfiguration(
-					InVMConnectorFactory.class.getName(), this.properties.getEmbedded()
-							.generateTransportParameters());
+					InVMConnectorFactory.class.getName(),
+					this.properties.getEmbedded().generateTransportParameters());
 			ServerLocator serviceLocator = HornetQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class).newInstance(
-					serviceLocator);
+			return factoryClass.getConstructor(ServerLocator.class)
+					.newInstance(serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "

@@ -30,7 +30,8 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @since 1.2.2
  */
-public class MustacheTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
+public class MustacheTemplateAvailabilityProvider
+		implements TemplateAvailabilityProvider {
 
 	@Override
 	public boolean isTemplateAvailable(String view, Environment environment,

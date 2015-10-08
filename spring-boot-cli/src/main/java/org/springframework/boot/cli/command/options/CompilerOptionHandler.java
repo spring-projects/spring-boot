@@ -45,7 +45,7 @@ public class CompilerOptionHandler extends OptionHandler {
 				"Do not attempt to guess dependencies");
 		this.autoconfigureOption = option("autoconfigure",
 				"Add autoconfigure compiler transformations").withOptionalArg()
-				.ofType(Boolean.class).defaultsTo(true);
+						.ofType(Boolean.class).defaultsTo(true);
 		this.classpathOption = option(asList("classpath", "cp"),
 				"Additional classpath entries").withRequiredArg();
 		doOptions();

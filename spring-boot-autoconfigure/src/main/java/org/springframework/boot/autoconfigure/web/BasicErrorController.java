@@ -68,7 +68,8 @@ public class BasicErrorController implements ErrorController {
 	@RequestMapping(value = "${error.path:/error}")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request, getTraceParameter(request));
+		Map<String, Object> body = getErrorAttributes(request,
+				getTraceParameter(request));
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<Map<String, Object>>(body, status);
 	}

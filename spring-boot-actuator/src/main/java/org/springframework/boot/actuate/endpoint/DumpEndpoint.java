@@ -40,8 +40,8 @@ public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {
 
 	@Override
 	public List<ThreadInfo> invoke() {
-		return Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true,
-				true));
+		return Arrays
+				.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true, true));
 	}
 
 }

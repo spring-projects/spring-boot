@@ -67,8 +67,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain) throws ServletException,
-			IOException {
+			HttpServletResponse response, FilterChain chain)
+					throws ServletException, IOException {
 		StopWatch stopWatch = createStopWatchIfNecessary(request);
 		String path = new UrlPathHelper().getPathWithinApplication(request);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();

@@ -84,14 +84,16 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 
 	private void processGrabMetadataAnnotation(AnnotationNode annotationNode) {
 		Expression valueExpression = annotationNode.getMember("value");
-		List<Map<String, String>> metadataDependencies = createDependencyMaps(valueExpression);
+		List<Map<String, String>> metadataDependencies = createDependencyMaps(
+				valueExpression);
 		updateArtifactCoordinatesResolver(metadataDependencies);
 	}
 
 	private List<Map<String, String>> createDependencyMaps(Expression valueExpression) {
 		Map<String, String> dependency = null;
 
-		List<ConstantExpression> constantExpressions = getConstantExpressions(valueExpression);
+		List<ConstantExpression> constantExpressions = getConstantExpressions(
+				valueExpression);
 		List<Map<String, String>> dependencies = new ArrayList<Map<String, String>>(
 				constantExpressions.size());
 
@@ -131,7 +133,8 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 		return Collections.emptyList();
 	}
 
-	private List<ConstantExpression> getConstantExpressions(ListExpression valueExpression) {
+	private List<ConstantExpression> getConstantExpressions(
+			ListExpression valueExpression) {
 		List<ConstantExpression> expressions = new ArrayList<ConstantExpression>();
 		for (Expression expression : valueExpression.getExpressions()) {
 			if (expression instanceof ConstantExpression
@@ -139,8 +142,9 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 				expressions.add((ConstantExpression) expression);
 			}
 			else {
-				reportError("Each entry in the array must be an "
-						+ "inline string constant", expression);
+				reportError(
+						"Each entry in the array must be an " + "inline string constant",
+						expression);
 			}
 		}
 		return expressions;
@@ -159,8 +163,8 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 		List<Dependencies> managedDependencies = new ArrayList<Dependencies>(uris.length);
 		for (URI uri : uris) {
 			try {
-				managedDependencies.add(new PropertiesFileDependencies(uri.toURL()
-						.openStream()));
+				managedDependencies
+						.add(new PropertiesFileDependencies(uri.toURL().openStream()));
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException("Failed to parse '" + uris[0]
@@ -168,8 +172,8 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 			}
 		}
 
-		this.resolutionContext.setManagedDependencies(ManagedDependencies
-				.get(managedDependencies));
+		this.resolutionContext
+				.setManagedDependencies(ManagedDependencies.get(managedDependencies));
 	}
 
 	private void handleDuplicateGrabMetadataAnnotation(AnnotationNode annotationNode) {
@@ -180,13 +184,14 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 	}
 
 	private void reportError(String message, ASTNode node) {
-		getSourceUnit().getErrorCollector().addErrorAndContinue(
-				createSyntaxErrorMessage(message, node));
+		getSourceUnit().getErrorCollector()
+				.addErrorAndContinue(createSyntaxErrorMessage(message, node));
 	}
 
 	private Message createSyntaxErrorMessage(String message, ASTNode node) {
-		return new SyntaxErrorMessage(new SyntaxException(message, node.getLineNumber(),
-				node.getColumnNumber(), node.getLastLineNumber(),
-				node.getLastColumnNumber()), getSourceUnit());
+		return new SyntaxErrorMessage(
+				new SyntaxException(message, node.getLineNumber(), node.getColumnNumber(),
+						node.getLastLineNumber(), node.getLastColumnNumber()),
+				getSourceUnit());
 	}
 }

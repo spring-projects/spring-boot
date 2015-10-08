@@ -52,6 +52,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> {
 
 	private static final List<Class<?>> NON_REPLACING_CONVERTERS;
+
 	static {
 		List<Class<?>> nonReplacingConverters = new ArrayList<Class<?>>();
 		addClassIfExists(nonReplacingConverters, "org.springframework.hateoas.mvc."
@@ -81,7 +82,8 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	 * default converter is found) The {@link #postProcessConverters(List)} method can be
 	 * used for further converter manipulation.
 	 */
-	public HttpMessageConverters(Collection<HttpMessageConverter<?>> additionalConverters) {
+	public HttpMessageConverters(
+			Collection<HttpMessageConverter<?>> additionalConverters) {
 		this(true, additionalConverters);
 	}
 

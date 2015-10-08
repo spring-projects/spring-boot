@@ -38,8 +38,8 @@ import static org.mockito.Mockito.mock;
  * @author Greg Turnquist
  * @author Phillip Webb
  */
-public class AutoConfigurationReportEndpointTests extends
-		AbstractEndpointTests<AutoConfigurationReportEndpoint> {
+public class AutoConfigurationReportEndpointTests
+		extends AbstractEndpointTests<AutoConfigurationReportEndpoint> {
 
 	public AutoConfigurationReportEndpointTests() {
 		super(Config.class, AutoConfigurationReportEndpoint.class, "autoconfig", true,
@@ -62,8 +62,8 @@ public class AutoConfigurationReportEndpointTests extends
 
 		@PostConstruct
 		public void setupAutoConfigurationReport() {
-			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context
-					.getBeanFactory());
+			ConditionEvaluationReport report = ConditionEvaluationReport
+					.get(this.context.getBeanFactory());
 			report.recordConditionEvaluation("a", mock(Condition.class),
 					mock(ConditionOutcome.class));
 		}

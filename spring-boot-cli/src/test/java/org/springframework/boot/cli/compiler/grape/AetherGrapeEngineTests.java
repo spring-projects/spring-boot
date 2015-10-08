@@ -49,9 +49,9 @@ public class AetherGrapeEngineTests {
 	private final AetherGrapeEngine grapeEngine = createGrapeEngine();
 
 	private AetherGrapeEngine createGrapeEngine() {
-		return AetherGrapeEngineFactory.create(this.groovyClassLoader, Arrays
-				.asList(new RepositoryConfiguration("central", URI
-						.create("http://repo1.maven.org/maven2"), false)),
+		return AetherGrapeEngineFactory.create(this.groovyClassLoader,
+				Arrays.asList(new RepositoryConfiguration("central",
+						URI.create("http://repo1.maven.org/maven2"), false)),
 				new DependencyResolutionContext());
 	}
 
@@ -134,10 +134,8 @@ public class AetherGrapeEngineTests {
 	public void nonTransitiveDependencyResolution() {
 		Map<String, Object> args = new HashMap<String, Object>();
 
-		this.grapeEngine.grab(
-				args,
-				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE",
-						false));
+		this.grapeEngine.grab(args, createDependency("org.springframework", "spring-jdbc",
+				"3.2.4.RELEASE", false));
 
 		assertEquals(1, this.groovyClassLoader.getURLs().length);
 	}
@@ -158,8 +156,8 @@ public class AetherGrapeEngineTests {
 	@Test
 	public void resolutionWithCustomResolver() {
 		Map<String, Object> args = new HashMap<String, Object>();
-		this.grapeEngine.addResolver(createResolver("restlet.org",
-				"http://maven.restlet.org"));
+		this.grapeEngine
+				.addResolver(createResolver("restlet.org", "http://maven.restlet.org"));
 		this.grapeEngine.grab(args,
 				createDependency("org.restlet", "org.restlet", "1.1.6"));
 		assertEquals(1, this.groovyClassLoader.getURLs().length);

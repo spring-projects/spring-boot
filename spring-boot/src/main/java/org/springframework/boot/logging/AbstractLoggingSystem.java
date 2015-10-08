@@ -70,7 +70,8 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	 */
 	protected String getSelfInitializationConfig() {
 		for (String location : getStandardConfigLocations()) {
-			ClassPathResource resource = new ClassPathResource(location, this.classLoader);
+			ClassPathResource resource = new ClassPathResource(location,
+					this.classLoader);
 			if (resource.exists()) {
 				return "classpath:" + location;
 			}

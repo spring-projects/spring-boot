@@ -88,15 +88,16 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 						AbstractDeviceDelegatingViewResolver.class);
 		assertNotNull(internalResourceViewResolver);
 		assertNotNull(deviceDelegatingViewResolver);
-		assertTrue(deviceDelegatingViewResolver.getViewResolver() instanceof InternalResourceViewResolver);
+		assertTrue(deviceDelegatingViewResolver
+				.getViewResolver() instanceof InternalResourceViewResolver);
 		try {
 			this.context.getBean(ThymeleafViewResolver.class);
 		}
 		catch (NoSuchBeanDefinitionException e) {
 			// expected. ThymeleafViewResolver shouldn't be defined.
 		}
-		assertTrue(deviceDelegatingViewResolver.getOrder() == internalResourceViewResolver
-				.getOrder() - 1);
+		assertTrue(deviceDelegatingViewResolver
+				.getOrder() == internalResourceViewResolver.getOrder() - 1);
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -138,11 +139,12 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 						AbstractDeviceDelegatingViewResolver.class);
 		assertNotNull(thymeleafViewResolver);
 		assertNotNull(deviceDelegatingViewResolver);
-		assertTrue(deviceDelegatingViewResolver.getViewResolver() instanceof ThymeleafViewResolver);
+		assertTrue(deviceDelegatingViewResolver
+				.getViewResolver() instanceof ThymeleafViewResolver);
 		assertNotNull(this.context.getBean(InternalResourceViewResolver.class));
 		assertNotNull(this.context.getBean(ThymeleafViewResolver.class));
-		assertTrue(deviceDelegatingViewResolver.getOrder() == thymeleafViewResolver
-				.getOrder() - 1);
+		assertTrue(deviceDelegatingViewResolver
+				.getOrder() == thymeleafViewResolver.getOrder() - 1);
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -176,43 +178,43 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
 
-		Field normalPrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "normalPrefix");
+		Field normalPrefixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "normalPrefix");
 		normalPrefixField.setAccessible(true);
 		String normalPrefix = (String) ReflectionUtils.getField(normalPrefixField,
 				liteDeviceDelegatingViewResolver);
 		assertEquals("", normalPrefix);
 
-		Field mobilePrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "mobilePrefix");
+		Field mobilePrefixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "mobilePrefix");
 		mobilePrefixField.setAccessible(true);
 		String mobilePrefix = (String) ReflectionUtils.getField(mobilePrefixField,
 				liteDeviceDelegatingViewResolver);
 		assertEquals("mobile/", mobilePrefix);
 
-		Field tabletPrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "tabletPrefix");
+		Field tabletPrefixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "tabletPrefix");
 		tabletPrefixField.setAccessible(true);
 		String tabletPrefix = (String) ReflectionUtils.getField(tabletPrefixField,
 				liteDeviceDelegatingViewResolver);
 		assertEquals("tablet/", tabletPrefix);
 
-		Field normalSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "normalSuffix");
+		Field normalSuffixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "normalSuffix");
 		normalSuffixField.setAccessible(true);
 		String normalSuffix = (String) ReflectionUtils.getField(normalSuffixField,
 				liteDeviceDelegatingViewResolver);
 		assertEquals("", normalSuffix);
 
-		Field mobileSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "mobileSuffix");
+		Field mobileSuffixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "mobileSuffix");
 		mobileSuffixField.setAccessible(true);
 		String mobileSuffix = (String) ReflectionUtils.getField(mobileSuffixField,
 				liteDeviceDelegatingViewResolver);
 		assertEquals("", mobileSuffix);
 
-		Field tabletSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "tabletSuffix");
+		Field tabletSuffixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "tabletSuffix");
 		tabletSuffixField.setAccessible(true);
 		String tabletSuffix = (String) ReflectionUtils.getField(tabletSuffixField,
 				liteDeviceDelegatingViewResolver);
@@ -233,8 +235,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
-		Field normalPrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "normalPrefix");
+		Field normalPrefixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "normalPrefix");
 		normalPrefixField.setAccessible(true);
 		String normalPrefix = (String) ReflectionUtils.getField(normalPrefixField,
 				liteDeviceDelegatingViewResolver);
@@ -255,8 +257,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
-		Field mobilePrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "mobilePrefix");
+		Field mobilePrefixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "mobilePrefix");
 		mobilePrefixField.setAccessible(true);
 		String mobilePrefix = (String) ReflectionUtils.getField(mobilePrefixField,
 				liteDeviceDelegatingViewResolver);
@@ -277,8 +279,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
-		Field tabletPrefixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "tabletPrefix");
+		Field tabletPrefixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "tabletPrefix");
 		tabletPrefixField.setAccessible(true);
 		String tabletPrefix = (String) ReflectionUtils.getField(tabletPrefixField,
 				liteDeviceDelegatingViewResolver);
@@ -299,8 +301,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
-		Field normalSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "normalSuffix");
+		Field normalSuffixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "normalSuffix");
 		normalSuffixField.setAccessible(true);
 		String normalSuffix = (String) ReflectionUtils.getField(normalSuffixField,
 				liteDeviceDelegatingViewResolver);
@@ -321,8 +323,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
-		Field mobileSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "mobileSuffix");
+		Field mobileSuffixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "mobileSuffix");
 		mobileSuffixField.setAccessible(true);
 		String mobileSuffix = (String) ReflectionUtils.getField(mobileSuffixField,
 				liteDeviceDelegatingViewResolver);
@@ -343,8 +345,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
 				.getBean("deviceDelegatingViewResolver",
 						LiteDeviceDelegatingViewResolver.class);
-		Field tabletSuffixField = ReflectionUtils.findField(
-				LiteDeviceDelegatingViewResolver.class, "tabletSuffix");
+		Field tabletSuffixField = ReflectionUtils
+				.findField(LiteDeviceDelegatingViewResolver.class, "tabletSuffix");
 		tabletSuffixField.setAccessible(true);
 		String tabletSuffix = (String) ReflectionUtils.getField(tabletSuffixField,
 				liteDeviceDelegatingViewResolver);

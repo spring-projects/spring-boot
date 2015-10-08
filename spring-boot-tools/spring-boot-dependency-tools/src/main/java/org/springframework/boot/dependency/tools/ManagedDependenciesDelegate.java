@@ -35,7 +35,8 @@ class ManagedDependenciesDelegate extends AbstractDependencies {
 	 * @param versionManagedDependencies a collection of {@link Dependencies} that take
 	 * precedence over the `spring-boot-dependencies`.
 	 */
-	public ManagedDependenciesDelegate(Collection<Dependencies> versionManagedDependencies) {
+	public ManagedDependenciesDelegate(
+			Collection<Dependencies> versionManagedDependencies) {
 		this(getSpringBootDependencies(), versionManagedDependencies);
 	}
 
@@ -57,7 +58,8 @@ class ManagedDependenciesDelegate extends AbstractDependencies {
 
 	private static Dependencies getSpringBootDependencies() {
 		if (springBootDependencies == null) {
-			springBootDependencies = new PomDependencies(getResource("effective-pom.xml"));
+			springBootDependencies = new PomDependencies(
+					getResource("effective-pom.xml"));
 		}
 		return springBootDependencies;
 	}

@@ -49,7 +49,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { Config.class }, initializers = ContextPathListener.class)
+@SpringApplicationConfiguration(classes = {
+		Config.class }, initializers = ContextPathListener.class)
 @WebAppConfiguration
 public class JolokiaMvcEndpointContextPathTests {
 
@@ -64,8 +65,8 @@ public class JolokiaMvcEndpointContextPathTests {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment(
-				(ConfigurableApplicationContext) this.context, "foo:bar");
+		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
+				"foo:bar");
 	}
 
 	@Test
@@ -83,8 +84,8 @@ public class JolokiaMvcEndpointContextPathTests {
 	public static class Config {
 	}
 
-	public static class ContextPathListener implements
-			ApplicationContextInitializer<ConfigurableApplicationContext> {
+	public static class ContextPathListener
+			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 		@Override
 		public void initialize(ConfigurableApplicationContext context) {
 			EnvironmentTestUtils.addEnvironment(context, "management.contextPath:/admin");

@@ -74,12 +74,13 @@ public class EndpointMBeanExportAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String endpointEnabled = context.getEnvironment().getProperty(
-					"endpoints.jmx.enabled", "true");
-			String jmxEnabled = context.getEnvironment().getProperty(
-					"spring.jmx.enabled", "true");
-			return new ConditionOutcome("true".equalsIgnoreCase(endpointEnabled)
-					&& "true".equalsIgnoreCase(jmxEnabled),
+			String endpointEnabled = context.getEnvironment()
+					.getProperty("endpoints.jmx.enabled", "true");
+			String jmxEnabled = context.getEnvironment().getProperty("spring.jmx.enabled",
+					"true");
+			return new ConditionOutcome(
+					"true".equalsIgnoreCase(endpointEnabled)
+							&& "true".equalsIgnoreCase(jmxEnabled),
 					"JMX endpoint and JMX enabled");
 
 		}

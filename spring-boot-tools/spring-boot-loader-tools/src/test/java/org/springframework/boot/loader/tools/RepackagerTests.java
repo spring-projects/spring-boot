@@ -288,8 +288,8 @@ public class RepackagerTests {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
 				callback.library(new Library(libJarFile, LibraryScope.COMPILE));
-				callback.library(new Library(libJarFileToUnpack, LibraryScope.COMPILE,
-						true));
+				callback.library(
+						new Library(libJarFileToUnpack, LibraryScope.COMPILE, true));
 				callback.library(new Library(libNonJarFile, LibraryScope.COMPILE));
 			}
 		});
@@ -351,9 +351,8 @@ public class RepackagerTests {
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(NO_LIBRARIES);
 		Manifest actualManifest = getManifest(file);
-		assertThat(
-				actualManifest.getMainAttributes().containsKey(
-						new Attributes.Name("Spring-Boot-Version")), equalTo(true));
+		assertThat(actualManifest.getMainAttributes()
+				.containsKey(new Attributes.Name("Spring-Boot-Version")), equalTo(true));
 	}
 
 	@Test
@@ -394,7 +393,8 @@ public class RepackagerTests {
 	}
 
 	@Test
-	public void unpackLibrariesTakePrecedenceOverExistingSourceEntries() throws Exception {
+	public void unpackLibrariesTakePrecedenceOverExistingSourceEntries()
+			throws Exception {
 		TestJarFile nested = new TestJarFile(this.temporaryFolder);
 		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		final File nestedFile = nested.getFile();

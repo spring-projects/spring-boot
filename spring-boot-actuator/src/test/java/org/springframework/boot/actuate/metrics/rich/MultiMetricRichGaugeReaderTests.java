@@ -35,7 +35,8 @@ public class MultiMetricRichGaugeReaderTests {
 	private MultiMetricRichGaugeReader reader = new MultiMetricRichGaugeReader(
 			this.repository);
 	private InMemoryRichGaugeRepository data = new InMemoryRichGaugeRepository();
-	private RichGaugeExporter exporter = new RichGaugeExporter(this.data, this.repository);
+	private RichGaugeExporter exporter = new RichGaugeExporter(this.data,
+			this.repository);
 
 	@Test
 	public void countOne() {

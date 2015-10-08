@@ -445,7 +445,8 @@ public class SpringApplicationBuilder {
 	 * @param beanNameGenerator the generator to set.
 	 * @return the current builder
 	 */
-	public SpringApplicationBuilder beanNameGenerator(BeanNameGenerator beanNameGenerator) {
+	public SpringApplicationBuilder beanNameGenerator(
+			BeanNameGenerator beanNameGenerator) {
 		this.application.setBeanNameGenerator(beanNameGenerator);
 		return this;
 	}

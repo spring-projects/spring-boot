@@ -53,8 +53,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		if (resolver.containsProperty("enabled") || !enabledByDefault) {
 			boolean match = resolver.getProperty("enabled", Boolean.class,
 					enabledByDefault);
-			return new ConditionOutcome(match, "The " + endpointName + " is "
-					+ (match ? "enabled" : "disabled"));
+			return new ConditionOutcome(match,
+					"The " + endpointName + " is " + (match ? "enabled" : "disabled"));
 		}
 		return null;
 	}
@@ -63,8 +63,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				context.getEnvironment(), "endpoints.");
 		boolean match = Boolean.valueOf(resolver.getProperty("enabled", "true"));
-		return new ConditionOutcome(match, "All endpoints are "
-				+ (match ? "enabled" : "disabled") + " by default");
+		return new ConditionOutcome(match,
+				"All endpoints are " + (match ? "enabled" : "disabled") + " by default");
 	}
 
 }

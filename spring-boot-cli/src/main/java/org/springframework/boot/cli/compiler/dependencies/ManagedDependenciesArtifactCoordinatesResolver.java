@@ -26,8 +26,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  */
-public class ManagedDependenciesArtifactCoordinatesResolver implements
-		ArtifactCoordinatesResolver {
+public class ManagedDependenciesArtifactCoordinatesResolver
+		implements ArtifactCoordinatesResolver {
 
 	private final ManagedDependencies dependencies;
 
@@ -35,7 +35,8 @@ public class ManagedDependenciesArtifactCoordinatesResolver implements
 		this(ManagedDependencies.get());
 	}
 
-	public ManagedDependenciesArtifactCoordinatesResolver(ManagedDependencies dependencies) {
+	public ManagedDependenciesArtifactCoordinatesResolver(
+			ManagedDependencies dependencies) {
 		this.dependencies = dependencies;
 	}
 

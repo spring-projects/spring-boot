@@ -34,8 +34,8 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  */
 @SupportedAnnotationTypes({ "*" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-public class TestConfigurationMetadataAnnotationProcessor extends
-		ConfigurationMetadataAnnotationProcessor {
+public class TestConfigurationMetadataAnnotationProcessor
+		extends ConfigurationMetadataAnnotationProcessor {
 
 	static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
 
@@ -66,8 +66,8 @@ public class TestConfigurationMetadataAnnotationProcessor extends
 			File metadataFile = new File(this.outputLocation,
 					"META-INF/spring-configuration-metadata.json");
 			if (metadataFile.isFile()) {
-				this.metadata = new JsonMarshaller().read(new FileInputStream(
-						metadataFile));
+				this.metadata = new JsonMarshaller()
+						.read(new FileInputStream(metadataFile));
 			}
 			else {
 				this.metadata = new ConfigurationMetadata();

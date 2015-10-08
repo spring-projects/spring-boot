@@ -98,8 +98,7 @@ public class EndpointMBeanExportAutoConfigurationTests {
 			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class,
-				NestedInManagedEndpoint.class,
-				EndpointMBeanExportAutoConfiguration.class,
+				NestedInManagedEndpoint.class, EndpointMBeanExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(EndpointMBeanExporter.class));
@@ -116,8 +115,7 @@ public class EndpointMBeanExportAutoConfigurationTests {
 		environment.setProperty("endpoints.jmx.enabled", "false");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setEnvironment(environment);
-		this.context.register(JmxAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
+		this.context.register(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
 				EndpointMBeanExportAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(EndpointMBeanExporter.class);
@@ -133,26 +131,24 @@ public class EndpointMBeanExportAutoConfigurationTests {
 		environment.setProperty("endpoints.jmx.static_names", "key1=value1, key2=value2");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setEnvironment(environment);
-		this.context.register(JmxAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
+		this.context.register(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
 				EndpointMBeanExportAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(EndpointMBeanExporter.class);
 
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 
-		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
-				ObjectNameManager.getInstance(getObjectName("test-domain",
-						"healthEndpoint", this.context).toString()
-						+ ",key1=value1,key2=value2")));
+		assertNotNull(mbeanExporter.getServer()
+				.getMBeanInfo(ObjectNameManager.getInstance(
+						getObjectName("test-domain", "healthEndpoint", this.context)
+								.toString() + ",key1=value1,key2=value2")));
 	}
 
 	@Test
 	public void testEndpointMBeanExporterInParentChild() throws IntrospectionException,
 			InstanceNotFoundException, MalformedObjectNameException, ReflectionException {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(JmxAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
+		this.context.register(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
 				EndpointMBeanExportAutoConfiguration.class);
 
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
@@ -177,10 +173,8 @@ public class EndpointMBeanExportAutoConfigurationTests {
 		}
 		if (applicationContext.getEnvironment().getProperty("endpoints.jmx.unique_names",
 				Boolean.class, false)) {
-			name = name
-					+ ",identity="
-					+ ObjectUtils.getIdentityHexString(applicationContext
-							.getBean(beanKey));
+			name = name + ",identity=" + ObjectUtils
+					.getIdentityHexString(applicationContext.getBean(beanKey));
 		}
 		if (applicationContext.getParent() != null) {
 			return ObjectNameManager.getInstance(String.format(name, domain, beanKey,

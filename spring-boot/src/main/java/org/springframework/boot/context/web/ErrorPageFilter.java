@@ -86,8 +86,8 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain chain) throws ServletException,
-				IOException {
+				HttpServletResponse response, FilterChain chain)
+						throws ServletException, IOException {
 			ErrorPageFilter.this.doFilter(request, response, chain);
 		}
 
@@ -135,7 +135,7 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 
 	private void handleErrorStatus(HttpServletRequest request,
 			HttpServletResponse response, int status, String message)
-			throws ServletException, IOException {
+					throws ServletException, IOException {
 		if (response.isCommitted()) {
 			handleCommittedResponse(request, null);
 			return;
@@ -150,9 +150,9 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		request.getRequestDispatcher(errorPath).forward(request, response);
 	}
 
-	private void handleException(HttpServletRequest request,
-			HttpServletResponse response, ErrorWrapperResponse wrapped, Throwable ex)
-			throws IOException, ServletException {
+	private void handleException(HttpServletRequest request, HttpServletResponse response,
+			ErrorWrapperResponse wrapped, Throwable ex)
+					throws IOException, ServletException {
 		Class<?> type = ex.getClass();
 		String errorPath = getErrorPath(type);
 		if (errorPath == null) {
@@ -168,8 +168,8 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 	}
 
 	private void forwardToErrorPage(String path, HttpServletRequest request,
-			HttpServletResponse response, Throwable ex) throws ServletException,
-			IOException {
+			HttpServletResponse response, Throwable ex)
+					throws ServletException, IOException {
 		if (logger.isErrorEnabled()) {
 			String message = "Forwarding to error page from request "
 					+ getDescription(request) + " due to exception [" + ex.getMessage()
@@ -231,7 +231,8 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		return this.global;
 	}
 
-	private void setErrorAttributes(HttpServletRequest request, int status, String message) {
+	private void setErrorAttributes(HttpServletRequest request, int status,
+			String message) {
 		request.setAttribute(ERROR_STATUS_CODE, status);
 		request.setAttribute(ERROR_MESSAGE, message);
 		request.setAttribute(ERROR_REQUEST_URI, request.getRequestURI());
@@ -310,8 +311,8 @@ public class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContaine
 		@Override
 		public void flushBuffer() throws IOException {
 			if (this.hasErrorToSend && !isCommitted()) {
-				((HttpServletResponse) getResponse())
-						.sendError(this.status, this.message);
+				((HttpServletResponse) getResponse()).sendError(this.status,
+						this.message);
 			}
 			super.flushBuffer();
 		}

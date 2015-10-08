@@ -58,8 +58,8 @@ public class MultiProjectRepackagingTests {
 				.withArguments("-PbootVersion=" + BOOT_VERSION).run();
 		File buildLibs = new File(
 				"target/multi-project-common-file-dependency/build/libs");
-		JarFile jarFile = new JarFile(new File(buildLibs,
-				"multi-project-common-file-dependency.jar"));
+		JarFile jarFile = new JarFile(
+				new File(buildLibs, "multi-project-common-file-dependency.jar"));
 		assertThat(jarFile.getEntry("lib/foo.jar"), notNullValue());
 		jarFile.close();
 	}

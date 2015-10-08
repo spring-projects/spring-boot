@@ -56,8 +56,8 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class OnBeanCondition extends SpringBootCondition implements
-		ConfigurationCondition {
+public class OnBeanCondition extends SpringBootCondition
+		implements ConfigurationCondition {
 
 	private static final Log logger = LogFactory.getLog(OnBeanCondition.class);
 
@@ -83,11 +83,11 @@ public class OnBeanCondition extends SpringBootCondition implements
 					ConditionalOnBean.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (matching.isEmpty()) {
-				return ConditionOutcome.noMatch("@ConditionalOnBean " + spec
-						+ " found no beans");
+				return ConditionOutcome
+						.noMatch("@ConditionalOnBean " + spec + " found no beans");
 			}
-			matchMessage.append("@ConditionalOnBean " + spec + " found the following "
-					+ matching);
+			matchMessage.append(
+					"@ConditionalOnBean " + spec + " found the following " + matching);
 		}
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
@@ -103,7 +103,8 @@ public class OnBeanCondition extends SpringBootCondition implements
 		return ConditionOutcome.match(matchMessage.toString());
 	}
 
-	private List<String> getMatchingBeans(ConditionContext context, BeanSearchSpec beans) {
+	private List<String> getMatchingBeans(ConditionContext context,
+			BeanSearchSpec beans) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beans.getStrategy() == SearchStrategy.PARENTS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
@@ -146,7 +147,7 @@ public class OnBeanCondition extends SpringBootCondition implements
 
 	private Collection<String> getBeanNamesForType(ListableBeanFactory beanFactory,
 			String type, ClassLoader classLoader, boolean considerHierarchy)
-			throws LinkageError {
+					throws LinkageError {
 		try {
 			Set<String> result = new LinkedHashSet<String>();
 			collectBeanNamesForType(result, beanFactory,
@@ -181,7 +182,8 @@ public class OnBeanCondition extends SpringBootCondition implements
 					.forName(type, classLoader);
 			result = beanFactory.getBeanNamesForAnnotation(typeClass);
 			if (considerHierarchy) {
-				if (beanFactory.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
+				if (beanFactory
+						.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
 					String[] parentResult = getBeanNamesForAnnotation(
 							(ConfigurableListableBeanFactory) beanFactory
 									.getParentBeanFactory(),
@@ -232,8 +234,8 @@ public class OnBeanCondition extends SpringBootCondition implements
 			Assert.isTrue(hasAtLeastOne(this.types, this.names, this.annotations),
 					annotationName(annotationType) + " annotations must "
 							+ "specify at least one bean (type, name or annotation)");
-			this.strategy = (SearchStrategy) metadata.getAnnotationAttributes(
-					annotationType.getName()).get("search");
+			this.strategy = (SearchStrategy) metadata
+					.getAnnotationAttributes(annotationType.getName()).get("search");
 		}
 
 		private boolean hasAtLeastOne(List<?>... lists) {
@@ -279,8 +281,8 @@ public class OnBeanCondition extends SpringBootCondition implements
 						methodMetadata.getDeclaringClassName(), context.getClassLoader());
 				ReflectionUtils.doWithMethods(configClass, new MethodCallback() {
 					@Override
-					public void doWith(Method method) throws IllegalArgumentException,
-							IllegalAccessException {
+					public void doWith(Method method)
+							throws IllegalArgumentException, IllegalAccessException {
 						if (methodMetadata.getMethodName().equals(method.getName())) {
 							beanTypes.add(method.getReturnType().getName());
 						}
@@ -290,10 +292,9 @@ public class OnBeanCondition extends SpringBootCondition implements
 			catch (Throwable ex) {
 				// swallow exception and continue
 				if (logger.isDebugEnabled()) {
-					logger.debug(
-							"Unable to deduce bean type for "
-									+ methodMetadata.getDeclaringClassName() + "."
-									+ methodMetadata.getMethodName(), ex);
+					logger.debug("Unable to deduce bean type for "
+							+ methodMetadata.getDeclaringClassName() + "."
+							+ methodMetadata.getMethodName(), ex);
 				}
 			}
 		}

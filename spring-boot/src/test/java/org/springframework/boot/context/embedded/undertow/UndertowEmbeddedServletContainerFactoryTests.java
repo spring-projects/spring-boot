@@ -45,8 +45,8 @@ import static org.mockito.Mockito.mock;
  * @author Ivan Sopov
  * @author Andy Wilkinson
  */
-public class UndertowEmbeddedServletContainerFactoryTests extends
-		AbstractEmbeddedServletContainerFactoryTests {
+public class UndertowEmbeddedServletContainerFactoryTests
+		extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected UndertowEmbeddedServletContainerFactory getFactory() {
@@ -57,8 +57,8 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 	public void errorPage404() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/hello"));
-		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
-				new ExampleServlet(), "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
 		assertThat(getResponse(getLocalUrl("/not-found")), equalTo("Hello World"));
@@ -119,8 +119,8 @@ public class UndertowEmbeddedServletContainerFactoryTests extends
 		for (int i = 0; i < customizers.length; i++) {
 			customizers[i] = mock(UndertowDeploymentInfoCustomizer.class);
 		}
-		factory.setDeploymentInfoCustomizers(Arrays
-				.asList(customizers[0], customizers[1]));
+		factory.setDeploymentInfoCustomizers(
+				Arrays.asList(customizers[0], customizers[1]));
 		factory.addDeploymentInfoCustomizers(customizers[2], customizers[3]);
 		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) customizers);

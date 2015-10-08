@@ -43,8 +43,8 @@ import static org.junit.Assert.assertThat;
  */
 public class EmbeddedVelocityToolboxViewTests {
 
-	private static final String PATH = EmbeddedVelocityToolboxViewTests.class
-			.getPackage().getName().replace(".", "/");
+	private static final String PATH = EmbeddedVelocityToolboxViewTests.class.getPackage()
+			.getName().replace(".", "/");
 
 	@Test
 	public void loadsContextFromClassPath() throws Exception {
@@ -69,8 +69,8 @@ public class EmbeddedVelocityToolboxViewTests {
 		Map<String, Object> model = new LinkedHashMap<String, Object>();
 		HttpServletRequest request = new MockHttpServletRequest();
 		HttpServletResponse response = new MockHttpServletResponse();
-		ToolContext toolContext = (ToolContext) view.createVelocityContext(model,
-				request, response);
+		ToolContext toolContext = (ToolContext) view.createVelocityContext(model, request,
+				response);
 		context.close();
 		return toolContext;
 	}

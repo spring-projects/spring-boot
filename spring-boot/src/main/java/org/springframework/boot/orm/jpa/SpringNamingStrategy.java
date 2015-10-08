@@ -27,7 +27,7 @@ import org.hibernate.cfg.NamingStrategy;
  */
 @Deprecated
 @SuppressWarnings("serial")
-public class SpringNamingStrategy extends
-		org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy {
+public class SpringNamingStrategy
+		extends org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy {
 
 }

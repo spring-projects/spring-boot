@@ -41,12 +41,12 @@ public class JsonMarshallerTests {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(),
 				InputStream.class.getName(), "sourceMethod", "desc", "x", true));
-		metadata.add(ItemMetadata.newProperty("b.c.d", null, null, null, null, null,
-				null, false));
-		metadata.add(ItemMetadata.newProperty("c", null, null, null, null, null, 123,
+		metadata.add(ItemMetadata.newProperty("b.c.d", null, null, null, null, null, null,
 				false));
-		metadata.add(ItemMetadata.newProperty("d", null, null, null, null, null, true,
-				false));
+		metadata.add(
+				ItemMetadata.newProperty("c", null, null, null, null, null, 123, false));
+		metadata.add(
+				ItemMetadata.newProperty("d", null, null, null, null, null, true, false));
 		metadata.add(ItemMetadata.newProperty("e", null, null, null, null, null,
 				new String[] { "y", "n" }, false));
 		metadata.add(ItemMetadata.newProperty("f", null, null, null, null, null,
@@ -55,8 +55,8 @@ public class JsonMarshallerTests {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
-		ConfigurationMetadata read = marshaller.read(new ByteArrayInputStream(
-				outputStream.toByteArray()));
+		ConfigurationMetadata read = marshaller
+				.read(new ByteArrayInputStream(outputStream.toByteArray()));
 		assertThat(read,
 				containsProperty("a.b", StringBuffer.class).fromSource(InputStream.class)
 						.withDescription("desc").withDefaultValue(is("x"))
@@ -66,8 +66,8 @@ public class JsonMarshallerTests {
 		assertThat(read, containsProperty("d").withDefaultValue(is(true)));
 		assertThat(read,
 				containsProperty("e").withDefaultValue(is(new String[] { "y", "n" })));
-		assertThat(read,
-				containsProperty("f").withDefaultValue(is(new boolean[] { true, false })));
+		assertThat(read, containsProperty("f")
+				.withDefaultValue(is(new boolean[] { true, false })));
 		assertThat(read, containsGroup("d"));
 	}
 

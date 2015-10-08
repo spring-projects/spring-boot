@@ -77,8 +77,8 @@ public abstract class ResourceUtils {
 			return getUrlsFromWildcardPath(path, classLoader);
 		}
 		catch (Exception ex) {
-			throw new IllegalArgumentException("Cannot create URL from path [" + path
-					+ "]", ex);
+			throw new IllegalArgumentException(
+					"Cannot create URL from path [" + path + "]", ex);
 
 		}
 	}
@@ -160,8 +160,9 @@ public abstract class ResourceUtils {
 		public Resource getResource(String location) {
 			Assert.notNull(location, "Location must not be null");
 			if (location.startsWith(CLASSPATH_URL_PREFIX)) {
-				return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX
-						.length()), getClassLoader());
+				return new ClassPathResource(
+						location.substring(CLASSPATH_URL_PREFIX.length()),
+						getClassLoader());
 			}
 			else {
 				if (location.startsWith(FILE_URL_PREFIX)) {

@@ -41,8 +41,8 @@ import org.springframework.util.StringUtils;
 @Configuration
 @EnableConfigurationProperties
 @ConditionalOnWebApplication
-public class ServerPropertiesAutoConfiguration implements ApplicationContextAware,
-		EmbeddedServletContainerCustomizer, Ordered {
+public class ServerPropertiesAutoConfiguration
+		implements ApplicationContextAware, EmbeddedServletContainerCustomizer, Ordered {
 
 	private ApplicationContext applicationContext;
 
@@ -69,8 +69,7 @@ public class ServerPropertiesAutoConfiguration implements ApplicationContextAwar
 		// a single bean
 		String[] serverPropertiesBeans = this.applicationContext
 				.getBeanNamesForType(ServerProperties.class);
-		Assert.state(
-				serverPropertiesBeans.length == 1,
+		Assert.state(serverPropertiesBeans.length == 1,
 				"Multiple ServerProperties beans registered "
 						+ StringUtils.arrayToCommaDelimitedString(serverPropertiesBeans));
 	}

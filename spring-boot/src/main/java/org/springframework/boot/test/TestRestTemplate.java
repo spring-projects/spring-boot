@@ -68,8 +68,8 @@ public class TestRestTemplate extends RestTemplate {
 	public TestRestTemplate(String username, String password,
 			HttpClientOption... httpClientOptions) {
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
-			setRequestFactory(new CustomHttpComponentsClientHttpRequestFactory(
-					httpClientOptions));
+			setRequestFactory(
+					new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 		}
 		addAuthentication(username, password);
 		setErrorHandler(new DefaultResponseErrorHandler() {
@@ -85,8 +85,8 @@ public class TestRestTemplate extends RestTemplate {
 			return;
 		}
 		List<ClientHttpRequestInterceptor> interceptors = Collections
-				.<ClientHttpRequestInterceptor>singletonList(new BasicAuthorizationInterceptor(
-						username, password));
+				.<ClientHttpRequestInterceptor>singletonList(
+						new BasicAuthorizationInterceptor(username, password));
 		setRequestFactory(new InterceptingClientHttpRequestFactory(getRequestFactory(),
 				interceptors));
 	}
@@ -108,8 +108,8 @@ public class TestRestTemplate extends RestTemplate {
 
 	}
 
-	private static class BasicAuthorizationInterceptor implements
-			ClientHttpRequestInterceptor {
+	private static class BasicAuthorizationInterceptor
+			implements ClientHttpRequestInterceptor {
 
 		private final String username;
 
@@ -131,8 +131,8 @@ public class TestRestTemplate extends RestTemplate {
 
 	}
 
-	protected static class CustomHttpComponentsClientHttpRequestFactory extends
-			HttpComponentsClientHttpRequestFactory {
+	protected static class CustomHttpComponentsClientHttpRequestFactory
+			extends HttpComponentsClientHttpRequestFactory {
 
 		private final String cookieSpec;
 
@@ -142,8 +142,8 @@ public class TestRestTemplate extends RestTemplate {
 				HttpClientOption[] httpClientOptions) {
 			Set<HttpClientOption> options = new HashSet<TestRestTemplate.HttpClientOption>(
 					Arrays.asList(httpClientOptions));
-			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? CookieSpecs.STANDARD
-					: CookieSpecs.IGNORE_COOKIES);
+			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES)
+					? CookieSpecs.STANDARD : CookieSpecs.IGNORE_COOKIES);
 			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
 		}
 

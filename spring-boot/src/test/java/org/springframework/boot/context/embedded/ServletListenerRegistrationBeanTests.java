@@ -67,8 +67,8 @@ public class ServletListenerRegistrationBeanTests {
 				this.listener);
 		bean.setEnabled(false);
 		bean.onStartup(this.servletContext);
-		verify(this.servletContext, times(0)).addListener(
-				any(ServletContextListener.class));
+		verify(this.servletContext, times(0))
+				.addListener(any(ServletContextListener.class));
 	}
 
 	@Test

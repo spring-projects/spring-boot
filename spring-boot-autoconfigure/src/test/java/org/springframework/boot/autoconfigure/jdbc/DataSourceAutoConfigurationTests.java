@@ -158,11 +158,9 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testExplicitDriverClassClearsUserName() throws Exception {
-		EnvironmentTestUtils
-				.addEnvironment(
-						this.context,
-						"spring.datasource.driverClassName:org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
-						"spring.datasource.url:jdbc:foo://localhost");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
+				"spring.datasource.url:jdbc:foo://localhost");
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -221,19 +219,19 @@ public class DataSourceAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
-		this.context.setClassLoader(new URLClassLoader(new URL[0], getClass()
-				.getClassLoader()) {
-			@Override
-			protected Class<?> loadClass(String name, boolean resolve)
-					throws ClassNotFoundException {
-				for (String hiddenPackage : hiddenPackages) {
-					if (name.startsWith(hiddenPackage)) {
-						throw new ClassNotFoundException();
+		this.context.setClassLoader(
+				new URLClassLoader(new URL[0], getClass().getClassLoader()) {
+					@Override
+					protected Class<?> loadClass(String name, boolean resolve)
+							throws ClassNotFoundException {
+						for (String hiddenPackage : hiddenPackages) {
+							if (name.startsWith(hiddenPackage)) {
+								throw new ClassNotFoundException();
+							}
+						}
+						return super.loadClass(name, resolve);
 					}
-				}
-				return super.loadClass(name, resolve);
-			}
-		});
+				});
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

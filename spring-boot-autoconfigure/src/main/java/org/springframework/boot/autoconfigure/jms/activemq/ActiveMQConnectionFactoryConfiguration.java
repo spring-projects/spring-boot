@@ -48,8 +48,8 @@ class ActiveMQConnectionFactoryConfiguration {
 		if (properties.isPooled()) {
 			PooledConnectionFactory pool = new PooledConnectionFactory();
 			Method setConnectionFactory = findConnectionFactorySetter();
-			Assert.state(setConnectionFactory != null, "No supported "
-					+ "setConnectionFactory method was found");
+			Assert.state(setConnectionFactory != null,
+					"No supported " + "setConnectionFactory method was found");
 			ReflectionUtils.invokeMethod(setConnectionFactory, pool, connectionFactory);
 			return pool;
 		}

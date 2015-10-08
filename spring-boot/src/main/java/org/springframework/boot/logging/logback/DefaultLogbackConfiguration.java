@@ -99,8 +99,8 @@ class DefaultLogbackConfiguration {
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<ILoggingEvent>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(OptionHelper.substVars(CONSOLE_LOG_PATTERN,
-				config.getContext()));
+		encoder.setPattern(
+				OptionHelper.substVars(CONSOLE_LOG_PATTERN, config.getContext()));
 		encoder.setCharset(UTF8);
 		config.start(encoder);
 		appender.setEncoder(encoder);

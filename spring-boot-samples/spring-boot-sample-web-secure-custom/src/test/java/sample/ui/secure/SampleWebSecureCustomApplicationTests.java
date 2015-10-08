@@ -62,11 +62,11 @@ public class SampleWebSecureCustomApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
-						headers), String.class);
+				"http://localhost:" + this.port, HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertTrue("Wrong location:\n" + entity.getHeaders(), entity.getHeaders()
-				.getLocation().toString().endsWith(port + "/login"));
+		assertTrue("Wrong location:\n" + entity.getHeaders(),
+				entity.getHeaders().getLocation().toString().endsWith(port + "/login"));
 	}
 
 	@Test
@@ -94,16 +94,16 @@ public class SampleWebSecureCustomApplicationTests {
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertTrue("Wrong location:\n" + entity.getHeaders(), entity.getHeaders()
-				.getLocation().toString().endsWith(port + "/"));
+		assertTrue("Wrong location:\n" + entity.getHeaders(),
+				entity.getHeaders().getLocation().toString().endsWith(port + "/"));
 		assertNotNull("Missing cookie:\n" + entity.getHeaders(),
 				entity.getHeaders().get("Set-Cookie"));
 	}
 
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-		ResponseEntity<String> page = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/login", String.class);
+		ResponseEntity<String> page = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/login", String.class);
 		assertEquals(HttpStatus.OK, page.getStatusCode());
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);

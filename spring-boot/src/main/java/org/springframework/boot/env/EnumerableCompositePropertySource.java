@@ -34,8 +34,8 @@ import org.springframework.core.env.PropertySource;
  *
  * @author Dave Syer
  */
-public class EnumerableCompositePropertySource extends
-		EnumerablePropertySource<Collection<PropertySource<?>>> {
+public class EnumerableCompositePropertySource
+		extends EnumerablePropertySource<Collection<PropertySource<?>>> {
 
 	private volatile String[] names;
 
@@ -59,10 +59,11 @@ public class EnumerableCompositePropertySource extends
 		String[] result = this.names;
 		if (result == null) {
 			List<String> names = new ArrayList<String>();
-			for (PropertySource<?> source : new ArrayList<PropertySource<?>>(getSource())) {
+			for (PropertySource<?> source : new ArrayList<PropertySource<?>>(
+					getSource())) {
 				if (source instanceof EnumerablePropertySource) {
-					names.addAll(Arrays.asList(((EnumerablePropertySource<?>) source)
-							.getPropertyNames()));
+					names.addAll(Arrays.asList(
+							((EnumerablePropertySource<?>) source).getPropertyNames()));
 				}
 			}
 			this.names = names.toArray(new String[0]);

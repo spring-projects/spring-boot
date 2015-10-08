@@ -22,6 +22,7 @@ import org.springframework.boot.test.AbstractConfigurationClassTests;
  * Tests for the autoconfigure module's @Configuration classes
  * @author Andy Wilkinson
  */
-public class AutoConfigureConfigurationClassTests extends AbstractConfigurationClassTests {
+public class AutoConfigureConfigurationClassTests
+		extends AbstractConfigurationClassTests {
 
 }

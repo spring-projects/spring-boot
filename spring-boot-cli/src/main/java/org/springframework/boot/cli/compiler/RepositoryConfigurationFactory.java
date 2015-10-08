@@ -95,8 +95,8 @@ public final class RepositoryConfigurationFactory {
 					.getEffectiveSettings();
 		}
 		catch (SettingsBuildingException ex) {
-			throw new IllegalStateException("Failed to build settings from "
-					+ settingsFile, ex);
+			throw new IllegalStateException(
+					"Failed to build settings from " + settingsFile, ex);
 		}
 	}
 

@@ -49,8 +49,8 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 		imports.addStarImports("javax.jms", "org.springframework.jms.annotation",
 				"org.springframework.jms.config", "org.springframework.jms.core",
 				"org.springframework.jms.listener",
-				"org.springframework.jms.listener.adapter").addImports(
-				org.springframework.boot.groovy.EnableJmsMessaging.class
+				"org.springframework.jms.listener.adapter")
+				.addImports(org.springframework.boot.groovy.EnableJmsMessaging.class
 						.getCanonicalName());
 	}
 

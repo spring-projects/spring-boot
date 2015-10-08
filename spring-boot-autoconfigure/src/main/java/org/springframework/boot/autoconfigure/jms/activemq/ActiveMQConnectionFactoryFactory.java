@@ -46,8 +46,8 @@ class ActiveMQConnectionFactoryFactory {
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create "
-					+ "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException(
+					"Unable to create " + "ActiveMQConnectionFactory", ex);
 		}
 	}
 

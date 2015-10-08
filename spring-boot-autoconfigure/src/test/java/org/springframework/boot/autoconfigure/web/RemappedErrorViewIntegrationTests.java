@@ -56,16 +56,16 @@ public class RemappedErrorViewIntegrationTests {
 
 	@Test
 	public void directAccessToErrorPage() throws Exception {
-		String content = this.template.getForObject("http://localhost:" + this.port
-				+ "/spring/error", String.class);
+		String content = this.template.getForObject(
+				"http://localhost:" + this.port + "/spring/error", String.class);
 		assertTrue("Wrong content: " + content, content.contains("error"));
 		assertTrue("Wrong content: " + content, content.contains("999"));
 	}
 
 	@Test
 	public void forwardToErrorPage() throws Exception {
-		String content = this.template.getForObject("http://localhost:" + this.port
-				+ "/spring/", String.class);
+		String content = this.template
+				.getForObject("http://localhost:" + this.port + "/spring/", String.class);
 		assertTrue("Wrong content: " + content, content.contains("error"));
 		assertTrue("Wrong content: " + content, content.contains("500"));
 	}
@@ -91,8 +91,8 @@ public class RemappedErrorViewIntegrationTests {
 
 		// For manual testing
 		public static void main(String[] args) {
-			new SpringApplicationBuilder(TestConfiguration.class).properties(
-					"server.servletPath:spring/*").run(args);
+			new SpringApplicationBuilder(TestConfiguration.class)
+					.properties("server.servletPath:spring/*").run(args);
 		}
 
 	}

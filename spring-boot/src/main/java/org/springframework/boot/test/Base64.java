@@ -37,8 +37,8 @@ final class Base64 {
 
 	/**
 	 * Encode using Base64-like encoding that is URL- and Filename-safe as described in
-	 * Section 4 of RFC3548: <a
-	 * href="http://www.faqs.org/rfcs/rfc3548.html">http://www.faqs
+	 * Section 4 of RFC3548:
+	 * <a href="http://www.faqs.org/rfcs/rfc3548.html">http://www.faqs
 	 * .org/rfcs/rfc3548.html</a>. It is important to note that data encoded this way is
 	 * <em>not</em> officially valid Base64, or at the very least should not be called
 	 * Base64 without also specifying that is was encoded using the URL- and Filename-safe
@@ -47,9 +47,9 @@ final class Base64 {
 	public static final int URL_SAFE = 16;
 
 	/**
-	 * Encode using the special "ordered" dialect of Base64 described here: <a
-	 * href="http://www.faqs.org/qa/rfcc-1940.html"
-	 * >http://www.faqs.org/qa/rfcc-1940.html</a>.
+	 * Encode using the special "ordered" dialect of Base64 described here:
+	 * <a href="http://www.faqs.org/qa/rfcc-1940.html" >http://www.faqs.org/qa/rfcc-1940.
+	 * html</a>.
 	 */
 	public static final int ORDERED = 32;
 
@@ -69,18 +69,18 @@ final class Base64 {
 
 	/** The 64 valid Base64 values. */
 	/* Host platform me be something funny like EBCDIC, so we hardcode these values. */
-	private static final byte[] _STANDARD_ALPHABET = { (byte) 'A', (byte) 'B',
-			(byte) 'C', (byte) 'D', (byte) 'E', (byte) 'F', (byte) 'G', (byte) 'H',
-			(byte) 'I', (byte) 'J', (byte) 'K', (byte) 'L', (byte) 'M', (byte) 'N',
-			(byte) 'O', (byte) 'P', (byte) 'Q', (byte) 'R', (byte) 'S', (byte) 'T',
-			(byte) 'U', (byte) 'V', (byte) 'W', (byte) 'X', (byte) 'Y', (byte) 'Z',
-			(byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f',
-			(byte) 'g', (byte) 'h', (byte) 'i', (byte) 'j', (byte) 'k', (byte) 'l',
-			(byte) 'm', (byte) 'n', (byte) 'o', (byte) 'p', (byte) 'q', (byte) 'r',
-			(byte) 's', (byte) 't', (byte) 'u', (byte) 'v', (byte) 'w', (byte) 'x',
-			(byte) 'y', (byte) 'z', (byte) '0', (byte) '1', (byte) '2', (byte) '3',
-			(byte) '4', (byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9',
-			(byte) '+', (byte) '/' };
+	private static final byte[] _STANDARD_ALPHABET = { (byte) 'A', (byte) 'B', (byte) 'C',
+			(byte) 'D', (byte) 'E', (byte) 'F', (byte) 'G', (byte) 'H', (byte) 'I',
+			(byte) 'J', (byte) 'K', (byte) 'L', (byte) 'M', (byte) 'N', (byte) 'O',
+			(byte) 'P', (byte) 'Q', (byte) 'R', (byte) 'S', (byte) 'T', (byte) 'U',
+			(byte) 'V', (byte) 'W', (byte) 'X', (byte) 'Y', (byte) 'Z', (byte) 'a',
+			(byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f', (byte) 'g',
+			(byte) 'h', (byte) 'i', (byte) 'j', (byte) 'k', (byte) 'l', (byte) 'm',
+			(byte) 'n', (byte) 'o', (byte) 'p', (byte) 'q', (byte) 'r', (byte) 's',
+			(byte) 't', (byte) 'u', (byte) 'v', (byte) 'w', (byte) 'x', (byte) 'y',
+			(byte) 'z', (byte) '0', (byte) '1', (byte) '2', (byte) '3', (byte) '4',
+			(byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9', (byte) '+',
+			(byte) '/' };
 
 	/**
 	 * Translates a Base64 value to either its 6-bit reconstruction value or a negative
@@ -123,24 +123,23 @@ final class Base64 {
 	/* ******** U R L S A F E B A S E 6 4 A L P H A B E T ******** */
 
 	/**
-	 * Used in the URL- and Filename-safe dialect described in Section 4 of RFC3548: <a
-	 * href
-	 * ="http://www.faqs.org/rfcs/rfc3548.html">http://www.faqs.org/rfcs/rfc3548.html</a>.
-	 * Notice that the last two bytes become "hyphen" and "underscore" instead of "plus"
-	 * and "slash."
+	 * Used in the URL- and Filename-safe dialect described in Section 4 of RFC3548:
+	 * <a href ="http://www.faqs.org/rfcs/rfc3548.html">http://www.faqs.org/rfcs/rfc3548.
+	 * html</a>. Notice that the last two bytes become "hyphen" and "underscore" instead
+	 * of "plus" and "slash."
 	 */
-	private static final byte[] _URL_SAFE_ALPHABET = { (byte) 'A', (byte) 'B',
-			(byte) 'C', (byte) 'D', (byte) 'E', (byte) 'F', (byte) 'G', (byte) 'H',
-			(byte) 'I', (byte) 'J', (byte) 'K', (byte) 'L', (byte) 'M', (byte) 'N',
-			(byte) 'O', (byte) 'P', (byte) 'Q', (byte) 'R', (byte) 'S', (byte) 'T',
-			(byte) 'U', (byte) 'V', (byte) 'W', (byte) 'X', (byte) 'Y', (byte) 'Z',
-			(byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f',
-			(byte) 'g', (byte) 'h', (byte) 'i', (byte) 'j', (byte) 'k', (byte) 'l',
-			(byte) 'm', (byte) 'n', (byte) 'o', (byte) 'p', (byte) 'q', (byte) 'r',
-			(byte) 's', (byte) 't', (byte) 'u', (byte) 'v', (byte) 'w', (byte) 'x',
-			(byte) 'y', (byte) 'z', (byte) '0', (byte) '1', (byte) '2', (byte) '3',
-			(byte) '4', (byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9',
-			(byte) '-', (byte) '_' };
+	private static final byte[] _URL_SAFE_ALPHABET = { (byte) 'A', (byte) 'B', (byte) 'C',
+			(byte) 'D', (byte) 'E', (byte) 'F', (byte) 'G', (byte) 'H', (byte) 'I',
+			(byte) 'J', (byte) 'K', (byte) 'L', (byte) 'M', (byte) 'N', (byte) 'O',
+			(byte) 'P', (byte) 'Q', (byte) 'R', (byte) 'S', (byte) 'T', (byte) 'U',
+			(byte) 'V', (byte) 'W', (byte) 'X', (byte) 'Y', (byte) 'Z', (byte) 'a',
+			(byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f', (byte) 'g',
+			(byte) 'h', (byte) 'i', (byte) 'j', (byte) 'k', (byte) 'l', (byte) 'm',
+			(byte) 'n', (byte) 'o', (byte) 'p', (byte) 'q', (byte) 'r', (byte) 's',
+			(byte) 't', (byte) 'u', (byte) 'v', (byte) 'w', (byte) 'x', (byte) 'y',
+			(byte) 'z', (byte) '0', (byte) '1', (byte) '2', (byte) '3', (byte) '4',
+			(byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9', (byte) '-',
+			(byte) '_' };
 
 	/**
 	 * Used in decoding URL- and Filename-safe dialects of Base64.
@@ -187,8 +186,8 @@ final class Base64 {
 
 	/**
 	 * I don't get the point of this technique, but someone requested it, and it is
-	 * described here: <a
-	 * href="http://www.faqs.org/qa/rfcc-1940.html">http://www.faqs.org/
+	 * described here:
+	 * <a href="http://www.faqs.org/qa/rfcc-1940.html">http://www.faqs.org/
 	 * qa/rfcc-1940.html</a>.
 	 */
 	private static final byte[] _ORDERED_ALPHABET = { (byte) '-', (byte) '0', (byte) '1',
@@ -207,8 +206,10 @@ final class Base64 {
 	/**
 	 * Used in decoding the "ordered" dialect of Base64.
 	 */
-	private static final byte[] _ORDERED_DECODABET = { -9, -9, -9, -9, -9, -9, -9, -9,
-			-9, // Decimal 0 - 8
+	private static final byte[] _ORDERED_DECODABET = { -9, -9, -9, -9, -9, -9, -9, -9, -9, // Decimal
+																							// 0
+																							// -
+																							// 8
 			-5, -5, // Whitespace: Tab and Linefeed
 			-9, -9, // Decimal 11 - 12
 			-5, // Whitespace: Carriage Return
@@ -383,7 +384,8 @@ final class Base64 {
 	 * @throws IllegalArgumentException if source array, offset, or length are invalid
 	 * @since 2.3.1
 	 */
-	private static byte[] encodeBytesToBytes(byte[] source, int off, int len, int options) {
+	private static byte[] encodeBytesToBytes(byte[] source, int off, int len,
+			int options) {
 
 		if (source == null) {
 			throw new NullPointerException("Cannot serialize a null array.");
@@ -490,16 +492,14 @@ final class Base64 {
 			throw new NullPointerException("Destination array was null.");
 		} // end if
 		if (srcOffset < 0 || srcOffset + 3 >= source.length) {
-			throw new IllegalArgumentException(
-					String.format(
-							"Source array with length %d cannot have offset of %d and still process four bytes.",
-							source.length, srcOffset));
+			throw new IllegalArgumentException(String.format(
+					"Source array with length %d cannot have offset of %d and still process four bytes.",
+					source.length, srcOffset));
 		} // end if
 		if (destOffset < 0 || destOffset + 2 >= destination.length) {
-			throw new IllegalArgumentException(
-					String.format(
-							"Destination array with length %d cannot have offset of %d and still store three bytes.",
-							destination.length, destOffset));
+			throw new IllegalArgumentException(String.format(
+					"Destination array with length %d cannot have offset of %d and still store three bytes.",
+					destination.length, destOffset));
 		} // end if
 
 		byte[] DECODABET = getDecodabet(options);
@@ -573,10 +573,9 @@ final class Base64 {
 			throw new NullPointerException("Cannot decode null source array.");
 		} // end if
 		if (off < 0 || off + len > source.length) {
-			throw new IllegalArgumentException(
-					String.format(
-							"Source array with length %d cannot have offset of %d and process %d bytes.",
-							source.length, off, len));
+			throw new IllegalArgumentException(String.format(
+					"Source array with length %d cannot have offset of %d and process %d bytes.",
+					source.length, off, len));
 		} // end if
 
 		if (len == 0) {

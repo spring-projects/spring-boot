@@ -119,21 +119,23 @@ public class JacksonAutoConfiguration {
 			SimpleModule module = new SimpleModule();
 			JacksonJodaFormat jacksonJodaFormat = getJacksonJodaFormat();
 			if (jacksonJodaFormat != null) {
-				module.addSerializer(DateTime.class, new DateTimeSerializer(
-						jacksonJodaFormat));
+				module.addSerializer(DateTime.class,
+						new DateTimeSerializer(jacksonJodaFormat));
 			}
 			return module;
 		}
 
 		private JacksonJodaFormat getJacksonJodaFormat() {
 			if (this.jacksonProperties.getJodaDateTimeFormat() != null) {
-				return new JacksonJodaFormat(DateTimeFormat.forPattern(
-						this.jacksonProperties.getJodaDateTimeFormat()).withZoneUTC());
+				return new JacksonJodaFormat(DateTimeFormat
+						.forPattern(this.jacksonProperties.getJodaDateTimeFormat())
+						.withZoneUTC());
 			}
 			if (this.jacksonProperties.getDateFormat() != null) {
 				try {
-					return new JacksonJodaFormat(DateTimeFormat.forPattern(
-							this.jacksonProperties.getDateFormat()).withZoneUTC());
+					return new JacksonJodaFormat(DateTimeFormat
+							.forPattern(this.jacksonProperties.getDateFormat())
+							.withZoneUTC());
 				}
 				catch (IllegalArgumentException ex) {
 					if (this.log.isWarnEnabled()) {
@@ -151,9 +153,10 @@ public class JacksonAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
-	@EnableConfigurationProperties({ HttpMapperProperties.class, JacksonProperties.class })
-	static class JacksonObjectMapperBuilderConfiguration implements
-			ApplicationContextAware {
+	@EnableConfigurationProperties({ HttpMapperProperties.class,
+			JacksonProperties.class })
+	static class JacksonObjectMapperBuilderConfiguration
+			implements ApplicationContextAware {
 
 		private ApplicationContext applicationContext;
 
@@ -206,8 +209,8 @@ public class JacksonAutoConfiguration {
 			if (dateFormat != null) {
 				try {
 					Class<?> dateFormatClass = ClassUtils.forName(dateFormat, null);
-					builder.dateFormat((DateFormat) BeanUtils
-							.instantiateClass(dateFormatClass));
+					builder.dateFormat(
+							(DateFormat) BeanUtils.instantiateClass(dateFormatClass));
 				}
 				catch (ClassNotFoundException ex) {
 					builder.dateFormat(new SimpleDateFormat(dateFormat));
@@ -215,7 +218,8 @@ public class JacksonAutoConfiguration {
 			}
 		}
 
-		private void configurePropertyNamingStrategy(Jackson2ObjectMapperBuilder builder) {
+		private void configurePropertyNamingStrategy(
+				Jackson2ObjectMapperBuilder builder) {
 			// We support a fully qualified class name extending Jackson's
 			// PropertyNamingStrategy or a string value corresponding to the constant
 			// names in PropertyNamingStrategy which hold default provided implementations
@@ -232,7 +236,8 @@ public class JacksonAutoConfiguration {
 		}
 
 		private void configurePropertyNamingStrategyClass(
-				Jackson2ObjectMapperBuilder builder, Class<?> propertyNamingStrategyClass) {
+				Jackson2ObjectMapperBuilder builder,
+				Class<?> propertyNamingStrategyClass) {
 			builder.propertyNamingStrategy((PropertyNamingStrategy) BeanUtils
 					.instantiateClass(propertyNamingStrategyClass));
 		}

@@ -91,8 +91,8 @@ public class PomDependencies extends AbstractDependencies {
 		String groupId = getTextContent(element, "groupId");
 		String artifactId = getTextContent(element, "artifactId");
 		String version = getTextContent(element, "version");
-		List<Exclusion> exclusions = createExclusions(element
-				.getElementsByTagName("exclusions"));
+		List<Exclusion> exclusions = createExclusions(
+				element.getElementsByTagName("exclusions"));
 		return new Dependency(groupId, artifactId, version, exclusions);
 	}
 

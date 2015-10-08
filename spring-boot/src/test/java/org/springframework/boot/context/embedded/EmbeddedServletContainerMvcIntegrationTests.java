@@ -95,9 +95,10 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context,
 			String resourcePath) throws Exception {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(
-				"http://localhost:" + context.getEmbeddedServletContainer().getPort()
-						+ resourcePath), HttpMethod.GET);
+		ClientHttpRequest request = clientHttpRequestFactory.createRequest(
+				new URI("http://localhost:"
+						+ context.getEmbeddedServletContainer().getPort() + resourcePath),
+				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		try {
 			String actual = StreamUtils.copyToString(response.getBody(),

@@ -107,13 +107,13 @@ public final class JarEntryData {
 			// aspectjrt-1.7.4.jar has a different ext bytes length in the
 			// local directory to the central directory. We need to re-read
 			// here to skip them
-			byte[] localHeader = Bytes.get(this.source.getData().getSubsection(
-					this.localHeaderOffset, LOCAL_FILE_HEADER_SIZE));
+			byte[] localHeader = Bytes.get(this.source.getData()
+					.getSubsection(this.localHeaderOffset, LOCAL_FILE_HEADER_SIZE));
 			long nameLength = Bytes.littleEndianValue(localHeader, 26, 2);
 			long extraLength = Bytes.littleEndianValue(localHeader, 28, 2);
-			this.data = this.source.getData().getSubsection(
-					this.localHeaderOffset + LOCAL_FILE_HEADER_SIZE + nameLength
-							+ extraLength, getCompressedSize());
+			this.data = this.source.getData().getSubsection(this.localHeaderOffset
+					+ LOCAL_FILE_HEADER_SIZE + nameLength + extraLength,
+					getCompressedSize());
 		}
 		return this.data;
 	}
@@ -154,8 +154,8 @@ public final class JarEntryData {
 	}
 
 	/**
-	 * Decode MSDOS Date Time details. See <a
-	 * href="http://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a> for
+	 * Decode MSDOS Date Time details. See
+	 * <a href="http://mindprod.com/jgloss/zip.html">mindprod.com/jgloss/zip.html</a> for
 	 * more details of the format.
 	 * @param date the date part
 	 * @param time the time part

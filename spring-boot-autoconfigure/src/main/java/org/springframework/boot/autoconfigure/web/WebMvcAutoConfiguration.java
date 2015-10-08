@@ -104,6 +104,7 @@ public class WebMvcAutoConfiguration {
 			"classpath:/static/", "classpath:/public/" };
 
 	private static final String[] RESOURCE_LOCATIONS;
+
 	static {
 		RESOURCE_LOCATIONS = new String[CLASSPATH_RESOURCE_LOCATIONS.length
 				+ SERVLET_RESOURCE_LOCATIONS.length];
@@ -114,6 +115,7 @@ public class WebMvcAutoConfiguration {
 	}
 
 	private static final String[] STATIC_INDEX_HTML_RESOURCES;
+
 	static {
 		STATIC_INDEX_HTML_RESOURCES = new String[RESOURCE_LOCATIONS.length];
 		for (int i = 0; i < STATIC_INDEX_HTML_RESOURCES.length; i++) {
@@ -194,8 +196,8 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class)
 		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
-			resolver.setContentNegotiationManager(beanFactory
-					.getBean(ContentNegotiationManager.class));
+			resolver.setContentNegotiationManager(
+					beanFactory.getBean(ContentNegotiationManager.class));
 			// ContentNegotiatingViewResolver uses all the other view resolvers to locate
 			// a view so it should have a high precedence
 			resolver.setOrder(Ordered.HIGHEST_PRECEDENCE);
@@ -220,8 +222,8 @@ public class WebMvcAutoConfiguration {
 		public MessageCodesResolver getMessageCodesResolver() {
 			if (this.mvcProperties.getMessageCodesResolverFormat() != null) {
 				DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
-				resolver.setMessageCodeFormatter(this.mvcProperties
-						.getMessageCodesResolverFormat());
+				resolver.setMessageCodeFormatter(
+						this.mvcProperties.getMessageCodesResolverFormat());
 				return resolver;
 			}
 			return null;

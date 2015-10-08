@@ -70,8 +70,9 @@ public class HttpMapperProperties {
 
 	private String getDeprecationMessage(String property,
 			SerializationFeature alternativeFeature) {
-		return String.format("%s is deprecated. If you are using Jackson,"
-				+ " spring.jackson.serialization.%s=true should be used instead.",
+		return String.format(
+				"%s is deprecated. If you are using Jackson,"
+						+ " spring.jackson.serialization.%s=true should be used instead.",
 				property, alternativeFeature.name());
 	}
 

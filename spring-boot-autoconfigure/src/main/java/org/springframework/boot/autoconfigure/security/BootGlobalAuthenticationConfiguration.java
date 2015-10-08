@@ -56,8 +56,8 @@ public class BootGlobalAuthenticationConfiguration {
 		return new BootGlobalAuthenticationConfigurationAdapter(context);
 	}
 
-	private static class BootGlobalAuthenticationConfigurationAdapter extends
-			GlobalAuthenticationConfigurerAdapter {
+	private static class BootGlobalAuthenticationConfigurationAdapter
+			extends GlobalAuthenticationConfigurerAdapter {
 
 		private static Log logger = LogFactory
 				.getLog(BootGlobalAuthenticationConfiguration.class);

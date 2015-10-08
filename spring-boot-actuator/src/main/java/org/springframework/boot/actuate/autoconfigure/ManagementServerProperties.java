@@ -53,7 +53,8 @@ public class ManagementServerProperties implements SecurityPrerequisite {
 	 * management endpoints. This is a useful place to put user-defined access rules if
 	 * you want to override the default access rules.
 	 */
-	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER - 1;
+	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER
+			- 1;
 
 	/**
 	 * Management endpoint HTTP port. Use the same port as the applicationby default.

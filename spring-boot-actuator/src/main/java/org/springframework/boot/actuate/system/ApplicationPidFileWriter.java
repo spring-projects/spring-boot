@@ -43,8 +43,8 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.2.0
  */
-public class ApplicationPidFileWriter implements
-		ApplicationListener<SpringApplicationEvent>, Ordered {
+public class ApplicationPidFileWriter
+		implements ApplicationListener<SpringApplicationEvent>, Ordered {
 
 	private static final Log logger = LogFactory.getLog(ApplicationPidFileWriter.class);
 
@@ -108,7 +108,8 @@ public class ApplicationPidFileWriter implements
 					writePidFile(event);
 				}
 				catch (Exception ex) {
-					logger.warn(String.format("Cannot create pid file %s", this.file), ex);
+					logger.warn(String.format("Cannot create pid file %s", this.file),
+							ex);
 				}
 			}
 		}

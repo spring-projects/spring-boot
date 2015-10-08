@@ -163,14 +163,14 @@ public class EntityManagerFactoryBuilder {
 		public LocalContainerEntityManagerFactoryBean build() {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
-				entityManagerFactoryBean
-						.setPersistenceUnitManager(EntityManagerFactoryBuilder.this.persistenceUnitManager);
+				entityManagerFactoryBean.setPersistenceUnitManager(
+						EntityManagerFactoryBuilder.this.persistenceUnitManager);
 			}
 			if (this.persistenceUnit != null) {
 				entityManagerFactoryBean.setPersistenceUnitName(this.persistenceUnit);
 			}
-			entityManagerFactoryBean
-					.setJpaVendorAdapter(EntityManagerFactoryBuilder.this.jpaVendorAdapter);
+			entityManagerFactoryBean.setJpaVendorAdapter(
+					EntityManagerFactoryBuilder.this.jpaVendorAdapter);
 
 			if (this.jta) {
 				entityManagerFactoryBean.setJtaDataSource(this.dataSource);
@@ -180,8 +180,8 @@ public class EntityManagerFactoryBuilder {
 			}
 
 			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
-			entityManagerFactoryBean.getJpaPropertyMap().putAll(
-					EntityManagerFactoryBuilder.this.properties.getProperties());
+			entityManagerFactoryBean.getJpaPropertyMap()
+					.putAll(EntityManagerFactoryBuilder.this.properties.getProperties());
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
 			if (EntityManagerFactoryBuilder.this.callback != null) {
 				EntityManagerFactoryBuilder.this.callback

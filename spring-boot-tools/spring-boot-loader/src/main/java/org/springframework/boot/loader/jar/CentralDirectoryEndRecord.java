@@ -82,8 +82,8 @@ class CentralDirectoryEndRecord {
 			return false;
 		}
 		// Total size must be the structure size + comment
-		long commentLength = Bytes.littleEndianValue(this.block, this.offset
-				+ COMMENT_LENGTH_OFFSET, 2);
+		long commentLength = Bytes.littleEndianValue(this.block,
+				this.offset + COMMENT_LENGTH_OFFSET, 2);
 		return this.size == MINIMUM_SIZE + commentLength;
 	}
 

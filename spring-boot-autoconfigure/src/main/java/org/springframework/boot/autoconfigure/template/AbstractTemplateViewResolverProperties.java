@@ -28,8 +28,8 @@ import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public abstract class AbstractTemplateViewResolverProperties extends
-		AbstractViewResolverProperties {
+public abstract class AbstractTemplateViewResolverProperties
+		extends AbstractViewResolverProperties {
 
 	/**
 	 * Prefix that gets prepended to view names when building a URL.

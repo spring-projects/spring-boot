@@ -94,8 +94,8 @@ public class HttpEncodingAutoConfigurationTests {
 	@Test
 	public void filterIsOrderedHighest() throws Exception {
 		load(OrderedConfiguration.class);
-		List<Filter> beans = new ArrayList<Filter>(this.context.getBeansOfType(
-				Filter.class).values());
+		List<Filter> beans = new ArrayList<Filter>(
+				this.context.getBeansOfType(Filter.class).values());
 		AnnotationAwareOrderComparator.sort(beans);
 		assertThat(beans.get(0), instanceOf(CharacterEncodingFilter.class));
 		assertThat(beans.get(1), instanceOf(HiddenHttpMethodFilter.class));

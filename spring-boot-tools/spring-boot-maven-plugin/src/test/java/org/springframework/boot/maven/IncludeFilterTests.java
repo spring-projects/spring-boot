@@ -39,8 +39,8 @@ public class IncludeFilterTests {
 
 	@Test
 	public void includeSimple() throws ArtifactFilterException {
-		IncludeFilter filter = new IncludeFilter(Arrays.asList(createInclude("com.foo",
-				"bar")));
+		IncludeFilter filter = new IncludeFilter(
+				Arrays.asList(createInclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.foo", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertEquals("Should not have been filtered", 1, result.size());
@@ -49,8 +49,8 @@ public class IncludeFilterTests {
 
 	@Test
 	public void includeGroupIdNoMatch() throws ArtifactFilterException {
-		IncludeFilter filter = new IncludeFilter(Arrays.asList(createInclude("com.foo",
-				"bar")));
+		IncludeFilter filter = new IncludeFilter(
+				Arrays.asList(createInclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.baz", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertEquals("Should have been filtered", 0, result.size());
@@ -58,8 +58,8 @@ public class IncludeFilterTests {
 
 	@Test
 	public void includeArtifactIdNoMatch() throws ArtifactFilterException {
-		IncludeFilter filter = new IncludeFilter(Arrays.asList(createInclude("com.foo",
-				"bar")));
+		IncludeFilter filter = new IncludeFilter(
+				Arrays.asList(createInclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.foo", "biz");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertEquals("Should have been filtered", 0, result.size());
@@ -67,8 +67,8 @@ public class IncludeFilterTests {
 
 	@Test
 	public void includeClassifier() throws ArtifactFilterException {
-		IncludeFilter filter = new IncludeFilter(Arrays.asList(createInclude("com.foo",
-				"bar", "jdk5")));
+		IncludeFilter filter = new IncludeFilter(
+				Arrays.asList(createInclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar", "jdk5");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertEquals("Should not have been filtered", 1, result.size());
@@ -77,8 +77,8 @@ public class IncludeFilterTests {
 
 	@Test
 	public void includeClassifierNoTargetClassifier() throws ArtifactFilterException {
-		IncludeFilter filter = new IncludeFilter(Arrays.asList(createInclude("com.foo",
-				"bar", "jdk5")));
+		IncludeFilter filter = new IncludeFilter(
+				Arrays.asList(createInclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertEquals("Should have been filtered", 0, result.size());
@@ -86,8 +86,8 @@ public class IncludeFilterTests {
 
 	@Test
 	public void includeClassifierNoMatch() throws ArtifactFilterException {
-		IncludeFilter filter = new IncludeFilter(Arrays.asList(createInclude("com.foo",
-				"bar", "jdk5")));
+		IncludeFilter filter = new IncludeFilter(
+				Arrays.asList(createInclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar", "jdk6");
 		Set result = filter.filter(Collections.singleton(artifact));
 		assertEquals("Should have been filtered", 0, result.size());
@@ -121,7 +121,8 @@ public class IncludeFilterTests {
 		return include;
 	}
 
-	private Artifact createArtifact(String groupId, String artifactId, String classifier) {
+	private Artifact createArtifact(String groupId, String artifactId,
+			String classifier) {
 		Artifact a = mock(Artifact.class);
 		given(a.getGroupId()).willReturn(groupId);
 		given(a.getArtifactId()).willReturn(artifactId);

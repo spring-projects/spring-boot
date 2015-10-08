@@ -101,7 +101,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		setupTestConfiguration();
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
-		assertTrue(this.context.getBean("transactionManager") instanceof JpaTransactionManager);
+		assertTrue(this.context
+				.getBean("transactionManager") instanceof JpaTransactionManager);
 	}
 
 	@Test
@@ -218,8 +219,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestConfigurationWithEntityManagerFactory extends
-			TestConfiguration {
+	protected static class TestConfigurationWithEntityManagerFactory
+			extends TestConfiguration {
 
 		@Bean
 		public LocalContainerEntityManagerFactoryBean entityManagerFactory(

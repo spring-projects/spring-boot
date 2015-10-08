@@ -35,8 +35,8 @@ import org.springframework.util.ReflectionUtils;
  */
 public class RunProcess {
 
-	private static final Method INHERIT_IO_METHOD = ReflectionUtils.findMethod(
-			ProcessBuilder.class, "inheritIO");
+	private static final Method INHERIT_IO_METHOD = ReflectionUtils
+			.findMethod(ProcessBuilder.class, "inheritIO");
 
 	private static final long JUST_ENDED_LIMIT = 500;
 
@@ -125,8 +125,8 @@ public class RunProcess {
 	}
 
 	private void redirectOutput(Process process) {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(
-				process.getInputStream()));
+		final BufferedReader reader = new BufferedReader(
+				new InputStreamReader(process.getInputStream()));
 		new Thread() {
 
 			@Override

@@ -56,8 +56,8 @@ public class HealthMvcEndpointAutoConfigurationTests {
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				TestHealthIndicator.class);
 		this.context.refresh();
-		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class).invoke(
-				null);
+		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
+				.invoke(null);
 		assertEquals(Status.UP, health.getStatus());
 		assertEquals(null, health.getDetails().get("foo"));
 	}
@@ -73,11 +73,11 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"management.security.enabled=false");
 		this.context.refresh();
-		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class).invoke(
-				null);
+		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
+				.invoke(null);
 		assertEquals(Status.UP, health.getStatus());
-		Health map = (Health) health.getDetails().get(
-				"healthMvcEndpointAutoConfigurationTests.Test");
+		Health map = (Health) health.getDetails()
+				.get("healthMvcEndpointAutoConfigurationTests.Test");
 		assertEquals("bar", map.getDetails().get("foo"));
 	}
 

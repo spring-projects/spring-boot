@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
-		EnvironmentAware {
+public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
+		implements EnvironmentAware {
 
 	private Environment environment;
 

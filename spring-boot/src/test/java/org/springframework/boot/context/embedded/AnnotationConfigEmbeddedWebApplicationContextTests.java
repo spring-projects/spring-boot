@@ -91,8 +91,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 	@Test
 	public void scanAndRefresh() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.scan(ExampleEmbeddedWebApplicationConfiguration.class.getPackage()
-				.getName());
+		this.context.scan(
+				ExampleEmbeddedWebApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
 		verifyContext();
 	}
@@ -152,8 +152,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 
 	@Configuration
 	@EnableWebMvc
-	public static class ServletContextAwareEmbeddedConfiguration implements
-			ServletContextAware {
+	public static class ServletContextAwareEmbeddedConfiguration
+			implements ServletContextAware {
 
 		private ServletContext servletContext;
 

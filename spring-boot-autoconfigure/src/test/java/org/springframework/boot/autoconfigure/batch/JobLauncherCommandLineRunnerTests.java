@@ -87,7 +87,8 @@ public class JobLauncherCommandLineRunnerTests {
 		}).build();
 		this.job = this.jobs.get("job").start(this.step).build();
 		this.jobExplorer = this.context.getBean(JobExplorer.class);
-		this.runner = new JobLauncherCommandLineRunner(this.jobLauncher, this.jobExplorer);
+		this.runner = new JobLauncherCommandLineRunner(this.jobLauncher,
+				this.jobExplorer);
 		this.context.getBean(BatchConfiguration.class).clear();
 	}
 
@@ -95,8 +96,8 @@ public class JobLauncherCommandLineRunnerTests {
 	public void basicExecution() throws Exception {
 		this.runner.execute(this.job, new JobParameters());
 		assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());
-		this.runner.execute(this.job, new JobParametersBuilder().addLong("id", 1L)
-				.toJobParameters());
+		this.runner.execute(this.job,
+				new JobParametersBuilder().addLong("id", 1L).toJobParameters());
 		assertEquals(2, this.jobExplorer.getJobInstances("job", 0, 100).size());
 	}
 

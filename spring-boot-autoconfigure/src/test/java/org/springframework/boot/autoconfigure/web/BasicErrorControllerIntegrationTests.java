@@ -71,23 +71,22 @@ public class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClient() throws Exception {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, Map.class);
 		String body = entity.getBody().toString();
-		assertThat(body, endsWith("status=500, " + "error=Internal Server Error, "
-				+ "exception=java.lang.IllegalStateException, " + "message=Expected!, "
-				+ "path=/}"));
+		assertThat(body,
+				endsWith("status=500, " + "error=Internal Server Error, "
+						+ "exception=java.lang.IllegalStateException, "
+						+ "message=Expected!, " + "path=/}"));
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForAnnotatedException() throws Exception {
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/annotated", Map.class);
-		assertThat(
-				entity.getBody().toString(),
-				endsWith("status=400, "
-						+ "error=Bad Request, "
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + "/annotated", Map.class);
+		assertThat(entity.getBody().toString(),
+				endsWith("status=400, " + "error=Bad Request, "
 						+ "exception=org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests$TestConfiguration$Errors$ExpectedException, "
 						+ "message=Expected!, " + "path=/annotated}"));
 	}
@@ -121,7 +120,7 @@ public class BasicErrorControllerIntegrationTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+								throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};

@@ -27,14 +27,15 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Stephane Nicoll
  */
-public class HikariDataSourcePoolMetadataTests extends
-		AbstractDataSourcePoolMetadataTests<HikariDataSourcePoolMetadata> {
+public class HikariDataSourcePoolMetadataTests
+		extends AbstractDataSourcePoolMetadataTests<HikariDataSourcePoolMetadata> {
 
 	private HikariDataSourcePoolMetadata dataSourceMetadata;
 
 	@Before
 	public void setup() {
-		this.dataSourceMetadata = new HikariDataSourcePoolMetadata(createDataSource(0, 2));
+		this.dataSourceMetadata = new HikariDataSourcePoolMetadata(
+				createDataSource(0, 2));
 	}
 
 	@Override
@@ -51,8 +52,8 @@ public class HikariDataSourcePoolMetadataTests extends
 	}
 
 	private HikariDataSource createDataSource(int minSize, int maxSize) {
-		HikariDataSource dataSource = (HikariDataSource) initializeBuilder().type(
-				HikariDataSource.class).build();
+		HikariDataSource dataSource = (HikariDataSource) initializeBuilder()
+				.type(HikariDataSource.class).build();
 		dataSource.setMinimumIdle(minSize);
 		dataSource.setMaximumPoolSize(maxSize);
 		return dataSource;

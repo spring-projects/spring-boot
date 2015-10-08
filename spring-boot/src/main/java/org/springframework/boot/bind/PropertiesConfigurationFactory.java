@@ -48,8 +48,8 @@ import org.springframework.validation.Validator;
  * @param <T> The target type
  * @author Dave Syer
  */
-public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
-		MessageSourceAware, InitializingBean {
+public class PropertiesConfigurationFactory<T>
+		implements FactoryBean<T>, MessageSourceAware, InitializingBean {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -236,8 +236,9 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	private void doBindPropertiesToTarget() throws BindException {
-		RelaxedDataBinder dataBinder = (this.targetName != null ? new RelaxedDataBinder(
-				this.target, this.targetName) : new RelaxedDataBinder(this.target));
+		RelaxedDataBinder dataBinder = (this.targetName != null
+				? new RelaxedDataBinder(this.target, this.targetName)
+				: new RelaxedDataBinder(this.target));
 		if (this.validator != null) {
 			dataBinder.setValidator(this.validator);
 		}
@@ -288,9 +289,11 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		if (errors.hasErrors()) {
 			this.logger.error("Properties configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				this.logger.error(this.messageSource != null ? this.messageSource
-						.getMessage(error, Locale.getDefault()) + " (" + error + ")"
-						: error);
+				this.logger
+						.error(this.messageSource != null
+								? this.messageSource.getMessage(error,
+										Locale.getDefault()) + " (" + error + ")"
+								: error);
 			}
 			if (this.exceptionIfInvalid) {
 				throw new BindException(errors);

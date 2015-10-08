@@ -49,7 +49,8 @@ public class CustomerController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	HttpEntity<Resources<Customer>> showCustomers() {
-		Resources<Customer> resources = new Resources<Customer>(this.repository.findAll());
+		Resources<Customer> resources = new Resources<Customer>(
+				this.repository.findAll());
 		resources.add(this.entityLinks.linkToCollectionResource(Customer.class));
 		return new ResponseEntity<Resources<Customer>>(resources, HttpStatus.OK);
 	}

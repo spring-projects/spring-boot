@@ -60,9 +60,9 @@ public class SampleAtmosphereApplicationTests {
 	public void chatEndpoint() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(
 				ClientConfiguration.class, PropertyPlaceholderAutoConfiguration.class)
-				.properties(
-						"websocket.uri:ws://localhost:" + this.port + "/chat/websocket")
-				.run("--spring.main.web_environment=false");
+						.properties("websocket.uri:ws://localhost:" + this.port
+								+ "/chat/websocket")
+						.run("--spring.main.web_environment=false");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context
 				.getBean(ClientConfiguration.class).messagePayload;

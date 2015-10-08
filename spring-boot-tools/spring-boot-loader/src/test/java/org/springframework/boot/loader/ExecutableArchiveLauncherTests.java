@@ -90,8 +90,8 @@ public class ExecutableArchiveLauncherTests {
 		assertArrayEquals(urls, ((URLClassLoader) classLoader).getURLs());
 	}
 
-	private static final class UnitTestExecutableArchiveLauncher extends
-			ExecutableArchiveLauncher {
+	private static final class UnitTestExecutableArchiveLauncher
+			extends ExecutableArchiveLauncher {
 
 		public UnitTestExecutableArchiveLauncher(JavaAgentDetector javaAgentDetector) {
 			super(javaAgentDetector);
@@ -103,7 +103,8 @@ public class ExecutableArchiveLauncherTests {
 		}
 	}
 
-	private void doWithTccl(ClassLoader classLoader, Callable<?> action) throws Exception {
+	private void doWithTccl(ClassLoader classLoader, Callable<?> action)
+			throws Exception {
 		ClassLoader old = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(classLoader);

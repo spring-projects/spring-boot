@@ -61,8 +61,8 @@ public class CommandCompleter extends StringsCompleter {
 			}
 			AggregateCompleter arguementCompleters = new AggregateCompleter(
 					new StringsCompleter(options), new FileNameCompleter());
-			ArgumentCompleter argumentCompleter = new ArgumentCompleter(
-					argumentDelimiter, arguementCompleters);
+			ArgumentCompleter argumentCompleter = new ArgumentCompleter(argumentDelimiter,
+					arguementCompleters);
 			argumentCompleter.setStrict(false);
 			this.commandCompleters.put(command.getName(), argumentCompleter);
 		}
@@ -99,8 +99,8 @@ public class CommandCompleter extends StringsCompleter {
 			for (OptionHelp optionHelp : command.getOptionsHelp()) {
 				OptionHelpLine optionHelpLine = new OptionHelpLine(optionHelp);
 				optionHelpLines.add(optionHelpLine);
-				maxOptionsLength = Math.max(maxOptionsLength, optionHelpLine.getOptions()
-						.length());
+				maxOptionsLength = Math.max(maxOptionsLength,
+						optionHelpLine.getOptions().length());
 			}
 
 			this.console.println();

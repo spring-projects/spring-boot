@@ -134,10 +134,8 @@ public class PropertySourcesLoader {
 	}
 
 	private boolean isFile(Resource resource) {
-		return resource != null
-				&& resource.exists()
-				&& StringUtils.hasText(StringUtils.getFilenameExtension(resource
-						.getFilename()));
+		return resource != null && resource.exists() && StringUtils
+				.hasText(StringUtils.getFilenameExtension(resource.getFilename()));
 	}
 
 	private String generatePropertySourceName(String name, String profile) {

@@ -55,8 +55,8 @@ public class ServerPropertiesTests {
 	@Test
 	public void testAddressBinding() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap("server.address",
-				"127.0.0.1")));
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.address", "127.0.0.1")));
 		assertFalse(binder.getBindingResult().hasErrors());
 		assertEquals(InetAddress.getByName("127.0.0.1"), this.properties.getAddress());
 	}
@@ -71,8 +71,8 @@ public class ServerPropertiesTests {
 	@Test
 	public void testServletPathAsMapping() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"server.servletPath", "/foo/*")));
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.servletPath", "/foo/*")));
 		assertFalse(binder.getBindingResult().hasErrors());
 		assertEquals("/foo/*", this.properties.getServletMapping());
 		assertEquals("/foo", this.properties.getServletPrefix());
@@ -81,8 +81,8 @@ public class ServerPropertiesTests {
 	@Test
 	public void testServletPathAsPrefix() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"server.servletPath", "/foo")));
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.servletPath", "/foo")));
 		assertFalse(binder.getBindingResult().hasErrors());
 		assertEquals("/foo/*", this.properties.getServletMapping());
 		assertEquals("/foo", this.properties.getServletPrefix());
@@ -96,25 +96,27 @@ public class ServerPropertiesTests {
 		map.put("server.tomcat.remote_ip_header", "Remote-Ip");
 		map.put("server.tomcat.internal_proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 		bindProperties(map);
-		assertEquals("%h %t '%r' %s %b", this.properties.getTomcat()
-				.getAccessLogPattern());
+		assertEquals("%h %t '%r' %s %b",
+				this.properties.getTomcat().getAccessLogPattern());
 		assertEquals("Remote-Ip", this.properties.getTomcat().getRemoteIpHeader());
-		assertEquals("X-Forwarded-Protocol", this.properties.getTomcat()
-				.getProtocolHeader());
-		assertEquals("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}", this.properties.getTomcat()
-				.getInternalProxies());
+		assertEquals("X-Forwarded-Protocol",
+				this.properties.getTomcat().getProtocolHeader());
+		assertEquals("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}",
+				this.properties.getTomcat().getInternalProxies());
 	}
 
 	@Test
 	public void testCustomizeTomcat() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
 		verify(factory, never()).setContextPath("");
 	}
 
 	@Test
 	public void testCustomizeTomcatPort() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.setPort(8080);
 		this.properties.customize(factory);
 		verify(factory).setPort(8080);
@@ -241,8 +243,8 @@ public class ServerPropertiesTests {
 	}
 
 	private void bindProperties(Map<String, String> map) {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				map));
+		new RelaxedDataBinder(this.properties, "server")
+				.bind(new MutablePropertyValues(map));
 	}
 
 	private String configureCompression(String compression) {

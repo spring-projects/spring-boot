@@ -48,8 +48,8 @@ import org.yaml.snakeyaml.error.YAMLException;
  * @author Luke Taylor
  * @author Dave Syer
  */
-public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourceAware,
-		InitializingBean {
+public class YamlConfigurationFactory<T>
+		implements FactoryBean<T>, MessageSourceAware, InitializingBean {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -91,7 +91,8 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 	 * @param propertyAliases the propertyAliases to set
 	 */
 	public void setPropertyAliases(Map<Class<?>, Map<String, String>> propertyAliases) {
-		this.propertyAliases = new HashMap<Class<?>, Map<String, String>>(propertyAliases);
+		this.propertyAliases = new HashMap<Class<?>, Map<String, String>>(
+				propertyAliases);
 	}
 
 	/**
@@ -156,9 +157,11 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 		if (errors.hasErrors()) {
 			this.logger.error("YAML configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				this.logger.error(this.messageSource != null ? this.messageSource
-						.getMessage(error, Locale.getDefault()) + " (" + error + ")"
-						: error);
+				this.logger
+						.error(this.messageSource != null
+								? this.messageSource.getMessage(error,
+										Locale.getDefault()) + " (" + error + ")"
+								: error);
 			}
 			if (this.exceptionIfInvalid) {
 				BindException summary = new BindException(errors);

@@ -135,8 +135,8 @@ public class AuditEvent implements Serializable {
 
 	@Override
 	public String toString() {
-		return "AuditEvent [timestamp=" + this.timestamp + ", principal="
-				+ this.principal + ", type=" + this.type + ", data=" + this.data + "]";
+		return "AuditEvent [timestamp=" + this.timestamp + ", principal=" + this.principal
+				+ ", type=" + this.type + ", data=" + this.data + "]";
 	}
 
 }

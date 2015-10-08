@@ -92,8 +92,8 @@ public class ConditionOutcome {
 		}
 		if (getClass() == obj.getClass()) {
 			ConditionOutcome other = (ConditionOutcome) obj;
-			return (this.match == other.match && ObjectUtils.nullSafeEquals(this.message,
-					other.message));
+			return (this.match == other.match
+					&& ObjectUtils.nullSafeEquals(this.message, other.message));
 		}
 		return super.equals(obj);
 	}

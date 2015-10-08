@@ -154,7 +154,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 					}
 					CodeSource source = loaded.getProtectionDomain().getCodeSource();
 					if (source != null) {
-						this.agent = new File[] { new File(source.getLocation().getFile()) };
+						this.agent = new File[] {
+								new File(source.getLocation().getFile()) };
 					}
 				}
 			}
@@ -170,7 +171,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	private void run(String startClassName) throws MojoExecutionException {
 		findAgent();
 		boolean hasAgent = (this.agent != null && this.agent.length > 0);
-		boolean hasJvmArgs = (this.jvmArguments != null && this.jvmArguments.length() > 0);
+		boolean hasJvmArgs = (this.jvmArguments != null
+				&& this.jvmArguments.length() > 0);
 		if (Boolean.TRUE.equals(this.fork)
 				|| (this.fork == null && (hasAgent || hasJvmArgs))) {
 			runWithForkedJvm(startClassName);
@@ -180,9 +182,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 				getLog().warn("Fork mode disabled, ignoring agent");
 			}
 			if (hasJvmArgs) {
-				getLog().warn(
-						"Fork mode disabled, ignoring JVM argument(s) ["
-								+ this.jvmArguments + "]");
+				getLog().warn("Fork mode disabled, ignoring JVM argument(s) ["
+						+ this.jvmArguments + "]");
 			}
 			runWithMavenJvm(startClassName);
 		}
@@ -196,8 +197,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		args.add(startClassName);
 		addArgs(args);
 		try {
-			new RunProcess(new JavaExecutable().toString()).run(args
-					.toArray(new String[args.size()]));
+			new RunProcess(new JavaExecutable().toString())
+					.run(args.toArray(new String[args.size()]));
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not exec java", ex);
@@ -206,8 +207,9 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 
 	private void runWithMavenJvm(String startClassName) throws MojoExecutionException {
 		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
-		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName,
-				this.arguments), startClassName + ".main()");
+		Thread launchThread = new Thread(threadGroup,
+				new LaunchRunner(startClassName, this.arguments),
+				startClassName + ".main()");
 		launchThread.setContextClassLoader(new URLClassLoader(getClassPathUrls()));
 		launchThread.start();
 		join(threadGroup);
@@ -236,8 +238,9 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		try {
 			StringBuilder classpath = new StringBuilder();
 			for (URL ele : getClassPathUrls()) {
-				classpath = classpath.append((classpath.length() > 0 ? File.pathSeparator
-						: "") + new File(ele.toURI()));
+				classpath = classpath
+						.append((classpath.length() > 0 ? File.pathSeparator : "")
+								+ new File(ele.toURI()));
 			}
 			getLog().debug("Classpath for forked process: " + classpath);
 			args.add("-cp");
@@ -310,10 +313,11 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		urls.add(this.classesDirectory.toURI().toURL());
 	}
 
-	private void addDependencies(List<URL> urls) throws MalformedURLException,
-			MojoExecutionException {
+	private void addDependencies(List<URL> urls)
+			throws MalformedURLException, MojoExecutionException {
 		FilterArtifacts filters = getFilters(new TestArtifactFilter());
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), filters);
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
+				filters);
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {
 				urls.add(artifact.getFile().toURI().toURL());
@@ -382,7 +386,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 			}
 		}
 
-		public synchronized void rethrowUncaughtException() throws MojoExecutionException {
+		public synchronized void rethrowUncaughtException()
+				throws MojoExecutionException {
 			if (this.exception != null) {
 				throw new MojoExecutionException("An exception occured while running. "
 						+ this.exception.getMessage(), this.exception);
@@ -420,7 +425,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 			catch (NoSuchMethodException ex) {
 				Exception wrappedEx = new Exception(
 						"The specified mainClass doesn't contain a "
-								+ "main method with appropriate signature.", ex);
+								+ "main method with appropriate signature.",
+						ex);
 				thread.getThreadGroup().uncaughtException(thread, wrappedEx);
 			}
 			catch (Exception ex) {

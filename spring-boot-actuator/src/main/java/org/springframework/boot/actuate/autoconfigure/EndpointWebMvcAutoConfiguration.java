@@ -94,8 +94,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
 		ManagementServerPropertiesAutoConfiguration.class })
 @EnableConfigurationProperties(HealthMvcEndpointProperties.class)
-public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
-		SmartInitializingSingleton {
+public class EndpointWebMvcAutoConfiguration
+		implements ApplicationContextAware, SmartInitializingSingleton {
 
 	private static Log logger = LogFactory.getLog(EndpointWebMvcAutoConfiguration.class);
 
@@ -119,9 +119,10 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointHandlerMapping endpointHandlerMapping() {
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(mvcEndpoints()
-				.getEndpoints());
-		boolean disabled = ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME;
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+				mvcEndpoints().getEndpoints());
+		boolean disabled = ManagementServerPort
+				.get(this.applicationContext) != ManagementServerPort.SAME;
 		mapping.setDisabled(disabled);
 		if (!disabled) {
 			mapping.setPrefix(this.managementServerProperties.getContextPath());
@@ -144,10 +145,10 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 						.getEmbeddedServletContainer() != null) {
 			createChildManagementContext();
 		}
-		if (managementPort == ManagementServerPort.SAME
-				&& this.applicationContext.getEnvironment() instanceof ConfigurableEnvironment) {
-			addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.applicationContext
-					.getEnvironment());
+		if (managementPort == ManagementServerPort.SAME && this.applicationContext
+				.getEnvironment() instanceof ConfigurableEnvironment) {
+			addLocalManagementPortPropertyAlias(
+					(ConfigurableEnvironment) this.applicationContext.getEnvironment());
 		}
 	}
 
@@ -172,8 +173,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		boolean secure = (security == null || security.isEnabled());
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate, secure);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
-			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
-					.getMapping());
+			healthMvcEndpoint
+					.addStatusMapping(this.healthMvcEndpointProperties.getMapping());
 		}
 		return healthMvcEndpoint;
 	}
@@ -210,14 +211,16 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		// Ensure close on the parent also closes the child
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
 			((ConfigurableApplicationContext) this.applicationContext)
-					.addApplicationListener(new ApplicationListener<ContextClosedEvent>() {
-						@Override
-						public void onApplicationEvent(ContextClosedEvent event) {
-							if (event.getApplicationContext() == EndpointWebMvcAutoConfiguration.this.applicationContext) {
-								childContext.close();
-							}
-						}
-					});
+					.addApplicationListener(
+							new ApplicationListener<ContextClosedEvent>() {
+								@Override
+								public void onApplicationEvent(ContextClosedEvent event) {
+									if (event
+											.getApplicationContext() == EndpointWebMvcAutoConfiguration.this.applicationContext) {
+										childContext.close();
+									}
+								}
+							});
 		}
 		try {
 			childContext.refresh();
@@ -227,7 +230,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			// and this is the signature of that happening
 			if (ex instanceof EmbeddedServletContainerException
 					|| ex.getCause() instanceof EmbeddedServletContainerException) {
-				logger.warn("Could not start embedded container (management endpoints are still available through JMX)");
+				logger.warn(
+						"Could not start embedded container (management endpoints are still available through JMX)");
 			}
 			else {
 				throw ex;
@@ -242,8 +246,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	 */
 	private void addLocalManagementPortPropertyAlias(
 			final ConfigurableEnvironment environment) {
-		environment.getPropertySources().addLast(
-				new PropertySource<Object>("Management Server") {
+		environment.getPropertySources()
+				.addLast(new PropertySource<Object>("Management Server") {
 					@Override
 					public Object getProperty(String name) {
 						if ("local.management.port".equals(name)) {
@@ -283,7 +287,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain filterChain)
-				throws ServletException, IOException {
+						throws ServletException, IOException {
 			if (this.properties == null) {
 				this.properties = this.applicationContext
 						.getBean(ManagementServerProperties.class);
@@ -328,7 +332,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			return ((port == null)
 					|| (serverProperties.getPort() == null && port.equals(8080))
 					|| (port != 0 && port.equals(serverProperties.getPort())) ? SAME
-					: DIFFERENT);
+							: DIFFERENT);
 		}
 
 	}

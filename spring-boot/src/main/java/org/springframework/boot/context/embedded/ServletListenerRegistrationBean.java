@@ -54,12 +54,13 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @param <T> the type of listener
  */
-public class ServletListenerRegistrationBean<T extends EventListener> extends
-		RegistrationBean {
+public class ServletListenerRegistrationBean<T extends EventListener>
+		extends RegistrationBean {
 
 	private static Log logger = LogFactory.getLog(ServletListenerRegistrationBean.class);
 
 	private static final Set<Class<?>> SUPPORTED_TYPES;
+
 	static {
 		Set<Class<?>> types = new HashSet<Class<?>>();
 		types.add(ServletContextAttributeListener.class);
@@ -109,8 +110,9 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends
 			servletContext.addListener(this.listener);
 		}
 		catch (RuntimeException ex) {
-			throw new IllegalStateException("Failed to add listener '" + this.listener
-					+ "' to servlet context", ex);
+			throw new IllegalStateException(
+					"Failed to add listener '" + this.listener + "' to servlet context",
+					ex);
 		}
 	}
 

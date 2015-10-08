@@ -241,7 +241,8 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(
 				"application/zip", file.getAbsolutePath());
 		mockSuccessfulProjectGeneration(request);
-		assertEquals("Should not have failed", ExitStatus.OK, this.command.run("--force"));
+		assertEquals("Should not have failed", ExitStatus.OK,
+				this.command.run("--force"));
 		assertTrue("File should have changed", fileLength != file.length());
 	}
 
@@ -369,8 +370,8 @@ public class InitCommandTests extends AbstractHttpClientMockTests {
 		return bos.toByteArray();
 	}
 
-	private static class TestableInitCommandOptionHandler extends
-			InitCommand.InitOptionHandler {
+	private static class TestableInitCommandOptionHandler
+			extends InitCommand.InitOptionHandler {
 
 		private boolean disableProjectGeneration;
 

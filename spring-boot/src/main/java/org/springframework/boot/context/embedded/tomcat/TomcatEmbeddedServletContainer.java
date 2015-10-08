@@ -76,8 +76,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	}
 
 	private synchronized void initialize() throws EmbeddedServletContainerException {
-		TomcatEmbeddedServletContainer.logger.info("Tomcat initialized with port(s): "
-				+ getPortsDescription(false));
+		TomcatEmbeddedServletContainer.logger
+				.info("Tomcat initialized with port(s): " + getPortsDescription(false));
 		try {
 			addInstanceIdToEngineName();
 
@@ -95,8 +95,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			startDaemonAwaitThread();
 		}
 		catch (Exception ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to start embedded Tomcat", ex);
+			throw new EmbeddedServletContainerException("Unable to start embedded Tomcat",
+					ex);
 		}
 	}
 
@@ -156,8 +156,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			stopSilently();
 			throw new IllegalStateException("Tomcat connector in failed state");
 		}
-		TomcatEmbeddedServletContainer.logger.info("Tomcat started on port(s): "
-				+ getPortsDescription(true));
+		TomcatEmbeddedServletContainer.logger
+				.info("Tomcat started on port(s): " + getPortsDescription(true));
 	}
 
 	private boolean connectorsHaveFailedToStart() {

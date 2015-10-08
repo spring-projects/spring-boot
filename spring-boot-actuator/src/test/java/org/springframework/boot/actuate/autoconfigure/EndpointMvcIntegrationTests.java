@@ -82,8 +82,8 @@ public class EndpointMvcIntegrationTests {
 
 	@Test
 	public void envEndpointNotHidden() throws InterruptedException {
-		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port
-				+ "/env/user.dir", String.class);
+		String body = new TestRestTemplate().getForObject(
+				"http://localhost:" + this.port + "/env/user.dir", String.class);
 		assertNotNull(body);
 		assertTrue("Wrong body: \n" + body, body.contains("spring-boot-actuator"));
 		assertTrue(this.interceptor.invoked());
@@ -95,8 +95,8 @@ public class EndpointMvcIntegrationTests {
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
 			ServerPropertiesAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
-			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			HttpMessageConvertersAutoConfiguration.class, ErrorMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected static @interface MinimalWebConfiguration {
 
 	}

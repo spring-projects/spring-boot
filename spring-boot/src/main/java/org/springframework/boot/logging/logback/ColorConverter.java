@@ -37,6 +37,7 @@ import ch.qos.logback.core.pattern.CompositeConverter;
 public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 
 	private static final Map<String, AnsiElement> ELEMENTS;
+
 	static {
 		Map<String, AnsiElement> elements = new HashMap<String, AnsiElement>();
 		elements.put("faint", AnsiElement.FAINT);
@@ -50,6 +51,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 	}
 
 	private static final Map<Integer, AnsiElement> LEVELS;
+
 	static {
 		Map<Integer, AnsiElement> levels = new HashMap<Integer, AnsiElement>();
 		levels.put(Level.ERROR_INTEGER, AnsiElement.RED);
