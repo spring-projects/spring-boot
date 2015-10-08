@@ -18,7 +18,7 @@ package org.springframework.boot.env;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -199,7 +199,7 @@ public class PropertySourcesLoader {
 	 * @return the file extensions
 	 */
 	public Set<String> getAllFileExtensions() {
-		Set<String> fileExtensions = new HashSet<String>();
+		Set<String> fileExtensions = new LinkedHashSet<String>();
 		for (PropertySourceLoader loader : this.loaders) {
 			fileExtensions.addAll(Arrays.asList(loader.getFileExtensions()));
 		}
