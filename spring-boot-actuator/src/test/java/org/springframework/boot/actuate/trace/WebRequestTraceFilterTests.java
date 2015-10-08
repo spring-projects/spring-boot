@@ -111,7 +111,7 @@ public class WebRequestTraceFilterTests {
 		Map<String, Object> trace = this.inMemoryTraceRepository.findAll().iterator().next().getInfo();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
-		assertEquals("{Content-Type=application/json, status=200}", 
+		assertEquals("{Content-Type=application/json, status=200}",
 			map.get("response").toString());
 
 		assertEquals("GET", trace.get("method"));
