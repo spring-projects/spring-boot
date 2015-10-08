@@ -51,23 +51,25 @@ public class SampleWebStaticApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Static"));
+		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
+				entity.getBody().contains("<title>Static"));
 	}
 
 	@Test
 	public void testCss() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port
-						+ "/webjars/bootstrap/3.0.3/css/bootstrap.min.css", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity(
+						"http://localhost:" + this.port
+								+ "/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
+						String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
 		assertEquals("Wrong content type:\n" + entity.getHeaders().getContentType(),
-				MediaType.valueOf("text/css;charset=UTF-8"), entity.getHeaders()
-						.getContentType());
+				MediaType.valueOf("text/css;charset=UTF-8"),
+				entity.getHeaders().getContentType());
 	}
 
 }

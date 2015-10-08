@@ -187,8 +187,8 @@ class ResourceMatcher {
 		}
 
 		private MatchedResource(File rootFolder, File file) {
-			this.name = StringUtils.cleanPath(file.getAbsolutePath().substring(
-					rootFolder.getAbsolutePath().length() + 1));
+			this.name = StringUtils.cleanPath(file.getAbsolutePath()
+					.substring(rootFolder.getAbsolutePath().length() + 1));
 			this.file = file;
 			this.root = false;
 		}

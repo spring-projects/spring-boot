@@ -40,7 +40,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	 * useful place to put user-defined access rules if you want to override the default
 	 * access rules.
 	 */
-	public static final int ACCESS_OVERRIDE_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 2;
+	public static final int ACCESS_OVERRIDE_ORDER = SecurityProperties.BASIC_AUTH_ORDER
+			- 2;
 
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic

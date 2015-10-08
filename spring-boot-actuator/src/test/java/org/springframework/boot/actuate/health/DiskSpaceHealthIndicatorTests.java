@@ -51,8 +51,8 @@ public class DiskSpaceHealthIndicatorTests {
 	public void setUp() throws Exception {
 		given(this.fileMock.exists()).willReturn(true);
 		given(this.fileMock.canRead()).willReturn(true);
-		this.healthIndicator = new DiskSpaceHealthIndicator(createProperties(
-				this.fileMock, THRESHOLD_BYTES));
+		this.healthIndicator = new DiskSpaceHealthIndicator(
+				createProperties(this.fileMock, THRESHOLD_BYTES));
 	}
 
 	@Test
@@ -77,7 +77,8 @@ public class DiskSpaceHealthIndicatorTests {
 		assertEquals(THRESHOLD_BYTES * 10, health.getDetails().get("total"));
 	}
 
-	private DiskSpaceHealthIndicatorProperties createProperties(File path, long threshold) {
+	private DiskSpaceHealthIndicatorProperties createProperties(File path,
+			long threshold) {
 		DiskSpaceHealthIndicatorProperties properties = new DiskSpaceHealthIndicatorProperties();
 		properties.setPath(path);
 		properties.setThreshold(threshold);

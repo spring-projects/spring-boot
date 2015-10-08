@@ -86,8 +86,8 @@ public class SampleUndertowApplicationTests {
 	}
 
 	private void assertOkResponse(String path, String body) {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + path, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + this.port + path, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals(body, entity.getBody());
 	}

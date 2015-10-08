@@ -194,8 +194,8 @@ public class CrshAutoConfigurationTests {
 		PluginContext pluginContext = lifeCycle.getContext();
 
 		int count = 0;
-		Iterator<AuthenticationPlugin> plugins = pluginContext.getPlugins(
-				AuthenticationPlugin.class).iterator();
+		Iterator<AuthenticationPlugin> plugins = pluginContext
+				.getPlugins(AuthenticationPlugin.class).iterator();
 		while (plugins.hasNext()) {
 			count++;
 			plugins.next();
@@ -230,8 +230,8 @@ public class CrshAutoConfigurationTests {
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertEquals("jaas", lifeCycle.getConfig().get("crash.auth"));
-		assertEquals("my-test-domain", lifeCycle.getConfig()
-				.get("crash.auth.jaas.domain"));
+		assertEquals("my-test-domain",
+				lifeCycle.getConfig().get("crash.auth.jaas.domain"));
 	}
 
 	@Test
@@ -270,8 +270,8 @@ public class CrshAutoConfigurationTests {
 		AuthenticationPlugin<String> authenticationPlugin = null;
 		String authentication = lifeCycle.getConfig().getProperty("crash.auth");
 		assertNotNull(authentication);
-		for (AuthenticationPlugin plugin : lifeCycle.getContext().getPlugins(
-				AuthenticationPlugin.class)) {
+		for (AuthenticationPlugin plugin : lifeCycle.getContext()
+				.getPlugins(AuthenticationPlugin.class)) {
 			if (authentication.equals(plugin.getName())) {
 				authenticationPlugin = plugin;
 				break;
@@ -299,8 +299,8 @@ public class CrshAutoConfigurationTests {
 		AuthenticationPlugin<String> authenticationPlugin = null;
 		String authentication = lifeCycle.getConfig().getProperty("crash.auth");
 		assertNotNull(authentication);
-		for (AuthenticationPlugin plugin : lifeCycle.getContext().getPlugins(
-				AuthenticationPlugin.class)) {
+		for (AuthenticationPlugin plugin : lifeCycle.getContext()
+				.getPlugins(AuthenticationPlugin.class)) {
 			if (authentication.equals(plugin.getName())) {
 				authenticationPlugin = plugin;
 				break;
@@ -314,7 +314,8 @@ public class CrshAutoConfigurationTests {
 	}
 
 	@Test
-	public void testSpringAuthenticationProviderAsDefaultConfiguration() throws Exception {
+	public void testSpringAuthenticationProviderAsDefaultConfiguration()
+			throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(ManagementServerPropertiesAutoConfiguration.class);
@@ -328,8 +329,8 @@ public class CrshAutoConfigurationTests {
 		AuthenticationPlugin<String> authenticationPlugin = null;
 		String authentication = lifeCycle.getConfig().getProperty("crash.auth");
 		assertNotNull(authentication);
-		for (AuthenticationPlugin plugin : lifeCycle.getContext().getPlugins(
-				AuthenticationPlugin.class)) {
+		for (AuthenticationPlugin plugin : lifeCycle.getContext()
+				.getPlugins(AuthenticationPlugin.class)) {
 			if (authentication.equals(plugin.getName())) {
 				authenticationPlugin = plugin;
 				break;
@@ -360,12 +361,12 @@ public class CrshAutoConfigurationTests {
 							&& authentication.getCredentials().equals(PASSWORD)) {
 						authentication = new UsernamePasswordAuthenticationToken(
 								authentication.getPrincipal(),
-								authentication.getCredentials(),
-								Collections
+								authentication.getCredentials(), Collections
 										.singleton(new SimpleGrantedAuthority("ADMIN")));
 					}
 					else {
-						throw new BadCredentialsException("Invalid username and password");
+						throw new BadCredentialsException(
+								"Invalid username and password");
 					}
 					return authentication;
 				}

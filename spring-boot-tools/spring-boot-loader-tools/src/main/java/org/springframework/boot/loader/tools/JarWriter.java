@@ -198,8 +198,8 @@ public class JarWriter {
 	 */
 	public void writeLoaderClasses() throws IOException {
 		URL loaderJar = getClass().getClassLoader().getResource(NESTED_LOADER_JAR);
-		JarInputStream inputStream = new JarInputStream(new BufferedInputStream(
-				loaderJar.openStream()));
+		JarInputStream inputStream = new JarInputStream(
+				new BufferedInputStream(loaderJar.openStream()));
 		JarEntry entry;
 		while ((entry = inputStream.getNextJarEntry()) != null) {
 			if (entry.getName().endsWith(".class")) {
@@ -323,8 +323,8 @@ public class JarWriter {
 
 		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
-			int read = (this.headerStream == null ? -1 : this.headerStream.read(b, off,
-					len));
+			int read = (this.headerStream == null ? -1
+					: this.headerStream.read(b, off, len));
 			if (read != -1) {
 				this.headerStream = null;
 				return read;

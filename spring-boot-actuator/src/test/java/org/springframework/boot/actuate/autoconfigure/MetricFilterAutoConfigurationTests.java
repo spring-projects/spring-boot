@@ -110,10 +110,10 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		mvc.perform(get("/templateVarTest/foo")).andExpect(status().isOk());
-		verify(context.getBean(CounterService.class)).increment(
-				"status.200.templateVarTest.someVariable");
-		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.templateVarTest.someVariable"), anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.templateVarTest.someVariable");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.templateVarTest.someVariable"), anyDouble());
 		context.close();
 	}
 
@@ -126,10 +126,10 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		mvc.perform(get("/knownPath/foo")).andExpect(status().isNotFound());
-		verify(context.getBean(CounterService.class)).increment(
-				"status.404.knownPath.someVariable");
-		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.knownPath.someVariable"), anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment("status.404.knownPath.someVariable");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.knownPath.someVariable"), anyDouble());
 		context.close();
 	}
 
@@ -142,10 +142,10 @@ public class MetricFilterAutoConfigurationTests {
 				.addFilter(filter).build();
 		mvc.perform(get("/unknownPath/1")).andExpect(status().isNotFound());
 		mvc.perform(get("/unknownPath/2")).andExpect(status().isNotFound());
-		verify(context.getBean(CounterService.class), times(2)).increment(
-				"status.404.unmapped");
-		verify(context.getBean(GaugeService.class), times(2)).submit(
-				eq("response.unmapped"), anyDouble());
+		verify(context.getBean(CounterService.class), times(2))
+				.increment("status.404.unmapped");
+		verify(context.getBean(GaugeService.class), times(2))
+				.submit(eq("response.unmapped"), anyDouble());
 		context.close();
 	}
 
@@ -159,10 +159,10 @@ public class MetricFilterAutoConfigurationTests {
 				.build();
 		mvc.perform(get("/unknownPath/1")).andExpect(status().is3xxRedirection());
 		mvc.perform(get("/unknownPath/2")).andExpect(status().is3xxRedirection());
-		verify(context.getBean(CounterService.class), times(2)).increment(
-				"status.302.unmapped");
-		verify(context.getBean(GaugeService.class), times(2)).submit(
-				eq("response.unmapped"), anyDouble());
+		verify(context.getBean(CounterService.class), times(2))
+				.increment("status.302.unmapped");
+		verify(context.getBean(GaugeService.class), times(2))
+				.submit(eq("response.unmapped"), anyDouble());
 		context.close();
 	}
 
@@ -182,16 +182,16 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		try {
-			mvc.perform(get("/unhandledException")).andExpect(
-					status().isInternalServerError());
+			mvc.perform(get("/unhandledException"))
+					.andExpect(status().isInternalServerError());
 		}
 		catch (NestedServletException ex) {
 			// Expected
 		}
-		verify(context.getBean(CounterService.class)).increment(
-				"status.500.unhandledException");
-		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.unhandledException"), anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment("status.500.unhandledException");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.unhandledException"), anyDouble());
 		context.close();
 	}
 
@@ -206,10 +206,10 @@ public class MetricFilterAutoConfigurationTests {
 		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController())
 				.addFilter(filter).build();
 		mvc.perform(get("/templateVarTest/foo")).andExpect(status().isOk());
-		verify(context.getBean(CounterService.class)).increment(
-				"status.200.templateVarTest.someVariable");
-		verify(context.getBean(GaugeService.class)).submit(
-				eq("response.templateVarTest.someVariable"), anyDouble());
+		verify(context.getBean(CounterService.class))
+				.increment("status.200.templateVarTest.someVariable");
+		verify(context.getBean(GaugeService.class))
+				.submit(eq("response.templateVarTest.someVariable"), anyDouble());
 		context.close();
 	}
 
@@ -235,7 +235,8 @@ public class MetricFilterAutoConfigurationTests {
 	}
 
 	@Test
-	public void correctlyRecordsMetricsForFailedDeferredResultResponse() throws Exception {
+	public void correctlyRecordsMetricsForFailedDeferredResultResponse()
+			throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class, MetricFilterAutoConfiguration.class);
 		MetricsFilter filter = context.getBean(MetricsFilter.class);
@@ -255,8 +256,8 @@ public class MetricFilterAutoConfigurationTests {
 		}
 		catch (Exception ex) {
 			assertThat(result.getRequest().getAttribute(attributeName), is(nullValue()));
-			verify(context.getBean(CounterService.class)).increment(
-					"status.500.createFailure");
+			verify(context.getBean(CounterService.class))
+					.increment("status.500.createFailure");
 		}
 		finally {
 			context.close();
@@ -317,8 +318,8 @@ public class MetricFilterAutoConfigurationTests {
 				public void run() {
 					try {
 						MetricFilterTestController.this.latch.await();
-						result.setResult(new ResponseEntity<String>("Done",
-								HttpStatus.CREATED));
+						result.setResult(
+								new ResponseEntity<String>("Done", HttpStatus.CREATED));
 					}
 					catch (InterruptedException ex) {
 					}
@@ -353,8 +354,8 @@ public class MetricFilterAutoConfigurationTests {
 
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain chain) throws ServletException,
-				IOException {
+				HttpServletResponse response, FilterChain chain)
+						throws ServletException, IOException {
 			// send redirect before filter chain is executed, like Spring Security sending
 			// us back to a login page
 			response.sendRedirect("http://example.com");

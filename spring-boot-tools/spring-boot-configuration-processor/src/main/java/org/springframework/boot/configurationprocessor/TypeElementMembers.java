@@ -54,8 +54,8 @@ class TypeElementMembers {
 	}
 
 	private void process(TypeElement element) {
-		for (ExecutableElement method : ElementFilter.methodsIn(element
-				.getEnclosedElements())) {
+		for (ExecutableElement method : ElementFilter
+				.methodsIn(element.getEnclosedElements())) {
 			processMethod(method);
 		}
 		for (VariableElement field : ElementFilter
@@ -95,14 +95,14 @@ class TypeElementMembers {
 	}
 
 	private boolean isSetterReturnType(ExecutableElement method) {
-		return (TypeKind.VOID == method.getReturnType().getKind() || this.env
-				.getTypeUtils().isSameType(method.getEnclosingElement().asType(),
-						method.getReturnType()));
+		return (TypeKind.VOID == method.getReturnType().getKind()
+				|| this.env.getTypeUtils().isSameType(
+						method.getEnclosingElement().asType(), method.getReturnType()));
 	}
 
 	private String getAccessorName(String methodName) {
-		String name = methodName.startsWith("is") ? methodName.substring(2) : methodName
-				.substring(3);
+		String name = methodName.startsWith("is") ? methodName.substring(2)
+				: methodName.substring(3);
 		name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 		return name;
 	}

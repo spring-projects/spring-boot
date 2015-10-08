@@ -60,8 +60,8 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class JettyEmbeddedServletContainerFactoryTests extends
-		AbstractEmbeddedServletContainerFactoryTests {
+public class JettyEmbeddedServletContainerFactoryTests
+		extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected JettyEmbeddedServletContainerFactory getFactory() {
@@ -137,11 +137,12 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 				equalTo(new String[] { "ALPHA", "BRAVO", "CHARLIE" }));
 	}
 
-	private void assertTimeout(JettyEmbeddedServletContainerFactory factory, int expected) {
+	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,
+			int expected) {
 		this.container = factory.getEmbeddedServletContainer();
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
-		Handler[] handlers = jettyContainer.getServer().getChildHandlersByClass(
-				WebAppContext.class);
+		Handler[] handlers = jettyContainer.getServer()
+				.getChildHandlersByClass(WebAppContext.class);
 		WebAppContext webAppContext = (WebAppContext) handlers[0];
 		int actual = webAppContext.getSessionHandler().getSessionManager()
 				.getMaxInactiveInterval();

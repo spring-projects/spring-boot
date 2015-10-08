@@ -57,6 +57,7 @@ import org.springframework.util.ResourceUtils;
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private static final Map<LogLevel, Level> LEVELS;
+
 	static {
 		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
 		levels.put(LogLevel.TRACE, Level.TRACE);
@@ -114,8 +115,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			Collections.addAll(supportedConfigLocations, "log4j2.json", "log4j2.jsn");
 		}
 		supportedConfigLocations.add("log4j2.xml");
-		return supportedConfigLocations.toArray(new String[supportedConfigLocations
-				.size()]);
+		return supportedConfigLocations
+				.toArray(new String[supportedConfigLocations.size()]);
 	}
 
 	protected boolean isClassAvailable(String className) {
@@ -164,8 +165,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			ctx.start(ConfigurationFactory.getInstance().getConfiguration(source));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize Log4J2 logging from "
-					+ location, ex);
+			throw new IllegalStateException(
+					"Could not initialize Log4J2 logging from " + location, ex);
 		}
 	}
 

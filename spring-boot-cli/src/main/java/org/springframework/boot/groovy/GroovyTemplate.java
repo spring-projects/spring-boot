@@ -37,18 +37,19 @@ import groovy.text.TemplateEngine;
  */
 public abstract class GroovyTemplate {
 
-	public static String template(String name) throws IOException,
-			CompilationFailedException, ClassNotFoundException {
+	public static String template(String name)
+			throws IOException, CompilationFailedException, ClassNotFoundException {
 		return template(name, Collections.<String, Object>emptyMap());
 	}
 
-	public static String template(String name, Map<String, ?> model) throws IOException,
-			CompilationFailedException, ClassNotFoundException {
+	public static String template(String name, Map<String, ?> model)
+			throws IOException, CompilationFailedException, ClassNotFoundException {
 		return template(new GStringTemplateEngine(), name, model);
 	}
 
-	public static String template(TemplateEngine engine, String name, Map<String, ?> model)
-			throws IOException, CompilationFailedException, ClassNotFoundException {
+	public static String template(TemplateEngine engine, String name,
+			Map<String, ?> model) throws IOException, CompilationFailedException,
+					ClassNotFoundException {
 		Writable writable = getTemplate(engine, name).make(model);
 		StringWriter result = new StringWriter();
 		writable.writeTo(result);

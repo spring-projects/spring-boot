@@ -110,8 +110,8 @@ public abstract class AutoConfigurationPackages {
 
 	private static String[] addBasePackages(
 			ConstructorArgumentValues constructorArguments, String[] packageNames) {
-		String[] existing = (String[]) constructorArguments.getIndexedArgumentValue(0,
-				String[].class).getValue();
+		String[] existing = (String[]) constructorArguments
+				.getIndexedArgumentValue(0, String[].class).getValue();
 		Set<String> merged = new LinkedHashSet<String>();
 		merged.addAll(Arrays.asList(existing));
 		merged.addAll(Arrays.asList(packageNames));

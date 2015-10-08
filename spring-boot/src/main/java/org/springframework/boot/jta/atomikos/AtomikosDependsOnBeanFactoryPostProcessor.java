@@ -32,15 +32,15 @@ import com.atomikos.icatch.jta.UserTransactionManager;
 
 /**
  * {@link BeanFactoryPostProcessor} to automatically setup the recommended
- * {@link BeanDefinition#setDependsOn(String[]) dependsOn} settings for <a
- * href="http://www.atomikos.com/Documentation/SpringIntegration">correct Atomikos
+ * {@link BeanDefinition#setDependsOn(String[]) dependsOn} settings for
+ * <a href="http://www.atomikos.com/Documentation/SpringIntegration">correct Atomikos
  * ordering</a>.
  *
  * @author Phillip Webb
  * @since 1.2.0
  */
-public class AtomikosDependsOnBeanFactoryPostProcessor implements
-		BeanFactoryPostProcessor, Ordered {
+public class AtomikosDependsOnBeanFactoryPostProcessor
+		implements BeanFactoryPostProcessor, Ordered {
 
 	private static final String[] NO_BEANS = {};
 
@@ -49,8 +49,8 @@ public class AtomikosDependsOnBeanFactoryPostProcessor implements
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
-		String[] transactionManagers = beanFactory.getBeanNamesForType(
-				UserTransactionManager.class, true, false);
+		String[] transactionManagers = beanFactory
+				.getBeanNamesForType(UserTransactionManager.class, true, false);
 		for (String transactionManager : transactionManagers) {
 			addTransactionManagerDependencies(beanFactory, transactionManager);
 		}
@@ -75,14 +75,15 @@ public class AtomikosDependsOnBeanFactoryPostProcessor implements
 				"com.atomikos.jms.extra.MessageDrivenContainer");
 		for (String messageDrivenContainer : messageDrivenContainers) {
 			BeanDefinition bean = beanFactory.getBeanDefinition(messageDrivenContainer);
-			Set<String> dependsOn = new LinkedHashSet<String>(asList(bean.getDependsOn()));
+			Set<String> dependsOn = new LinkedHashSet<String>(
+					asList(bean.getDependsOn()));
 			dependsOn.addAll(asList(transactionManagers));
 			bean.setDependsOn(dependsOn.toArray(new String[dependsOn.size()]));
 		}
 	}
 
-	private void addDependencies(ConfigurableListableBeanFactory beanFactory,
-			String type, Set<String> dependsOn) {
+	private void addDependencies(ConfigurableListableBeanFactory beanFactory, String type,
+			Set<String> dependsOn) {
 		dependsOn.addAll(asList(getBeanNamesForType(beanFactory, type)));
 	}
 

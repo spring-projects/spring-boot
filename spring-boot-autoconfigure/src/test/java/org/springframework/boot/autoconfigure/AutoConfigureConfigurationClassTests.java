@@ -23,6 +23,7 @@ import org.springframework.boot.test.AbstractConfigurationClassTests;
  *
  * @author Andy Wilkinson
  */
-public class AutoConfigureConfigurationClassTests extends AbstractConfigurationClassTests {
+public class AutoConfigureConfigurationClassTests
+		extends AbstractConfigurationClassTests {
 
 }

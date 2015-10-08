@@ -49,7 +49,8 @@ public class SystemPropertyUtilsTests {
 
 	@Test
 	public void testNestedPlaceholder() {
-		assertEquals("foo", SystemPropertyUtils.resolvePlaceholders("${bar:${spam:foo}}"));
+		assertEquals("foo",
+				SystemPropertyUtils.resolvePlaceholders("${bar:${spam:foo}}"));
 	}
 
 	@Test

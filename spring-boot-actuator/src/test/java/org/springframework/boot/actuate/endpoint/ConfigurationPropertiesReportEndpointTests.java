@@ -37,8 +37,8 @@ import static org.junit.Assert.assertThat;
  *
  * @author Dave Syer
  */
-public class ConfigurationPropertiesReportEndpointTests extends
-		AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
+public class ConfigurationPropertiesReportEndpointTests
+		extends AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
 
 	public ConfigurationPropertiesReportEndpointTests() {
 		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "configprops",

@@ -177,12 +177,13 @@ public final class RelaxedNames implements Iterable<String> {
 
 		public abstract String apply(String value);
 
-		private static String separatedToCamelCase(String value, boolean caseInsensitive) {
+		private static String separatedToCamelCase(String value,
+				boolean caseInsensitive) {
 			StringBuilder builder = new StringBuilder();
 			for (String field : value.split("[_\\-.]")) {
 				field = (caseInsensitive ? field.toLowerCase() : field);
-				builder.append(builder.length() == 0 ? field : StringUtils
-						.capitalize(field));
+				builder.append(
+						builder.length() == 0 ? field : StringUtils.capitalize(field));
 			}
 			for (String suffix : new String[] { "_", "-", "." }) {
 				if (value.endsWith(suffix)) {

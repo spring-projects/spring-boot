@@ -44,8 +44,8 @@ class WebAppIntegrationTestContextBootstrapper extends DefaultTestContextBootstr
 	@Override
 	protected MergedContextConfiguration processMergedContextConfiguration(
 			MergedContextConfiguration mergedConfig) {
-		WebIntegrationTest annotation = AnnotationUtils.findAnnotation(
-				mergedConfig.getTestClass(), WebIntegrationTest.class);
+		WebIntegrationTest annotation = AnnotationUtils
+				.findAnnotation(mergedConfig.getTestClass(), WebIntegrationTest.class);
 		if (annotation != null) {
 			mergedConfig = new WebMergedContextConfiguration(mergedConfig, null);
 			MergedContextConfigurationProperties properties = new MergedContextConfigurationProperties(

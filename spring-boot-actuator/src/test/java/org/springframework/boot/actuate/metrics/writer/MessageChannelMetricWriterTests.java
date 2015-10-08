@@ -54,8 +54,8 @@ public class MessageChannelMetricWriterTests {
 
 			@Override
 			public Object answer(InvocationOnMock invocation) throws Throwable {
-				MessageChannelMetricWriterTests.this.handler.handleMessage(invocation
-						.getArgumentAt(0, Message.class));
+				MessageChannelMetricWriterTests.this.handler
+						.handleMessage(invocation.getArgumentAt(0, Message.class));
 				return true;
 			}
 

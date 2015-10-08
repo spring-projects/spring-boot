@@ -107,8 +107,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 		}
 		this.undertow.start();
 		this.started = true;
-		UndertowEmbeddedServletContainer.logger.info("Undertow started on port(s) "
-				+ getPortsDescription());
+		UndertowEmbeddedServletContainer.logger
+				.info("Undertow started on port(s) " + getPortsDescription());
 	}
 
 	private Undertow createUndertowServer() {

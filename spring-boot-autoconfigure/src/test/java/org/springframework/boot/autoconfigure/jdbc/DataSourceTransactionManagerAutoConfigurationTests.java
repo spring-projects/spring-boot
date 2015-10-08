@@ -48,8 +48,8 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
 		assertNotNull(this.context.getBean(DataSourceTransactionManager.class));
-		assertNotNull(this.context
-				.getBean(AbstractTransactionManagementConfiguration.class));
+		assertNotNull(
+				this.context.getBean(AbstractTransactionManagementConfiguration.class));
 	}
 
 	@Test
@@ -57,9 +57,8 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		this.context.register(DataSourceTransactionManagerAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);
-		assertEquals(
-				0,
-				this.context.getBeanNamesForType(DataSourceTransactionManager.class).length);
+		assertEquals(0, this.context
+				.getBeanNamesForType(DataSourceTransactionManager.class).length);
 	}
 
 	@Test

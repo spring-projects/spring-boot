@@ -29,8 +29,8 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Phillip Webb
  * @see ConfigFileEnvironmentPostProcessor
  */
-public class ConfigFileApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class ConfigFileApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	@Override
 	public void initialize(final ConfigurableApplicationContext applicationContext) {

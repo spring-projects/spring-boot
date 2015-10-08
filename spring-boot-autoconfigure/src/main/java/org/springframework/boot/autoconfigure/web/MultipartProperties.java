@@ -30,13 +30,11 @@ import org.springframework.util.StringUtils;
  * be obtained.</li>
  * <li>{@literal multipart.maxFileSize} specifies the maximum size permitted for uploaded
  * files. The default is 1Mb.</li>
- * <li>
- * {@literal multipart.maxRequestSize} specifies the maximum size allowed for
+ * <li>{@literal multipart.maxRequestSize} specifies the maximum size allowed for
  * {@literal multipart/form-data} requests. The default is 10Mb</li>
- * <li>
- * {@literal multipart.fileSizeThreshold} specifies the size threshold after which files
- * will be written to disk. Default is 0, which means that the file will be written to
- * disk immediately.</li>
+ * <li>{@literal multipart.fileSizeThreshold} specifies the size threshold after which
+ * files will be written to disk. Default is 0, which means that the file will be written
+ * to disk immediately.</li>
  * </ul>
  * <p>
  * These properties are ultimately passed through

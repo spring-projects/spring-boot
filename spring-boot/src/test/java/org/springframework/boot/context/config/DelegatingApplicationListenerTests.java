@@ -62,8 +62,10 @@ public class DelegatingApplicationListenerTests {
 				new SpringApplication(), new String[0], this.context.getEnvironment()));
 		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
 		this.context.refresh();
-		assertThat(this.context.getBeanFactory().getSingleton("a"), equalTo((Object) "a"));
-		assertThat(this.context.getBeanFactory().getSingleton("b"), equalTo((Object) "b"));
+		assertThat(this.context.getBeanFactory().getSingleton("a"),
+				equalTo((Object) "a"));
+		assertThat(this.context.getBeanFactory().getSingleton("b"),
+				equalTo((Object) "b"));
 	}
 
 	@Test

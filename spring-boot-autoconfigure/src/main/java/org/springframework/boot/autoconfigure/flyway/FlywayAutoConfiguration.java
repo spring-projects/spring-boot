@@ -83,8 +83,9 @@ public class FlywayAutoConfiguration {
 				Assert.state(!this.properties.getLocations().isEmpty(),
 						"Migration script locations not configured");
 				boolean exists = hasAtLeastOneLocation();
-				Assert.state(exists, "Cannot find migrations location in: "
-						+ this.properties.getLocations()
+				Assert.state(exists,
+						"Cannot find migrations location in: " + this.properties
+								.getLocations()
 						+ " (please add migrations or check your Flyway configuration)");
 			}
 		}
@@ -104,8 +105,8 @@ public class FlywayAutoConfiguration {
 			Flyway flyway = new Flyway();
 			if (this.properties.isCreateDataSource()) {
 				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(),
-						this.properties.getPassword(), this.properties.getInitSqls()
-								.toArray(new String[0]));
+						this.properties.getPassword(),
+						this.properties.getInitSqls().toArray(new String[0]));
 			}
 			else if (this.flywayDataSource != null) {
 				flyway.setDataSource(this.flywayDataSource);
@@ -147,8 +148,8 @@ public class FlywayAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class FlywayJpaDependencyConfiguration extends
-			EntityManagerFactoryDependsOnPostProcessor {
+	protected static class FlywayJpaDependencyConfiguration
+			extends EntityManagerFactoryDependsOnPostProcessor {
 
 		public FlywayJpaDependencyConfiguration() {
 			super("flyway");

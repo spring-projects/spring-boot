@@ -48,8 +48,8 @@ class Installer {
 
 	Installer(OptionSet options, CompilerOptionHandler compilerOptionHandler)
 			throws IOException {
-		this(new GroovyGrabDependencyResolver(createCompilerConfiguration(options,
-				compilerOptionHandler)));
+		this(new GroovyGrabDependencyResolver(
+				createCompilerConfiguration(options, compilerOptionHandler)));
 	}
 
 	Installer(DependencyResolver resolver) throws IOException {

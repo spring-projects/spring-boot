@@ -52,12 +52,13 @@ public class GroovyTemplateResolver implements TemplateResolver {
 	public URL resolveTemplate(final String templatePath) throws IOException {
 		MarkupTemplateEngine.TemplateResource templateResource = MarkupTemplateEngine.TemplateResource
 				.parse(templatePath);
-		URL resource = this.templateClassLoader.getResource(templateResource.withLocale(
-				LocaleContextHolder.getLocale().toString().replace("-", "_")).toString());
+		URL resource = this.templateClassLoader.getResource(templateResource
+				.withLocale(LocaleContextHolder.getLocale().toString().replace("-", "_"))
+				.toString());
 		if (resource == null) {
 			// no resource found with the default locale, try without any locale
-			resource = this.templateClassLoader.getResource(templateResource.withLocale(
-					null).toString());
+			resource = this.templateClassLoader
+					.getResource(templateResource.withLocale(null).toString());
 		}
 		if (resource == null) {
 			throw new IOException("Unable to load template:" + templatePath);

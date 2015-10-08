@@ -38,8 +38,8 @@ public class CommandLineIT {
 	private final CommandLineInvoker cli = new CommandLineInvoker();
 
 	@Test
-	public void hintProducesListOfValidCommands() throws IOException,
-			InterruptedException {
+	public void hintProducesListOfValidCommands()
+			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("hint");
 		assertThat(cli.await(), equalTo(0));
 		assertThat("Unexpected error: \n" + cli.getErrorOutput(), cli.getErrorOutput()
@@ -48,8 +48,8 @@ public class CommandLineIT {
 	}
 
 	@Test
-	public void invokingWithNoArgumentsDisplaysHelp() throws IOException,
-			InterruptedException {
+	public void invokingWithNoArgumentsDisplaysHelp()
+			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke();
 		assertThat(cli.await(), equalTo(1));
 		assertThat(cli.getErrorOutput().length(), equalTo(0));
@@ -57,8 +57,8 @@ public class CommandLineIT {
 	}
 
 	@Test
-	public void unrecognizedCommandsAreHandledGracefully() throws IOException,
-			InterruptedException {
+	public void unrecognizedCommandsAreHandledGracefully()
+			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("not-a-real-command");
 		assertThat(cli.await(), equalTo(1));
 		assertThat(cli.getErrorOutput(),

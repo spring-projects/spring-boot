@@ -44,7 +44,8 @@ public class IntegrationTestPropertiesListener extends AbstractTestExecutionList
 		}
 	}
 
-	private void addPropertySourceProperties(TestContext testContext, String[] properties) {
+	private void addPropertySourceProperties(TestContext testContext,
+			String[] properties) {
 		try {
 			MergedContextConfiguration configuration = (MergedContextConfiguration) ReflectionTestUtils
 					.getField(testContext, "mergedContextConfiguration");

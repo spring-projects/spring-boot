@@ -184,8 +184,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.availableClasses(
 				"com.fasterxml.jackson.dataformat.yaml.YAMLParser",
 				ObjectMapper.class.getName());
-		assertThat(
-				this.loggingSystem.getStandardConfigLocations(),
+		assertThat(this.loggingSystem.getStandardConfigLocations(),
 				is(arrayContaining("log4j2.yaml", "log4j2.yml", "log4j2.json",
 						"log4j2.jsn", "log4j2.xml")));
 	}

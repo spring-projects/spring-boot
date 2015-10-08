@@ -80,8 +80,8 @@ public class PropertyPlaceholderAutoConfigurationTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer morePlaceholders() {
 			PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-			configurer.setProperties(StringUtils.splitArrayElementsIntoProperties(
-					new String[] { "foo=spam" }, "="));
+			configurer.setProperties(StringUtils
+					.splitArrayElementsIntoProperties(new String[] { "foo=spam" }, "="));
 			configurer.setLocalOverride(true);
 			configurer.setOrder(0);
 			return configurer;

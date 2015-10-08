@@ -38,8 +38,8 @@ import org.springframework.util.ClassUtils;
  * @author Ivan Sopov
  * @see AbstractEmbeddedServletContainerFactory
  */
-public abstract class AbstractConfigurableEmbeddedServletContainer implements
-		ConfigurableEmbeddedServletContainer {
+public abstract class AbstractConfigurableEmbeddedServletContainer
+		implements ConfigurableEmbeddedServletContainer {
 
 	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
 			.toSeconds(30);

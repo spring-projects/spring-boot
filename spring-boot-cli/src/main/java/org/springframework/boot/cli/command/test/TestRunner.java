@@ -95,7 +95,8 @@ public class TestRunner {
 			if (sources.length != 0 && sources[0] instanceof Class) {
 				setContextClassLoader(((Class<?>) sources[0]).getClassLoader());
 			}
-			this.spockSpecificationClass = loadSpockSpecificationClass(getContextClassLoader());
+			this.spockSpecificationClass = loadSpockSpecificationClass(
+					getContextClassLoader());
 			this.testClasses = getTestClasses(sources);
 		}
 
@@ -135,8 +136,8 @@ public class TestRunner {
 		}
 
 		private boolean isSpockTest(Class<?> sourceClass) {
-			return (this.spockSpecificationClass != null && this.spockSpecificationClass
-					.isAssignableFrom(sourceClass));
+			return (this.spockSpecificationClass != null
+					&& this.spockSpecificationClass.isAssignableFrom(sourceClass));
 		}
 
 		@Override
@@ -156,8 +157,8 @@ public class TestRunner {
 							resultClass);
 					Object result = resultClass.newInstance();
 					runMethod.invoke(null, this.testClasses, result);
-					boolean wasSuccessful = (Boolean) resultClass.getMethod(
-							"wasSuccessful").invoke(result);
+					boolean wasSuccessful = (Boolean) resultClass
+							.getMethod("wasSuccessful").invoke(result);
 					if (!wasSuccessful) {
 						throw new RuntimeException("Tests Failed.");
 					}

@@ -99,8 +99,8 @@ public class MongoDataAutoConfigurationTests {
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoTemplate template = this.context.getBean(MongoTemplate.class);
-		assertTrue(template.getConverter().getConversionService()
-				.canConvert(Mongo.class, Boolean.class));
+		assertTrue(template.getConverter().getConversionService().canConvert(Mongo.class,
+				Boolean.class));
 	}
 
 	@Test
@@ -161,8 +161,8 @@ public class MongoDataAutoConfigurationTests {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext,
 			Class<?>... types) {
-		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils.getField(
-				mappingContext, "initialEntitySet");
+		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils
+				.getField(mappingContext, "initialEntitySet");
 		assertThat(initialEntitySet, hasSize(types.length));
 		assertThat(initialEntitySet, Matchers.<Class>hasItems(types));
 	}

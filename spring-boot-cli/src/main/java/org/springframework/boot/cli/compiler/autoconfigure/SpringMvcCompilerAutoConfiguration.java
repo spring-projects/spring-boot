@@ -33,17 +33,16 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller",
-				"RestController", "EnableWebMvc");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller", "RestController",
+				"EnableWebMvc");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
+		dependencies.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
 				.add("spring-boot-starter-web");
-		dependencies.ifAnyMissingClasses("groovy.text.TemplateEngine").add(
-				"groovy-templates");
+		dependencies.ifAnyMissingClasses("groovy.text.TemplateEngine")
+				.add("groovy-templates");
 	}
 
 	@Override

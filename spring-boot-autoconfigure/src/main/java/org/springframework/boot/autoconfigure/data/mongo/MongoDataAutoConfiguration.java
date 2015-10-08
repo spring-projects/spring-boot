@@ -125,8 +125,8 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 		MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver,
 				context);
 		try {
-			mappingConverter.setCustomConversions(beanFactory
-					.getBean(CustomConversions.class));
+			mappingConverter
+					.setCustomConversions(beanFactory.getBean(CustomConversions.class));
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			// Ignore
@@ -183,8 +183,9 @@ public class MongoDataAutoConfiguration implements BeanClassLoaderAware {
 	@ConditionalOnMissingBean
 	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
 			MongoTemplate mongoTemplate) {
-		return new GridFsTemplate(new GridFsMongoDbFactory(mongoDbFactory,
-				this.properties), mongoTemplate.getConverter());
+		return new GridFsTemplate(
+				new GridFsMongoDbFactory(mongoDbFactory, this.properties),
+				mongoTemplate.getConverter());
 	}
 
 	/**

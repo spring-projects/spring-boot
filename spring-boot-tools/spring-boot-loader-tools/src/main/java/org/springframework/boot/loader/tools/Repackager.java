@@ -132,8 +132,8 @@ public class Repackager {
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
 		if (this.source.equals(destination)) {
-			workingSource = new File(this.source.getParentFile(), this.source.getName()
-					+ ".original");
+			workingSource = new File(this.source.getParentFile(),
+					this.source.getName() + ".original");
 			workingSource.delete();
 			renameFile(this.source, workingSource);
 		}
@@ -158,8 +158,8 @@ public class Repackager {
 		JarFile jarFile = new JarFile(this.source);
 		try {
 			Manifest manifest = jarFile.getManifest();
-			return (manifest != null && manifest.getMainAttributes().getValue(
-					BOOT_VERSION_ATTRIBUTE) != null);
+			return (manifest != null && manifest.getMainAttributes()
+					.getValue(BOOT_VERSION_ATTRIBUTE) != null);
 		}
 		finally {
 			jarFile.close();
@@ -208,12 +208,12 @@ public class Repackager {
 	private void writeNestedLibraries(List<Library> libraries, Set<String> alreadySeen,
 			JarWriter writer) throws IOException {
 		for (Library library : libraries) {
-			String destination = Repackager.this.layout.getLibraryDestination(
-					library.getName(), library.getScope());
+			String destination = Repackager.this.layout
+					.getLibraryDestination(library.getName(), library.getScope());
 			if (destination != null) {
 				if (!alreadySeen.add(destination + library.getName())) {
-					throw new IllegalStateException("Duplicate library "
-							+ library.getName());
+					throw new IllegalStateException(
+							"Duplicate library " + library.getName());
 				}
 				writer.writeNestedLibrary(destination, library);
 			}
@@ -260,8 +260,8 @@ public class Repackager {
 		}
 		String launcherClassName = this.layout.getLauncherClassName();
 		if (launcherClassName != null) {
-			manifest.getMainAttributes()
-					.putValue(MAIN_CLASS_ATTRIBUTE, launcherClassName);
+			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE,
+					launcherClassName);
 			if (startClass == null) {
 				throw new IllegalStateException("Unable to find main class");
 			}
@@ -282,8 +282,8 @@ public class Repackager {
 
 	private void renameFile(File file, File dest) {
 		if (!file.renameTo(dest)) {
-			throw new IllegalStateException("Unable to rename '" + file + "' to '" + dest
-					+ "'");
+			throw new IllegalStateException(
+					"Unable to rename '" + file + "' to '" + dest + "'");
 		}
 	}
 

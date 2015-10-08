@@ -78,8 +78,8 @@ public class LoggingApplicationListenerTests {
 	public void init() throws SecurityException, IOException {
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
-		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
-				new SpringApplication(), NO_ARGS));
+		this.initializer.onApplicationEvent(
+				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
 		new File("target/foo.log").delete();
 		new File(tmpDir() + "/spring.log").delete();
 	}
@@ -97,8 +97,8 @@ public class LoggingApplicationListenerTests {
 	}
 
 	private String tmpDir() {
-		String path = this.context.getEnvironment().resolvePlaceholders(
-				"${java.io.tmpdir}");
+		String path = this.context.getEnvironment()
+				.resolvePlaceholders("${java.io.tmpdir}");
 		path = path.replace("\\", "/");
 		if (path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);
@@ -127,7 +127,8 @@ public class LoggingApplicationListenerTests {
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertTrue("Wrong output:\n" + output, output.startsWith("LOG_FILE_IS_UNDEFINED"));
+		assertTrue("Wrong output:\n" + output,
+				output.startsWith("LOG_FILE_IS_UNDEFINED"));
 		assertTrue("Wrong output:\n" + output, output.endsWith("BOOTBOOT"));
 	}
 
@@ -203,7 +204,8 @@ public class LoggingApplicationListenerTests {
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo/spring.log"));
+		assertTrue("Wrong output:\n" + output,
+				output.startsWith("target/foo/spring.log"));
 	}
 
 	@Test

@@ -32,8 +32,8 @@ import org.springframework.core.Ordered;
  * @author Raphael von der Grün
  * @since 1.2.0
  */
-public class AnsiOutputApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+public class AnsiOutputApplicationListener
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {

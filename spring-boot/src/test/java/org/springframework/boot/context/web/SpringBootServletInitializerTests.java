@@ -140,15 +140,16 @@ public class SpringBootServletInitializerTests {
 	public class WithConfiguredSource extends MockSpringBootServletInitializer {
 
 		@Override
-		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		protected SpringApplicationBuilder configure(
+				SpringApplicationBuilder application) {
 			return application.sources(Config.class);
 		}
 
 	}
 
 	@Configuration
-	public class WithErrorPageFilterNotRegistered extends
-			MockSpringBootServletInitializer {
+	public class WithErrorPageFilterNotRegistered
+			extends MockSpringBootServletInitializer {
 
 		public WithErrorPageFilterNotRegistered() {
 			setRegisterErrorPageFilter(false);

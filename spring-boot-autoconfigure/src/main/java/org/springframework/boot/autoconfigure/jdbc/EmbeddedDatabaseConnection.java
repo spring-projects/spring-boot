@@ -107,10 +107,9 @@ public enum EmbeddedDatabaseConnection {
 	 * @return true if the driver class is one of the embedded types
 	 */
 	public static boolean isEmbedded(String driverClass) {
-		return driverClass != null
-				&& (driverClass.equals(HSQL.driverClass)
-						|| driverClass.equals(H2.driverClass) || driverClass
-							.equals(DERBY.driverClass));
+		return driverClass != null && (driverClass.equals(HSQL.driverClass)
+				|| driverClass.equals(H2.driverClass)
+				|| driverClass.equals(DERBY.driverClass));
 	}
 
 	/**
@@ -141,8 +140,8 @@ public enum EmbeddedDatabaseConnection {
 			return override;
 		}
 		for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection.values()) {
-			if (candidate != NONE
-					&& ClassUtils.isPresent(candidate.getDriverClassName(), classLoader)) {
+			if (candidate != NONE && ClassUtils.isPresent(candidate.getDriverClassName(),
+					classLoader)) {
 				return candidate;
 			}
 		}
@@ -155,8 +154,8 @@ public enum EmbeddedDatabaseConnection {
 	private static class IsEmbedded implements ConnectionCallback<Boolean> {
 
 		@Override
-		public Boolean doInConnection(Connection connection) throws SQLException,
-				DataAccessException {
+		public Boolean doInConnection(Connection connection)
+				throws SQLException, DataAccessException {
 			String productName = connection.getMetaData().getDatabaseProductName();
 			if (productName == null) {
 				return false;

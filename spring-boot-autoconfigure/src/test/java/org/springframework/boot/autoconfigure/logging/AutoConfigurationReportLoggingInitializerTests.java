@@ -172,7 +172,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		}
 		// Just basic sanity check, test is for visual inspection
 		String l = this.debugLog.get(0);
-		assertThat(l, containsString("not a web application (OnWebApplicationCondition)"));
+		assertThat(l,
+				containsString("not a web application (OnWebApplicationCondition)"));
 	}
 
 	@Test
@@ -196,9 +197,9 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 	@Test
 	public void noErrorIfNotInitialized() throws Exception {
-		this.initializer.onApplicationEvent(new ApplicationFailedEvent(
-				new SpringApplication(), new String[0], null, new RuntimeException(
-						"Planned")));
+		this.initializer
+				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(),
+						new String[0], null, new RuntimeException("Planned")));
 		assertThat(this.infoLog.get(0),
 				containsString("Unable to provide auto-configuration report"));
 	}
@@ -216,8 +217,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 	}
 
 	@Configuration
-	@Import({ WebMvcAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class,
+	@Import({ WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 
