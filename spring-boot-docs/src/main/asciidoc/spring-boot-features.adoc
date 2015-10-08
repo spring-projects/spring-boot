@@ -93,7 +93,7 @@ instance and customize it. For example, to turn off the banner you would write:
 ----
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(MySpringConfiguration.class);
-		app.setShowBanner(false);
+		app.setBannerMode(Banner.Mode.OFF);
 		app.run(args);
 	}
 ----
@@ -124,7 +124,7 @@ For example:
 [source,java,indent=0]
 ----
 	new SpringApplicationBuilder()
-		.showBanner(false)
+		.bannerMode(Banner.Mode.OFF)
 		.sources(Parent.class)
 		.child(Application.class)
 		.run(args);

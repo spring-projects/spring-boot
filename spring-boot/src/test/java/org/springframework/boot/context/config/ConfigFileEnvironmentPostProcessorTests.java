@@ -34,6 +34,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigFileEnvironmentPostProcessor.ConfigurationPropertySources;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
@@ -87,7 +88,7 @@ public class ConfigFileEnvironmentPostProcessorTests {
 		}
 		System.clearProperty("the.property");
 		System.clearProperty("spring.config.location");
-		System.clearProperty("spring.main.showBanner");
+		System.clearProperty("spring.main.banner-mode");
 	}
 
 	@Test
@@ -623,19 +624,19 @@ public class ConfigFileEnvironmentPostProcessorTests {
 		// gh-346
 		this.initializer.setSearchNames("bindtoapplication");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
-		Field field = ReflectionUtils.findField(SpringApplication.class, "showBanner");
+		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
 		field.setAccessible(true);
-		assertThat((Boolean) field.get(this.application), equalTo(false));
+		assertThat((Banner.Mode) field.get(this.application), equalTo(Banner.Mode.OFF));
 	}
 
 	@Test
 	public void bindsSystemPropertyToSpringApplication() throws Exception {
 		// gh-951
-		System.setProperty("spring.main.showBanner", "false");
+		System.setProperty("spring.main.banner-mode", "off");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
-		Field field = ReflectionUtils.findField(SpringApplication.class, "showBanner");
+		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
 		field.setAccessible(true);
-		assertThat((Boolean) field.get(this.application), equalTo(false));
+		assertThat((Banner.Mode) field.get(this.application), equalTo(Banner.Mode.OFF));
 	}
 
 	private static Matcher<? super ConfigurableEnvironment> containsPropertySource(

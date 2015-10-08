@@ -43,6 +43,7 @@ content into your application; rather pick only the properties that you need.
 	spring.main.sources= # sources (class name, package name or XML resource location) to include
 	spring.main.web-environment= # detect by default
 	spring.main.show-banner=true
+	spring.main.banner-mode=console # the mode used to display the banner (console, off, or log)
 	spring.main....= # see class for all properties
 
 	# AUTO-CONFIGURATION
