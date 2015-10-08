@@ -601,6 +601,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.hazelcast</groupId>
+				<artifactId>hazelcast-hibernate4</artifactId>
+				<version>${hazelcast.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.hazelcast</groupId>
 				<artifactId>hazelcast-spring</artifactId>
 				<version>${hazelcast.version}</version>
 			</dependency>
