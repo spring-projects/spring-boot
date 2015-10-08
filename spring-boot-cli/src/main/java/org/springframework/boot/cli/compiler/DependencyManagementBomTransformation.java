@@ -66,7 +66,7 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 	/**
 	 * The order of the transformation.
 	 */
-	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE;
+	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 100;
 
 	private static final Set<String> DEPENDENCY_MANAGEMENT_BOM_ANNOTATION_NAMES = Collections
 			.unmodifiableSet(new HashSet<String>(Arrays.asList(
@@ -170,6 +170,7 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 				DefaultModelBuildingRequest request = new DefaultModelBuildingRequest();
 				request.setModelResolver(new GrapeModelResolver());
 				request.setModelSource(new UrlModelSource(uri.toURL()));
+				request.setSystemProperties(System.getProperties());
 				Model model = modelBuilder.build(request).getEffectiveModel();
 				this.resolutionContext
 						.addDependencyManagement(new MavenModelDependencyManagement(model));

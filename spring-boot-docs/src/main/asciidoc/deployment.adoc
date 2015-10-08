@@ -451,9 +451,23 @@ the default behavior in a script or on the command line:
  in the script.
 |===
 
-TIP: With the exception of `JARFILE` and `APP_NAME`, the above settings can be placed in
-a `.conf` next to the jar. For example the jar `/var/myapp/myapp.jar` would attempt to
-source the configuration file `/var/myapp/myapp.conf`.
+
+
+[[deployment-script-customization-conf-file]]
+==== Customizing the startup script with a conf file
+
+With the exception of `JARFILE` and `APP_NAME`, the above settings can be configured using
+a `.conf` file,
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	JAVA_OPTS=-Xmx1024M
+	LOG_FOLDER=/custom/log/folder
+----
+
+The file should be situated next to the jar file and have the same name but suffixed with
+`.conf` rather than `.jar`. For example, a jar named `/var/myapp/myapp.jar` will use the
+configuration file named `/var/myapp/myapp.conf` if it exists.
 
 
 

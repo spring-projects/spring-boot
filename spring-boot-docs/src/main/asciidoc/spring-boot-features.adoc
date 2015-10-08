@@ -2582,14 +2582,18 @@ additional settings such as the _replica set_:
 	spring.data.mongodb.uri=mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test
 ----
 
-Alternatively, specify a `host`/`port`. For example, you might declare the following in
-your `application.properties`:
+Alternatively, as long as you're using Mongo 2.x, specify a `host`/`port`. For example,
+you might declare the following in your `application.properties`:
 
 [source,properties,indent=0]
 ----
 	spring.data.mongodb.host=mongoserver
 	spring.data.mongodb.port=27017
 ----
+
+NOTE: `spring.data.mongodb.host` and `spring.data.mongodb.port` are not supported if
+you're using the Mongo 3.0 Java driver. In such cases, `spring.data.mongodb.uri` should be
+used to provide all of the configuration.
 
 TIP: If `spring.data.mongodb.port` is not specified the default of `27017` is used. You
 could simply delete this line from the sample above.

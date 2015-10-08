@@ -25,7 +25,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.1.1</maven.version>
-		<spring-restdocs.version>1.0.0.RC1</spring-restdocs.version>
 	</properties>
 	<scm>
 		<url>http://github.com/spring-projects/spring-boot</url>
@@ -198,11 +197,6 @@
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
 				<version>1.12.6</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.restdocs</groupId>
-				<artifactId>spring-restdocs-mockmvc</artifactId>
-				<version>${spring-restdocs.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.zeroturnaround</groupId>

@@ -76,6 +76,7 @@ import org.springframework.security.oauth2.provider.approval.ApprovalStoreUserAp
 import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
+import org.springframework.security.oauth2.provider.client.InMemoryClientDetailsService;
 import org.springframework.security.oauth2.provider.endpoint.AuthorizationEndpoint;
 import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecurityExpressionHandler;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
@@ -92,6 +93,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -130,7 +132,7 @@ public class OAuth2AutoConfigurationTests {
 				.getClientId());
 		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService), equalTo(true));
 		assertThat(AopUtils.getTargetClass(clientDetailsService).getName(),
-				equalTo(ClientDetailsService.class.getName()));
+				is(equalTo(InMemoryClientDetailsService.class.getName())));
 		assertThat(handler instanceof ApprovalStoreUserApprovalHandler, equalTo(true));
 		assertThat(clientDetails, equalTo(config));
 		verifyAuthentication(config);
