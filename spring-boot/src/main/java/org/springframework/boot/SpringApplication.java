@@ -80,12 +80,9 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <ul>
  * <li>Create an appropriate {@link ApplicationContext} instance (depending on your
  * classpath)</li>
- *
  * <li>Register a {@link CommandLinePropertySource} to expose command line arguments as
  * Spring properties</li>
- *
  * <li>Refresh the application context, loading all singleton beans</li>
- *
  * <li>Trigger any {@link CommandLineRunner} beans</li>
  * </ul>
  *
@@ -123,13 +120,10 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <ul>
  * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}
  * </li>
- *
  * <li>{@link Resource} - An XML resource to be loaded by {@link XmlBeanDefinitionReader},
  * or a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
- *
  * <li>{@link Package} - A Java package to be scanned by
  * {@link ClassPathBeanDefinitionScanner}</li>
- *
  * <li>{@link CharSequence} - A class name, resource handle or package name to loaded as
  * appropriate. If the {@link CharSequence} cannot be resolved to class and does not
  * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
