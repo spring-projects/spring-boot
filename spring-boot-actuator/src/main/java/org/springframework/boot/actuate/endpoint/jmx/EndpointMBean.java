@@ -58,7 +58,8 @@ public class EndpointMBean {
 	 * @param endpoint the endpoint to wrap
 	 * @param objectMapper the {@link ObjectMapper} used to convert the payload
 	 */
-	public EndpointMBean(String beanName, Endpoint<?> endpoint, ObjectMapper objectMapper) {
+	public EndpointMBean(String beanName, Endpoint<?> endpoint,
+			ObjectMapper objectMapper) {
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");

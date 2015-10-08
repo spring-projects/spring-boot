@@ -52,10 +52,11 @@ import org.springframework.util.FileCopyUtils;
  * @author Phillip Webb
  * @since 1.3.0
  */
-public class ClassPathChangeUploader implements
-		ApplicationListener<ClassPathChangedEvent> {
+public class ClassPathChangeUploader
+		implements ApplicationListener<ClassPathChangedEvent> {
 
 	private static final Map<ChangedFile.Type, ClassLoaderFile.Kind> TYPE_MAPPINGS;
+
 	static {
 		Map<ChangedFile.Type, ClassLoaderFile.Kind> map = new HashMap<ChangedFile.Type, ClassLoaderFile.Kind>();
 		map.put(ChangedFile.Type.ADD, ClassLoaderFile.Kind.ADDED);
@@ -108,8 +109,8 @@ public class ClassPathChangeUploader implements
 
 	private void logUpload(ClassLoaderFiles classLoaderFiles) {
 		int size = classLoaderFiles.size();
-		logger.info("Uploaded " + size + " class "
-				+ (size == 1 ? "resource" : "resources"));
+		logger.info(
+				"Uploaded " + size + " class " + (size == 1 ? "resource" : "resources"));
 	}
 
 	private byte[] serialize(ClassLoaderFiles classLoaderFiles) throws IOException {
@@ -133,10 +134,11 @@ public class ClassPathChangeUploader implements
 		return files;
 	}
 
-	private ClassLoaderFile asClassLoaderFile(ChangedFile changedFile) throws IOException {
+	private ClassLoaderFile asClassLoaderFile(ChangedFile changedFile)
+			throws IOException {
 		ClassLoaderFile.Kind kind = TYPE_MAPPINGS.get(changedFile.getType());
-		byte[] bytes = (kind == Kind.DELETED ? null : FileCopyUtils
-				.copyToByteArray(changedFile.getFile()));
+		byte[] bytes = (kind == Kind.DELETED ? null
+				: FileCopyUtils.copyToByteArray(changedFile.getFile()));
 		long lastModified = (kind == Kind.DELETED ? System.currentTimeMillis()
 				: changedFile.getFile().lastModified());
 		return new ClassLoaderFile(kind, lastModified, bytes);

@@ -148,7 +148,8 @@ public class GroovyTemplateAutoConfigurationTests {
 
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
-		registerAndRefreshContext("spring.groovy.template.resource-loader-path:classpath:/custom-templates/");
+		registerAndRefreshContext(
+				"spring.groovy.template.resource-loader-path:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("custom"));
@@ -168,14 +169,16 @@ public class GroovyTemplateAutoConfigurationTests {
 		MarkupTemplateEngine engine = config.getTemplateEngine();
 		Writer writer = new StringWriter();
 		engine.createTemplate(new ClassPathResource("templates/message.tpl").getFile())
-				.make(new HashMap<String, Object>(Collections.singletonMap("greeting",
-						"Hello World"))).writeTo(writer);
+				.make(new HashMap<String, Object>(
+						Collections.singletonMap("greeting", "Hello World")))
+				.writeTo(writer);
 		assertThat(writer.toString(), containsString("Hello World"));
 	}
 
 	@Test
 	public void customConfiguration() throws Exception {
-		registerAndRefreshContext("spring.groovy.template.configuration.auto-indent:true");
+		registerAndRefreshContext(
+				"spring.groovy.template.configuration.auto-indent:true");
 		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent(),
 				is(true));
 	}

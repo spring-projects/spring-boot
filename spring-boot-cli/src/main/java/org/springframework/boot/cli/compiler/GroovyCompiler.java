@@ -56,9 +56,11 @@ import groovy.lang.GroovyCodeSource;
  * <ul>
  * <li>{@link CompilerAutoConfiguration} strategies will be read from
  * {@code META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration}
- * (per the standard java {@link ServiceLoader} contract) and applied during compilation</li>
+ * (per the standard java {@link ServiceLoader} contract) and applied during compilation
+ * </li>
  *
- * <li>Multiple classes can be returned if the Groovy source defines more than one Class</li>
+ * <li>Multiple classes can be returned if the Groovy source defines more than one Class
+ * </li>
  *
  * <li>Generated class files can also be loaded using
  * {@link ClassLoader#getResource(String)}</li>
@@ -94,8 +96,8 @@ public class GroovyCompiler {
 
 		GrapeEngineInstaller.install(grapeEngine);
 
-		this.loader.getConfiguration().addCompilationCustomizers(
-				new CompilerAutoConfigureCustomizer());
+		this.loader.getConfiguration()
+				.addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
 		if (configuration.isAutoconfigure()) {
 			this.compilerAutoConfigurations = ServiceLoader
 					.load(CompilerAutoConfiguration.class);
@@ -105,14 +107,14 @@ public class GroovyCompiler {
 		}
 
 		this.transformations = new ArrayList<ASTTransformation>();
-		this.transformations.add(new DependencyManagementBomTransformation(
-				resolutionContext));
+		this.transformations
+				.add(new DependencyManagementBomTransformation(resolutionContext));
 		this.transformations.add(new DependencyAutoConfigurationTransformation(
 				this.loader, resolutionContext, this.compilerAutoConfigurations));
 		this.transformations.add(new GroovyBeansTransformation());
 		if (this.configuration.isGuessDependencies()) {
-			this.transformations.add(new ResolveDependencyCoordinatesTransformation(
-					resolutionContext));
+			this.transformations.add(
+					new ResolveDependencyCoordinatesTransformation(resolutionContext));
 		}
 		for (ASTTransformation transformation : ServiceLoader
 				.load(SpringBootAstTransformation.class)) {
@@ -175,8 +177,8 @@ public class GroovyCompiler {
 	 * @throws IOException in case of I/O errors
 	 * @throws CompilationFailedException in case of compilation errors
 	 */
-	public Class<?>[] compile(String... sources) throws CompilationFailedException,
-			IOException {
+	public Class<?>[] compile(String... sources)
+			throws CompilationFailedException, IOException {
 
 		this.loader.clearCache();
 		List<Class<?>> classes = new ArrayList<Class<?>>();
@@ -274,8 +276,8 @@ public class GroovyCompiler {
 		public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
 				throws CompilationFailedException {
 
-			ImportCustomizer importCustomizer = new SmartImportCustomizer(source,
-					context, classNode);
+			ImportCustomizer importCustomizer = new SmartImportCustomizer(source, context,
+					classNode);
 			ClassNode mainClassNode = MainClass.get(source.getAST().getClasses());
 
 			// Additional auto configuration
@@ -290,10 +292,9 @@ public class GroovyCompiler {
 								GroovyCompiler.this.configuration, context, source,
 								classNode);
 					}
-					autoConfiguration
-							.apply(GroovyCompiler.this.loader,
-									GroovyCompiler.this.configuration, context, source,
-									classNode);
+					autoConfiguration.apply(GroovyCompiler.this.loader,
+							GroovyCompiler.this.configuration, context, source,
+							classNode);
 				}
 			}
 			importCustomizer.call(source, context, classNode);
@@ -313,9 +314,8 @@ public class GroovyCompiler {
 				if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
 					return null; // No need to enhance this
 				}
-				if (AstUtils
-						.hasAtLeastOneAnnotation(node, "*Controller", "Configuration",
-								"Component", "*Service", "Repository", "Enable*")) {
+				if (AstUtils.hasAtLeastOneAnnotation(node, "*Controller", "Configuration",
+						"Component", "*Service", "Repository", "Enable*")) {
 					return node;
 				}
 			}

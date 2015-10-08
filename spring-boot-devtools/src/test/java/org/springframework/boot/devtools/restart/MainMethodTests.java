@@ -62,8 +62,8 @@ public class MainMethodTests {
 			}
 		}).test();
 		assertThat(method.getMethod(), equalTo(this.actualMain));
-		assertThat(method.getDeclaringClassName(), equalTo(this.actualMain
-				.getDeclaringClass().getName()));
+		assertThat(method.getDeclaringClassName(),
+				equalTo(this.actualMain.getDeclaringClass().getName()));
 	}
 
 	@Test

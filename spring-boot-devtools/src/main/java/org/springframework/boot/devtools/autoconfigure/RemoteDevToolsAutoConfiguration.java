@@ -86,7 +86,8 @@ public class RemoteDevToolsAutoConfiguration {
 	@Bean
 	public HandlerMapper remoteDevToolsHealthCheckHandlerMapper() {
 		Handler handler = new HttpStatusHandler();
-		return new UrlHandlerMapper(this.properties.getRemote().getContextPath(), handler);
+		return new UrlHandlerMapper(this.properties.getRemote().getContextPath(),
+				handler);
 	}
 
 	@Bean
@@ -152,8 +153,8 @@ public class RemoteDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "remoteDebugHttpTunnelServer")
 		public HttpTunnelServer remoteDebugHttpTunnelServer() {
-			return new HttpTunnelServer(new SocketTargetServerConnection(
-					new RemoteDebugPortProvider()));
+			return new HttpTunnelServer(
+					new SocketTargetServerConnection(new RemoteDebugPortProvider()));
 		}
 
 	}
@@ -169,8 +170,8 @@ public class RemoteDevToolsAutoConfiguration {
 		}
 
 		@Order(SecurityProperties.IGNORED_ORDER + 2)
-		static class RemoteRestartWebSecurityConfigurer extends
-				WebSecurityConfigurerAdapter {
+		static class RemoteRestartWebSecurityConfigurer
+				extends WebSecurityConfigurerAdapter {
 
 			@Autowired
 			private DevToolsProperties properties;

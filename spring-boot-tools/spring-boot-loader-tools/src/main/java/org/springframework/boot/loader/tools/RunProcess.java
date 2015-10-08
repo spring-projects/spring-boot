@@ -55,7 +55,8 @@ public class RunProcess {
 		return run(waitForProcess, Arrays.asList(args));
 	}
 
-	protected int run(boolean waitForProcess, Collection<String> args) throws IOException {
+	protected int run(boolean waitForProcess, Collection<String> args)
+			throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
 		builder.command().addAll(args);
 		builder.redirectErrorStream(true);

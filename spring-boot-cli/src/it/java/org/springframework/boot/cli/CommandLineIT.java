@@ -42,8 +42,8 @@ public class CommandLineIT {
 			throws IOException, InterruptedException {
 		Invocation cli = this.cli.invoke("hint");
 		assertThat(cli.await(), equalTo(0));
-		assertThat("Unexpected error: \n" + cli.getErrorOutput(), cli.getErrorOutput()
-				.length(), equalTo(0));
+		assertThat("Unexpected error: \n" + cli.getErrorOutput(),
+				cli.getErrorOutput().length(), equalTo(0));
 		assertThat(cli.getStandardOutputLines().size(), equalTo(10));
 	}
 

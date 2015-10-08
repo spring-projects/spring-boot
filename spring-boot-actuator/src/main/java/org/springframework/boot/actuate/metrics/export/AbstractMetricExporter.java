@@ -52,8 +52,8 @@ public abstract class AbstractMetricExporter implements Exporter {
 	private Date latestTimestamp = new Date(0L);
 
 	public AbstractMetricExporter(String prefix) {
-		this.prefix = (!StringUtils.hasText(prefix) ? "" : (prefix.endsWith(".") ? prefix
-				: prefix + "."));
+		this.prefix = (!StringUtils.hasText(prefix) ? ""
+				: (prefix.endsWith(".") ? prefix : prefix + "."));
 	}
 
 	/**

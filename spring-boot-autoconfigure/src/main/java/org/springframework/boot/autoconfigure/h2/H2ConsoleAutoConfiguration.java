@@ -72,8 +72,8 @@ public class H2ConsoleAutoConfiguration {
 		}
 
 		@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-		private static class H2ConsoleSecurityConfigurer extends
-				WebSecurityConfigurerAdapter {
+		private static class H2ConsoleSecurityConfigurer
+				extends WebSecurityConfigurerAdapter {
 
 			@Autowired
 			private H2ConsoleProperties console;

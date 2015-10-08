@@ -110,8 +110,9 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		LoggerContext context = getLoggerContext();
 		stopAndReset(context);
 		LogbackConfigurator configurator = new LogbackConfigurator(context);
-		context.putProperty("LOG_LEVEL_PATTERN", initializationContext.getEnvironment()
-				.resolvePlaceholders("${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
+		context.putProperty("LOG_LEVEL_PATTERN",
+				initializationContext.getEnvironment().resolvePlaceholders(
+						"${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
 		new DefaultLogbackConfiguration(initializationContext, logFile)
 				.apply(configurator);
 	}
@@ -142,8 +143,8 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			}
 		}
 		if (errors.length() > 0) {
-			throw new IllegalStateException("Logback configuration error "
-					+ "detected: \n" + errors);
+			throw new IllegalStateException(
+					"Logback configuration error " + "detected: \n" + errors);
 		}
 	}
 

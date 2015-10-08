@@ -159,8 +159,8 @@ public class DataSourceAutoConfigurationTests {
 	public void explicitType() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb", "spring.datasource.type:"
-						+ HikariDataSource.class.getName());
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb",
+				"spring.datasource.type:" + HikariDataSource.class.getName());
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

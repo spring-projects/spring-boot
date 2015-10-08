@@ -82,8 +82,9 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
 		assertFalse(new File(tmpDir() + "/spring.log").exists());
-		assertThat(this.loggingSystem.getConfiguration().getConfigurationSource()
-				.getFile(), is(notNullValue()));
+		assertThat(
+				this.loggingSystem.getConfiguration().getConfigurationSource().getFile(),
+				is(notNullValue()));
 	}
 
 	@Test
@@ -96,8 +97,9 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
 		assertTrue(new File(tmpDir() + "/spring.log").exists());
-		assertThat(this.loggingSystem.getConfiguration().getConfigurationSource()
-				.getFile(), is(notNullValue()));
+		assertThat(
+				this.loggingSystem.getConfiguration().getConfigurationSource().getFile(),
+				is(notNullValue()));
 	}
 
 	@Test
@@ -196,8 +198,8 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		Matcher<String> expectedOutput = containsString("[junit-");
 		this.output.expect(expectedOutput);
 		this.logger.warn("Expected exception", new RuntimeException("Expected"));
-		String fileContents = FileCopyUtils.copyToString(new FileReader(new File(tmpDir()
-				+ "/spring.log")));
+		String fileContents = FileCopyUtils
+				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
 		assertThat(fileContents, is(expectedOutput));
 	}
 
@@ -205,13 +207,13 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	public void rootCauseIsLoggedFirst() throws Exception {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
-		Matcher<String> expectedOutput = containsString("Wrapped by: "
-				+ "java.lang.RuntimeException: Expected");
+		Matcher<String> expectedOutput = containsString(
+				"Wrapped by: " + "java.lang.RuntimeException: Expected");
 		this.output.expect(expectedOutput);
-		this.logger.warn("Expected exception", new RuntimeException("Expected",
-				new RuntimeException("Cause")));
-		String fileContents = FileCopyUtils.copyToString(new FileReader(new File(tmpDir()
-				+ "/spring.log")));
+		this.logger.warn("Expected exception",
+				new RuntimeException("Expected", new RuntimeException("Cause")));
+		String fileContents = FileCopyUtils
+				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
 		assertThat(fileContents, is(expectedOutput));
 	}
 
@@ -226,10 +228,10 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 					containsString("java.lang.RuntimeException: Expected"),
 					not(containsString("Wrapped by:")));
 			this.output.expect(expectedOutput);
-			this.logger.warn("Expected exception", new RuntimeException("Expected",
-					new RuntimeException("Cause")));
-			String fileContents = FileCopyUtils.copyToString(new FileReader(new File(
-					tmpDir() + "/spring.log")));
+			this.logger.warn("Expected exception",
+					new RuntimeException("Expected", new RuntimeException("Cause")));
+			String fileContents = FileCopyUtils
+					.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
 			assertThat(fileContents, is(expectedOutput));
 		}
 		finally {

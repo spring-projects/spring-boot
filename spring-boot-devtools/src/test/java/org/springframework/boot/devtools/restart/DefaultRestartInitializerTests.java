@@ -63,7 +63,8 @@ public class DefaultRestartInitializerTests {
 	@Test
 	public void threadNotUsingAppClassLoader() throws Exception {
 		MockRestartInitializer initializer = new MockRestartInitializer(false);
-		ClassLoader classLoader = new MockLauncherClassLoader(getClass().getClassLoader());
+		ClassLoader classLoader = new MockLauncherClassLoader(
+				getClass().getClassLoader());
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);

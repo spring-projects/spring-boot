@@ -90,7 +90,8 @@ public class MongoPropertiesTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = properties.createMongoClient(null, null);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "foo");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
+				"foo");
 	}
 
 	@Test
@@ -100,7 +101,8 @@ public class MongoPropertiesTests {
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
 		MongoClient client = properties.createMongoClient(null, null);
-		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret", "foo");
+		assertMongoCredential(client.getCredentialsList().get(0), "user", "secret",
+				"foo");
 	}
 
 	@Test

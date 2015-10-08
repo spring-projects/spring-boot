@@ -43,8 +43,8 @@ public abstract class HazelcastConfigResourceCondition extends ResourceCondition
 	protected ConditionOutcome getResourceOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		if (System.getProperty(CONFIG_SYSTEM_PROPERTY) != null) {
-			return ConditionOutcome.match("System property '" + CONFIG_SYSTEM_PROPERTY
-					+ "' is set.");
+			return ConditionOutcome
+					.match("System property '" + CONFIG_SYSTEM_PROPERTY + "' is set.");
 		}
 		return super.getResourceOutcome(context, metadata);
 	}

@@ -45,8 +45,8 @@ public class AnsiOutputApplicationListener
 		}
 
 		if (resolver.containsProperty("console-available")) {
-			AnsiOutput.setConsoleAvailable(resolver.getProperty("console-available",
-					Boolean.class));
+			AnsiOutput.setConsoleAvailable(
+					resolver.getProperty("console-available", Boolean.class));
 		}
 	}
 

@@ -220,8 +220,8 @@ public class ErrorMvcAutoConfiguration {
 	 * {@link EmbeddedServletContainerCustomizer} that configures the container's error
 	 * pages.
 	 */
-	private static class ErrorPageCustomizer implements
-			EmbeddedServletContainerCustomizer, Ordered {
+	private static class ErrorPageCustomizer
+			implements EmbeddedServletContainerCustomizer, Ordered {
 
 		private final ServerProperties properties;
 

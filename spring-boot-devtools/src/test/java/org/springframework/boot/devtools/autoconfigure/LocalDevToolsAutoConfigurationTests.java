@@ -227,8 +227,8 @@ public class LocalDevToolsAutoConfigurationTests {
 		Object watcher = ReflectionTestUtils.getField(classPathWatcher,
 				"fileSystemWatcher");
 		@SuppressWarnings("unchecked")
-		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils.getField(
-				watcher, "folders");
+		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils
+				.getField(watcher, "folders");
 		assertThat(folders.size(), is(equalTo(2)));
 		assertThat(folders, hasKey(new File("src/main/java").getAbsoluteFile()));
 		assertThat(folders, hasKey(new File("src/test/java").getAbsoluteFile()));

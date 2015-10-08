@@ -136,8 +136,9 @@ public class ProjectGenerationRequestTests {
 		this.request.setVersion("1.0.1-SNAPSHOT");
 		this.request.setDescription("Spring Boot Test");
 		assertEquals(
-				createDefaultUrl("?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
-						+ "&description=Spring+Boot+Test&type=test-type"),
+				createDefaultUrl(
+						"?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
+								+ "&description=Spring+Boot+Test&type=test-type"),
 				this.request.generateUrl(createDefaultMetadata()));
 	}
 

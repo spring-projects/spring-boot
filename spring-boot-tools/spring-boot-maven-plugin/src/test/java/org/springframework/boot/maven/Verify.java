@@ -165,14 +165,15 @@ public final class Verify {
 			verify(true);
 		}
 
-		public void verify(boolean executable, String... scriptContents) throws Exception {
+		public void verify(boolean executable, String... scriptContents)
+				throws Exception {
 			assertTrue("Archive missing", this.file.exists());
 			assertTrue("Archive not a file", this.file.isFile());
 
 			if (scriptContents.length > 0 && executable) {
 				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
-				contents = contents.substring(0, contents.indexOf(new String(new byte[] {
-						0x50, 0x4b, 0x03, 0x04 })));
+				contents = contents.substring(0, contents
+						.indexOf(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 })));
 				for (String content : scriptContents) {
 					assertThat(contents, containsString(content));
 				}
@@ -180,10 +181,8 @@ public final class Verify {
 
 			if (!executable) {
 				String contents = new String(FileCopyUtils.copyToByteArray(this.file));
-				assertTrue(
-						"Is executable",
-						contents.startsWith(new String(new byte[] { 0x50, 0x4b, 0x03,
-								0x04 })));
+				assertTrue("Is executable", contents
+						.startsWith(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 })));
 			}
 
 			ZipFile zipFile = new ZipFile(this.file);

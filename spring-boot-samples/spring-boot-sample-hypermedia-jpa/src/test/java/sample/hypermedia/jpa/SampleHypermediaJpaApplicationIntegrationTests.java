@@ -85,8 +85,8 @@ public class SampleHypermediaJpaApplicationIntegrationTests {
 	public void browser() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isFound()).andReturn();
-		assertEquals("/browser/index.html#", response.getResponse()
-				.getHeaders("location").get(0));
+		assertEquals("/browser/index.html#",
+				response.getResponse().getHeaders("location").get(0));
 	}
 
 }

@@ -121,16 +121,19 @@ public class AggregateMetricReader implements MetricReader {
 		String name = this.prefix + key;
 		Metric<?> aggregate = result.findOne(name);
 		if (aggregate == null) {
-			aggregate = new Metric<Number>(name, metric.getValue(), metric.getTimestamp());
+			aggregate = new Metric<Number>(name, metric.getValue(),
+					metric.getTimestamp());
 		}
 		else if (key.contains("counter.")) {
 			// accumulate all values
-			aggregate = new Metric<Number>(name, metric.increment(
-					aggregate.getValue().intValue()).getValue(), metric.getTimestamp());
+			aggregate = new Metric<Number>(name,
+					metric.increment(aggregate.getValue().intValue()).getValue(),
+					metric.getTimestamp());
 		}
 		else if (aggregate.getTimestamp().before(metric.getTimestamp())) {
 			// sort by timestamp and only take the latest
-			aggregate = new Metric<Number>(name, metric.getValue(), metric.getTimestamp());
+			aggregate = new Metric<Number>(name, metric.getValue(),
+					metric.getTimestamp());
 		}
 		result.set(aggregate);
 	}

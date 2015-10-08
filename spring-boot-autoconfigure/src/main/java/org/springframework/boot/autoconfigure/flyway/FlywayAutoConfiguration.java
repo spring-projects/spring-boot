@@ -130,8 +130,8 @@ public class FlywayAutoConfiguration {
 		@Configuration
 		@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 		@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-		protected static class FlywayInitializerJpaDependencyConfiguration extends
-				EntityManagerFactoryDependsOnPostProcessor {
+		protected static class FlywayInitializerJpaDependencyConfiguration
+				extends EntityManagerFactoryDependsOnPostProcessor {
 
 			public FlywayInitializerJpaDependencyConfiguration() {
 				super("flywayInitializer");

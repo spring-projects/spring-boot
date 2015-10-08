@@ -49,6 +49,7 @@ import org.springframework.boot.ansi.AnsiStyle;
 public final class ColorConverter extends LogEventPatternConverter {
 
 	private static final Map<String, AnsiElement> ELEMENTS;
+
 	static {
 		Map<String, AnsiElement> elements = new HashMap<String, AnsiElement>();
 		elements.put("faint", AnsiStyle.FAINT);
@@ -62,6 +63,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 	}
 
 	private static final Map<Integer, AnsiElement> LEVELS;
+
 	static {
 		Map<Integer, AnsiElement> levels = new HashMap<Integer, AnsiElement>();
 		levels.put(Level.FATAL.intLevel(), AnsiColor.RED);

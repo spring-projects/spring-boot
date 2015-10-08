@@ -42,24 +42,23 @@ public class RepositoryConfigurationFactoryTests {
 			public void run() {
 				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 						.createDefaultRepositoryConfiguration();
-				assertRepositoryConfiguration(repositoryConfiguration, "central",
-						"local", "spring-snapshot", "spring-milestone");
+				assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
+						"spring-snapshot", "spring-milestone");
 			}
 		}, "user.home:src/test/resources/maven-settings/basic");
 	}
 
 	@Test
 	public void snapshotRepositoriesDisabled() {
-		SystemProperties.doWithSystemProperties(
-				new Runnable() {
-					@Override
-					public void run() {
-						List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
-								.createDefaultRepositoryConfiguration();
-						assertRepositoryConfiguration(repositoryConfiguration, "central",
-								"local");
-					}
-				}, "user.home:src/test/resources/maven-settings/basic",
+		SystemProperties.doWithSystemProperties(new Runnable() {
+			@Override
+			public void run() {
+				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
+						.createDefaultRepositoryConfiguration();
+				assertRepositoryConfiguration(repositoryConfiguration, "central",
+						"local");
+			}
+		}, "user.home:src/test/resources/maven-settings/basic",
 				"disableSpringSnapshotRepos:true");
 	}
 
@@ -70,27 +69,23 @@ public class RepositoryConfigurationFactoryTests {
 			public void run() {
 				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 						.createDefaultRepositoryConfiguration();
-				assertRepositoryConfiguration(repositoryConfiguration, "central",
-						"local", "spring-snapshot", "spring-milestone",
-						"active-by-default");
+				assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
+						"spring-snapshot", "spring-milestone", "active-by-default");
 			}
 		}, "user.home:src/test/resources/maven-settings/active-profile-repositories");
 	}
 
 	@Test
 	public void activeByPropertyProfileRepositories() {
-		SystemProperties.doWithSystemProperties(
-				new Runnable() {
-					@Override
-					public void run() {
-						List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
-								.createDefaultRepositoryConfiguration();
-						assertRepositoryConfiguration(repositoryConfiguration, "central",
-								"local", "spring-snapshot", "spring-milestone",
-								"active-by-property");
-					}
-				},
-				"user.home:src/test/resources/maven-settings/active-profile-repositories",
+		SystemProperties.doWithSystemProperties(new Runnable() {
+			@Override
+			public void run() {
+				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
+						.createDefaultRepositoryConfiguration();
+				assertRepositoryConfiguration(repositoryConfiguration, "central", "local",
+						"spring-snapshot", "spring-milestone", "active-by-property");
+			}
+		}, "user.home:src/test/resources/maven-settings/active-profile-repositories",
 				"foo:bar");
 	}
 

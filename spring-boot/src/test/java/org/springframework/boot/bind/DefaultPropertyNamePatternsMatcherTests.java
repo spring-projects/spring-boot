@@ -39,8 +39,9 @@ public class DefaultPropertyNamePatternsMatcherTests {
 
 	@Test
 	public void namesExactMatch() {
-		assertTrue(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb",
-				"cccc").matches("bbbb"));
+		assertTrue(
+				new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb", "cccc")
+						.matches("bbbb"));
 	}
 
 	@Test
@@ -51,20 +52,23 @@ public class DefaultPropertyNamePatternsMatcherTests {
 
 	@Test
 	public void nameWithDot() throws Exception {
-		assertTrue(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb",
-				"cccc").matches("bbbb.anything"));
+		assertTrue(
+				new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb", "cccc")
+						.matches("bbbb.anything"));
 	}
 
 	@Test
 	public void nameWithUnderscore() throws Exception {
-		assertTrue(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb",
-				"cccc").matches("bbbb_anything"));
+		assertTrue(
+				new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaaa", "bbbb", "cccc")
+						.matches("bbbb_anything"));
 	}
 
 	@Test
 	public void namesMatchWithDifferentLengths() throws Exception {
-		assertTrue(new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaa", "bbbb",
-				"ccccc").matches("bbbb"));
+		assertTrue(
+				new DefaultPropertyNamePatternsMatcher(DELIMITERS, "aaa", "bbbb", "ccccc")
+						.matches("bbbb"));
 	}
 
 	@Test

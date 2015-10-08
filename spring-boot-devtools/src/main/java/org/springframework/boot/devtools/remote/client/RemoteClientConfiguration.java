@@ -97,8 +97,8 @@ public class RemoteClientConfiguration {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		Proxy proxy = this.properties.getRemote().getProxy();
 		if (proxy.getHost() != null && proxy.getPort() != null) {
-			requestFactory.setProxy(new java.net.Proxy(Type.HTTP, new InetSocketAddress(
-					proxy.getHost(), proxy.getPort())));
+			requestFactory.setProxy(new java.net.Proxy(Type.HTTP,
+					new InetSocketAddress(proxy.getHost(), proxy.getPort())));
 		}
 		return new InterceptingClientHttpRequestFactory(requestFactory, interceptors);
 	}
@@ -157,8 +157,8 @@ public class RemoteClientConfiguration {
 		@EventListener
 		public void onClassPathChanged(ClassPathChangedEvent event) {
 			String url = this.remoteUrl + this.properties.getRemote().getContextPath();
-			this.executor.execute(new DelayedLiveReloadTrigger(
-					optionalLiveReloadServer(), this.clientHttpRequestFactory, url));
+			this.executor.execute(new DelayedLiveReloadTrigger(optionalLiveReloadServer(),
+					this.clientHttpRequestFactory, url));
 		}
 
 		@Bean
@@ -221,8 +221,8 @@ public class RemoteClientConfiguration {
 
 		@Bean
 		public ClassPathRestartStrategy classPathRestartStrategy() {
-			return new PatternClassPathRestartStrategy(this.properties.getRestart()
-					.getAllExclude());
+			return new PatternClassPathRestartStrategy(
+					this.properties.getRestart().getAllExclude());
 		}
 
 		@Bean

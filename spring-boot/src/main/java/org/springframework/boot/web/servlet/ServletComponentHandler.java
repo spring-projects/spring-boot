@@ -49,12 +49,13 @@ abstract class ServletComponentHandler {
 		return this.typeFilter;
 	}
 
-	protected String[] extractUrlPatterns(String attribute, Map<String, Object> attributes) {
+	protected String[] extractUrlPatterns(String attribute,
+			Map<String, Object> attributes) {
 		String[] value = (String[]) attributes.get("value");
 		String[] urlPatterns = (String[]) attributes.get("urlPatterns");
 		if (urlPatterns.length > 0) {
-			Assert.state(value.length == 0, "The urlPatterns and value attributes "
-					+ "are mututally exclusive");
+			Assert.state(value.length == 0,
+					"The urlPatterns and value attributes " + "are mututally exclusive");
 			return urlPatterns;
 		}
 		return value;

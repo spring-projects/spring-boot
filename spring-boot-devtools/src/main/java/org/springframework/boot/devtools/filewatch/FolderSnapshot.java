@@ -74,11 +74,12 @@ class FolderSnapshot {
 		}
 	}
 
-	public ChangedFiles getChangedFiles(FolderSnapshot snapshot, FileFilter triggerFilter) {
+	public ChangedFiles getChangedFiles(FolderSnapshot snapshot,
+			FileFilter triggerFilter) {
 		Assert.notNull(snapshot, "Snapshot must not be null");
 		File folder = this.folder;
-		Assert.isTrue(snapshot.folder.equals(folder), "Snapshot source folder must be '"
-				+ folder + "'");
+		Assert.isTrue(snapshot.folder.equals(folder),
+				"Snapshot source folder must be '" + folder + "'");
 		Set<ChangedFile> changes = new LinkedHashSet<ChangedFile>();
 		Map<File, FileSnapshot> previousFiles = getFilesMap();
 		for (FileSnapshot currentFile : snapshot.files) {
@@ -88,8 +89,8 @@ class FolderSnapshot {
 					changes.add(new ChangedFile(folder, currentFile.getFile(), Type.ADD));
 				}
 				else if (!previousFile.equals(currentFile)) {
-					changes.add(new ChangedFile(folder, currentFile.getFile(),
-							Type.MODIFY));
+					changes.add(
+							new ChangedFile(folder, currentFile.getFile(), Type.MODIFY));
 				}
 			}
 		}

@@ -59,8 +59,8 @@ public class MockCachingProvider implements CachingProvider {
 				return caches.get(cacheName);
 			}
 		});
-		given(cacheManager.createCache(anyString(), any(Configuration.class))).will(
-				new Answer<Cache>() {
+		given(cacheManager.createCache(anyString(), any(Configuration.class)))
+				.will(new Answer<Cache>() {
 					@Override
 					public Cache answer(InvocationOnMock invocationOnMock)
 							throws Throwable {

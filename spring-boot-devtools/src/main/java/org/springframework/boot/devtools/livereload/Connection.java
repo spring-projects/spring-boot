@@ -38,8 +38,8 @@ class Connection {
 
 	private static Log logger = LogFactory.getLog(Connection.class);
 
-	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern.compile(
-			"^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);
+	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern
+			.compile("^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);
 
 	public final static String WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
@@ -89,8 +89,8 @@ class Connection {
 	private void runWebSocket(String header) throws Exception {
 		String accept = getWebsocketAcceptResponse();
 		this.outputStream.writeHeaders("HTTP/1.1 101 Switching Protocols",
-				"Upgrade: websocket", "Connection: Upgrade", "Sec-WebSocket-Accept: "
-						+ accept);
+				"Upgrade: websocket", "Connection: Upgrade",
+				"Sec-WebSocket-Accept: " + accept);
 		new Frame("{\"command\":\"hello\",\"protocols\":"
 				+ "[\"http://livereload.com/protocols/official-7\"],"
 				+ "\"serverName\":\"spring-boot\"}").write(this.outputStream);

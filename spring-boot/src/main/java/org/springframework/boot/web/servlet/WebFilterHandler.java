@@ -57,7 +57,8 @@ class WebFilterHandler extends ServletComponentHandler {
 		registry.registerBeanDefinition(name, builder.getBeanDefinition());
 	}
 
-	private EnumSet<DispatcherType> extractDispatcherTypes(Map<String, Object> attributes) {
+	private EnumSet<DispatcherType> extractDispatcherTypes(
+			Map<String, Object> attributes) {
 		DispatcherType[] dispatcherTypes = (DispatcherType[]) attributes
 				.get("dispatcherTypes");
 		if (dispatcherTypes.length == 0) {
@@ -72,8 +73,8 @@ class WebFilterHandler extends ServletComponentHandler {
 
 	private String determineName(Map<String, Object> attributes,
 			BeanDefinition beanDefinition) {
-		return (String) (StringUtils.hasText((String) attributes.get("filterName")) ? attributes
-				.get("filterName") : beanDefinition.getBeanClassName());
+		return (String) (StringUtils.hasText((String) attributes.get("filterName"))
+				? attributes.get("filterName") : beanDefinition.getBeanClassName());
 	}
 
 }

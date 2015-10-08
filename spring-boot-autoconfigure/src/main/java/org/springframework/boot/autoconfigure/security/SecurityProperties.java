@@ -62,7 +62,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	 * other filters registered with the container). There is no connection between this
 	 * and the <code>@Order</code> on a WebSecurityConfigurer.
 	 */
-	public static final int DEFAULT_FILTER_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100;
+	public static final int DEFAULT_FILTER_ORDER = FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER
+			- 100;
 
 	/**
 	 * Enable secure channel for all requests.

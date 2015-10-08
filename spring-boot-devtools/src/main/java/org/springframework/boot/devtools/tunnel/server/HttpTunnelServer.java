@@ -37,11 +37,11 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.util.Assert;
 
 /**
- * A server that can be used to tunnel TCP traffic over HTTP. Similar in design to the <a
- * href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous
- * HTTP (BOSH)</a> XMPP extension protocol, the server uses long polling with HTTP
- * requests held open until a response is available. A typical traffic pattern would be as
- * follows:
+ * A server that can be used to tunnel TCP traffic over HTTP. Similar in design to the
+ * <a href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over
+ * Synchronous HTTP (BOSH)</a> XMPP extension protocol, the server uses long polling with
+ * HTTP requests held open until a response is available. A typical traffic pattern would
+ * be as follows:
  *
  * <pre>
  * [ CLIENT ]                      [ SERVER ]
@@ -193,7 +193,8 @@ public class HttpTunnelServer {
 	 * @param disconnectTimeout the disconnect timeout in milliseconds
 	 */
 	public void setDisconnectTimeout(long disconnectTimeout) {
-		Assert.isTrue(disconnectTimeout > 0, "DisconnectTimeout must be a positive value");
+		Assert.isTrue(disconnectTimeout > 0,
+				"DisconnectTimeout must be a positive value");
 		this.disconnectTimeout = disconnectTimeout;
 	}
 
@@ -277,7 +278,8 @@ public class HttpTunnelServer {
 				Iterator<HttpConnection> iterator = this.httpConnections.iterator();
 				while (iterator.hasNext()) {
 					HttpConnection httpConnection = iterator.next();
-					if (httpConnection.isOlderThan(HttpTunnelServer.this.longPollTimeout)) {
+					if (httpConnection
+							.isOlderThan(HttpTunnelServer.this.longPollTimeout)) {
 						httpConnection.respond(HttpStatus.NO_CONTENT);
 						iterator.remove();
 					}
@@ -324,8 +326,8 @@ public class HttpTunnelServer {
 			}
 			synchronized (this.httpConnections) {
 				while (this.httpConnections.size() > 1) {
-					this.httpConnections.removeFirst().respond(
-							HttpStatus.TOO_MANY_REQUESTS);
+					this.httpConnections.removeFirst()
+							.respond(HttpStatus.TOO_MANY_REQUESTS);
 				}
 				this.lastHttpRequestTime = System.currentTimeMillis();
 				this.httpConnections.addLast(httpConnection);
@@ -439,8 +441,8 @@ public class HttpTunnelServer {
 		 * @return if the request is a signal to disconnect
 		 */
 		public boolean isDisconnectRequest() {
-			return DISCONNECT_MEDIA_TYPE.equals(this.request.getHeaders()
-					.getContentType());
+			return DISCONNECT_MEDIA_TYPE
+					.equals(this.request.getHeaders().getContentType());
 		}
 
 		/**

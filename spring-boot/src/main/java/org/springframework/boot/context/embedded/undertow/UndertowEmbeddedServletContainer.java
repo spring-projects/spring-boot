@@ -189,13 +189,13 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 	private List<BoundChannel> extractChannels() {
 		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
 		ReflectionUtils.makeAccessible(channelsField);
-		return (List<BoundChannel>) ReflectionUtils
-				.getField(channelsField, this.undertow);
+		return (List<BoundChannel>) ReflectionUtils.getField(channelsField,
+				this.undertow);
 	}
 
 	private Port getPortFromChannel(BoundChannel channel) {
-		String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null ? "https"
-				: "http";
+		String protocol = ReflectionUtils.findField(channel.getClass(), "ssl") != null
+				? "https" : "http";
 		SocketAddress socketAddress = channel.getLocalAddress();
 		if (socketAddress instanceof InetSocketAddress) {
 			return new Port(((InetSocketAddress) socketAddress).getPort(), protocol);
@@ -212,7 +212,8 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 				this.undertow.stop();
 			}
 			catch (Exception ex) {
-				throw new EmbeddedServletContainerException("Unable to stop undertow", ex);
+				throw new EmbeddedServletContainerException("Unable to stop undertow",
+						ex);
 			}
 		}
 	}
@@ -264,12 +265,12 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 
 		@Override
 		public boolean resolve(HttpServerExchange value) {
-			String contentType = value.getResponseHeaders().getFirst(
-					HttpHeaders.CONTENT_TYPE);
+			String contentType = value.getResponseHeaders()
+					.getFirst(HttpHeaders.CONTENT_TYPE);
 			if (contentType != null) {
 				for (MimeType mimeType : this.mimeTypes) {
-					if (mimeType.isCompatibleWith(MimeTypeUtils
-							.parseMimeType(contentType))) {
+					if (mimeType
+							.isCompatibleWith(MimeTypeUtils.parseMimeType(contentType))) {
 						return true;
 					}
 				}

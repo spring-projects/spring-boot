@@ -70,7 +70,8 @@ public class HttpRestartServer {
 			throws IOException {
 		try {
 			Assert.state(request.getHeaders().getContentLength() > 0, "No content");
-			ObjectInputStream objectInputStream = new ObjectInputStream(request.getBody());
+			ObjectInputStream objectInputStream = new ObjectInputStream(
+					request.getBody());
 			ClassLoaderFiles files = (ClassLoaderFiles) objectInputStream.readObject();
 			objectInputStream.close();
 			this.server.updateAndRestart(files);

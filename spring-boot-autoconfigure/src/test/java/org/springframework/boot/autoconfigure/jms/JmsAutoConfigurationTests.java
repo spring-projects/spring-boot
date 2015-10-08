@@ -150,8 +150,8 @@ public class JmsAutoConfigurationTests {
 				"spring.jms.listener.acknowledgeMode=client",
 				"spring.jms.listener.concurrency=2",
 				"spring.jms.listener.maxConcurrency=10");
-		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context
-				.getBean("jmsListenerContainerFactory", JmsListenerContainerFactory.class);
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory = this.context.getBean(
+				"jmsListenerContainerFactory", JmsListenerContainerFactory.class);
 		assertEquals(DefaultJmsListenerContainerFactory.class,
 				jmsListenerContainerFactory.getClass());
 		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)

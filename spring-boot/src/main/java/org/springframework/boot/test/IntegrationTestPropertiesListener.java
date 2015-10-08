@@ -37,7 +37,8 @@ public class IntegrationTestPropertiesListener extends AbstractTestExecutionList
 	public void prepareTestInstance(TestContext testContext) throws Exception {
 		Class<?> testClass = testContext.getTestClass();
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(testClass, IntegrationTest.class.getName());
+				.getMergedAnnotationAttributes(testClass,
+						IntegrationTest.class.getName());
 		if (annotationAttributes != null) {
 			addPropertySourceProperties(testContext,
 					annotationAttributes.getStringArray("value"));

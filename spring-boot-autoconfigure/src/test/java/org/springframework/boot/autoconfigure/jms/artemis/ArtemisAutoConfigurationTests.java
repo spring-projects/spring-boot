@@ -176,7 +176,8 @@ public class ArtemisAutoConfigurationTests {
 	@Test
 	public void embeddedServiceWithCustomJmsConfiguration() {
 		// Ignored with custom config
-		load(CustomJmsConfiguration.class, "spring.artemis.embedded.queues=Queue1,Queue2");
+		load(CustomJmsConfiguration.class,
+				"spring.artemis.embedded.queues=Queue1,Queue2");
 		DestinationChecker checker = new DestinationChecker(this.context);
 		checker.checkQueue("custom", true); // See CustomJmsConfiguration
 		checker.checkQueue("Queue1", true);
@@ -270,7 +271,8 @@ public class ArtemisAutoConfigurationTests {
 
 	private TransportConfiguration assertInVmConnectionFactory(
 			ActiveMQConnectionFactory connectionFactory) {
-		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
+		TransportConfiguration transportConfig = getSingleTransportConfiguration(
+				connectionFactory);
 		assertEquals(InVMConnectorFactory.class.getName(),
 				transportConfig.getFactoryClassName());
 		return transportConfig;
@@ -278,7 +280,8 @@ public class ArtemisAutoConfigurationTests {
 
 	private TransportConfiguration assertNettyConnectionFactory(
 			ActiveMQConnectionFactory connectionFactory, String host, int port) {
-		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
+		TransportConfiguration transportConfig = getSingleTransportConfiguration(
+				connectionFactory);
 		assertEquals(NettyConnectorFactory.class.getName(),
 				transportConfig.getFactoryClassName());
 		assertEquals(host, transportConfig.getParams().get("host"));

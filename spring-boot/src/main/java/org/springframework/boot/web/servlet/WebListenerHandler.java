@@ -37,8 +37,8 @@ class WebListenerHandler extends ServletComponentHandler {
 	}
 
 	@Override
-	protected void doHandle(Map<String, Object> attributes,
-			BeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
+	protected void doHandle(Map<String, Object> attributes, BeanDefinition beanDefinition,
+			BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder
 				.rootBeanDefinition(ServletListenerRegistrationBean.class);
 		builder.addPropertyValue("listener", beanDefinition);

@@ -205,8 +205,8 @@ public class ThymeleafAutoConfigurationTests {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeansOfType(ResourceUrlEncodingFilter.class)
-				.size());
+		assertEquals(0,
+				this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
 	}
 
 	@Test

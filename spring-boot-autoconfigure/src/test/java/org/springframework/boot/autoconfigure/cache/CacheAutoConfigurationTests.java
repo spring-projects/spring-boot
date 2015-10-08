@@ -112,7 +112,8 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void cacheManagerBackOff() {
 		load(CustomCacheManagerConfiguration.class);
-		ConcurrentMapCacheManager cacheManager = validateCacheManager(ConcurrentMapCacheManager.class);
+		ConcurrentMapCacheManager cacheManager = validateCacheManager(
+				ConcurrentMapCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), contains("custom1"));
 		assertThat(cacheManager.getCacheNames(), hasSize(1));
 	}
@@ -120,7 +121,8 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void cacheManagerFromSupportBackOff() {
 		load(CustomCacheManagerFromSupportConfiguration.class);
-		ConcurrentMapCacheManager cacheManager = validateCacheManager(ConcurrentMapCacheManager.class);
+		ConcurrentMapCacheManager cacheManager = validateCacheManager(
+				ConcurrentMapCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), contains("custom1"));
 		assertThat(cacheManager.getCacheNames(), hasSize(1));
 	}
@@ -143,7 +145,8 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void simpleCacheExplicit() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=simple");
-		ConcurrentMapCacheManager cacheManager = validateCacheManager(ConcurrentMapCacheManager.class);
+		ConcurrentMapCacheManager cacheManager = validateCacheManager(
+				ConcurrentMapCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), empty());
 	}
 
@@ -151,7 +154,8 @@ public class CacheAutoConfigurationTests {
 	public void simpleCacheExplicitWithCacheNames() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=simple",
 				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		ConcurrentMapCacheManager cacheManager = validateCacheManager(ConcurrentMapCacheManager.class);
+		ConcurrentMapCacheManager cacheManager = validateCacheManager(
+				ConcurrentMapCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
 		assertThat(cacheManager.getCacheNames(), hasSize(2));
 	}
@@ -302,7 +306,8 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void ehCacheCacheWithCaches() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=ehcache");
-		EhCacheCacheManager cacheManager = validateCacheManager(EhCacheCacheManager.class);
+		EhCacheCacheManager cacheManager = validateCacheManager(
+				EhCacheCacheManager.class);
 		assertThat(cacheManager.getCacheNames(),
 				containsInAnyOrder("cacheTest1", "cacheTest2"));
 		assertThat(cacheManager.getCacheNames(), hasSize(2));
@@ -314,7 +319,8 @@ public class CacheAutoConfigurationTests {
 	public void ehCacheCacheWithConfig() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=ehcache",
 				"spring.cache.ehcache.config=cache/ehcache-override.xml");
-		EhCacheCacheManager cacheManager = validateCacheManager(EhCacheCacheManager.class);
+		EhCacheCacheManager cacheManager = validateCacheManager(
+				EhCacheCacheManager.class);
 		assertThat(cacheManager.getCacheNames(),
 				containsInAnyOrder("cacheOverrideTest1", "cacheOverrideTest2"));
 		assertThat(cacheManager.getCacheNames(), hasSize(2));
@@ -323,7 +329,8 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void ehCacheCacheWithExistingCacheManager() {
 		load(EhCacheCustomCacheManager.class, "spring.cache.type=ehcache");
-		EhCacheCacheManager cacheManager = validateCacheManager(EhCacheCacheManager.class);
+		EhCacheCacheManager cacheManager = validateCacheManager(
+				EhCacheCacheManager.class);
 		assertThat(cacheManager.getCacheManager(),
 				equalTo(this.context.getBean("customEhCacheCacheManager")));
 	}
@@ -331,7 +338,8 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void hazelcastCacheExplicit() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast");
-		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
+		HazelcastCacheManager cacheManager = validateCacheManager(
+				HazelcastCacheManager.class);
 		// NOTE: the hazelcast implementation knows about a cache in a lazy manner.
 		cacheManager.getCache("defaultCache");
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("defaultCache"));
@@ -343,10 +351,10 @@ public class CacheAutoConfigurationTests {
 
 	@Test
 	public void hazelcastCacheWithConfig() {
-		load(DefaultCacheConfiguration.class,
-				"spring.cache.type=hazelcast",
+		load(DefaultCacheConfiguration.class, "spring.cache.type=hazelcast",
 				"spring.cache.hazelcast.config=org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml");
-		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
+		HazelcastCacheManager cacheManager = validateCacheManager(
+				HazelcastCacheManager.class);
 		cacheManager.getCache("foobar");
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foobar"));
 		assertThat(cacheManager.getCacheNames(), hasSize(1));
@@ -363,7 +371,8 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void hazelcastCacheWithExistingHazelcastInstance() {
 		load(HazelcastCustomHazelcastInstance.class, "spring.cache.type=hazelcast");
-		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
+		HazelcastCacheManager cacheManager = validateCacheManager(
+				HazelcastCacheManager.class);
 		assertThat(
 				new DirectFieldAccessor(cacheManager)
 						.getPropertyValue("hazelcastInstance"),
@@ -376,15 +385,14 @@ public class CacheAutoConfigurationTests {
 		configs.add(DefaultCacheConfiguration.class);
 		configs.add(HazelcastAutoConfiguration.class);
 		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
-		doLoad(configs, "spring.cache.type=hazelcast", "spring.hazelcast.config="
-				+ mainConfig);
-		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
+		doLoad(configs, "spring.cache.type=hazelcast",
+				"spring.hazelcast.config=" + mainConfig);
+		HazelcastCacheManager cacheManager = validateCacheManager(
+				HazelcastCacheManager.class);
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
-		assertThat(
-				new DirectFieldAccessor(cacheManager)
-						.getPropertyValue("hazelcastInstance"),
-				equalTo((Object) hazelcastInstance));
+		assertThat(new DirectFieldAccessor(cacheManager).getPropertyValue(
+				"hazelcastInstance"), equalTo((Object) hazelcastInstance));
 		assertThat(hazelcastInstance.getConfig().getConfigurationFile(),
 				equalTo(new ClassPathResource(mainConfig).getFile()));
 	}
@@ -397,11 +405,13 @@ public class CacheAutoConfigurationTests {
 		configs.add(HazelcastAutoConfiguration.class);
 		String mainConfig = "org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml";
 		String cacheConfig = "org/springframework/boot/autoconfigure/cache/hazelcast-specific.xml";
-		doLoad(configs, "spring.cache.type=hazelcast", "spring.cache.hazelcast.config="
-				+ cacheConfig, "spring.hazelcast.config=" + mainConfig);
+		doLoad(configs, "spring.cache.type=hazelcast",
+				"spring.cache.hazelcast.config=" + cacheConfig,
+				"spring.hazelcast.config=" + mainConfig);
 		HazelcastInstance hazelcastInstance = this.context
 				.getBean(HazelcastInstance.class);
-		HazelcastCacheManager cacheManager = validateCacheManager(HazelcastCacheManager.class);
+		HazelcastCacheManager cacheManager = validateCacheManager(
+				HazelcastCacheManager.class);
 		HazelcastInstance cacheHazelcastInstance = (HazelcastInstance) new DirectFieldAccessor(
 				cacheManager).getPropertyValue("hazelcastInstance");
 		assertThat(cacheHazelcastInstance, not(hazelcastInstance)); // Our custom
@@ -440,7 +450,8 @@ public class CacheAutoConfigurationTests {
 	public void infinispanCacheWithConfig() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
 				"spring.cache.infinispan.config=infinispan.xml");
-		SpringEmbeddedCacheManager cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+		SpringEmbeddedCacheManager cacheManager = validateCacheManager(
+				SpringEmbeddedCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
 	}
 
@@ -448,7 +459,8 @@ public class CacheAutoConfigurationTests {
 	public void infinispanCacheWithCaches() {
 		load(DefaultCacheConfiguration.class, "spring.cache.type=infinispan",
 				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		SpringEmbeddedCacheManager cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+		SpringEmbeddedCacheManager cacheManager = validateCacheManager(
+				SpringEmbeddedCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
 		assertThat(cacheManager.getCacheNames(), hasSize(2));
 	}
@@ -457,7 +469,8 @@ public class CacheAutoConfigurationTests {
 	public void infinispanCacheWithCachesAndCustomConfig() {
 		load(InfinispanCustomConfiguration.class, "spring.cache.type=infinispan",
 				"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar");
-		SpringEmbeddedCacheManager cacheManager = validateCacheManager(SpringEmbeddedCacheManager.class);
+		SpringEmbeddedCacheManager cacheManager = validateCacheManager(
+				SpringEmbeddedCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), containsInAnyOrder("foo", "bar"));
 		assertThat(cacheManager.getCacheNames(), hasSize(2));
 
@@ -617,8 +630,8 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public javax.cache.CacheManager customJCacheCacheManager() {
 			javax.cache.CacheManager cacheManager = mock(javax.cache.CacheManager.class);
-			given(cacheManager.getCacheNames()).willReturn(
-					Collections.<String>emptyList());
+			given(cacheManager.getCacheNames())
+					.willReturn(Collections.<String>emptyList());
 			return cacheManager;
 		}
 
@@ -634,8 +647,8 @@ public class CacheAutoConfigurationTests {
 				@Override
 				public void customize(javax.cache.CacheManager cacheManager) {
 					MutableConfiguration<?, ?> config = new MutableConfiguration<Object, Object>();
-					config.setExpiryPolicyFactory(CreatedExpiryPolicy
-							.factoryOf(Duration.TEN_MINUTES));
+					config.setExpiryPolicyFactory(
+							CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES));
 					config.setStatisticsEnabled(true);
 					cacheManager.createCache("custom1", config);
 					cacheManager.destroyCache("bar");
@@ -651,7 +664,8 @@ public class CacheAutoConfigurationTests {
 
 		@Bean
 		public net.sf.ehcache.CacheManager customEhCacheCacheManager() {
-			net.sf.ehcache.CacheManager cacheManager = mock(net.sf.ehcache.CacheManager.class);
+			net.sf.ehcache.CacheManager cacheManager = mock(
+					net.sf.ehcache.CacheManager.class);
 			given(cacheManager.getStatus()).willReturn(Status.STATUS_ALIVE);
 			given(cacheManager.getCacheNames()).willReturn(new String[0]);
 			return cacheManager;
@@ -696,8 +710,8 @@ public class CacheAutoConfigurationTests {
 
 	@Configuration
 	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
-	static class CustomCacheManagerFromSupportConfiguration extends
-			CachingConfigurerSupport {
+	static class CustomCacheManagerFromSupportConfiguration
+			extends CachingConfigurerSupport {
 
 		@Override
 		@Bean

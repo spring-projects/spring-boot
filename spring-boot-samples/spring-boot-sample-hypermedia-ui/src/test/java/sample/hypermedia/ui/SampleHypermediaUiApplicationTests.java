@@ -46,15 +46,15 @@ public class SampleHypermediaUiApplicationTests {
 
 	@Test
 	public void home() {
-		String response = new TestRestTemplate().getForObject("http://localhost:"
-				+ this.port, String.class);
+		String response = new TestRestTemplate()
+				.getForObject("http://localhost:" + this.port, String.class);
 		assertTrue("Wrong body: " + response, response.contains("Hello World"));
 	}
 
 	@Test
 	public void links() {
-		String response = new TestRestTemplate().getForObject("http://localhost:"
-				+ this.port + "/actuator", String.class);
+		String response = new TestRestTemplate().getForObject(
+				"http://localhost:" + this.port + "/actuator", String.class);
 		assertTrue("Wrong body: " + response, response.contains("\"_links\":"));
 	}
 
@@ -63,8 +63,9 @@ public class SampleHypermediaUiApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> response = new TestRestTemplate().exchange(
-				new RequestEntity<Void>(headers, HttpMethod.GET, new URI(
-						"http://localhost:" + this.port + "/actuator")), String.class);
+				new RequestEntity<Void>(headers, HttpMethod.GET,
+						new URI("http://localhost:" + this.port + "/actuator")),
+				String.class);
 		assertTrue("Wrong body: " + response, response.getBody().contains("\"_links\":"));
 	}
 
@@ -72,9 +73,9 @@ public class SampleHypermediaUiApplicationTests {
 	public void homeWithHtml() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> response = new TestRestTemplate().exchange(
-				new RequestEntity<Void>(headers, HttpMethod.GET, new URI(
-						"http://localhost:" + this.port)), String.class);
+		ResponseEntity<String> response = new TestRestTemplate()
+				.exchange(new RequestEntity<Void>(headers, HttpMethod.GET,
+						new URI("http://localhost:" + this.port)), String.class);
 		assertTrue("Wrong body: " + response, response.getBody().contains("Hello World"));
 	}
 

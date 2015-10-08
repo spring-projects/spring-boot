@@ -50,8 +50,10 @@ class OnResourceCondition extends SpringBootCondition {
 			Assert.isTrue(locations.size() > 0,
 					"@ConditionalOnResource annotations must specify at least one resource location");
 			for (String location : locations) {
-				if (!loader.getResource(
-						context.getEnvironment().resolvePlaceholders(location)).exists()) {
+				if (!loader
+						.getResource(
+								context.getEnvironment().resolvePlaceholders(location))
+						.exists()) {
 					return ConditionOutcome.noMatch("resource not found: " + location);
 				}
 			}

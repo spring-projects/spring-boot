@@ -88,8 +88,8 @@ public class VelocityAutoConfigurationTests {
 
 	@Test
 	public void nonExistentTemplateLocation() {
-		registerAndRefreshContext("spring.velocity.resourceLoaderPath:"
-				+ "classpath:/does-not-exist/");
+		registerAndRefreshContext(
+				"spring.velocity.resourceLoaderPath:" + "classpath:/does-not-exist/");
 		this.output.expect(containsString("Cannot find template location"));
 	}
 
@@ -143,7 +143,8 @@ public class VelocityAutoConfigurationTests {
 
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
-		registerAndRefreshContext("spring.velocity.resourceLoaderPath:classpath:/custom-templates/");
+		registerAndRefreshContext(
+				"spring.velocity.resourceLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("custom"));
@@ -158,9 +159,12 @@ public class VelocityAutoConfigurationTests {
 
 	@Test
 	public void customVelocitySettings() {
-		registerAndRefreshContext("spring.velocity.properties.directive.parse.max.depth:10");
-		assertThat(this.context.getBean(VelocityConfigurer.class).getVelocityEngine()
-				.getProperty("directive.parse.max.depth"), equalTo((Object) "10"));
+		registerAndRefreshContext(
+				"spring.velocity.properties.directive.parse.max.depth:10");
+		assertThat(
+				this.context.getBean(VelocityConfigurer.class).getVelocityEngine()
+						.getProperty("directive.parse.max.depth"),
+				equalTo((Object) "10"));
 	}
 
 	@Test
@@ -205,8 +209,8 @@ public class VelocityAutoConfigurationTests {
 	@Test
 	public void registerResourceHandlingFilterDisabledByDefault() throws Exception {
 		registerAndRefreshContext();
-		assertEquals(0, this.context.getBeansOfType(ResourceUrlEncodingFilter.class)
-				.size());
+		assertEquals(0,
+				this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
 	}
 
 	@Test

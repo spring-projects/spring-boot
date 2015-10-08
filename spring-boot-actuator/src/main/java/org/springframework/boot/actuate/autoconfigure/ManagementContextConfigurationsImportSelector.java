@@ -39,16 +39,16 @@ import org.springframework.core.type.AnnotationMetadata;
  * @see ManagementContextConfiguration
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-class ManagementContextConfigurationsImportSelector implements DeferredImportSelector,
-		BeanClassLoaderAware {
+class ManagementContextConfigurationsImportSelector
+		implements DeferredImportSelector, BeanClassLoaderAware {
 
 	private ClassLoader classLoader;
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
 		// Find all possible auto configuration classes, filtering duplicates
-		List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
-				SpringFactoriesLoader.loadFactoryNames(
+		List<String> factories = new ArrayList<String>(
+				new LinkedHashSet<String>(SpringFactoriesLoader.loadFactoryNames(
 						ManagementContextConfiguration.class, this.classLoader)));
 		AnnotationAwareOrderComparator.sort(factories);
 		return factories.toArray(new String[0]);

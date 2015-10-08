@@ -46,8 +46,8 @@ import org.springframework.util.StringUtils;
  * @author Arthur Kalimullin
  * @since 1.1.0
  */
-public class DataSourceHealthIndicator extends AbstractHealthIndicator implements
-		InitializingBean {
+public class DataSourceHealthIndicator extends AbstractHealthIndicator
+		implements InitializingBean {
 
 	private static final String DEFAULT_QUERY = "SELECT 1";
 
@@ -121,8 +121,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	private String getProduct() {
 		return this.jdbcTemplate.execute(new ConnectionCallback<String>() {
 			@Override
-			public String doInConnection(Connection connection) throws SQLException,
-					DataAccessException {
+			public String doInConnection(Connection connection)
+					throws SQLException, DataAccessException {
 				return connection.getMetaData().getDatabaseProductName();
 			}
 		});

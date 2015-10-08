@@ -56,7 +56,8 @@ public class MavenSettingsReader {
 		Settings settings = loadSettings();
 		SettingsDecryptionResult decrypted = decryptSettings(settings);
 		if (!decrypted.getProblems().isEmpty()) {
-			Log.error("Maven settings decryption failed. Some Maven repositories may be inaccessible");
+			Log.error(
+					"Maven settings decryption failed. Some Maven repositories may be inaccessible");
 			// Continue - the encrypted credentials may not be used
 		}
 		return new MavenSettings(settings, decrypted);
@@ -72,8 +73,8 @@ public class MavenSettingsReader {
 					.getEffectiveSettings();
 		}
 		catch (SettingsBuildingException ex) {
-			throw new IllegalStateException("Failed to build settings from "
-					+ settingsFile, ex);
+			throw new IllegalStateException(
+					"Failed to build settings from " + settingsFile, ex);
 		}
 	}
 
@@ -99,8 +100,8 @@ public class MavenSettingsReader {
 			field.set(target, value);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Failed to set field '" + fieldName
-					+ "' on '" + target + "'", ex);
+			throw new IllegalStateException(
+					"Failed to set field '" + fieldName + "' on '" + target + "'", ex);
 		}
 	}
 

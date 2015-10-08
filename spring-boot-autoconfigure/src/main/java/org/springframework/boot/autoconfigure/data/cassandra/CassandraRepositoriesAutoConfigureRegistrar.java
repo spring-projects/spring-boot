@@ -31,8 +31,8 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Eddú Meléndez
  * @since 1.3.0
  */
-class CassandraRepositoriesAutoConfigureRegistrar extends
-		AbstractRepositoryConfigurationSourceSupport {
+class CassandraRepositoriesAutoConfigureRegistrar
+		extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

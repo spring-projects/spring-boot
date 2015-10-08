@@ -89,7 +89,8 @@ public class MetadataStore {
 		catch (JSONException ex) {
 			throw new InvalidConfigurationMetadataException(
 					"Invalid additional meta-data in '" + METADATA_PATH + "': "
-							+ ex.getMessage(), Diagnostic.Kind.ERROR);
+							+ ex.getMessage(),
+					Diagnostic.Kind.ERROR);
 		}
 		finally {
 			in.close();

@@ -63,9 +63,8 @@ public class SampleOAuth2SsoApplicationTests {
 
 	@Test
 	public void everythingIsSecuredByDefault() throws Exception {
-		this.mvc.perform(get("/"))
-				.andExpect(status().isFound())
-				.andExpect(header().string("location", containsString("localhost/login")));
+		this.mvc.perform(get("/")).andExpect(status().isFound()).andExpect(
+				header().string("location", containsString("localhost/login")));
 	}
 
 }

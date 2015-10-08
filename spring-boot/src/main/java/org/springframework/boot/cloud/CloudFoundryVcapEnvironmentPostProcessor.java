@@ -88,7 +88,8 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
+public class CloudFoundryVcapEnvironmentPostProcessor
+		implements EnvironmentPostProcessor, Ordered {
 
 	private static final Log logger = LogFactory
 			.getLog(CloudFoundryVcapEnvironmentPostProcessor.class);
@@ -121,8 +122,8 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 			addWithPrefix(properties, getPropertiesFromServices(environment),
 					"vcap.services.");
 			MutablePropertySources propertySources = environment.getPropertySources();
-			if (propertySources
-					.contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
+			if (propertySources.contains(
+					CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
 				propertySources.addAfter(
 						CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
 						new PropertiesPropertySource("vcap", properties));

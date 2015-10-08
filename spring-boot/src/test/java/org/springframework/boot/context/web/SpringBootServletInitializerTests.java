@@ -117,8 +117,8 @@ public class SpringBootServletInitializerTests {
 
 	}
 
-	private class CustomSpringBootServletInitializer extends
-			MockSpringBootServletInitializer {
+	private class CustomSpringBootServletInitializer
+			extends MockSpringBootServletInitializer {
 
 		private final CustomSpringApplicationBuilder applicationBuilder = new CustomSpringApplicationBuilder();
 
@@ -128,7 +128,8 @@ public class SpringBootServletInitializerTests {
 		}
 
 		@Override
-		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		protected SpringApplicationBuilder configure(
+				SpringApplicationBuilder application) {
 			return application.sources(Config.class);
 		}
 	}

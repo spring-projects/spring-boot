@@ -33,6 +33,7 @@ final class CacheConfigurations {
 	}
 
 	private static final Map<CacheType, Class<?>> MAPPINGS;
+
 	static {
 		Map<CacheType, Class<?>> mappings = new HashMap<CacheType, Class<?>>();
 		mappings.put(CacheType.GENERIC, GenericCacheConfiguration.class);
@@ -59,8 +60,8 @@ final class CacheConfigurations {
 				return entry.getKey();
 			}
 		}
-		throw new IllegalStateException("Unknown configuration class "
-				+ configurationClassName);
+		throw new IllegalStateException(
+				"Unknown configuration class " + configurationClassName);
 	}
 
 }

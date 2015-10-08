@@ -79,8 +79,8 @@ public class ApplicationTemp {
 				byte[] hash = generateHash(this.sourceClass);
 				this.folder = new File(getTempDirectory(), toHexString(hash));
 				this.folder.mkdirs();
-				Assert.state(this.folder.exists(), "Unable to create temp folder "
-						+ this.folder);
+				Assert.state(this.folder.exists(),
+						"Unable to create temp folder " + this.folder);
 			}
 		}
 		return this.folder;

@@ -170,8 +170,7 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void customFlywayMigrationStrategy() throws Exception {
 		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
-				FlywayAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				MockFlywayMigrationStrategy.class);
 		assertNotNull(this.context.getBean(Flyway.class));
 		this.context.getBean(MockFlywayMigrationStrategy.class).assertCalled();
@@ -248,7 +247,8 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Component
-	protected static class MockFlywayMigrationStrategy implements FlywayMigrationStrategy {
+	protected static class MockFlywayMigrationStrategy
+			implements FlywayMigrationStrategy {
 
 		private boolean called = false;
 

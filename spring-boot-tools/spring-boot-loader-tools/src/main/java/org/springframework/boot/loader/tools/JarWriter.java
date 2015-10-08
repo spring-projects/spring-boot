@@ -76,8 +76,8 @@ public class JarWriter {
 	 * @throws IOException if the file cannot be opened
 	 * @throws FileNotFoundException if the file cannot be found
 	 */
-	public JarWriter(File file, LaunchScript launchScript) throws FileNotFoundException,
-			IOException {
+	public JarWriter(File file, LaunchScript launchScript)
+			throws FileNotFoundException, IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		if (launchScript != null) {
 			fileOutputStream.write(launchScript.toByteArray());

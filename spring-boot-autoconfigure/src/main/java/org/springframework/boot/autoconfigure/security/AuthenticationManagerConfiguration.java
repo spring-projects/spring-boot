@@ -152,7 +152,8 @@ public class AuthenticationManagerConfiguration {
 
 		private final SecurityProperties securityProperties;
 
-		DefaultInMemoryUserDetailsManagerConfigurer(SecurityProperties securityProperties) {
+		DefaultInMemoryUserDetailsManagerConfigurer(
+				SecurityProperties securityProperties) {
 			this.securityProperties = securityProperties;
 		}
 

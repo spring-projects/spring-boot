@@ -61,6 +61,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private final GaugeService gaugeService;
 
 	private static final Set<PatternReplacer> STATUS_REPLACERS;
+
 	static {
 		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
 		replacements.add(new PatternReplacer("[{}]", 0, "-"));
@@ -72,6 +73,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	}
 
 	private static final Set<PatternReplacer> KEY_REPLACERS;
+
 	static {
 		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
 		replacements.add(new PatternReplacer("/", Pattern.LITERAL, "."));
@@ -217,8 +219,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 		}
 
 		public String apply(String input) {
-			return this.pattern.matcher(input).replaceAll(
-					Matcher.quoteReplacement(this.replacement));
+			return this.pattern.matcher(input)
+					.replaceAll(Matcher.quoteReplacement(this.replacement));
 		}
 
 	}

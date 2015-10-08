@@ -144,8 +144,8 @@ public class PublicMetricsAutoConfiguration {
 		@ConditionalOnMissingBean
 		public MetricReaderPublicMetrics springIntegrationPublicMetrics(
 				IntegrationMBeanExporter exporter) {
-			return new MetricReaderPublicMetrics(new SpringIntegrationMetricReader(
-					exporter));
+			return new MetricReaderPublicMetrics(
+					new SpringIntegrationMetricReader(exporter));
 		}
 
 	}

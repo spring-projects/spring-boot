@@ -55,8 +55,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	};
 
-	private final JavaLoggingSystem loggingSystem = new JavaLoggingSystem(getClass()
-			.getClassLoader());
+	private final JavaLoggingSystem loggingSystem = new JavaLoggingSystem(
+			getClass().getClassLoader());
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
@@ -120,11 +120,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	public void testSystemPropertyInitializesFormat() throws Exception {
 		System.setProperty("PID", "1234");
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(
-				null,
-				"classpath:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"logging.properties"), null);
+		this.loggingSystem.initialize(null, "classpath:" + ClassUtils
+				.addResourcePathToPackagePath(getClass(), "logging.properties"), null);
 		this.logger.info("Hello world");
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();

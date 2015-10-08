@@ -53,8 +53,8 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 			public Metric<?> modify(Metric<?> current) {
 				if (current != null) {
 					Metric<? extends Number> metric = current;
-					return new Metric<Long>(metricName, metric.increment(amount)
-							.getValue(), timestamp);
+					return new Metric<Long>(metricName,
+							metric.increment(amount).getValue(), timestamp);
 				}
 				else {
 					return new Metric<Long>(metricName, new Long(amount), timestamp);

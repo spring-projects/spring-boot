@@ -41,8 +41,8 @@ public class WebListenerHandlerTests {
 	@Test
 	public void listener() throws IOException {
 		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory().getMetadataReader(TestListener.class
-						.getName()));
+				new SimpleMetadataReaderFactory()
+						.getMetadataReader(TestListener.class.getName()));
 		this.handler.handle(scanned, this.registry);
 		this.registry.getBeanDefinition(TestListener.class.getName());
 	}

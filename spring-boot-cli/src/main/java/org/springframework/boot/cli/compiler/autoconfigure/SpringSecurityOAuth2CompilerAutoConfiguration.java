@@ -30,8 +30,8 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * @author Dave Syer
  * @since 1.3.0
  */
-public class SpringSecurityOAuth2CompilerAutoConfiguration extends
-		CompilerAutoConfiguration {
+public class SpringSecurityOAuth2CompilerAutoConfiguration
+		extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
@@ -48,7 +48,8 @@ public class SpringSecurityOAuth2CompilerAutoConfiguration extends
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addImports("org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso");
+		imports.addImports(
+				"org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso");
 		imports.addStarImports(
 				"org.springframework.security.oauth2.config.annotation.web.configuration",
 				"org.springframework.security.access.prepost");

@@ -73,8 +73,8 @@ import org.springframework.util.StringUtils;
  * @author Marcos Barbero
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
-public class ServerProperties implements EmbeddedServletContainerCustomizer,
-		EnvironmentAware, Ordered {
+public class ServerProperties
+		implements EmbeddedServletContainerCustomizer, EnvironmentAware, Ordered {
 
 	/**
 	 * Server HTTP port.
@@ -735,7 +735,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer,
 
 				@Override
 				public void customize(Context context) {
-					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
+					context.setBackgroundProcessorDelay(
+							Tomcat.this.backgroundProcessorDelay);
 				}
 
 			});
@@ -746,12 +747,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer,
 			String protocolHeader = getProtocolHeader();
 			String remoteIpHeader = getRemoteIpHeader();
 			// For back compatibility the valve is also enabled if protocol-header is set
-			if (StringUtils.hasText(protocolHeader)
-					|| StringUtils.hasText(remoteIpHeader)
+			if (StringUtils.hasText(protocolHeader) || StringUtils.hasText(remoteIpHeader)
 					|| properties.getOrDeduceUseForwardHeaders()) {
 				RemoteIpValve valve = new RemoteIpValve();
-				valve.setProtocolHeader(StringUtils.hasLength(protocolHeader) ? protocolHeader
-						: "X-Forwarded-Proto");
+				valve.setProtocolHeader(StringUtils.hasLength(protocolHeader)
+						? protocolHeader : "X-Forwarded-Proto");
 				if (StringUtils.hasLength(remoteIpHeader)) {
 					valve.setRemoteIpHeader(remoteIpHeader);
 				}
@@ -1085,8 +1085,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer,
 	 * {@link ServletContextInitializer} to apply appropriate parts of the {@link Session}
 	 * configuration.
 	 */
-	private static class SessionConfiguringInitializer implements
-			ServletContextInitializer {
+	private static class SessionConfiguringInitializer
+			implements ServletContextInitializer {
 
 		private final Session session;
 

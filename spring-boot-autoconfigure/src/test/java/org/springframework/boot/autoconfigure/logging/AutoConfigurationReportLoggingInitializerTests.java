@@ -163,8 +163,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
-		ConditionEvaluationReport.get(context.getBeanFactory()).recordExclusions(
-				Arrays.asList("com.foo.Bar"));
+		ConditionEvaluationReport.get(context.getBeanFactory())
+				.recordExclusions(Arrays.asList("com.foo.Bar"));
 		context.refresh();
 		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
 		for (String message : this.debugLog) {

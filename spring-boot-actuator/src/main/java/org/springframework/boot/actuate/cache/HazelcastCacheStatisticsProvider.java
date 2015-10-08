@@ -28,8 +28,8 @@ import com.hazelcast.spring.cache.HazelcastCache;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public class HazelcastCacheStatisticsProvider implements
-		CacheStatisticsProvider<HazelcastCache> {
+public class HazelcastCacheStatisticsProvider
+		implements CacheStatisticsProvider<HazelcastCache> {
 
 	@Override
 	public CacheStatistics getCacheStatistics(CacheManager cacheManager,

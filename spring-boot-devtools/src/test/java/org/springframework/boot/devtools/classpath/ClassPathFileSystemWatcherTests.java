@@ -99,8 +99,8 @@ public class ClassPathFileSystemWatcherTests {
 		public ClassPathFileSystemWatcher watcher() {
 			FileSystemWatcher watcher = new FileSystemWatcher(false, 100, 10);
 			URL[] urls = this.environemnt.getProperty("urls", URL[].class);
-			return new ClassPathFileSystemWatcher(new MockFileSystemWatcherFactory(
-					watcher), restartStrategy(), urls);
+			return new ClassPathFileSystemWatcher(
+					new MockFileSystemWatcherFactory(watcher), restartStrategy(), urls);
 		}
 
 		@Bean
@@ -137,7 +137,8 @@ public class ClassPathFileSystemWatcherTests {
 
 	}
 
-	private static class MockFileSystemWatcherFactory implements FileSystemWatcherFactory {
+	private static class MockFileSystemWatcherFactory
+			implements FileSystemWatcherFactory {
 
 		private final FileSystemWatcher watcher;
 

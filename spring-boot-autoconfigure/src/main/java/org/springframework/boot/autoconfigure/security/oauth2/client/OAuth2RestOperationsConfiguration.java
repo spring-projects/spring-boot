@@ -72,7 +72,8 @@ public class OAuth2RestOperationsConfiguration {
 	@Primary
 	public OAuth2RestTemplate oauth2RestTemplate(OAuth2ClientContext oauth2ClientContext,
 			OAuth2ProtectedResourceDetails details) {
-		OAuth2RestTemplate template = new OAuth2RestTemplate(details, oauth2ClientContext);
+		OAuth2RestTemplate template = new OAuth2RestTemplate(details,
+				oauth2ClientContext);
 		return template;
 	}
 

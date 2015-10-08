@@ -75,8 +75,8 @@ public class DelayedLiveReloadTriggerTests {
 		MockitoAnnotations.initMocks(this);
 		given(this.errorRequest.execute()).willReturn(this.errorResponse);
 		given(this.okRequest.execute()).willReturn(this.okResponse);
-		given(this.errorResponse.getStatusCode()).willReturn(
-				HttpStatus.INTERNAL_SERVER_ERROR);
+		given(this.errorResponse.getStatusCode())
+				.willReturn(HttpStatus.INTERNAL_SERVER_ERROR);
 		given(this.okResponse.getStatusCode()).willReturn(HttpStatus.OK);
 		this.trigger = new DelayedLiveReloadTrigger(this.liveReloadServer,
 				this.requestFactory, URL);
@@ -112,8 +112,9 @@ public class DelayedLiveReloadTriggerTests {
 
 	@Test
 	public void triggerReloadOnStatus() throws Exception {
-		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(
-				new IOException()).willReturn(this.errorRequest, this.okRequest);
+		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET))
+				.willThrow(new IOException())
+				.willReturn(this.errorRequest, this.okRequest);
 		long startTime = System.currentTimeMillis();
 		this.trigger.setTimings(10, 200, 30000);
 		this.trigger.run();
@@ -123,8 +124,8 @@ public class DelayedLiveReloadTriggerTests {
 
 	@Test
 	public void timeout() throws Exception {
-		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(
-				new IOException());
+		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET))
+				.willThrow(new IOException());
 		this.trigger.setTimings(10, 0, 10);
 		this.trigger.run();
 		verify(this.liveReloadServer, never()).triggerReload();

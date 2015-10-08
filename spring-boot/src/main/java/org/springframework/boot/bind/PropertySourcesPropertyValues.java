@@ -199,8 +199,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 					COLLECTION_PROPERTY.matcher(propertyName).replaceAll("[]"), source);
 			if (collectionOwner == null || collectionOwner == source) {
 				this.collectionOwners.get(this.collectionOwners);
-				PropertyValue propertyValue = new OriginCapablePropertyValue(
-						propertyName, value, propertyName, source);
+				PropertyValue propertyValue = new OriginCapablePropertyValue(propertyName,
+						value, propertyName, source);
 				this.propertyValues.put(propertyName, propertyValue);
 				return propertyValue;
 			}

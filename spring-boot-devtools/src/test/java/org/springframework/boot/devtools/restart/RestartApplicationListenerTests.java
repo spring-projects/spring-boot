@@ -85,7 +85,8 @@ public class RestartApplicationListenerTests {
 		Restarter.clearInstance();
 		RestartApplicationListener listener = new RestartApplicationListener();
 		SpringApplication application = new SpringApplication();
-		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
+		ConfigurableApplicationContext context = mock(
+				ConfigurableApplicationContext.class);
 		listener.onApplicationEvent(new ApplicationStartedEvent(application, ARGS));
 		assertThat(Restarter.getInstance(), not(nullValue()));
 		assertThat(Restarter.getInstance().isFinished(), equalTo(false));
@@ -94,8 +95,8 @@ public class RestartApplicationListenerTests {
 					context, new RuntimeException()));
 		}
 		else {
-			listener.onApplicationEvent(new ApplicationReadyEvent(application, ARGS,
-					context));
+			listener.onApplicationEvent(
+					new ApplicationReadyEvent(application, ARGS, context));
 		}
 	}
 

@@ -58,13 +58,14 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 		this.endpoints.addAll(existing);
 		this.customTypes = findEndpointClasses(existing);
 		@SuppressWarnings("rawtypes")
-		Collection<Endpoint> delegates = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-				this.applicationContext, Endpoint.class).values();
+		Collection<Endpoint> delegates = BeanFactoryUtils
+				.beansOfTypeIncludingAncestors(this.applicationContext, Endpoint.class)
+				.values();
 		for (Endpoint<?> endpoint : delegates) {
 			if (isGenericEndpoint(endpoint.getClass()) && endpoint.isEnabled()) {
 				EndpointMvcAdapter adapter = new EndpointMvcAdapter(endpoint);
-				String path = this.applicationContext.getEnvironment().getProperty(
-						"endpoints." + endpoint.getId() + ".path");
+				String path = this.applicationContext.getEnvironment()
+						.getProperty("endpoints." + endpoint.getId() + ".path");
 				if (path != null) {
 					adapter.setPath(path);
 				}

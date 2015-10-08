@@ -87,8 +87,8 @@ public class CacheAutoConfiguration {
 			for (String name : beanFactory.getBeanNamesForType(CacheAspectSupport.class,
 					false, false)) {
 				BeanDefinition definition = beanFactory.getBeanDefinition(name);
-				definition.setDependsOn(append(definition.getDependsOn(),
-						VALIDATOR_BEAN_NAME));
+				definition.setDependsOn(
+						append(definition.getDependsOn(), VALIDATOR_BEAN_NAME));
 			}
 		}
 
@@ -116,9 +116,10 @@ public class CacheAutoConfiguration {
 
 		@PostConstruct
 		public void checkHasCacheManager() {
-			Assert.notNull(this.cacheManager, "No cache manager could "
-					+ "be auto-configured, check your configuration (caching "
-					+ "type is '" + this.cacheProperties.getType() + "')");
+			Assert.notNull(this.cacheManager,
+					"No cache manager could "
+							+ "be auto-configured, check your configuration (caching "
+							+ "type is '" + this.cacheProperties.getType() + "')");
 		}
 	}
 

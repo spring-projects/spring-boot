@@ -325,7 +325,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @return a {@link JarFile} for the entry
 	 * @throws IOException if the nested jar file cannot be read
 	 */
-	public synchronized JarFile getNestedJarFile(final ZipEntry entry) throws IOException {
+	public synchronized JarFile getNestedJarFile(final ZipEntry entry)
+			throws IOException {
 		return getNestedJarFile(getContainedEntry(entry).getSource());
 	}
 

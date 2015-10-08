@@ -36,8 +36,8 @@ class DescriptionExtractor {
 		if (dot != -1) {
 			BreakIterator breakIterator = BreakIterator.getSentenceInstance(Locale.US);
 			breakIterator.setText(description);
-			String text = description.substring(breakIterator.first(),
-					breakIterator.next()).trim();
+			String text = description
+					.substring(breakIterator.first(), breakIterator.next()).trim();
 			return removeSpaceBetweenLine(text);
 		}
 		else {

@@ -164,7 +164,8 @@ public abstract class AstUtils {
 		return null;
 	}
 
-	private static List<ExpressionStatement> getExpressionStatements(BlockStatement block) {
+	private static List<ExpressionStatement> getExpressionStatements(
+			BlockStatement block) {
 		ArrayList<ExpressionStatement> statements = new ArrayList<ExpressionStatement>();
 		for (Statement statement : block.getStatements()) {
 			if (statement instanceof ExpressionStatement) {

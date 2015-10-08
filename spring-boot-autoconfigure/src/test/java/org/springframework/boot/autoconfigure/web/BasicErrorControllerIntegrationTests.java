@@ -84,8 +84,8 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClient() throws Exception {
 		load();
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				createUrl("?trace=true"), Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
 		assertFalse("trace parameter should not be set",
@@ -96,19 +96,20 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClientTraceParamStacktrace() throws Exception {
 		load("--server.error.include-stacktrace=on-trace-param");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				createUrl("?trace=true"), Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
-		assertTrue("trace parameter should be set", entity.getBody().containsKey("trace"));
+		assertTrue("trace parameter should be set",
+				entity.getBody().containsKey("trace"));
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClientNoStacktrace() throws Exception {
 		load("--server.error.include-stacktrace=never");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				createUrl("?trace=true"), Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
 		assertFalse("trace parameter should not be set",
@@ -119,19 +120,20 @@ public class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	public void testErrorForMachineClientAlwaysStacktrace() throws Exception {
 		load("--server.error.include-stacktrace=always");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				createUrl("?trace=false"), Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("?trace=false"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "" + "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
-		assertTrue("trace parameter should be set", entity.getBody().containsKey("trace"));
+		assertTrue("trace parameter should be set",
+				entity.getBody().containsKey("trace"));
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testErrorForAnnotatedException() throws Exception {
 		load();
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				createUrl("/annotated"), Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("/annotated"), Map.class);
 		assertErrorAttributes(entity.getBody(), "400", "Bad Request",
 				TestConfiguration.Errors.ExpectedException.class, "Expected!",
 				"/annotated");
@@ -140,8 +142,8 @@ public class BasicErrorControllerIntegrationTests {
 	@Test
 	public void testErrorForAnnotatedNoReasonException() throws Exception {
 		load();
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				createUrl("/annotatedNoReason"), Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate()
+				.getForEntity(createUrl("/annotatedNoReason"), Map.class);
 		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
 				TestConfiguration.Errors.NoReasonExpectedException.class,
 				"Expected message", "/annotatedNoReason");
@@ -201,7 +203,7 @@ public class BasicErrorControllerIntegrationTests {
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model,
 						HttpServletRequest request, HttpServletResponse response)
-						throws Exception {
+								throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
 			};

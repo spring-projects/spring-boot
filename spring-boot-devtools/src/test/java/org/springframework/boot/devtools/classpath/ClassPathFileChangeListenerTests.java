@@ -80,7 +80,8 @@ public class ClassPathFileChangeListenerTests {
 	public void restartStrategyMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("RestartStrategy must not be null");
-		new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher);
+		new ClassPathFileChangeListener(this.eventPublisher, null,
+				this.fileSystemWatcher);
 	}
 
 	@Test

@@ -65,8 +65,8 @@ public class EnvironmentMvcEndpointTests {
 	public void setUp() {
 		this.context.getBean(EnvironmentEndpoint.class).setEnabled(true);
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		EnvironmentTestUtils.addEnvironment(
-				(ConfigurableApplicationContext) this.context, "foo:bar", "fool:baz");
+		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context,
+				"foo:bar", "fool:baz");
 	}
 
 	@Test

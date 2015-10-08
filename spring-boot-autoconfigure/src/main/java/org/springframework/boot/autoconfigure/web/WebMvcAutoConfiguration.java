@@ -180,8 +180,8 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class)
 		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
-			resolver.setContentNegotiationManager(beanFactory
-					.getBean(ContentNegotiationManager.class));
+			resolver.setContentNegotiationManager(
+					beanFactory.getBean(ContentNegotiationManager.class));
 			// ContentNegotiatingViewResolver uses all the other view resolvers to locate
 			// a view so it should have a high precedence
 			resolver.setOrder(Ordered.HIGHEST_PRECEDENCE);
@@ -205,8 +205,8 @@ public class WebMvcAutoConfiguration {
 		public MessageCodesResolver getMessageCodesResolver() {
 			if (this.mvcProperties.getMessageCodesResolverFormat() != null) {
 				DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
-				resolver.setMessageCodeFormatter(this.mvcProperties
-						.getMessageCodesResolverFormat());
+				resolver.setMessageCodeFormatter(
+						this.mvcProperties.getMessageCodesResolverFormat());
 				return resolver;
 			}
 			return null;
@@ -242,8 +242,7 @@ public class WebMvcAutoConfiguration {
 						.setCachePeriod(cachePeriod));
 			}
 			if (!registry.hasMappingForPattern("/**")) {
-				registerResourceChain(registry
-						.addResourceHandler("/**")
+				registerResourceChain(registry.addResourceHandler("/**")
 						.addResourceLocations(
 								this.resourceProperties.getStaticLocations())
 						.setCachePeriod(cachePeriod));

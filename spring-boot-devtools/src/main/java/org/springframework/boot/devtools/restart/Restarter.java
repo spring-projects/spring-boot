@@ -282,8 +282,8 @@ public class Restarter {
 		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles,
 				this.logger);
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Starting application " + this.mainClassName
-					+ " with URLs " + Arrays.asList(urls));
+			this.logger.debug("Starting application " + this.mainClassName + " with URLs "
+					+ Arrays.asList(urls));
 		}
 		return relaunch(classLoader);
 	}
@@ -374,8 +374,8 @@ public class Restarter {
 			Map<?, ?> map = ((Map<?, ?>) instance);
 			for (Iterator<?> iterator = map.keySet().iterator(); iterator.hasNext();) {
 				Object value = iterator.next();
-				if (value instanceof Class
-						&& ((Class<?>) value).getClassLoader() instanceof RestartClassLoader) {
+				if (value instanceof Class && ((Class<?>) value)
+						.getClassLoader() instanceof RestartClassLoader) {
 					iterator.remove();
 				}
 

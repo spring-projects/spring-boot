@@ -58,8 +58,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle,
-		ApplicationContextAware {
+public class EndpointMBeanExporter extends MBeanExporter
+		implements SmartLifecycle, ApplicationContextAware {
 
 	/**
 	 * The default JMX domain.
@@ -139,7 +139,8 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 	}
 
 	@Override
-	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
+	public void setEnsureUniqueRuntimeObjectNames(
+			boolean ensureUniqueRuntimeObjectNames) {
 		super.setEnsureUniqueRuntimeObjectNames(ensureUniqueRuntimeObjectNames);
 		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
 	}
@@ -209,9 +210,8 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 						+ ObjectUtils.getIdentityHexString(this.applicationContext));
 			}
 			if (this.ensureUniqueRuntimeObjectNames) {
-				builder.append(",identity="
-						+ ObjectUtils.getIdentityHexString(((EndpointMBean) bean)
-								.getEndpoint()));
+				builder.append(",identity=" + ObjectUtils
+						.getIdentityHexString(((EndpointMBean) bean).getEndpoint()));
 			}
 			builder.append(getStaticNames());
 			return ObjectNameManager.getInstance(builder.toString());
