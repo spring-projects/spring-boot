@@ -44,8 +44,8 @@ import org.springframework.boot.loader.util.AsciiBytes;
  */
 public class ExplodedArchive extends Archive {
 
-	private static final Set<String> SKIPPED_NAMES = new HashSet<String>(Arrays.asList(
-			".", ".."));
+	private static final Set<String> SKIPPED_NAMES = new HashSet<String>(
+			Arrays.asList(".", ".."));
 
 	private static final AsciiBytes MANIFEST_ENTRY_NAME = new AsciiBytes(
 			"META-INF/MANIFEST.MF");
@@ -152,7 +152,8 @@ public class ExplodedArchive extends Archive {
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		File file = ((FileEntry) entry).getFile();
-		return (file.isDirectory() ? new ExplodedArchive(file) : new JarFileArchive(file));
+		return (file.isDirectory() ? new ExplodedArchive(file)
+				: new JarFileArchive(file));
 	}
 
 	@Override
@@ -201,8 +202,8 @@ public class ExplodedArchive extends Archive {
 
 		@Override
 		protected URLConnection openConnection(URL url) throws IOException {
-			String name = url.getPath().substring(
-					ExplodedArchive.this.root.toURI().getPath().length());
+			String name = url.getPath()
+					.substring(ExplodedArchive.this.root.toURI().getPath().length());
 			if (ExplodedArchive.this.entries.containsKey(new AsciiBytes(name))) {
 				return new URL(url.toString()).openConnection();
 			}

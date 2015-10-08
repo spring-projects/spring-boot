@@ -89,8 +89,8 @@ class JCacheCacheConfiguration {
 	}
 
 	private CacheManager createCacheManager() throws IOException {
-		CachingProvider cachingProvider = getCachingProvider(this.cacheProperties
-				.getJcache().getProvider());
+		CachingProvider cachingProvider = getCachingProvider(
+				this.cacheProperties.getJcache().getProvider());
 		Resource configLocation = this.cacheProperties
 				.resolveConfigLocation(this.cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
@@ -112,8 +112,8 @@ class JCacheCacheConfiguration {
 			throws IOException {
 		Properties properties = new Properties();
 		// Hazelcast does not use the URI as a mean to specify a custom config.
-		properties.setProperty("hazelcast.config.location", configLocation.getURI()
-				.toString());
+		properties.setProperty("hazelcast.config.location",
+				configLocation.getURI().toString());
 		return properties;
 	}
 
@@ -178,8 +178,8 @@ class JCacheCacheConfiguration {
 			}
 			providers.next();
 			if (providers.hasNext()) {
-				return ConditionOutcome.noMatch("Multiple default JSR-107 compliant "
-						+ "providers found");
+				return ConditionOutcome.noMatch(
+						"Multiple default JSR-107 compliant " + "providers found");
 
 			}
 			return ConditionOutcome.match("Default JSR-107 compliant provider found.");

@@ -48,24 +48,20 @@ public class MustacheStandaloneIntegrationTests {
 
 	@Test
 	public void directCompilation() throws Exception {
-		assertEquals(
-				"Hello: World",
-				this.compiler.compile("Hello: {{world}}").execute(
-						Collections.singletonMap("world", "World")));
+		assertEquals("Hello: World", this.compiler.compile("Hello: {{world}}")
+				.execute(Collections.singletonMap("world", "World")));
 	}
 
 	@Test
 	public void environmentCollectorCompoundKey() throws Exception {
-		assertEquals("Hello: Heaven", this.compiler.compile("Hello: {{env.foo}}")
-				.execute(new Object()));
+		assertEquals("Hello: Heaven",
+				this.compiler.compile("Hello: {{env.foo}}").execute(new Object()));
 	}
 
 	@Test
 	public void environmentCollectorCompoundKeyStandard() throws Exception {
-		assertEquals(
-				"Hello: Heaven",
-				this.compiler.standardsMode(true).compile("Hello: {{env.foo}}")
-						.execute(new Object()));
+		assertEquals("Hello: Heaven", this.compiler.standardsMode(true)
+				.compile("Hello: {{env.foo}}").execute(new Object()));
 	}
 
 	@Test
@@ -75,7 +71,8 @@ public class MustacheStandaloneIntegrationTests {
 	}
 
 	@Configuration
-	@Import({ MustacheAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	@Import({ MustacheAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	protected static class Application {
 
 	}

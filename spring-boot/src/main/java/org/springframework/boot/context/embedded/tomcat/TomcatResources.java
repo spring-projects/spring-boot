@@ -142,8 +142,8 @@ abstract class TomcatResources {
 				try {
 					Class<?> fileDirContextClass = Class
 							.forName("org.apache.naming.resources.FileDirContext");
-					Method setDocBaseMethod = ReflectionUtils.findMethod(
-							fileDirContextClass, "setDocBase", String.class);
+					Method setDocBaseMethod = ReflectionUtils
+							.findMethod(fileDirContextClass, "setDocBase", String.class);
 					Object fileDirContext = fileDirContextClass.newInstance();
 					setDocBaseMethod.invoke(fileDirContext, dir);
 					Method addResourcesDirContextMethod = ReflectionUtils.findMethod(

@@ -64,8 +64,8 @@ class JacksonHttpMessageConvertersConfiguration {
 		@ConditionalOnMissingBean
 		public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(
 				Jackson2ObjectMapperBuilder builder) {
-			return new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(
-					true).build());
+			return new MappingJackson2XmlHttpMessageConverter(
+					builder.createXmlMapper(true).build());
 		}
 
 	}

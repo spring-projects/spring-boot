@@ -124,12 +124,12 @@ public class OAuth2AutoConfigurationTests {
 		ClientDetails config = this.context.getBean(BaseClientDetails.class);
 		AuthorizationEndpoint endpoint = this.context
 				.getBean(AuthorizationEndpoint.class);
-		UserApprovalHandler handler = (UserApprovalHandler) ReflectionTestUtils.getField(
-				endpoint, "userApprovalHandler");
+		UserApprovalHandler handler = (UserApprovalHandler) ReflectionTestUtils
+				.getField(endpoint, "userApprovalHandler");
 		ClientDetailsService clientDetailsService = this.context
 				.getBean(ClientDetailsService.class);
-		ClientDetails clientDetails = clientDetailsService.loadClientByClientId(config
-				.getClientId());
+		ClientDetails clientDetails = clientDetailsService
+				.loadClientByClientId(config.getClientId());
 		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService), equalTo(true));
 		assertThat(AopUtils.getTargetClass(clientDetailsService).getName(),
 				is(equalTo(InMemoryClientDetailsService.class.getName())));
@@ -279,8 +279,8 @@ public class OAuth2AutoConfigurationTests {
 	@Test
 	public void testMethodSecurityBackingOff() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(CustomMethodSecurity.class,
-				TestSecurityConfiguration.class, MinimalSecureWebApplication.class);
+		this.context.register(CustomMethodSecurity.class, TestSecurityConfiguration.class,
+				MinimalSecureWebApplication.class);
 		this.context.refresh();
 		DelegatingMethodSecurityMetadataSource source = this.context
 				.getBean(DelegatingMethodSecurityMetadataSource.class);
@@ -319,12 +319,12 @@ public class OAuth2AutoConfigurationTests {
 		assertThat(scope, equalTo("\"read\""));
 		// Now we should be able to see that endpoint.
 		headers.set("Authorization", "BEARER " + authorizationToken);
-		ResponseEntity<String> securedResponse = rest.exchange(new RequestEntity<Void>(
-				headers, HttpMethod.GET, URI.create(baseUrl + "/securedFind")),
-				String.class);
+		ResponseEntity<String> securedResponse = rest
+				.exchange(new RequestEntity<Void>(headers, HttpMethod.GET,
+						URI.create(baseUrl + "/securedFind")), String.class);
 		assertThat(securedResponse.getStatusCode(), equalTo(HttpStatus.OK));
-		assertThat(securedResponse.getBody(), equalTo("You reached an endpoint "
-				+ "secured by Spring Security OAuth2"));
+		assertThat(securedResponse.getBody(), equalTo(
+				"You reached an endpoint " + "secured by Spring Security OAuth2"));
 		ResponseEntity<String> entity = rest.exchange(new RequestEntity<Void>(headers,
 				HttpMethod.POST, URI.create(baseUrl + "/securedSave")), String.class);
 		assertThat(entity.getStatusCode(), equalTo(finalStatus));
@@ -332,8 +332,8 @@ public class OAuth2AutoConfigurationTests {
 
 	private HttpHeaders getHeaders(ClientDetails config) {
 		HttpHeaders headers = new HttpHeaders();
-		String token = new String(Base64.encode((config.getClientId() + ":" + config
-				.getClientSecret()).getBytes()));
+		String token = new String(Base64.encode(
+				(config.getClientId() + ":" + config.getClientSecret()).getBytes()));
 		headers.set("Authorization", "Basic " + token);
 		return headers;
 	}
@@ -349,8 +349,8 @@ public class OAuth2AutoConfigurationTests {
 
 	private void assertEndpointUnauthorized(String baseUrl, RestTemplate rest) {
 		URI uri = URI.create(baseUrl + "/secured");
-		ResponseEntity<String> entity = rest.exchange(new RequestEntity<Void>(
-				HttpMethod.GET, uri), String.class);
+		ResponseEntity<String> entity = rest
+				.exchange(new RequestEntity<Void>(HttpMethod.GET, uri), String.class);
 		assertThat(entity.getStatusCode(), equalTo(HttpStatus.UNAUTHORIZED));
 	}
 
@@ -368,7 +368,8 @@ public class OAuth2AutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class TestSecurityConfiguration extends WebSecurityConfigurerAdapter {
+	protected static class TestSecurityConfiguration
+			extends WebSecurityConfigurerAdapter {
 
 		@Override
 		@Bean
@@ -397,8 +398,8 @@ public class OAuth2AutoConfigurationTests {
 	@EnableAuthorizationServer
 	@EnableResourceServer
 	@EnableGlobalMethodSecurity(prePostEnabled = true)
-	protected static class AuthorizationAndResourceServerConfiguration extends
-			TestSecurityConfiguration {
+	protected static class AuthorizationAndResourceServerConfiguration
+			extends TestSecurityConfiguration {
 
 	}
 
@@ -420,8 +421,8 @@ public class OAuth2AutoConfigurationTests {
 
 	@Configuration
 	@EnableAuthorizationServer
-	protected static class AuthorizationServerConfiguration extends
-			TestSecurityConfiguration {
+	protected static class AuthorizationServerConfiguration
+			extends TestSecurityConfiguration {
 
 	}
 
@@ -483,8 +484,8 @@ public class OAuth2AutoConfigurationTests {
 
 	@Configuration
 	@EnableAuthorizationServer
-	protected static class CustomAuthorizationServer extends
-			AuthorizationServerConfigurerAdapter {
+	protected static class CustomAuthorizationServer
+			extends AuthorizationServerConfigurerAdapter {
 
 		@Autowired
 		private AuthenticationManager authenticationManager;
@@ -512,15 +513,16 @@ public class OAuth2AutoConfigurationTests {
 		@Override
 		public void configure(AuthorizationServerEndpointsConfigurer endpoints)
 				throws Exception {
-			endpoints.tokenStore(tokenStore()).authenticationManager(
-					this.authenticationManager);
+			endpoints.tokenStore(tokenStore())
+					.authenticationManager(this.authenticationManager);
 		}
 
 	}
 
 	@Configuration
 	@EnableGlobalMethodSecurity(prePostEnabled = true)
-	protected static class CustomMethodSecurity extends GlobalMethodSecurityConfiguration {
+	protected static class CustomMethodSecurity
+			extends GlobalMethodSecurityConfiguration {
 
 		@Override
 		protected MethodSecurityExpressionHandler createExpressionHandler() {

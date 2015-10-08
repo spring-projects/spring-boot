@@ -78,9 +78,9 @@ public class WebSocketMessagingAutoConfigurationTests {
 
 	@Before
 	public void setup() {
-		List<Transport> transports = Arrays.asList(new WebSocketTransport(
-				new StandardWebSocketClient()), new RestTemplateXhrTransport(
-				new RestTemplate()));
+		List<Transport> transports = Arrays.asList(
+				new WebSocketTransport(new StandardWebSocketClient()),
+				new RestTemplateXhrTransport(new RestTemplate()));
 		this.sockJsClient = new SockJsClient(transports);
 	}
 
@@ -104,7 +104,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 		StompSessionHandler handler = new StompSessionHandlerAdapter() {
 
 			@Override
-			public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
+			public void afterConnected(StompSession session,
+					StompHeaders connectedHeaders) {
 				session.subscribe("/app/data", new StompFrameHandler() {
 
 					@Override
@@ -142,8 +143,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 		};
 
 		stompClient.setMessageConverter(new SimpleMessageConverter());
-		stompClient.connect("ws://localhost:{port}/messaging", handler, this.context
-				.getEnvironment().getProperty("local.server.port"));
+		stompClient.connect("ws://localhost:{port}/messaging", handler,
+				this.context.getEnvironment().getProperty("local.server.port"));
 
 		if (!latch.await(30, TimeUnit.SECONDS)) {
 			if (failure.get() != null) {
@@ -166,8 +167,8 @@ public class WebSocketMessagingAutoConfigurationTests {
 			ServerPropertiesAutoConfiguration.class,
 			WebSocketMessagingAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class })
-	static class WebSocketMessagingConfiguration extends
-			AbstractWebSocketMessageBrokerConfigurer {
+	static class WebSocketMessagingConfiguration
+			extends AbstractWebSocketMessageBrokerConfigurer {
 
 		@Override
 		public void registerStompEndpoints(StompEndpointRegistry registry) {

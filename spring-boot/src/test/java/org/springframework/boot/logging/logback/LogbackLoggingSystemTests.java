@@ -275,8 +275,8 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		Matcher<String> expectedOutput = containsString("[junit-");
 		this.output.expect(expectedOutput);
 		this.logger.warn("Expected exception", new RuntimeException("Expected"));
-		String fileContents = FileCopyUtils.copyToString(new FileReader(new File(tmpDir()
-				+ "/spring.log")));
+		String fileContents = FileCopyUtils
+				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
 		assertThat(fileContents, is(expectedOutput));
 	}
 
@@ -285,13 +285,13 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null,
 				getLogFile(null, tmpDir()));
-		Matcher<String> expectedOutput = containsString("Wrapped by: "
-				+ "java.lang.RuntimeException: Expected");
+		Matcher<String> expectedOutput = containsString(
+				"Wrapped by: " + "java.lang.RuntimeException: Expected");
 		this.output.expect(expectedOutput);
-		this.logger.warn("Expected exception", new RuntimeException("Expected",
-				new RuntimeException("Cause")));
-		String fileContents = FileCopyUtils.copyToString(new FileReader(new File(tmpDir()
-				+ "/spring.log")));
+		this.logger.warn("Expected exception",
+				new RuntimeException("Expected", new RuntimeException("Cause")));
+		String fileContents = FileCopyUtils
+				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
 		assertThat(fileContents, is(expectedOutput));
 	}
 
@@ -307,10 +307,10 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 					containsString("java.lang.RuntimeException: Expected"),
 					not(containsString("Wrapped by:")));
 			this.output.expect(expectedOutput);
-			this.logger.warn("Expected exception", new RuntimeException("Expected",
-					new RuntimeException("Cause")));
-			String fileContents = FileCopyUtils.copyToString(new FileReader(new File(
-					tmpDir() + "/spring.log")));
+			this.logger.warn("Expected exception",
+					new RuntimeException("Expected", new RuntimeException("Cause")));
+			String fileContents = FileCopyUtils
+					.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
 			assertThat(fileContents, is(expectedOutput));
 		}
 		finally {

@@ -41,8 +41,8 @@ import org.springframework.cache.CacheManager;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache> implements
-		CacheStatisticsProvider<C> {
+public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache>
+		implements CacheStatisticsProvider<C> {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractJmxCacheStatisticsProvider.class);
@@ -81,7 +81,8 @@ public abstract class AbstractJmxCacheStatisticsProvider<C extends Cache> implem
 	 */
 	protected abstract CacheStatistics getCacheStatistics(ObjectName objectName);
 
-	private ObjectName internalGetObjectName(C cache) throws MalformedObjectNameException {
+	private ObjectName internalGetObjectName(C cache)
+			throws MalformedObjectNameException {
 		String cacheName = cache.getName();
 		ObjectNameWrapper value = this.caches.get(cacheName);
 		if (value != null) {

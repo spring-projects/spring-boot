@@ -32,8 +32,8 @@ import liquibase.servicelocator.ServiceLocator;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class LiquibaseServiceLocatorApplicationListener implements
-		ApplicationListener<ApplicationStartedEvent> {
+public class LiquibaseServiceLocatorApplicationListener
+		implements ApplicationListener<ApplicationStartedEvent> {
 
 	static final Log logger = LogFactory
 			.getLog(LiquibaseServiceLocatorApplicationListener.class);

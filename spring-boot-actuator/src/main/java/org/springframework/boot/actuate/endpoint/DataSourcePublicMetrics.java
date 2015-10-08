@@ -84,7 +84,8 @@ public class DataSourcePublicMetrics implements PublicMetrics {
 		return metrics;
 	}
 
-	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name, T value) {
+	private <T extends Number> void addMetric(Set<Metric<?>> metrics, String name,
+			T value) {
 		if (value != null) {
 			metrics.add(new Metric<T>(name, value));
 		}

@@ -30,10 +30,10 @@ public class ManagedDependenciesDelegateTests {
 
 	@Before
 	public void setup() throws Exception {
-		PropertiesFileDependencies root = new PropertiesFileDependencies(getClass()
-				.getResourceAsStream("external.properties"));
-		PropertiesFileDependencies extra = new PropertiesFileDependencies(getClass()
-				.getResourceAsStream("additional-external.properties"));
+		PropertiesFileDependencies root = new PropertiesFileDependencies(
+				getClass().getResourceAsStream("external.properties"));
+		PropertiesFileDependencies extra = new PropertiesFileDependencies(
+				getClass().getResourceAsStream("additional-external.properties"));
 		this.dependencies = new ManagedDependenciesDelegate(root,
 				Collections.<Dependencies> singleton(extra));
 	}

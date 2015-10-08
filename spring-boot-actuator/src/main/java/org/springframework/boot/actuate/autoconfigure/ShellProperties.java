@@ -50,7 +50,8 @@ public class ShellProperties {
 	private boolean defaultAuth = true;
 
 	@Autowired(required = false)
-	private CrshShellProperties[] additionalProperties = new CrshShellProperties[] { new SimpleAuthenticationProperties() };
+	private CrshShellProperties[] additionalProperties = new CrshShellProperties[] {
+			new SimpleAuthenticationProperties() };
 
 	/**
 	 * Scan for changes and update the command if necessary (in seconds).
@@ -215,8 +216,8 @@ public class ShellProperties {
 	/**
 	 * Base class for Auth specific properties.
 	 */
-	public static abstract class CrshShellAuthenticationProperties extends
-			CrshShellProperties {
+	public static abstract class CrshShellAuthenticationProperties
+			extends CrshShellProperties {
 
 	}
 
@@ -325,8 +326,8 @@ public class ShellProperties {
 	 * Auth specific properties for JAAS authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.jaas", ignoreUnknownFields = false)
-	public static class JaasAuthenticationProperties extends
-			CrshShellAuthenticationProperties {
+	public static class JaasAuthenticationProperties
+			extends CrshShellAuthenticationProperties {
 
 		/**
 		 * JAAS domain.
@@ -354,8 +355,8 @@ public class ShellProperties {
 	 * Auth specific properties for key authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.key", ignoreUnknownFields = false)
-	public static class KeyAuthenticationProperties extends
-			CrshShellAuthenticationProperties {
+	public static class KeyAuthenticationProperties
+			extends CrshShellAuthenticationProperties {
 
 		/**
 		 * Path to the authentication key. This should point to a valid ".pem" file.
@@ -385,8 +386,8 @@ public class ShellProperties {
 	 * Auth specific properties for simple authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.simple", ignoreUnknownFields = false)
-	public static class SimpleAuthenticationProperties extends
-			CrshShellAuthenticationProperties {
+	public static class SimpleAuthenticationProperties
+			extends CrshShellAuthenticationProperties {
 
 		private static Log logger = LogFactory
 				.getLog(SimpleAuthenticationProperties.class);
@@ -460,8 +461,8 @@ public class ShellProperties {
 	 * Auth specific properties for Spring authentication.
 	 */
 	@ConfigurationProperties(prefix = "shell.auth.spring", ignoreUnknownFields = false)
-	public static class SpringAuthenticationProperties extends
-			CrshShellAuthenticationProperties {
+	public static class SpringAuthenticationProperties
+			extends CrshShellAuthenticationProperties {
 
 		/**
 		 * Comma-separated list of required roles to login to the CRaSH console.

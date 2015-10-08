@@ -98,8 +98,8 @@ public class StatsdMetricWriter implements MetricWriter, Closeable {
 		this.client.stop();
 	}
 
-	private static final class LoggingStatsdErrorHandler implements
-			StatsDClientErrorHandler {
+	private static final class LoggingStatsdErrorHandler
+			implements StatsDClientErrorHandler {
 
 		@Override
 		public void handle(Exception e) {

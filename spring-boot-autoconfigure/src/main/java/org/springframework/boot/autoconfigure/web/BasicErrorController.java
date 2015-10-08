@@ -100,7 +100,8 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @param produces the media type produced (or {@code MediaType.ALL})
 	 * @return if the stacktrace attribute should be included
 	 */
-	protected boolean isIncludeStackTrace(HttpServletRequest request, MediaType produces) {
+	protected boolean isIncludeStackTrace(HttpServletRequest request,
+			MediaType produces) {
 		IncludeStacktrace include = getErrorProperties().getIncludeStacktrace();
 		if (include == IncludeStacktrace.ALWAYS) {
 			return true;

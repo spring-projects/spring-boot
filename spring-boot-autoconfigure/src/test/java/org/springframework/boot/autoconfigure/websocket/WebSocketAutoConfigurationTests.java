@@ -70,8 +70,8 @@ public class WebSocketAutoConfigurationTests {
 			Class<?>... configuration) {
 		this.context.register(configuration);
 		this.context.refresh();
-		Object serverContainer = this.context.getServletContext().getAttribute(
-				"javax.websocket.server.ServerContainer");
+		Object serverContainer = this.context.getServletContext()
+				.getAttribute("javax.websocket.server.ServerContainer");
 		assertThat(serverContainer, is(instanceOf(ServerContainer.class)));
 
 	}

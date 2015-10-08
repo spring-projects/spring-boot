@@ -95,7 +95,8 @@ public class RestartServer {
 		restart(urls, files);
 	}
 
-	private boolean updateFileSystem(URL url, String name, ClassLoaderFile classLoaderFile) {
+	private boolean updateFileSystem(URL url, String name,
+			ClassLoaderFile classLoaderFile) {
 		if (!isFolderUrl(url.toString())) {
 			return false;
 		}

@@ -64,8 +64,7 @@ public class XADataSourceAutoConfigurationTests {
 
 	@Test
 	public void createFromClass() throws Exception {
-		ApplicationContext context = createContext(
-				FromProperties.class,
+		ApplicationContext context = createContext(FromProperties.class,
 				"spring.datasource.xa.data-source-class-name:org.hsqldb.jdbc.pool.JDBCXADataSource",
 				"spring.datasource.xa.properties.database-name:test");
 		context.getBean(DataSource.class);

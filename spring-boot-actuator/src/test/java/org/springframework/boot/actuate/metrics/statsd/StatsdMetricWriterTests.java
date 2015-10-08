@@ -116,8 +116,9 @@ public class StatsdMetricWriterTests {
 						final DatagramPacket packet = new DatagramPacket(new byte[256],
 								256);
 						DummyStatsDServer.this.server.receive(packet);
-						DummyStatsDServer.this.messagesReceived.add(new String(packet
-								.getData(), Charset.forName("UTF-8")).trim());
+						DummyStatsDServer.this.messagesReceived.add(
+								new String(packet.getData(), Charset.forName("UTF-8"))
+										.trim());
 					}
 					catch (Exception e) {
 						// Ignore

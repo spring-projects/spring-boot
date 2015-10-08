@@ -79,8 +79,8 @@ public class ServerPropertiesTests {
 	@Test
 	public void testAddressBinding() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap("server.address",
-				"127.0.0.1")));
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.address", "127.0.0.1")));
 		assertFalse(binder.getBindingResult().hasErrors());
 		assertEquals(InetAddress.getByName("127.0.0.1"), this.properties.getAddress());
 	}
@@ -95,8 +95,8 @@ public class ServerPropertiesTests {
 	@Test
 	public void testServletPathAsMapping() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"server.servletPath", "/foo/*")));
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.servletPath", "/foo/*")));
 		assertFalse(binder.getBindingResult().hasErrors());
 		assertEquals("/foo/*", this.properties.getServletMapping());
 		assertEquals("/foo", this.properties.getServletPrefix());
@@ -105,8 +105,8 @@ public class ServerPropertiesTests {
 	@Test
 	public void testServletPathAsPrefix() throws Exception {
 		RelaxedDataBinder binder = new RelaxedDataBinder(this.properties, "server");
-		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"server.servletPath", "/foo")));
+		binder.bind(new MutablePropertyValues(
+				Collections.singletonMap("server.servletPath", "/foo")));
 		assertFalse(binder.getBindingResult().hasErrors());
 		assertEquals("/foo/*", this.properties.getServletMapping());
 		assertEquals("/foo", this.properties.getServletPrefix());
@@ -147,21 +147,24 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeTomcat() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
 		verify(factory, never()).setContextPath("");
 	}
 
 	@Test
 	public void testDefaultDisplayName() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
 		verify(factory).setDisplayName("application");
 	}
 
 	@Test
 	public void testCustomizeDisplayName() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.setDisplayName("TestName");
 		this.properties.customize(factory);
 		verify(factory).setDisplayName("TestName");
@@ -180,7 +183,8 @@ public class ServerPropertiesTests {
 		map.put("server.session.cookie.secure", "true");
 		map.put("server.session.cookie.max-age", "60");
 		bindProperties(map);
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		ServletContext servletContext = mock(ServletContext.class);
 		SessionCookieConfig sessionCookieConfig = mock(SessionCookieConfig.class);
 		given(servletContext.getSessionCookieConfig()).willReturn(sessionCookieConfig);
@@ -200,8 +204,8 @@ public class ServerPropertiesTests {
 
 	private void triggerInitializers(ConfigurableEmbeddedServletContainer container,
 			ServletContext servletContext) throws ServletException {
-		verify(container, atLeastOnce()).addInitializers(
-				this.initializersCaptor.capture());
+		verify(container, atLeastOnce())
+				.addInitializers(this.initializersCaptor.capture());
 		for (Object initializers : this.initializersCaptor.getAllValues()) {
 			if (initializers instanceof ServletContextInitializer) {
 				((ServletContextInitializer) initializers).onStartup(servletContext);
@@ -216,7 +220,8 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeTomcatPort() throws Exception {
-		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
+		ConfigurableEmbeddedServletContainer factory = mock(
+				ConfigurableEmbeddedServletContainer.class);
 		this.properties.setPort(8080);
 		this.properties.customize(factory);
 		verify(factory).setPort(8080);
@@ -227,8 +232,8 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.uriEncoding", "US-ASCII");
 		bindProperties(map);
-		assertEquals(Charset.forName("US-ASCII"), this.properties.getTomcat()
-				.getUriEncoding());
+		assertEquals(Charset.forName("US-ASCII"),
+				this.properties.getTomcat().getUriEncoding());
 	}
 
 	@Test
@@ -329,7 +334,8 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void defaultUseForwardHeadersUndertow() throws Exception {
-		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
+		UndertowEmbeddedServletContainerFactory container = spy(
+				new UndertowEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(false);
 	}
@@ -337,7 +343,8 @@ public class ServerPropertiesTests {
 	@Test
 	public void setUseForwardHeadersUndertow() throws Exception {
 		this.properties.setUseForwardHeaders(true);
-		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
+		UndertowEmbeddedServletContainerFactory container = spy(
+				new UndertowEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
 	}
@@ -345,14 +352,16 @@ public class ServerPropertiesTests {
 	@Test
 	public void deduceUseForwardHeadersUndertow() throws Exception {
 		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
-		UndertowEmbeddedServletContainerFactory container = spy(new UndertowEmbeddedServletContainerFactory());
+		UndertowEmbeddedServletContainerFactory container = spy(
+				new UndertowEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
 	}
 
 	@Test
 	public void defaultUseForwardHeadersJetty() throws Exception {
-		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
+		JettyEmbeddedServletContainerFactory container = spy(
+				new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(false);
 	}
@@ -360,7 +369,8 @@ public class ServerPropertiesTests {
 	@Test
 	public void setUseForwardHeadersJetty() throws Exception {
 		this.properties.setUseForwardHeaders(true);
-		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
+		JettyEmbeddedServletContainerFactory container = spy(
+				new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
 	}
@@ -368,14 +378,15 @@ public class ServerPropertiesTests {
 	@Test
 	public void deduceUseForwardHeadersJetty() throws Exception {
 		this.properties.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
-		JettyEmbeddedServletContainerFactory container = spy(new JettyEmbeddedServletContainerFactory());
+		JettyEmbeddedServletContainerFactory container = spy(
+				new JettyEmbeddedServletContainerFactory());
 		this.properties.customize(container);
 		verify(container).setUseForwardHeaders(true);
 	}
 
 	private void bindProperties(Map<String, String> map) {
-		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
-				map));
+		new RelaxedDataBinder(this.properties, "server")
+				.bind(new MutablePropertyValues(map));
 	}
 
 }

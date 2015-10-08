@@ -411,8 +411,8 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
-									HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+			HttpServletResponse response, FilterChain filterChain)
+					throws ServletException, IOException {
 
 		HttpServletRequest requestToUse = request;
 		HttpServletResponse responseToUse = response;
@@ -599,8 +599,8 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 				.getAttribute("javax.servlet.error.exception");
 		if (exception != null && this.errorAttributes != null) {
 			RequestAttributes requestAttributes = new ServletRequestAttributes(request);
-			Map<String, Object> error = this.errorAttributes.getErrorAttributes(
-					requestAttributes, true);
+			Map<String, Object> error = this.errorAttributes
+					.getErrorAttributes(requestAttributes, true);
 			trace.put("error", error);
 		}
 		return trace;

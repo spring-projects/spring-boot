@@ -111,8 +111,8 @@ public class WebRequestTraceFilterTests {
 		Map<String, Object> trace = this.inMemoryTraceRepository.findAll().iterator().next().getInfo();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
-		assertEquals("{Content-Type=application/json, status=200}", map.get("response")
-				.toString());
+		assertEquals("{Content-Type=application/json, status=200}", 
+			map.get("response").toString());
 
 		assertEquals("GET", trace.get("method"));
 		assertEquals("/foo", trace.get("path"));
@@ -151,8 +151,8 @@ public class WebRequestTraceFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.setStatus(500);
-		request.setAttribute("javax.servlet.error.exception", new IllegalStateException(
-				"Foo"));
+		request.setAttribute("javax.servlet.error.exception",
+				new IllegalStateException("Foo"));
 		response.addHeader("Content-Type", "application/json");
 		Map<String, Object> trace = this.filter.getTrace(request);
 		this.filter.enhanceTrace(trace, response);

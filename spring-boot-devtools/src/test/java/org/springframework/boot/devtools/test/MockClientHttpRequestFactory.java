@@ -105,13 +105,13 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 		}
 
 		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
-			MockClientHttpResponse httpResponse = new MockClientHttpResponse(
-					this.payload, this.status);
+			MockClientHttpResponse httpResponse = new MockClientHttpResponse(this.payload,
+					this.status);
 			waitForDelay();
 			if (this.payload != null) {
 				httpResponse.getHeaders().setContentLength(this.payload.length);
-				httpResponse.getHeaders().setContentType(
-						MediaType.APPLICATION_OCTET_STREAM);
+				httpResponse.getHeaders()
+						.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 				httpResponse.getHeaders().add("x-seq",
 						Long.toString(seq.incrementAndGet()));
 			}

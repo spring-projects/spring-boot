@@ -47,10 +47,11 @@ public abstract class AllNestedConditions extends AbstractNestedCondition {
 
 	@Override
 	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
-		return new ConditionOutcome(memberOutcomes.getMatches().size() == memberOutcomes
-				.getAll().size(), "nested all match resulted in "
-				+ memberOutcomes.getMatches() + " matches and "
-				+ memberOutcomes.getNonMatches() + " non matches");
+		return new ConditionOutcome(
+				memberOutcomes.getMatches().size() == memberOutcomes.getAll().size(),
+				"nested all match resulted in " + memberOutcomes.getMatches()
+						+ " matches and " + memberOutcomes.getNonMatches()
+						+ " non matches");
 	}
 
 }

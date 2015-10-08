@@ -52,7 +52,8 @@ public class GroovyBeansTransformation implements ASTTransformation {
 		for (ASTNode node : nodes) {
 			if (node instanceof ModuleNode) {
 				ModuleNode module = (ModuleNode) node;
-				for (ClassNode classNode : new ArrayList<ClassNode>(module.getClasses())) {
+				for (ClassNode classNode : new ArrayList<ClassNode>(
+						module.getClasses())) {
 					if (classNode.isScript()) {
 						classNode.visitContents(new ClassVisitor(source, classNode));
 					}
@@ -95,9 +96,10 @@ public class GroovyBeansTransformation implements ASTTransformation {
 				// Implement the interface by adding a public read-only property with the
 				// same name as the method in the interface (getBeans). Make it return the
 				// closure.
-				this.classNode.addProperty(new PropertyNode(BEANS, Modifier.PUBLIC
-						| Modifier.FINAL, ClassHelper.CLOSURE_TYPE
-						.getPlainNodeReference(), this.classNode, closure, null, null));
+				this.classNode.addProperty(
+						new PropertyNode(BEANS, Modifier.PUBLIC | Modifier.FINAL,
+								ClassHelper.CLOSURE_TYPE.getPlainNodeReference(),
+								this.classNode, closure, null, null));
 				// Only do this once per class
 				this.xformed = true;
 			}

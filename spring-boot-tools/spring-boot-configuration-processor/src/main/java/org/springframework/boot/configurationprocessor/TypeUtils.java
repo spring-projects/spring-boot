@@ -40,6 +40,7 @@ import javax.lang.model.util.Types;
 class TypeUtils {
 
 	private static final Map<TypeKind, Class<?>> PRIMITIVE_WRAPPERS;
+
 	static {
 		Map<TypeKind, Class<?>> wrappers = new HashMap<TypeKind, Class<?>>();
 		wrappers.put(TypeKind.BOOLEAN, Boolean.class);
@@ -63,8 +64,9 @@ class TypeUtils {
 		this.env = env;
 		Types types = env.getTypeUtils();
 		WildcardType wc = types.getWildcardType(null, null);
-		this.collectionType = types.getDeclaredType(this.env.getElementUtils()
-				.getTypeElement(Collection.class.getName()), wc);
+		this.collectionType = types.getDeclaredType(
+				this.env.getElementUtils().getTypeElement(Collection.class.getName()),
+				wc);
 		this.mapType = types.getDeclaredType(
 				this.env.getElementUtils().getTypeElement(Map.class.getName()), wc, wc);
 	}
@@ -108,8 +110,8 @@ class TypeUtils {
 	}
 
 	public String getJavaDoc(Element element) {
-		String javadoc = (element == null ? null : this.env.getElementUtils()
-				.getDocComment(element));
+		String javadoc = (element == null ? null
+				: this.env.getElementUtils().getDocComment(element));
 		if (javadoc != null) {
 			javadoc = javadoc.trim();
 		}

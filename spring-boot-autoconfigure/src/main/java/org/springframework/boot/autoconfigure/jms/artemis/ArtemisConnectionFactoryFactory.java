@@ -62,8 +62,8 @@ class ArtemisConnectionFactoryFactory {
 			return doCreateConnectionFactory(factoryClass);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create "
-					+ "ActiveMQConnectionFactory", ex);
+			throw new IllegalStateException(
+					"Unable to create " + "ActiveMQConnectionFactory", ex);
 		}
 	}
 
@@ -106,12 +106,12 @@ class ArtemisConnectionFactoryFactory {
 			Class<T> factoryClass) throws Exception {
 		try {
 			TransportConfiguration transportConfiguration = new TransportConfiguration(
-					InVMConnectorFactory.class.getName(), this.properties.getEmbedded()
-							.generateTransportParameters());
+					InVMConnectorFactory.class.getName(),
+					this.properties.getEmbedded().generateTransportParameters());
 			ServerLocator serviceLocator = ActiveMQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
-			return factoryClass.getConstructor(ServerLocator.class).newInstance(
-					serviceLocator);
+			return factoryClass.getConstructor(ServerLocator.class)
+					.newInstance(serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException("Unable to create InVM "

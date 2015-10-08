@@ -91,10 +91,10 @@ public class ResourceServerTokenServicesConfiguration {
 
 		static {
 			DEFAULT_RESOURCE_DETAILS.setClientId("<N/A>");
-			DEFAULT_RESOURCE_DETAILS.setUserAuthorizationUri("Not a URI "
-					+ "because there is no client");
-			DEFAULT_RESOURCE_DETAILS.setAccessTokenUri("Not a URI "
-					+ "because there is no client");
+			DEFAULT_RESOURCE_DETAILS
+					.setUserAuthorizationUri("Not a URI " + "because there is no client");
+			DEFAULT_RESOURCE_DETAILS
+					.setAccessTokenUri("Not a URI " + "because there is no client");
 		}
 
 		@Autowired(required = false)
@@ -113,8 +113,8 @@ public class ResourceServerTokenServicesConfiguration {
 				this.details = DEFAULT_RESOURCE_DETAILS;
 			}
 			OAuth2RestTemplate template = getTemplate();
-			template.setInterceptors(Arrays
-					.<ClientHttpRequestInterceptor>asList(new AcceptJsonRequestInterceptor()));
+			template.setInterceptors(Arrays.<ClientHttpRequestInterceptor>asList(
+					new AcceptJsonRequestInterceptor()));
 			AuthorizationCodeAccessTokenProvider accessTokenProvider = new AuthorizationCodeAccessTokenProvider();
 			accessTokenProvider.setTokenRequestEnhancer(new AcceptJsonRequestEnhancer());
 			template.setAccessTokenProvider(accessTokenProvider);
@@ -298,8 +298,9 @@ public class ResourceServerTokenServicesConfiguration {
 			Boolean preferTokenInfo = resolver.getProperty("prefer-token-info",
 					Boolean.class);
 			if (preferTokenInfo == null) {
-				preferTokenInfo = environment.resolvePlaceholders(
-						"${OAUTH2_RESOURCE_PREFERTOKENINFO:true}").equals("true");
+				preferTokenInfo = environment
+						.resolvePlaceholders("${OAUTH2_RESOURCE_PREFERTOKENINFO:true}")
+						.equals("true");
 			}
 			String tokenInfoUri = resolver.getProperty("token-info-uri");
 			String userInfoUri = resolver.getProperty("user-info-uri");
@@ -307,8 +308,8 @@ public class ResourceServerTokenServicesConfiguration {
 				return ConditionOutcome.match("No user info provided");
 			}
 			if (StringUtils.hasLength(tokenInfoUri) && preferTokenInfo) {
-				return ConditionOutcome.match("Token info endpoint "
-						+ "is preferred and user info provided");
+				return ConditionOutcome.match(
+						"Token info endpoint " + "is preferred and user info provided");
 			}
 			return ConditionOutcome.noMatch("Token info endpoint is not provided");
 		}
@@ -339,8 +340,8 @@ public class ResourceServerTokenServicesConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			return ConditionOutcome.inverse(this.tokenInfoCondition.getMatchOutcome(
-					context, metadata));
+			return ConditionOutcome
+					.inverse(this.tokenInfoCondition.getMatchOutcome(context, metadata));
 		}
 
 	}
@@ -352,14 +353,14 @@ public class ResourceServerTokenServicesConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			return ConditionOutcome.inverse(this.jwtTokenCondition.getMatchOutcome(
-					context, metadata));
+			return ConditionOutcome
+					.inverse(this.jwtTokenCondition.getMatchOutcome(context, metadata));
 		}
 
 	}
 
-	private static class AcceptJsonRequestInterceptor implements
-			ClientHttpRequestInterceptor {
+	private static class AcceptJsonRequestInterceptor
+			implements ClientHttpRequestInterceptor {
 
 		@Override
 		public ClientHttpResponse intercept(HttpRequest request, byte[] body,

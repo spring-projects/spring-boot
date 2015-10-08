@@ -69,8 +69,8 @@ public class SpringSocialTokenServices implements ResourceServerTokenServices {
 				.commaSeparatedStringToAuthorityList("ROLE_USER");
 		OAuth2Request request = new OAuth2Request(null, this.clientId, null, true, null,
 				null, null, null, null);
-		return new OAuth2Authentication(request, new UsernamePasswordAuthenticationToken(
-				principal, "N/A", authorities));
+		return new OAuth2Authentication(request,
+				new UsernamePasswordAuthenticationToken(principal, "N/A", authorities));
 	}
 
 	@Override

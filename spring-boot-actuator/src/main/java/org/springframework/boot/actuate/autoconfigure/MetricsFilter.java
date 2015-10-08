@@ -61,6 +61,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private final GaugeService gaugeService;
 
 	private static final Set<PatternReplacer> STATUS_REPLACERS;
+
 	static {
 		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
 		replacements.add(new PatternReplacer("[{}]", 0, "-"));
@@ -72,6 +73,7 @@ final class MetricsFilter extends OncePerRequestFilter {
 	}
 
 	private static final Set<PatternReplacer> KEY_REPLACERS;
+
 	static {
 		Set<PatternReplacer> replacements = new LinkedHashSet<PatternReplacer>();
 		replacements.add(new PatternReplacer("/", Pattern.LITERAL, "."));
@@ -91,8 +93,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain) throws ServletException,
-			IOException {
+			HttpServletResponse response, FilterChain chain)
+					throws ServletException, IOException {
 		StopWatch stopWatch = createStopWatchIfNecessary(request);
 		String path = new UrlPathHelper().getPathWithinApplication(request);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
@@ -217,8 +219,8 @@ final class MetricsFilter extends OncePerRequestFilter {
 		}
 
 		public String apply(String input) {
-			return this.pattern.matcher(input).replaceAll(
-					Matcher.quoteReplacement(this.replacement));
+			return this.pattern.matcher(input)
+					.replaceAll(Matcher.quoteReplacement(this.replacement));
 		}
 
 	}

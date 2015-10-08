@@ -72,7 +72,7 @@ import org.springframework.core.env.Environment;
  * @deprecated since 1.3.0 in favor of CloudFoundryVcapEnvironmentPostProcessor
  */
 @Deprecated
-public class VcapEnvironmentPostProcessor extends
-		CloudFoundryVcapEnvironmentPostProcessor {
+public class VcapEnvironmentPostProcessor
+		extends CloudFoundryVcapEnvironmentPostProcessor {
 
 }

@@ -59,8 +59,8 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.configprops", ignoreUnknownFields = false)
-public class ConfigurationPropertiesReportEndpoint extends
-		AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
+public class ConfigurationPropertiesReportEndpoint
+		extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
 
 	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
@@ -101,7 +101,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private Map<String, Object> extract(ApplicationContext context, ObjectMapper mapper) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(context);
+		ConfigurationBeanFactoryMetaData beanFactoryMetaData = getBeanFactoryMetaData(
+				context);
 		Map<String, Object> beans = getConfigurationPropertiesBeans(context,
 				beanFactoryMetaData);
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
@@ -153,8 +154,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 			String prefix) {
 		try {
 			@SuppressWarnings("unchecked")
-			Map<String, Object> result = new HashMap<String, Object>(mapper.convertValue(
-					bean, Map.class));
+			Map<String, Object> result = new HashMap<String, Object>(
+					mapper.convertValue(bean, Map.class));
 			return result;
 		}
 		catch (Exception ex) {
@@ -210,8 +211,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 		ConfigurationProperties annotation = context.findAnnotationOnBean(beanName,
 				ConfigurationProperties.class);
 		if (beanFactoryMetaData != null) {
-			ConfigurationProperties override = beanFactoryMetaData.findFactoryAnnotation(
-					beanName, ConfigurationProperties.class);
+			ConfigurationProperties override = beanFactoryMetaData
+					.findFactoryAnnotation(beanName, ConfigurationProperties.class);
 			if (override != null) {
 				// The @Bean-level @ConfigurationProperties overrides the one at type
 				// level when binding. Arguably we should render them both, but this one
@@ -249,8 +250,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 * properties.
 	 */
 	@SuppressWarnings("serial")
-	private static class CglibAnnotationIntrospector extends
-			JacksonAnnotationIntrospector {
+	private static class CglibAnnotationIntrospector
+			extends JacksonAnnotationIntrospector {
 
 		@Override
 		public Object findFilterId(Annotated a) {
@@ -312,9 +313,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 			// that its a nested class used solely for binding to config props, so it
 			// should be kosher. This filter is not used if there is JSON metadata for
 			// the property, so it's mainly for user-defined beans.
-			return (setter != null)
-					|| ClassUtils.getPackageName(parentType).equals(
-							ClassUtils.getPackageName(type));
+			return (setter != null) || ClassUtils.getPackageName(parentType)
+					.equals(ClassUtils.getPackageName(type));
 		}
 
 		private AnnotatedMethod findSetter(BeanDescription beanDesc,

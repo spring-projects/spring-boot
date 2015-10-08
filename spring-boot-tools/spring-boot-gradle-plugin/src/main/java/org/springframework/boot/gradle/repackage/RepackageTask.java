@@ -91,16 +91,16 @@ public class RepackageTask extends DefaultTask {
 	@TaskAction
 	public void repackage() {
 		Project project = getProject();
-		SpringBootPluginExtension extension = project.getExtensions().getByType(
-				SpringBootPluginExtension.class);
+		SpringBootPluginExtension extension = project.getExtensions()
+				.getByType(SpringBootPluginExtension.class);
 		ProjectLibraries libraries = getLibraries();
 		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
 	}
 
 	public ProjectLibraries getLibraries() {
 		Project project = getProject();
-		SpringBootPluginExtension extension = project.getExtensions().getByType(
-				SpringBootPluginExtension.class);
+		SpringBootPluginExtension extension = project.getExtensions()
+				.getByType(SpringBootPluginExtension.class);
 		ProjectLibraries libraries = new ProjectLibraries(project, extension);
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
@@ -123,8 +123,7 @@ public class RepackageTask extends DefaultTask {
 
 		private final ProjectLibraries libraries;
 
-		RepackageAction(SpringBootPluginExtension extension,
-				ProjectLibraries libraries) {
+		RepackageAction(SpringBootPluginExtension extension, ProjectLibraries libraries) {
 			this.extension = extension;
 			this.libraries = libraries;
 		}
@@ -251,10 +250,9 @@ public class RepackageTask extends DefaultTask {
 			finally {
 				long duration = System.currentTimeMillis() - startTime;
 				if (duration > FIND_WARNING_TIMEOUT) {
-					getLogger().warn(
-							"Searching for the main-class is taking "
-									+ "some time, consider using setting "
-									+ "'springBoot.mainClass'");
+					getLogger().warn("Searching for the main-class is taking "
+							+ "some time, consider using setting "
+							+ "'springBoot.mainClass'");
 				}
 			}
 		}

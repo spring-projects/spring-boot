@@ -45,8 +45,7 @@ public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfigu
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports(
-				"org.springframework.security.core.Authentication",
+		imports.addImports("org.springframework.security.core.Authentication",
 				"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity",
 				"org.springframework.security.core.authority.AuthorityUtils")
 				.addStarImports(

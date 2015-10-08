@@ -60,8 +60,8 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class JettyEmbeddedServletContainerFactoryTests extends
-		AbstractEmbeddedServletContainerFactoryTests {
+public class JettyEmbeddedServletContainerFactoryTests
+		extends AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected JettyEmbeddedServletContainerFactory getFactory() {
@@ -137,11 +137,12 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 				equalTo(new String[] { "ALPHA", "BRAVO", "CHARLIE" }));
 	}
 
-	private void assertTimeout(JettyEmbeddedServletContainerFactory factory, int expected) {
+	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,
+			int expected) {
 		this.container = factory.getEmbeddedServletContainer();
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
-		Handler[] handlers = jettyContainer.getServer().getChildHandlersByClass(
-				WebAppContext.class);
+		Handler[] handlers = jettyContainer.getServer()
+				.getChildHandlersByClass(WebAppContext.class);
 		WebAppContext webAppContext = (WebAppContext) handlers[0];
 		int actual = webAppContext.getSessionHandler().getSessionManager()
 				.getMaxInactiveInterval();
@@ -193,8 +194,8 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 	@Override
 	@SuppressWarnings("serial")
 	// Workaround for Jetty issue - https://bugs.eclipse.org/bugs/show_bug.cgi?id=470646
-	protected String setUpFactoryForCompression(final int contentSize,
-			String[] mimeTypes, String[] excludedUserAgents) throws Exception {
+	protected String setUpFactoryForCompression(final int contentSize, String[] mimeTypes,
+			String[] excludedUserAgents) throws Exception {
 		char[] chars = new char[contentSize];
 		Arrays.fill(chars, 'F');
 		final String testContent = new String(chars);
@@ -208,8 +209,8 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 			compression.setExcludedUserAgents(excludedUserAgents);
 		}
 		factory.setCompression(compression);
-		this.container = factory.getEmbeddedServletContainer(new ServletRegistrationBean(
-				new HttpServlet() {
+		this.container = factory.getEmbeddedServletContainer(
+				new ServletRegistrationBean(new HttpServlet() {
 					@Override
 					protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 							throws ServletException, IOException {

@@ -88,8 +88,8 @@ public class MetricExportAutoConfigurationTests {
 		assertNotNull(gaugeService);
 		gaugeService.submit("foo", 2.7);
 		MetricExporters exporters = this.context.getBean(MetricExporters.class);
-		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters().get(
-				"writer");
+		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters()
+				.get("writer");
 		exporter.setIgnoreTimestamps(true);
 		exporter.export();
 		MetricWriter writer = this.context.getBean("writer", MetricWriter.class);
@@ -102,8 +102,8 @@ public class MetricExportAutoConfigurationTests {
 				MetricEndpointConfiguration.class, MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporters = this.context.getBean(MetricExporters.class);
-		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters().get(
-				"writer");
+		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters()
+				.get("writer");
 		exporter.setIgnoreTimestamps(true);
 		exporter.export();
 		MetricsEndpointMetricReader reader = this.context.getBean("endpointReader",

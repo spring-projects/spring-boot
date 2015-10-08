@@ -40,6 +40,7 @@ import org.springframework.core.env.PropertySource;
 public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostProcessor {
 
 	private static final Map<String, Object> PROPERTIES;
+
 	static {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		properties.put("spring.thymeleaf.cache", "false");

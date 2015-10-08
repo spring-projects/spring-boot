@@ -50,8 +50,8 @@ import org.springframework.validation.Validator;
  * @param <T> The target type
  * @author Dave Syer
  */
-public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
-		MessageSourceAware, InitializingBean {
+public class PropertiesConfigurationFactory<T>
+		implements FactoryBean<T>, MessageSourceAware, InitializingBean {
 
 	private static final char[] EXACT_DELIMITERS = { '_', '.', '[' };
 
@@ -248,8 +248,9 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	private void doBindPropertiesToTarget() throws BindException {
-		RelaxedDataBinder dataBinder = (this.targetName != null ? new RelaxedDataBinder(
-				this.target, this.targetName) : new RelaxedDataBinder(this.target));
+		RelaxedDataBinder dataBinder = (this.targetName != null
+				? new RelaxedDataBinder(this.target, this.targetName)
+				: new RelaxedDataBinder(this.target));
 		if (this.validator != null) {
 			dataBinder.setValidator(this.validator);
 		}
@@ -271,8 +272,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	private Set<String> getNames() {
 		Set<String> names = new LinkedHashSet<String>();
 		if (this.target != null) {
-			Iterable<String> prefixes = (StringUtils.hasLength(this.targetName) ? new RelaxedNames(
-					this.targetName) : null);
+			Iterable<String> prefixes = (StringUtils.hasLength(this.targetName)
+					? new RelaxedNames(this.targetName) : null);
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
 			for (PropertyDescriptor descriptor : descriptors) {
@@ -310,7 +311,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		return new PropertySourcesPropertyValues(this.propertySources, names, includes);
 	}
 
-	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(Set<String> names) {
+	private PropertyNamePatternsMatcher getPropertyNamePatternsMatcher(
+			Set<String> names) {
 		if (this.ignoreUnknownFields && !isMapTarget()) {
 			// Since unknown fields are ignored we can filter them out early to save
 			// unnecessary calls to the PropertySource.
@@ -337,9 +339,11 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		if (errors.hasErrors()) {
 			this.logger.error("Properties configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				this.logger.error(this.messageSource != null ? this.messageSource
-						.getMessage(error, Locale.getDefault()) + " (" + error + ")"
-						: error);
+				this.logger
+						.error(this.messageSource != null
+								? this.messageSource.getMessage(error,
+										Locale.getDefault()) + " (" + error + ")"
+								: error);
 			}
 			if (this.exceptionIfInvalid) {
 				throw new BindException(errors);

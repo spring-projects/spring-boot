@@ -30,8 +30,8 @@ public class ProducerApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		new File("target/input").mkdirs();
 		if (args.length > 0) {
-			FileOutputStream stream = new FileOutputStream("target/input/data"
-					+ System.currentTimeMillis() + ".txt");
+			FileOutputStream stream = new FileOutputStream(
+					"target/input/data" + System.currentTimeMillis() + ".txt");
 			for (String arg : args) {
 				stream.write(arg.getBytes());
 			}

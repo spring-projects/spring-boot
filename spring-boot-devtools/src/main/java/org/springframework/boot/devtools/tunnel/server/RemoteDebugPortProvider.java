@@ -45,15 +45,16 @@ public class RemoteDebugPortProvider implements PortProvider {
 	@UsesUnsafeJava
 	@SuppressWarnings("restriction")
 	private static int getRemoteDebugPort() {
-		String property = sun.misc.VMSupport.getAgentProperties().getProperty(
-				JDWP_ADDRESS_PROPERTY);
+		String property = sun.misc.VMSupport.getAgentProperties()
+				.getProperty(JDWP_ADDRESS_PROPERTY);
 		try {
 			if (property != null && property.contains(":")) {
 				return Integer.valueOf(property.split(":")[1]);
 			}
 		}
 		catch (Exception ex) {
-			logger.trace("Unable to get JDWP port from property value '" + property + "'");
+			logger.trace(
+					"Unable to get JDWP port from property value '" + property + "'");
 		}
 		return -1;
 	}

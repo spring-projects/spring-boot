@@ -47,8 +47,8 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
  */
 @SuppressWarnings("serial")
 @ConfigurationProperties(prefix = "spring.jta.bitronix.datasource")
-public class PoolingDataSourceBean extends PoolingDataSource implements BeanNameAware,
-		InitializingBean {
+public class PoolingDataSourceBean extends PoolingDataSource
+		implements BeanNameAware, InitializingBean {
 
 	private static ThreadLocal<PoolingDataSourceBean> source = new ThreadLocal<PoolingDataSourceBean>();
 

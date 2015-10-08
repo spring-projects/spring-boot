@@ -40,7 +40,8 @@ public class ConfigurationMetadataTests {
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderScores() {
-		assertThat(toDashedCase("Word___With__underscore"), is("word___with__underscore"));
+		assertThat(toDashedCase("Word___With__underscore"),
+				is("word___with__underscore"));
 	}
 
 	@Test

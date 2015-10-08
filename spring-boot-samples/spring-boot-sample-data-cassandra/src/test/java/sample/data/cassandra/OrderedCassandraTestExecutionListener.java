@@ -19,8 +19,8 @@ package sample.data.cassandra;
 import org.cassandraunit.spring.CassandraUnitDependencyInjectionTestExecutionListener;
 import org.springframework.core.Ordered;
 
-public class OrderedCassandraTestExecutionListener extends
-		CassandraUnitDependencyInjectionTestExecutionListener {
+public class OrderedCassandraTestExecutionListener
+		extends CassandraUnitDependencyInjectionTestExecutionListener {
 
 	@Override
 	public int getOrder() {

@@ -81,11 +81,9 @@ public class ServerPropertiesAutoConfiguration {
 			// a single bean
 			String[] serverPropertiesBeans = this.applicationContext
 					.getBeanNamesForType(ServerProperties.class);
-			Assert.state(
-					serverPropertiesBeans.length == 1,
-					"Multiple ServerProperties beans registered "
-							+ StringUtils
-									.arrayToCommaDelimitedString(serverPropertiesBeans));
+			Assert.state(serverPropertiesBeans.length == 1,
+					"Multiple ServerProperties beans registered " + StringUtils
+							.arrayToCommaDelimitedString(serverPropertiesBeans));
 		}
 
 	}

@@ -267,8 +267,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
-		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
-				bean.getClass(), ConfigurationProperties.class);
+		ConfigurationProperties annotation = AnnotationUtils
+				.findAnnotation(bean.getClass(), ConfigurationProperties.class);
 		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
 			postProcessBeforeInitialization(bean, beanName, annotation);
 		}
@@ -288,13 +288,13 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private void postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
-		Object target = (bean instanceof ConfigurationPropertiesHolder ? ((ConfigurationPropertiesHolder) bean)
-				.getTarget() : bean);
+		Object target = (bean instanceof ConfigurationPropertiesHolder
+				? ((ConfigurationPropertiesHolder) bean).getTarget() : bean);
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
 		if (annotation != null && annotation.locations().length != 0) {
-			factory.setPropertySources(loadPropertySources(annotation.locations(),
-					annotation.merge()));
+			factory.setPropertySources(
+					loadPropertySources(annotation.locations(), annotation.merge()));
 		}
 		else {
 			factory.setPropertySources(this.propertySources);
@@ -302,15 +302,15 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		factory.setValidator(determineValidator(bean));
 		// If no explicit conversion service is provided we add one so that (at least)
 		// comma-separated arrays of convertibles can be bound automatically
-		factory.setConversionService(this.conversionService == null ? getDefaultConversionService()
-				: this.conversionService);
+		factory.setConversionService(this.conversionService == null
+				? getDefaultConversionService() : this.conversionService);
 		if (annotation != null) {
 			factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
 			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
 			factory.setExceptionIfInvalid(annotation.exceptionIfInvalid());
 			factory.setIgnoreNestedProperties(annotation.ignoreNestedProperties());
-			String targetName = (StringUtils.hasLength(annotation.value()) ? annotation
-					.value() : annotation.prefix());
+			String targetName = (StringUtils.hasLength(annotation.value())
+					? annotation.value() : annotation.prefix());
 			if (StringUtils.hasLength(targetName)) {
 				factory.setTargetName(targetName);
 			}
@@ -330,19 +330,18 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			return "";
 		}
 		StringBuilder details = new StringBuilder();
-		details.append("prefix=").append(
-				(StringUtils.hasLength(annotation.value()) ? annotation.value()
-						: annotation.prefix()));
+		details.append("prefix=").append((StringUtils.hasLength(annotation.value())
+				? annotation.value() : annotation.prefix()));
 		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
 		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
-		details.append(", ignoreNestedProperties=").append(
-				annotation.ignoreNestedProperties());
+		details.append(", ignoreNestedProperties=")
+				.append(annotation.ignoreNestedProperties());
 		return details.toString();
 	}
 
 	private Validator determineValidator(Object bean) {
-		boolean globalValidatorSupportBean = (this.validator != null && this.validator
-				.supports(bean.getClass()));
+		boolean globalValidatorSupportBean = (this.validator != null
+				&& this.validator.supports(bean.getClass()));
 		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {
 			if (!globalValidatorSupportBean) {
 				return (Validator) bean;
@@ -357,8 +356,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		try {
 			PropertySourcesLoader loader = new PropertySourcesLoader();
 			for (String location : locations) {
-				Resource resource = this.resourceLoader.getResource(this.environment
-						.resolvePlaceholders(location));
+				Resource resource = this.resourceLoader
+						.getResource(this.environment.resolvePlaceholders(location));
 				String[] profiles = this.environment.getActiveProfiles();
 				for (int i = profiles.length; i-- > 0;) {
 					String profile = profiles[i];

@@ -156,7 +156,7 @@ public class SpringApplicationRunner {
 			try {
 				this.applicationContext = new SpringApplicationLauncher(
 						getContextClassLoader()).launch(this.compiledSources,
-						SpringApplicationRunner.this.args);
+								SpringApplicationRunner.this.args);
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();

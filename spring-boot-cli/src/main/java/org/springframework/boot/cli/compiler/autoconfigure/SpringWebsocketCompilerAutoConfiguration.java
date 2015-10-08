@@ -49,8 +49,8 @@ public class SpringWebsocketCompilerAutoConfiguration extends CompilerAutoConfig
 				"org.springframework.messaging.simp.config",
 				"org.springframework.web.socket.handler",
 				"org.springframework.web.socket.sockjs.transport.handler",
-				"org.springframework.web.socket.config.annotation").addImports(
-				"org.springframework.web.socket.WebSocketHandler");
+				"org.springframework.web.socket.config.annotation")
+				.addImports("org.springframework.web.socket.WebSocketHandler");
 	}
 
 }

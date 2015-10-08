@@ -52,8 +52,8 @@ public class RunMojo extends AbstractRunMojo {
 	protected void runWithMavenJvm(String startClassName, String... arguments)
 			throws MojoExecutionException {
 		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
-		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName,
-				arguments), "main");
+		Thread launchThread = new Thread(threadGroup,
+				new LaunchRunner(startClassName, arguments), "main");
 		launchThread.setContextClassLoader(new URLClassLoader(getClassPathUrls()));
 		launchThread.start();
 		join(threadGroup);

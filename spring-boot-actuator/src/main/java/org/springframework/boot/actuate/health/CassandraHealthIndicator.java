@@ -47,8 +47,8 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		try {
-			Select select = QueryBuilder.select("release_version")
-					.from("system", "local");
+			Select select = QueryBuilder.select("release_version").from("system",
+					"local");
 			ResultSet results = this.cassandraAdminOperations.query(select);
 			if (results.isExhausted()) {
 				builder.up();

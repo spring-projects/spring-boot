@@ -59,8 +59,8 @@ public class ParentContextApplicationContextInitializer implements
 		}
 	}
 
-	private static class EventPublisher implements
-			ApplicationListener<ContextRefreshedEvent>, Ordered {
+	private static class EventPublisher
+			implements ApplicationListener<ContextRefreshedEvent>, Ordered {
 
 		private static EventPublisher INSTANCE = new EventPublisher();
 

@@ -78,8 +78,8 @@ public class DataSourceAutoConfiguration {
 			ConfigurableListableBeanFactory beanFactory) {
 		try {
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition("dataSource");
-			return EmbeddedDataSourceConfiguration.class.getName().equals(
-					beanDefinition.getFactoryBeanName());
+			return EmbeddedDataSourceConfiguration.class.getName()
+					.equals(beanDefinition.getFactoryBeanName());
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			return false;
@@ -117,8 +117,7 @@ public class DataSourceAutoConfiguration {
 			DataSourceBuilder factory = DataSourceBuilder
 					.create(this.properties.getClassLoader())
 					.driverClassName(this.properties.getDriverClassName())
-					.url(this.properties.getUrl())
-					.username(this.properties.getUsername())
+					.url(this.properties.getUrl()).username(this.properties.getUsername())
 					.password(this.properties.getPassword());
 			if (this.properties.getType() != null) {
 				factory.type(this.properties.getType());
@@ -212,8 +211,8 @@ public class DataSourceAutoConfiguration {
 				return ConditionOutcome
 						.noMatch("existing non-embedded database detected");
 			}
-			EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(
-					context.getClassLoader()).getType();
+			EmbeddedDatabaseType type = EmbeddedDatabaseConnection
+					.get(context.getClassLoader()).getType();
 			if (type == null) {
 				return ConditionOutcome.noMatch("no embedded database detected");
 			}

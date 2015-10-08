@@ -56,8 +56,8 @@ public class HypermediaHttpMessageConverterConfiguration {
 	 * {@code Jackson2ModuleRegisteringBeanPostProcessor} has registered the converter and
 	 * it is unordered.
 	 */
-	private static class HalMessageConverterSupportedMediaTypesCustomizer implements
-			BeanFactoryAware {
+	private static class HalMessageConverterSupportedMediaTypesCustomizer
+			implements BeanFactoryAware {
 
 		private volatile BeanFactory beanFactory;
 
@@ -73,9 +73,9 @@ public class HypermediaHttpMessageConverterConfiguration {
 							.getMessageConverters()) {
 						if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
 							((TypeConstrainedMappingJackson2HttpMessageConverter) converter)
-									.setSupportedMediaTypes(Arrays.asList(
-											MediaTypes.HAL_JSON,
-											MediaType.APPLICATION_JSON));
+									.setSupportedMediaTypes(
+											Arrays.asList(MediaTypes.HAL_JSON,
+													MediaType.APPLICATION_JSON));
 						}
 					}
 

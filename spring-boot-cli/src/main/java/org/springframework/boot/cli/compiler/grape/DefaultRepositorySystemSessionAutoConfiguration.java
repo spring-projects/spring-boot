@@ -33,8 +33,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class DefaultRepositorySystemSessionAutoConfiguration implements
-		RepositorySystemSessionAutoConfiguration {
+public class DefaultRepositorySystemSessionAutoConfiguration
+		implements RepositorySystemSessionAutoConfiguration {
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,

@@ -190,8 +190,8 @@ public class ThymeleafAutoConfigurationTests {
 		assertEquals(0, context.getBeanNamesForType(ViewResolver.class).length);
 		try {
 			TemplateEngine engine = context.getBean(TemplateEngine.class);
-			Context attrs = new Context(Locale.UK, Collections.singletonMap("greeting",
-					"Hello World"));
+			Context attrs = new Context(Locale.UK,
+					Collections.singletonMap("greeting", "Hello World"));
 			String result = engine.process("message", attrs);
 			assertThat(result, containsString("Hello World"));
 		}
@@ -205,8 +205,8 @@ public class ThymeleafAutoConfigurationTests {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeansOfType(ResourceUrlEncodingFilter.class)
-				.size());
+		assertEquals(0,
+				this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
 	}
 
 	@Test

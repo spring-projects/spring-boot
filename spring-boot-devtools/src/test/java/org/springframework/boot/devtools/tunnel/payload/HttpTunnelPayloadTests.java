@@ -121,8 +121,8 @@ public class HttpTunnelPayloadTests {
 
 	@Test
 	public void getPayloadData() throws Exception {
-		ReadableByteChannel channel = Channels.newChannel(new ByteArrayInputStream(
-				"hello".getBytes()));
+		ReadableByteChannel channel = Channels
+				.newChannel(new ByteArrayInputStream("hello".getBytes()));
 		ByteBuffer payloadData = HttpTunnelPayload.getPayloadData(channel);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		WritableByteChannel writeChannel = Channels.newChannel(out);

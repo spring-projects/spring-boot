@@ -146,7 +146,8 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 	 * Controller advice that adds links to the actuator endpoint's path.
 	 */
 	@ControllerAdvice
-	public static class ActuatorEndpointLinksAdvice implements ResponseBodyAdvice<Object> {
+	public static class ActuatorEndpointLinksAdvice
+			implements ResponseBodyAdvice<Object> {
 
 		@Autowired
 		private MvcEndpoints endpoints;
@@ -187,8 +188,8 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		}
 
 		private void beforeBodyWrite(Object body, ServletServerHttpRequest request) {
-			Object pattern = request.getServletRequest().getAttribute(
-					HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+			Object pattern = request.getServletRequest()
+					.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 			if (pattern != null && body instanceof ResourceSupport) {
 				beforeBodyWrite(pattern.toString(), (ResourceSupport) body);
 			}
@@ -196,15 +197,14 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 
 		private void beforeBodyWrite(String path, ResourceSupport body) {
 			if (isActuatorEndpointPath(path)) {
-				this.linksEnhancer
-						.addEndpointLinks(body, this.actuatorEndpoint.getPath());
+				this.linksEnhancer.addEndpointLinks(body,
+						this.actuatorEndpoint.getPath());
 			}
 		}
 
 		private boolean isActuatorEndpointPath(String path) {
-			return this.actuatorEndpoint != null
-					&& (this.management.getContextPath() + this.actuatorEndpoint
-							.getPath()).equals(path);
+			return this.actuatorEndpoint != null && (this.management.getContextPath()
+					+ this.actuatorEndpoint.getPath()).equals(path);
 		}
 
 	}
@@ -293,13 +293,14 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		private boolean isHypermediaDisabled(MethodParameter returnType) {
 			return AnnotationUtils.findAnnotation(returnType.getMethod(),
 					HypermediaDisabled.class) != null
-					|| AnnotationUtils.findAnnotation(returnType.getMethod()
-							.getDeclaringClass(), HypermediaDisabled.class) != null;
+					|| AnnotationUtils.findAnnotation(
+							returnType.getMethod().getDeclaringClass(),
+							HypermediaDisabled.class) != null;
 		}
 
 		private String getPath(ServletServerHttpRequest request) {
-			String path = (String) request.getServletRequest().getAttribute(
-					HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+			String path = (String) request.getServletRequest()
+					.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 			return (path == null ? "" : path);
 		}
 

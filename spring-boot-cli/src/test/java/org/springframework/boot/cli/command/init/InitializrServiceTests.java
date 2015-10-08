@@ -57,7 +57,8 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		MockHttpProjectGenerationRequest mockHttpRequest = new MockHttpProjectGenerationRequest(
 				"application/xml", "foo.zip");
 		ProjectGenerationResponse entity = generateProject(request, mockHttpRequest);
-		assertProjectEntity(entity, mockHttpRequest.contentType, mockHttpRequest.fileName);
+		assertProjectEntity(entity, mockHttpRequest.contentType,
+				mockHttpRequest.fileName);
 	}
 
 	@Test
@@ -158,8 +159,8 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 			assertNull("No content type expected", entity.getContentType());
 		}
 		else {
-			assertEquals("wrong mime type", mimeType, entity.getContentType()
-					.getMimeType());
+			assertEquals("wrong mime type", mimeType,
+					entity.getContentType().getMimeType());
 		}
 		assertEquals("wrong filename", fileName, entity.getFileName());
 	}

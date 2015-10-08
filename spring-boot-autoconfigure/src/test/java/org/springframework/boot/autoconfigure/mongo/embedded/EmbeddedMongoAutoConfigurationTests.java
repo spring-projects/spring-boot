@@ -36,6 +36,7 @@ import com.mongodb.CommandResult;
 import com.mongodb.MongoClient;
 
 import de.flapdoodle.embed.mongo.distribution.Feature;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
@@ -73,8 +74,9 @@ public class EmbeddedMongoAutoConfigurationTests {
 	public void customFeatures() {
 		this.context = new AnnotationConfigApplicationContext();
 		int mongoPort = SocketUtils.findAvailableTcpPort();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.port="
-				+ mongoPort, "spring.mongodb.embedded.features=TEXT_SEARCH, SYNC_DELAY");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.mongodb.port=" + mongoPort,
+				"spring.mongodb.embedded.features=TEXT_SEARCH, SYNC_DELAY");
 		this.context.register(EmbeddedMongoAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(EmbeddedMongoProperties.class).getFeatures(),
@@ -89,10 +91,9 @@ public class EmbeddedMongoAutoConfigurationTests {
 				MongoClientConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(
-				this.context.getBean(MongoClient.class).getAddress().getPort(),
-				equalTo(Integer.valueOf(this.context.getEnvironment().getProperty(
-						"local.mongo.port"))));
+		assertThat(this.context.getBean(MongoClient.class).getAddress().getPort(),
+				equalTo(Integer.valueOf(
+						this.context.getEnvironment().getProperty("local.mongo.port"))));
 	}
 
 	@Test
@@ -120,8 +121,8 @@ public class EmbeddedMongoAutoConfigurationTests {
 			String expectedVersion) {
 		this.context = new AnnotationConfigApplicationContext();
 		int mongoPort = SocketUtils.findAvailableTcpPort();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.data.mongodb.port="
-				+ mongoPort);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.mongodb.port=" + mongoPort);
 		if (configuredVersion != null) {
 			EnvironmentTestUtils.addEnvironment(this.context,
 					"spring.mongodb.embedded.version=" + configuredVersion);

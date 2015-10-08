@@ -33,7 +33,8 @@ import org.springframework.xml.xsd.XsdSchema;
 public class WebServiceConfig extends WsConfigurerAdapter {
 
 	@Bean
-	public ServletRegistrationBean dispatcherServlet(ApplicationContext applicationContext) {
+	public ServletRegistrationBean dispatcherServlet(
+			ApplicationContext applicationContext) {
 		MessageDispatcherServlet servlet = new MessageDispatcherServlet();
 		servlet.setApplicationContext(applicationContext);
 		return new ServletRegistrationBean(servlet, "/services/*");

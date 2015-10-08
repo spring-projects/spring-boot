@@ -101,8 +101,8 @@ public class ManagementWebSecurityAutoConfiguration {
 	}
 
 	@Configuration
-	protected static class ManagementSecurityPropertiesConfiguration implements
-			SecurityPrerequisite {
+	protected static class ManagementSecurityPropertiesConfiguration
+			implements SecurityPrerequisite {
 
 		@Autowired(required = false)
 		private SecurityProperties security;
@@ -122,8 +122,8 @@ public class ManagementWebSecurityAutoConfiguration {
 
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER + 1)
-	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
-			WebSecurityConfigurer<WebSecurity> {
+	private static class IgnoredPathsWebSecurityConfigurerAdapter
+			implements WebSecurityConfigurer<WebSecurity> {
 
 		@Autowired(required = false)
 		private ErrorController errorController;
@@ -152,8 +152,8 @@ public class ManagementWebSecurityAutoConfiguration {
 			List<String> ignored = SpringBootWebSecurityConfiguration
 					.getIgnored(this.security);
 			if (!this.management.getSecurity().isEnabled()) {
-				ignored.addAll(Arrays.asList(EndpointPaths.ALL
-						.getPaths(this.endpointHandlerMapping)));
+				ignored.addAll(Arrays
+						.asList(EndpointPaths.ALL.getPaths(this.endpointHandlerMapping)));
 			}
 			if (ignored.contains("none")) {
 				ignored.remove("none");
@@ -192,12 +192,13 @@ public class ManagementWebSecurityAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String managementEnabled = context.getEnvironment().getProperty(
-					"management.security.enabled", "true");
-			String basicEnabled = context.getEnvironment().getProperty(
-					"security.basic.enabled", "true");
-			return new ConditionOutcome("true".equalsIgnoreCase(managementEnabled)
-					&& !"true".equalsIgnoreCase(basicEnabled),
+			String managementEnabled = context.getEnvironment()
+					.getProperty("management.security.enabled", "true");
+			String basicEnabled = context.getEnvironment()
+					.getProperty("security.basic.enabled", "true");
+			return new ConditionOutcome(
+					"true".equalsIgnoreCase(managementEnabled)
+							&& !"true".equalsIgnoreCase(basicEnabled),
 					"Management security enabled and basic disabled");
 		}
 
@@ -207,8 +208,8 @@ public class ManagementWebSecurityAutoConfiguration {
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
 	@Order(ManagementServerProperties.BASIC_AUTH_ORDER)
-	protected static class ManagementWebSecurityConfigurerAdapter extends
-			WebSecurityConfigurerAdapter {
+	protected static class ManagementWebSecurityConfigurerAdapter
+			extends WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private SecurityProperties security;
@@ -234,8 +235,8 @@ public class ManagementWebSecurityAutoConfiguration {
 			if (this.endpointHandlerMapping == null) {
 				ApplicationContext context = (this.contextResolver == null ? null
 						: this.contextResolver.getApplicationContext());
-				if (context != null
-						&& context.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
+				if (context != null && context
+						.getBeanNamesForType(EndpointHandlerMapping.class).length > 0) {
 					this.endpointHandlerMapping = context
 							.getBean(EndpointHandlerMapping.class);
 				}

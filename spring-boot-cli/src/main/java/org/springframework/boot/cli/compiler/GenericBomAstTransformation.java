@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,15 +39,15 @@ import org.springframework.core.Ordered;
 
 /**
  * A base class that lets plugin authors easily add additional BOMs to all apps. All the
- * dependencies in the bom (and it's transitives) will be added to the dependency
+ * dependencies in the BOM (and it's transitives) will be added to the dependency
  * management lookup, so an app can use just the artifact id (e.g. "spring-jdbc") in a
- * <code>@Grab</code>. To install, implement the missing methods and list the class in
- * <code>META-INF/services/org.springframework.boot.cli.compiler.SpringBootAstTransformation</code>
+ * {@code @Grab}. To install, implement the missing methods and list the class in
+ * {@code META-INF/services/org.springframework.boot.cli.compiler.SpringBootAstTransformation}
  * . The {@link #getOrder()} value needs to be before
  * {@link DependencyManagementBomTransformation#ORDER}.
  *
  * @author Dave Syer
- *
+ * @since 1.3.0
  */
 @GroovyASTTransformation(phase = CompilePhase.CONVERSION)
 public abstract class GenericBomAstTransformation
@@ -67,11 +67,10 @@ public abstract class GenericBomAstTransformation
 	/**
 	 * The bom to be added to dependency management in compact form:
 	 * <code>"&lt;groupId&gt;:&lt;artifactId&gt;:&lt;version&gt;"</code> (like in a
-	 * <code>@Grab</code>).
-	 *
-	 * @return the maven co-ordinates of the bom to add
+	 * {@code @Grab}).
+	 * @return the maven co-ordinates of the BOM to add
 	 */
-	abstract protected String getBomModule();
+	protected abstract String getBomModule();
 
 	private void visitModule(ModuleNode node, String module) {
 		addDependencyManagementBom(node, module);
@@ -89,30 +88,24 @@ public abstract class GenericBomAstTransformation
 	}
 
 	private AnnotationNode getAnnotation(AnnotatedNode annotated) {
-		AnnotationNode annotation;
 		List<AnnotationNode> annotations = annotated.getAnnotations(BOM);
-		if (annotations.isEmpty()) {
-			annotation = new AnnotationNode(BOM);
-			annotated.addAnnotation(annotation);
+		if (!annotations.isEmpty()) {
+			return annotations.get(0);
 		}
-		else {
-			annotation = annotations.get(0);
-		}
+		AnnotationNode annotation = new AnnotationNode(BOM);
+		annotated.addAnnotation(annotation);
 		return annotation;
 	}
 
 	private AnnotatedNode getAnnotatedNode(ModuleNode node) {
-		PackageNode pkg = node.getPackage();
-		if (pkg != null) {
-			if (!pkg.getAnnotations(BOM).isEmpty()) {
-				return pkg;
-			}
+		PackageNode packageNode = node.getPackage();
+		if (packageNode != null && !packageNode.getAnnotations(BOM).isEmpty()) {
+			return packageNode;
 		}
 		if (!node.getClasses().isEmpty()) {
-			ClassNode cls = node.getClasses().get(0);
-			return cls;
+			return node.getClasses().get(0);
 		}
-		return pkg;
+		return packageNode;
 	}
 
 	private List<ConstantExpression> getConstantExpressions(Expression valueExpression) {

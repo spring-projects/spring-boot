@@ -60,8 +60,8 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 	}
 
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(EntityScan.class.getName()));
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
 		String[] value = attributes.getStringArray("value");
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
@@ -76,8 +76,8 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
 		}
 		if (packagesToScan.isEmpty()) {
-			return Collections.singleton(ClassUtils.getPackageName(metadata
-					.getClassName()));
+			return Collections
+					.singleton(ClassUtils.getPackageName(metadata.getClassName()));
 		}
 		return packagesToScan;
 	}
@@ -86,8 +86,8 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 			Set<String> packagesToScan) {
 		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 		beanDefinition.setBeanClass(EntityScanBeanPostProcessor.class);
-		beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(
-				toArray(packagesToScan));
+		beanDefinition.getConstructorArgumentValues()
+				.addGenericArgumentValue(toArray(packagesToScan));
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		// We don't need this one to be post processed otherwise it can cause a
 		// cascade of bean instantiation that we would rather avoid.
@@ -115,8 +115,8 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 	 * {@link LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)} based
 	 * on an {@link EntityScan} annotation.
 	 */
-	static class EntityScanBeanPostProcessor implements BeanPostProcessor,
-			SmartInitializingSingleton, Ordered {
+	static class EntityScanBeanPostProcessor
+			implements BeanPostProcessor, SmartInitializingSingleton, Ordered {
 
 		private final String[] packagesToScan;
 
@@ -145,9 +145,10 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
 		public void afterSingletonsInstantiated() {
-			Assert.state(this.processed, "Unable to configure "
-					+ "LocalContainerEntityManagerFactoryBean from @EntityScan, "
-					+ "ensure an appropriate bean is registered.");
+			Assert.state(this.processed,
+					"Unable to configure "
+							+ "LocalContainerEntityManagerFactoryBean from @EntityScan, "
+							+ "ensure an appropriate bean is registered.");
 		}
 
 		@Override

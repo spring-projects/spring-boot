@@ -33,9 +33,9 @@ import org.apache.commons.logging.LogFactory;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public abstract class AbstractEmbeddedServletContainerFactory extends
-		AbstractConfigurableEmbeddedServletContainer implements
-		EmbeddedServletContainerFactory {
+public abstract class AbstractEmbeddedServletContainerFactory
+		extends AbstractConfigurableEmbeddedServletContainer
+		implements EmbeddedServletContainerFactory {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
@@ -68,9 +68,9 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 		// Or maybe there is a document root in a well-known location
 		file = file != null ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isDebugEnabled()) {
-			this.logger.debug("None of the document roots "
-					+ Arrays.asList(COMMON_DOC_ROOTS)
-					+ " point to a directory and will be ignored.");
+			this.logger
+					.debug("None of the document roots " + Arrays.asList(COMMON_DOC_ROOTS)
+							+ " point to a directory and will be ignored.");
 		}
 		else if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Document root: " + file);
@@ -83,7 +83,8 @@ public abstract class AbstractEmbeddedServletContainerFactory extends
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + file);
 		}
-		if (file != null && file.exists() && file.getAbsolutePath().contains("/WEB-INF/")) {
+		if (file != null && file.exists()
+				&& file.getAbsolutePath().contains("/WEB-INF/")) {
 			String path = file.getAbsolutePath();
 			path = path.substring(0, path.indexOf("/WEB-INF/"));
 			return new File(path);

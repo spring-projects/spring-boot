@@ -59,7 +59,9 @@ public class SpringApplicationHierarchyTests {
 
 	@EnableAutoConfiguration(exclude = { ElasticsearchDataAutoConfiguration.class,
 			ElasticsearchRepositoriesAutoConfiguration.class,
-			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
+			CassandraAutoConfiguration.class,
+			CassandraDataAutoConfiguration.class }, excludeName = {
+					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Child {
 	}
 
@@ -67,7 +69,9 @@ public class SpringApplicationHierarchyTests {
 			EndpointMBeanExportAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class,
 			ElasticsearchRepositoriesAutoConfiguration.class,
-			CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class }, excludeName = { "org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
+			CassandraAutoConfiguration.class,
+			CassandraDataAutoConfiguration.class }, excludeName = {
+					"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration" })
 	public static class Parent {
 	}
 

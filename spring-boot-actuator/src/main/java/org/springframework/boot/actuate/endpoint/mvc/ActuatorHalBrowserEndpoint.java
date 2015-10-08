@@ -40,8 +40,8 @@ import org.springframework.web.servlet.resource.TransformedResource;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implements
-		ResourceLoaderAware {
+public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint
+		implements ResourceLoaderAware {
 
 	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
@@ -86,7 +86,8 @@ public class ActuatorHalBrowserEndpoint extends ActuatorHalJsonEndpoint implemen
 		}
 	}
 
-	public static HalBrowserLocation getHalBrowserLocation(ResourceLoader resourceLoader) {
+	public static HalBrowserLocation getHalBrowserLocation(
+			ResourceLoader resourceLoader) {
 		for (HalBrowserLocation candidate : HAL_BROWSER_RESOURCE_LOCATIONS) {
 			try {
 				Resource resource = resourceLoader.getResource(candidate.toString());

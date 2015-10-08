@@ -78,7 +78,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
-		WebApplicationContext rootAppContext = createRootApplicationContext(servletContext);
+		WebApplicationContext rootAppContext = createRootApplicationContext(
+				servletContext);
 		if (rootAppContext != null) {
 			servletContext.addListener(new ContextLoaderListener(rootAppContext) {
 				@Override
@@ -105,13 +106,13 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
 			builder.initializers(new ParentContextApplicationContextInitializer(parent));
 		}
-		builder.initializers(new ServletContextApplicationContextInitializer(
-				servletContext));
+		builder.initializers(
+				new ServletContextApplicationContextInitializer(servletContext));
 		builder.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
 		builder = configure(builder);
 		SpringApplication application = builder.build();
-		if (application.getSources().isEmpty()
-				&& AnnotationUtils.findAnnotation(getClass(), Configuration.class) != null) {
+		if (application.getSources().isEmpty() && AnnotationUtils
+				.findAnnotation(getClass(), Configuration.class) != null) {
 			application.getSources().add(getClass());
 		}
 		Assert.state(application.getSources().size() > 0,
@@ -146,8 +147,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	private ApplicationContext getExistingRootWebApplicationContext(
 			ServletContext servletContext) {
-		Object context = servletContext
-				.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+		Object context = servletContext.getAttribute(
+				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		if (context instanceof ApplicationContext) {
 			return (ApplicationContext) context;
 		}

@@ -63,8 +63,8 @@ public class JpaWebAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));
 		assertNotNull(this.context.getBean(PageableHandlerMethodArgumentResolver.class));
-		assertTrue(this.context.getBean(FormattingConversionService.class).canConvert(
-				Long.class, City.class));
+		assertTrue(this.context.getBean(FormattingConversionService.class)
+				.canConvert(Long.class, City.class));
 	}
 
 	@Configuration

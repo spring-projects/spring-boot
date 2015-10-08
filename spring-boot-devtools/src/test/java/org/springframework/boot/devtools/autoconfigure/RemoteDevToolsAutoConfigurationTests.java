@@ -209,13 +209,14 @@ public class RemoteDevToolsAutoConfigurationTests {
 
 		@Bean
 		public HttpTunnelServer remoteDebugHttpTunnelServer() {
-			return new MockHttpTunnelServer(new SocketTargetServerConnection(
-					new RemoteDebugPortProvider()));
+			return new MockHttpTunnelServer(
+					new SocketTargetServerConnection(new RemoteDebugPortProvider()));
 		}
 
 		@Bean
 		public HttpRestartServer remoteRestartHttpRestartServer() {
-			SourceFolderUrlFilter sourceFolderUrlFilter = mock(SourceFolderUrlFilter.class);
+			SourceFolderUrlFilter sourceFolderUrlFilter = mock(
+					SourceFolderUrlFilter.class);
 			return new MockHttpRestartServer(sourceFolderUrlFilter);
 		}
 

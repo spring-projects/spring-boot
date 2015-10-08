@@ -38,6 +38,7 @@ public abstract class LoggingSystem {
 	public static final String SYSTEM_PROPERTY = LoggingSystem.class.getName();
 
 	private static final Map<String, String> SYSTEMS;
+
 	static {
 		Map<String, String> systems = new LinkedHashMap<String, String>();
 		systems.put("ch.qos.logback.core.Appender",

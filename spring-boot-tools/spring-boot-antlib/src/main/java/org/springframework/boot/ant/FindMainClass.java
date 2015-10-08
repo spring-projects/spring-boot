@@ -64,15 +64,15 @@ public class FindMainClass extends Task {
 					"one of @mainClass or @classesRoot must be specified");
 		}
 		if (!this.classesRoot.exists()) {
-			throw new BuildException("@classesRoot " + this.classesRoot
-					+ " does not exist");
+			throw new BuildException(
+					"@classesRoot " + this.classesRoot + " does not exist");
 		}
 		try {
 			if (this.classesRoot.isDirectory()) {
 				return MainClassFinder.findSingleMainClass(this.classesRoot);
 			}
-			return MainClassFinder
-					.findSingleMainClass(new JarFile(this.classesRoot), "/");
+			return MainClassFinder.findSingleMainClass(new JarFile(this.classesRoot),
+					"/");
 		}
 		catch (IOException ex) {
 			throw new BuildException(ex);

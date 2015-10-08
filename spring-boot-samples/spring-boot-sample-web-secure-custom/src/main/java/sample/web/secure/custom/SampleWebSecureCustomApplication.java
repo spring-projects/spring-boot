@@ -19,7 +19,6 @@ package sample.web.secure.custom;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -68,9 +67,6 @@ public class SampleWebSecureCustomApplication extends WebMvcConfigurerAdapter {
 
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
-
-		@Autowired
-		private SecurityProperties security;
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {

@@ -85,8 +85,8 @@ public class SimpleInMemoryRepository<T> {
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";
 		}
-		return new ArrayList<T>(this.values.subMap(prefix, false, prefix + "~", true)
-				.values());
+		return new ArrayList<T>(
+				this.values.subMap(prefix, false, prefix + "~", true).values());
 	}
 
 	public void setValues(ConcurrentNavigableMap<String, T> values) {

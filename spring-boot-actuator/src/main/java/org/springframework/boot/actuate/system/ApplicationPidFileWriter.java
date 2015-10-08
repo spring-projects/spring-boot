@@ -56,14 +56,15 @@ import org.springframework.util.Assert;
  * @author Tomasz Przybyla
  * @since 1.2.0
  */
-public class ApplicationPidFileWriter implements
-		ApplicationListener<SpringApplicationEvent>, Ordered {
+public class ApplicationPidFileWriter
+		implements ApplicationListener<SpringApplicationEvent>, Ordered {
 
 	private static final Log logger = LogFactory.getLog(ApplicationPidFileWriter.class);
 
 	private static final String DEFAULT_FILE_NAME = "application.pid";
 
 	private static final List<Property> FILE_PROPERTIES;
+
 	static {
 		List<Property> properties = new ArrayList<Property>();
 		properties.add(new SpringProperty("spring.pid.", "file"));
@@ -73,6 +74,7 @@ public class ApplicationPidFileWriter implements
 	}
 
 	private static final List<Property> FAIL_ON_WRITE_ERROR_PROPERTIES;
+
 	static {
 		List<Property> properties = new ArrayList<Property>();
 		properties.add(new SpringProperty("spring.pid.", "fail-on-write-error"));
@@ -116,9 +118,9 @@ public class ApplicationPidFileWriter implements
 	/**
 	 * Sets the type of application event that will trigger writing of the PID file.
 	 * Defaults to {@link ApplicationPreparedEvent}. NOTE: If you use the
-	 * {@link org.springframework.boot.context.event.ApplicationStartedEvent}
-	 * to trigger the write, you will not be able to
-	 * specify the PID filename in the Spring {@link Environment}.
+	 * {@link org.springframework.boot.context.event.ApplicationStartedEvent} to trigger
+	 * the write, you will not be able to specify the PID filename in the Spring
+	 * {@link Environment}.
 	 * @param triggerEventType the trigger event type
 	 */
 	public void setTriggerEventType(
@@ -135,8 +137,8 @@ public class ApplicationPidFileWriter implements
 					writePidFile(event);
 				}
 				catch (Exception ex) {
-					String message = String
-							.format("Cannot create pid file %s", this.file);
+					String message = String.format("Cannot create pid file %s",
+							this.file);
 					if (failOnWriteError(event)) {
 						throw new IllegalStateException(message, ex);
 					}

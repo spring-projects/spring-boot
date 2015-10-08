@@ -64,7 +64,8 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 	}
 
 	private Resource[] scan(ClassLoader loader, String packageName) throws IOException {
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(loader);
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
+				loader);
 		String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX
 				+ ClassUtils.convertClassNameToResourcePath(packageName) + "/**/*.class";
 		Resource[] resources = resolver.getResources(pattern);
@@ -87,8 +88,8 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 		}
 		catch (Throwable ex) {
 			if (this.logger.isWarnEnabled()) {
-				this.logger.warn("Unexpected failure when loading class resource "
-						+ resource, ex);
+				this.logger.warn(
+						"Unexpected failure when loading class resource " + resource, ex);
 			}
 			return null;
 		}
@@ -96,8 +97,8 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 
 	private void handleFailure(Resource resource, Throwable ex) {
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Ignoring candidate class resource " + resource
-					+ " due to " + ex);
+			this.logger.debug(
+					"Ignoring candidate class resource " + resource + " due to " + ex);
 		}
 	}
 

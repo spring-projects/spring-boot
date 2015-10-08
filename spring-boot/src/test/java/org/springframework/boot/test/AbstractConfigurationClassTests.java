@@ -72,8 +72,8 @@ public abstract class AbstractConfigurationClassTests {
 						.getMetadataReader(resource);
 				AnnotationMetadata annotationMetadata = metadataReader
 						.getAnnotationMetadata();
-				if (annotationMetadata.getAnnotationTypes().contains(
-						Configuration.class.getName())) {
+				if (annotationMetadata.getAnnotationTypes()
+						.contains(Configuration.class.getName())) {
 					configurationClasses.add(annotationMetadata);
 				}
 			}

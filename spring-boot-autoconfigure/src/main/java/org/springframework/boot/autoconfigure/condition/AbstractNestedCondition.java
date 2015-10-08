@@ -42,8 +42,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  */
-abstract class AbstractNestedCondition extends SpringBootCondition implements
-		ConfigurationCondition {
+abstract class AbstractNestedCondition extends SpringBootCondition
+		implements ConfigurationCondition {
 
 	private final ConfigurationPhase configurationPhase;
 

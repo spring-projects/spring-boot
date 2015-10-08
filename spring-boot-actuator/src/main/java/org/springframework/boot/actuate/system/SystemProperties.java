@@ -36,8 +36,8 @@ final class SystemProperties {
 				}
 			}
 			catch (Throwable ex) {
-				System.err.println("Could not resolve '" + property
-						+ "' as system property: " + ex);
+				System.err.println(
+						"Could not resolve '" + property + "' as system property: " + ex);
 			}
 		}
 		return null;

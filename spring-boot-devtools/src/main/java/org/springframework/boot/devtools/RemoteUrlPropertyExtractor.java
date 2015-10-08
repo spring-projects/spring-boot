@@ -38,8 +38,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class RemoteUrlPropertyExtractor implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+class RemoteUrlPropertyExtractor
+		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	private static final String NON_OPTION_ARGS = CommandLinePropertySource.DEFAULT_NON_OPTION_ARGS_PROPERTY_NAME;
 

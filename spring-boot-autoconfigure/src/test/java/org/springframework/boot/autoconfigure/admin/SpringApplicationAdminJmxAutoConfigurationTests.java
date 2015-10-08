@@ -77,8 +77,8 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	}
 
 	@Test
-	public void notRegisteredByDefault() throws MalformedObjectNameException,
-			InstanceNotFoundException {
+	public void notRegisteredByDefault()
+			throws MalformedObjectNameException, InstanceNotFoundException {
 		load();
 		this.thrown.expect(InstanceNotFoundException.class);
 		this.mBeanServer.getObjectInstance(createDefaultObjectName());
@@ -114,12 +114,13 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 
 	@Test
 	public void registerWithSimpleWebApp() throws Exception {
-		this.context = new SpringApplicationBuilder().sources(
-				EmbeddedServletContainerAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, JmxAutoConfiguration.class,
-				SpringApplicationAdminJmxAutoConfiguration.class).run(
-				"--" + ENABLE_ADMIN_PROP, "--server.port=0");
+		this.context = new SpringApplicationBuilder()
+				.sources(EmbeddedServletContainerAutoConfiguration.class,
+						ServerPropertiesAutoConfiguration.class,
+						DispatcherServletAutoConfiguration.class,
+						JmxAutoConfiguration.class,
+						SpringApplicationAdminJmxAutoConfiguration.class)
+				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0");
 		assertTrue(this.context instanceof EmbeddedWebApplicationContext);
 		assertEquals(true, this.mBeanServer.getAttribute(createDefaultObjectName(),
 				"EmbeddedWebApplication"));

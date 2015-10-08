@@ -73,8 +73,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 
 	@Test
 	public void defaultIsRemoteTokenServices() {
-		this.context = new SpringApplicationBuilder(ResourceConfiguration.class).web(
-				false).run();
+		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
+				.web(false).run();
 		RemoteTokenServices services = this.context.getBean(RemoteTokenServices.class);
 		assertNotNull(services);
 	}

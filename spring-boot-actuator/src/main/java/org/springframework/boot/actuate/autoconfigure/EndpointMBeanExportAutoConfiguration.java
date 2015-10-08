@@ -60,7 +60,8 @@ public class EndpointMBeanExportAutoConfiguration {
 
 	@Bean
 	public EndpointMBeanExporter endpointMBeanExporter(MBeanServer server) {
-		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter(this.objectMapper);
+		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter(
+				this.objectMapper);
 		String domain = this.properties.getDomain();
 		if (StringUtils.hasText(domain)) {
 			mbeanExporter.setDomain(domain);

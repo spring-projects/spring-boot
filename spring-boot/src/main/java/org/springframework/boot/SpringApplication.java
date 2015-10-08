@@ -80,12 +80,9 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <ul>
  * <li>Create an appropriate {@link ApplicationContext} instance (depending on your
  * classpath)</li>
- *
  * <li>Register a {@link CommandLinePropertySource} to expose command line arguments as
  * Spring properties</li>
- *
  * <li>Refresh the application context, loading all singleton beans</li>
- *
  * <li>Trigger any {@link CommandLineRunner} beans</li>
  * </ul>
  *
@@ -121,14 +118,12 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * your application, however, any of the following sources can also be used:
  *
  * <ul>
- * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}</li>
- *
+ * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}
+ * </li>
  * <li>{@link Resource} - An XML resource to be loaded by {@link XmlBeanDefinitionReader},
  * or a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
- *
  * <li>{@link Package} - A Java package to be scanned by
  * {@link ClassPathBeanDefinitionScanner}</li>
- *
  * <li>{@link CharSequence} - A class name, resource handle or package name to loaded as
  * appropriate. If the {@link CharSequence} cannot be resolved to class and does not
  * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
@@ -169,6 +164,7 @@ public class SpringApplication {
 	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
 
 	private static final Set<String> SERVLET_ENVIRONMENT_SOURCE_NAMES;
+
 	static {
 		Set<String> names = new HashSet<String>();
 		names.add(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
@@ -247,7 +243,8 @@ public class SpringApplication {
 			this.sources.addAll(Arrays.asList(sources));
 		}
 		this.webEnvironment = deduceWebEnvironment();
-		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		setInitializers((Collection) getSpringFactoriesInstances(
+				ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
@@ -293,8 +290,8 @@ public class SpringApplication {
 			context = doRun(listeners, args);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(
-						getApplicationLog(), stopWatch);
+				new StartupInfoLogger(this.mainApplicationClass)
+						.logStarted(getApplicationLog(), stopWatch);
 			}
 			return context;
 		}
@@ -366,10 +363,8 @@ public class SpringApplication {
 	}
 
 	private void configureHeadlessProperty() {
-		System.setProperty(
-				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
-				System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
-						Boolean.toString(this.headless)));
+		System.setProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, System.getProperty(
+				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, Boolean.toString(this.headless)));
 	}
 
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
@@ -402,8 +397,8 @@ public class SpringApplication {
 				instances.add(instance);
 			}
 			catch (Throwable ex) {
-				throw new IllegalArgumentException("Cannot instantiate " + type + " : "
-						+ name, ex);
+				throw new IllegalArgumentException(
+						"Cannot instantiate " + type + " : " + name, ex);
 			}
 		}
 
@@ -433,15 +428,16 @@ public class SpringApplication {
 	 * @see #configureProfiles(ConfigurableEnvironment, String[])
 	 * @see #configurePropertySources(ConfigurableEnvironment, String[])
 	 */
-	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
+	protected void configureEnvironment(ConfigurableEnvironment environment,
+			String[] args) {
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
 	}
 
 	private boolean isWebEnvironment(ConfigurableEnvironment environment) {
 		try {
-			Class<?> webEnvironmentClass = ClassUtils.forName(
-					CONFIGURABLE_WEB_ENVIRONMENT_CLASS, getClassLoader());
+			Class<?> webEnvironmentClass = ClassUtils
+					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, getClassLoader());
 			return (webEnvironmentClass.isInstance(environment));
 		}
 		catch (Throwable ex) {
@@ -483,16 +479,16 @@ public class SpringApplication {
 			String[] args) {
 		MutablePropertySources sources = environment.getPropertySources();
 		if (this.defaultProperties != null && !this.defaultProperties.isEmpty()) {
-			sources.addLast(new MapPropertySource("defaultProperties",
-					this.defaultProperties));
+			sources.addLast(
+					new MapPropertySource("defaultProperties", this.defaultProperties));
 		}
 		if (this.addCommandLineProperties && args.length > 0) {
 			String name = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
 			if (sources.contains(name)) {
 				PropertySource<?> source = sources.get(name);
 				CompositePropertySource composite = new CompositePropertySource(name);
-				composite.addPropertySource(new SimpleCommandLinePropertySource(name
-						+ "-" + args.hashCode(), args));
+				composite.addPropertySource(new SimpleCommandLinePropertySource(
+						name + "-" + args.hashCode(), args));
 				composite.addPropertySource(source);
 				sources.replace(name, composite);
 			}
@@ -559,14 +555,14 @@ public class SpringApplication {
 		Class<?> contextClass = this.applicationContextClass;
 		if (contextClass == null) {
 			try {
-				contextClass = Class
-						.forName(this.webEnvironment ? DEFAULT_WEB_CONTEXT_CLASS
-								: DEFAULT_CONTEXT_CLASS);
+				contextClass = Class.forName(this.webEnvironment
+						? DEFAULT_WEB_CONTEXT_CLASS : DEFAULT_CONTEXT_CLASS);
 			}
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
 						"Unable create a default ApplicationContext, "
-								+ "please specify an ApplicationContextClass", ex);
+								+ "please specify an ApplicationContextClass",
+						ex);
 			}
 		}
 		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
@@ -595,8 +591,8 @@ public class SpringApplication {
 						.setResourceLoader(this.resourceLoader);
 			}
 			if (context instanceof DefaultResourceLoader) {
-				((DefaultResourceLoader) context).setClassLoader(this.resourceLoader
-						.getClassLoader());
+				((DefaultResourceLoader) context)
+						.setClassLoader(this.resourceLoader.getClassLoader());
 			}
 		}
 	}
@@ -665,8 +661,8 @@ public class SpringApplication {
 	 */
 	protected void load(ApplicationContext context, Object[] sources) {
 		if (this.log.isDebugEnabled()) {
-			this.log.debug("Loading source "
-					+ StringUtils.arrayToCommaDelimitedString(sources));
+			this.log.debug(
+					"Loading source " + StringUtils.arrayToCommaDelimitedString(sources));
 		}
 		BeanDefinitionLoader loader = createBeanDefinitionLoader(
 				getBeanDefinitionRegistry(context), sources);
@@ -1087,8 +1083,8 @@ public class SpringApplication {
 			try {
 				List<ExitCodeGenerator> generators = new ArrayList<ExitCodeGenerator>();
 				generators.addAll(Arrays.asList(exitCodeGenerators));
-				generators.addAll(context.getBeansOfType(ExitCodeGenerator.class)
-						.values());
+				generators
+						.addAll(context.getBeansOfType(ExitCodeGenerator.class).values());
 				exitCode = getExitCode(generators);
 			}
 			finally {

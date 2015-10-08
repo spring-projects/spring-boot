@@ -78,7 +78,8 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 						}
 					}
 					else {
-						char charAfter = propertyNameChars[this.names[nameIndex].length()];
+						char charAfter = propertyNameChars[this.names[nameIndex]
+								.length()];
 						if (isDelimiter(charAfter)) {
 							match[nameIndex] = true;
 							noneMatched = false;

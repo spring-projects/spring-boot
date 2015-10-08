@@ -48,8 +48,8 @@ public class SampleHateoasApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/customers/1", String.class);
 		assertThat(entity.getStatusCode(), equalTo(HttpStatus.OK));
-		assertThat(entity.getBody(), startsWith("{\"id\":1,\"firstName\":\"Oliver\""
-				+ ",\"lastName\":\"Gierke\""));
+		assertThat(entity.getBody(), startsWith(
+				"{\"id\":1,\"firstName\":\"Oliver\"" + ",\"lastName\":\"Gierke\""));
 		assertThat(entity.getBody(), containsString("_links\":{\"self\":{\"href\""));
 	}
 

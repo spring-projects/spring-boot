@@ -134,8 +134,8 @@ public class HealthIndicatorAutoConfiguration {
 
 		@SuppressWarnings("unchecked")
 		protected H createHealthIndicator(S source) {
-			Class<?>[] generics = ResolvableType.forClass(
-					CompositeHealthIndicatorConfiguration.class, getClass())
+			Class<?>[] generics = ResolvableType
+					.forClass(CompositeHealthIndicatorConfiguration.class, getClass())
 					.resolveGenerics();
 			Class<H> indicatorClass = (Class<H>) generics[0];
 			Class<S> sourceClass = (Class<S>) generics[1];
@@ -211,8 +211,7 @@ public class HealthIndicatorAutoConfiguration {
 	@Configuration
 	@ConditionalOnBean(RedisConnectionFactory.class)
 	@ConditionalOnEnabledHealthIndicator("redis")
-	public static class RedisHealthIndicatorConfiguration
-			extends
+	public static class RedisHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
 
 		@Autowired
@@ -281,8 +280,7 @@ public class HealthIndicatorAutoConfiguration {
 	@Configuration
 	@ConditionalOnBean(JavaMailSenderImpl.class)
 	@ConditionalOnEnabledHealthIndicator("mail")
-	public static class MailHealthIndicatorConfiguration
-			extends
+	public static class MailHealthIndicatorConfiguration extends
 			CompositeHealthIndicatorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
 
 		@Autowired(required = false)

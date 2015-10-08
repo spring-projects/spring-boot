@@ -38,8 +38,8 @@ import org.springframework.util.ClassUtils;
  * @author Ivan Sopov
  * @see AbstractEmbeddedServletContainerFactory
  */
-public abstract class AbstractConfigurableEmbeddedServletContainer implements
-		ConfigurableEmbeddedServletContainer {
+public abstract class AbstractConfigurableEmbeddedServletContainer
+		implements ConfigurableEmbeddedServletContainer {
 
 	private static final int DEFAULT_SESSION_TIMEOUT = (int) TimeUnit.MINUTES
 			.toSeconds(30);
@@ -325,10 +325,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	 * @return {@code true} if the container should be registered, otherwise {@code false}
 	 */
 	protected boolean shouldRegisterJspServlet() {
-		return this.jspServlet != null
-				&& this.jspServlet.getRegistered()
-				&& ClassUtils.isPresent(this.jspServlet.getClassName(), getClass()
-						.getClassLoader());
+		return this.jspServlet != null && this.jspServlet.getRegistered() && ClassUtils
+				.isPresent(this.jspServlet.getClassName(), getClass().getClassLoader());
 	}
 
 }

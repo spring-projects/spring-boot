@@ -53,8 +53,8 @@ public class AetherGrapeEngineTests {
 	private AetherGrapeEngine createGrapeEngine(
 			RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<RepositoryConfiguration>();
-		repositoryConfigurations.add(new RepositoryConfiguration("central", URI
-				.create("http://repo1.maven.org/maven2"), false));
+		repositoryConfigurations.add(new RepositoryConfiguration("central",
+				URI.create("http://repo1.maven.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
 		return AetherGrapeEngineFactory.create(this.groovyClassLoader,
 				repositoryConfigurations, new DependencyResolutionContext());
@@ -138,10 +138,8 @@ public class AetherGrapeEngineTests {
 	public void nonTransitiveDependencyResolution() {
 		Map<String, Object> args = new HashMap<String, Object>();
 
-		createGrapeEngine().grab(
-				args,
-				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE",
-						false));
+		createGrapeEngine().grab(args, createDependency("org.springframework",
+				"spring-jdbc", "3.2.4.RELEASE", false));
 
 		assertEquals(1, this.groovyClassLoader.getURLs().length);
 	}

@@ -304,11 +304,11 @@ public class HttpTunnelServerTests {
 		testHttpConnectionNonAsync(100);
 	}
 
-	private void testHttpConnectionNonAsync(long sleepBeforeResponse) throws IOException,
-			InterruptedException {
+	private void testHttpConnectionNonAsync(long sleepBeforeResponse)
+			throws IOException, InterruptedException {
 		ServerHttpRequest request = mock(ServerHttpRequest.class);
-		given(request.getAsyncRequestControl(this.response)).willThrow(
-				new IllegalArgumentException());
+		given(request.getAsyncRequestControl(this.response))
+				.willThrow(new IllegalArgumentException());
 		final HttpConnection connection = new HttpConnection(request, this.response);
 		final AtomicBoolean responded = new AtomicBoolean();
 		Thread connectionThread = new Thread() {

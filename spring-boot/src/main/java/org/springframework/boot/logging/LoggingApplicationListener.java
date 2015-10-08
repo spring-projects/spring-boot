@@ -54,7 +54,8 @@ import org.springframework.util.StringUtils;
  * <ul>
  * <li>{@code LOG_FILE} is set to the value of path of the log file that should be written
  * (if any).</li>
- * <li>{@code PID} is set to the value of the current process ID if it can be determined.</li>
+ * <li>{@code PID} is set to the value of the current process ID if it can be determined.
+ * </li>
  * </ul>
  *
  * @author Dave Syer
@@ -98,6 +99,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String EXCEPTION_CONVERSION_WORD = "LOG_EXCEPTION_CONVERSION_WORD";
 
 	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
+
 	static {
 		LOG_LEVEL_LOGGERS = new LinkedMultiValueMap<LogLevel, String>();
 		LOG_LEVEL_LOGGERS.add(LogLevel.DEBUG, "org.springframework.boot");
@@ -152,7 +154,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			onApplicationStartedEvent((ApplicationStartedEvent) event);
 		}
 		else if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
+			onApplicationEnvironmentPreparedEvent(
+					(ApplicationEnvironmentPreparedEvent) event);
 		}
 		else if (event instanceof ContextClosedEvent) {
 			onContextClosedEvent();
@@ -160,16 +163,16 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void onApplicationStartedEvent(ApplicationStartedEvent event) {
-		this.loggingSystem = LoggingSystem.get(event.getSpringApplication()
-				.getClassLoader());
+		this.loggingSystem = LoggingSystem
+				.get(event.getSpringApplication().getClassLoader());
 		this.loggingSystem.beforeInitialize();
 	}
 
 	private void onApplicationEnvironmentPreparedEvent(
 			ApplicationEnvironmentPreparedEvent event) {
 		if (this.loggingSystem == null) {
-			this.loggingSystem = LoggingSystem.get(event.getSpringApplication()
-					.getClassLoader());
+			this.loggingSystem = LoggingSystem
+					.get(event.getSpringApplication().getClassLoader());
 		}
 		initialize(event.getEnvironment(), event.getSpringApplication().getClassLoader());
 	}
@@ -186,7 +189,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * @param environment the environment
 	 * @param classLoader the classloader
 	 */
-	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
+	protected void initialize(ConfigurableEnvironment environment,
+			ClassLoader classLoader) {
 		if (System.getProperty(PID_KEY) == null) {
 			System.setProperty(PID_KEY, new ApplicationPid().toString());
 		}

@@ -72,9 +72,6 @@ public class SampleWebSecureCustomApplication extends WebMvcConfigurerAdapter {
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 		@Autowired
-		private SecurityProperties security;
-
-		@Autowired
 		private DataSource dataSource;
 
 		@Override

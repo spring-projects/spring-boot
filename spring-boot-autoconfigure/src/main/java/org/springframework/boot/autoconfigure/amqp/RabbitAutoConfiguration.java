@@ -43,30 +43,25 @@ import com.rabbitmq.client.Channel;
  * <P>
  * Registers the following beans:
  * <ul>
- * <li>
- * {@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there is
- * no other bean of the same type in the context.</li>
- * <li>
- * {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory
+ * <li>{@link org.springframework.amqp.rabbit.core.RabbitTemplate RabbitTemplate} if there
+ * is no other bean of the same type in the context.</li>
+ * <li>{@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory
  * CachingConnectionFactory} instance if there is no other bean of the same type in the
  * context.</li>
- * <li>
- * {@link org.springframework.amqp.core.AmqpAdmin } instance as long as
+ * <li>{@link org.springframework.amqp.core.AmqpAdmin } instance as long as
  * {@literal spring.rabbitmq.dynamic=true}.</li>
  * </ul>
  * <p>
  * The {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory} honors
  * the following properties:
  * <ul>
- * <li>
- * {@literal spring.rabbitmq.port} is used to specify the port to which the client should
- * connect, and defaults to 5672.</li>
- * <li>
- * {@literal spring.rabbitmq.username} is used to specify the (optional) username.</li>
- * <li>
- * {@literal spring.rabbitmq.password} is used to specify the (optional) password.</li>
- * <li>
- * {@literal spring.rabbitmq.host} is used to specify the host, and defaults to
+ * <li>{@literal spring.rabbitmq.port} is used to specify the port to which the client
+ * should connect, and defaults to 5672.</li>
+ * <li>{@literal spring.rabbitmq.username} is used to specify the (optional) username.
+ * </li>
+ * <li>{@literal spring.rabbitmq.password} is used to specify the (optional) password.
+ * </li>
+ * <li>{@literal spring.rabbitmq.host} is used to specify the host, and defaults to
  * {@literal localhost}.</li>
  * <li>{@literal spring.rabbitmq.virtualHost} is used to specify the (optional) virtual
  * host to which the client should connect.</li>
