@@ -2705,10 +2705,13 @@ https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java
 [[boot-features-solr]]
 === Solr
 http://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic
-auto-configuration for the Solr client library and abstractions on top of it provided by
+auto-configuration for the Solr 4 client library and abstractions on top of it provided by
 https://github.com/spring-projects/spring-data-solr[Spring Data Solr]. There is
 a `spring-boot-starter-data-solr` '`Starter POM`' for collecting the dependencies in a
 convenient way.
+
+TIP: Solr 5 is currently not supported and the auto-configuration will not be enabled by
+a Solr 5 dependency.
 
 
 
