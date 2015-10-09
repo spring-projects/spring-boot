@@ -145,7 +145,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext
 	 * {@link #refresh()} must be called in order for the context to fully process the new
 	 * class.
 	 * <p>
-	 * Calls to {@link #register} are idempotent; adding the same annotated class more
+	 * Calls to {@code #register} are idempotent; adding the same annotated class more
 	 * than once has no additional effect.
 	 * @param annotatedClasses one or more annotated classes, e.g. {@code @Configuration}
 	 * classes
