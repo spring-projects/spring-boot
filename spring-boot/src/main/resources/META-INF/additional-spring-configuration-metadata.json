@@ -122,7 +122,6 @@
     "sourceType": "org.springframework.boot.SpringApplication",
     "description": "Display the banner when the application runs.",
     "defaultValue": true,
-    "deprecated": true,
     "deprecation": {"replacement": "spring.main.banner-mode"}
   },
   {
